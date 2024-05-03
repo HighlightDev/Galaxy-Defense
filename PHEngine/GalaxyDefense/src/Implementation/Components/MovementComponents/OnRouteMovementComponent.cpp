@@ -92,7 +92,11 @@ namespace Game
             distanceAlreadyDone = std::fmod(distanceAlreadyDone, mRouteTotalDistance);
             const float prctDistanceDone = EngineMath::FloatsNearEqual(mRouteTotalDistance, 0.0f) ? 0.0f : distanceToBeDone / mRouteTotalDistance;
             mMovementProgressOnRoute += prctDistanceDone;
-            mMovementProgressOnRoute = mMovementProgressOnRoute > 1.0f ? mMovementProgressOnRoute - 1.0f : mMovementProgressOnRoute;
+            if (mMovementProgressOnRoute > 1.0f)
+            {
+                mIsDistanceCompleted = true;
+                mMovementProgressOnRoute -= 1.0f;
+            }
 
             TeleportToMovementProgressOnRoute(distanceAlreadyDone);
         }
@@ -106,5 +110,18 @@ namespace Game
     void OnRouteMovementComponent::SetIsMovementAllowed(const bool isAllowed)
     {
         mIsMovementAllowed = isAllowed;
+    }
+
+    bool OnRouteMovementComponent::GetIsDistanceCompleted() const
+    {
+        return mIsDistanceCompleted;
+    }
+
+    void OnRouteMovementComponent::ResetStates()
+    {
+        mIsDistanceCompleted = false;
+        mIsMovementAllowed = false;
+        mMovementProgressOnRoute = 0.0f;
+        mRouteTotalDistance = 0.0f;
     }
 }

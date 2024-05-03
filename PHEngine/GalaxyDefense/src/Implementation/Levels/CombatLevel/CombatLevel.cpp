@@ -25,9 +25,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
 #include "Implementation/GalaxySceneCamera.h"
-#include "Implementation/Controllers/GameFlowController.h"
 #include "Implementation/Controllers/CombatController.h"
-#include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Events/RayCollisionEvent.h"
 #include "Implementation/Events/SphereContactCollisionEvent.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
@@ -60,7 +58,7 @@ namespace Game
    CombatLevel::CombatLevel()
        : LevelBase("FirstLevel")
    {
-      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent, Event::ChangeGameModeEvent>();
+      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent, Event::ChangeGameModeEvent>();
       Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent>();
    }
 
@@ -86,11 +84,9 @@ namespace Game
       assert(sceneSp);
       Base::PreLevelInit();
       mCombatController = std::make_shared<CombatController>(sceneSp);
-      mGameFlowController = std::make_shared<GameFlowController>(sceneSp);
       mUiController = std::make_unique<UiController>(sceneSp);
       mCombatController->OnPreLevelInit();
       mUiController->OnPreLevelInit();
-      mGameFlowController->OnPreLevelInit();
    }
 
    LevelData CombatLevel::LoadLevelDataFromFile(const std::string &levelName) const
@@ -152,10 +148,6 @@ namespace Game
       billboardComponent->SetSortOrderValue(-100000);
       a_skybox->AddComponent(billboardComponent);
 
-      const auto &a_station = sceneSp->GetActorByName("SpaceshipActor");
-
-      mGameFlowController->SetTempRootComponent(a_station->GetRootComponent());
-      mGameFlowController->OnLevelInit();
       mCombatController->InitFromLevelData(levelData);
       mCombatController->OnLevelInit();
       mUiController->OnLevelInit();
@@ -164,7 +156,6 @@ namespace Game
    void CombatLevel::PostLevelInit()
    {
       mCombatController->OnPostLevelInit();
-      mGameFlowController->OnPostLevelInit();
       mUiController->OnPostLevelInit();
       Base::PostLevelInit();
    }
@@ -173,7 +164,6 @@ namespace Game
    {
       Base::PostPlayLevelFinished();
       mCombatController->PostPlayLevelFinished();
-      mGameFlowController->PostPlayLevelFinished();
       mUiController->PostPlayLevelFinished();
    }
 
@@ -201,12 +191,6 @@ namespace Game
          mCombatController->CleanUp();
          mCombatController.reset();
       }
-
-      if (mGameFlowController)
-      {
-         mGameFlowController->CleanUp();
-         mGameFlowController.reset();
-      }
    }
 
    void CombatLevel::Tick(const float deltaTime)
@@ -220,11 +204,6 @@ namespace Game
       {
          mCombatController->Tick(deltaTime);
       }
-
-      if (mGameFlowController)
-      {
-         mGameFlowController->Tick(deltaTime);
-      }
    }
 
    void CombatLevel::UnpausableTick(const float deltaTime)
@@ -237,11 +216,6 @@ namespace Game
       if (mCombatController)
       {
          mCombatController->UnpausableTick(deltaTime);
-      }
-
-      if (mGameFlowController)
-      {
-         mGameFlowController->UnpausableTick(deltaTime);
       }
    }
 }

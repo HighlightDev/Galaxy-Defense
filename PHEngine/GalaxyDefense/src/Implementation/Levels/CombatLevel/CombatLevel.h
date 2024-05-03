@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Implementation/Levels/LevelBase.h"
-#include "Implementation/Controllers/GameFlowController.h"
 #include "Implementation/Levels/CombatLevel/Controllers/UiController.h"
 #include "Implementation/Levels/LevelData.h"
 
@@ -16,8 +15,6 @@ namespace Game
       using Base = LevelBase;
 
       std::shared_ptr<CombatController> mCombatController;
-
-      std::shared_ptr<GameFlowController> mGameFlowController;
 
       std::unique_ptr<UiController> mUiController;
 

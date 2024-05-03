@@ -114,13 +114,13 @@ namespace Graphics
 
 			void SendDataToGPU() override
 			{
-				const size_t bufferSize = GetElementByteSize() * m_totalDataLength;
+				m_allocatedBufferSize = GetElementByteSize() * m_totalDataLength;
 				GenBuffer();
 				BindVBO();
 
-				LogInfo("InstancedVertexBufferObject::SendDataToGPU => bufferSize = ", bufferSize);
+				LogInfo("InstancedVertexBufferObject::SendDataToGPU => bufferSize = ", m_allocatedBufferSize);
 
-				glBufferData(m_bufferTarget, bufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
+				glBufferData(m_bufferTarget, m_allocatedBufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
 				glEnableVertexAttribArray(m_vertexAttribIndex);
 				this->SetVertexAttribPointerWithSpecificParams();
 				glVertexAttribDivisor(m_vertexAttribIndex, attrib_divisor);

@@ -22,8 +22,6 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
 #include "Implementation/GalaxySceneCamera.h"
-#include "Implementation/Controllers/SpaceShipPlayerController.h"
-#include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Events/RayCollisionEvent.h"
 #include "Implementation/Events/SphereContactCollisionEvent.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"

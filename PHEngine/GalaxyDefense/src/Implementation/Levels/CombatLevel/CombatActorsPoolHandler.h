@@ -62,6 +62,10 @@ namespace Game
 
         std::shared_ptr<SpaceStationActor> GetSpaceStationOwnerActorById(const int32_t actorId) const;
 
+        const std::vector<std::shared_ptr<SpaceshipActor>>& GetEnemySpaceshipActors() const;
+
+        const std::vector<std::shared_ptr<MissileActor>>& GetMissileActors() const;
+
         eGameObjectsType GetGameObjectTypeByActorId(const int32_t actorId) const;
 
         eGameObjectsCollisionType GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const;

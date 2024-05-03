@@ -33,7 +33,6 @@ namespace IO
 		CreateFilePathMap(GetModelPath(), GetShortModelPath());
 		CreateFilePathMap(GetMaterialPath(), GetShortMaterialPath());
 		CreateFilePathMap(GetScriptPath(), GetShortScriptPath());
-		CreateFilePathMap(GetScriptCorePath(), GetShortScriptCorePath());
 		CreateFilePathMap(GetTweenerPath(), GetShortTweenerPath());
 		CreateFilePathMap(GetFontsPath(), GetShortFontsPath());
 		CreateFilePathMap(GetAudioPath(), GetShortAudioPath());
@@ -191,11 +190,6 @@ namespace IO
 		return GetShortResPath() + "scripts" + SLASH;
 	}
 
-	std::string FolderManager::GetShortScriptCorePath() const
-	{
-		return GetShortScriptPath() + "core" + SLASH;
-	}
-
 	std::string FolderManager::GetShortMaterialPath() const
 	{
 		return GetShortResPath() + "materials" + SLASH;
@@ -319,11 +313,6 @@ namespace IO
 	std::string FolderManager::GetScriptPath() const
 	{
 		return GetResPath() + "scripts" + SLASH;
-	}
-
-	std::string FolderManager::GetScriptCorePath() const
-	{
-		return GetScriptPath() + "core" + SLASH;
 	}
 
 	std::string FolderManager::GetMaterialPath() const

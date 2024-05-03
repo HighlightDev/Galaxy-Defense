@@ -55,6 +55,7 @@ function CreateTestLevel(host)
 		,Asteroid_roughness.jpg
 		,Asteroid_metallic.jpg
 		,sphere.obj
+		,plane.obj
 		,spaceship.obj
 		,missile1_model.fbx
 		,asteroid.fbx
@@ -99,33 +100,6 @@ function CreateTestLevel(host)
 		0, 0, 0,
 		1, 1, 1,
 		"")
-
-	local spaceship_a = _CreateActor(host, "Actor",
-		"SpaceshipActor",
-		0, 0, 0,
-		0, 0, 0,
-		1, 1, 1,
-		"")
-
-	local spaceshipMatProxyId = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_COLOR.png", "albedo")
-	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_NORMAL.png", "normalMap")
-	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_ROUGHNESS.jpg", "roughnessMap")
-	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_METALLIC.jpg", "metallicMap")
-	_SetFloatToMaterial(host, spaceshipMatProxyId, 1.0, "uvScale")
-
-	_CreateAndAttachComponentToActor(host, spaceship_a, "StaticMeshComponent",
-		Json.encode(
-			{
-				gameObjectName = "SpaceshipMeshComponent",
-				meshName = "space_station.obj",
-				translation = { x = 0, y = 0, z = 0 },
-				rotation = { x = 0, y = 0, z = 0 },
-				scale = { x = 7, y = 7, z = 7 },
-				luaScriptName = "",
-				materialProxyId = spaceshipMatProxyId
-			}
-		))
 end
 
 function System_OnStart(host)

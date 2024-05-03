@@ -30,6 +30,7 @@
 #include <array>
 #include <unordered_map>
 #include <tuple>
+#include <json/json.hpp>
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -47,6 +48,7 @@ namespace Game
         : mScene(scene),
           mLevelBounds(BoundingBox3D(glm::vec3(0), glm::vec3(100, 50, 100))),
           mNavigationController(std::make_shared<NavigationController>(scene)),
+          mUserInteractionController(std::make_shared<UserInteractionController>(scene)),
           mCombatActorsPoolHandler(std::make_shared<CombatActorsPoolHandler>(scene))
     {
     }
@@ -54,9 +56,9 @@ namespace Game
     CombatController::~CombatController()
     {
         SphereContactCollisionEvent::GetInstance()->RemoveListener(SphereContactCollisionEvent::GetInstanceId());
-        MainPlayerActionEvent::GetInstance()->RemoveListener(MainPlayerActionEvent::GetInstanceId());
         PhysicsCollisionGameThreadEvent::GetInstance()->RemoveListener(PhysicsCollisionGameThreadEvent::GetInstanceId());
         RayCollisionEvent::GetInstance()->RemoveListener(RayCollisionEvent::GetInstanceId());
+        BroadcastGameThreadEvent::GetInstance()->RemoveListener(BroadcastGameThreadEvent::GetInstanceId());
     }
 
     void CombatController::InitFromLevelData(const LevelData &levelData)
@@ -67,6 +69,7 @@ namespace Game
 
         mLevelBounds = BoundingBox3D(glm::vec3(levelData.LevelBoundaryOrigin.x, 0.0f, levelData.LevelBoundaryOrigin.y),
                                      glm::vec3(levelData.LevelBoundaryExtent.x, 50.0f, levelData.LevelBoundaryExtent.y));
+        mNavigationController->SetLevelBounds(mLevelBounds);
 
         std::unordered_map<std::string, Path> pathRoutes;
 
@@ -97,10 +100,11 @@ namespace Game
     {
         const auto thisSp = shared_from_this();
         SphereContactCollisionEvent::GetInstance()->AddListener(thisSp);
-        MainPlayerActionEvent::GetInstance()->AddListener(thisSp);
         PhysicsCollisionGameThreadEvent::GetInstance()->AddListener(thisSp);
         RayCollisionEvent::GetInstance()->AddListener(thisSp);
+        BroadcastGameThreadEvent::GetInstance()->AddListener(thisSp);
         mNavigationController->OnPreLevelInit();
+        mUserInteractionController->OnPreLevelInit();
     }
 
     void CombatController::OnLevelInit()
@@ -120,10 +124,15 @@ namespace Game
 
         mCombatActorsPoolHandler->SpawnAsteroids(20);
         mNavigationController->OnLevelInit();
+        mUserInteractionController->SetActorsPoolHandler(mCombatActorsPoolHandler);
+        mUserInteractionController->SetOnShootCallback(std::bind(&CombatController::OnReadyToShoot, this));
+        mUserInteractionController->OnLevelInit();
     }
 
     void CombatController::OnPostLevelInit()
     {
+        mNavigationController->OnPostLevelInit();
+        mUserInteractionController->OnPostLevelInit();
     }
 
     void CombatController::PostPlayLevelFinished()
@@ -136,37 +145,20 @@ namespace Game
             const auto &freeShip = mCombatActorsPoolHandler->GetFreeSpaceshipActor();
             mNavigationController->PutSpaceshipOnRoute(pathName, freeShip);
         }
+
+        mUserInteractionController->PostPlayLevelFinished();
     }
 
-    void CombatController::ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data)
+    void CombatController::OnReadyToShoot()
     {
-        const auto &playerAction = std::get<0>(data);
-
-        if (eMainPlayerActionEnum::SHOOT == playerAction)
-        {
-            if (const auto &sceneSp = mScene.lock())
-            {
-                ShootBullet(mPlayerShip->GetRootComponent()->GetTranslation());
-                // todo: use player data provider instead
-                LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eMainPlayerStatusType::LIFE_POINTS_CHANGED);
-            }
-        }
-        else if (eMainPlayerActionEnum::SELECT_NEXT_MISSILE_TYPE == playerAction || eMainPlayerActionEnum::SELECT_PREV_MISSILE_TYPE == playerAction)
-        {
-            static std::array<eMissileType, 4> missiles = {eMissileType::BOMB, eMissileType::FREEZING, eMissileType::ELECTRO_RAY, eMissileType::BLACK_HOLE};
-            const auto &playerDataProvider = PlayerDataProvider::GetInstance();
-            const auto selectedMissileType = playerDataProvider->GetSelectedMissileType();
-            const auto foundMissileTypeIt = std::find(missiles.cbegin(), missiles.cend(), selectedMissileType);
-            assert(foundMissileTypeIt != missiles.cend());
-            const auto selectedMissileTypeIndex = std::distance(missiles.cbegin(), foundMissileTypeIt);
-            const auto newMissileType = eMainPlayerActionEnum::SELECT_NEXT_MISSILE_TYPE == playerAction
-                                            ? (missiles.size() - 1) == selectedMissileTypeIndex ? missiles.at(0) : missiles.at(selectedMissileTypeIndex + 1)
-                                        : eMainPlayerActionEnum::SELECT_PREV_MISSILE_TYPE == playerAction
-                                            ? 0 == selectedMissileTypeIndex ? missiles.at(missiles.size() - 1) : missiles.at(selectedMissileTypeIndex - 1)
-                                            : eMissileType::NONE;
-            assert(newMissileType != eMissileType::NONE);
-            playerDataProvider->SetSelectedMissileType(newMissileType);
-        }
+        LogInfo("CombatController::OnReadyToShoot");
+        const auto &projectileMarkerPosition = mUserInteractionController->GetProjectileMarkerPosition();
+        const auto selectedSpaceStationId = mUserInteractionController->GetSelectedSpaceStationId();
+        const auto &activeSpaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(selectedSpaceStationId);
+        assert(activeSpaceStationActor);
+        const auto &activeSpaceStationPosition = activeSpaceStationActor->GetRootComponent()->GetTranslation();
+        const auto &projectileShootDirection = glm::normalize(projectileMarkerPosition - activeSpaceStationPosition);
+        LaunchMisile(activeSpaceStationActor, activeSpaceStationPosition, projectileShootDirection);
     }
 
     void CombatController::ProcessEvent(const typename PhysicsCollisionGameThreadEvent::EventData_t &data)
@@ -236,8 +228,12 @@ namespace Game
             LogInfo("CombatController::PhysicsCollisionGameThreadEvent =>", collisionType, "spaceship with space object, this_actor = ", ownerEnemyShipActor->GetName(),
                     " that_actor = ", ownerSpaceObjectActor->GetName());
 
-            ownerEnemyShipActor->TriggerDamageReceived(1UL, eDamageDealerType::NEUTRAL_OBJECT);
             ownerSpaceObjectActor->TriggerDisabled();
+            ownerEnemyShipActor->TriggerDamageReceived(1UL, eDamageDealerType::NEUTRAL_OBJECT);
+            if (!ownerEnemyShipActor->IsAlive())
+            {
+                mNavigationController->RemoveSpaceshipFromRoute(ownerEnemyShipActor->GetObjectId());
+            }
         }
         else if (eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT == objectsCollisionType)
         {
@@ -338,33 +334,91 @@ namespace Game
         }
     }
 
+    void CombatController::ProcessEvent(const typename BroadcastGameThreadEvent::EventData_t &data)
+    {
+        const auto &eventHeader = std::get<0>(data);
+        const auto &jsonParams = std::get<1>(data);
+        if ("CombatLevelEvents" == eventHeader)
+        {
+            const auto &jsonObj = nlohmann::json::parse(std::get<1>(data));
+            const auto &actionName = jsonObj.at("action").get<std::string>();
+            if ("button_press" == actionName)
+            {
+                const auto selectedSpaceStationId = mUserInteractionController->GetSelectedSpaceStationId();
+                if (selectedSpaceStationId >= 0)
+                {
+                    const auto &buttonType = jsonObj.at("button_type").get<std::string>();
+                    static std::unordered_map<std::string, eMissileType> missilesMap = {{"Bomb", eMissileType::BOMB},
+                                                                                        {"Freezing", eMissileType::FREEZING},
+                                                                                        {"Electro_Ray", eMissileType::ELECTRO_RAY},
+                                                                                        {"Black_Hole", eMissileType::BLACK_HOLE}};
+                    ext_assert(missilesMap.count(buttonType), "Unknown button type: " + buttonType);
+                    PlayerDataProvider::GetInstance()->SetSelectedMissileType(missilesMap.at(buttonType));
+                    mUserInteractionController->ShowMissileProjectile();
+                }
+            }
+        }
+    }
+
     void CombatController::Tick(const float deltaTime)
     {
-        FlushToPoolUsedBullets();
+        ValidatePoolObjects();
         UpdateMissilesData();
 
         mNavigationController->Tick(deltaTime);
+        mUserInteractionController->Tick(deltaTime);
     }
 
-    void CombatController::ShootBullet(const glm::vec3 &bulletStartPosition)
+    void CombatController::LaunchMisile(const std::shared_ptr<Actor> &missileOwner, const glm::vec3 &missileStartPosition, const glm::vec3 &missileDirection)
     {
         const auto selectedMissileType = PlayerDataProvider::GetInstance()->GetSelectedMissileType();
-        const auto &missile = mCombatActorsPoolHandler->GetFreeMissile(eMissileType::BOMB);
-        missile->TriggerSpawn(bulletStartPosition, eDamageDealerType::MAIN_PLAYER, mPlayerShip);
+        const auto &missile = mCombatActorsPoolHandler->GetFreeMissile(selectedMissileType);
+        if (missile)
+        {
+            missile->GetMovementComponent()->SetDirection(missileDirection);
+            missile->TriggerSpawn(missileStartPosition, eDamageDealerType::MAIN_PLAYER, missileOwner);
+        }
+        else
+        {
+            LogInfo("CombatController::LaunchMisile => No free missiles!");
+        }
     }
 
-    void CombatController::FlushToPoolUsedBullets()
+    void CombatController::ValidatePoolObjects()
     {
-        // for (auto &missile : mMissilesPool)
-        // {
-        //     if (eMissileActivityState::ACTIVE == missile->GetMissileActivityState())
-        //     {
-        //         if (!missile->IsInsideLevel(mLevelBounds))
-        //         {
-        //             missile->TriggerDisabled();
-        //         }
-        //     }
-        // }
+        const auto &enemySpaceshipActors = mCombatActorsPoolHandler->GetEnemySpaceshipActors();
+
+        if (enemySpaceshipActors.size())
+        {
+            for (const auto &enemySpaceship : enemySpaceshipActors)
+            {
+                if (eSpaceshipActivityState::ROUTE_COMPLETED == enemySpaceship->GetSpaceshipActivityState())
+                {
+                    mNavigationController->RemoveSpaceshipFromRoute(enemySpaceship->GetObjectId());
+                    enemySpaceship->TriggerDisabled();
+                }
+            }
+        }
+
+        const auto &missileActors = mCombatActorsPoolHandler->GetMissileActors();
+
+        if (missileActors.size())
+        {
+            int32_t returnedToPoolMissiles = 0;
+            for (const auto &missileActor : missileActors)
+            {
+                if (eMissileActivityState::OUT_OF_LEVEL == missileActor->GetMissileActivityState())
+                {
+                    mNavigationController->RemoveMissileFromNavigation(missileActor->GetObjectId());
+                    missileActor->TriggerDisabled();
+                    ++returnedToPoolMissiles;
+                }
+            }
+            if (returnedToPoolMissiles)
+            {
+                LogInfo("CombatController::ValidatePoolObjects => returnedToPoolMissiles: ", returnedToPoolMissiles);
+            }
+        }
     }
 
     void CombatController::UpdateMissilesData()
@@ -387,5 +441,16 @@ namespace Game
 
     void CombatController::CleanUp()
     {
+        if (mNavigationController)
+        {
+            mNavigationController->CleanUp();
+            mNavigationController.reset();
+        }
+
+        if (mUserInteractionController)
+        {
+            mUserInteractionController->CleanUp();
+            mUserInteractionController.reset();
+        }
     }
 }

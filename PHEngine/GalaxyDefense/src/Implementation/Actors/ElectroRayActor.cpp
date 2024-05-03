@@ -68,9 +68,9 @@ namespace Game
                 if (const auto &spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock())
                 {
                     std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionPhysComponents;
-                    if (spaceshipWhoSpawnedMeSp->GetPhysicsComponent())
+                    if (const auto& ownerSpaceshipPhysComp = spaceshipWhoSpawnedMeSp->GetPhysicsComponent())
                     {
-                        excludeCollisionPhysComponents.emplace_back(spaceshipWhoSpawnedMeSp->GetPhysicsComponent());
+                        excludeCollisionPhysComponents.emplace_back(ownerSpaceshipPhysComp);
                     }
 
                     auto rayWithoutSpawnSpaceship = RayCastWithFilterAdapter(excludeCollisionPhysComponents);

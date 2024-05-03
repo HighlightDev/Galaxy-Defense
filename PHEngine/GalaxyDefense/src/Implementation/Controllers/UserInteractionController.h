@@ -2,11 +2,13 @@
 
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/CommonCore/Timer.h"
 #include "Implementation/Controllers/ILevelController.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/GameModeTypeEnum.h"
 
 #include <glm/mat4x4.hpp>
+#include <functional>
 
 using namespace Event;
 using namespace EngineCore;
@@ -17,15 +19,18 @@ namespace EngineCore
    class ThirdPersonCamera;
    class SceneComponent;
    class Scene;
+   class Actor;
 }
 
 namespace Game
 {
-   class GameFlowController
+   class CombatActorsPoolHandler;
+
+   class UserInteractionController
        : public ILevelController,
          public ITickable,
          public ChangeGameModeEvent,
-         public std::enable_shared_from_this<GameFlowController>
+         public std::enable_shared_from_this<UserInteractionController>
    {
       std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
@@ -33,19 +38,26 @@ namespace Game
 
       std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
 
-      eGameModeType mCurrentGameModeType{eGameModeType::IDLE};
+      eGameModeType mCurrentGameModeType{eGameModeType::COMBAT};
 
       std::weak_ptr<ThirdPersonCamera> mMainSceneCamera;
 
       glm::mat4 mProjectionMatrix;
 
-      // TEMP
-      std::shared_ptr<SceneComponent> m_tempActorRootComponent;
+      std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
+
+      int32_t mSelectedSpaceStationId{-1};
+
+      std::shared_ptr<::EngineCore::Actor> mProjectileMarkerActor;
+
+      GameThreadTimer mReadyToShootTimer;
+
+      std::function<void()> mShootCallback;
 
    public:
-      GameFlowController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
+      UserInteractionController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
-      ~GameFlowController() override;
+      ~UserInteractionController() override;
 
       void Tick(const float deltaTime) override;
 
@@ -67,9 +79,21 @@ namespace Game
 
       void SetLevelBounds(const BoundingBox3D &mLevelBounds);
 
-      void SetTempRootComponent(const std::shared_ptr<SceneComponent>& tempActorRootComponent);
+      void SetOnShootCallback(const std::function<void()>& callback);
+
+      void SetActorsPoolHandler(const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler);
+
+      int32_t GetSelectedSpaceStationId() const;
+
+      void ShowMissileProjectile();
+
+      void HideMissileProjectile();
+
+      glm::vec3 GetProjectileMarkerPosition() const;
 
    private:
-      void PrepareForSpaceStationPlacementMode();
+      glm::vec3 CreateWorldSpaceRayFromScreenSpacePosition(const glm::ivec2 &screenSpacePosition) const;
+
+      void UpdateProjectionMatrix();
    };
 }

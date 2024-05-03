@@ -91,6 +91,16 @@ namespace Game
         return freeShipIt == mEnemySpaceships.cend() ? SpawnSpaceshipActor() : *freeShipIt;
     }
 
+    const std::vector<std::shared_ptr<SpaceshipActor>> &CombatActorsPoolHandler::GetEnemySpaceshipActors() const
+    {
+        return mEnemySpaceships;
+    }
+
+    const std::vector<std::shared_ptr<MissileActor>> &CombatActorsPoolHandler::GetMissileActors() const
+    {
+        return mMissilesPool;
+    }
+
     void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count)
     {
         const auto &sceneSp = mSceneWp.lock();

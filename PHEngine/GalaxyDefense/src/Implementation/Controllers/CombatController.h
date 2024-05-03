@@ -2,7 +2,6 @@
 
 #include "ILevelController.h"
 #include "Core/GameCore/ITickable.h"
-#include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
@@ -11,9 +10,11 @@
 #include "Implementation/Events/SphereContactCollisionEvent.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
+#include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Implementation/GameObjectsType.h"
 #include "Implementation/GameObjectsCollisionType.h"
 #include "Implementation/Controllers/NavigationController.h"
+#include "Implementation/Controllers/UserInteractionController.h"
 #include "Implementation/Levels/LevelData.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
@@ -34,10 +35,10 @@ namespace Game
 {
     class CombatController : public ITickable,
                              public ILevelController,
-                             public MainPlayerActionEvent,
                              public PhysicsCollisionGameThreadEvent,
                              public RayCollisionEvent,
                              public SphereContactCollisionEvent,
+                             public BroadcastGameThreadEvent,
                              public std::enable_shared_from_this<CombatController>
     {
         std::weak_ptr<Scene> mScene;
@@ -46,10 +47,11 @@ namespace Game
 
         std::shared_ptr<NavigationController> mNavigationController;
 
+        std::shared_ptr<UserInteractionController> mUserInteractionController;
+
         std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
 
         BoundingBox3D mLevelBounds;
-
 
     public:
         CombatController(const std::weak_ptr<Scene> &scene);
@@ -70,22 +72,24 @@ namespace Game
 
         void CleanUp() override;
 
-        void InitFromLevelData(const LevelData& levelData);
+        void InitFromLevelData(const LevelData &levelData);
 
     protected:
-        void ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data) override;
-
         void ProcessEvent(const typename PhysicsCollisionGameThreadEvent::EventData_t &data) override;
 
         void ProcessEvent(const typename RayCollisionEvent::EventData_t &data) override;
 
         void ProcessEvent(const typename SphereContactCollisionEvent::EventData_t &data) override;
 
-    private:
-        void ShootBullet(const glm::vec3 &bulletStartPosition);
+        void ProcessEvent(const typename BroadcastGameThreadEvent::EventData_t &data) override;
 
-        void FlushToPoolUsedBullets();
+    private:
+        void LaunchMisile(const std::shared_ptr<Actor>& missileOwner, const glm::vec3 &missileStartPosition, const glm::vec3& missileDirection);
+
+        void ValidatePoolObjects();
 
         void UpdateMissilesData();
+
+        void OnReadyToShoot();
     };
 }

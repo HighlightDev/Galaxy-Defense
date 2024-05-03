@@ -95,7 +95,7 @@ function LevelEditorOverlay:new(host)
     local newRouteButton = ImageButton:new(host, overlay, "NewRouteButton")
     overlay:addCompoundWidget(newRouteButton)
 
-    changeContainerStateButton:subscriveOnMouseInputClickedCallback(function()
+    changeContainerStateButton:subscribeOnMouseInputClickedCallback(function()
         self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
             EditorContainerState.Hided or EditorContainerState.Expanded
 
@@ -109,24 +109,24 @@ function LevelEditorOverlay:new(host)
         newRouteButton:setIsVisible(buttonsVisible)
     end)
 
-    editStationSocketsButton:subscriveOnMouseInputClickedCallback(function()
+    editStationSocketsButton:subscribeOnMouseInputClickedCallback(function()
         self.currentEditModeType = EditModeType.EDIT_TOWERS == self.currentEditModeType and EditModeType.IDLE or
             EditModeType.EDIT_TOWERS
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             self.currentEditModeType)
     end)
-    editRoutesButton:subscriveOnMouseInputClickedCallback(function()
+    editRoutesButton:subscribeOnMouseInputClickedCallback(function()
         self.currentEditModeType = EditModeType.EDIT_ROUTES == self.currentEditModeType and EditModeType.IDLE or
             EditModeType.EDIT_ROUTES
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             self.currentEditModeType)
     end)
-    undoLastActionButton:subscriveOnMouseInputClickedCallback(function()
+    undoLastActionButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "EditorLevelEvents", json.encode({ action = "undo" }))
     end)
 
-    saveLevelButton:subscriveOnMouseInputClickedCallback(function()
+    saveLevelButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "EditorLevelEvents", json.encode({
                 action = "save",
@@ -134,7 +134,7 @@ function LevelEditorOverlay:new(host)
             }))
     end)
 
-    newRouteButton:subscriveOnMouseInputClickedCallback(function()
+    newRouteButton:subscribeOnMouseInputClickedCallback(function()
         local newRouteColor = getRandomColor()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "EditorLevelEvents", json.encode({

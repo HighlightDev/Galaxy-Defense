@@ -85,7 +85,10 @@ namespace EngineCore
         {
             if (m_timerTimeMilliseconds >= (float)m_intervalMs)
             {
-                mCallback();
+                if (mCallback)
+                {
+                    mCallback();
+                }
                 if (m_isRepeat)
                 {
                     RestartTimer();
@@ -116,7 +119,6 @@ namespace EngineCore
 
     void GameThreadTimer::StartTimer()
     {
-        assert(mCallback);
         m_isRunning = true;
         m_timerTimeMilliseconds = 0.0f;
     }

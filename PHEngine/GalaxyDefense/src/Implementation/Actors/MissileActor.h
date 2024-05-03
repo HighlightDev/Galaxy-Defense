@@ -20,7 +20,8 @@ namespace Game
         IDLE,
         ACTIVE,
         EXPLOSION,
-        EXPLOSION_FINISHED
+        EXPLOSION_FINISHED,
+        OUT_OF_LEVEL
     };
 
     class MissileActor
@@ -51,6 +52,8 @@ namespace Game
         virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor();
 
         eMissileActivityState GetMissileActivityState() const;
+
+        void SetMissileActivityState(const eMissileActivityState activityState);
 
         eMissileType GetMissileType() const;
 

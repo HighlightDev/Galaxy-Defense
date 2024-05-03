@@ -134,7 +134,7 @@ function ImageButton:onCompoundWidgetInitialize()
                 propertyDstValue = 0.0
             },
         });
-    self.pressButtonStateContainer:subscriveOnMouseInputClickedCallback(function()
+    self.pressButtonStateContainer:subscribeOnMouseInputClickedCallback(function()
         self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonClick")
     end)
 
@@ -170,9 +170,9 @@ function ImageButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchor
     self:resizeWidgets()
 end
 
-function ImageButton:subscriveOnMouseInputClickedCallback(callback)
+function ImageButton:subscribeOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.buttonContainer:subscriveOnMouseInputClickedCallback(callback)
+    self.buttonContainer:subscribeOnMouseInputClickedCallback(callback)
 end
 
 function ImageButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,

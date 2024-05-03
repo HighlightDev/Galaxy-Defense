@@ -343,7 +343,7 @@ function UiItemBase:setOnMouseInputCursorHoverStateChangedCallback(callback)
     self.onMouseInputCursorHoverStateChangedCallback = callback
 end
 
-function UiItemBase:subscriveOnMouseInputClickedCallback(callback)
+function UiItemBase:subscribeOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
     self.onMouseInputClickedCallbacks[#self.onMouseInputClickedCallbacks + 1] = callback
 end

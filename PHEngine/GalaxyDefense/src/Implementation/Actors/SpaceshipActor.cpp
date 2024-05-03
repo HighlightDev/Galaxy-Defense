@@ -45,7 +45,9 @@ namespace Game
     {
         SetIsEnabled(true);
         mActivityState = eSpaceshipActivityState::ACTIVE;
-        GetMovementComponent()->Teleport(position);
+        const auto& onRouteMovementComponent = GetOnRouteMovementComponent();
+        onRouteMovementComponent->ResetStates();
+        onRouteMovementComponent->Teleport(position);
         RestoreLife();
     }
 
@@ -238,6 +240,11 @@ namespace Game
     eSpaceshipActivityState SpaceshipActor::GetSpaceshipActivityState() const
     {
         return mActivityState;
+    }
+
+    void SpaceshipActor::SetSpaceshipActivityState(const eSpaceshipActivityState activityState)
+    {
+        mActivityState = activityState;
     }
 
     void SpaceshipActor::SetFreezingEffectValue(const float value)

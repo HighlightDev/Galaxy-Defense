@@ -61,7 +61,6 @@ namespace IO
 		std::string GetMaskTexturePath() const;
 		std::string GetUiTexturePath() const;
 		std::string GetScriptPath() const;
-		std::string GetScriptCorePath() const;
 		std::string GetMaterialPath() const;
 		std::string GetTweenerPath() const;
 
@@ -86,7 +85,6 @@ namespace IO
 		std::string GetShortMaskTexturePath() const;
 		std::string GetShortUiTexturePath() const;
 		std::string GetShortScriptPath() const;
-		std::string GetShortScriptCorePath() const;
 		std::string GetShortMaterialPath() const;
 		std::string GetShortTweenerPath() const;
 

@@ -25,19 +25,16 @@ set(
 	src/Implementation/DamageDealerType.h
 	src/Implementation/ICameraTransformChangeNotifyable.h
 	src/Implementation/Controllers/ILevelController.h
-	src/Implementation/Controllers/SpaceShipPlayerController.h
 	src/Implementation/Controllers/CombatController.h
 	src/Implementation/Controllers/AiActorController.h
 	src/Implementation/Controllers/AiSpaceshipActorController.h
-	src/Implementation/Controllers/GameFlowController.h
+	src/Implementation/Controllers/UserInteractionController.h
 	src/Implementation/Controllers/NavigationController.h
-	src/Implementation/Events/MainPlayerActionEvent.h
 	src/Implementation/Events/SphereContactCollisionEvent.h
 	src/Implementation/Events/RayCollisionEvent.h
 	src/Implementation/Events/MainPlayerStatusChangedEvent.h
 	src/Implementation/Events/ChangeGameModeEvent.h
 	src/Implementation/Events/ChangeEditModeEvent.h
-	src/Implementation/MainPlayerActionEnum.h
 	src/Implementation/GameModeTypeEnum.h
 	src/Implementation/EditModeTypeEnum.h
 	src/Implementation/Factories/ISpaceShipFactory.h
@@ -108,14 +105,12 @@ set(
 	src/Implementation/Levels/Editor/RoutesHandler.cpp
 	src/Implementation/Levels/Editor/TowersHandler.cpp
 	src/Implementation/GalaxySceneCamera.cpp
-	src/Implementation/Controllers/SpaceShipPlayerController.cpp
 	src/Implementation/Controllers/CombatController.cpp
 	src/Implementation/AiBrain.cpp
 	src/Implementation/Controllers/AiActorController.cpp
 	src/Implementation/Controllers/AiSpaceshipActorController.cpp
-	src/Implementation/Controllers/GameFlowController.cpp
+	src/Implementation/Controllers/UserInteractionController.cpp
 	src/Implementation/Controllers/NavigationController.cpp
-	src/Implementation/Events/MainPlayerActionEvent.cpp
 	src/Implementation/Events/SphereContactCollisionEvent.cpp
 	src/Implementation/Events/RayCollisionEvent.cpp
 	src/Implementation/Events/MainPlayerStatusChangedEvent.cpp

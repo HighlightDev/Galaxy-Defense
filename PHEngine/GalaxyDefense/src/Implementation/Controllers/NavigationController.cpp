@@ -15,11 +15,11 @@
 #include "Implementation/Navigation/PathSegment.h"
 #include "Implementation/Navigation/Path.h"
 #include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/Actors/MissileActor.h"
 
 #include <array>
 #include <glm/vec3.hpp>
 
-using namespace EngineCore;
 using namespace Graphics;
 using namespace Resources;
 
@@ -86,6 +86,11 @@ namespace Game
         }
     }
 
+    void NavigationController::SetLevelBounds(const BoundingBox3D &levelBounds)
+    {
+        mLevelBounds = levelBounds;
+    }
+
     void NavigationController::OnPreLevelInit()
     {
     }
@@ -111,6 +116,25 @@ namespace Game
 
     void NavigationController::Tick(const float deltaTime)
     {
+        for (auto &missile : mMissiles)
+        {
+            if (eMissileActivityState::ACTIVE == missile->GetMissileActivityState())
+            {
+                if (!missile->IsInsideLevel(mLevelBounds))
+                {
+                    missile->SetMissileActivityState(eMissileActivityState::OUT_OF_LEVEL);
+                }
+            }
+        }
+
+        for (const auto &spaceship : mEnemies)
+        {
+            const auto &routeMoveComp = spaceship->GetOnRouteMovementComponent();
+            if (routeMoveComp->GetIsDistanceCompleted())
+            {
+                spaceship->SetSpaceshipActivityState(eSpaceshipActivityState::ROUTE_COMPLETED);
+            }
+        }
     }
 
     void NavigationController::UnpausableTick(const float deltaTime)
@@ -138,5 +162,31 @@ namespace Game
         enemyMovementComponent->SetRoutePoints(spacePath.GetRoutePoints());
         enemyMovementComponent->SetIsMovementAllowed(true);
         spaceship->TriggerSpawn(spacePath.GetRouteFirstPoint());
+        mEnemies.emplace_back(spaceship);
+    }
+
+    void NavigationController::PutMissileToNavigate(const std::shared_ptr<MissileActor> &missile)
+    {
+        assert(missile);
+        assert(missile->GetMissileActivityState() == eMissileActivityState::ACTIVE);
+        mMissiles.emplace_back(missile);
+    }
+
+    void NavigationController::RemoveSpaceshipFromRoute(const int32_t spaceshipActorId)
+    {
+        if (mEnemies.size())
+        {
+            mEnemies.erase(std::remove_if(mEnemies.begin(), mEnemies.end(), [spaceshipActorId](const auto &enemy)
+                                          { return spaceshipActorId == enemy->GetObjectId(); }));
+        }
+    }
+
+    void NavigationController::RemoveMissileFromNavigation(const int32_t missileActorId)
+    {
+        if (mMissiles.size())
+        {
+            mMissiles.erase(std::remove_if(mMissiles.begin(), mMissiles.end(), [missileActorId](const auto &missile)
+                                           { return missileActorId == missile->GetObjectId(); }));
+        }
     }
 }

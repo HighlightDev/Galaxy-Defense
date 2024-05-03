@@ -41,9 +41,8 @@ PlayerStatusType = {
 }
 
 GameModeType = {
-    IDLE = 0,
-    COMBAT = 1,
-    SPACE_STATION_PLACEMENT = 2
+    COMBAT = 0,
+    SPACE_STATION_PLACEMENT = 1
 }
 
 MissileType = {
@@ -105,6 +104,15 @@ local function startAnimationForMissileWidget(host, missileType, animationName)
     end
 end
 
+local function onWeaponButtonPressed(host, buttonTypeName)
+    assert(buttonTypeName ~= nil and type(buttonTypeName) == "string")
+    EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+        "CombatLevelEvents", json.encode({
+            action = "button_press",
+            button_type = buttonTypeName
+        }))
+end
+
 function PlayerHUDOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
@@ -130,7 +138,7 @@ function PlayerHUDOverlay:new(host)
     local enemyCountTile = UiRectangle:new(host)
     playerHUDOverlay:addWidget(enemyCountTile)
 
-    enemyCountTile:subscriveOnMouseInputClickedCallback(function()
+    enemyCountTile:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendChangeGameModeGameThreadEvent(host,
             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, GameModeType.SPACE_STATION_PLACEMENT)
     end)
@@ -152,6 +160,22 @@ function PlayerHUDOverlay:new(host)
     playerHUDOverlay:addCompoundWidget(weaponTile3)
     local weaponTile4 = WeaponTile:new(host, playerHUDOverlay)
     playerHUDOverlay:addCompoundWidget(weaponTile4)
+
+    weaponTile1:subscribeOnMouseInputClickedCallback(function()
+        onWeaponButtonPressed("Bomb")
+    end)
+
+    weaponTile2:subscribeOnMouseInputClickedCallback(function()
+        onWeaponButtonPressed("Freezing")
+    end)
+
+    weaponTile3:subscribeOnMouseInputClickedCallback(function()
+        onWeaponButtonPressed("Electro_Ray")
+    end)
+
+    weaponTile4:subscribeOnMouseInputClickedCallback(function()
+        onWeaponButtonPressed("Black_Hole")
+    end)
 
     local lifeImage1 = UiImage:new(host)
     playerHUDOverlay:addWidget(lifeImage1)
@@ -214,7 +238,7 @@ function PlayerHUDOverlay:new(host)
 
     playerHUDOverlay.onCurrentMissileChanged = function()
         local currentMissileType = getSelectedMissileType(host)
-        if false and PlayerHUDOverlay.prevSelectedMissileType ~= currentMissileType then
+        if PlayerHUDOverlay.prevSelectedMissileType ~= currentMissileType then
             startAnimationForMissileWidget(host, PlayerHUDOverlay.prevSelectedMissileType, "FocusOut")
             PlayerHUDOverlay.prevSelectedMissileType = currentMissileType
             startAnimationForMissileWidget(host, PlayerHUDOverlay.prevSelectedMissileType, "FocusIn")

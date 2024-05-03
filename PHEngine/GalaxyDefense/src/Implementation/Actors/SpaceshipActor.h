@@ -22,6 +22,7 @@ enum class eSpaceshipActivityState
 {
     IDLE,
     ACTIVE,
+    ROUTE_COMPLETED
 };
 
 namespace Game
@@ -97,6 +98,8 @@ namespace Game
         void RestoreLife();
 
         eSpaceshipActivityState GetSpaceshipActivityState() const;
+
+        void SetSpaceshipActivityState(const eSpaceshipActivityState activityState);
 
         void SetFreezingEffectValue(const float value);
 

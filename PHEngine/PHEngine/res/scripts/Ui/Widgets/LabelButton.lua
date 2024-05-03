@@ -136,7 +136,7 @@ function LabelButton:onCompoundWidgetInitialize()
                 propertyDstValue = 0.0
             },
         });
-    self.pressButtonStateContainer:subscriveOnMouseInputClickedCallback(function()
+    self.pressButtonStateContainer:subscribeOnMouseInputClickedCallback(function()
         self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonClick")
     end)
 
@@ -181,9 +181,9 @@ function LabelButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchor
     self:resizeWidgets()
 end
 
-function LabelButton:subscriveOnMouseInputClickedCallback(callback)
+function LabelButton:subscribeOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.buttonContainer:subscriveOnMouseInputClickedCallback(callback)
+    self.buttonContainer:subscribeOnMouseInputClickedCallback(callback)
 end
 
 function LabelButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,

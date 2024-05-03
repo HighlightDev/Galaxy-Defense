@@ -15,6 +15,11 @@ namespace Game
         return mActivityState;
     }
 
+    void MissileActor::SetMissileActivityState(const eMissileActivityState activityState)
+    {
+        mActivityState = activityState;
+    }
+
     void MissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType damageDealerType, const std::shared_ptr<Actor> &spawnerActor)
     {
         assert(GetMovementComponent());

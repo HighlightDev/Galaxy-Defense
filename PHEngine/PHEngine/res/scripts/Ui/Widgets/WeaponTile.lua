@@ -154,6 +154,7 @@ function WeaponTile:onCompoundWidgetInitialize()
 
     self.weaponBackgroundTile:setColorHexValue(WeaponTile.weaponBackgroundTileColor)
     self.weaponBackgroundTile:setBorderRadius(8)
+    self.weaponBackgroundTile:enableMouseInputReceiverBase(self.host)
 
     self.weaponImage:setParent(self.host, self.overlayCanvasName,
         self.weaponBackgroundTile.widgetName)
@@ -181,6 +182,11 @@ function WeaponTile:onCompoundWidgetInitialize()
     self.weaponLabel:setFontSize(10.0)
     self.weaponLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
     self.weaponLabel:setZOrder(4)
+end
+
+function WeaponTile:subscribeOnMouseInputClickedCallback(callback)
+    assert(callback ~= nil and type(callback) == "function")
+    self.weaponBackgroundTile:subscribeOnMouseInputClickedCallback(callback)
 end
 
 return WeaponTile

@@ -23,6 +23,8 @@ namespace Game
 
         float mRouteTotalDistance{0.0f};
 
+        bool mIsDistanceCompleted{false};
+
     public:
         explicit OnRouteMovementComponent(const std::shared_ptr<MovementComponentData> &movementComponentData);
 
@@ -39,5 +41,9 @@ namespace Game
         bool GetIsMovementAllowed() const;
 
         void SetIsMovementAllowed(const bool isAllowed);
+
+        bool GetIsDistanceCompleted() const;
+
+        void ResetStates();
     };
 }
