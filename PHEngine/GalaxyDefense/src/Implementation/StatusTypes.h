@@ -9,6 +9,7 @@ namespace Game
         ACTIVE_WEAPON_CHANGED, // changed active type of missiles
         MISSILES_COUNT_CHANGED, // amount of missiles changed
         AVAILABLE_MISSILES_CHANGED, // missiles become unlocked or locked,
-        DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED // total amount of destroyed by player enemy spaceships
+        DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED, // total amount of destroyed by player enemy spaceships,
+        SELECTED_TOWER_CHANGED
     };
 }

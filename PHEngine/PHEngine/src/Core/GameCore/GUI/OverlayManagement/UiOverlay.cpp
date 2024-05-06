@@ -7,6 +7,7 @@
 #include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiOverlayLuaProxy.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 using namespace EngineCore;
 
@@ -45,6 +46,7 @@ namespace EngineCore
 
         void UiOverlay::OpenOverlay()
         {
+            LogInfo("UiOverlay::OpenOverlay => overlay: ", mOverlayName);
             assert(mCanvas);
             mCanvas->SetIsVisible(true);
             const auto &animator = mCanvas->GetAnimator();
@@ -56,6 +58,7 @@ namespace EngineCore
 
         void UiOverlay::CloseOverlay()
         {
+            LogInfo("UiOverlay::OpenOverlay => overlay: ", mOverlayName);
             assert(mCanvas);
             const auto &animator = mCanvas->GetAnimator();
             if (animator->HasAnimation("FadeOut"))

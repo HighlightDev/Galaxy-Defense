@@ -16,6 +16,8 @@ namespace Game
 
         int32_t mDestroyedEnemySpaceshipsCount{0};
 
+        int32_t mSelectedTowerId{-1};
+
     private:
         PlayerDataProvider() = default;
 
@@ -41,5 +43,9 @@ namespace Game
         void SetDestroyedEnemySpaceshipsCount(const int32_t enemySpaceshipsCount);
 
         int32_t GetDestroyedEnemySpaceshipsCount() const;
+
+        void SetSelectedTowerId(const int32_t towerId);
+
+        int32_t GetSelectedTowerId() const;
     };
 }

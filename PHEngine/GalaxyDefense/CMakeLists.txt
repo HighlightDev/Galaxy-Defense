@@ -8,6 +8,7 @@ set(
 	src/Implementation/Levels/CombatLevel/CombatLevel.h
 	src/Implementation/Levels/CombatLevel/Controllers/UiController.h
 	src/Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h
+	src/Implementation/Levels/CombatLevel/SmartPicker.h
 	src/Implementation/Levels/MainMenu/MainMenuLevel.h
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h
 	src/Implementation/Levels/Editor/EditorLevel.h
@@ -96,6 +97,7 @@ set(
 	src/Implementation/Levels/CombatLevel/CombatLevel.cpp
 	src/Implementation/Levels/CombatLevel/Controllers/UiController.cpp
 	src/Implementation/Levels/CombatLevel/CombatActorsPoolHandler.cpp
+	src/Implementation/Levels/CombatLevel/SmartPicker.cpp
 	src/Implementation/Levels/MainMenu/MainMenuLevel.cpp
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.cpp
 	src/Implementation/Levels/Editor/EditorLevel.cpp

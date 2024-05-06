@@ -33,6 +33,8 @@ namespace EngineCore
 
             float mBorderRadius;
 
+            std::shared_ptr<EngineObjectProperty<glm::vec3>> mColorProperty;
+
             std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
 
         public:

@@ -14,16 +14,14 @@
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
 #include "Core/GameCore/Components/PrimitiveComponents/ForwardShadingMeshComponent.h"
-#include "Core/GameCore/Physics/CollisionTestImplementation/RayCastWithFilterAdapter.h"
-#include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
-#include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/Levels/CombatLevel/SmartPicker.h"
+#include "Implementation/DataProviders/PlayerDataProvider.h"
 
 using namespace IO;
-using namespace EnginePhysics;
 using namespace Graphics;
 
 namespace Game
@@ -33,7 +31,6 @@ namespace Game
          mLevelBounds(),
          mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>("GameFlowController_InputComponent"))),
          mMainSceneCamera(),
-         mProjectionMatrix(),
          mProjectileMarkerActor(std::make_shared<Actor>("MissileProjectileActor",
                                                         std::make_shared<SceneComponent>("MissileProjectileRootComponent",
                                                                                          glm::vec3(),
@@ -59,7 +56,6 @@ namespace Game
       const auto &mainCameraSp = std::dynamic_pointer_cast<ThirdPersonCamera>(sceneSp->GetMainCamera());
       assert(mainCameraSp);
       mMainSceneCamera = mainCameraSp;
-      UpdateProjectionMatrix();
 
       const auto pickerCellSize = 10.0f;
       sceneSp->AddActor(mProjectileMarkerActor);
@@ -96,6 +92,7 @@ namespace Game
    void UserInteractionController::OnLevelInit()
    {
       assert(mCombatActorsPoolHandler);
+      mSmartPicker = std::make_shared<SmartPicker>(mCombatActorsPoolHandler);
    }
 
    void UserInteractionController::OnPostLevelInit()
@@ -124,12 +121,12 @@ namespace Game
       if (mouseBindings->IsMouseMoveEventDirty())
       {
          const auto &mouseMoveEvent = mouseBindings->FlushMouseMoveEvent();
-         const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
+         /*const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
 
          if (eGameModeType::SPACE_STATION_PLACEMENT == mCurrentGameModeType)
          {
             const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
-            const auto &worldSpaceRay = CreateWorldSpaceRayFromScreenSpacePosition(screenSpacePosition);
+            const auto &worldSpaceRay = mSmartPicker->CreateWorldSpaceRayFromScreenSpacePosition(sceneCameraSp, screenSpacePosition);
             const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
             if (tParam >= 0.0f)
             {
@@ -141,60 +138,41 @@ namespace Game
             {
                mCurrentGameModeType = eGameModeType::COMBAT;
             }
-         }
+         }*/
       }
 
       if (eGameModeType::COMBAT == mCurrentGameModeType)
       {
          if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED)
          {
-            if (mProjectileMarkerActor->IsEnabled())
-            {
-               if (mShootCallback && !mReadyToShootTimer.IsRunning())
-               {
-                  mShootCallback();
-                  mReadyToShootTimer.StartTimer();
-               }
-            }
-            else
-            {
-               const auto &mousePosition = mouseBindings->GetLastMouseCursorPosition();
-               const glm::ivec2 &screenSpacePosition = glm::ivec2(mousePosition.x, mousePosition.y);
-               const auto &worldSpaceRay = CreateWorldSpaceRayFromScreenSpacePosition(screenSpacePosition);
+            const auto &mousePosition = mouseBindings->GetLastMouseCursorPosition();
+            const glm::ivec2 &screenSpacePosition = glm::ivec2(mousePosition.x, mousePosition.y);
+            const int32_t collidedObjectId = mSmartPicker->CastScreenSpaceRayIntoScene(sceneSp, sceneCameraSp, screenSpacePosition);
 
-               const auto &enemySpaceships = mCombatActorsPoolHandler->GetEnemySpaceshipActors();
-               std::vector<std::shared_ptr<PhysicsComponent>> excludedComponents;
-               excludedComponents.reserve(enemySpaceships.size());
-               std::transform(enemySpaceships.cbegin(), enemySpaceships.cend(), std::back_inserter(excludedComponents), [](const auto &enemySpaceship)
-                              { return enemySpaceship->GetPhysicsComponent(); });
-               auto rayCast = RayCastWithFilterAdapter(excludedComponents);
-               const auto &rayCastStartPos = sceneCameraSp->GetEyeVector(),
-                          rayCastEndPos = glm::vec3(sceneCameraSp->GetEyeVector() + worldSpaceRay * 1000.0f);
-               rayCast.RayTest(sceneSp->GetPhysicsWorld(), rayCastStartPos, rayCastEndPos);
-               if (rayCast.IsRayHitCollision())
-               {
-                  if (const auto &collidedPhysDescriptor = rayCast.GetCollisionHitPhysicsDescriptor())
-                  {
-                     const int32_t collidedObjectId = collidedPhysDescriptor->GetOwnerActorEngineObjectId();
-                     const auto objectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedObjectId);
-                     if (eGameObjectsType::SPACE_STATION == objectType)
-                     {
-                        mSelectedSpaceStationId = collidedObjectId;
-                     }
-                  }
-               }
-               else
-               {
-                  HideMissileProjectile();
-                  mSelectedSpaceStationId = -1;
-               }
+            if (-1 != collidedObjectId &&
+                eGameObjectsType::SPACE_STATION == mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedObjectId))
+            {
+               mSelectedSpaceStationId = collidedObjectId;
+               PlayerDataProvider::GetInstance()->SetSelectedTowerId(mSelectedSpaceStationId);
+            }
+            else if (!mProjectileMarkerActor->IsEnabled())
+            {
+               mSelectedSpaceStationId = -1;
+               PlayerDataProvider::GetInstance()->SetSelectedTowerId(-1);
+            }
+            else if (mProjectileMarkerActor->IsEnabled() &&
+                     mShootCallback &&
+                     !mReadyToShootTimer.IsRunning())
+            {
+               mShootCallback();
+               mReadyToShootTimer.StartTimer();
             }
          }
          else if (mProjectileMarkerActor->IsEnabled())
          {
             const auto &mousePosition = mouseBindings->GetLastMouseCursorPosition();
             const glm::ivec2 &screenSpacePosition = glm::ivec2(mousePosition.x, mousePosition.y);
-            const auto &worldSpaceRay = CreateWorldSpaceRayFromScreenSpacePosition(screenSpacePosition);
+            const auto &worldSpaceRay = mSmartPicker->CreateWorldSpaceRayFromScreenSpacePosition(sceneCameraSp, screenSpacePosition);
 
             const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
             const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
@@ -222,29 +200,6 @@ namespace Game
       if (mCurrentGameModeType != newGameModeType)
       {
          mCurrentGameModeType = newGameModeType;
-         UpdateProjectionMatrix();
-      }
-   }
-
-   glm::vec3 UserInteractionController::CreateWorldSpaceRayFromScreenSpacePosition(const glm::ivec2 &screenSpacePosition) const
-   {
-      if (const auto &sceneCameraSp = mMainSceneCamera.lock())
-      {
-         const ScreenRayCaster screenRayCaster;
-         return screenRayCaster.CastRayFromScreenSpaceToWorldSpace(screenSpacePosition,
-                                                                   glm::ivec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
-                                                                              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
-                                                                   mProjectionMatrix,
-                                                                   sceneCameraSp->GetViewMatrix());
-      }
-      return {};
-   }
-
-   void UserInteractionController::UpdateProjectionMatrix()
-   {
-      if (const auto &sceneCameraSp = mMainSceneCamera.lock())
-      {
-         mProjectionMatrix = sceneCameraSp->GetViewProjectionInfo()->CreateProjectionMatrix();
       }
    }
 

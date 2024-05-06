@@ -291,6 +291,18 @@ namespace EngineCore
             srcData = jsonObj["propertySrcValue"].get<int32_t>();
             dstData = jsonObj["propertyDstValue"].get<int32_t>();
          }
+         else if (eEnginePropertyType::Vec3 == propType)
+         {
+            auto x = jsonObj["propertySrcValue"].at("x").get<float>();
+            auto y = jsonObj["propertySrcValue"].at("y").get<float>();
+            auto z = jsonObj["propertySrcValue"].at("z").get<float>();
+            srcData = glm::vec3(x, y, z);
+
+            x = jsonObj["propertyDstValue"].at("x").get<float>();
+            y = jsonObj["propertyDstValue"].at("y").get<float>();
+            z = jsonObj["propertyDstValue"].at("z").get<float>();
+            dstData = glm::vec3(x, y, z);
+         }
          else
          {
             assert(false); // Not supported yet

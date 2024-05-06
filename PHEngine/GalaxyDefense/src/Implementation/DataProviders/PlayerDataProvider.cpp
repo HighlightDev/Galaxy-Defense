@@ -4,6 +4,7 @@
 #include "Implementation/StatusTypes.h"
 
 #include <algorithm>
+#include <json/json.hpp>
 
 using namespace Event;
 
@@ -23,8 +24,12 @@ namespace Game
     void PlayerDataProvider::SetSelectedMissileType(const eMissileType missileType)
     {
         mSelectedMissileType.store(missileType, std::memory_order::memory_order_seq_cst);
-        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::ACTIVE_WEAPON_CHANGED);
-        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::ACTIVE_WEAPON_CHANGED);
+        const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::ACTIVE_WEAPON_CHANGED;
+        nlohmann::json jsonObj;
+        jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
+        const auto &eventParams = jsonObj.dump();
+        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
+        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
     }
 
     void PlayerDataProvider::SetMissilesCountForType(const eMissileType missileType, const size_t missilesCount)
@@ -33,8 +38,12 @@ namespace Game
         if (mAvailableMissiles.at(missileType) != missilesCount)
         {
             mAvailableMissiles[missileType] = missilesCount;
-            MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
-            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
+            const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::MISSILES_COUNT_CHANGED;
+            nlohmann::json jsonObj;
+            jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
+            const auto &eventParams = jsonObj.dump();
+            MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
+            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
         }
     }
 
@@ -52,8 +61,12 @@ namespace Game
         }
         if (bDataUpdated)
         {
-            MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
-            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
+            const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::MISSILES_COUNT_CHANGED;
+            nlohmann::json jsonObj;
+            jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
+            const auto &eventParams = jsonObj.dump();
+            MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
+            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
         }
     }
 
@@ -85,12 +98,30 @@ namespace Game
     {
         LogInfo("PlayerDataProvider::SetDestroyedEnemySpaceshipsCount => enemySpaceshipsCount: ", enemySpaceshipsCount);
         mDestroyedEnemySpaceshipsCount = enemySpaceshipsCount;
-        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED);
-        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED);
     }
 
     int32_t PlayerDataProvider::GetDestroyedEnemySpaceshipsCount() const
     {
         return mDestroyedEnemySpaceshipsCount;
+    }
+
+    void PlayerDataProvider::SetSelectedTowerId(const int32_t towerId)
+    {
+        if (mSelectedTowerId != towerId)
+        {
+            mSelectedTowerId = towerId;
+            const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::SELECTED_TOWER_CHANGED;
+            nlohmann::json jsonObj;
+            jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
+            jsonObj["has_selected_tower"] = towerId != -1;
+            const auto &eventParams = jsonObj.dump();
+            MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
+            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
+        }
+    }
+
+    int32_t PlayerDataProvider::GetSelectedTowerId() const
+    {
+        return mSelectedTowerId;
     }
 }

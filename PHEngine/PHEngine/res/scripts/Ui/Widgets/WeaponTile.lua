@@ -45,7 +45,13 @@ function WeaponTile:new(host, overlay)
         weaponImage = nil,
         tileWidth = 0,
         tileHeight = 0,
-        widgetName = ""
+        widgetName = "",
+        anchorMargins = {
+            left = 0,
+            right = 0,
+            bottom = 0,
+            top = 0,
+        }
     }
 
     newObj.weaponBackgroundTile = UiRectangle:new(host)
@@ -78,13 +84,25 @@ function WeaponTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
+    if srcAnchor == UiItemBase.UiAnchorType.LEFT then
+        self.anchorMargins.left = anchorMargin
+    elseif srcAnchor == UiItemBase.UiAnchorType.RIGHT then
+        self.anchorMargins.right = anchorMargin
+    elseif srcAnchor == UiItemBase.UiAnchorType.TOP then
+        self.anchorMargins.top = anchorMargin
+    elseif srcAnchor == UiItemBase.UiAnchorType.BOTTOM then
+        self.anchorMargins.bottom = anchorMargin
+    end
+
     self.weaponBackgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     self:resizeWidgets()
 end
 
-function WeaponTile:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
+function WeaponTile:addAnimation(host, onlyForTile, animationName, animationFunctionType, animationDuration,
+                                 animatedPropertyName,
                                  animatedPropertyType, propertySrcValue, propertyDstValue)
     assert(host ~= nil and type(host) == "userdata")
+    assert(onlyForTile ~= nil and type(onlyForTile) == "boolean")
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
         type(animationFunctionType) == "number" and animationDuration ~= nil and
         type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
@@ -94,12 +112,14 @@ function WeaponTile:addAnimation(host, animationName, animationFunctionType, ani
     self.weaponBackgroundTile:addAnimation(host, animationName, animationFunctionType, animationDuration,
         animatedPropertyName,
         animatedPropertyType, propertySrcValue, propertyDstValue)
-    self.weaponImage:addAnimation(host, animationName, animationFunctionType, animationDuration,
-        animatedPropertyName,
-        animatedPropertyType, propertySrcValue, propertyDstValue)
-    self.weaponLabel:addAnimation(host, animationName, animationFunctionType, animationDuration,
-        animatedPropertyName,
-        animatedPropertyType, propertySrcValue, propertyDstValue)
+    if onlyForTile ~= true then
+        self.weaponImage:addAnimation(host, animationName, animationFunctionType, animationDuration,
+            animatedPropertyName,
+            animatedPropertyType, propertySrcValue, propertyDstValue)
+        self.weaponLabel:addAnimation(host, animationName, animationFunctionType, animationDuration,
+            animatedPropertyName,
+            animatedPropertyType, propertySrcValue, propertyDstValue)
+    end
 end
 
 function WeaponTile:startAnimation(host, animationName)
@@ -117,15 +137,14 @@ function WeaponTile:setLabelText(labelText)
 end
 
 function WeaponTile:resizeWidgets()
-    local weaponRootContainerHeight = self.tileWidth + 10
-    local weaponInterval = self.tileWidth / 12.0
-    local weaponTopBottomMargin = (weaponRootContainerHeight - self.tileWidth) * 0.5
     local weaponImageSize = self.tileWidth * 0.75
 
     self.weaponBackgroundTile:setHeight(self.tileHeight);
     self.weaponBackgroundTile:setWidth(self.tileWidth);
-    self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.LEFT, weaponInterval);
-    self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.BOTTOM, weaponTopBottomMargin);
+    self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.LEFT, self.anchorMargins.left);
+    self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.RIGHT, self.anchorMargins.right);
+    self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.TOP, self.anchorMargins.top);
+    self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.BOTTOM, self.anchorMargins.bottom);
     self.weaponImage:setHeight(weaponImageSize);
     self.weaponImage:setWidth(weaponImageSize);
     self.weaponLabel:setHeight(weaponImageSize / 15)

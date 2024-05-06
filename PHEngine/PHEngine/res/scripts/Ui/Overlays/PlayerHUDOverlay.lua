@@ -16,7 +16,7 @@ local function setup()
         unixLikePath = unixLikePath:gsub("//", "/")
         local _, endindex = string.find(unixLikePath, "scripts/")
         unixLikePath = string.sub(unixLikePath, 1, endindex)
-        package.path = package.path .. ";" .. unixLikePath .. "?.lua"
+        package.path = package.path .. "" .. unixLikePath .. "?.lua"
     end
 end
 
@@ -37,7 +37,8 @@ PlayerStatusType = {
     ACTIVE_WEAPON_CHANGED = 2,
     MISSILES_COUNT_CHANGED = 3,
     AVAILABLE_MISSILES_CHANGED = 4,
-    DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED = 5
+    DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED = 5,
+    SELECTED_TOWER_CHANGED = 6
 }
 
 GameModeType = {
@@ -63,7 +64,8 @@ MissileWidgetsMap = {
 PlayerHUDOverlay = {
     testAvailableHearts = 5,
     prevSelectedMissileType = MissileType.NONE,
-    weaponBackgroundTileColor = 0xdb9427,
+    inactiveTileColor = { x = 0.85, y = 0.58, z = 0.15 },
+    activeTileColor = { x = 1.0, y = 0.0, z = 0.0 },
     missilesCountLabelColor = 0xFFFFFF,
 }
 
@@ -105,7 +107,7 @@ local function startAnimationForMissileWidget(host, missileType, animationName)
 end
 
 local function onWeaponButtonPressed(host, buttonTypeName)
-    assert(buttonTypeName ~= nil and type(buttonTypeName) == "string")
+    assert(host ~= nil and type(host) == "userdata" and buttonTypeName ~= nil and type(buttonTypeName) == "string")
     EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
         "CombatLevelEvents", json.encode({
             action = "button_press",
@@ -123,28 +125,16 @@ function PlayerHUDOverlay:new(host)
     end)
     local playerHUDOverlay = UiOverlay:createBackgroundOverlay(host, "PlayerHUDOverlay", playerHUDOverlayCanvas)
 
-    local lifeRootContainerWidth = windowWidth / 3.0;
-    local lifeRootContainerHeight = windowHeight / 4.0;
-    local weaponRootContainerWidth = windowWidth / 3.0;
+    local lifeRootContainerWidth = windowWidth / 3.0
+    local lifeRootContainerHeight = windowHeight / 4.0
+    local weaponRootContainerWidth = windowWidth / 5.0
     local heartWidth = lifeRootContainerWidth / 10.0
     local heartInterval = heartWidth * 0.5
     local weaponCount = 4.0
-    local weaponWidth = weaponRootContainerWidth / weaponCount
+    local weaponInterval = 15
+    local weaponWidth = (weaponRootContainerWidth - (weaponInterval * (weaponCount - 1))) / weaponCount
     local weaponRootContainerHeight = weaponWidth + 10
-    local weaponInterval = weaponWidth / 8.0
-    weaponWidth = (weaponRootContainerWidth - (weaponInterval * (weaponCount + 1))) / weaponCount
     local weaponTopBottomMargin = (weaponRootContainerHeight - weaponWidth) * 0.5
-
-    local enemyCountTile = UiRectangle:new(host)
-    playerHUDOverlay:addWidget(enemyCountTile)
-
-    enemyCountTile:subscribeOnMouseInputClickedCallback(function()
-        EventsHelper:sendChangeGameModeGameThreadEvent(host,
-            EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, GameModeType.SPACE_STATION_PLACEMENT)
-    end)
-
-    local stationImg = UiImage:new(host)
-    playerHUDOverlay:addWidget(stationImg)
 
     local lifeRootContainer = UiItem:new(host)
     playerHUDOverlay:addWidget(lifeRootContainer)
@@ -162,19 +152,19 @@ function PlayerHUDOverlay:new(host)
     playerHUDOverlay:addCompoundWidget(weaponTile4)
 
     weaponTile1:subscribeOnMouseInputClickedCallback(function()
-        onWeaponButtonPressed("Bomb")
+        onWeaponButtonPressed(host, "Bomb")
     end)
 
     weaponTile2:subscribeOnMouseInputClickedCallback(function()
-        onWeaponButtonPressed("Freezing")
+        onWeaponButtonPressed(host, "Freezing")
     end)
 
     weaponTile3:subscribeOnMouseInputClickedCallback(function()
-        onWeaponButtonPressed("Electro_Ray")
+        onWeaponButtonPressed(host, "Electro_Ray")
     end)
 
     weaponTile4:subscribeOnMouseInputClickedCallback(function()
-        onWeaponButtonPressed("Black_Hole")
+        onWeaponButtonPressed(host, "Black_Hole")
     end)
 
     local lifeImage1 = UiImage:new(host)
@@ -261,15 +251,14 @@ function PlayerHUDOverlay:new(host)
 
     playerHUDOverlay.onWindowSizeChanged = function(width, height)
         assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number")
-        local lifeRootContainerWidth = width / 3.0;
-        local lifeRootContainerHeight = height / 4.0;
-        local weaponRootContainerWidth = width / 3.0;
+        local lifeRootContainerWidth = width / 3.0
+        local lifeRootContainerHeight = height / 4.0
+        local weaponRootContainerWidth = width / 5.0
         local heartWidth = lifeRootContainerWidth / 10.0
         local heartInterval = heartWidth * 0.5
         local weaponCount = 4.0
-        local weaponWidth = weaponRootContainerWidth / weaponCount
-        local weaponInterval = weaponWidth / 8.0
-        weaponWidth = (weaponRootContainerWidth - (weaponInterval * (weaponCount + 1))) / weaponCount
+        local weaponInterval = 15
+        local weaponWidth = (weaponRootContainerWidth - (weaponInterval * (weaponCount - 1))) / weaponCount
 
         lifeRootContainer:setWidth(lifeRootContainerWidth)
         lifeRootContainer:setHeight(lifeRootContainerHeight)
@@ -282,54 +271,31 @@ function PlayerHUDOverlay:new(host)
         weaponTile2:setHeight(weaponWidth)
         weaponTile2:setWidth(weaponWidth)
 
-        weaponTile3:setHeight(weaponWidth);
-        weaponTile3:setWidth(weaponWidth);
+        weaponTile3:setHeight(weaponWidth)
+        weaponTile3:setWidth(weaponWidth)
 
-        weaponTile4:setHeight(weaponWidth);
-        weaponTile4:setWidth(weaponWidth);
+        weaponTile4:setHeight(weaponWidth)
+        weaponTile4:setWidth(weaponWidth)
 
-        lifeImage1:setHeight(heartWidth);
-        lifeImage1:setWidth(heartWidth);
-        lifeImage2:setHeight(heartWidth);
-        lifeImage2:setWidth(heartWidth);
-        lifeImage3:setHeight(heartWidth);
-        lifeImage3:setWidth(heartWidth);
+        lifeImage1:setHeight(heartWidth)
+        lifeImage1:setWidth(heartWidth)
+        lifeImage2:setHeight(heartWidth)
+        lifeImage2:setWidth(heartWidth)
+        lifeImage3:setHeight(heartWidth)
+        lifeImage3:setWidth(heartWidth)
         lifeImage3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage2.widgetName,
-            heartInterval);
-        lifeImage4:setHeight(heartWidth);
-        lifeImage4:setWidth(heartWidth);
+            heartInterval)
+        lifeImage4:setHeight(heartWidth)
+        lifeImage4:setWidth(heartWidth)
         lifeImage4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage3.widgetName,
-            heartInterval);
-        lifeImage5:setHeight(heartWidth);
-        lifeImage5:setWidth(heartWidth);
+            heartInterval)
+        lifeImage5:setHeight(heartWidth)
+        lifeImage5:setWidth(heartWidth)
         lifeImage5:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage4.widgetName,
-            heartInterval);
+            heartInterval)
     end
 
     playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
-        enemyCountTile:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
-        enemyCountTile:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            playerHUDOverlayCanvas.widgetName, 30)
-        enemyCountTile:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-            playerHUDOverlayCanvas.widgetName, 30)
-        enemyCountTile:setWidth(150)
-        enemyCountTile:setHeight(150)
-        enemyCountTile:setZOrder(3);
-        enemyCountTile:setColorHexValue(PlayerHUDOverlay.weaponBackgroundTileColor)
-        enemyCountTile:setBorderRadius(8)
-        enemyCountTile:enableMouseInputReceiverBase(host)
-
-        stationImg:setParent(host, playerHUDOverlayCanvas.widgetName, enemyCountTile.widgetName)
-        stationImg:setTextureSource("space_station_img.png");
-        stationImg:setZOrder(4);
-        stationImg:setRotationDegrees(180)
-        stationImg:setHeight(130);
-        stationImg:setWidth(130);
-        stationImg:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-            enemyCountTile.widgetName);
-        stationImg:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-            enemyCountTile.widgetName);
-
         lifeRootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
         lifeRootContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             playerHUDOverlayCanvas.widgetName, 30)
@@ -348,121 +314,145 @@ function PlayerHUDOverlay:new(host)
 
         weaponTile1:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, weaponRootContainer.widgetName,
-            weaponInterval);
+            weaponInterval)
         weaponTile1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            weaponRootContainer.widgetName, weaponTopBottomMargin);
+            weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponTile1:setWidth(weaponWidth)
         weaponTile1:setHeight(weaponWidth)
-        weaponTile1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile1:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
-        weaponTile1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile1:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
-        weaponTile1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile1:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 0, 40)
-        weaponTile1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile1:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 40, 0)
+        weaponTile1:addAnimation(host, true, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Color", UiBaseWidget.EnginePropertyType.Vec3, PlayerHUDOverlay.inactiveTileColor,
+            PlayerHUDOverlay.activeTileColor)
+        weaponTile1:addAnimation(host, true, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Color", UiBaseWidget.EnginePropertyType.Vec3, PlayerHUDOverlay.activeTileColor,
+            PlayerHUDOverlay.inactiveTileColor)
 
         weaponTile2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            weaponTile1.widgetName, weaponInterval);
+            weaponTile1.widgetName, weaponInterval)
         weaponTile2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
-        weaponTile2:setHeight(weaponWidth);
-        weaponTile2:setWidth(weaponWidth);
-        weaponTile2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile2:setHeight(weaponWidth)
+        weaponTile2:setWidth(weaponWidth)
+        weaponTile2:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
-        weaponTile2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile2:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
-        weaponTile2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile2:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 0, 40)
-        weaponTile2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile2:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 40, 0)
+        weaponTile2:addAnimation(host, true, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Color", UiBaseWidget.EnginePropertyType.Vec3, PlayerHUDOverlay.inactiveTileColor,
+            PlayerHUDOverlay.activeTileColor)
+        weaponTile2:addAnimation(host, true, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Color", UiBaseWidget.EnginePropertyType.Vec3, PlayerHUDOverlay.activeTileColor,
+            PlayerHUDOverlay.inactiveTileColor)
 
         weaponTile3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            weaponTile2.widgetName, weaponInterval);
+            weaponTile2.widgetName, weaponInterval)
         weaponTile3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
-        weaponTile3:setHeight(weaponWidth);
-        weaponTile3:setWidth(weaponWidth);
-        weaponTile3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile3:setHeight(weaponWidth)
+        weaponTile3:setWidth(weaponWidth)
+        weaponTile3:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
-        weaponTile3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile3:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
-        weaponTile3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile3:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 0, 40)
-        weaponTile3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile3:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 40, 0)
+        weaponTile3:addAnimation(host, true, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Color", UiBaseWidget.EnginePropertyType.Vec3, PlayerHUDOverlay.inactiveTileColor,
+            PlayerHUDOverlay.activeTileColor)
+        weaponTile3:addAnimation(host, true, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Color", UiBaseWidget.EnginePropertyType.Vec3, PlayerHUDOverlay.activeTileColor,
+            PlayerHUDOverlay.inactiveTileColor)
 
         weaponTile4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            weaponTile3.widgetName, weaponInterval);
+            weaponTile3.widgetName, weaponInterval)
         weaponTile4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
-        weaponTile4:setHeight(weaponWidth);
-        weaponTile4:setWidth(weaponWidth);
-        weaponTile4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile4:setHeight(weaponWidth)
+        weaponTile4:setWidth(weaponWidth)
+        weaponTile4:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
-        weaponTile4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile4:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
-        weaponTile4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile4:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 0, 40)
-        weaponTile4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+        weaponTile4:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 40, 0)
+        weaponTile4:addAnimation(host, true, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Color", UiBaseWidget.EnginePropertyType.Vec3, PlayerHUDOverlay.inactiveTileColor,
+            PlayerHUDOverlay.activeTileColor)
+        weaponTile4:addAnimation(host, true, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Color", UiBaseWidget.EnginePropertyType.Vec3, PlayerHUDOverlay.activeTileColor,
+            PlayerHUDOverlay.inactiveTileColor)
 
-        lifeImage1:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
-        lifeImage1:setTextureSource("scaled_down_heart.png");
-        lifeImage1:setZOrder(2);
+        lifeImage1:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName)
+        lifeImage1:setTextureSource("scaled_down_heart.png")
+        lifeImage1:setZOrder(2)
         lifeImage1:setRotationDegrees(180)
-        lifeImage1:setHeight(heartWidth);
-        lifeImage1:setWidth(heartWidth);
-        lifeImage1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, lifeRootContainer.widgetName);
+        lifeImage1:setHeight(heartWidth)
+        lifeImage1:setWidth(heartWidth)
+        lifeImage1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, lifeRootContainer.widgetName)
         lifeImage1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName);
+            .widgetName)
 
-        lifeImage2:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
-        lifeImage2:setTextureSource("scaled_down_heart.png");
-        lifeImage2:setZOrder(2);
+        lifeImage2:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName)
+        lifeImage2:setTextureSource("scaled_down_heart.png")
+        lifeImage2:setZOrder(2)
         lifeImage2:setRotationDegrees(180)
-        lifeImage2:setHeight(heartWidth);
-        lifeImage2:setWidth(heartWidth);
+        lifeImage2:setHeight(heartWidth)
+        lifeImage2:setWidth(heartWidth)
         lifeImage2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage1.widgetName,
-            heartInterval);
+            heartInterval)
         lifeImage2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName);
+            .widgetName)
 
-        lifeImage3:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
-        lifeImage3:setTextureSource("scaled_down_heart.png");
-        lifeImage3:setZOrder(2);
+        lifeImage3:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName)
+        lifeImage3:setTextureSource("scaled_down_heart.png")
+        lifeImage3:setZOrder(2)
         lifeImage3:setRotationDegrees(180)
-        lifeImage3:setHeight(heartWidth);
-        lifeImage3:setWidth(heartWidth);
+        lifeImage3:setHeight(heartWidth)
+        lifeImage3:setWidth(heartWidth)
         lifeImage3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage2.widgetName,
-            heartInterval);
+            heartInterval)
         lifeImage3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName);
+            .widgetName)
 
-        lifeImage4:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
-        lifeImage4:setTextureSource("scaled_down_heart.png");
-        lifeImage4:setZOrder(2);
+        lifeImage4:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName)
+        lifeImage4:setTextureSource("scaled_down_heart.png")
+        lifeImage4:setZOrder(2)
         lifeImage4:setRotationDegrees(180)
-        lifeImage4:setHeight(heartWidth);
-        lifeImage4:setWidth(heartWidth);
+        lifeImage4:setHeight(heartWidth)
+        lifeImage4:setWidth(heartWidth)
         lifeImage4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage3.widgetName,
-            heartInterval);
+            heartInterval)
         lifeImage4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName);
+            .widgetName)
 
-        lifeImage5:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
-        lifeImage5:setTextureSource("scaled_down_heart.png");
-        lifeImage5:setZOrder(2);
+        lifeImage5:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName)
+        lifeImage5:setTextureSource("scaled_down_heart.png")
+        lifeImage5:setZOrder(2)
         lifeImage5:setRotationDegrees(180)
-        lifeImage5:setHeight(heartWidth);
-        lifeImage5:setWidth(heartWidth);
+        lifeImage5:setHeight(heartWidth)
+        lifeImage5:setWidth(heartWidth)
         lifeImage5:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage4.widgetName,
-            heartInterval);
+            heartInterval)
         lifeImage5:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName);
+            .widgetName)
 
         playerHUDOverlay:onMissilesDataChanged()   -- initialize all data missiles widgets
         playerHUDOverlay:onCurrentMissileChanged() -- initialize current missile widget

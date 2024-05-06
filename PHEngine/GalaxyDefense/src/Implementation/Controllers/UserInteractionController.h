@@ -7,7 +7,6 @@
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/GameModeTypeEnum.h"
 
-#include <glm/mat4x4.hpp>
 #include <functional>
 
 using namespace Event;
@@ -25,6 +24,7 @@ namespace EngineCore
 namespace Game
 {
    class CombatActorsPoolHandler;
+   class SmartPicker;
 
    class UserInteractionController
        : public ILevelController,
@@ -42,7 +42,7 @@ namespace Game
 
       std::weak_ptr<ThirdPersonCamera> mMainSceneCamera;
 
-      glm::mat4 mProjectionMatrix;
+      std::shared_ptr<SmartPicker> mSmartPicker;
 
       std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
 
@@ -90,10 +90,5 @@ namespace Game
       void HideMissileProjectile();
 
       glm::vec3 GetProjectileMarkerPosition() const;
-
-   private:
-      glm::vec3 CreateWorldSpaceRayFromScreenSpacePosition(const glm::ivec2 &screenSpacePosition) const;
-
-      void UpdateProjectionMatrix();
    };
 }

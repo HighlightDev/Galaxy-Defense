@@ -29,6 +29,7 @@ local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
 local PlayerHUDOverlay = require("Ui/Overlays/PlayerHUDOverlay")
+local json = require("Ui/Core/3rdparty/json")
 
 GlobalContext = {
 }
@@ -51,12 +52,14 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
                         EventsHelper:sendPauseGameThreadEvent(host,
                             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
                         UiOverlayManager:closeCurrentOverlay(host)
-                        UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
+                        -- restore active background overlays
+                        --UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
                     else
                         EventsHelper:sendPauseGameThreadEvent(host,
                             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
                         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
-                        UiOverlayManager:closeBackgroundOverlay(host, "PlayerHUDOverlay")
+                        --store active background overlays
+                        --UiOverlayManager:closeBackgroundOverlay(host, "PlayerHUDOverlay")
                     end
                 end
             end
@@ -88,7 +91,6 @@ function System_OnStart(host)
     engineReceiver:subscribeOnPressedKeyboardButton(onPressedKeyboardButtons)
     GlobalContext["inputReceiver"] = engineReceiver
     initialize(host)
-    UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
 end
 
 function System_OnUpdate(host, deltaTimeSec)
@@ -142,6 +144,23 @@ end
 
 function System_OnGameEventTriggered(host, eventName, jsonArgs)
     assert(eventName ~= nil and type(eventName) == "string")
+
+    if "PlayerStatusChanged" == eventName then
+        assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+        local parsedJson = json.decode(jsonArgs)
+        if parsedJson["player_status_type"] ~= nil then
+            local statusType = tonumber(parsedJson["player_status_type"])
+            if statusType == PlayerStatusType.SELECTED_TOWER_CHANGED then
+                if parsedJson["has_selected_tower"] ~= nil then
+                    if parsedJson["has_selected_tower"] == true then
+                        UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
+                    else
+                        UiOverlayManager:closeBackgroundOverlay(host, "PlayerHUDOverlay")
+                    end
+                end
+            end
+        end
+    end
 
     for _, value in pairs(UiOverlays) do
         value.onGameEventTriggered(eventName, jsonArgs)

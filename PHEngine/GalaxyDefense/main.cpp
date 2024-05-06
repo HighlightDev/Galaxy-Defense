@@ -114,9 +114,9 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
   }
 }
 
-void get_screen_rezolution()
+void get_screen_rezolution(GLFWmonitor *activeMonitor)
 {
-  const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+  const GLFWvidmode *mode = glfwGetVideoMode(activeMonitor);
 
   DisplayDeviceDataProvider::GetInstance()->SetScreenWidth(mode->width);
   DisplayDeviceDataProvider::GetInstance()->SetScreenHeight(mode->height);
@@ -156,15 +156,24 @@ int32_t main(int32_t argc, char **argv)
   if (!glfwInit())
     return -1;
 
-  // Create a windowed mode window and its OpenGL context
-  get_screen_rezolution();
-  const auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
-  const auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
-
   // auto width = 1200;
   // auto height = 900;
-  auto primaryMonitor = glfwGetPrimaryMonitor();
-  window = glfwCreateWindow(width, height, "PHEngine", primaryMonitor, NULL);
+  GLFWmonitor *activeMonitor = nullptr;
+  int monitorsCount = 0;
+  GLFWmonitor **monitors = glfwGetMonitors(&monitorsCount);
+  if (monitorsCount > 1)
+  {
+    activeMonitor = monitors[1];
+  }
+  else
+  {
+    activeMonitor = glfwGetPrimaryMonitor();
+  }
+  // Create a windowed mode window and its OpenGL context
+  get_screen_rezolution(activeMonitor);
+  const auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
+  const auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
+  window = glfwCreateWindow(width, height, "PHEngine", activeMonitor, NULL);
   LogInfo("main => glfwWindow create with size: width = ", width, " height = ", height);
 
   if (!window)

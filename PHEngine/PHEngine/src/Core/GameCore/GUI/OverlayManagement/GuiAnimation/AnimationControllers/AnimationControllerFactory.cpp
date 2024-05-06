@@ -1,6 +1,7 @@
 #include "AnimationControllerFactory.h"
 #include "FloatAnimationController.h"
 #include "IntegerAnimationController.h"
+#include "Vec3AnimationController.h"
 
 namespace EngineCore
 {
@@ -13,7 +14,9 @@ namespace EngineCore
             case eEnginePropertyType::Float:
                 return std::make_unique<FloatAnimationController>();
             case eEnginePropertyType::Integer:
-               return std::make_unique<IntegerAnimationController>();
+                return std::make_unique<IntegerAnimationController>();
+            case eEnginePropertyType::Vec3:
+                return std::make_unique<Vec3AnimationController>();
 
             default:
                 return nullptr;

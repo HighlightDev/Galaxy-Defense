@@ -24,10 +24,14 @@ namespace EngineCore
               mColor(glm::vec3(1.0f)),
               mOpacity(1.0f),
               mBorderRadius(0.0f),
-              mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(1.0f, "Opacity", [this](const float newOpacityValue)
+              mColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(mColor, "Color", [this](const glm::vec3 &newColorVaue)
+                                                                               { SetColor(newColorVaue); })),
+              mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(mOpacity, "Opacity", [this](const float newOpacityValue)
                                                                              { SetOpacity(newOpacityValue); }))
         {
+            assert(!mProperties.count("Color"));
             assert(!mProperties.count("Opacity"));
+            mProperties.emplace("Color", mColorProperty);
             mProperties.emplace("Opacity", mOpacityProperty);
         }
 

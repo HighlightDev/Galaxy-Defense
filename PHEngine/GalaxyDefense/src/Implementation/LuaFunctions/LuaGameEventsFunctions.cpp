@@ -64,10 +64,11 @@ namespace Game
 
    void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent::EventData_t &data)
    {
-      nlohmann::json jsonObj;
-      jsonObj["player_status_type"] = static_cast<int32_t>(std::get<0>(data));
-      const auto &eventParams = jsonObj.dump();
-      LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(), "System_OnGameEventTriggered", (void *)mOwnerPtr, std::string("PlayerStatusChanged"), eventParams);
+      LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(),
+                                                                         "System_OnGameEventTriggered",
+                                                                         (void *)mOwnerPtr,
+                                                                         std::string("PlayerStatusChanged"),
+                                                                         std::get<1>(data));
    }
 
    int32_t LuaGameEventsFunctions::GetSelectedMissileType(const std::tuple<> &data) const
@@ -102,13 +103,12 @@ namespace Game
       if (const auto &sceneSp = mSceneWp.lock())
       {
          static constexpr auto functionId = Hash64_CT("LuaGameEventsFunctions::SendChangeGameModeGameThreadEvent");
-         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [gameModeType]() { 
-            ChangeGameModeEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, static_cast<eGameModeType>(gameModeType)); 
-         });
+         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [gameModeType]()
+                                                                           { ChangeGameModeEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, static_cast<eGameModeType>(gameModeType)); });
       }
    }
 
-   void LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, int32_t/*edit mode type*/>& data)
+   void LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, int32_t /*edit mode type*/> &data)
    {
       const auto enqueuePolicy = std::get<0>(data);
       const auto editModeType = std::get<1>(data);
@@ -116,9 +116,8 @@ namespace Game
       if (const auto &sceneSp = mSceneWp.lock())
       {
          static constexpr auto functionId = Hash64_CT("LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent");
-         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [editModeType]() { 
-            ChangeEditModeEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, static_cast<eEditModeType>(editModeType));
-         });
+         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [editModeType]()
+                                                                           { ChangeEditModeEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, static_cast<eEditModeType>(editModeType)); });
       }
    }
 }
