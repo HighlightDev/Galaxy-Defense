@@ -13,10 +13,10 @@ namespace Game
 
     bool LevelData::IsLevelBoundariesValid() const
     {
-        const bool isInvalid = EngineMath::FloatsNearEqual(0.0f, LevelBoundaryExtent.x) ||
-                               EngineMath::FloatsNearEqual(0.0f, LevelBoundaryExtent.y) ||
-                               EngineMath::FloatsNearEqual(0.0f, LevelBoundaryOrigin.x) ||
-                               EngineMath::FloatsNearEqual(0.0f, LevelBoundaryOrigin.y);
+        const bool isInvalid = EngineMath::FloatsNearEqual(0.0f, LevelBoundaryMin.x) ||
+                               EngineMath::FloatsNearEqual(0.0f, LevelBoundaryMin.y) ||
+                               EngineMath::FloatsNearEqual(0.0f, LevelBoundaryMax.x) ||
+                               EngineMath::FloatsNearEqual(0.0f, LevelBoundaryMax.y);
         return !isInvalid;
     }
 }

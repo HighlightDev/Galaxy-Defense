@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/BoundingBox3D.h"
+#include "Core/CommonCore/Timer.h"
 #include "Implementation/Modifiers/IModifiable.h"
 #include "Implementation/Modifiers/ModifiersHandler.h"
 #include "Implementation/DamageDealerType.h"
@@ -15,14 +16,14 @@ using namespace EngineCore;
 
 namespace EngineCore
 {
-    class HudTextField;
+    class UiComponent;
 }
 
 enum class eSpaceshipActivityState
 {
     IDLE,
     ACTIVE,
-    ROUTE_COMPLETED
+    PENDING_DISABLE
 };
 
 namespace Game
@@ -37,22 +38,20 @@ namespace Game
 
         size_t mLifePoints;
 
-        std::weak_ptr<HudTextField> mDamageTextFieldWp;
+        std::shared_ptr<::EngineCore::UiComponent> mUiComponent;
+
+        int32_t mDamageTextFieldId{-1};
+
+        GameThreadTimer mDamageMessageTimer;
 
         float mDamageEffectTimePassed;
 
         float mDamageEffectDuration;
 
-        std::shared_ptr<EngineObjectProperty<float>> mDamageTimeProperty;
-        std::shared_ptr<EngineObjectProperty<float>> mFreezingEffectProperty;
-
-        float mDamageTextShowDuration;
-
-        float mDamageTextTimePassed;
-
         bool mIsDamageEffectActive;
 
-        bool mIsDamageTextActive;
+        std::shared_ptr<EngineObjectProperty<float>> mDamageTimeProperty;
+        std::shared_ptr<EngineObjectProperty<float>> mFreezingEffectProperty;
 
     public:
         SpaceshipActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);

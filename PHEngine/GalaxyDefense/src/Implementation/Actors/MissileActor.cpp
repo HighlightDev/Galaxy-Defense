@@ -20,10 +20,17 @@ namespace Game
         mActivityState = activityState;
     }
 
-    void MissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType damageDealerType, const std::shared_ptr<Actor> &spawnerActor)
+    void MissileActor::TriggerSpawn(const glm::vec3 &position,
+                                    const glm::vec3 &direction,
+                                    const float yawDegrees,
+                                    const eDamageDealerType damageDealerType,
+                                    const std::shared_ptr<Actor> &spawnerActor)
     {
         assert(GetMovementComponent());
         mDamageDealerType = damageDealerType;
+        const auto& existingRotation = GetRootComponent()->GetAdditionalRotation();
+        GetRootComponent()->SetAdditionalRotation(glm::vec3(existingRotation.x, yawDegrees, existingRotation.z));
+        GetMovementComponent()->SetDirection(direction);
         GetMovementComponent()->Teleport(position);
     }
 

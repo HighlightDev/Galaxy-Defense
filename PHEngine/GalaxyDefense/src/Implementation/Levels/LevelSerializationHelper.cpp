@@ -12,8 +12,8 @@ namespace Game
 
         nlohmann::json jsonObj;
         jsonObj["level_name"] = levelData.LevelName;
-        jsonObj["level_boundary_extent"] = JsonVec2(levelData.LevelBoundaryExtent);
-        jsonObj["level_boundary_origin"] = JsonVec2(levelData.LevelBoundaryOrigin);
+        jsonObj["level_boundary_min"] = JsonVec2(levelData.LevelBoundaryMin);
+        jsonObj["level_boundary_max"] = JsonVec2(levelData.LevelBoundaryMax);
         jsonObj["routes"] = preparedRoutesData;
         jsonObj["towers"] = preparedTowersData;
 
@@ -25,10 +25,10 @@ namespace Game
         const auto &jsonObj = nlohmann::json::parse(jsonStr);
         LevelData lvlData;
         lvlData.LevelName = jsonObj.at("level_name").get<std::string>();
-        const auto& extent = jsonObj.at("level_boundary_extent").get<JsonVec2>();
-        const auto& origin = jsonObj.at("level_boundary_origin").get<JsonVec2>();
-        lvlData.LevelBoundaryExtent = glm::vec2(extent.x, extent.y);
-        lvlData.LevelBoundaryOrigin = glm::vec2(origin.x, origin.y);
+        const auto& min = jsonObj.at("level_boundary_min").get<JsonVec2>();
+        const auto& max = jsonObj.at("level_boundary_max").get<JsonVec2>();
+        lvlData.LevelBoundaryMin = glm::vec2(min.x, min.y);
+        lvlData.LevelBoundaryMax = glm::vec2(max.x, max.y);
         auto preparedRoutesData = jsonObj.at("routes").get<std::unordered_map<std::string, std::vector<std::tuple<JsonVec3, JsonVec3, JsonVec3>>>>();
         lvlData.RoutesData = RestoreRouteControlPoints(preparedRoutesData);
         auto preparedTowersData = jsonObj.at("towers").get<std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>>();

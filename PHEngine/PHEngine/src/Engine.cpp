@@ -32,7 +32,6 @@
 #include "Core/GameCore/Event/MouseScrollEvent.h"
 #include "Core/GameCore/Event/MouseButtonDownEvent.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
-#include "Core/GameCore/Event/TextEvent.h"
 
 using namespace TinyLogger;
 using namespace IO;
@@ -74,8 +73,6 @@ namespace EngineCore
                                  MouseScrollGameThreadEvent,
                                  MouseButtonDownGameThreadEvent,
                                  PhysicsCollisionGameThreadEvent,
-                                 TextRegisterGameThreadEvent,
-                                 TextDataChangedGameThreadEvent,
                                  PauseGameThreadEvent,
                                  ExitGameThreadEvent,
                                  LoadLevelGameThreadEvent,

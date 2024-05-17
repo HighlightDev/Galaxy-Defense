@@ -13,7 +13,7 @@ namespace Game
 
     eModifierType FreezingModifier::GetModifierType() const
     {
-        return eModifierType::Gravity;
+        return eModifierType::Freezing;
     }
 
     int32_t FreezingModifier::CreatorObjectId() const

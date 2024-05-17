@@ -2210,13 +2210,7 @@
     <ClInclude Include="src\Core\GameCore\Components\UiComponents\UiComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Event\eTextEventEnums.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\Event\MouseButtonDownEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Event\TextEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\BooleanPropertyBinding.h">

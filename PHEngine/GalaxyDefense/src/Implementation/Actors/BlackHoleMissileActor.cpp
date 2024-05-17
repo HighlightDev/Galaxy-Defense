@@ -66,6 +66,8 @@ namespace Game
         else if ("s_FirstPhaseExplosion" == stateName)
         {
             mExplosionSecondPhaseActor->TriggerSpawn(mCombatActivePhaseActor->GetRootComponent()->GetTranslation(),
+                                                     {},
+                                                     0.0f,
                                                      mDamageDealerType,
                                                      shared_from_this());
             const auto c_particle = mExplosionSecondPhaseActor->GetComponentsByType<ParticleSystemComponent>().back();
@@ -116,11 +118,18 @@ namespace Game
         mBlackMissileTweener->ChangeState("s_BlackHoleSuckIn");
     }
 
-    void BlackHoleMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor)
+    void BlackHoleMissileActor::TriggerSpawn(const glm::vec3 &position,
+                                             const glm::vec3 &direction,
+                                             const float yawDegrees,
+                                             const eDamageDealerType ownerType,
+                                             const std::shared_ptr<Actor> &spawnerActor)
     {
         mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;
         SetIsEnabled(true);
+        const auto& existingRotation = mCombatActivePhaseActor->GetRootComponent()->GetAdditionalRotation();
+        mCombatActivePhaseActor->GetRootComponent()->SetAdditionalRotation(glm::vec3(existingRotation.x, yawDegrees, existingRotation.z));
+        mCombatActivePhaseActor->GetMovementComponent()->SetDirection(direction);
         mCombatActivePhaseActor->GetMovementComponent()->Teleport(position);
 
         TriggerLifecycle_FirstPhaseActiveCombat();

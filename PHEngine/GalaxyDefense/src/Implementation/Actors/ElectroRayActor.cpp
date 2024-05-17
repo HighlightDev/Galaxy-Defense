@@ -48,6 +48,9 @@ namespace Game
     {
         return EngineMath::TestPointInAABB(boundingBox.GetMin(),
                                            boundingBox.GetMax(),
+                                           mElectroLineBegin) ||
+               EngineMath::TestPointInAABB(boundingBox.GetMin(),
+                                           boundingBox.GetMax(),
                                            mElectroLineBegin);
     }
 
@@ -57,18 +60,18 @@ namespace Game
 
         assert(mLineComponent);
 
-        glm::vec3 electroLineDirection(0.0f, 0.0f, 1.0f);
+        glm::vec3 electroLineDirection = mElectroLineDirection;
 
         if (!bElectroLineCollided)
         {
-            mElectroLineEnd += glm::vec3(0.0f, 0.0f, 1.0f) * mElectroLineDestinationSpeed * deltaTime;
+            mElectroLineEnd += mElectroLineDirection * mElectroLineDestinationSpeed * deltaTime;
 
             if (const auto &sceneSp = mSceneOwner.lock())
             {
                 if (const auto &spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock())
                 {
                     std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionPhysComponents;
-                    if (const auto& ownerSpaceshipPhysComp = spaceshipWhoSpawnedMeSp->GetPhysicsComponent())
+                    if (const auto &ownerSpaceshipPhysComp = spaceshipWhoSpawnedMeSp->GetPhysicsComponent())
                     {
                         excludeCollisionPhysComponents.emplace_back(ownerSpaceshipPhysComp);
                     }
@@ -108,8 +111,8 @@ namespace Game
             mElectroLineBegin += electroLineDirection * mElectroLineOriginSpeed * deltaTime;
             if (bElectroLineCollided &&
                 (EngineMath::CheckSimilarityVec3(mElectroLineBegin, mElectroLineEnd) ||
-                 (EngineMath::ProjectVector3OnVector(mElectroLineBegin, glm::vec3(0.0f, 0.0f, 1.0f)) >=
-                  EngineMath::ProjectVector3OnVector(mElectroLineEnd, glm::vec3(0.0f, 0.0f, 1.0f)))))
+                 (EngineMath::ProjectVector3OnVector(mElectroLineBegin, mElectroLineDirection) >=
+                  EngineMath::ProjectVector3OnVector(mElectroLineEnd, mElectroLineDirection))))
             {
                 TriggerDisabled();
             }
@@ -119,13 +122,18 @@ namespace Game
         mLineComponent->SetLineEndWorldSpacePosition(mElectroLineEnd);
     }
 
-    void ElectroRayActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor)
+    void ElectroRayActor::TriggerSpawn(const glm::vec3 &position,
+                                       const glm::vec3 &direction,
+                                       const float yawDegrees,
+                                       const eDamageDealerType ownerType,
+                                       const std::shared_ptr<Actor> &spawnerActor)
     {
         mDamageDealerType = ownerType;
         mSpaceshipWhoSpawnedMeWp = spawnerActor;
         DropState();
         SetIsEnabled(true);
         mActivityState = eMissileActivityState::ACTIVE;
+        mElectroLineDirection = direction;
 
         if (const auto &spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock())
         {

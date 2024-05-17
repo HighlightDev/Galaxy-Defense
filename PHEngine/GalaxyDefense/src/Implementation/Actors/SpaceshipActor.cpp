@@ -18,34 +18,43 @@ namespace Game
         : Actor(gameObjectName, rootComponent),
           mModifiersHandler(std::make_unique<ModifiersHandler>()),
           mLifePoints(10),
-          mDamageTextFieldWp(),
           mDamageEffectTimePassed(0.0f),
           mDamageEffectDuration(0.5f),
           mDamageTimeProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_damageEffect")),
           mFreezingEffectProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_freezingEffect")),
-          mDamageTextShowDuration(1.5f),
-          mDamageTextTimePassed(0.0f),
-          mIsDamageEffectActive(false),
-          mIsDamageTextActive(false)
+          mIsDamageEffectActive(false)
     {
         AddEngineProperty(mDamageTimeProperty);
         AddEngineProperty(mFreezingEffectProperty);
+
+        static constexpr size_t s_dmgTextShowDuration = 1500;
+        mDamageMessageTimer.SetIntervalMs(s_dmgTextShowDuration);
+        mDamageMessageTimer.SetIsRepeat(false);
+        mDamageMessageTimer.SetIsPausable(true);
+        mDamageMessageTimer.SetCallback([this]() { 
+            mUiComponent->SetVisibility(mDamageTextFieldId, false); 
+        });
     }
 
     void SpaceshipActor::PostLevelInit()
     {
         Actor::PostLevelInit();
 
-        const auto c_uiComponent = GetComponentsByType<UiComponent>().back();
-        const size_t dmgTextFieldId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(1.0f, 0.0f, 0.0f), true, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
-        mDamageTextFieldWp = c_uiComponent->GetTextFieldById(dmgTextFieldId);
+        mUiComponent = GetComponentsByType<UiComponent>().back();
+        mDamageTextFieldId = mUiComponent->CreateEmptyTextField("nimbus_mono",
+                                                                10,
+                                                                glm::vec3(1.0f, 0.0f, 0.0f),
+                                                                true,
+                                                                0.3f,
+                                                                1,
+                                                                eTextHorizontalAlignmentType::LEFT);
     }
 
     void SpaceshipActor::TriggerSpawn(const glm::vec3 &position)
     {
         SetIsEnabled(true);
         mActivityState = eSpaceshipActivityState::ACTIVE;
-        const auto& onRouteMovementComponent = GetOnRouteMovementComponent();
+        const auto &onRouteMovementComponent = GetOnRouteMovementComponent();
         onRouteMovementComponent->ResetStates();
         onRouteMovementComponent->Teleport(position);
         RestoreLife();
@@ -53,7 +62,7 @@ namespace Game
 
     void SpaceshipActor::TriggerExplosion()
     {
-        TriggerDisabled();
+        SetSpaceshipActivityState(eSpaceshipActivityState::PENDING_DISABLE);
     }
 
     void SpaceshipActor::TriggerDisabled()
@@ -86,33 +95,23 @@ namespace Game
             }
         }
 
-        if (mIsDamageTextActive)
+        if (mDamageMessageTimer.IsRunning())
         {
             if (const auto &sceneSp = mSceneOwner.lock())
             {
-                if (const auto &dmgTextFieldSp = mDamageTextFieldWp.lock())
+                const auto &spaceShipTranslation = GetRootComponent()->GetTranslation();
+                const auto &mainCameraSp = sceneSp->GetMainCamera();
+                const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
+                const glm::vec3 ndcTranslation = glm::vec3(clippedSpaceTranslation.x / clippedSpaceTranslation.w,
+                                                           clippedSpaceTranslation.y / clippedSpaceTranslation.w,
+                                                           clippedSpaceTranslation.z / clippedSpaceTranslation.w);
+
+                const glm::vec2 textureSpaceTranslation = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
+                if (const auto &dmgTextFieldSp = mUiComponent->GetTextFieldById(mDamageTextFieldId))
                 {
-                    const auto &spaceShipTranslation = GetRootComponent()->GetTranslation();
-                    const auto &mainCameraSp = sceneSp->GetMainCamera();
-                    const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
-                    const glm::vec3 ndcTranslation = glm::vec3(clippedSpaceTranslation.x / clippedSpaceTranslation.w,
-                                                               clippedSpaceTranslation.y / clippedSpaceTranslation.w,
-                                                               clippedSpaceTranslation.z / clippedSpaceTranslation.w);
-
-                    const glm::vec2 textureSpaceTranslation = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
-                    dmgTextFieldSp->SetPosition(textureSpaceTranslation - (dmgTextFieldSp->GetScreenSpaceSize().x * 0.5f) + glm::vec2(0.0f, -0.2f));
+                    mUiComponent->SetPosition(mDamageTextFieldId,
+                                              textureSpaceTranslation - (dmgTextFieldSp->GetScreenSpaceSize().x * 0.5f) + glm::vec2(0.0f, -0.2f));
                 }
-            }
-
-            if (mDamageTextTimePassed < mDamageTextShowDuration)
-            {
-                mDamageTextTimePassed += deltaTime;
-            }
-            else if (const auto &dmgTextFieldSp = mDamageTextFieldWp.lock())
-            {
-                dmgTextFieldSp->SetVisibility(false);
-                mIsDamageTextActive = false;
-                mDamageTextTimePassed = 0.0f;
             }
         }
     }
@@ -122,25 +121,22 @@ namespace Game
         if (CheckIsAliveAfterDamage(dmg))
         {
             mIsDamageEffectActive = true;
-            mIsDamageTextActive = true;
             mDamageEffectTimePassed = 0.0f;
-            mDamageTextTimePassed = 0.0f;
 
             const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
             c_particle->EmitParticles();
 
-            if (const auto &dmgTextFieldSp = mDamageTextFieldWp.lock())
-            {
-                dmgTextFieldSp->SetText(std::to_string(dmg));
-                dmgTextFieldSp->SetVisibility(true);
-                dmgTextFieldSp->SetPosition(CalculatePositionForDamageText());
-            }
+            mUiComponent->SetPosition(mDamageTextFieldId, CalculatePositionForDamageText());
+            mUiComponent->SetText(mDamageTextFieldId, std::to_string(dmg));
+            mUiComponent->SetVisibility(mDamageTextFieldId, true);
         }
         else if (eDamageDealerType::MAIN_PLAYER == damageDealerType)
         {
             const auto &playerDataProvider = PlayerDataProvider::GetInstance();
             playerDataProvider->SetDestroyedEnemySpaceshipsCount(playerDataProvider->GetDestroyedEnemySpaceshipsCount() + 1);
         }
+
+        mDamageMessageTimer.RestartTimer();
     }
 
     glm::vec2 SpaceshipActor::CalculatePositionForDamageText() const
@@ -149,7 +145,7 @@ namespace Game
 
         if (const auto &sceneSp = mSceneOwner.lock())
         {
-            if (const auto &dmgTextFieldSp = mDamageTextFieldWp.lock())
+            if (const auto &dmgTextFieldSp = mUiComponent->GetTextFieldById(mDamageTextFieldId))
             {
                 const auto &mainCameraSp = sceneSp->GetMainCamera();
                 const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
@@ -178,6 +174,10 @@ namespace Game
     void SpaceshipActor::AddModifier(const std::shared_ptr<IModifiable> &modifier)
     {
         mModifiersHandler->AddModifier(modifier);
+        if (modifier->GetModifierType() == eModifierType::Gravity)
+        {
+            GetOnRouteMovementComponent()->SetIsMovementOnRouteAllowed(false); // Spaceship is under gravity effect. Movement on the route is not allowed.
+        }
     }
 
     bool SpaceshipActor::HasModifier(const eModifierType modifierType, const int32_t creatorObjectId) const

@@ -13,9 +13,9 @@ namespace Game
     {
         std::string LevelName;
 
-        glm::vec2 LevelBoundaryExtent;
+        glm::vec2 LevelBoundaryMin;
 
-        glm::vec2 LevelBoundaryOrigin;
+        glm::vec2 LevelBoundaryMax;
 
         std::unordered_map<std::string, std::tuple<glm::vec3 /*position*/, glm::vec3 /*scale*/>> TowersData;
 

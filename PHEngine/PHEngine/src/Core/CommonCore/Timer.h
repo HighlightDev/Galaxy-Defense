@@ -68,13 +68,13 @@ namespace EngineCore
 
         void SetIsPausable(const bool isPausable);
 
+        void SetCallback(std::function<void(void)> callback);
+
         void StartTimer();
 
         void RestartTimer();
 
         void StopTimer();
-
-        void SetCallback(std::function<void(void)> callback);
 
         bool IsRunning() const;
 

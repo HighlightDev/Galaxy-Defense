@@ -28,7 +28,11 @@ namespace Game
 
         void OnTweenStateChanged(const std::string &stateName) override;
 
-        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor) override;
+        void TriggerSpawn(const glm::vec3 &position,
+                          const glm::vec3 &direction,
+                          const float yawDegrees,
+                          const eDamageDealerType ownerType,
+                          const std::shared_ptr<Actor> &spawnerActor) override;
 
         void TriggerExplosion() override;
 

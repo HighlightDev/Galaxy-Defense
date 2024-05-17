@@ -16,44 +16,43 @@ namespace EngineCore
     class UiComponent
         : public Component
     {
-    protected:
-        std::vector<std::shared_ptr<HudTextField>> mTextFields;
-
     public:
         UiComponent(const std::shared_ptr<ComponentData> &data);
 
         ~UiComponent() override;
 
-        void Tick(const float deltaTime) override;
+        eComponentType GetComponentType() const override;
 
         void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-        void CleanUp() override;
-
-        eComponentType GetComponentType() const override;
-
         int32_t CreateTextField(const std::string &fontName,
-                               const float fontSize,
-                               const std::string &text,
-                               const glm::vec3 &color,
-                               const glm::vec2 &position,
-                               const bool receiveUpdateOnTextScreenSpaceSizeChanged,
-                               const float lineMaxSize,
-                               const int32_t numberOfLines,
-                               const eTextHorizontalAlignmentType textHorizontalAlignment);
+                                const float fontSize,
+                                const std::string &text,
+                                const glm::vec3 &color,
+                                const glm::vec2 &position,
+                                const bool receiveUpdateOnTextScreenSpaceSizeChanged,
+                                const float lineMaxSize,
+                                const int32_t numberOfLines,
+                                const eTextHorizontalAlignmentType textHorizontalAlignment);
 
         int32_t CreateEmptyTextField(const std::string &fontName,
-                                    const float fontSize,
-                                    const glm::vec3 &color,
-                                    const bool receiveUpdateOnTextScreenSpaceSizeChanged,
-                                    const float lineMaxSize,
-                                    const int32_t numberOfLines,
-                                    const eTextHorizontalAlignmentType textHorizontalAlignment);
+                                     const float fontSize,
+                                     const glm::vec3 &color,
+                                     const bool receiveUpdateOnTextScreenSpaceSizeChanged,
+                                     const float lineMaxSize,
+                                     const int32_t numberOfLines,
+                                     const eTextHorizontalAlignmentType textHorizontalAlignment);
 
         void DeleteTextField(const int32_t textFieldId);
 
-        std::weak_ptr<HudTextField> GetTextFieldById(const int32_t textFieldId) const;
+        std::shared_ptr<HudTextField> GetTextFieldById(const int32_t textFieldId) const;
 
-        const std::vector<std::shared_ptr<HudTextField>> &GetTextFields() const;
+        void SetText(const int32_t textFieldId, const std::string &text);
+
+        void SetVisibility(const int32_t textFieldId, const bool isVisible);
+
+        void SetColor(const int32_t textFieldId, const glm::vec3 &color);
+
+        void SetPosition(const int32_t textFieldId, const glm::vec2 &position);
     };
 }

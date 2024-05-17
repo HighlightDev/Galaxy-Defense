@@ -19,7 +19,7 @@ namespace Game
         // param which lies between 0 and 1 and denotes route movement progress
         float mMovementProgressOnRoute{0.0f};
 
-        bool mIsMovementAllowed{false};
+        bool mIsMovementOnRouteAllowed{false};
 
         float mRouteTotalDistance{0.0f};
 
@@ -38,9 +38,9 @@ namespace Game
 
         float GetMovementProgressOnRoute() const;
 
-        bool GetIsMovementAllowed() const;
+        bool GetIsMovementOnRouteAllowed() const;
 
-        void SetIsMovementAllowed(const bool isAllowed);
+        void SetIsMovementOnRouteAllowed(const bool isAllowed);
 
         bool GetIsDistanceCompleted() const;
 

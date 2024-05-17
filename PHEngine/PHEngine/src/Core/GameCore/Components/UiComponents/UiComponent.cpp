@@ -2,6 +2,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/TextHandler.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <algorithm>
@@ -11,8 +12,7 @@ using namespace Graphics::Renderer;
 namespace EngineCore
 {
     UiComponent::UiComponent(const std::shared_ptr<ComponentData> &data)
-        : Component(data->EngineObjectName),
-          mTextFields()
+        : Component(data->EngineObjectName)
     {
     }
 
@@ -20,31 +20,13 @@ namespace EngineCore
     {
     }
 
-    void UiComponent::CleanUp()
+    eComponentType UiComponent::GetComponentType() const
     {
-        if (const auto &sceneSp = m_sceneWP.lock())
-        {
-            if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
-            {
-                for (const auto &textFieldSp : mTextFields)
-                {
-                    sceneRendererSp->UnregisterText(textFieldSp->GetFontName(), textFieldSp->GetTextFieldId());
-                }
-            }
-        }
-    }
-
-    void UiComponent::Tick(const float deltaTime)
-    {
+        return eComponentType::UI_COMPONENT;
     }
 
     void UiComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
     {
-    }
-
-    eComponentType UiComponent::GetComponentType() const
-    {
-        return UI_COMPONENT;
     }
 
     int32_t UiComponent::CreateTextField(const std::string &fontName,
@@ -57,10 +39,22 @@ namespace EngineCore
                                          const int32_t numberOfLines,
                                          const eTextHorizontalAlignmentType textHorizontalAlignment)
     {
-        const auto &textFieldSp = std::make_shared<HudTextField>(fontName, fontSize, text, color, position, lineMaxSize, numberOfLines, textHorizontalAlignment);
-        mTextFields.emplace_back(textFieldSp);
-        textFieldSp->RegisterText(receiveUpdateOnTextScreenSpaceSizeChanged);
-        return textFieldSp->GetTextFieldId();
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            const auto &textHanderSp = sceneSp->GetTextHandler();
+            const auto &textFieldSp = textHanderSp->CreateTextField(fontName,
+                                                                    fontSize,
+                                                                    text,
+                                                                    color,
+                                                                    position,
+                                                                    receiveUpdateOnTextScreenSpaceSizeChanged,
+                                                                    lineMaxSize,
+                                                                    numberOfLines,
+                                                                    textHorizontalAlignment);
+            return textFieldSp->GetTextFieldId();
+        }
+
+        return -1;
     }
 
     int32_t UiComponent::CreateEmptyTextField(const std::string &fontName,
@@ -71,33 +65,75 @@ namespace EngineCore
                                               const int32_t numberOfLines,
                                               const eTextHorizontalAlignmentType textHorizontalAlignment)
     {
-        const auto &textFieldSp = std::make_shared<HudTextField>(fontName, fontSize, color, lineMaxSize, numberOfLines, textHorizontalAlignment);
-        mTextFields.emplace_back(textFieldSp);
-        textFieldSp->RegisterText(receiveUpdateOnTextScreenSpaceSizeChanged);
-        return textFieldSp->GetTextFieldId();
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            const auto &textHanderSp = sceneSp->GetTextHandler();
+            const auto &textFieldSp = textHanderSp->CreateEmptyTextField(fontName,
+                                                                         fontSize,
+                                                                         color,
+                                                                         receiveUpdateOnTextScreenSpaceSizeChanged,
+                                                                         lineMaxSize,
+                                                                         numberOfLines,
+                                                                         textHorizontalAlignment);
+            return textFieldSp->GetTextFieldId();
+        }
+
+        return -1;
     }
 
     void UiComponent::DeleteTextField(const int32_t textFieldId)
     {
-        const auto it = std::find_if(
-            mTextFields.begin(), mTextFields.end(), [=](const auto &textFieldSp)
-            { return textFieldSp->GetTextFieldId() == textFieldId; });
-        assert(it != mTextFields.end());
-        (*it)->UnregisterText();
-        mTextFields.erase(it);
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            const auto &textHanderSp = sceneSp->GetTextHandler();
+            textHanderSp->UnregisterText(textFieldId);
+        }
     }
 
-    std::weak_ptr<HudTextField> UiComponent::GetTextFieldById(const int32_t textFieldId) const
+    std::shared_ptr<HudTextField> UiComponent::GetTextFieldById(const int32_t textFieldId) const
     {
-        const auto it = std::find_if(
-            mTextFields.begin(), mTextFields.end(), [=](const auto &textFieldSp)
-            { return textFieldSp->GetTextFieldId() == textFieldId; });
-        assert(it != mTextFields.end());
-        return *it;
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            const auto &textHanderSp = sceneSp->GetTextHandler();
+            return textHanderSp->GetTextFieldById(textFieldId);
+        }
+
+        return nullptr;
     }
 
-    const std::vector<std::shared_ptr<HudTextField>> &UiComponent::GetTextFields() const
+    void UiComponent::SetText(const int32_t textFieldId, const std::string &text)
     {
-        return mTextFields;
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            const auto &textHanderSp = sceneSp->GetTextHandler();
+            textHanderSp->SetText(textFieldId, text);
+        }
+    }
+
+    void UiComponent::SetVisibility(const int32_t textFieldId, const bool isVisible)
+    {
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            const auto &textHanderSp = sceneSp->GetTextHandler();
+            textHanderSp->SetVisibility(textFieldId, isVisible);
+        }
+    }
+
+    void UiComponent::SetColor(const int32_t textFieldId, const glm::vec3 &color)
+    {
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            const auto &textHanderSp = sceneSp->GetTextHandler();
+            textHanderSp->SetColor(textFieldId, color);
+        }
+    }
+
+    void UiComponent::SetPosition(const int32_t textFieldId, const glm::vec2 &position)
+    {
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            const auto &textHanderSp = sceneSp->GetTextHandler();
+            textHanderSp->SetPosition(textFieldId, position);
+        }
     }
 }

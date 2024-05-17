@@ -8,7 +8,6 @@
 #include "Core/GameCore/Input/KeyboardBindings.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
-#include "Core/GameCore/Event/TextEvent.h"
 #include "Core/GameCore/Input/InputDeviceKeyData.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
@@ -32,8 +31,6 @@ namespace Event
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<size_t>>;
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string>>;
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>;
-   template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eRegisterType, bool>>;
-   template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::weak_ptr<HudTextField>, eTextChangedDataType>>;
 
    template class TEvent<eEventThreadType::GAME_THREAD, NoDataEventPolicy>;
 

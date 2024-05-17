@@ -67,8 +67,10 @@ namespace Game
         const auto &sceneSp = mScene.lock();
         assert(sceneSp);
 
-        mLevelBounds = BoundingBox3D(glm::vec3(levelData.LevelBoundaryOrigin.x, 0.0f, levelData.LevelBoundaryOrigin.y),
-                                     glm::vec3(levelData.LevelBoundaryExtent.x, 50.0f, levelData.LevelBoundaryExtent.y));
+        mLevelBounds = BoundingBox3D(glm::vec3(0.0f),
+                                     glm::vec3(std::abs(levelData.LevelBoundaryMax.x - levelData.LevelBoundaryMin.x),
+                                               50.0f,
+                                               std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y)));
         mNavigationController->SetLevelBounds(mLevelBounds);
 
         std::unordered_map<std::string, Path> pathRoutes;
@@ -230,10 +232,6 @@ namespace Game
 
             ownerSpaceObjectActor->TriggerDisabled();
             ownerEnemyShipActor->TriggerDamageReceived(1UL, eDamageDealerType::NEUTRAL_OBJECT);
-            if (!ownerEnemyShipActor->IsAlive())
-            {
-                mNavigationController->RemoveSpaceshipFromRoute(ownerEnemyShipActor->GetObjectId());
-            }
         }
         else if (eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT == objectsCollisionType)
         {
@@ -375,8 +373,10 @@ namespace Game
         const auto &missile = mCombatActorsPoolHandler->GetFreeMissile(selectedMissileType);
         if (missile)
         {
-            missile->GetMovementComponent()->SetDirection(missileDirection);
-            missile->TriggerSpawn(missileStartPosition, eDamageDealerType::MAIN_PLAYER, missileOwner);
+            const auto yawRad = std::atan2(missileDirection.x, missileDirection.z);
+            const auto yawDeg = RAD_TO_DEG(yawRad);
+            missile->TriggerSpawn(missileStartPosition, missileDirection, yawDeg, eDamageDealerType::MAIN_PLAYER, missileOwner);
+            mNavigationController->PutMissileToNavigate(missile);
         }
         else
         {
@@ -392,7 +392,7 @@ namespace Game
         {
             for (const auto &enemySpaceship : enemySpaceshipActors)
             {
-                if (eSpaceshipActivityState::ROUTE_COMPLETED == enemySpaceship->GetSpaceshipActivityState())
+                if (eSpaceshipActivityState::PENDING_DISABLE == enemySpaceship->GetSpaceshipActivityState())
                 {
                     mNavigationController->RemoveSpaceshipFromRoute(enemySpaceship->GetObjectId());
                     enemySpaceship->TriggerDisabled();

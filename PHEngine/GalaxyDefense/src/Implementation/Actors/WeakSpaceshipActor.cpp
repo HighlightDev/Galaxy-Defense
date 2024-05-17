@@ -1,10 +1,12 @@
 #include "WeakSpaceshipActor.h"
+#include "Core/GameCore/Scene.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/DamageDealerType.h"
 
@@ -16,12 +18,13 @@ namespace Game
     {
     }
 
-    void WeakSpaceshipActor::PostLevelInit()
+    void WeakSpaceshipActor::AttachTweener(std::shared_ptr<Tweener> tweener)
     {
-        SpaceshipActor::PostLevelInit();
+        assert(tweener);
+        LogInfo("WeakSpaceshipActor::AttachTweener => Path to tweener", tweener->GetRelPathTweener());
 
-        mWeakSpaceshipTweener = GetTweenerByName("WeakSpaceshipLifecycle");
-        assert(mWeakSpaceshipTweener);
+        Actor::AttachTweener(tweener);
+        mWeakSpaceshipTweener = tweener;
         InitTweenerSubscriptions();
     }
 
@@ -47,15 +50,10 @@ namespace Game
             }
         }
 
-        mIsDamageTextActive = true;
-        mDamageTextTimePassed = 0.0f;
-
-        if (const auto &dmgTextFieldSp = mDamageTextFieldWp.lock())
-        {
-            dmgTextFieldSp->SetText(std::to_string(damage));
-            dmgTextFieldSp->SetVisibility(true);
-            dmgTextFieldSp->SetPosition(CalculatePositionForDamageText());
-        }
+        mDamageMessageTimer.RestartTimer();
+        mUiComponent->SetText(mDamageTextFieldId, std::to_string(damage));
+        mUiComponent->SetVisibility(mDamageTextFieldId, true);
+        mUiComponent->SetPosition(mDamageTextFieldId, CalculatePositionForDamageText());
     }
 
     void WeakSpaceshipActor::OnTweenStateChanged(const std::string &stateName)
@@ -72,7 +70,7 @@ namespace Game
         }
         else if ("s_LifecycleDestroyed" == stateName)
         {
-            TriggerDisabled();
+            SetSpaceshipActivityState(eSpaceshipActivityState::PENDING_DISABLE);
         }
     }
 

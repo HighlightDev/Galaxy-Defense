@@ -39,8 +39,6 @@
 #include "Core/GameCore/GUI/Common/FontHandler.h"
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
 
-#include "Core/GameCore/Event/eTextEventEnums.h"
-
 #include <utility>
 
 using namespace Thread;

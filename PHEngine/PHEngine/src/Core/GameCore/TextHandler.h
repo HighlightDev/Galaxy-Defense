@@ -4,19 +4,15 @@
 #include <vector>
 
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
-#include "Core/GameCore/Event/TextEvent.h"
-
-using namespace Event;
 
 namespace EngineCore
 {
     class Scene;
 
     class TextHandler
-        : public TextRegisterGameThreadEvent,
-          public TextDataChangedGameThreadEvent,
-          public std::enable_shared_from_this<TextHandler>
     {
+        std::weak_ptr<Scene> mSceneWp;
+
         std::vector<std::shared_ptr<HudTextField>> mRegisteredTexts;
 
     public:
@@ -24,18 +20,49 @@ namespace EngineCore
 
         ~TextHandler();
 
-        void Initialize();
+        void CleanUp();
 
-        std::weak_ptr<Scene> mSceneWp;
+        void Initialize();
 
         void SetScene(const std::weak_ptr<Scene> &sceneWp);
 
         std::shared_ptr<HudTextField> GetTextFieldById(const int32_t fieldId) const;
 
-    protected:
-        void ProcessEvent(const TextRegisterGameThreadEvent::EventData_t &data) override;
+        std::shared_ptr<HudTextField> CreateTextField(const std::string &fontName,
+                                                      const float fontSize,
+                                                      const std::string &text,
+                                                      const glm::vec3 &color,
+                                                      const glm::vec2 &position,
+                                                      const bool receiveUpdateOnTextScreenSpaceSizeChanged,
+                                                      const float lineMaxSize,
+                                                      const int32_t numberOfLines,
+                                                      const eTextHorizontalAlignmentType textHorizontalAlignment);
 
-        void ProcessEvent(const TextDataChangedGameThreadEvent::EventData_t &data) override;
+        std::shared_ptr<HudTextField> CreateEmptyTextField(const std::string &fontName,
+                                                           const float fontSize,
+                                                           const glm::vec3 &color,
+                                                           const bool receiveUpdateOnTextScreenSpaceSizeChanged,
+                                                           const float lineMaxSize,
+                                                           const int32_t numberOfLines,
+                                                           const eTextHorizontalAlignmentType textHorizontalAlignment);
+
+        void UnregisterText(const int32_t fieldId);
+
+        void SetText(const int32_t textFieldId, const std::string &text);
+
+        void SetVisibility(const int32_t textFieldId, const bool isVisible);
+
+        void SetColor(const int32_t textFieldId, const glm::vec3 &color);
+
+        void SetPosition(const int32_t textFieldId, const glm::vec2 &position);
+
+    private:
+        void RegisterTextField(const std::shared_ptr<HudTextField> &textField,
+                               const bool receiveUpdateOnTextScreenSpaceSizeChanged);
+
+        void UnregisterTextField(const std::shared_ptr<HudTextField> &textField);
+
+        void OnTextDataChanged(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType changedDataType);
     };
 
 }

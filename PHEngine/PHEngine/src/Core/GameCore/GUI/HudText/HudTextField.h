@@ -10,11 +10,16 @@
 
 namespace EngineCore
 {
-    class HudTextField
-        : public std::enable_shared_from_this<HudTextField>
+    enum class eTextChangedDataType
     {
-        friend class UiComponent;
+        VISIBILITY,
+        OFFSET,
+        COLOR,
+        TEXT
+    };
 
+    class HudTextField
+    {
         int32_t mTextFieldId;
 
         bool mIsVisible;
@@ -35,28 +40,24 @@ namespace EngineCore
 
         eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
-        bool mIsRegistered;
-
         glm::vec2 mScreenSpaceSize;
 
     public:
         HudTextField(const std::string &fontName,
-                  const float fontSize,
-                  const std::string &text,
-                  const glm::vec3 &color,
-                  const glm::vec2 &position,
-                  const float lineMaxSize,
-                  const int32_t numberOfLines,
-                  const eTextHorizontalAlignmentType textHorizontalAlignment);
+                     const float fontSize,
+                     const std::string &text,
+                     const glm::vec3 &color,
+                     const glm::vec2 &position,
+                     const float lineMaxSize,
+                     const int32_t numberOfLines,
+                     const eTextHorizontalAlignmentType textHorizontalAlignment);
 
         HudTextField(const std::string &fontName,
-                  const float fontSize,
-                  const glm::vec3 &color,
-                  const float lineMaxSize,
-                  const int32_t numberOfLines,
-                  const eTextHorizontalAlignmentType textHorizontalAlignment);
-
-        std::shared_ptr<HudTextField> GetSharedFromThis() const;
+                     const float fontSize,
+                     const glm::vec3 &color,
+                     const float lineMaxSize,
+                     const int32_t numberOfLines,
+                     const eTextHorizontalAlignmentType textHorizontalAlignment);
 
         int32_t GetTextFieldId() const;
 
@@ -86,15 +87,8 @@ namespace EngineCore
 
         eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
 
-        bool GetIsRegistered() const;
-
-        void SetTextScreenSpaceSize(const glm::vec2& screenSpaceSize);
+        void SetTextScreenSpaceSize(const glm::vec2 &screenSpaceSize);
 
         glm::vec2 GetScreenSpaceSize() const;
-
-    private:
-        void RegisterText(const bool receiveUpdateOnTextScreenSpaceSizeChanged);
-
-        void UnregisterText();
     };
 }

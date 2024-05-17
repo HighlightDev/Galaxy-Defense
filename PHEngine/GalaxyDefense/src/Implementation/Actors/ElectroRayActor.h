@@ -28,6 +28,7 @@ namespace Game
         std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> mLineComponent;
         std::weak_ptr<::EngineCore::Actor> mSpaceshipWhoSpawnedMeWp;
 
+        glm::vec3 mElectroLineDirection;
         glm::vec3 mElectroLineBegin;
         glm::vec3 mElectroLineEnd;
 
@@ -49,7 +50,11 @@ namespace Game
 
         void Tick(const float deltaTime) override;
 
-        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor) override;
+        void TriggerSpawn(const glm::vec3 &position,
+                          const glm::vec3 &direction,
+                          const float yawDegrees,
+                          const eDamageDealerType ownerType,
+                          const std::shared_ptr<Actor> &spawnerActor) override;
 
         void TriggerExplosion() override;
 

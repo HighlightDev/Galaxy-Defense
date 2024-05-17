@@ -491,9 +491,7 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\UiComponentCreator.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\ForwardShadingMeshComponentCreator.h" />
     <ClInclude Include="src\Core\GameCore\Components\UiComponents\UiComponent.h" />
-    <ClInclude Include="src\Core\GameCore\Event\eTextEventEnums.h" />
     <ClInclude Include="src\Core\GameCore\Event\MouseButtonDownEvent.h" />
-    <ClInclude Include="src\Core\GameCore\Event\TextEvent.h" />
     <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\BooleanPropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\Vec3PropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\Particles\Emitters\IEmitter.h" />

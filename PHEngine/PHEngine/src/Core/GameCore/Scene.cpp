@@ -732,6 +732,7 @@ namespace EngineCore
    void Scene::UnloadUi()
    {
       mUiHandler->CleanUp();
+      mTextHandler->CleanUp();
    }
 
    void Scene::UnloadActors()

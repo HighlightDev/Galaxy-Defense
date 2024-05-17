@@ -7,6 +7,7 @@
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
@@ -116,15 +117,28 @@ namespace Game
 
     void NavigationController::Tick(const float deltaTime)
     {
+        bool needToValidateMissiles = false;
         for (auto &missile : mMissiles)
         {
-            if (eMissileActivityState::ACTIVE == missile->GetMissileActivityState())
+            if (!missile)
+            {
+                needToValidateMissiles = true;
+            }
+            else if (eMissileActivityState::IDLE != missile->GetMissileActivityState() &&
+                     eMissileActivityState::OUT_OF_LEVEL != missile->GetMissileActivityState())
             {
                 if (!missile->IsInsideLevel(mLevelBounds))
                 {
+                    LogInfo("NavigationController::Tick => missile ", missile->GetName(), " is out of level.");
                     missile->SetMissileActivityState(eMissileActivityState::OUT_OF_LEVEL);
                 }
             }
+        }
+
+        if (needToValidateMissiles)
+        {
+            mMissiles.erase(std::remove_if(mMissiles.begin(), mMissiles.end(), [](const auto &missile)
+                                           { return !missile; }));
         }
 
         for (const auto &spaceship : mEnemies)
@@ -132,7 +146,7 @@ namespace Game
             const auto &routeMoveComp = spaceship->GetOnRouteMovementComponent();
             if (routeMoveComp->GetIsDistanceCompleted())
             {
-                spaceship->SetSpaceshipActivityState(eSpaceshipActivityState::ROUTE_COMPLETED);
+                spaceship->SetSpaceshipActivityState(eSpaceshipActivityState::PENDING_DISABLE);
             }
         }
     }
@@ -160,7 +174,7 @@ namespace Game
         const auto enemyMovementComponent = spaceship->GetOnRouteMovementComponent();
         assert(enemyMovementComponent);
         enemyMovementComponent->SetRoutePoints(spacePath.GetRoutePoints());
-        enemyMovementComponent->SetIsMovementAllowed(true);
+        enemyMovementComponent->SetIsMovementOnRouteAllowed(true);
         spaceship->TriggerSpawn(spacePath.GetRouteFirstPoint());
         mEnemies.emplace_back(spaceship);
     }

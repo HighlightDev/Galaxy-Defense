@@ -25,7 +25,7 @@ namespace Game
         assert(mElectroRayChainActor);
         mElectroRayChainActor->SetStartLineSpaceship(mChainSrc.second);
         mElectroRayChainActor->SetEndLineSpaceship(mChainDst.second);
-        mElectroRayChainActor->TriggerSpawn({}, eDamageDealerType::MAIN_PLAYER, mChainSrc.second.lock());
+        mElectroRayChainActor->TriggerSpawn({}, {}, 0.0f, eDamageDealerType::MAIN_PLAYER, mChainSrc.second.lock());
     }
 
     eModifierType ElectroRayChainModifier::GetModifierType() const
@@ -59,7 +59,7 @@ namespace Game
             }
             else if (eGameObjectsType::NEUTRAL_SPACE_OBJECT == mChainDst.first)
             {
-                 if (const auto &chainDstSp = mChainDst.second.lock())
+                if (const auto &chainDstSp = mChainDst.second.lock())
                 {
                     const auto &dstSpaceobjectSp = std::static_pointer_cast<SpaceObjectActor>(chainDstSp);
                     dstSpaceobjectSp->TriggerDisabled();

@@ -40,6 +40,8 @@ namespace Game
         virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const;
 
         virtual void TriggerSpawn(const glm::vec3 &position,
+                                  const glm::vec3 &direction,
+                                  const float yawDegrees,
                                   const eDamageDealerType ownerType,
                                   const std::shared_ptr<Actor> &spawnerActor);
 

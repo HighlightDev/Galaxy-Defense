@@ -8,7 +8,6 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 #include "Core/GameCore/ACamera.h"
-#include "Core/GameCore/Event/eTextEventEnums.h"
 #include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
 #include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "TextHandler.h"

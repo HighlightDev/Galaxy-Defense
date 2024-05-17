@@ -85,7 +85,7 @@ namespace Game
 
     void OnRouteMovementComponent::Move(const float deltaTime)
     {
-        if (mIsMovementAllowed)
+        if (mIsMovementOnRouteAllowed)
         {
             const float distanceToBeDone = mCurrentSpeed * deltaTime;
             float distanceAlreadyDone = mMovementProgressOnRoute * mRouteTotalDistance + distanceToBeDone;
@@ -102,14 +102,14 @@ namespace Game
         }
     }
 
-    bool OnRouteMovementComponent::GetIsMovementAllowed() const
+    bool OnRouteMovementComponent::GetIsMovementOnRouteAllowed() const
     {
-        return mIsMovementAllowed;
+        return mIsMovementOnRouteAllowed;
     }
 
-    void OnRouteMovementComponent::SetIsMovementAllowed(const bool isAllowed)
+    void OnRouteMovementComponent::SetIsMovementOnRouteAllowed(const bool isAllowed)
     {
-        mIsMovementAllowed = isAllowed;
+        mIsMovementOnRouteAllowed = isAllowed;
     }
 
     bool OnRouteMovementComponent::GetIsDistanceCompleted() const
@@ -120,7 +120,7 @@ namespace Game
     void OnRouteMovementComponent::ResetStates()
     {
         mIsDistanceCompleted = false;
-        mIsMovementAllowed = false;
+        mIsMovementOnRouteAllowed = false;
         mMovementProgressOnRoute = 0.0f;
         mRouteTotalDistance = 0.0f;
     }

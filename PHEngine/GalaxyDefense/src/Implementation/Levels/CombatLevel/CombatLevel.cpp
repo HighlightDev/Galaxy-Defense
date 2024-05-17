@@ -124,8 +124,10 @@ namespace Game
                                                                     0.0f,
                                                                     150.0f);
 
-      spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(levelData.LevelBoundaryOrigin.x, 0, levelData.LevelBoundaryOrigin.y),
-                                                    glm::vec3(levelData.LevelBoundaryExtent.x, 5.0f, levelData.LevelBoundaryExtent.y)));
+      spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(0.0f),
+                                                    glm::vec3(std::abs(levelData.LevelBoundaryMax.x - levelData.LevelBoundaryMin.x),
+                                                              50.0f,
+                                                              std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y))));
       spaceCamera->SetMaxDistanceFromTargetToCamera(150.0f);
       spaceCamera->SetMinDistanceFromTargetToCamera(20.0f);
       spaceCamera->SetDistanceFromTargetToCamera(150.0f);

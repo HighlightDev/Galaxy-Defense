@@ -16,11 +16,18 @@ namespace Game
         mMissileType = eMissileType::BOMB;
     }
 
-    void BombMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor)
+    void BombMissileActor::TriggerSpawn(const glm::vec3 &position,
+                                        const glm::vec3 &direction,
+                                        const float yawDegrees,
+                                        const eDamageDealerType ownerType,
+                                        const std::shared_ptr<Actor> &spawnerActor)
     {
         mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;
         SetIsEnabled(true);
+        const auto& existingRotation = GetRootComponent()->GetAdditionalRotation();
+        GetRootComponent()->SetAdditionalRotation(glm::vec3(existingRotation.x, yawDegrees, existingRotation.z));
+        GetMovementComponent()->SetDirection(direction);
         GetMovementComponent()->Teleport(position);
     }
 
