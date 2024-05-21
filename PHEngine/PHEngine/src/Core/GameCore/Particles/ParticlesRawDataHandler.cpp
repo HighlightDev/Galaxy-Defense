@@ -96,6 +96,21 @@ namespace EngineCore
         (void)memcpy((void *)((char *)mColorData + offset), src, byteChunkSize);
     }
 
+    void ParticlesRawDataHandler::ResetTranslationData()
+    {
+        memset(mTranslationData, 0, mTranslationDataSize);
+    }
+
+    void ParticlesRawDataHandler::ResetRotationSizeData()
+    {
+        memset(mRotationSizeData, 0, mRotationSizeDataSize);
+    }
+
+    void ParticlesRawDataHandler::ResetColorData()
+    {
+        memset(mColorData, 0, mColorDataSize);
+    }
+
     void ParticlesRawDataHandler::SetTranslationActiveDataChunkSize(const size_t activeDataChunkSize)
     {
         assert(activeDataChunkSize <= mTranslationDataSize);

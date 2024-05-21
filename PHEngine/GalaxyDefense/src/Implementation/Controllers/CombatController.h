@@ -18,6 +18,7 @@
 #include "Implementation/Levels/LevelData.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
+#include "Core/CommonCore/Timer.h"
 
 #include <memory>
 #include <utility>
@@ -52,6 +53,8 @@ namespace Game
         std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
 
         BoundingBox3D mLevelBounds;
+
+        std::unordered_map<std::string, GameThreadTimer> mSpawnEnemyOnRouteTimers;
 
     public:
         CombatController(const std::weak_ptr<Scene> &scene);

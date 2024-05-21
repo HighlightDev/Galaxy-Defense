@@ -51,6 +51,8 @@ namespace EngineCore
         void AddParticleModule(const std::shared_ptr<IParticleModule> &particleModule);
 
         void EmitParticles(const size_t particlesCount = 0);
+        
+        void ResetParticles();
 
         inline const ParticleSystemRenderData &GetRenderData() const
         {
@@ -64,6 +66,6 @@ namespace EngineCore
         void SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter);
 
     private:
-        void SyncDataWithRenderThread(const size_t activeParticlesCount);
+        void SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData = false);
     };
 }

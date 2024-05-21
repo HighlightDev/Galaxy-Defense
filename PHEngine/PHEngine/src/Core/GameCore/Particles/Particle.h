@@ -17,5 +17,7 @@ namespace EngineCore
         bool isActive = false;
 
         float Rotation = 0.0f;
+
+        void Reset();
     };
 }

@@ -53,6 +53,10 @@ namespace EngineCore
         void CopyToMeActiveRotationSizeData(const void *src, const size_t offset, const size_t byteChunkSize);
         void CopyToMeActiveColorData(const void *src, const size_t offset, const size_t byteChunkSize);
 
+        void ResetTranslationData();
+        void ResetRotationSizeData();
+        void ResetColorData();
+
         inline static size_t GetTranslationVectorByteDataOffset()
         {
             return sizeof(float) * 3;

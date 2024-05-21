@@ -139,6 +139,24 @@ namespace EngineCore
         }
     }
 
+    void ParticleSystemComponent::ResetParticles()
+    {
+        for (auto particleIt = mParticlesPool.begin(); particleIt != mParticlesPool.end(); ++particleIt)
+        {
+            particleIt->Reset();
+        }
+
+        mParticlesRawDataHandler.ResetTranslationData();
+        mParticlesRawDataHandler.ResetRotationSizeData();
+        mParticlesRawDataHandler.ResetColorData();
+
+        if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
+        {
+            SyncDataWithRenderThread(0, true);
+            mPrevActiveParticles = 0;
+        }
+    }
+
     void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
     {
         if (!mIsEnabled)
@@ -186,7 +204,7 @@ namespace EngineCore
         mParticleEmitter = emitter;
     }
 
-    void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount)
+    void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData)
     {
         static const uint64_t functionId = Hash("ParticleSystemComponent: SyncDataWithRenderThread");
         if (const auto &sceneSp = m_sceneWP.lock())

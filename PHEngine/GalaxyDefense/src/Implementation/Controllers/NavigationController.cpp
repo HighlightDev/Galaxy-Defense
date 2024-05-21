@@ -173,8 +173,9 @@ namespace Game
 
         const auto enemyMovementComponent = spaceship->GetOnRouteMovementComponent();
         assert(enemyMovementComponent);
-        enemyMovementComponent->SetRoutePoints(spacePath.GetRoutePoints());
+        enemyMovementComponent->ResetStates();
         enemyMovementComponent->SetIsMovementOnRouteAllowed(true);
+        enemyMovementComponent->SetRoutePoints(spacePath.GetRoutePoints());
         spaceship->TriggerSpawn(spacePath.GetRouteFirstPoint());
         mEnemies.emplace_back(spaceship);
     }

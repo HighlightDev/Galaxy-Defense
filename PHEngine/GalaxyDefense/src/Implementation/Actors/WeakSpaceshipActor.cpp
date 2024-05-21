@@ -78,7 +78,8 @@ namespace Game
     {
         mActivityState = eSpaceshipActivityState::ACTIVE;
         SetIsEnabled(true);
-        GetMovementComponent()->Teleport(position);
+        const auto& onRouteMovementComponent = GetOnRouteMovementComponent();       
+        onRouteMovementComponent->Teleport(position);
         RestoreLife();
 
         mWeakSpaceshipTweener->ChangeState("s_LifecycleActive");
@@ -101,6 +102,8 @@ namespace Game
     {
         mModifiersHandler->RemoveAllModifiers();
         mActivityState = eSpaceshipActivityState::IDLE;
+        const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
+        c_particle->ResetParticles();
         mWeakSpaceshipTweener->InitRootState();
     }
 }

@@ -144,8 +144,17 @@ namespace Game
         const auto &pathNames = mNavigationController->GetPathNames();
         for (const auto &pathName : pathNames)
         {
-            const auto &freeShip = mCombatActorsPoolHandler->GetFreeSpaceshipActor();
-            mNavigationController->PutSpaceshipOnRoute(pathName, freeShip);
+
+            mSpawnEnemyOnRouteTimers.try_emplace(pathName);
+            auto &timer = mSpawnEnemyOnRouteTimers[pathName];
+            timer.SetIntervalMs(1500);
+            timer.SetIsPausable(true);
+            timer.SetIsRepeat(true);
+            timer.SetCallback([pathName, this]()
+                              { 
+                                const auto &freeShip = mCombatActorsPoolHandler->GetFreeSpaceshipActor();
+                                mNavigationController->PutSpaceshipOnRoute(pathName, freeShip); });
+            timer.StartTimer();
         }
 
         mUserInteractionController->PostPlayLevelFinished();
@@ -390,13 +399,19 @@ namespace Game
 
         if (enemySpaceshipActors.size())
         {
+            int32_t returnedToPoolSpaceships = 0;
             for (const auto &enemySpaceship : enemySpaceshipActors)
             {
                 if (eSpaceshipActivityState::PENDING_DISABLE == enemySpaceship->GetSpaceshipActivityState())
                 {
                     mNavigationController->RemoveSpaceshipFromRoute(enemySpaceship->GetObjectId());
                     enemySpaceship->TriggerDisabled();
+                    ++returnedToPoolSpaceships;
                 }
+            }
+            if (returnedToPoolSpaceships)
+            {
+                LogInfo("CombatController::ValidatePoolObjects => returnedToPoolSpaceships: ", returnedToPoolSpaceships);
             }
         }
 
