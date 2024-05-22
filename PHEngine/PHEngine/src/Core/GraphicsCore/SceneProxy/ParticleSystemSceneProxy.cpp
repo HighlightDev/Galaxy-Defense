@@ -44,7 +44,7 @@ namespace Graphics
             CompositeShaderParams particlesCompositeShaderParams("InstancedStaticMeshVertexFactory_SimpleShader",
                                                                  particlesShaderParams);
 
-            m_shader = CreateMaterialShader<InstancedStaticMeshVertexFactory, SimpleShader>(
+            m_shader = CreateMaterialShader<ParticleVertexFactory, SimpleShader>(
                 "InstancedStaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName,
                 particlesShaderParams, mMaterialProxy);
 

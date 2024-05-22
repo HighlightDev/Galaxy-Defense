@@ -533,7 +533,7 @@
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\FontRenderingShader.h" />
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\InstancedStaticMeshVertexFactory.h" />
+    <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\ParticleVertexFactory.h" />
     <ClInclude Include="src\Core\GameCore\TextHandler.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\BooleanTweenController.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\EulerAnglesRotationTweenController.h" />

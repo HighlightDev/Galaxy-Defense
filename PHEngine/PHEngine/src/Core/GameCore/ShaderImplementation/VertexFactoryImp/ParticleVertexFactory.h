@@ -8,7 +8,7 @@ using namespace IO;
 
 namespace EngineCore
 {
-   class InstancedStaticMeshVertexFactory
+   class ParticleVertexFactory
        : public VertexFactoryShader
    {
 
@@ -17,10 +17,10 @@ namespace EngineCore
       Uniform u_projectionMatrix;
 
    public:
-      InstancedStaticMeshVertexFactory()
-          : VertexFactoryShader("InstancedStaticMeshVertexFactory")
+      ParticleVertexFactory()
+          : VertexFactoryShader("ParticleVertexFactory")
       {
-         InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "InstancedStaticMeshVertexFactory.glsl");
+         InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "ParticleVertexFactory.glsl");
       }
 
       void AccessAllUniformLocations(uint32_t shaderProgramID) override

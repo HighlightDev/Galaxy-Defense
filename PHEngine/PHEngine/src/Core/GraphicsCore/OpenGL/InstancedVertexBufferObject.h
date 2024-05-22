@@ -4,7 +4,6 @@
 #include <gl/glew.h>
 #include <memory>
 #include <vector>
-#include <TinyLogger/LogInterface.h>
 
 #include "DataCarryFlag.h"
 #include "VertexBufferObjectBase.h"

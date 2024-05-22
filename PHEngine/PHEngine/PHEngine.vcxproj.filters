@@ -2114,7 +2114,7 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\eAttribArrayIndexName.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\InstancedStaticMeshVertexFactory.h">
+    <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\ParticleVertexFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Particles\Emitters\IEmitter.h">

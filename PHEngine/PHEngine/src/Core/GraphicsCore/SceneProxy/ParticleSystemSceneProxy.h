@@ -6,7 +6,7 @@
 #include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
-#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/InstancedStaticMeshVertexFactory.h"
+#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/ParticleVertexFactory.h"
 #include "Core/GameCore/Particles/ParticlePoolParameters.h"
 #include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
 
@@ -37,7 +37,7 @@ namespace Graphics
             bool bIsParticlesTransformDirty{false};
 
             using Base = PrimitiveSceneProxy;
-            using ParticleShader_t = VertexFactoryMaterialCompositeShader<InstancedStaticMeshVertexFactory, SimpleShader>;
+            using ParticleShader_t = VertexFactoryMaterialCompositeShader<ParticleVertexFactory, SimpleShader>;
 
         public:
             ParticleSystemSceneProxy(const ::EngineCore::ParticleSystemComponent *component);

@@ -161,7 +161,7 @@ int32_t main(int32_t argc, char **argv)
   GLFWmonitor *activeMonitor = nullptr;
   int monitorsCount = 0;
   GLFWmonitor **monitors = glfwGetMonitors(&monitorsCount);
-  if (monitorsCount > 1)
+  if (false && monitorsCount > 1)
   {
     activeMonitor = monitors[1];
   }
