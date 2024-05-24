@@ -36,5 +36,17 @@ namespace EngineCore
          u_viewMatrix.LoadUniform(viewMatrix);
          u_projectionMatrix.LoadUniform(projectionMatrix);
       }
+
+      std::vector<std::shared_ptr<AttributeDataBase>> GetVertexAttributes(const int32_t shaderProgramId) override
+      {
+         std::vector<std::shared_ptr<AttributeDataBase>> result;
+         result.reserve(5);
+         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexPosition>>(0));
+         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexNormal>>(1));
+         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexTexCoords>>(2));
+         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexTangent>>(3));
+         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexBitangent>>(4));
+         return result;
+      }
    };
 }

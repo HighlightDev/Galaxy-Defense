@@ -5,11 +5,11 @@
 #include "IComponentCreatable.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
-#include "Core/GameCore/Particles/ParticlePoolParameters.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
 
-
+using namespace Resources;
 using namespace Graphics::Data;
 using namespace Graphics::OpenGL;
 

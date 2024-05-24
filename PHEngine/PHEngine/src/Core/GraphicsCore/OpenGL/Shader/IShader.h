@@ -33,6 +33,8 @@ namespace Graphics
 
          UniformArray GetUniformArray(const std::string &uniformName, size_t countOfUniforms, uint32_t shaderProgramID) const;
 
+         int32_t GetAttributeLocationByName(const std::string& attributeName) const;
+
          std::string GetCompileLogInfo() const;
 
          std::string GetLinkLogInfo() const;
@@ -49,6 +51,7 @@ namespace Graphics
          virtual void AccessAllSubroutineIndices(uint32_t shaderProgramID);
          virtual void SetShaderPredefine(){};
          virtual void ProcessAllPredefines(){};
+         virtual void BindAttributeLocations(const int32_t shaderProgramId) {}
 
 #if DEBUG
          virtual void RecompileShader(){};

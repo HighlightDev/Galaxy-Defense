@@ -1,7 +1,6 @@
 #pragma once
 
-#include "eAttribArrayIndexName.h"
-
+#include <string>
 #include <cstddef>
 #include <stdint.h>
 #include <gl/glew.h>
@@ -17,12 +16,12 @@ namespace Graphics
 
 			int32_t m_bufferTarget;
 
-			eAttribArrayIndexName mAttribArrayIndexName;
+			std::string mAttribArrayIndexName;
 
 			size_t m_allocatedBufferSize{0};
 
 		public:
-			VertexBufferObjectBase(const eAttribArrayIndexName attribArrayIndexName, const int32_t bufferTarget = GL_ARRAY_BUFFER);
+			VertexBufferObjectBase(const std::string& attribArrayIndexName, const int32_t bufferTarget = GL_ARRAY_BUFFER);
 			virtual ~VertexBufferObjectBase();
 
 			void GenBuffer();
@@ -51,7 +50,7 @@ namespace Graphics
 
 			size_t GetDescriptor() const;
 
-			eAttribArrayIndexName GetAttribArrayIndexName() const;
+			std::string GetAttribArrayIndexName() const;
 
 			int32_t GetBufferTarget() const;
 

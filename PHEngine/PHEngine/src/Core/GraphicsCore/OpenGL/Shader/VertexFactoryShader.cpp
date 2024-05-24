@@ -1,6 +1,7 @@
 #include "VertexFactoryShader.h"
 
 #include "Core/UtilityCore/StringStreamWrapper.h"
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
 namespace Graphics
 {
@@ -36,6 +37,15 @@ namespace Graphics
       void VertexFactoryShader::AccessAllUniformLocations(uint32_t shaderProgramID)
       {
          // Base implementation
+      }
+
+      void VertexFactoryShader::BindAttributeLocations(const int32_t shaderProgramId)
+      {
+         const auto& vertexAttributes = GetVertexAttributes(shaderProgramId);
+         for (const auto& vertexAttribute : vertexAttributes)
+         {
+            glBindAttribLocation(shaderProgramId, vertexAttribute->GetAttributeIndex(), vertexAttribute->GetAttributeName().c_str());
+         }
       }
 
       std::string VertexFactoryShader::GetShaderSource() const

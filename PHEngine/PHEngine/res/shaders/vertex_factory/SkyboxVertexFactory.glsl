@@ -1,6 +1,6 @@
 #version 400
 
-layout (location = 0) in vec3 VertexPosition;
+in vec3 VertexPosition;
 
 #include "materialCommon.incl.glsl"
 
@@ -31,11 +31,6 @@ vec3 GetLocalToWorldSpaceBitangent()
 vec2 GetLocalTexCoords()
 {
 	return vec2(0);
-}
-
-vec3 GetVertexColor()
-{
-	return vec3(0);
 }
 
 MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput()

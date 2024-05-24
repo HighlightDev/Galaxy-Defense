@@ -20,44 +20,39 @@ namespace Resources
 
 		{
 			const auto vao = std::make_shared<VertexArrayObject>();
+			VertexBufferObject<float> *vertexVBO = nullptr;
 
-			auto *vertexVBO = new VertexBufferObject<float,
-													 3,
-													 GL_FLOAT,
-													 GL_STATIC_DRAW>(std::vector<float>({0.0f, 0.0f, 0.0f}),
-																	 eAttribArrayIndexName::POSITION,
-																	 GL_ARRAY_BUFFER,
-																	 eDataCarryFlag::INVALIDATE);
+			const auto &vertexAttributes = arg.mVertexAttributes;
+			for (const auto &vertexAttribute : vertexAttributes)
+			{
+				if (vertexAttribute->GetAttributeType() == eAttributeType::STANDART)
+				{
+					const auto &standartAttribute = std::static_pointer_cast<StandartAttributeDataBase>(vertexAttribute);
+					if (standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexPosition)
+					{
+						vertexVBO = new VertexBufferObject<float>(std::vector<float>({0.0f, 0.0f, 0.0f}),
+																  vertexAttribute->GetAttributeName(),
+																  vertexAttribute->GetAttributeIndex(),
+																  GL_FLOAT,
+																  vertexAttribute->GetAttributeComponentsNumber(),
+																  GL_ARRAY_BUFFER,
+																  eDataCarryFlag::INVALIDATE);
+					}
+				}
+				else
+				{
+					auto customVBO = new InstancedVertexBufferObject<float>(arg.mParticleCount,
+																			vertexAttribute->GetAttributeName(),
+																			vertexAttribute->GetAttributeIndex(),
+																			vertexAttribute->GetAttributeComponentDataType() == eAttributeComponentDataType::FLOAT ? GL_FLOAT : GL_INT,
+																			vertexAttribute->GetAttributeComponentsNumber(),
+																			GL_ARRAY_BUFFER);
+					vao->AddVBO(customVBO);
+				}
+			}
 
-			auto *instancedTransformVBO = new InstancedVertexBufferObject<float,
-																		  3,
-																		  GL_FLOAT,
-																		  GL_STREAM_DRAW,
-																		  1>(arg.mParticleCount,
-																			 eAttribArrayIndexName::CUSTOM_0,
-																			 GL_ARRAY_BUFFER);
-
-			auto *instancedRotationSizeVBO = new InstancedVertexBufferObject<float,
-																			 2,
-																			 GL_FLOAT,
-																			 GL_STREAM_DRAW,
-																			 1>(arg.mParticleCount,
-																				eAttribArrayIndexName::CUSTOM_1,
-																				GL_ARRAY_BUFFER);
-
-			auto *instancedColorVBO = new InstancedVertexBufferObject<float,
-																	  4,
-																	  GL_FLOAT,
-																	  GL_STREAM_DRAW,
-																	  1>(arg.mParticleCount,
-																		 eAttribArrayIndexName::CUSTOM_2,
-																		 GL_ARRAY_BUFFER);
-
-			vao->AddVBO(vertexVBO,
-					   instancedTransformVBO,
-					   instancedRotationSizeVBO,
-					   instancedColorVBO);
-					   
+			assert(vertexVBO);
+			vao->AddVBO(vertexVBO);
 			vao->BindBuffersToVao();
 
 			resultSkin = std::make_shared<Skin>(vao, BoundingBox3D());

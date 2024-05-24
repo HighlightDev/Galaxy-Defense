@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PrimitiveComponent.h"
-#include "Core/GraphicsCore/RenderData/SkeletalMeshRenderData.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 
 using namespace Graphics;
@@ -24,7 +24,7 @@ namespace EngineCore
 
    protected:
       // todo: should do something with render data on game thread.....
-      SkeletalMeshRenderData m_renderData;
+      MeshRenderData m_renderData;
 
       std::string mLuaScriptAbsPath;
 
@@ -56,7 +56,7 @@ namespace EngineCore
       std::shared_ptr<EngineObjectProperty<float>> TransitionValue;
 
    public:
-      SkeletalMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const SkeletalMeshRenderData &renderData);
+      SkeletalMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const MeshRenderData &renderData);
 
       ~SkeletalMeshComponent() override;
 
@@ -74,9 +74,8 @@ namespace EngineCore
 
       std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-      inline const SkeletalMeshRenderData &GetRenderData() const
+      inline const MeshRenderData &GetRenderData() const
       {
-
          return m_renderData;
       }
 

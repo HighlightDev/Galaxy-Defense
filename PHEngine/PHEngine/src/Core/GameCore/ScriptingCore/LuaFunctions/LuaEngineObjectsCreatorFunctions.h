@@ -53,8 +53,6 @@ namespace EngineCore
       private:
          // Common callbacks
          /* -------------------  Load asynchronously resources by names ----------------------------*/
-         void LoadResourcesAsync(const std::tuple<std::string> &asyncLoadNamesData);
-
          void LazyLoadResourcesAsync(const std::tuple<std::string> &dataNames);
 
          /* -------------------  Create Actor ----------------------------*/

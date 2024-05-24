@@ -171,6 +171,7 @@ namespace EngineCore
       m_scene->UnloadScene();
       m_luaScriptProcessor->CleanUp();
       m_sceneRenderer->CleanUp();
+      ResourceMap::GetInstance()->CleanUp();
       m_interThreadMgr.SetIsAllowedPushGameThreadJobs(true);
       m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(true);
    }
@@ -198,7 +199,6 @@ namespace EngineCore
          PostPhysicsInitialize();
          PostLevelInit();
          ResourceMap::GetInstance()->WaitUntilResourcesLoad();
-         ResourceMap::GetInstance()->CleanUp();
          PostPlayLevelFinished();
          bLevelIsLoading.store(false, std::memory_order::memory_order_seq_cst);
       }

@@ -6,6 +6,7 @@ namespace Graphics
 {
    namespace OpenGL
    {
+      class AttributeDataBase;
 
       class VertexFactoryShader : public IShader
       {
@@ -22,9 +23,13 @@ namespace Graphics
 
          virtual ~VertexFactoryShader();
 
+         virtual std::vector<std::shared_ptr<AttributeDataBase>> GetVertexAttributes(const int32_t shaderProgramId) = 0;
+
          void ProcessAllPredefines() override;
          
          void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+
+         void BindAttributeLocations(const int32_t shaderProgramId) override;
 
          std::string GetShaderSource() const;
 

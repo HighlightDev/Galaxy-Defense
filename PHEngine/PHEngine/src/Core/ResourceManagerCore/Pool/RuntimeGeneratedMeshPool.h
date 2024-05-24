@@ -2,7 +2,7 @@
 #include "PoolBase.h"
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/ResourceManagerCore/Policy/RuntimeGeneratedMeshAllocationPolicy.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedMeshPoolParameters.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/RuntimeGeneratedMeshPoolParameters.h"
 
 using namespace EngineCore;
 

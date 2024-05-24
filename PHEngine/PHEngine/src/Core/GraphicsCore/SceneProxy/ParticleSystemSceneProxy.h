@@ -7,7 +7,6 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/ParticleVertexFactory.h"
-#include "Core/GameCore/Particles/ParticlePoolParameters.h"
 #include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
 
 #include <vector>
@@ -38,6 +37,9 @@ namespace Graphics
 
             using Base = PrimitiveSceneProxy;
             using ParticleShader_t = VertexFactoryMaterialCompositeShader<ParticleVertexFactory, SimpleShader>;
+
+        private:
+            std::shared_ptr<ParticleShader_t> GetShader() const;
 
         public:
             ParticleSystemSceneProxy(const ::EngineCore::ParticleSystemComponent *component);

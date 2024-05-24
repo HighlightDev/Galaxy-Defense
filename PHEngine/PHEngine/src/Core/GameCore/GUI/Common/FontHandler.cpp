@@ -138,8 +138,8 @@ namespace EngineCore
 
     void FontBatcher::AllocateTextSpace(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
     {
-        auto *const positionVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
-        auto *const textureCoordinatesVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
+        auto *const positionVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
+        auto *const textureCoordinatesVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
         assert(positionVBO && textureCoordinatesVBO);
 
         FontBufferSubData(textFieldProxy, positionVBO, textureCoordinatesVBO);
@@ -150,8 +150,8 @@ namespace EngineCore
 
     void FontBatcher::ReallocateTextSpace()
     {
-        auto *const positionVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
-        auto *const textureCoordinatesVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
+        auto *const positionVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
+        auto *const textureCoordinatesVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
         assert(positionVBO && textureCoordinatesVBO);
 
         mPositionChunkData.mCurrentChunkOffset = 0; // start filling buffer from the beginning
@@ -168,8 +168,8 @@ namespace EngineCore
 
     void FontBatcher::FreeAllocatedTextSpace(const std::shared_ptr<TextFieldProxy> &removeTextFieldProxy)
     {
-        auto *const positionVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
-        auto *const textureCoordinatesVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
+        auto *const positionVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
+        auto *const textureCoordinatesVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
         assert(positionVBO && textureCoordinatesVBO);
 
         if (0 == removeTextFieldProxy->GetPositionChunkOffset()) // text that should be removed is at the beginning
@@ -274,8 +274,8 @@ namespace EngineCore
         static constexpr size_t verticesPerCharacter = 6;
         const auto &fontBatcher = mFontBatcherMap.at(fontParams.FontName);
 
-        auto *const positionVBO = fontMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
-        auto *const textureCoordinatesVBO = fontMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
+        auto *const positionVBO = fontMesh->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
+        auto *const textureCoordinatesVBO = fontMesh->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
         assert(positionVBO && textureCoordinatesVBO);
 
         fontBatcher->GetPositionChunkDataRef().mTotalChunkSize =

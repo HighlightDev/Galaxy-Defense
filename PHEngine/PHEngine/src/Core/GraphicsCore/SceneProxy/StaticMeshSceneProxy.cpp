@@ -1,6 +1,7 @@
 #include "StaticMeshSceneProxy.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/MeshPoolParameters.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 using namespace Graphics::Renderer;
@@ -14,8 +15,7 @@ namespace Graphics
       StaticMeshSceneProxy::StaticMeshSceneProxy(const StaticMeshComponent *component)
           : PrimitiveSceneProxy(component,
                                 component->GetRenderData().mMaterialProxy),
-            m_renderData(component->GetRenderData()),
-            mIsDeferredShaded(component->GetRenderData().mIsDeferredShaded)
+            m_renderData(component->GetRenderData())
       {
       }
 
@@ -49,11 +49,16 @@ namespace Graphics
              FolderManager::GetInstance()->GetShadersPath() +
                  "composite_shaders" + SLASH + "forwardFS.glsl");
 
-         m_planarReflectionShader = CreateMaterialShader<StaticMeshVertexFactory,
-                                                         CapturePlanarReflectionShader>(
-             "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName, planarReflectionParams, mMaterialProxy);
+         m_planarReflectionShader = CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(
+             "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName,
+             planarReflectionParams,
+             mMaterialProxy);
 
-         m_skin = MeshPool::GetInstance()->GetOrAllocateResource(m_renderData.mModelPath);
+         MeshPoolParameters poolParameters;
+         poolParameters.mModelPath = m_renderData.mModelPath;
+         poolParameters.mVertexAttributes = GetShader()->GetVertexAttributes();
+
+         m_skin = MeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
          {
@@ -108,7 +113,7 @@ namespace Graphics
 
       bool StaticMeshSceneProxy::IsDeferred() const
       {
-         return mIsDeferredShaded;
+         return m_renderData.mIsDeferredShaded;
       }
 
       eMeshFacing StaticMeshSceneProxy::GetMeshFrontFace() const

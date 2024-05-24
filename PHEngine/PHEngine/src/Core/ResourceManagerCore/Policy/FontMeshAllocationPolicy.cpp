@@ -1,6 +1,7 @@
 #include "FontMeshAllocationPolicy.h"
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
+#include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 
 #include "Core/CommonCore/Assertion.h"
@@ -23,17 +24,19 @@ namespace Resources
 		const size_t maxFontCharactersCount = EngineConfigHolder::GetInstance()->GetEngineConfig().MaxFontCharactersCount;
 
 		auto *positionsVBO = new VertexBufferObject<float,
-													2,
-													GL_FLOAT,
 													GL_DYNAMIC_DRAW>(maxFontCharactersCount * verticesPerCharacter,
-																	 eAttribArrayIndexName::POSITION,
+																	 "VertexPosition",
+																	 (int32_t)eAttribArrayIndex::VertexPosition,
+																	 GL_FLOAT,
+																	 2,
 																	 GL_ARRAY_BUFFER);
 
 		auto *texCoordsVBO = new VertexBufferObject<float,
-													2,
-													GL_FLOAT,
 													GL_DYNAMIC_DRAW>(maxFontCharactersCount * verticesPerCharacter,
-																	 eAttribArrayIndexName::TEXTURE_COORDINATES,
+																	 "VertexTexCoords",
+																	 (int32_t)eAttribArrayIndex::VertexTexCoords,
+																	 GL_FLOAT,
+																	 2,
 																	 GL_ARRAY_BUFFER);
 
 		vao.AddVBO(positionsVBO,

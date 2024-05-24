@@ -21,7 +21,7 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiImage::UiImage(const std::string& name)
+        UiImage::UiImage(const std::string &name)
             : UiItemBase(name),
               mTextureSrc(""),
               mTexture(),
@@ -60,15 +60,28 @@ namespace EngineCore
         {
         }
 
-        void UiImage::ReallocateTexture()
+        void UiImage::ReallocateTexture(const bool updateRenderThreadData, const bool updateLuaThreadData)
         {
-            const auto &texturePool = TexturePool::GetInstance();
-            if (mTexture)
+            static constexpr uint64_t functionId = Hash64_CT("UiImage::ReallocateTexture");
+            if (const auto &sceneSp = GetScene().lock())
             {
-                assert(texturePool->TryToFreeMemory(mTexture));
+                auto &interThreadMngr = sceneSp->GetInterThreadCommunicationManager();
+                interThreadMngr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId,
+                    [this, updateRenderThreadData, updateLuaThreadData]() {
+                    const auto &texturePool = TexturePool::GetInstance();
+                    if (mTexture) {
+                        assert(texturePool->TryToFreeMemory(mTexture));
+                    }
+                    mTexture = texturePool->GetOrAllocateResource(mTextureSrc);
+                    
+                    if (updateRenderThreadData) {
+                        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                    }
+                    if (updateLuaThreadData) {
+                        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+                    }
+                });
             }
-
-            mTexture = texturePool->GetOrAllocateResource(mTextureSrc);
         }
 
         void UiImage::OnPropertiesShouldBeUpdatedOnRenderThread()
@@ -89,24 +102,29 @@ namespace EngineCore
             if (mTextureSrc != textureSrc)
             {
                 mTextureSrc = textureSrc;
-                ReallocateTexture();
-                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
-                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+                ReallocateTexture(true, true);
             }
         }
 
         void UiImage::SetTexture(const std::shared_ptr<ITexture> &texture)
         {
-            if (mTexture && mTextureSrc != "")
+            static constexpr uint64_t functionId = Hash64_CT("UiImage::SetTexture");
+            if (const auto &sceneSp = GetScene().lock())
             {
-                assert(TexturePool::GetInstance()->TryToFreeMemory(mTexture));
-                mTextureSrc = "";
-                mTexture = nullptr;
-            }
+                auto &interThreadMngr = sceneSp->GetInterThreadCommunicationManager();
+                interThreadMngr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, texture]() {
+                    if (mTexture && mTextureSrc != "")
+                    {
+                        assert(TexturePool::GetInstance()->TryToFreeMemory(mTexture));
+                        mTextureSrc = "";
+                        mTexture = nullptr;
+                    }
 
-            mTexture = texture;
-            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
-            SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+                    mTexture = texture;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                    SetIsPropertiesShouldBeUpdatedOnLuaThread(true); 
+                });
+            }
         }
 
         std::string UiImage::GetTextureSrc() const
@@ -229,8 +247,7 @@ namespace EngineCore
                 if (mTextureSrc != texture_source)
                 {
                     mTextureSrc = texture_source;
-                    ReallocateTexture();
-                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                    ReallocateTexture(true, false);
                 }
             }
             if (jsonObj.contains("is_custom_color"))

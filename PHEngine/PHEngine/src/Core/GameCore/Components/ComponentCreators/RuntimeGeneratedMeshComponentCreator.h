@@ -4,10 +4,11 @@
 
 #include "IComponentCreatable.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedMeshPoolParameters.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/RuntimeGeneratedMeshPoolParameters.h"
 
+using namespace Resources;
 using namespace Graphics::Data;
 
 namespace EngineCore
@@ -30,7 +31,7 @@ namespace EngineCore
 
             const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
             assert(materialProxy);
-            return std::make_shared<ComponentInstantiationType>(mData, StaticMeshRenderData("", materialProxy, false), runtimeMeshParams);
+            return std::make_shared<ComponentInstantiationType>(mData, MeshRenderData("", materialProxy, false), runtimeMeshParams);
         }
     };
 }

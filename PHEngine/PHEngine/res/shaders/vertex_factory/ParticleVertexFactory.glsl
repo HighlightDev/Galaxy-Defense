@@ -1,15 +1,13 @@
 #version 400
 
-layout (location = 0) in vec3 VertexPosition;
-layout (location = 1) in vec3 VertexNormal;
-layout (location = 2) in vec2 VertexTexCoords;
-layout (location = 3) in vec3 VertexColor;
-layout (location = 4) in vec3 VertexTangent;
-layout (location = 5) in vec3 VertexBitangent;
-
-layout (location = 8) in vec3 Custom_0;
-layout (location = 9) in vec2 Custom_1;
-layout (location = 10) in vec4 Custom_2;
+in vec3 VertexPosition;
+in vec3 VertexNormal;
+in vec2 VertexTexCoords;
+in vec3 VertexTangent;
+in vec3 VertexBitangent;
+in vec3 ParticleRelativeOffset;
+in vec2 ParticleRotationAndSize;
+in vec4 ParticleColor;
 
 #include "materialCommon.incl.glsl"
 
@@ -42,24 +40,19 @@ vec2 GetLocalTexCoords()
 	return VertexTexCoords;
 }
 
-vec3 GetVertexColor()
+vec3 GetParticleRelativeOffset()
 {
-	return VertexColor;
+	return ParticleRelativeOffset;
 }
 
-vec3 GetCustom_0()
+vec2 GetParticleRotationAndSize()
 {
-	return Custom_0;
+	return ParticleRotationAndSize;
 }
 
-vec2 GetCustom_1()
+vec4 GetParticleColor()
 {
-	return Custom_1;
-}
-
-vec4 GetCustom_2()
-{
-	return Custom_2;
+	return ParticleColor;
 }
 
 MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput()

@@ -41,7 +41,6 @@
 #include "Core/GameCore/Components/ComponentCreators/SkeletalMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/SkyboxComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
 #include "Core/GameCore/ScriptingCore/Common/JsonParserHelper.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 
@@ -76,7 +75,7 @@ namespace EngineCore
                 {"HumanoidPhysicsMovementComponent", std::make_shared<MovementComponentCreator<HumanoidPhysicsMovementComponent>>()},
                 {"PlatformTraverseComponent", std::make_shared<PlatformTraverseComponentCreator<PlatformTraverseComponent>>()},
                 {"SkyboxComponent", std::make_shared<SkyboxComponentCreator<SkyboxComponent>>()},
-                {"WaterPlaneComponent", std::make_shared<ForwardShadingMeshComponentCreator<WaterPlaneComponent>>()},
+                {"WaterPlaneComponent", std::make_shared<StaticMeshComponentCreator<WaterPlaneComponent>>(false)},
                 {"PlanarReflectionComponent", std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>()},
                 {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()},
                 {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()}};
@@ -256,7 +255,7 @@ namespace EngineCore
                 const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
                 const auto &material = sceneSp->GetMaterialByProxyId(materialProxyId);
                 assert(material);
-                componentData = std::make_shared<ForwardShadingMeshComponentData>("", objectName, translation, rotation, scale, material);
+                componentData = std::make_shared<MeshComponentData>("", objectName, translation, rotation, scale, "", material);
             }
             else if ("PlanarReflectionComponent" == componentType)
             {

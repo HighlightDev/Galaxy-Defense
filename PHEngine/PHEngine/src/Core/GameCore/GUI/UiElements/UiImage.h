@@ -102,7 +102,7 @@ namespace EngineCore
 
             void SyncDataOnLuaThread();
 
-            void ReallocateTexture();
+            void ReallocateTexture(const bool updateRenderThreadData, const bool updateLuaThreadData);
         };
     }
 }

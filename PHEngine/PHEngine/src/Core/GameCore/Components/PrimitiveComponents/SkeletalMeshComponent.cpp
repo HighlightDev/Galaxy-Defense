@@ -16,7 +16,7 @@ using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
-   SkeletalMeshComponent::SkeletalMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const SkeletalMeshRenderData &renderData)
+   SkeletalMeshComponent::SkeletalMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const MeshRenderData &renderData)
        : PrimitiveComponent(meshComponentData->EngineObjectName,
                             meshComponentData->m_translation,
                             meshComponentData->m_eulerRotationDegrees,

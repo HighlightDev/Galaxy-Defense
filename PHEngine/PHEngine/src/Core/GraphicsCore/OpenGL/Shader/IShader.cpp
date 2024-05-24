@@ -64,6 +64,13 @@ namespace Graphics
          }
       }
 
+      int32_t IShader::GetAttributeLocationByName(const std::string &attributeName) const
+      {
+         assert(-1 != m_shaderProgramID);
+         const auto attribLocation = glGetAttribLocation(m_shaderProgramID, attributeName.c_str());
+         return attribLocation;
+      }
+
       std::vector<std::string> IShader::LoadShaderSrcVector(const std::string &pathToShader) const
       {
          std::ifstream stream(pathToShader);

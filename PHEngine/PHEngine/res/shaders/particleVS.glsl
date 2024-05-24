@@ -7,9 +7,9 @@ out MATERIAL_VS_OUTPUT VsOutput;
 
 void main()
 {   
-    vs_out_particle_color = GetCustom_2();
-    vs_out_rotation_size = GetCustom_1();
+    vs_out_particle_color = GetParticleColor();
+    vs_out_rotation_size = GetParticleRotationAndSize();
     VsOutput = VertexFactoryGetMaterialOutput();
-    gl_Position = viewMatrix * worldMatrix * vec4(GetCustom_0(), 1.0);
+    gl_Position = viewMatrix * worldMatrix * vec4(GetParticleRelativeOffset(), 1.0);
 }
 

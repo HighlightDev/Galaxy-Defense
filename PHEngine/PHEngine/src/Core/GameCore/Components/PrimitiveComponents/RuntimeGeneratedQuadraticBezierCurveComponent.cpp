@@ -8,7 +8,7 @@
 namespace EngineCore
 {
    RuntimeGeneratedQuadraticBezierCurveComponent::RuntimeGeneratedQuadraticBezierCurveComponent(const std::shared_ptr<MeshComponentData> &meshComponentData,
-                                                                                                const StaticMeshRenderData &renderData,
+                                                                                                const MeshRenderData &renderData,
                                                                                                 const RuntimeGeneratedMeshPoolParameters &rtMeshParams)
        : RuntimeGeneratedLineComponent(meshComponentData, renderData, rtMeshParams)
    {

@@ -3,13 +3,19 @@
 #include <string>
 #include <cstdint>
 #include <stdint.h>
+#include <vector>
 
-namespace EngineCore
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
+
+using namespace Graphics::OpenGL;
+
+namespace Resources
 {
     struct RuntimeGeneratedMeshPoolParameters
     {
         std::string mComponentName;
         size_t mMaxVerticesCount;
+        std::vector<std::shared_ptr<AttributeDataBase>> mVertexAttributes;
 
         RuntimeGeneratedMeshPoolParameters(const std::string &componentName, const size_t maxVerticesCount)
             : mComponentName(componentName),
@@ -29,7 +35,7 @@ namespace EngineCore
 
 namespace std
 {
-    using namespace EngineCore;
+    using namespace Resources;
     template <>
     struct hash<RuntimeGeneratedMeshPoolParameters>
     {

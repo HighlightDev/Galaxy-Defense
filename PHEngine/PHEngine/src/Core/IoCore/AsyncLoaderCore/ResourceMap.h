@@ -34,7 +34,7 @@ namespace IO
 
       bool TryGetResource(Resource *&outResource, const std::string &key);
 
-      void SaveToPool(const std::string &key);
+      void UnloadResource(const std::string &key);
 
       static ResourceMap *GetInstance();
 

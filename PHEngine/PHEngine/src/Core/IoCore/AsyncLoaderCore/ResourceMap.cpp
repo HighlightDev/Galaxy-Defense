@@ -68,6 +68,16 @@ namespace IO
 
       return bValid;
    }
+   
+   void ResourceMap::UnloadResource(const std::string &key)
+   {
+      if (ReadyToReadResources.count(key) > 0)
+      {
+         ReadyToReadResources[key]->Clear();
+         delete ReadyToReadResources[key];
+         ReadyToReadResources.erase(key);
+      }
+   }
 
    void ResourceMap::AllocateAsync(const std::string &key)
    {
@@ -144,26 +154,6 @@ namespace IO
          break;
       }
       default:
-         break;
-      }
-   }
-
-   void ResourceMap::SaveToPool(const std::string &key)
-   {
-      const eResourceType resType = ResourceExtensionsInfo::GetResourceTypeByFileExtension(key);
-      switch (resType)
-      {
-      case eResourceType::MESH:
-         MeshPool::GetInstance()->GetOrAllocateResource(key);
-         break;
-      case eResourceType::TEXTURE:
-         TexturePool::GetInstance()->GetOrAllocateResource(key);
-         break;
-      case eResourceType::AUDIO:
-         SoundBufferPool::GetInstance()->GetOrAllocateResource(key);
-         break;
-      default:
-         assert(false); // undefined type
          break;
       }
    }

@@ -2,9 +2,12 @@
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/MeshPoolParameters.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
 using namespace Graphics::Renderer;
+using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
 using namespace EngineCore;
 using namespace Resources;
@@ -56,7 +59,11 @@ namespace Graphics
          m_planarReflectionShader = CreateMaterialShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>(
              "SkeletalMeshVertexFactory<4>_CapturePlanarReflectionShader" + mMaterialProxy->MaterialName, planarReflectionParams, mMaterialProxy);
 
-         m_skin = MeshPool::GetInstance()->GetOrAllocateResource(mRenderData.mModelName);
+         MeshPoolParameters poolParameters;
+         poolParameters.mModelPath = mRenderData.mModelPath;
+         poolParameters.mVertexAttributes = GetShader()->GetVertexAttributes();
+
+         m_skin = MeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
          std::shared_ptr<AnimatedSkin> animatedSkinSp = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
          assert((animatedSkinSp));
          mAnimationPlayer = std::make_shared<AnimationPlayer>(animatedSkinSp);

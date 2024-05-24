@@ -238,7 +238,7 @@ namespace EngineCore
    {
       auto meshData = std::make_shared<SerializeDataSkeletalMesh>();
       meshData->ComponentName = component->GetEngineObjectName();
-      meshData->ModelName = component->GetRenderData().mModelName;
+      meshData->ModelName = component->GetRenderData().mModelPath;
       meshData->Translation = component->GetTranslation();
       meshData->Rotation = component->GetRotationDegrees();
       meshData->Scale = component->GetScale();

@@ -68,6 +68,7 @@ namespace Graphics
          {
             CompileShaders();
             m_shaderProgramID = glCreateProgram();
+            BindAttributeLocations(m_shaderProgramID);
             LinkShaders();
             AccessAllUniformLocations(m_shaderProgramID);
          }

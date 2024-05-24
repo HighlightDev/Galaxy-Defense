@@ -4,6 +4,7 @@
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/BoundingBoxBuilder.h"
+#include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
 
 #include <memory>
 #include <vector>
@@ -12,10 +13,10 @@
 using namespace Common;
 using namespace Resources;
 using namespace EngineCore;
+using namespace Graphics::OpenGL;
 
 namespace Graphics
 {
-
 	ScreenQuad *ScreenQuad::m_instance = nullptr;
 
 	ScreenQuad::ScreenQuad()
@@ -53,17 +54,23 @@ namespace Graphics
 										0, 0,
 										0, 1};
 
-		VertexBufferObject<float, 3, GL_FLOAT> *verticesVBO =
-			new VertexBufferObject<float, 3, GL_FLOAT, GL_STATIC_DRAW>(
+		VertexBufferObject<float> *verticesVBO =
+			new VertexBufferObject<float>(
 				std::move(vertices),
-				eAttribArrayIndexName::POSITION,
+				"VertexPosition",
+				(int32_t)eAttribArrayIndex::VertexPosition,
+				GL_FLOAT,
+				3,
 				GL_ARRAY_BUFFER,
 				eDataCarryFlag::INVALIDATE);
 
 		VertexBufferObjectBase *texCoordsVBO =
-			new VertexBufferObject<float, 2, GL_FLOAT, GL_STATIC_DRAW>(
+			new VertexBufferObject<float>(
 				std::move(texCoords),
-				eAttribArrayIndexName::TEXTURE_COORDINATES,
+				"VertexTexCoords",
+				(int32_t)eAttribArrayIndex::VertexTexCoords,
+				GL_FLOAT,
+				2,
 				GL_ARRAY_BUFFER,
 				eDataCarryFlag::INVALIDATE);
 

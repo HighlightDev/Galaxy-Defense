@@ -1,8 +1,9 @@
 #pragma once
 #include "RuntimeGeneratedLineComponent.h"
-#include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedMeshPoolParameters.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/RuntimeGeneratedMeshPoolParameters.h"
 
+using namespace Resources;
 using namespace Graphics::Data;
 using namespace Graphics;
 
@@ -21,7 +22,7 @@ namespace EngineCore
 
 	public:
 		RuntimeGeneratedQuadraticBezierCurveComponent(const std::shared_ptr<MeshComponentData> &meshComponentData,
-													  const StaticMeshRenderData &renderData,
+													  const MeshRenderData &renderData,
 													  const RuntimeGeneratedMeshPoolParameters &rtMeshParams);
 
 		std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;

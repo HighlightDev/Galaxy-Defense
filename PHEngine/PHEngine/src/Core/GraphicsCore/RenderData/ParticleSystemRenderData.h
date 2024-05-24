@@ -3,8 +3,9 @@
 #include <memory>
 
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
-#include "Core/GameCore/Particles/ParticlePoolParameters.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
 
+using namespace Resources;
 using namespace EngineCore;
 
 namespace Graphics

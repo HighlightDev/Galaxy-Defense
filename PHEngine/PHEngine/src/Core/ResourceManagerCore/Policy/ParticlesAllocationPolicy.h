@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "Core/GraphicsCore/Mesh/Skin.h"
-#include "Core/GameCore/Particles/ParticlePoolParameters.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
 
 using namespace Graphics::Mesh;
 using namespace EngineCore;

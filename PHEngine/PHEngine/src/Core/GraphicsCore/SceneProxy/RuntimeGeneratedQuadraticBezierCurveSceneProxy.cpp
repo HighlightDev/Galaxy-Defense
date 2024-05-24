@@ -36,8 +36,8 @@ namespace Graphics
       {
          if (bUpdateLineGeometry)
          {
-            auto *const verticesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
-            auto *const textureCoordinatesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
+            auto *const verticesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
+            auto *const textureCoordinatesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
 
             assert(verticesVBO && textureCoordinatesVBO);
             const float halfWidth = mLineWidth * 0.5f;

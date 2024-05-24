@@ -8,7 +8,6 @@ using namespace Graphics::OpenGL;
 
 namespace Resources
 {
-
    class CompositeShaderPool 
       : public PoolBase<IShader, CompositeShaderParams, CompositeShaderAllocationPolicy>
    {

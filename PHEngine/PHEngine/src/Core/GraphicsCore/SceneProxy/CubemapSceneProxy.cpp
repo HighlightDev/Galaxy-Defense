@@ -4,8 +4,12 @@
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+#include "Core/ResourceManagerCore/SimpleMeshType.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/SimplePrimitivePoolParameters.h"
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
 using namespace Graphics::Renderer;
+using namespace Graphics::OpenGL;
 using namespace EngineCore;
 using namespace Resources;
 
@@ -41,11 +45,14 @@ namespace Graphics
          static constexpr uint64_t functionId = Hash64_CT("CubemapSceneProxy::PostConstructorInitialize");
 
          const ShaderParams shaderParams("Cubemap Shader",
-                                   FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl",
-                                   FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl");
+                                         FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl",
+                                         FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl");
          m_shaderCubemap = ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapShader>(shaderParams);
 
-         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource((int32_t)SimplePrimitiveType::CUBE);
+         SimplePrimitivePoolParameters poolParams;
+         poolParams.mSimplePrimitiveType = SimplePrimitiveType::CUBE;
+         poolParams.mVertexAttributes.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexPosition>>(0));
+         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(poolParams);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
          {

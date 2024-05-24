@@ -71,7 +71,6 @@ namespace EngineCore
 
       void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper &luaWrapper)
       {
-         LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::LoadResourcesAsync"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::LoadResourcesAsync, this, std::placeholders::_1), "_LoadResourcesAsync");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync, this, std::placeholders::_1), "_LazyLoadResourcesAsync");
 
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateActor"), int32_t(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateActor, this, std::placeholders::_1), "_CreateActor");
@@ -91,9 +90,9 @@ namespace EngineCore
       }
 
       /* -------------------  Load asynchronously resources by names ----------------------------*/
-      void LuaEngineObjectsCreatorFunctions::LoadResourcesAsync(const std::tuple<std::string> &asyncLoadNamesData)
+      void LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync(const std::tuple<std::string> &dataNames)
       {
-         const std::string &resourcesNamesStr = std::get<0>(asyncLoadNamesData);
+         const std::string &resourcesNamesStr = std::get<0>(dataNames);
          assert(!resourcesNamesStr.empty());
 
          const std::vector<std::string> &resourceNames = Split(resourcesNamesStr, ',');
@@ -105,21 +104,6 @@ namespace EngineCore
          }
 
          ResourceMap::GetInstance()->WaitUntilResourcesLoad();
-      }
-
-      void LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync(const std::tuple<std::string> &dataNames)
-      {
-         LoadResourcesAsync(dataNames);
-         const std::string &resourcesNamesStr = std::get<0>(dataNames);
-         assert(!resourcesNamesStr.empty());
-
-         const std::vector<std::string> &resourceNames = Split(resourcesNamesStr, ',');
-
-         for (std::string resName : resourceNames)
-         {
-            resName = Trim(resName);
-            ResourceMap::GetInstance()->SaveToPool(resName);
-         }
       }
 
       /* -------------------  Create Actor ----------------------------*/
@@ -160,7 +144,7 @@ namespace EngineCore
          const glm::ivec4 &viewPortData = std::get<1>(cameraData);
          const bool bIsMainSceneCamera = static_cast<int32_t>(std::get<6>(cameraData));
 
-         const auto& viewProjectionInfo = mEngineObjectCreator->CreateViewProjectionInfo(std::get<2>(cameraData));
+         const auto &viewProjectionInfo = mEngineObjectCreator->CreateViewProjectionInfo(std::get<2>(cameraData));
 
          mEngineObjectCreator->CreateFirstPersonCamera(
              std::get<0>(cameraData),
@@ -185,7 +169,7 @@ namespace EngineCore
          const glm::ivec4 &viewPortData = std::get<1>(cameraData);
          const bool bIsMainSceneCamera = static_cast<int32_t>(std::get<7>(cameraData));
 
-         const auto& viewProjectionInfo = mEngineObjectCreator->CreateViewProjectionInfo(std::get<2>(cameraData));
+         const auto &viewProjectionInfo = mEngineObjectCreator->CreateViewProjectionInfo(std::get<2>(cameraData));
 
          mEngineObjectCreator->CreateThirdPersonCamera(
              std::get<0>(cameraData),

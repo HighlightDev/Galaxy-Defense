@@ -1343,9 +1343,6 @@
     <ClInclude Include="src\Core\GraphicsCore\Common\ScreenQuad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\RenderData\StaticMeshRenderData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\RenderData\SkyboxRenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1412,9 +1409,6 @@
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedShadowInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\RenderData\ForwardShadingMeshRenderData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\InterThreadCommunicationMgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1436,13 +1430,10 @@
     <ClInclude Include="src\Core\GameCore\Input\KeyboardBindings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\ForwardShadingMeshComponentData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\RenderData\SkeletalMeshRenderData.h">
+    <ClInclude Include="src\Core\GraphicsCore\RenderData\MeshRenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.h">
@@ -2084,9 +2075,6 @@
     <ClInclude Include="src\Core\GameCore\Particles\Particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Particles\ParticlePoolParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\Particles\ParticleProperties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2111,7 +2099,7 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\InstancedVertexBufferObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\OpenGL\eAttribArrayIndexName.h">
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\eAttribArrayIndex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\ParticleVertexFactory.h">
@@ -2202,9 +2190,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\UiComponentCreator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\ForwardShadingMeshComponentCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\UiComponents\UiComponent.h">
@@ -2451,9 +2436,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\RuntimeGeneratedLineComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\RuntimeGeneratedMeshPoolParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\RuntimeGeneratedMeshComponentCreator.h">

@@ -1,6 +1,6 @@
 #pragma once
 #include "PrimitiveComponent.h"
-#include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include <glm/mat4x4.hpp>
 
@@ -16,10 +16,10 @@ namespace EngineCore
 	protected:
 		using Base = PrimitiveComponent;
 
-		StaticMeshRenderData m_renderData;
+		MeshRenderData m_renderData;
 
 	public:
-		StaticMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const StaticMeshRenderData renderData);
+		StaticMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const MeshRenderData renderData);
 
 		~StaticMeshComponent() override;
 
@@ -37,7 +37,7 @@ namespace EngineCore
 
 		void PostLevelInit() override;
 
-		inline const StaticMeshRenderData &GetRenderData() const
+		inline const MeshRenderData &GetRenderData() const
 		{
 			return m_renderData;
 		}

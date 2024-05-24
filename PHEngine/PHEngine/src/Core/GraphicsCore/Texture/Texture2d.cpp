@@ -104,7 +104,9 @@ namespace Graphics
             m_textureParams.TexPixelInternalFormat = GL_RGBA;
          }
 
-         return CreateTexture(texResource->DATA);
+         const auto resultTexture = CreateTexture(texResource->DATA);
+         ResourceMap::GetInstance()->UnloadResource(pathToTex);
+         return resultTexture;
       }
 
       uint32_t Texture2d::CreateTexture(const void *pixelsData)

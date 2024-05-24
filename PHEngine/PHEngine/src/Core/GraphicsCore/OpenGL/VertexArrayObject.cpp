@@ -33,7 +33,7 @@ namespace Graphics
 			return m_vbos[index].first;
 		}
 
-		const std::vector<std::pair<VertexBufferObjectBase *, eAttribArrayIndexName>> &VertexArrayObject::GetVertexBufferObjects() const
+		const std::vector<std::pair<VertexBufferObjectBase *, std::string>> &VertexArrayObject::GetVertexBufferObjects() const
 		{
 			return m_vbos;
 		}
@@ -54,7 +54,7 @@ namespace Graphics
 			}
 			else
 			{
-				VertexBufferObjectBase *positionVBO = GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
+				VertexBufferObjectBase *positionVBO = GetVboByAttribArrayIndexName("VertexPosition");
 				assert(positionVBO);
 				glDrawArrays(primitiveMode, 0, positionVBO->GetCountOfIndices());
 			}
@@ -78,7 +78,7 @@ namespace Graphics
 		void VertexArrayObject::RenderInstanced(const int32_t primitiveMode, const size_t primitivesCount)
 		{
 			glBindVertexArray(m_descriptor);
-			VertexBufferObjectBase *positionVBO = GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
+			VertexBufferObjectBase *positionVBO = GetVboByAttribArrayIndexName("VertexPosition");
 			assert(positionVBO);
 			glDrawArraysInstanced(primitiveMode, 0, positionVBO->GetCountOfIndices(), primitivesCount);
 			glBindVertexArray(0);

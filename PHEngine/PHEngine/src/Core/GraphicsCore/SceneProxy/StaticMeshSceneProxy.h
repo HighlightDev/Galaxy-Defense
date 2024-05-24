@@ -5,7 +5,7 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
-#include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 
 using namespace Graphics::Data;
 using namespace EngineCore;
@@ -23,9 +23,7 @@ namespace Graphics
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
 
       protected:
-         StaticMeshRenderData m_renderData;
-
-         bool mIsDeferredShaded;
+         MeshRenderData m_renderData;
 
       protected:
          std::shared_ptr<ShaderType> GetShader() const;

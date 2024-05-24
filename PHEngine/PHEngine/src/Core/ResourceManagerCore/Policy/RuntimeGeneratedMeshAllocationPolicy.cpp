@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
 #include <gl/glew.h>
 #include <vector>
@@ -20,25 +21,27 @@ namespace Resources
 		{
 			const auto vao = std::make_shared<VertexArrayObject>();
 
-			auto *vertexVBO = new VertexBufferObject<float,
-													 3,
-													 GL_FLOAT,
-													 GL_STATIC_DRAW>(std::vector<float>(arg.mMaxVerticesCount * 3),
-																	 eAttribArrayIndexName::POSITION,
-																	 GL_ARRAY_BUFFER,
-																	 eDataCarryFlag::INVALIDATE);
+			const auto &vertexAttributes = arg.mVertexAttributes;
+			for (const auto &vertexAttribute : vertexAttributes)
+			{
+				if (vertexAttribute->GetAttributeType() == eAttributeType::STANDART)
+				{
+					const auto &standartAttribute = std::static_pointer_cast<StandartAttributeDataBase>(vertexAttribute);
+					if (standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexPosition ||
+						standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexTexCoords)
+					{
+						const auto &vbo = new VertexBufferObject<float>(arg.mMaxVerticesCount,
+																		vertexAttribute->GetAttributeName(),
+																		vertexAttribute->GetAttributeIndex(),
+																		vertexAttribute->GetAttributeComponentDataType() == eAttributeComponentDataType::FLOAT ? GL_FLOAT : GL_INT,
+																		vertexAttribute->GetAttributeComponentsNumber(),
+																		GL_ARRAY_BUFFER);
+						vao->AddVBO(vbo);
+					}
+				}
+			}
 
-			auto *texCoordsVBO = new VertexBufferObject<float,
-													 2,
-													 GL_FLOAT,
-													 GL_STATIC_DRAW>(std::vector<float>(arg.mMaxVerticesCount * 2),
-																	 eAttribArrayIndexName::TEXTURE_COORDINATES,
-																	 GL_ARRAY_BUFFER,
-																	 eDataCarryFlag::INVALIDATE);
-
-			vao->AddVBO(vertexVBO,
-					   texCoordsVBO);
-					   
+			assert(vao->GetVertexBufferObjects().size());
 			vao->BindBuffersToVao();
 
 			resultSkin = std::make_shared<Skin>(vao, BoundingBox3D());

@@ -2,6 +2,7 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
+#include "Core/ResourceManagerCore/SimpleMeshType.h"
 
 using namespace Graphics::Renderer;
 using namespace EngineCore;
@@ -36,8 +37,11 @@ namespace Graphics
 
          m_shader = CreateMaterialShader<StaticMeshVertexFactory, BillboardShader>(
              "StaticMeshVertexFactory_BillboardShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
+         SimplePrimitivePoolParameters poolParams;
+         poolParams.mSimplePrimitiveType = SimplePrimitiveType::POINT;
+         poolParams.mVertexAttributes = GetShader()->GetVertexAttributes();
 
-         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource((int32_t)SimplePrimitiveType::POINT);
+         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(poolParams);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
          {

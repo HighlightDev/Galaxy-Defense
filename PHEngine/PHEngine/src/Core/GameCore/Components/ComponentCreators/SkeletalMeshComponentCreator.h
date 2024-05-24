@@ -6,7 +6,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GraphicsCore/RenderData/SkeletalMeshRenderData.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 
 using namespace Graphics::Data;
@@ -29,7 +29,7 @@ namespace EngineCore
             const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
             assert(materialProxy);
 
-            SkeletalMeshRenderData renderData(mData->m_pathToMesh, materialProxy);
+            MeshRenderData renderData(mData->m_pathToMesh, materialProxy, true);
             return std::make_shared<ComponentInstantiationType>(mData, renderData);
         }
     };

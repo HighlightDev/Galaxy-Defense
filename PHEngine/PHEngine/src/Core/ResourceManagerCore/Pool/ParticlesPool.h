@@ -2,7 +2,7 @@
 #include "PoolBase.h"
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/ResourceManagerCore/Policy/ParticlesAllocationPolicy.h"
-#include "Core/GameCore/Particles/ParticlePoolParameters.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
 
 using namespace EngineCore;
 

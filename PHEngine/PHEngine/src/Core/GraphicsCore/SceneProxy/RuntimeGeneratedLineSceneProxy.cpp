@@ -52,7 +52,7 @@ namespace Graphics
          m_planarReflectionShader = CreateMaterialShader<StaticMeshVertexFactory,
                                                          CapturePlanarReflectionShader>(
              "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName, planarReflectionParams, mMaterialProxy);
-
+         mRtMeshPoolParams.mVertexAttributes = GetShader()->GetVertexAttributes();
          m_skin = RuntimeGeneratedMeshPool::GetInstance()->GetOrAllocateResource(mRtMeshPoolParams);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
@@ -127,8 +127,8 @@ namespace Graphics
       {
          if (bUpdateLineGeometry)
          {
-            auto *const verticesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
-            auto *const textureCoordinatesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
+            auto *const verticesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
+            auto *const textureCoordinatesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
 
             assert(verticesVBO && textureCoordinatesVBO);
 

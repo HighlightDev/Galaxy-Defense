@@ -1,6 +1,7 @@
 #include "SkyboxSceneProxy.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
+#include "Core/ResourceManagerCore/SimpleMeshType.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 using namespace Graphics::Renderer;
@@ -36,7 +37,10 @@ namespace Graphics
                                                          CapturePlanarReflectionShader>("SkyboxVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName,
                                                                                         planarReflectionParams, mMaterialProxy);
 
-         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(static_cast<int32_t>(SimplePrimitiveType::INVERTED_VERTICES_DIRECTION_CUBE));
+         SimplePrimitivePoolParameters poolParams;
+         poolParams.mSimplePrimitiveType = SimplePrimitiveType::INVERTED_VERTICES_DIRECTION_CUBE;
+         poolParams.mVertexAttributes = GetShader()->GetVertexAttributes();
+         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(poolParams);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
          {

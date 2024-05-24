@@ -12,8 +12,8 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/SceneComponent.h"
-#include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ForwardShadingMeshComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
@@ -67,14 +67,15 @@ namespace Game
       MaterialPropertySetter::SetMaterialPropertyValue(missileProjectileMaterial, "color", glm::vec3(1.0f, 0.0f, 0.0f));
       MaterialPropertySetter::SetMaterialPropertyValue(missileProjectileMaterial, sceneSp, "GT_DeltaSec", "gt_timeSec");
 
-      const auto &meshComponentCreator = std::make_shared<ForwardShadingMeshComponentCreator<ForwardShadingMeshComponent>>();
-      const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("MissileProjectileMeshComponent",
+      const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
+      const auto &d_mesh = std::make_shared<MeshComponentData>("MissileProjectileMeshComponent",
                                                                              "plane.obj",
                                                                              glm::vec3(),
                                                                              glm::vec3(),
                                                                              glm::vec3(pickerCellSize, 1.0f, pickerCellSize),
+                                                                             "",
                                                                              missileProjectileMaterial);
-      const auto &c_mesh = std::static_pointer_cast<ForwardShadingMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+      const auto &c_mesh = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
       c_mesh->SetSortOrderValue(1);
       mProjectileMarkerActor->AddComponent(c_mesh);
       mProjectileMarkerActor->SetIsEnabled(false);

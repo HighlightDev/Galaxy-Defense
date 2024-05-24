@@ -11,13 +11,13 @@ using namespace Graphics::Mesh;
 namespace Resources
 {
 
-	class MeshPool : public PoolBase<Skin, std::string, MeshAllocationPolicy>
+	class MeshPool : public PoolBase<Skin, MeshPoolParameters, MeshAllocationPolicy>
 	{
 		static std::unique_ptr<MeshPool> m_instance;
 
 	public:
 
-		using poolType_t = PoolBase<Skin, std::string, MeshAllocationPolicy>;
+		using poolType_t = PoolBase<Skin, MeshPoolParameters, MeshAllocationPolicy>;
 
 		std::string ToString() const override;
 

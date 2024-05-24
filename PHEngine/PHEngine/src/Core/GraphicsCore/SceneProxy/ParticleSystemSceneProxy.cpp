@@ -5,10 +5,13 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/ParticlesPool.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Scene.h"
+
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
 #include <stdlib.h>
 
@@ -16,6 +19,7 @@ using namespace EngineMath;
 using namespace Resources;
 using namespace TinyLogger;
 using namespace Graphics::Renderer;
+using namespace Graphics::OpenGL;
 using namespace EngineCore;
 
 namespace Graphics
@@ -41,12 +45,15 @@ namespace Graphics
                 FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl");
 
-            CompositeShaderParams particlesCompositeShaderParams("InstancedStaticMeshVertexFactory_SimpleShader",
+            CompositeShaderParams particlesCompositeShaderParams("ParticleVertexFactory_SimpleShader",
                                                                  particlesShaderParams);
 
             m_shader = CreateMaterialShader<ParticleVertexFactory, SimpleShader>(
-                "InstancedStaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName,
-                particlesShaderParams, mMaterialProxy);
+                "ParticleVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName,
+                particlesShaderParams,
+                mMaterialProxy);
+
+            mRenderData.mParticleMeshParams.mVertexAttributes = GetShader()->GetVertexAttributes();
 
             m_skin = ParticlesPool::GetInstance()->GetOrAllocateResource(mRenderData.mParticleMeshParams);
 
@@ -72,6 +79,11 @@ namespace Graphics
         {
         }
 
+        std::shared_ptr<typename ParticleSystemSceneProxy::ParticleShader_t> ParticleSystemSceneProxy::GetShader() const
+        {
+            return std::static_pointer_cast<ParticleSystemSceneProxy::ParticleShader_t>(m_shader);
+        }
+
         void ParticleSystemSceneProxy::CleanUp()
         {
             PrimitiveSceneProxy::CleanUp();
@@ -82,7 +94,7 @@ namespace Graphics
             if (!mActiveParticlesCount)
                 return;
 
-            const std::shared_ptr<ParticleSystemSceneProxy::ParticleShader_t> &shader = std::static_pointer_cast<ParticleSystemSceneProxy::ParticleShader_t>(m_shader);
+            const auto &shader = GetShader();
 
             PrepareParticlesInstancedBuffer();
             shader->ExecuteShader();
@@ -144,10 +156,9 @@ namespace Graphics
         {
             if (!bIsParticlesTransformDirty)
                 return;
-
-            auto *const particlesTransformVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_0);
-            auto *const particlesRotationSizeVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_1);
-            auto *const particlesColorVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_2);
+            auto *const particlesTransformVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("ParticleRelativeOffset");
+            auto *const particlesRotationSizeVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("ParticleRotationAndSize");
+            auto *const particlesColorVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("ParticleColor");
 
             assert(particlesTransformVBO && particlesRotationSizeVBO && particlesColorVBO);
 

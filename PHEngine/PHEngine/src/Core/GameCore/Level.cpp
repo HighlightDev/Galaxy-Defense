@@ -7,15 +7,18 @@
 #include "Core/GameCore/HumanoidPlayerController.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/MeshPoolParameters.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Assertion.h"
 
 #include <glm/vec3.hpp>
 #include <cereal/archives/xml.hpp>
 #include <fstream>
+#include <algorithm>
 
 using namespace IO;
 using namespace EngineUtility;
+using namespace Resources;
 
 namespace EngineCore
 {
@@ -119,7 +122,12 @@ namespace EngineCore
       LogInfo("CollectAllocatedResourcesForSerialization");
 
       std::vector<std::string> loadedTextureNames = TexturePool::GetInstance()->GetAllKeys();
-      std::vector<std::string> loadedModelNames = MeshPool::GetInstance()->GetAllKeys();
+      const auto &meshParamsList = MeshPool::GetInstance()->GetAllKeys();
+      std::vector<std::string> loadedModelNames;
+      loadedModelNames.reserve(meshParamsList.size());
+      std::transform(meshParamsList.cbegin(), meshParamsList.cend(), std::back_inserter(loadedModelNames), [](const MeshPoolParameters &meshParam)
+                     { return meshParam.mModelPath; });
+
       std::vector<std::string> concatNamesVec;
       concatNamesVec.reserve(loadedTextureNames.size() + loadedModelNames.size());
       concatNamesVec.insert(concatNamesVec.end(),

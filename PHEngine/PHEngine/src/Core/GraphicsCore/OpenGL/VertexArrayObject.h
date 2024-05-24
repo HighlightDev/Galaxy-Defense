@@ -18,7 +18,7 @@ namespace Graphics
 		{
 		private:
 			uint32_t m_descriptor;
-			std::vector<std::pair<VertexBufferObjectBase *, eAttribArrayIndexName>> m_vbos;
+			std::vector<std::pair<VertexBufferObjectBase *, std::string>> m_vbos;
 			IndexBufferObject *m_ibo;
 
 		public:
@@ -29,7 +29,7 @@ namespace Graphics
 
 			VertexBufferObjectBase *GetVboByIndex(const size_t index) const;
 
-			VertexBufferObjectBase* GetVboByAttribArrayIndexName(const eAttribArrayIndexName attribArrayIndexName) const
+			VertexBufferObjectBase* GetVboByAttribArrayIndexName(const std::string& attribArrayIndexName) const
 			{
 				auto alreadyExistingAttribVboIt = std::find_if(m_vbos.begin(),
 																   m_vbos.end(),
@@ -44,7 +44,7 @@ namespace Graphics
 			{
 				if (p_vbo != nullptr)
 				{
-					const auto attribArrayIndexName = static_cast<VertexBufferObjectBase *>(p_vbo)->GetAttribArrayIndexName();
+					const auto& attribArrayIndexName = static_cast<VertexBufferObjectBase *>(p_vbo)->GetAttribArrayIndexName();
 					assert(!GetVboByAttribArrayIndexName(attribArrayIndexName));
 					m_vbos.emplace_back(std::make_pair(std::forward<Arg>(p_vbo), attribArrayIndexName));
 				}
@@ -56,7 +56,7 @@ namespace Graphics
 			{
 				if (p_vbo != nullptr)
 				{
-					const auto attribArrayIndexName = static_cast<VertexBufferObjectBase *>(p_vbo)->GetAttribArrayIndexName();
+					const auto& attribArrayIndexName = static_cast<VertexBufferObjectBase *>(p_vbo)->GetAttribArrayIndexName();
 					assert(!GetVboByAttribArrayIndexName(attribArrayIndexName));
 					m_vbos.emplace_back(std::make_pair(std::forward<Arg>(p_vbo), attribArrayIndexName));
 				}
@@ -64,7 +64,7 @@ namespace Graphics
 
 			bool HasIBO() const;
 
-			const std::vector<std::pair<VertexBufferObjectBase *, eAttribArrayIndexName>> &GetVertexBufferObjects() const;
+			const std::vector<std::pair<VertexBufferObjectBase *, std::string>> &GetVertexBufferObjects() const;
 
 			void GenVAO();
 

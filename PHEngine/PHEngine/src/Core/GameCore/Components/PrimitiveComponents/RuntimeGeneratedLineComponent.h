@@ -1,12 +1,13 @@
 #pragma once
 #include "StaticMeshComponent.h"
-#include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedMeshPoolParameters.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/RuntimeGeneratedMeshPoolParameters.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
+using namespace Resources;
 using namespace Graphics::Data;
 using namespace Graphics;
 
@@ -31,7 +32,7 @@ namespace EngineCore
 
 	public:
 		RuntimeGeneratedLineComponent(const std::shared_ptr<MeshComponentData> &meshComponentData,
-									  const StaticMeshRenderData &renderData,
+									  const MeshRenderData &renderData,
 									  const RuntimeGeneratedMeshPoolParameters &rtMeshParams);
 
 		~RuntimeGeneratedLineComponent() override;

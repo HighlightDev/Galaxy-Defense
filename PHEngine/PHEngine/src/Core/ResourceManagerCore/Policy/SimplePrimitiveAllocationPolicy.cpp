@@ -2,7 +2,9 @@
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/GraphicsCore/OpenGL/IndexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
+#include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
 #include "Core/GameCore/BoundingBoxBuilder.h"
+#include "Core/ResourceManagerCore/SimpleMeshType.h"
 
 #include <gl/glew.h>
 
@@ -12,10 +14,9 @@ using namespace EngineCore;
 
 namespace Resources
 {
-
-   std::shared_ptr<Skin> SimplePrimitiveAllocationPolicy::AllocateMemory(int32_t arg)
+   std::shared_ptr<Skin> SimplePrimitiveAllocationPolicy::AllocateMemory(const SimplePrimitivePoolParameters &arg)
    {
-      auto typeArg = SimplePrimitiveType(arg);
+      const auto typeMesh = arg.mSimplePrimitiveType;
 
       std::shared_ptr<Skin> resultSkin;
 
@@ -26,7 +27,7 @@ namespace Resources
          std::vector<float> normals;
          std::vector<float> texCoords;
 
-         switch (typeArg)
+         switch (typeMesh)
          {
          case SimplePrimitiveType::POINT:
             vertices = std::vector<float>({0.0f, 0.0f, 0.0f});
@@ -146,7 +147,7 @@ namespace Resources
             break;
          }
 
-         if (SimplePrimitiveType::PLANE_WITH_ATTRIBUTES == typeArg)
+         if (SimplePrimitiveType::PLANE_WITH_ATTRIBUTES == typeMesh)
          {
             normals = std::vector<float>({
                 0.0f, 0.0f, 1.0f, // top-right
@@ -169,26 +170,41 @@ namespace Resources
          BoundingBoxBuilder builder;
          BoundingBox3D boundingBox = builder.Build(vertices);
 
-         VertexBufferObjectBase *vertexVBO = nullptr, *normalVBO = nullptr, *texCoordsVBO = nullptr;
-
-         vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT, GL_STATIC_DRAW>(std::move(vertices),
-                                                                                eAttribArrayIndexName::POSITION,
-                                                                                GL_ARRAY_BUFFER,
-                                                                                eDataCarryFlag::INVALIDATE);
-
-         if (normals.size() > 0 && texCoords.size() > 0)
+         const auto &vertexAttributes = arg.mVertexAttributes;
+         for (const auto &vertexAttribute : vertexAttributes)
          {
-            normalVBO = new VertexBufferObject<float, 3, GL_FLOAT, GL_STATIC_DRAW>(std::move(normals),
-                                                                                   eAttribArrayIndexName::NORMAL,
-                                                                                   GL_ARRAY_BUFFER,
-                                                                                   eDataCarryFlag::INVALIDATE);
-            texCoordsVBO = new VertexBufferObject<float, 2, GL_FLOAT, GL_STATIC_DRAW>(std::move(texCoords),
-                                                                                      eAttribArrayIndexName::TEXTURE_COORDINATES,
-                                                                                      GL_ARRAY_BUFFER,
-                                                                                      eDataCarryFlag::INVALIDATE);
+            if (vertexAttribute->GetAttributeType() == eAttributeType::STANDART)
+            {
+               std::vector<float> data;
+               const auto &standartAttribute = std::static_pointer_cast<StandartAttributeDataBase>(vertexAttribute);
+					if (standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexPosition)
+               {
+                  data = std::move(vertices);
+               }
+               else if (standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexTexCoords)
+               {
+                  data = std::move(texCoords);
+               }
+               else if (standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexNormal)
+               {
+                  data = std::move(normals);
+               }
+
+               if (data.size())
+               {
+                  const auto &vbo = new VertexBufferObject<float>(std::move(data),
+                                                                  vertexAttribute->GetAttributeName(),
+                                                                  vertexAttribute->GetAttributeIndex(),
+                                                                  vertexAttribute->GetAttributeComponentDataType() == eAttributeComponentDataType::FLOAT ? GL_FLOAT : GL_INT,
+                                                                  vertexAttribute->GetAttributeComponentsNumber(),
+                                                                  GL_ARRAY_BUFFER,
+                                                                  eDataCarryFlag::INVALIDATE);
+                  vao->AddVBO(vbo);
+               }
+            }
          }
 
-         vao->AddVBO(vertexVBO, normalVBO, texCoordsVBO);
+         assert(vao->GetVertexBufferObjects().size());
          vao->BindBuffersToVao();
 
          resultSkin = std::make_shared<Skin>(vao, boundingBox);

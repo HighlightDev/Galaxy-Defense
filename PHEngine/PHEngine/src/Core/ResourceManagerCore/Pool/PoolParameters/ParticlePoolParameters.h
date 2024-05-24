@@ -3,13 +3,19 @@
 #include <string>
 #include <cstdint>
 #include <stdint.h>
+#include <vector>
 
-namespace EngineCore
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
+
+using namespace Graphics::OpenGL;
+
+namespace Resources
 {
     struct ParticlePoolParameters
     {
         std::string mParticleComponentName;
         size_t mParticleCount;
+        std::vector<std::shared_ptr<AttributeDataBase>> mVertexAttributes;
 
         friend struct std::hash<ParticlePoolParameters>;
 
@@ -23,7 +29,7 @@ namespace EngineCore
 
 namespace std
 {
-    using namespace EngineCore;
+    using namespace Resources;
     template <>
     struct hash<ParticlePoolParameters>
     {

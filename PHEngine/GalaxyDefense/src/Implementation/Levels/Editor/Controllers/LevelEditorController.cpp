@@ -8,9 +8,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedQuadraticBezierCurveComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ForwardShadingMeshComponent.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -360,9 +358,9 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, "color", glm::vec3(0.4f, 0.8f, 0.2f));
         MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, sceneSp, "GT_DeltaSec", "gt_timeSec");
 
-        const auto &meshComponentCreator = std::make_shared<ForwardShadingMeshComponentCreator<ForwardShadingMeshComponent>>();
-        const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("TowerPlacementMeshComponent", "plane.obj", glm::vec3(), glm::vec3(), glm::vec3(pickerCellSize, 1.0f, pickerCellSize), editorPickerMaterial);
-        const auto &c_mesh = std::static_pointer_cast<ForwardShadingMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
+        const auto &d_mesh = std::make_shared<MeshComponentData>("TowerPlacementMeshComponent", "plane.obj", glm::vec3(), glm::vec3(), glm::vec3(pickerCellSize, 1.0f, pickerCellSize), "", editorPickerMaterial);
+        const auto &c_mesh = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         c_mesh->SetSortOrderValue(1);
         mTowerPlacementPickerActor->AddComponent(c_mesh);
 

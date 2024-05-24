@@ -1,13 +1,12 @@
 #version 400
 
-layout (location = 0) in vec3 VertexPosition;
-layout (location = 1) in vec3 VertexNormal;
-layout (location = 2) in vec2 VertexTexCoords;
-layout (location = 3) in vec3 VertexColor;
-layout (location = 4) in vec3 VertexTangent;
-layout (location = 5) in vec3 VertexBitangent;
-layout(location = 6) in vec4 VertexBlendWeights;
-layout(location = 7) in ivec4 VertexBlendIndices;
+in vec3 VertexPosition;
+in vec3 VertexNormal;
+in vec2 VertexTexCoords;
+in vec3 VertexTangent;
+in vec3 VertexBitangent;
+in vec4 VertexBlendWeights;
+in ivec4 VertexBlendIndex;
 
 #include "materialCommon.incl.glsl"
 
@@ -21,7 +20,7 @@ vec4 ApplySkinningToVec(vec4 vector)
 	vec4 skinnedVec = vec4(0);
 	 for (int i = 0; i < MaxWeights; ++i)
 	{
-		int blendIndex = VertexBlendIndices[i];
+		int blendIndex = VertexBlendIndex[i];
 
 		float blendWeight = VertexBlendWeights[i];
 		skinnedVec += ((bonesMatrices[blendIndex]  * vector) * blendWeight);
@@ -59,11 +58,6 @@ vec3 GetLocalToWorldSpaceBitangent()
 vec2 GetLocalTexCoords()
 {
 	return VertexTexCoords;
-}
-
-vec3 GetVertexColor()
-{
-	return VertexColor;
 }
 
 MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput()

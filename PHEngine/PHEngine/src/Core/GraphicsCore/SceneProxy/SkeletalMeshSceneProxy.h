@@ -9,7 +9,7 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GraphicsCore/Mesh/AnimationPlayer.h"
-#include "Core/GraphicsCore/RenderData/SkeletalMeshRenderData.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
@@ -26,7 +26,7 @@ namespace Graphics
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>;
          using Base = PrimitiveSceneProxy;
 
-         SkeletalMeshRenderData mRenderData;
+         MeshRenderData mRenderData;
 
       protected:
          mutable std::shared_ptr<AnimationPlayer> mAnimationPlayer;

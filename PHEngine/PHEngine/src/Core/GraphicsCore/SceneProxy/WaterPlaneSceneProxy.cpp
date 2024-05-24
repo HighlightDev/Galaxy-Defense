@@ -1,6 +1,7 @@
 #include "WaterPlaneSceneProxy.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
+#include "Core/ResourceManagerCore/SimpleMeshType.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <glm/vec3.hpp>
@@ -27,7 +28,11 @@ namespace Graphics
       void WaterPlaneSceneProxy::PostConstructorInitialize()
       {
          static constexpr uint64_t functionId = Hash64_CT("WaterPlaneSceneProxy::PostConstructorInitialize");
-         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource((int32_t)SimplePrimitiveType::PLANE_WITH_ATTRIBUTES);
+
+         SimplePrimitivePoolParameters poolParams;
+         poolParams.mSimplePrimitiveType = SimplePrimitiveType::PLANE_WITH_ATTRIBUTES;
+         poolParams.mVertexAttributes = GetShader()->GetVertexAttributes();
+         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(poolParams);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
          {

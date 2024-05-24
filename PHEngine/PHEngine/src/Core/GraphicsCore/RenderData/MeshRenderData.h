@@ -12,13 +12,13 @@ namespace Graphics
 {
    namespace Data
    {
-      struct StaticMeshRenderData
+      struct MeshRenderData
       {
          std::string mModelPath;
          std::shared_ptr<MaterialProxy> mMaterialProxy;
          bool mIsDeferredShaded;
 
-         StaticMeshRenderData(
+         MeshRenderData(
              const std::string& modelPath,
              std::shared_ptr<MaterialProxy> materialProxy,
              const bool isDeferredShaded)

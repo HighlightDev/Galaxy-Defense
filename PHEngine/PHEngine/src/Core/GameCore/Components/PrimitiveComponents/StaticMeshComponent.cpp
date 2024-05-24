@@ -15,7 +15,7 @@ using namespace Graphics;
 namespace EngineCore
 {
 
-   StaticMeshComponent::StaticMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const StaticMeshRenderData renderData)
+   StaticMeshComponent::StaticMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const MeshRenderData renderData)
        : PrimitiveComponent(meshComponentData->EngineObjectName,
                             meshComponentData->m_translation,
                             meshComponentData->m_eulerRotationDegrees,

@@ -5,7 +5,7 @@ namespace Graphics
 {
 	namespace OpenGL
 	{
-		VertexBufferObjectBase::VertexBufferObjectBase(const eAttribArrayIndexName attribArrayIndexName,
+		VertexBufferObjectBase::VertexBufferObjectBase(const std::string& attribArrayIndexName,
 													   const int32_t bufferTarget)
 			: m_bufferTarget(bufferTarget)
 			, mAttribArrayIndexName(attribArrayIndexName)
@@ -42,7 +42,7 @@ namespace Graphics
 			return m_descriptor;
 		}
 
-		eAttribArrayIndexName VertexBufferObjectBase::GetAttribArrayIndexName() const
+		std::string VertexBufferObjectBase::GetAttribArrayIndexName() const
 		{
 			return mAttribArrayIndexName;
 		}

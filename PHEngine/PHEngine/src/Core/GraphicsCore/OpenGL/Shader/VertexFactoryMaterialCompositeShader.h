@@ -1,5 +1,6 @@
 #pragma once
 #include "AVertexFactoryMaterialShaderModule.h"
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
 namespace Graphics
 {
@@ -39,6 +40,16 @@ namespace Graphics
          std::shared_ptr<VertexFactoryShaderType> GetVertexFactoryShader() const
          {
             return std::static_pointer_cast<VertexFactoryShaderType>(mVertexFactoryShader);
+         }
+
+         void BindAttributeLocations(const int32_t shaderProgramId) override
+         {
+            return mVertexFactoryShader->BindAttributeLocations(shaderProgramId);
+         }
+
+         std::vector<std::shared_ptr<AttributeDataBase>> GetVertexAttributes() const
+         {
+            return mVertexFactoryShader->GetVertexAttributes(m_shaderProgramID);
          }
       };
    }

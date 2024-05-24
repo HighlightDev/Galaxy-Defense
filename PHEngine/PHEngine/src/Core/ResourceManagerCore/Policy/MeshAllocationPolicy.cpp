@@ -3,6 +3,8 @@
 #include "Core/GraphicsCore/OpenGL/IndexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
+#include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
 #include "Core/IoCore/MeshLoaderCore/MeshResourceInfo.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
@@ -24,15 +26,16 @@ using namespace IO;
 
 namespace Resources
 {
-	std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const std::string &arg)
+	std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParameters &arg)
 	{
 		std::shared_ptr<Skin> resultSkin;
+		BoundingBox3D boundingBox;
 
 		{
 			const auto vao = std::make_shared<VertexArrayObject>();
 
 			Resource *outResource;
-			const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
+			const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg.mModelPath);
 
 			assert(bResourceValid);
 
@@ -41,109 +44,92 @@ namespace Resources
 
 			MeshAttributes *meshAttributes = meshInfo->meshAttributes;
 
-			IndexBufferObject *ibo = nullptr;
-
-			VertexBufferObjectBase *normalsVBO = nullptr,
-								   *texCoordsVBO = nullptr,
-								   *tangentsVBO = nullptr,
-								   *bitangentsVBO = nullptr,
-								   *blendWeightsVBO = nullptr,
-								   *blendIndicesVBO = nullptr;
-
-			if (meshAttributes->VertexIndices.size())
-				ibo = new IndexBufferObject(std::move(meshAttributes->VertexIndices), eDataCarryFlag::INVALIDATE);
-
-			auto *vertexVBO = new VertexBufferObject<float,
-													 3,
-													 GL_FLOAT,
-													 GL_STATIC_DRAW>(std::move(meshAttributes->Positions),
-																	 eAttribArrayIndexName::POSITION,
-																	 GL_ARRAY_BUFFER,
-																	 eDataCarryFlag::STORE);
-
-			if (meshAttributes->Normals.size())
+			const auto &vertexAttributes = arg.mVertexAttributes;
+			for (const auto &vertexAttribute : vertexAttributes)
 			{
-				normalsVBO = new VertexBufferObject<float,
-													3,
-													GL_FLOAT,
-													GL_STATIC_DRAW>(std::move(meshAttributes->Normals),
-																	eAttribArrayIndexName::NORMAL,
-																	GL_ARRAY_BUFFER,
-																	eDataCarryFlag::INVALIDATE);
-			}
-			if (meshAttributes->TextureCoordinates.size())
-			{
-				texCoordsVBO = new VertexBufferObject<float,
-													  2,
-													  GL_FLOAT,
-													  GL_STATIC_DRAW>(std::move(meshAttributes->TextureCoordinates),
-																	  eAttribArrayIndexName::TEXTURE_COORDINATES,
-																	  GL_ARRAY_BUFFER,
-																	  eDataCarryFlag::INVALIDATE);
-			}
-			if (meshAttributes->TangentNormals.size())
-			{
-				tangentsVBO = new VertexBufferObject<float,
-													 3,
-													 GL_FLOAT,
-													 GL_STATIC_DRAW>(std::move(meshAttributes->TangentNormals),
-																	 eAttribArrayIndexName::TANGENT,
+				if (vertexAttribute->GetAttributeType() == eAttributeType::STANDART)
+				{
+					const auto &standartAttribute = std::static_pointer_cast<StandartAttributeDataBase>(vertexAttribute);
+					if (eAttribArrayIndex::VertexBlendIndex == standartAttribute->GetAttribArrayIndex() &&
+						meshAttributes->BoneIndices.size())
+					{
+						auto blendIndicesVBO = new VertexBufferObject<int32_t>(std::move(meshAttributes->BoneIndices),
+																			   standartAttribute->GetAttributeName(),
+																			   standartAttribute->GetAttributeIndex(),
+																			   GL_INT,
+																			   standartAttribute->GetAttributeComponentsNumber(),
+																			   GL_ARRAY_BUFFER,
+																			   eDataCarryFlag::INVALIDATE);
+						vao->AddVBO(blendIndicesVBO);
+					}
+					else
+					{
+						std::vector<float> data;
+						switch (standartAttribute->GetAttribArrayIndex())
+						{
+						case eAttribArrayIndex::VertexPosition:
+						{
+							data = std::move(meshAttributes->Positions);
+							BoundingBoxBuilder builder;
+							boundingBox = builder.Build(data);
+							break;
+						}
+						case eAttribArrayIndex::VertexNormal:
+							data = std::move(meshAttributes->Normals);
+							break;
+						case eAttribArrayIndex::VertexTexCoords:
+							data = std::move(meshAttributes->TextureCoordinates);
+							break;
+						case eAttribArrayIndex::VertexTangent:
+							data = std::move(meshAttributes->TangentNormals);
+							break;
+						case eAttribArrayIndex::VertexBitangent:
+							data = std::move(meshAttributes->BitangetNormals);
+							break;
+						case eAttribArrayIndex::VertexBlendWeights:
+							data = std::move(meshAttributes->BoneWeights);
+							break;
+
+						default:
+							assert(false);
+							break;
+						}
+
+						if (data.size())
+						{
+							auto vbo = new VertexBufferObject<float>(std::move(data),
+																	 standartAttribute->GetAttributeName(),
+																	 standartAttribute->GetAttributeIndex(),
+																	 standartAttribute->GetAttributeComponentDataType() == eAttributeComponentDataType::FLOAT ? GL_FLOAT : GL_INT,
+																	 standartAttribute->GetAttributeComponentsNumber(),
 																	 GL_ARRAY_BUFFER,
 																	 eDataCarryFlag::INVALIDATE);
+							vao->AddVBO(vbo);
+						}
+					}
+				}
 			}
-			if (meshAttributes->BitangetNormals.size())
+
+			if (meshAttributes->VertexIndices.size())
 			{
-				bitangentsVBO = new VertexBufferObject<float,
-													   3,
-													   GL_FLOAT,
-													   GL_STATIC_DRAW>(std::move(meshAttributes->BitangetNormals),
-																	   eAttribArrayIndexName::BITANGENT,
-																	   GL_ARRAY_BUFFER,
-																	   eDataCarryFlag::INVALIDATE);
+				const auto &ibo = new IndexBufferObject(std::move(meshAttributes->VertexIndices), eDataCarryFlag::INVALIDATE);
+				vao->AddIndexBuffer(ibo);
 			}
 
-			if (meshAttributes->BoneIndices.size() && meshAttributes->BoneWeights.size())
-			{
-				blendWeightsVBO = new VertexBufferObject<float,
-														 4,
-														 GL_FLOAT,
-														 GL_STATIC_DRAW>(std::move(meshAttributes->BoneWeights),
-																		 eAttribArrayIndexName::BONE_INDEX,
-																		 GL_ARRAY_BUFFER,
-																		 eDataCarryFlag::INVALIDATE);
-
-				blendIndicesVBO = new VertexBufferObject<int32_t,
-														 4,
-														 GL_FLOAT,
-														 GL_STATIC_DRAW>(std::move(meshAttributes->BoneIndices),
-																		 eAttribArrayIndexName::BONE_WEIGHT,
-																		 GL_ARRAY_BUFFER,
-																		 eDataCarryFlag::INVALIDATE);
-			}
-
-			vao->AddVBO(vertexVBO,
-					   normalsVBO,
-					   texCoordsVBO,
-					   tangentsVBO,
-					   bitangentsVBO,
-					   blendWeightsVBO,
-					   blendIndicesVBO);
-
-			vao->AddIndexBuffer(ibo);
+			assert(vao->GetVertexBufferObjects().size());
 			vao->BindBuffersToVao();
-
-			BoundingBoxBuilder builder;
-			BoundingBox3D boundingBox = builder.Build(vertexVBO->GetCastedDataRef());
-			vertexVBO->InvalidateData();
 
 			if (meshInfo->meshAnimatedData)
 			{
+				// todo: this part will crash due to pointer deletion when resource will be deleted
 				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<AnimatedMeshData>(meshInfo->meshAnimatedData), boundingBox);
 			}
 			else
 			{
 				resultSkin = std::make_shared<Skin>(vao, boundingBox);
 			}
+
+			ResourceMap::GetInstance()->UnloadResource(arg.mModelPath);
 		}
 
 		return resultSkin;
