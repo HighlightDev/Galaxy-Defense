@@ -38,8 +38,6 @@ namespace EngineCore
 
         ~ParticleSystemComponent() override;
 
-        void PostLevelInit() override;
-
         eComponentType GetComponentType() const override;
 
         void Tick(const float deltaTime) override;

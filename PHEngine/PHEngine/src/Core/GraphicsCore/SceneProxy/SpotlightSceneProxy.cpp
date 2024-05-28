@@ -20,7 +20,7 @@ namespace Graphics
       {
       }
 
-      void SpotlightSceneProxy::PostLevelInit()
+      void SpotlightSceneProxy::PostInitialize()
       {
          const auto shadowInfo = GetProjectedSpotLightShadowInfo();
          if (shadowInfo)

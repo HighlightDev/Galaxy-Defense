@@ -115,7 +115,7 @@ namespace EngineCore
 
    void Scene::PostPlayLevelFinished()
    {
-      LogInfo("Scene::PostPhysicsInitialize");
+      LogInfo("Scene::PostPlayLevelFinished");
 
       for (auto &actor : mActors)
       {

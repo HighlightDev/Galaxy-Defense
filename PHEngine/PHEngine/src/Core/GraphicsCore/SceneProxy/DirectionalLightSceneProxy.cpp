@@ -28,7 +28,7 @@ namespace Graphics
          return m_relativeMatrix * glm::vec4(m_direction, 0.0f);
       }
 
-      void DirectionalLightSceneProxy::PostLevelInit()
+      void DirectionalLightSceneProxy::PostInitialize()
       {
          const auto shadowInfoSp = std::static_pointer_cast<ProjectedDirectionalLightShadowInfo>(m_shadowInfo);
          if (shadowInfoSp)

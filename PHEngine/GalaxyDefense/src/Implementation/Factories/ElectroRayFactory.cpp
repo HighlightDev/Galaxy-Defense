@@ -76,6 +76,8 @@ namespace Game
         // c_sound->GetSoundSource()->SetGain(0.2f);
         // a_electroRayChain->AddComponent(c_sound);
 
+        a_electroRay->SetScene(scene);
+
         return a_electroRay;
     }
 }

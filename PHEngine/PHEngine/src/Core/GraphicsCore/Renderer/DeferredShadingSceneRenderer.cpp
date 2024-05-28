@@ -213,10 +213,6 @@ namespace Graphics
       void DeferredShadingSceneRenderer::PostLevelInit()
       {
          RegisterFonts();
-         for (const auto &lightProxy : LightProxiesVector)
-         {
-            lightProxy->PostLevelInit();
-         }
       }
 
       InterThreadCommunicationMgr &DeferredShadingSceneRenderer::GetInterThreadCommunicationManager()
@@ -1244,7 +1240,9 @@ namespace Graphics
             assert(!GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
             LightProxiesVector.emplace_back(lightSceneProxy);
             SetLightProxiesAreDirty(true);
-            lightComponent->SetIsSceneProxyReady(true); });
+            lightComponent->SetIsSceneProxyReady(true);
+            lightSceneProxy->PostInitialize();
+         });
       }
 
       void DeferredShadingSceneRenderer::RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate)

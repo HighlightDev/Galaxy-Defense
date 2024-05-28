@@ -79,6 +79,8 @@ namespace EngineCore
 
       virtual void CleanUp();
 
+      virtual void OnSceneOwnerInitialized();
+
       void AddComponent(std::shared_ptr<Component> component);
 
       void RemoveComponent(std::shared_ptr<EngineCore::Component> component);

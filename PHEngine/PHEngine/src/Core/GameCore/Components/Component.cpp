@@ -10,8 +10,7 @@ namespace EngineCore
        : EngineObject(gameObjectName),
          m_owner(),
          mIsEnabled(std::make_shared<EngineObjectProperty<bool>>(true, "p_isEnabled", [=](const bool &isEnabled)
-                                                             { SetIsEnabled(isEnabled); })),
-         mIsPostLevelInitialized(false),
+                                                                 { SetIsEnabled(isEnabled); })),
          m_sceneWP()
    {
       AddEngineProperty(mIsEnabled);
@@ -31,7 +30,15 @@ namespace EngineCore
 
    void Component::SetOwner(const std::weak_ptr<Actor> &ownerActor)
    {
-      m_owner = ownerActor;
+      if (!m_owner.lock())
+      {
+         m_owner = ownerActor;
+         OnSceneOwnerInitialized();
+      }
+   }
+
+   void Component::OnSceneOwnerInitialized()
+   {
    }
 
    void Component::RemoveOwner()
@@ -46,12 +53,6 @@ namespace EngineCore
 
    void Component::Tick(const float deltaTime)
    {
-      if (!mIsPostLevelInitialized)
-      {
-         // this call is necessary to resolve issue which could be observed in case component
-         // was created AFTER level had been initialized
-         PostLevelInit();
-      }
    }
 
    std::weak_ptr<Actor> Component::GetBaseOwner() const
@@ -94,7 +95,6 @@ namespace EngineCore
 
    void Component::PostLevelInit()
    {
-      mIsPostLevelInitialized = true;
    }
 
    SerializeDataActor &Component::GetSerializeDataActor(SerializeDataContainer &dataContainer)

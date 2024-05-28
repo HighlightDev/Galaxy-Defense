@@ -27,7 +27,7 @@ namespace Graphics
       {
       }
 
-      void PointLightSceneProxy::PostLevelInit()
+      void PointLightSceneProxy::PostInitialize()
       {
          const auto shadowInfo = GetProjectedPointShadowInfo();
          if (shadowInfo)

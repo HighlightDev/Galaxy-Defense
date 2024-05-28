@@ -79,6 +79,7 @@ namespace Game
         a_backgroundPlanet->AddComponent(c_movement);
 
         scene->AddActorController(std::make_shared<AiActorController>(a_backgroundPlanet));
+        a_backgroundPlanet->SetScene(scene);
 
         return a_backgroundPlanet;
     }

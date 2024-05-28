@@ -24,9 +24,9 @@ namespace EngineCore
    {
    }
 
-   void PlatformTraverseComponent::PostLevelInit()
+   void PlatformTraverseComponent::OnSceneOwnerInitialized()
    {
-      Component::PostLevelInit();
+      Component::OnSceneOwnerInitialized();
 
       if (const auto &spOwner = GetOwner().lock())
       {

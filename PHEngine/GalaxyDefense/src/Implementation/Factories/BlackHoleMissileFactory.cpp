@@ -217,6 +217,8 @@ namespace Game
         BindingAttachmentBuilder::SetAttachment(a_missileExplosionSecondPhase, b_missileExplosionSecondPhaseActorIsEnabled, "p_isEnabled");
         BindingAttachmentBuilder::SetAttachment(a_missileExplosionSecondPhase->GetRootComponent(), b_blackHoleSize, "p_scale");
 
+        a_missile->SetScene(scene);
+
         return a_missile;
     }
 }

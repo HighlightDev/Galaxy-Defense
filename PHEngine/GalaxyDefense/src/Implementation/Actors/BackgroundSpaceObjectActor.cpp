@@ -11,9 +11,9 @@ namespace Game
     {
     }
 
-    void BackgroundSpaceObjectActor::PostLevelInit()
+    void BackgroundSpaceObjectActor::OnSceneOwnerInitialized()
     {
-        SpaceObjectActor::PostLevelInit();
+        SpaceObjectActor::OnSceneOwnerInitialized();
 
         mBackgroundSpaceObjectBillboard = GetComponentsByType<BillboardComponent>().back();
     }

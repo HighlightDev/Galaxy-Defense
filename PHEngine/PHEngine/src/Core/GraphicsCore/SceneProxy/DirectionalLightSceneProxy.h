@@ -23,7 +23,7 @@ namespace Graphics
 
          ~DirectionalLightSceneProxy() override;
 
-         void PostLevelInit() override;
+         void PostInitialize() override;
 
          std::shared_ptr<ProjectedDirectionalLightShadowInfo> GetProjectedDirShadowInfo();
 

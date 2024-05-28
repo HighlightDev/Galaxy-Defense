@@ -50,9 +50,9 @@ namespace EngineCore
    {
    }
 
-   void SkeletalMeshComponent::PostLevelInit()
+   void SkeletalMeshComponent::OnSceneOwnerInitialized()
    {
-      PrimitiveComponent::PostLevelInit();
+      PrimitiveComponent::OnSceneOwnerInitialized();
 
       if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath))
       {

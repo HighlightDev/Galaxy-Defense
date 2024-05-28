@@ -35,8 +35,6 @@ namespace EngineCore
 
 		std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-		void PostLevelInit() override;
-
 		inline const MeshRenderData &GetRenderData() const
 		{
 			return m_renderData;

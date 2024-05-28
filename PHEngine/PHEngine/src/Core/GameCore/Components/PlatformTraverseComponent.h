@@ -37,7 +37,7 @@ namespace EngineCore
 
       void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      void PostLevelInit() override;
+      void OnSceneOwnerInitialized() override;
 
       const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>>& GetMovementPoints() const;
 

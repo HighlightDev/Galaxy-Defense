@@ -20,7 +20,7 @@ namespace Graphics
 
          ~SpotlightSceneProxy() override;
 
-         void PostLevelInit() override;
+         void PostInitialize() override;
 
          glm::vec3 GetDirection() const;
 

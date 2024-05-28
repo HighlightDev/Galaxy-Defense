@@ -17,7 +17,7 @@ namespace Game
     public:
         BackgroundSpaceObjectActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
-        void PostLevelInit() override;
+        void OnSceneOwnerInitialized() override;
 
         void TriggerSpawn(const glm::vec3 &position) override;
 

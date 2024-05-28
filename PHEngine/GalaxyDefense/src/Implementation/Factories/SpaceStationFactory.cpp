@@ -68,6 +68,8 @@ namespace Game
         towerActor->AddComponent(c_ghostPhysics);
 
         scene->AddActor(towerActor);
+
+        towerActor->SetScene(scene);
         return towerActor;
     }
 }

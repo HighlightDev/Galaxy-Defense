@@ -97,13 +97,6 @@ namespace EngineCore
 
    void Actor::PostLevelInit()
    {
-      m_rootComponent->SetOwner(shared_from_this());
-
-      for (const auto &tweener : mTweeners)
-      {
-         tweener->InitRootState();
-      }
-
       for (const auto &comp : m_allComponents)
       {
          comp->PostLevelInit();
@@ -441,7 +434,21 @@ namespace EngineCore
 
    void Actor::SetScene(std::weak_ptr<Scene> sceneOwner)
    {
-      mSceneOwner = sceneOwner;
+      if (!mSceneOwner.lock())
+      {
+         mSceneOwner = sceneOwner;
+         OnSceneOwnerInitialized();
+      }
+   }
+
+   void Actor::OnSceneOwnerInitialized()
+   {
+      m_rootComponent->SetOwner(shared_from_this());
+
+      for (const auto &tweener : mTweeners)
+      {
+         tweener->InitRootState();
+      }
    }
 
    std::weak_ptr<Actor> Actor::GetParent() const

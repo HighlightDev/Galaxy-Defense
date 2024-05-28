@@ -40,10 +40,6 @@ namespace EngineCore
     {
     }
 
-    void ParticleSystemComponent::PostLevelInit()
-    {
-    }
-
     eComponentType ParticleSystemComponent::GetComponentType() const
     {
         return PRIMITIVE_COMPONENT;

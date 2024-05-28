@@ -71,7 +71,7 @@ namespace EngineCore
    {
       SceneComponent::PostLevelInit();
 
-      static const uint64_t functionId = Hash("PlanarReflectionComponent: PostLevelInit");
+      static const uint64_t functionId = Hash("PlanarReflectionComponent::PostLevelInit");
       if (const auto &sceneSp = m_sceneWP.lock())
       {
          if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())

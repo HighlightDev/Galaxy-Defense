@@ -95,6 +95,8 @@ namespace Game
         const auto &bulletActorController = std::make_shared<AiActorController>(a_missile);
         scene->AddActorController(bulletActorController);
 
+        a_missile->SetScene(scene);
+
         return a_missile;
     }
 }

@@ -56,9 +56,9 @@ namespace Game
     public:
         SpaceshipActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
-        void PostLevelInit() override;
-
         void Tick(const float deltaTime) override;
+
+        void OnSceneOwnerInitialized() override;
 
         virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const;
 

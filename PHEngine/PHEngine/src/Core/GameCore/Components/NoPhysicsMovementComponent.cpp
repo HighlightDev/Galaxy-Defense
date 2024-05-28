@@ -14,9 +14,9 @@ namespace EngineCore
       mCurrentSpeed = 0.01f;
    }
 
-   void NoPhysicsMovementComponent::PostLevelInit()
+   void NoPhysicsMovementComponent::OnPostOwnerInitialized()
    {
-      MovementComponent::PostLevelInit();
+      MovementComponent::OnPostOwnerInitialized();
 
       if (const auto &spOwner = GetOwner().lock())
       {

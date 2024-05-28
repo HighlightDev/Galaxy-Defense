@@ -172,6 +172,8 @@ namespace Game
         BindingAttachmentBuilder::SetAttachment(a_enemySpaceship, spaceship_enabled_binding, "p_isEnabled");
         a_enemySpaceship->AttachTweener(lifecycleTweener);
 
+        a_enemySpaceship->SetScene(scene);
+
         return a_enemySpaceship;
     }
 }

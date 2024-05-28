@@ -1,6 +1,7 @@
 #include "Timer.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/CommonCore/ThreadHelper.h"
 
 namespace EngineCore
 {
@@ -8,6 +9,7 @@ namespace EngineCore
     GameThreadTimersHolder::GameThreadTimersHolder()
         : mTimerInstances()
     {
+        mTimerInstances.reserve(1000);
     }
 
     GameThreadTimersHolder *GameThreadTimersHolder::GetInstance()
@@ -21,6 +23,7 @@ namespace EngineCore
         assert(mTimerInstances.end() == std::find_if(mTimerInstances.begin(),
                                                      mTimerInstances.end(), [=](const auto m_instance)
                                                      { return instance->GetInstanceId() == m_instance->GetInstanceId(); }));
+        LogInfo("GameThreadTimersHolder::RegisterTimerInstance => Current Thread: ", ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads());
         mTimerInstances.emplace_back(instance);
     }
 
@@ -29,6 +32,7 @@ namespace EngineCore
         const auto removeIt = std::remove_if(mTimerInstances.begin(),
                                              mTimerInstances.end(), [=](const auto m_instance)
                                              { return instance->GetInstanceId() == m_instance->GetInstanceId(); });
+        LogInfo("GameThreadTimersHolder::UnregisterTimerInstance => Current Thread: ", ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads());
         mTimerInstances.erase(removeIt);
     }
 

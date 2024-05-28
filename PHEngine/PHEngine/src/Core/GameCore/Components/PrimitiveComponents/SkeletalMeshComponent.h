@@ -60,7 +60,7 @@ namespace EngineCore
 
       ~SkeletalMeshComponent() override;
 
-      void PostLevelInit() override;
+      void OnSceneOwnerInitialized() override;
 
       void SetIsEnabled(const bool bEnabled) override;
 

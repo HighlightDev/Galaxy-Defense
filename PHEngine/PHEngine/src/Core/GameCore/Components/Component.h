@@ -25,8 +25,6 @@ namespace EngineCore
    protected:
       std::shared_ptr<EngineObjectProperty<bool>> mIsEnabled;
 
-      bool mIsPostLevelInitialized;
-
       std::weak_ptr<Scene> m_sceneWP;
 
    public:
@@ -41,6 +39,8 @@ namespace EngineCore
       virtual eComponentType GetComponentType() const;
 
       virtual void SetOwner(const std::weak_ptr<Actor> &ownerActor);
+
+      virtual void OnSceneOwnerInitialized();
 
       void RemoveOwner();
 

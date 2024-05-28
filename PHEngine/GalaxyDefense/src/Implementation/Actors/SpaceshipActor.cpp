@@ -31,15 +31,12 @@ namespace Game
         mDamageMessageTimer.SetIntervalMs(s_dmgTextShowDuration);
         mDamageMessageTimer.SetIsRepeat(false);
         mDamageMessageTimer.SetIsPausable(true);
-        mDamageMessageTimer.SetCallback([this]() { 
-            mUiComponent->SetVisibility(mDamageTextFieldId, false); 
-        });
+        mDamageMessageTimer.SetCallback([this]()
+                                        { mUiComponent->SetVisibility(mDamageTextFieldId, false); });
     }
 
-    void SpaceshipActor::PostLevelInit()
+    void SpaceshipActor::OnSceneOwnerInitialized()
     {
-        Actor::PostLevelInit();
-
         mUiComponent = GetComponentsByType<UiComponent>().back();
         mDamageTextFieldId = mUiComponent->CreateEmptyTextField("nimbus_mono",
                                                                 10,

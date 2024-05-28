@@ -50,7 +50,7 @@ namespace EngineCore
 
       void Teleport(const glm::vec3& teleportPosition) override;
 
-      void PostLevelInit() override;
+      void OnSceneOwnerInitialized() override;
 
    protected:
       glm::vec3 GetVelocity() const;

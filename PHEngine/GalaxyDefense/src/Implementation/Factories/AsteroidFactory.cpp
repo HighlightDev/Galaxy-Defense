@@ -92,6 +92,7 @@ namespace Game
         a_asteroid->AddComponent(c_ghostPhysics);
 
         scene->AddActorController(std::make_shared<AiActorController>(a_asteroid));
+        a_asteroid->SetScene(scene);
 
         return a_asteroid;
     }

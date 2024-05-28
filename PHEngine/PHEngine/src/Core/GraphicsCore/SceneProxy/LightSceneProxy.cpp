@@ -32,7 +32,7 @@ namespace Graphics
          }
       }
 
-      void LightSceneProxy::PostLevelInit()
+      void LightSceneProxy::PostInitialize()
       {
       }
 

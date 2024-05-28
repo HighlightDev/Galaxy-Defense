@@ -17,9 +17,9 @@ namespace EngineCore
       mCameraName = charMoveCompData->mCameraName;
    }
 
-   void HumanoidPhysicsMovementComponent::PostLevelInit()
+   void HumanoidPhysicsMovementComponent::OnSceneOwnerInitialized()
    {
-      MovementComponent::PostLevelInit();
+      MovementComponent::OnSceneOwnerInitialized();
 
       if (const auto &spOwner = GetOwner().lock())
       {
