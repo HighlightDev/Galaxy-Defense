@@ -99,14 +99,10 @@ namespace EngineCore
 
    SerializeDataActor &Component::GetSerializeDataActor(SerializeDataContainer &dataContainer)
    {
-      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor &actorData)
-                             {
-         bool bFindResult = false;
-         if (const auto& spOwner = GetOwner().lock())
-         {
-            bFindResult = actorData.ActorName == spOwner->GetName();
-         }
-         return bFindResult; });
+      const auto &spOwner = GetOwner().lock();
+      assert(spOwner);
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [&spOwner](const SerializeDataActor &actorData)
+                             { return actorData.ActorName == spOwner->GetName(); });
       assert(it != dataContainer.Actors.end());
       return *it;
    }
