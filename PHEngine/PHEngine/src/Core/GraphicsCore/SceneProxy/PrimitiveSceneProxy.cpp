@@ -76,6 +76,11 @@ namespace Graphics
          return true;
       }
 
+      eMeshFacing PrimitiveSceneProxy::GetMeshFrontFace() const
+      {
+         return eMeshFacing::COUNTER_CLOCK_WISE;
+      }
+
       bool PrimitiveSceneProxy::IsTransformIntialized() const
       {
          return bTransformInitialized;

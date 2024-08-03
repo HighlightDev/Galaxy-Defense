@@ -126,6 +126,7 @@ namespace Graphics
 				glBufferData(m_bufferTarget, m_allocatedBufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
 				glEnableVertexAttribArray(m_vertexAttribIndex);
 				this->SetVertexAttribPointerWithSpecificParams();
+				glVertexAttribDivisor(m_vertexAttribIndex, 0);
 
 				// If data on CPU is unnecessary
 				if (m_dataCarryFlag == eDataCarryFlag::INVALIDATE)

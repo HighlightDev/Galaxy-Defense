@@ -23,6 +23,7 @@
 #include "Core/GraphicsCore/PostFX/PostFxRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatcher.h"
 
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/PointLightDepthShader.h"
@@ -46,6 +47,7 @@ using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
 using namespace EnginePhysics;
 using namespace Event;
+using namespace Graphics::GeometryBatching;
 
 namespace EngineCore
 {
@@ -111,6 +113,8 @@ namespace Graphics
          std::vector<std::shared_ptr<SpotlightSceneProxy>> mSpotlightProxiesVec;
          std::vector<std::shared_ptr<PlanarReflectionProxy>> mPlanarReflectionProxiesVec;
          std::vector<std::pair<size_t, std::vector<std::shared_ptr<LightSceneProxy>>>> mGroupedByShadowAtlasLights;
+
+         std::unique_ptr<InstancedGeometryBatcher> mInstancedGeometryBatcher;
 
       public:
          DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr);

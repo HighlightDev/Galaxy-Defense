@@ -36,38 +36,38 @@ namespace EngineCore
 #endif
 
 #ifndef NO_LIT
-         u_PointLightDiffuseColor = GetUniformArray("PointLightDiffuseColor", cfg.MaxPointLightCount, shaderProgramId);
-         u_PointLightSpecularColor = GetUniformArray("PointLightSpecularColor", cfg.MaxPointLightCount, shaderProgramId);
-         u_PointLightAttenuation = GetUniformArray("PointLightAttenuation", cfg.MaxPointLightCount, shaderProgramId);
+         u_PointLightDiffuseColor = GetUniformArray("PointLightDiffuseColor", cfg.MaxPointLightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_PointLightSpecularColor = GetUniformArray("PointLightSpecularColor", cfg.MaxPointLightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_PointLightAttenuation = GetUniformArray("PointLightAttenuation", cfg.MaxPointLightCount, shaderProgramId, eShaderType::FragmentShader);
 
-         u_PointLightShadowMaps = GetUniformArray("PointLightShadowMaps", cfg.MaxPointLightShadowMapCount, shaderProgramId);
-         u_PointLightPositionWorld = GetUniformArray("PointLightPositionWorld", cfg.MaxPointLightCount, shaderProgramId);
-         u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", cfg.MaxPointLightShadowMapCount, shaderProgramId);
+         u_PointLightShadowMaps = GetUniformArray("PointLightShadowMaps", cfg.MaxPointLightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
+         u_PointLightPositionWorld = GetUniformArray("PointLightPositionWorld", cfg.MaxPointLightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", cfg.MaxPointLightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
          u_PointLightShadowMapCount = GetUniform("PointLightShadowMapCount", shaderProgramId);
          u_PointLightCount = GetUniform("PointLightCount", shaderProgramId);
 
-         u_DirLightAmbientColor = GetUniformArray("DirLightAmbientColor", cfg.MaxDirLightCount, shaderProgramId);
-         u_DirLightDiffuseColor = GetUniformArray("DirLightDiffuseColor", cfg.MaxDirLightCount, shaderProgramId);
-         u_DirLightSpecularColor = GetUniformArray("DirLightSpecularColor", cfg.MaxDirLightCount, shaderProgramId);
-         u_DirLightDirection = GetUniformArray("DirLightDirection", cfg.MaxDirLightCount, shaderProgramId);
+         u_DirLightAmbientColor = GetUniformArray("DirLightAmbientColor", cfg.MaxDirLightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_DirLightDiffuseColor = GetUniformArray("DirLightDiffuseColor", cfg.MaxDirLightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_DirLightSpecularColor = GetUniformArray("DirLightSpecularColor", cfg.MaxDirLightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_DirLightDirection = GetUniformArray("DirLightDirection", cfg.MaxDirLightCount, shaderProgramId, eShaderType::FragmentShader);
 
-         u_DirectionalLightShadowMaps = GetUniformArray("DirLightShadowMaps", cfg.MaxDirLightShadowMapCount, shaderProgramId);
-         u_DirectionalLightShadowMatrices = GetUniformArray("DirLightShadowMatrices", cfg.MaxDirLightShadowMapCount, shaderProgramId);
-         u_DirectionalLightAtlasOffset = GetUniformArray("DirLightShadowAtlasOffset", cfg.MaxDirLightShadowMapCount, shaderProgramId);
+         u_DirectionalLightShadowMaps = GetUniformArray("DirLightShadowMaps", cfg.MaxDirLightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
+         u_DirectionalLightShadowMatrices = GetUniformArray("DirLightShadowMatrices", cfg.MaxDirLightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
+         u_DirectionalLightAtlasOffset = GetUniformArray("DirLightShadowAtlasOffset", cfg.MaxDirLightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
          u_DirectionalLightShadowMapCount = GetUniform("DirLightShadowMapCount", shaderProgramId);
          u_DirectionalLightCount = GetUniform("DirLightCount", shaderProgramId);
 
-         u_SpotlightAmbientColor = GetUniformArray("SpotlightAmbientColor", cfg.MaxSpotlightCount, shaderProgramId);
-         u_SpotlightDiffuseColor = GetUniformArray("SpotlightDiffuseColor", cfg.MaxSpotlightCount, shaderProgramId);
-         u_SpotlightSpecularColor = GetUniformArray("SpotlightSpecularColor", cfg.MaxSpotlightCount, shaderProgramId);
-         u_SpotlightDirection = GetUniformArray("SpotlightDirection", cfg.MaxSpotlightCount, shaderProgramId);
-         u_SpotlightPosition = GetUniformArray("SpotlightPosition", cfg.MaxSpotlightCount, shaderProgramId);
-         u_SpotlightCutoff = GetUniformArray("SpotlightCutoff", cfg.MaxSpotlightCount, shaderProgramId);
+         u_SpotlightAmbientColor = GetUniformArray("SpotlightAmbientColor", cfg.MaxSpotlightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_SpotlightDiffuseColor = GetUniformArray("SpotlightDiffuseColor", cfg.MaxSpotlightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_SpotlightSpecularColor = GetUniformArray("SpotlightSpecularColor", cfg.MaxSpotlightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_SpotlightDirection = GetUniformArray("SpotlightDirection", cfg.MaxSpotlightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_SpotlightPosition = GetUniformArray("SpotlightPosition", cfg.MaxSpotlightCount, shaderProgramId, eShaderType::FragmentShader);
+         u_SpotlightCutoff = GetUniformArray("SpotlightCutoff", cfg.MaxSpotlightCount, shaderProgramId, eShaderType::FragmentShader);
 
-         u_SpotlightShadowMaps = GetUniformArray("SpotlightShadowMaps", cfg.MaxSpotlightShadowMapCount, shaderProgramId);
-         u_SpotlightShadowProjectionFarPlane = GetUniformArray("SpotlightShadowProjectionFarPlane", cfg.MaxSpotlightShadowMapCount, shaderProgramId);
-         u_SpotlightShadowMatrices = GetUniformArray("SpotlightShadowMatrices", cfg.MaxSpotlightShadowMapCount, shaderProgramId);
-         u_SpotlightAtlasOffset = GetUniformArray("SpotlightShadowAtlasOffset", cfg.MaxSpotlightShadowMapCount, shaderProgramId);
+         u_SpotlightShadowMaps = GetUniformArray("SpotlightShadowMaps", cfg.MaxSpotlightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
+         u_SpotlightShadowProjectionFarPlane = GetUniformArray("SpotlightShadowProjectionFarPlane", cfg.MaxSpotlightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
+         u_SpotlightShadowMatrices = GetUniformArray("SpotlightShadowMatrices", cfg.MaxSpotlightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
+         u_SpotlightAtlasOffset = GetUniformArray("SpotlightShadowAtlasOffset", cfg.MaxSpotlightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
          u_SpotlightShadowMapCount = GetUniform("SpotlightShadowMapCount", shaderProgramId);
          u_SpotlightCount = GetUniform("SpotlightCount", shaderProgramId);
 #endif

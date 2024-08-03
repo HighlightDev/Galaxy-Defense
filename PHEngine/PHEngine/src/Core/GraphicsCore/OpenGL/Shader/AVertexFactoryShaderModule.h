@@ -2,6 +2,7 @@
 
 #include "Shader.h"
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 

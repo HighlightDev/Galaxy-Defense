@@ -1,6 +1,9 @@
 #pragma once
 #include "AVertexFactoryMaterialShaderModule.h"
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
+#include "VertexFactoryShader.h"
+
+#include <type_traits>
 
 namespace Graphics
 {
@@ -37,7 +40,10 @@ namespace Graphics
             return mBaseShader;
          }
 
-         std::shared_ptr<VertexFactoryShaderType> GetVertexFactoryShader() const
+         std::shared_ptr<
+             typename std::enable_if<std::is_base_of< VertexFactoryShader, VertexFactoryShaderType>::value,
+                                     VertexFactoryShaderType>::type>
+         GetVertexFactoryShader() const
          {
             return std::static_pointer_cast<VertexFactoryShaderType>(mVertexFactoryShader);
          }

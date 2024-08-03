@@ -50,8 +50,16 @@ namespace Graphics
 		{
 			static std::string GetValue(int32_t value)
 			{
-				EngineUtility::StringStreamWrapper::ToString(value);
-				return EngineUtility::StringStreamWrapper::FlushString();
+				return std::to_string(value);
+			}
+		};
+
+		template <>
+		struct MacroConverter<uint32_t>
+		{
+			static std::string GetValue(uint32_t value)
+			{
+				return std::to_string(value);
 			}
 		};
 

@@ -10,6 +10,7 @@ namespace EngineUtility
     struct EngineConfig
     {
         size_t MaxSkeletBones{0};
+        size_t MaxStaticMeshInstancesPerBatch{0};
 
         size_t MaxDirLightCount{0};
         size_t MaxDirLightShadowMapCount{0};

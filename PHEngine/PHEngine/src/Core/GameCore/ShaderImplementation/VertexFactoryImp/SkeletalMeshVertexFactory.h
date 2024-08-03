@@ -35,7 +35,7 @@ namespace EngineCore
          u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
          u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
          u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
-         u_boneMatrices = GetUniformArray("bonesMatrices", MaxBones, shaderProgramID);
+         u_boneMatrices = GetUniformArray("bonesMatrices", MaxBones, shaderProgramID, eShaderType::VertexShader);
       }
 
       void SetMatrices(const glm::mat4 &worldMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)

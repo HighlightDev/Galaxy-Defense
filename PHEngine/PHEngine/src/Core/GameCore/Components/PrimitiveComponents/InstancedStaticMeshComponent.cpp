@@ -1,7 +1,7 @@
 #include "InstancedStaticMeshComponent.h"
-#include "Core/GraphicsCore/SceneProxy/StaticMeshSceneProxy.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/ComponentData/InstancedMeshComponentData.h"
+#include "Core/GraphicsCore/SceneProxy/InstancedStaticMeshSceneProxy.h"
 
 #include <memory>
 #include <algorithm>
@@ -69,8 +69,7 @@ namespace EngineCore
 
     std::shared_ptr<PrimitiveSceneProxy> InstancedStaticMeshComponent::CreateSceneProxy() const
     {
-        return nullptr;
-        //return std::make_shared<StaticMeshSceneProxy>(this);
+        return std::make_shared<InstancedStaticMeshSceneProxy>(this);
     }
 
     eComponentType InstancedStaticMeshComponent::GetComponentType() const

@@ -10,7 +10,7 @@ namespace Graphics
 		VertexArrayObject::VertexArrayObject()
 			: m_ibo(nullptr)
 		{
-			LogInfo( "VertexArrayObject::ctor");
+			LogInfo("VertexArrayObject::ctor");
 			GenVAO();
 		}
 
@@ -42,7 +42,7 @@ namespace Graphics
 		{
 			assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 			glGenVertexArrays(1, &m_descriptor);
-			LogInfo( "VertexArrayObject::GenVAO => descriptor = ", m_descriptor);
+			LogInfo("VertexArrayObject::GenVAO => descriptor = ", m_descriptor);
 		}
 
 		void VertexArrayObject::RenderVAO(const int32_t primitiveMode)
@@ -80,20 +80,27 @@ namespace Graphics
 			glBindVertexArray(m_descriptor);
 			VertexBufferObjectBase *positionVBO = GetVboByAttribArrayIndexName("VertexPosition");
 			assert(positionVBO);
-			glDrawArraysInstanced(primitiveMode, 0, positionVBO->GetCountOfIndices(), primitivesCount);
+			if (HasIBO())
+			{
+				glDrawElementsInstanced(primitiveMode, m_ibo->GetCountOfIndices(), GL_UNSIGNED_INT, 0, primitivesCount);
+			}
+			else
+			{
+				glDrawArraysInstanced(primitiveMode, 0, positionVBO->GetCountOfIndices(), primitivesCount);
+			}
 			glBindVertexArray(0);
 		}
 
 		void VertexArrayObject::AddIndexBuffer(IndexBufferObject *ibo)
 		{
-			LogInfo( "VertexArrayObject::AddIndexBuffer => descriptor = ", m_descriptor,
-						"IBO descriptor = ", ibo->GetDescriptor());
+			LogInfo("VertexArrayObject::AddIndexBuffer => descriptor = ", m_descriptor,
+					"IBO descriptor = ", ibo->GetDescriptor());
 			m_ibo = ibo;
 		}
 
 		void VertexArrayObject::BindBuffersToVao()
 		{
-			LogInfo( "VertexArrayObject::BindBuffersToVao => descriptor = ", m_descriptor);
+			LogInfo("VertexArrayObject::BindBuffersToVao => descriptor = ", m_descriptor);
 
 			glBindVertexArray(m_descriptor);
 
@@ -120,7 +127,7 @@ namespace Graphics
 
 		void VertexArrayObject::CleanUp()
 		{
-			LogInfo( "VertexArrayObject::CleanUp => descriptor = ", m_descriptor);
+			LogInfo("VertexArrayObject::CleanUp => descriptor = ", m_descriptor);
 
 			glBindVertexArray(0);
 

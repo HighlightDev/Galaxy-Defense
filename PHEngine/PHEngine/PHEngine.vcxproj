@@ -1040,7 +1040,7 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\IndexBufferObject.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\DataCarryFlag.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderType.h" />
-    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderPredefineUtility.h" />
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderUtilityFunctions.h" />
     <ClInclude Include="src\Core\UtilityCore\AssimpToGlmConverter.h" />
     <ClInclude Include="src\Core\UtilityCore\EngineConfigHolder.h" />
     <ClInclude Include="src\Core\UtilityCore\EngineMath.h" />

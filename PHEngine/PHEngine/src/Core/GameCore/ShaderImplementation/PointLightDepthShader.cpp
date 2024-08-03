@@ -12,8 +12,8 @@ namespace EngineCore
       void PointLightDepthCollectShader::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
          Shader::AccessAllUniformLocations(shaderProgramId);
-         u_shadowViewMatrices = GetUniformArray("shadowViewMatrices", 6, shaderProgramId);
-         u_shadowProjectionMatrices = GetUniformArray("shadowProjectionMatrices", 6, shaderProgramId);
+         u_shadowViewMatrices = GetUniformArray("shadowViewMatrices", 6, shaderProgramId, eShaderType::VertexShader);
+         u_shadowProjectionMatrices = GetUniformArray("shadowProjectionMatrices", 6, shaderProgramId, eShaderType::VertexShader);
          u_pointLightPos = GetUniform("pointLightPos", shaderProgramId);
          u_farPlane = GetUniform("farPlane", shaderProgramId);
       }

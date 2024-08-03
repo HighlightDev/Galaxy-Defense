@@ -13,7 +13,6 @@ namespace Graphics
 {
    namespace Mesh
    {
-
       class Skin
       {
 

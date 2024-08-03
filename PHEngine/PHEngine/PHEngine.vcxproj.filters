@@ -1256,7 +1256,7 @@
     <ClInclude Include="Dependencies\GLM\include\glm\vector_relational.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderPredefineUtility.h">
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderUtilityFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\MeshAllocationPolicy.h">

@@ -1,7 +1,7 @@
 #pragma once
 #include "ShaderType.h"
 #include "ShaderPredefine.h"
-#include "ShaderPredefineUtility.h"
+#include "ShaderUtilityFunctions.h"
 #include "ShaderParams.h"
 #include "IShader.h"
 #include "Core/GameCore/LoggerExtension.h"

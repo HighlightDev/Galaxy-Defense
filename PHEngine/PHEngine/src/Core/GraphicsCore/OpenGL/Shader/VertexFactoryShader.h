@@ -1,6 +1,6 @@
 #pragma once
 #include "IShader.h"
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderPredefineUtility.h"
+#include "Core/GraphicsCore/OpenGL/Shader/ShaderUtilityFunctions.h"
 
 namespace Graphics
 {

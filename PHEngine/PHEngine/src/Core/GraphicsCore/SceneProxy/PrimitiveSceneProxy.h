@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
 
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
@@ -43,7 +44,8 @@ namespace Graphics
       {
          PRIMITIVE_PROXY,
          STATIC_MESH_PROXY,
-         SKELETAL_MESH_PROXY
+         SKELETAL_MESH_PROXY,
+         INDIRECT_RENDERED_PROXY
       };
 
       enum class eMeshFacing
@@ -104,7 +106,7 @@ namespace Graphics
 
          virtual bool CanBloomBeApplied() const;
 
-         virtual eMeshFacing GetMeshFrontFace() const = 0;
+         virtual eMeshFacing GetMeshFrontFace() const;
 
          virtual bool IsTransformIntialized() const;
 
@@ -115,12 +117,13 @@ namespace Graphics
 
          int32_t GetSortOrderValue() const;
 
-      protected:
+      public:
          template <typename VertexFactoryType, typename BaseShaderType>
-         typename CompositeShaderPool::sharedValue_t
+         static std::enable_if_t<std::is_base_of_v<VertexFactoryShader, VertexFactoryType> && std::is_base_of_v<Shader, BaseShaderType>,
+                                 typename CompositeShaderPool::sharedValue_t>
          CreateMaterialShader(const std::string &compositeShaderName,
                               const ShaderParams &shaderParams,
-                              std::shared_ptr<MaterialProxy> materialProxy) const
+                              std::shared_ptr<MaterialProxy> materialProxy)
          {
             CompositeMaterialShaderParams compositeParams(compositeShaderName,
                                                           shaderParams,

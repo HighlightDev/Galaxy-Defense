@@ -16,6 +16,8 @@
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/GameCore/TextHandler.h"
 #include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/InstancedStaticMeshSceneProxy.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatch.h"
 #include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
@@ -220,7 +222,7 @@ namespace Graphics
          return m_interThreadMgr;
       }
 
-      void DeferredShadingSceneRenderer::OnWindowSizeChanged(const ViewPortInfo& viewPortInfo)
+      void DeferredShadingSceneRenderer::OnWindowSizeChanged(const ViewPortInfo &viewPortInfo)
       {
          m_gbuffer->ResizeRenderTargets(viewPortInfo);
          m_resolvedSceneFramebuffer->ResizeRenderTargets(viewPortInfo);
@@ -485,6 +487,14 @@ namespace Graphics
          // Deferred shading collect info
          m_gbuffer->BindDeferredGBuffer();
 
+         const auto &viewMatrix = cameraProxy->GetViewMatrix();
+         const auto &projectionMatrix = cameraProxy->GetProjectionMatrix();
+
+         if (mInstancedGeometryBatcher)
+         {
+            mInstancedGeometryBatcher->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix);
+         }
+
          if (mSkeletalProxiesVec.size() > 0)
          {
             for (auto &proxy : mSkeletalProxiesVec)
@@ -495,7 +505,7 @@ namespace Graphics
                                           sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
                if (bShouldRender)
                {
-                  proxy->Render(cameraProxy, cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+                  proxy->Render(cameraProxy, viewMatrix, projectionMatrix);
                }
             }
          }
@@ -510,7 +520,7 @@ namespace Graphics
                                           sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
                if (bShouldRender)
                {
-                  proxy->Render(cameraProxy, cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+                  proxy->Render(cameraProxy, viewMatrix, projectionMatrix);
                }
             }
          }
@@ -810,16 +820,20 @@ namespace Graphics
 
             for (auto &proxy : PrimitiveProxiesVector)
             {
-               if (proxy->IsDeferred())
+               const auto primitiveProxyType = proxy->GetPrimitiveProxyType();
+               if (primitiveProxyType != ePrimitiveProxyType::INDIRECT_RENDERED_PROXY)
                {
-                  if (proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY)
-                     mSkeletalProxiesVec.emplace_back(std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy));
+                  if (proxy->IsDeferred())
+                  {
+                     if (proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY)
+                        mSkeletalProxiesVec.emplace_back(std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy));
+                     else
+                        mNonSkeletalProxiesVec.emplace_back(proxy);
+                  }
                   else
-                     mNonSkeletalProxiesVec.emplace_back(proxy);
-               }
-               else
-               {
-                  mForwardRenderingProxiesVec.emplace_back(proxy);
+                  {
+                     mForwardRenderingProxiesVec.emplace_back(proxy);
+                  }
                }
             }
             SetProxiesAreDirty(false);
@@ -1227,7 +1241,28 @@ namespace Graphics
             primitiveSceneProxy->PostConstructorInitialize();
             PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
             SetProxiesAreDirty(true);
-            primitiveComponent->SetIsSceneProxyReady(true); });
+            primitiveComponent->SetIsSceneProxyReady(true);
+
+            // todo: this is a temprorary solution
+            if (ePrimitiveProxyType::INDIRECT_RENDERED_PROXY == primitiveSceneProxy->GetPrimitiveProxyType()) {
+               if (!mInstancedGeometryBatcher) {
+                  mInstancedGeometryBatcher = std::make_unique<InstancedGeometryBatcher>();
+               }
+               const auto& instancedStaticMeshSceneProxy = std::dynamic_pointer_cast<InstancedStaticMeshSceneProxy>(primitiveSceneProxy);
+               assert(instancedStaticMeshSceneProxy);
+               if (mInstancedGeometryBatcher->CheckIfBatchExists(instancedStaticMeshSceneProxy->GetBatchKey()))
+               {
+                  const auto& batch = mInstancedGeometryBatcher->GetBatch(instancedStaticMeshSceneProxy->GetBatchKey());
+                  batch->AddInstancedStaticMeshSceneProxy(instancedStaticMeshSceneProxy);
+               }
+               else 
+               {
+                  const auto& batch = std::make_shared<InstancedGeometryBatch>(instancedStaticMeshSceneProxy);
+                  const bool bSuccess = mInstancedGeometryBatcher->TryToAddBatch(batch);
+                  assert(bSuccess);
+                  batch->Initialize();
+               }
+            } });
       }
 
       void DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightComponent> &lightComponent, const std::shared_ptr<LightSceneProxy> &lightSceneProxy)
@@ -1241,8 +1276,7 @@ namespace Graphics
             LightProxiesVector.emplace_back(lightSceneProxy);
             SetLightProxiesAreDirty(true);
             lightComponent->SetIsSceneProxyReady(true);
-            lightSceneProxy->PostInitialize();
-         });
+            lightSceneProxy->PostInitialize(); });
       }
 
       void DeferredShadingSceneRenderer::RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate)

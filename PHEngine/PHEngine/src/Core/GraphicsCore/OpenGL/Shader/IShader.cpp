@@ -51,17 +51,23 @@ namespace Graphics
          }
       }
 
-      UniformArray IShader::GetUniformArray(const std::string &uniformName, size_t countOfUniforms, uint32_t shaderProgramID) const
+      UniformArray IShader::GetUniformArray(const std::string &uniformName,
+                                            size_t countOfUniforms,
+                                            uint32_t shaderProgramID,
+                                            const eShaderType shaderType) const
       {
-         try
-         {
-            return UniformArray(shaderProgramID, countOfUniforms, uniformName);
-         }
-         catch (std::invalid_argument innerEx)
-         {
-            LogInfo("IShader::GetUniform => shaderName = ", mShaderName, " could not bind uniform. Inner exception message : \n", innerEx.what());
-            throw std::invalid_argument("IShader::GetUniform could not bind uniform");
-         }
+         static std::unordered_map<eShaderType, GLenum> s_mapShaderTypeToUniformShaderType = {
+             {eShaderType::VertexShader, GL_MAX_VERTEX_UNIFORM_COMPONENTS},
+             {eShaderType::FragmentShader, GL_MAX_FRAGMENT_UNIFORM_COMPONENTS},
+             {eShaderType::GeometryShader, GL_MAX_GEOMETRY_UNIFORM_COMPONENTS}};
+         assert(s_mapShaderTypeToUniformShaderType.count(shaderType));
+         GLint maxUniforms;
+         glGetIntegerv(s_mapShaderTypeToUniformShaderType.at(shaderType), &maxUniforms);
+         ext_assert(maxUniforms >= countOfUniforms,
+                    "Requested amount of uniforms is not supported by this type of shader. maxUniformsSupported: " + std::to_string(maxUniforms) +
+                        ", requested: " + std::to_string(countOfUniforms) +
+                        ", shaderType: " + std::to_string(static_cast<int8_t>(shaderType)));
+         return UniformArray(shaderProgramID, countOfUniforms, uniformName);
       }
 
       int32_t IShader::GetAttributeLocationByName(const std::string &attributeName) const

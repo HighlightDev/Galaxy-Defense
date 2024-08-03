@@ -4,6 +4,7 @@
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "ShaderPredefine.h"
+#include "ShaderType.h"
 
 #include <cstddef>
 #include <string>
@@ -27,13 +28,16 @@ namespace Graphics
 
          virtual ~IShader();
 
-         bool operator==(const IShader& right) const;
+         bool operator==(const IShader &right) const;
 
          Uniform GetUniform(const std::string &uniformName, uint32_t shaderProgramID) const;
 
-         UniformArray GetUniformArray(const std::string &uniformName, size_t countOfUniforms, uint32_t shaderProgramID) const;
+         UniformArray GetUniformArray(const std::string &uniformName,
+                                      size_t countOfUniforms,
+                                      uint32_t shaderProgramID,
+                                      const eShaderType shaderType) const;
 
-         int32_t GetAttributeLocationByName(const std::string& attributeName) const;
+         int32_t GetAttributeLocationByName(const std::string &attributeName) const;
 
          std::string GetCompileLogInfo() const;
 
@@ -49,12 +53,12 @@ namespace Graphics
 
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID);
          virtual void AccessAllSubroutineIndices(uint32_t shaderProgramID);
-         virtual void SetShaderPredefine(){};
-         virtual void ProcessAllPredefines(){};
+         virtual void SetShaderPredefine() {};
+         virtual void ProcessAllPredefines() {};
          virtual void BindAttributeLocations(const int32_t shaderProgramId) {}
 
 #if DEBUG
-         virtual void RecompileShader(){};
+         virtual void RecompileShader() {};
 #endif
 
          void ProcessPredefineToFile(const std::string &pathToShader,

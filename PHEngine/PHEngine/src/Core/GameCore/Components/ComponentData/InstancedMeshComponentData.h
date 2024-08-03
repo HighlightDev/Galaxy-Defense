@@ -11,8 +11,8 @@ namespace EngineCore
    struct InstancedMeshComponentData : public ComponentData
    {
       InstancedMeshComponentData(const std::string &gameObjectName,
-                        const std::string &pathToMesh,
-                        const std::shared_ptr<Graphics::IMaterial> &material)
+                                 const std::string &pathToMesh,
+                                 const std::shared_ptr<Graphics::IMaterial> &material)
           : ComponentData(gameObjectName),
             m_pathToMesh(pathToMesh),
             m_material(material)

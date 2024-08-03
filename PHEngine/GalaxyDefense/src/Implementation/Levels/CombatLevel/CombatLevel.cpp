@@ -19,7 +19,9 @@
 
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/InstancedStaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
+#include "Core/GameCore/Components/ComponentData/InstancedMeshComponentData.h"
 
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
@@ -33,6 +35,7 @@
 #include "Implementation/Levels/LevelSerializationHelper.h"
 
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
+#include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 #include "Core/GameCore/BoundingBox3D.h"
@@ -153,6 +156,37 @@ namespace Game
       mCombatController->InitFromLevelData(levelData);
       mCombatController->OnLevelInit();
       mUiController->OnLevelInit();
+
+      const std::shared_ptr<IMaterial> &asteroidPbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+      sceneSp->RegisterMaterialInstance(asteroidPbs_mat);
+
+      const std::string albedoName = "Asteroid_albedo.jpg";
+      const std::string normalName = "Asteroid_normal.jpg";
+      const std::string roughnessName = "Asteroid_roughness.jpg";
+      const std::string metallicName = "Asteroid_metallic.jpg";
+
+      const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoName);
+      const auto &normal_tex = TexturePool::GetInstance()->GetOrAllocateResource(normalName);
+      const auto &roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughnessName);
+      const auto &metallic_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallicName);
+      const float uvScale = 1.0f;
+
+      MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "albedo", albedo_tex);
+      MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "normalMap", normal_tex);
+      MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "roughnessMap", roughness_tex);
+      MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "metallicMap", metallic_tex);
+      MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "uvScale", uvScale);
+
+      auto instancedMeshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
+      for (int i = 0; i < 100; ++i)
+      { 
+         const auto d_ismesh = std::make_shared<InstancedMeshComponentData>("c_instancedStaticMesh" + std::to_string(i), "asteroid.fbx", asteroidPbs_mat);
+         const auto &c_ismesh = std::static_pointer_cast<InstancedStaticMeshComponent>(sceneSp->CreateComponent_GameThread(instancedMeshComponentCreator, d_ismesh));
+         c_ismesh->SetScale(glm::vec3(50));
+         c_ismesh->SetTranslation(glm::vec3(i * (2.0), 0.0f,  0.0f));
+         a_sceneCenterActorDummy->AddComponent(c_ismesh);
+         a_sceneCenterActorDummy->SetScene(sceneSp);
+      }
    }
 
    void CombatLevel::PostLevelInit()
