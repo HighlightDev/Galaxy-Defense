@@ -1,10 +1,13 @@
 #include "InstancedStaticMeshSceneProxy.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatcher.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatch.h"
 
 using namespace Graphics::Renderer;
 using namespace EngineCore;
 using namespace Resources;
+using namespace Graphics::GeometryBatching;
 
 namespace Graphics
 {
@@ -23,10 +26,22 @@ namespace Graphics
 
       void InstancedStaticMeshSceneProxy::PostConstructorInitialize()
       {
-         // either add current scene proxy to existing batch or create a new batch and add scene proxy to it
-
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
          {
+            const auto &batcherSp = deferredShadingSceneRendererSp->GetInstancedGeometryBatcher();
+
+            if (batcherSp->CheckIfBatchExists(GetBatchKey()))
+            {
+               const auto &batch = batcherSp->GetBatch(GetBatchKey());
+               batch->AddInstancedStaticMeshSceneProxy(shared_from_this());
+            }
+            else
+            {
+               const auto &batch = std::make_shared<InstancedGeometryBatch>(shared_from_this());
+               const bool bSuccess = batcherSp->TryToAddBatch(batch);
+               assert(bSuccess);
+               batch->Initialize();
+            }
          }
       }
 

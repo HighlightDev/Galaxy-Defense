@@ -114,7 +114,7 @@ namespace Graphics
          std::vector<std::shared_ptr<PlanarReflectionProxy>> mPlanarReflectionProxiesVec;
          std::vector<std::pair<size_t, std::vector<std::shared_ptr<LightSceneProxy>>>> mGroupedByShadowAtlasLights;
 
-         std::unique_ptr<InstancedGeometryBatcher> mInstancedGeometryBatcher;
+         std::shared_ptr<InstancedGeometryBatcher> mInstancedGeometryBatcher;
 
       public:
          DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr);
@@ -224,6 +224,8 @@ namespace Graphics
          void TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible);
 
          InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
+
+         std::shared_ptr<InstancedGeometryBatcher> GetInstancedGeometryBatcher() const;
 
          void OnWindowSizeChanged(const ViewPortInfo& viewPortInfo);
 

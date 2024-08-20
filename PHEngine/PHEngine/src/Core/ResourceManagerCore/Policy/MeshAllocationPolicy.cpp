@@ -53,7 +53,7 @@ namespace Resources
 					if (eAttribArrayIndex::VertexBlendIndex == standartAttribute->GetAttribArrayIndex() &&
 						meshAttributes->BoneIndices.size())
 					{
-						auto blendIndicesVBO = new VertexBufferObject<int32_t>(std::move(meshAttributes->BoneIndices),
+						auto blendIndicesVBO = new VertexBufferObject<int32_t>(meshAttributes->BoneIndices,
 																			   standartAttribute->GetAttributeName(),
 																			   standartAttribute->GetAttributeIndex(),
 																			   GL_INT,
@@ -69,25 +69,25 @@ namespace Resources
 						{
 						case eAttribArrayIndex::VertexPosition:
 						{
-							data = std::move(meshAttributes->Positions);
+							data = meshAttributes->Positions;
 							BoundingBoxBuilder builder;
 							boundingBox = builder.Build(data);
 							break;
 						}
 						case eAttribArrayIndex::VertexNormal:
-							data = std::move(meshAttributes->Normals);
+							data = meshAttributes->Normals;
 							break;
 						case eAttribArrayIndex::VertexTexCoords:
-							data = std::move(meshAttributes->TextureCoordinates);
+							data = meshAttributes->TextureCoordinates;
 							break;
 						case eAttribArrayIndex::VertexTangent:
-							data = std::move(meshAttributes->TangentNormals);
+							data = meshAttributes->TangentNormals;
 							break;
 						case eAttribArrayIndex::VertexBitangent:
-							data = std::move(meshAttributes->BitangetNormals);
+							data = meshAttributes->BitangetNormals;
 							break;
 						case eAttribArrayIndex::VertexBlendWeights:
-							data = std::move(meshAttributes->BoneWeights);
+							data = meshAttributes->BoneWeights;
 							break;
 
 						default:
@@ -97,7 +97,7 @@ namespace Resources
 
 						if (data.size())
 						{
-							auto vbo = new VertexBufferObject<float>(std::move(data),
+							auto vbo = new VertexBufferObject<float>(data,
 																	 standartAttribute->GetAttributeName(),
 																	 standartAttribute->GetAttributeIndex(),
 																	 standartAttribute->GetAttributeComponentDataType() == eAttributeComponentDataType::FLOAT ? GL_FLOAT : GL_INT,
@@ -112,7 +112,7 @@ namespace Resources
 
 			if (meshAttributes->VertexIndices.size())
 			{
-				const auto &ibo = new IndexBufferObject(std::move(meshAttributes->VertexIndices), eDataCarryFlag::INVALIDATE);
+				const auto &ibo = new IndexBufferObject(meshAttributes->VertexIndices, eDataCarryFlag::INVALIDATE);
 				vao->AddIndexBuffer(ibo);
 			}
 
@@ -128,8 +128,6 @@ namespace Resources
 			{
 				resultSkin = std::make_shared<Skin>(vao, boundingBox);
 			}
-
-			ResourceMap::GetInstance()->UnloadResource(arg.mModelPath);
 		}
 
 		return resultSkin;

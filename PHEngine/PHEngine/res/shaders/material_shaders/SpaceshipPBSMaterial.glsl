@@ -56,3 +56,8 @@ vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
     vec3 mixedIceNormalTangentSpace = mix(normal, normal_ice, smoothstep(0.0, 0.5, freezingEffect));
     return transformNormalFromTangentSpaceToWorld(materialIn,mixedIceNormalTangentSpace);
 }
+
+vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
+{
+    return vec4(0.0);
+}

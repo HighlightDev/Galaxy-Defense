@@ -30,6 +30,7 @@ uniform sampler2D gBuffer_Position;
 uniform sampler2D gBuffer_Normal;
 uniform sampler2D gBuffer_Albedo;
 uniform sampler2D gBuffer_MetallicRoughness;
+uniform sampler2D gBuffer_Emission;
 
 uniform sampler2D DirLightShadowMaps[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
 // todo: IMPORTANT!! some vendors don't support array of cubemap samplers,
@@ -191,9 +192,7 @@ float gaSchlickG1(float cosTheta, float k) {
 // method.
 float gaSchlickGGX(float cosLi, float cosLo, float roughness) {
   float r = roughness + 1.0;
-  float k =
-      (r * r) /
-      8.0; // Epic suggests using this roughness remapping for analytic lights.
+  float k = (r * r) / 8.0; // Epic suggests using this roughness remapping for analytic lights.
   return gaSchlickG1(cosLi, k) * gaSchlickG1(cosLo, k);
 }
 
@@ -502,6 +501,7 @@ void main() {
   vec3 albedo = texture(gBuffer_Albedo, fs_in.tex_coords).rgb;
   vec2 metallicRoughness =
       texture(gBuffer_MetallicRoughness, fs_in.tex_coords).rg;
+  vec4 emissionColor = texture(gBuffer_Emission, fs_in.tex_coords);
 
 #ifdef SHADING_MODEL_PBR
   vec3 ambientColor = (1.0 - step(1, DirLightCount)) * GetAmbientColor();
@@ -519,8 +519,8 @@ void main() {
 
 #ifdef GAMMA_CORRECTION
   const float gammaCorrection = 1.0 / 2.2;
-  FragColor = vec4(pow(totalColor.rgb, vec3(gammaCorrection)), 1.0);
+  FragColor = vec4(mix(pow(totalColor.rgb, vec3(gammaCorrection)), emissionColor.rgb, emissionColor.a), 1.0);
 #else
-  FragColor = totalColor;
+  FragColor = vec4(mix(totalColor.rgb, emissionColor.rgb, emissionColor.a), 1.0);
 #endif
 }

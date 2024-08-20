@@ -26,8 +26,10 @@ namespace EngineCore
          m_rotateSensetivity(0.08f),
          mCameraName(cameraName),
          mViewProjectionInfo(viewProjectionInfo),
-         mScene(scene), mPlanarReflectionComponent(nullptr),
-         mViewPort(viewPort), m_localSpaceRightVector(1, 0, 0),
+         mScene(scene),
+         mPlanarReflectionComponent(nullptr),
+         mViewPort(viewPort),
+         m_localSpaceRightVector(1, 0, 0),
          m_localSpaceUpVector(0, 1, 0),
          m_localSpaceForwardVector(0, 0, 1),
          m_eyeSpaceRightVector(1, 0, 0),
@@ -35,8 +37,10 @@ namespace EngineCore
          mPitchClampValue_min_max(-80, 80),
          mPitch(std::clamp(initPitchDeg, mPitchClampValue_min_max.x, mPitchClampValue_min_max.y)),
          mYaw(initYawDeg),
-         m_cameraType(cameraType)
+         m_cameraType(cameraType),
+         mCameraPositionProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(), "CameraPosition"))
    {
+      AddEngineProperty(mCameraPositionProperty);
    }
 
    ACamera::~ACamera()
@@ -134,6 +138,7 @@ namespace EngineCore
          bTransformationDirty = false;
          OnTransformationUpdated();
          UpdateCameraProxyData();
+         mCameraPositionProperty->SetValue(GetEyeVector(), false);
       }
    }
 
@@ -273,7 +278,7 @@ namespace EngineCore
       return mViewPort;
    }
 
-   const std::shared_ptr<ViewProjectionInfo>& ACamera::GetViewProjectionInfo() const
+   const std::shared_ptr<ViewProjectionInfo> &ACamera::GetViewProjectionInfo() const
    {
       return mViewProjectionInfo;
    }

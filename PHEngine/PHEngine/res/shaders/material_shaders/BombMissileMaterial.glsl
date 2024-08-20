@@ -8,10 +8,21 @@ uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D ambientOcclusionMap;
 uniform float uvScale;
+uniform vec3 cameraPosition;
+
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn);
+
+float CalculateFresnell(in vec3 viewDir, in MATERIAL_VS_OUTPUT materialIn)
+{
+	float fresnel = clamp(0.0, 1.0, 1.0 - dot(viewDir, GetMaterialWorldNormal(materialIn)));
+	return pow(fresnel, 2.0);
+}
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return texture(albedo, materialIn.TextureCoordinates.xy * uvScale).rgb;
+	vec3 viewDir = normalize(cameraPosition - materialIn.WorldCoordinates.xyz);
+	float fresnel = CalculateFresnell(viewDir, materialIn);
+	return mix(texture(albedo, materialIn.TextureCoordinates.xy * uvScale).rgb, vec3(1, 0, 0), fresnel);
 }
 
 vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
@@ -40,5 +51,7 @@ vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 
 vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return vec4(0.0);
+	vec3 viewDir = normalize(cameraPosition - materialIn.WorldCoordinates.xyz);
+	float fresnel = CalculateFresnell(viewDir, materialIn);
+	return vec4(1, 0, 0, fresnel);
 }

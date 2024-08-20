@@ -112,7 +112,6 @@ namespace Graphics
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, texParam.TexMinFilter);
 
 				m_texParams.emplace_back(std::move(texParam));
-				ResourceMap::GetInstance()->UnloadResource(pathToTextures[texIndex]);
 			}
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

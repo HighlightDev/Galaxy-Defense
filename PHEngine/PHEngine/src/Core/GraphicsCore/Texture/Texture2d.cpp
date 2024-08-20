@@ -105,7 +105,6 @@ namespace Graphics
          }
 
          const auto resultTexture = CreateTexture(texResource->DATA);
-         ResourceMap::GetInstance()->UnloadResource(pathToTex);
          return resultTexture;
       }
 

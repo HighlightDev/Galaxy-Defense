@@ -3,7 +3,7 @@
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderUtilityFunctions.h"
 #include "Core/ResourceManagerCore/Pool/PoolParameters/MeshPoolParameters.h"
-#include "Core/ResourceManagerCore/Pool/MeshPool.h"
+#include "Core/ResourceManagerCore/Pool/InstancedMeshPool.h"
 
 using namespace Graphics;
 using namespace Graphics::Proxy;
@@ -35,7 +35,7 @@ namespace Graphics::GeometryBatching
         poolParameters.mModelPath = m_renderData.mModelPath;
         poolParameters.mVertexAttributes = GetShader()->GetVertexAttributes();
 
-        m_skin = MeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
+        m_skin = InstancedMeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
     }
 
     std::string InstancedGeometryBatch::GetBatchKey() const

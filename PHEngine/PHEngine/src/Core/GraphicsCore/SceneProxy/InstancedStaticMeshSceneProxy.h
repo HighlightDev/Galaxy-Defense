@@ -12,7 +12,10 @@ namespace Graphics
    namespace Proxy
    {
 
-      class InstancedStaticMeshSceneProxy : public PrimitiveSceneProxy
+      class InstancedStaticMeshSceneProxy
+          : public PrimitiveSceneProxy,
+            public std::enable_shared_from_this<InstancedStaticMeshSceneProxy>
+
       {
          using Base = PrimitiveSceneProxy;
 

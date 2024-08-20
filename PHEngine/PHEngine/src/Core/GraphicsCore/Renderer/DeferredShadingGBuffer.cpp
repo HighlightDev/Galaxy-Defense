@@ -24,6 +24,7 @@ namespace Graphics
       mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT1, m_normalBuffer);
       mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT2, m_albedoBuffer);
       mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT3, m_metallicRoughnessBuffer);
+      mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT4, m_emissionBuffer);
    }
 
    void DeferredShadingGBuffer::SetFramebuffers()
@@ -54,6 +55,7 @@ namespace Graphics
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_normalBuffer);
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_albedoBuffer);
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_metallicRoughnessBuffer);
+      RenderTargetPool::GetInstance()->TryToFreeMemory(m_emissionBuffer);
    }
 
    void DeferredShadingGBuffer::AllocateTextures()
@@ -138,6 +140,22 @@ namespace Graphics
                                             GL_REPEAT, true);
          m_metallicRoughnessBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(metalllicRoughnessParams);
       }
+
+      // Emission texture
+      {
+         TexParams emissionParams(mViewPortInfo.Width,
+                                  mViewPortInfo.Height,
+                                  GL_TEXTURE_2D,
+                                  GL_NEAREST,
+                                  GL_NEAREST,
+                                  0,
+                                  GL_RGBA,
+                                  GL_RGBA,
+                                  GL_UNSIGNED_BYTE,
+                                  GL_REPEAT,
+                                  true);
+         m_emissionBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(emissionParams);
+      }
    }
 
    void DeferredShadingGBuffer::BindDeferredGBuffer()
@@ -179,6 +197,11 @@ namespace Graphics
       m_metallicRoughnessBuffer->BindTexture(slot);
    }
 
+   void DeferredShadingGBuffer::BindEmissionTexture(const int32_t slot)
+   {
+      m_emissionBuffer->BindTexture(slot);
+   }
+
    void DeferredShadingGBuffer::CopyFramebufferDataToDefaultFramebuffer(const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
                                                                         const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit)
    {
@@ -204,6 +227,7 @@ namespace Graphics
       mFramebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT1, m_normalBuffer);
       mFramebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT2, m_albedoBuffer);
       mFramebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT3, m_metallicRoughnessBuffer);
+      mFramebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT4, m_emissionBuffer);
 
       mFramebuffer->RebindFramebufferTextures();
    }

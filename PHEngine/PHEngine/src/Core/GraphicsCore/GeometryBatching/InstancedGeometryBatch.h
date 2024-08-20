@@ -36,7 +36,7 @@ namespace Graphics::GeometryBatching
 
         std::string mBatchKey; // model name + material name
 
-        std::vector<std::weak_ptr<PrimitiveSceneProxy>> mInstancedStaticMeshSceneProxies;
+        std::vector<std::weak_ptr<InstancedStaticMeshSceneProxy>> mInstancedStaticMeshSceneProxies;
 
         std::vector<glm::mat4> mCachedWorldMatrices;
 

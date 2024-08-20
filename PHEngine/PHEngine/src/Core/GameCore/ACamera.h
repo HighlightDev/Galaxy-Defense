@@ -80,6 +80,9 @@ namespace EngineCore
 
       eCameraType m_cameraType;
 
+   private:
+      std::shared_ptr<EngineObjectProperty<glm::vec3>> mCameraPositionProperty;
+
    public:
       ACamera(const std::string &cameraName,
               const eCameraType cameraType,
@@ -103,7 +106,7 @@ namespace EngineCore
 
       void Tick(const float DeltaTime) override;
 
-      void UnpausableTick(const float deltaTime) override{};
+      void UnpausableTick(const float deltaTime) override {};
 
       void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
 

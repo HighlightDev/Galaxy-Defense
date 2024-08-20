@@ -61,6 +61,7 @@ namespace EngineCore
          Uniform u_gBuffer_Position;
          Uniform u_gBuffer_Normal;
          Uniform u_gBuffer_Albedo;
+         Uniform u_gBuffer_Emission;
 
 #ifdef SHADING_MODEL_PBR
          Uniform u_gBuffer_MetallicRoughness;
@@ -81,6 +82,8 @@ namespace EngineCore
 #ifdef SHADING_MODEL_PBR
          void SetGBufferMetallicRoughness(int32_t slot);
 #endif
+
+         void SetGBufferEmission(const int32_t slot);
 
 #ifndef NO_LIT
          void SetLightsInfo(const std::vector<std::shared_ptr<LightSceneProxy>> &lightsProxies);

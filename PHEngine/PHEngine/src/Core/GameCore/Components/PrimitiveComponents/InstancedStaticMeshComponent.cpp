@@ -77,4 +77,9 @@ namespace EngineCore
         return PRIMITIVE_COMPONENT;
     }
 
+    BoundingBox3D InstancedStaticMeshComponent::GetTransformedBoundingBox() const
+    {
+        return {}; // todo: for now frustum cull test is not applyed to instanced geometry, so return wrong value anyway
+    }
+
 }

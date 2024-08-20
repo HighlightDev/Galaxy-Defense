@@ -30,3 +30,8 @@ vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 {
 	return normalize(materialIn.WorldNormal);
 }
+
+vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
+{
+	return vec4(0.0);
+}

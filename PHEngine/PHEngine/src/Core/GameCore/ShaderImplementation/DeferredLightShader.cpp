@@ -34,6 +34,7 @@ namespace EngineCore
 #ifdef SHADING_MODEL_PBR
          u_gBuffer_MetallicRoughness = GetUniform("gBuffer_MetallicRoughness", shaderProgramId);
 #endif
+         u_gBuffer_Emission = GetUniform("gBuffer_Emission", shaderProgramId);
 
 #ifndef NO_LIT
          u_PointLightDiffuseColor = GetUniformArray("PointLightDiffuseColor", cfg.MaxPointLightCount, shaderProgramId, eShaderType::FragmentShader);
@@ -136,6 +137,11 @@ namespace EngineCore
          u_gBuffer_MetallicRoughness.LoadUniform(slot);
       }
 #endif
+
+      void DeferredLightShader::SetGBufferEmission(const int32_t slot)
+      {
+         u_gBuffer_Emission.LoadUniform(slot);
+      }
 
 #ifndef NO_LIT
 

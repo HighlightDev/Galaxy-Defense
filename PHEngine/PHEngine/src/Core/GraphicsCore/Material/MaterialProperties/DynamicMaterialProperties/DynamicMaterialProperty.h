@@ -12,7 +12,8 @@ namespace Graphics
         {
             FloatProperty,
             iVec2Property,
-            Vec2Property
+            Vec2Property,
+            Vec3Property
         };
 
     protected:

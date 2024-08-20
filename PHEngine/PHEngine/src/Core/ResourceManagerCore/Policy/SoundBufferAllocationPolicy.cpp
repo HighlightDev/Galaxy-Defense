@@ -23,7 +23,6 @@ namespace Resources
         assert(audioResource);
 
         const auto& buffer = std::make_shared<SoundBuffer>(audioResource->DATA, audioResource->AudioInfo);
-        ResourceMap::GetInstance()->UnloadResource(arg);
         return buffer;
     }
     void SoundBufferAllocationPolicy::DeallocateMemory(const std::shared_ptr<SoundBuffer> &arg)

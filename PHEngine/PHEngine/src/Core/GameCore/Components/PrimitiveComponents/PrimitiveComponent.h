@@ -74,7 +74,7 @@ namespace EngineCore
 
             BoundingBox3D GetBoundingBox() const;
 
-            BoundingBox3D GetTransformedBoundingBox() const;
+            virtual BoundingBox3D GetTransformedBoundingBox() const;
 
       private:
             void SyncRenderData();

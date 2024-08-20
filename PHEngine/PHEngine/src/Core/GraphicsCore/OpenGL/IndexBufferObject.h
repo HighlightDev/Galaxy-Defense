@@ -24,7 +24,7 @@ namespace Graphics
 
 		public:
 
-			IndexBufferObject(std::vector<uint32_t>&& indicesData, eDataCarryFlag dataCarryFlag = eDataCarryFlag::INVALIDATE);
+			IndexBufferObject(const std::vector<uint32_t>& indicesData, eDataCarryFlag dataCarryFlag = eDataCarryFlag::INVALIDATE);
 
 			~IndexBufferObject() override;
 

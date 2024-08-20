@@ -41,6 +41,8 @@ namespace EngineCore
 		}
 
 		std::shared_ptr<IMaterial> GetMaterial() const;
+
+		BoundingBox3D GetTransformedBoundingBox() const override;
 	};
 
 }

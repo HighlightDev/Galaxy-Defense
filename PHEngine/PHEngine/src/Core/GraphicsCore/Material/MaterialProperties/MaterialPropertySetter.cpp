@@ -198,7 +198,8 @@ namespace Graphics
       const auto propertyType = property->GetPropertyType();
       return propertyType == MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY ||
              propertyType == MaterialProperty::eMaterialPropertyType::IVEC2_BINDING_PROPERTY ||
-             propertyType == MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY;
+             propertyType == MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY  ||
+             propertyType == MaterialProperty::eMaterialPropertyType::VEC3_BINDING_PROPERTY;
    }
 
    void MaterialPropertySetter::SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::shared_ptr<EngineObject> &gameObjectSp,

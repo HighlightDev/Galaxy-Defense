@@ -14,7 +14,8 @@ namespace Graphics
          UNDEFINED,
          FLOAT,
          VEC2,
-         IVEC2
+         IVEC2,
+         VEC3
       };
 
       enum class eMaterialNodeType

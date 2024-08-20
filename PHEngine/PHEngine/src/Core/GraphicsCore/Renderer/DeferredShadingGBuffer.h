@@ -22,6 +22,7 @@ namespace Graphics
       RenderTarget m_normalBuffer;
       RenderTarget m_albedoBuffer;
       RenderTarget m_metallicRoughnessBuffer;
+      RenderTarget m_emissionBuffer;
 
       std::shared_ptr<FramebufferObject> mFramebuffer;
 
@@ -52,6 +53,8 @@ namespace Graphics
       void BindAlbedoTexture(int32_t slot);
 
       void BindMetallicRoughnessTexture(int32_t slot);
+
+      void BindEmissionTexture(const int32_t slot);
 
       std::shared_ptr<IFramebufferObject> GetFramebufferObjectInstance() const;
 

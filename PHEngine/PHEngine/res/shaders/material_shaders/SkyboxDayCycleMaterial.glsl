@@ -43,3 +43,8 @@ vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 {
 	return vec3(0.0);
 }
+
+vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
+{
+	return vec4(0.0);
+}

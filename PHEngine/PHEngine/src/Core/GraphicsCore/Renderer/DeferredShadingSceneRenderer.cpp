@@ -15,9 +15,6 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/GameCore/TextHandler.h"
-#include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
-#include "Core/GraphicsCore/SceneProxy/InstancedStaticMeshSceneProxy.h"
-#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatch.h"
 #include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
@@ -88,7 +85,8 @@ namespace Graphics
             mPointLightProxiesVec(),
             mSpotlightProxiesVec(),
             mPlanarReflectionProxiesVec(),
-            mGroupedByShadowAtlasLights()
+            mGroupedByShadowAtlasLights(),
+            mInstancedGeometryBatcher(std::make_shared<InstancedGeometryBatcher>())
       {
          LogInfo("DeferredShadingSceneRenderer::ctor");
 
@@ -220,6 +218,11 @@ namespace Graphics
       InterThreadCommunicationMgr &DeferredShadingSceneRenderer::GetInterThreadCommunicationManager()
       {
          return m_interThreadMgr;
+      }
+
+      std::shared_ptr<InstancedGeometryBatcher> DeferredShadingSceneRenderer::GetInstancedGeometryBatcher() const
+      {
+         return mInstancedGeometryBatcher;
       }
 
       void DeferredShadingSceneRenderer::OnWindowSizeChanged(const ViewPortInfo &viewPortInfo)
@@ -490,10 +493,7 @@ namespace Graphics
          const auto &viewMatrix = cameraProxy->GetViewMatrix();
          const auto &projectionMatrix = cameraProxy->GetProjectionMatrix();
 
-         if (mInstancedGeometryBatcher)
-         {
-            mInstancedGeometryBatcher->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix);
-         }
+         mInstancedGeometryBatcher->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix);
 
          if (mSkeletalProxiesVec.size() > 0)
          {
@@ -604,10 +604,12 @@ namespace Graphics
          m_gbuffer->BindAlbedoTexture(1);
          m_gbuffer->BindNormalTexture(2);
          m_gbuffer->BindMetallicRoughnessTexture(3);
+         m_gbuffer->BindEmissionTexture(4);
 
          m_deferredLightShader->SetGBufferPosition(0);
          m_deferredLightShader->SetGBufferAlbedo(1);
          m_deferredLightShader->SetGBufferNormal(2);
+         m_deferredLightShader->SetGBufferEmission(4);
 
 #ifdef SHADING_MODEL_PBR
          m_deferredLightShader->SetGBufferMetallicRoughness(3);
@@ -1241,28 +1243,7 @@ namespace Graphics
             primitiveSceneProxy->PostConstructorInitialize();
             PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
             SetProxiesAreDirty(true);
-            primitiveComponent->SetIsSceneProxyReady(true);
-
-            // todo: this is a temprorary solution
-            if (ePrimitiveProxyType::INDIRECT_RENDERED_PROXY == primitiveSceneProxy->GetPrimitiveProxyType()) {
-               if (!mInstancedGeometryBatcher) {
-                  mInstancedGeometryBatcher = std::make_unique<InstancedGeometryBatcher>();
-               }
-               const auto& instancedStaticMeshSceneProxy = std::dynamic_pointer_cast<InstancedStaticMeshSceneProxy>(primitiveSceneProxy);
-               assert(instancedStaticMeshSceneProxy);
-               if (mInstancedGeometryBatcher->CheckIfBatchExists(instancedStaticMeshSceneProxy->GetBatchKey()))
-               {
-                  const auto& batch = mInstancedGeometryBatcher->GetBatch(instancedStaticMeshSceneProxy->GetBatchKey());
-                  batch->AddInstancedStaticMeshSceneProxy(instancedStaticMeshSceneProxy);
-               }
-               else 
-               {
-                  const auto& batch = std::make_shared<InstancedGeometryBatch>(instancedStaticMeshSceneProxy);
-                  const bool bSuccess = mInstancedGeometryBatcher->TryToAddBatch(batch);
-                  assert(bSuccess);
-                  batch->Initialize();
-               }
-            } });
+            primitiveComponent->SetIsSceneProxyReady(true); });
       }
 
       void DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightComponent> &lightComponent, const std::shared_ptr<LightSceneProxy> &lightSceneProxy)

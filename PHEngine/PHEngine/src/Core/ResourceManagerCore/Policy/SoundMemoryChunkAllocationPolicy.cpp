@@ -26,7 +26,6 @@ namespace Resources
         const size_t dataSize = audioResource->AudioInfo.mNumBytes;
         void *localData = malloc(dataSize);
         memcpy(localData, audioResource->DATA, dataSize);
-        ResourceMap::GetInstance()->UnloadResource(arg);
 
         return std::make_shared<SoundMemoryChunk>(static_cast<short*>(localData), audioResource->AudioInfo);
     }

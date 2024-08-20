@@ -7,6 +7,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicFloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicVec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicIVec2MaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicVec3MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/iVec2MaterialProperty.h"
@@ -16,6 +17,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/iVec2BindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2BindingMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/Vec3BindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialValuePropertyNode.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialEnterNode.h"
 
@@ -70,6 +72,10 @@ namespace Graphics
       else if ("binding_vec2" == propertyType)
       {
          resultProperty = std::make_shared<Vec2BindingMaterialProperty>(std::make_shared<Vec2PropertyBinding>(propertyName), propertyName);
+      }
+      else if ("binding_vec3" == propertyType)
+      {
+         resultProperty = std::make_shared<Vec3BindingMaterialProperty>(std::make_shared<Vec3PropertyBinding>(propertyName), propertyName);
       }
       else if ("ivec2" == propertyType)
       {
@@ -250,7 +256,8 @@ namespace Graphics
                    {MaterialProperty::eMaterialPropertyType::IVEC2_PROPERTY, MaterialNode::eMaterialPropertyType::IVEC2},
                    {MaterialProperty::eMaterialPropertyType::IVEC2_BINDING_PROPERTY, MaterialNode::eMaterialPropertyType::IVEC2},
                    {MaterialProperty::eMaterialPropertyType::VEC2_PROPERTY, MaterialNode::eMaterialPropertyType::VEC2},
-                   {MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY, MaterialNode::eMaterialPropertyType::VEC2}};
+                   {MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY, MaterialNode::eMaterialPropertyType::VEC2},
+                   {MaterialProperty::eMaterialPropertyType::VEC3_BINDING_PROPERTY, MaterialNode::eMaterialPropertyType::VEC3}};
 
                assert(supportedDynamicProperties.count(materialProperty->GetPropertyType()));
                valueNode = std::make_shared<MaterialValuePropertyNode>(materialProperty, supportedDynamicProperties.at(materialProperty->GetPropertyType()));
@@ -357,6 +364,16 @@ namespace Graphics
          }
          dynamicMaterialPropery = dynamicIVec2Property;
       }
+      else if ("vec3" == propertyType)
+      {
+         const auto dynamicVec3Property = std::make_shared<DynamicVec3MaterialProperty>(operationEnterNode, propertyName);
+         dynamicVec3Property->SetIsValueIncremental(propertyValueIncremental);
+         if (minMaxRangeExists)
+         {
+            dynamicVec3Property->SetRange(minMaxRange);
+         }
+         dynamicMaterialPropery = dynamicVec3Property;
+      }
       else
       {
          assert(false);
@@ -408,7 +425,8 @@ namespace Graphics
           {"binding_ivec2", MaterialNode::eMaterialPropertyType::IVEC2},
           {"vec2", MaterialNode::eMaterialPropertyType::VEC2},
           {"binding_vec2", MaterialNode::eMaterialPropertyType::VEC2},
-      };
+          {"vec3", MaterialNode::eMaterialPropertyType::VEC3},
+          {"binding_vec3", MaterialNode::eMaterialPropertyType::VEC3}};
 
       assert(strToPropTypeMapping.count(propertyTypeStr));
       return strToPropTypeMapping.at(propertyTypeStr);
