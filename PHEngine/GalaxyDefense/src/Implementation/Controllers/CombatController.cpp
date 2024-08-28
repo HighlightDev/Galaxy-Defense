@@ -1,31 +1,21 @@
 #include "CombatController.h"
-#include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/LoggerExtension.h"
-#include "Core/CommonCore/Random.h"
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Components/UiComponents/UiComponent.h"
-#include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
-#include "Core/GameCore/LoggerExtension.h"
 
-#include "Implementation/Factories/WeakSpaceShipFactory.h"
-#include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 #include "Implementation/Modifiers/ElectroRayChainModifier.h"
 #include "Implementation/GalaxySceneCamera.h"
-#include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
-#include "Implementation/MissileType.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
 #include "Implementation/Navigation/PathSegment.h"
 #include "Implementation/Navigation/Path.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
-#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Implementation/Actors/BlackHoleMissileActor.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+#include "Core/GameCore/Physics/CollisionTestImplementation/SphereCollisionTestWithFilterAdapter.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
-#include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
 #include <array>
 #include <unordered_map>
@@ -35,7 +25,6 @@
 using namespace Graphics;
 using namespace EnginePhysics;
 using namespace EngineCore;
-using namespace Resources;
 
 #undef min
 #undef max
@@ -111,8 +100,9 @@ namespace Game
 
     void CombatController::OnLevelInit()
     {
+        const int32_t c_bombMissilesCount = 10 * mCombatActorsPoolHandler->GetSpaceStationsCount();
         mCombatActorsPoolHandler->SpawnEnemySpaceships(10);
-        mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, 10);
+        mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, c_bombMissilesCount);
         mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING, 3);
         mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
         mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 2);
@@ -169,7 +159,8 @@ namespace Game
         assert(activeSpaceStationActor);
         const auto &activeSpaceStationPosition = activeSpaceStationActor->GetRootComponent()->GetTranslation();
         const auto &projectileShootDirection = glm::normalize(projectileMarkerPosition - activeSpaceStationPosition);
-        LaunchMisile(activeSpaceStationActor, activeSpaceStationPosition, projectileShootDirection);
+        const auto selectedMissileType = PlayerDataProvider::GetInstance()->GetSelectedMissileType();
+        LaunchMisile(activeSpaceStationActor, activeSpaceStationPosition, projectileShootDirection, selectedMissileType);
     }
 
     void CombatController::ProcessEvent(const typename PhysicsCollisionGameThreadEvent::EventData_t &data)
@@ -371,15 +362,18 @@ namespace Game
     {
         ValidatePoolObjects();
         UpdateMissilesData();
+        ProcessAiAction();
 
         mNavigationController->Tick(deltaTime);
         mUserInteractionController->Tick(deltaTime);
     }
 
-    void CombatController::LaunchMisile(const std::shared_ptr<Actor> &missileOwner, const glm::vec3 &missileStartPosition, const glm::vec3 &missileDirection)
+    void CombatController::LaunchMisile(const std::shared_ptr<Actor> &missileOwner,
+                                        const glm::vec3 &missileStartPosition,
+                                        const glm::vec3 &missileDirection,
+                                        const eMissileType missileType)
     {
-        const auto selectedMissileType = PlayerDataProvider::GetInstance()->GetSelectedMissileType();
-        const auto &missile = mCombatActorsPoolHandler->GetFreeMissile(selectedMissileType);
+        const auto &missile = mCombatActorsPoolHandler->GetFreeMissile(missileType);
         if (missile)
         {
             const auto yawRad = std::atan2(missileDirection.x, missileDirection.z);
@@ -452,6 +446,75 @@ namespace Game
         //     }
         // }
         // PlayerDataProvider::GetInstance()->SetMissilesCount(missiles);
+    }
+
+    void CombatController::ProcessAiAction()
+    {
+        const auto &sceneSp = mScene.lock();
+        if (!sceneSp)
+        {
+            return;
+        }
+
+        const auto &spaceStations = mCombatActorsPoolHandler->GetSpaceStationActors();
+        const auto &missiles = mCombatActorsPoolHandler->GetMissileActors();
+        std::vector<std::shared_ptr<PhysicsComponent>> excludedPhysicsComponents;
+        excludedPhysicsComponents.reserve(spaceStations.size() + missiles.size());
+        for (const auto &missile : missiles)
+        {
+            if (eMissileType::BLACK_HOLE == missile->GetMissileType())
+            {
+                const auto &blackHoleMissile = std::dynamic_pointer_cast<BlackHoleMissileActor>(missile);
+                excludedPhysicsComponents.emplace_back(blackHoleMissile->GetCombatActivePhaseActor()->GetPhysicsComponent());
+                excludedPhysicsComponents.emplace_back(blackHoleMissile->GetExplosionPhaseActor()->GetPhysicsComponent());
+            }
+            else if (missile->GetPhysicsComponent())
+            {
+                excludedPhysicsComponents.emplace_back(missile->GetPhysicsComponent());
+            }
+        }
+        std::transform(spaceStations.cbegin(), spaceStations.cend(), std::back_inserter(excludedPhysicsComponents), [](const auto &spaceStationActor)
+                       {
+            assert(spaceStationActor->GetPhysicsComponent());
+            return spaceStationActor->GetPhysicsComponent(); });
+
+        for (const auto &spaceStation : spaceStations)
+        {
+            if (spaceStation->CanShoot())
+            {
+                constexpr float c_collisionSphereRadius = 50.0f;
+                SphereCollisionTestWithFilterAdapter collisionTest(c_collisionSphereRadius, excludedPhysicsComponents);
+                collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceStation->GetRootComponent()->GetTranslation());
+                const auto &collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
+                std::vector<int32_t> descriptorActorIds;
+                std::transform(collidedDescriptors.begin(), collidedDescriptors.end(), std::back_inserter(descriptorActorIds),
+                               [](const auto &collidedDescriptor)
+                               { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
+
+                if (descriptorActorIds.size())
+                {
+                    const auto &spaceStationTranslation = spaceStation->GetRootComponent()->GetTranslation();
+                    const auto foundNearestIt = std::min_element(descriptorActorIds.begin(), descriptorActorIds.end(), [this, spaceStationTranslation](const auto &leftActorId, const auto &rightActorId)
+                                                                 {
+                        const auto &leftShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(leftActorId);
+                        const auto &rightShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(rightActorId);
+                        assert(leftShipActor && rightShipActor);
+                        const auto sqrDistanceToLeft = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
+                        const auto sqrDistanceToRight = glm::distance2(rightShipActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
+                        return sqrDistanceToLeft < sqrDistanceToRight; });
+                    if (foundNearestIt != descriptorActorIds.end())
+                    {
+                        const auto gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(*foundNearestIt);
+                        assert(eGameObjectsType::SPACESHIP == gameObjectType);
+                        const auto &nearestEnemy = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
+                        const auto &enemyPosition = nearestEnemy->GetRootComponent()->GetTranslation();
+                        const auto &projectileShootDirection = glm::normalize(enemyPosition - spaceStationTranslation);
+                        LaunchMisile(spaceStation, spaceStationTranslation, projectileShootDirection, eMissileType::BOMB);
+                        spaceStation->RestartTimerSinceLastShoot();
+                    }
+                }
+            }
+        }
     }
 
     void CombatController::CleanUp()

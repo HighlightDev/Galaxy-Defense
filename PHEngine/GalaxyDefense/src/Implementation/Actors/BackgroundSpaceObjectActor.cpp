@@ -1,7 +1,6 @@
 #include "BackgroundSpaceObjectActor.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
-#include "Core/CommonCore/Random.h"
 
 namespace Game
 {

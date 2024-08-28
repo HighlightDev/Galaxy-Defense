@@ -256,32 +256,6 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
   // Specular reflection vector.
   vec3 Lr = 2.0 * cosLo * nWorldNormal - Lo;
 
-#ifdef ENABLE_POINT_LIGHTING
-  vec3 pointLighting = vec3(0);
-  {
-    for (int pointLightIndex = 0; pointLightIndex < PointLightCount;
-         ++pointLightIndex) {
-      // calculate per-light radiance
-      vec3 toLVec = PointLightPositionWorld[pointLightIndex] - pixelWorldPos;
-      float lSrcDstSquared = dot(toLVec, toLVec);
-      float lSrcDist = sqrt(lSrcDstSquared);
-      vec3 Li = toLVec / lSrcDist;
-
-      float attenuation = 1.0; // for now
-      // (lSrcDstSquared);
-
-      vec3 LRadiance = PointLightDiffuseColor[pointLightIndex] * attenuation;
-
-      vec3 pbrRadiance =
-          GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo,
-                             LRadiance, metallicRoughness);
-
-      pointLighting += CalculatePointLightLitColor(pbrRadiance, pointLightIndex,
-                                                   pixelWorldPos);
-    }
-  }
-#endif
-
   vec3 directLighting = vec3(0);
   {
     for (int directLightIndex = 0; directLightIndex < DirLightCount;
@@ -299,6 +273,7 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
 
       // Calculating shadow
       float litFactor = 1.0f;
+#ifdef ENABLE_SHADOWS
       if (DirLightShadowMapCount > directLightIndex) {
         vec4 atlasOffset = DirLightShadowAtlasOffset[directLightIndex];
         mat4 shadowMatrix = DirLightShadowMatrices[directLightIndex];
@@ -322,13 +297,43 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
             DirLightShadowMaps[directLightIndex], shadowmapAtlasSize,
             shadowCoordinatesAndDepth, shadowTransitionValue);
       }
+#endif
 
       // Total contribution for this light.
       directLighting += pbrRadiance * litFactor;
     }
   }
 
+  vec3 pointLighting = vec3(0);
+#ifdef ENABLE_POINT_LIGHTING
+  {
+    for (int pointLightIndex = 0; pointLightIndex < PointLightCount;
+         ++pointLightIndex) {
+      // calculate per-light radiance
+      vec3 toLVec = PointLightPositionWorld[pointLightIndex] - pixelWorldPos;
+      float lSrcDstSquared = dot(toLVec, toLVec);
+      float lSrcDist = sqrt(lSrcDstSquared);
+      vec3 Li = toLVec / lSrcDist;
+
+      float attenuation = 1.0; // for now
+      // (lSrcDstSquared);
+
+      vec3 LRadiance = PointLightDiffuseColor[pointLightIndex] * attenuation;
+
+      vec3 pbrRadiance =
+          GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo,
+                             LRadiance, metallicRoughness);
+#ifdef ENABLE_SHADOWS
+      pointLighting += CalculatePointLightLitColor(pbrRadiance, pointLightIndex, pixelWorldPos);
+#else
+      pointLighting += pbrRadiance;
+#endif
+    }
+  }
+#endif
+
   vec3 spotlightColor = vec3(0);
+#ifdef ENABLE_SPOT_LIGHTING
   {
     for (int spotlightIndex = 0; spotlightIndex < SpotlightCount;
          ++spotlightIndex) {
@@ -351,6 +356,7 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
 
       // Calculating shadow
       float litFactor = 1.0f;
+#ifdef ENABLE_SHADOWS
       if (SpotlightShadowMapCount > spotlightIndex &&
           spotlightFactor > SpotlightCutoff[spotlightIndex]) {
         vec4 atlasOffset = SpotlightShadowAtlasOffset[spotlightIndex];
@@ -372,17 +378,15 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
             SpotlightPosition[spotlightIndex],
             SpotlightShadowProjectionFarPlane[spotlightIndex]);
       }
+#endif
 
       // Total contribution for this light.
       spotlightColor += pbrRadiance * litFactor;
     }
   }
-
-#ifdef ENABLE_POINT_LIGHTING
-  return pointLighting + directLighting + spotlightColor;
-#else
-  return directLighting + spotlightColor;
 #endif
+
+  return directLighting + pointLighting + spotlightColor;
 }
 
 #endif

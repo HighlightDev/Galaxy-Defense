@@ -184,7 +184,12 @@ namespace Game
     {
         assert(missile);
         assert(missile->GetMissileActivityState() == eMissileActivityState::ACTIVE);
-        mMissiles.emplace_back(missile);
+        const bool missingMissile = std::none_of(mMissiles.cbegin(), mMissiles.cend(), [missile](const auto &missileSp)
+                                                 { return missile->GetObjectId() == missileSp->GetObjectId(); });
+        if (missingMissile)
+        {
+            mMissiles.emplace_back(missile);
+        }
     }
 
     void NavigationController::RemoveSpaceshipFromRoute(const int32_t spaceshipActorId)
@@ -201,7 +206,7 @@ namespace Game
         if (mMissiles.size())
         {
             mMissiles.erase(std::remove_if(mMissiles.begin(), mMissiles.end(), [missileActorId](const auto &missile)
-                                           { return missileActorId == missile->GetObjectId(); }));
+                                           { return !missile || (missile && missileActorId == missile->GetObjectId()); }));
         }
     }
 }

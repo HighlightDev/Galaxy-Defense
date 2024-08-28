@@ -8,7 +8,6 @@
 #include "Implementation/Actors/BackgroundSpaceObjectActor.h"
 #include "Implementation/Events/RayCollisionEvent.h"
 #include "Implementation/Events/SphereContactCollisionEvent.h"
-#include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Implementation/GameObjectsType.h"
@@ -18,6 +17,8 @@
 #include "Implementation/Levels/LevelData.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
+#include "Implementation/MissileType.h"
+#include "Core/GameCore/BoundingBox3D.h"
 #include "Core/CommonCore/Timer.h"
 
 #include <memory>
@@ -71,7 +72,7 @@ namespace Game
 
         void Tick(const float deltaTime) override;
 
-        void UnpausableTick(const float deltaTime) override{};
+        void UnpausableTick(const float deltaTime) override {};
 
         void CleanUp() override;
 
@@ -87,7 +88,12 @@ namespace Game
         void ProcessEvent(const typename BroadcastGameThreadEvent::EventData_t &data) override;
 
     private:
-        void LaunchMisile(const std::shared_ptr<Actor>& missileOwner, const glm::vec3 &missileStartPosition, const glm::vec3& missileDirection);
+        void ProcessAiAction(); // todo: move this functionality to AI controller
+
+        void LaunchMisile(const std::shared_ptr<Actor> &missileOwner,
+                          const glm::vec3 &missileStartPosition,
+                          const glm::vec3 &missileDirection,
+                          const eMissileType missileType);
 
         void ValidatePoolObjects();
 

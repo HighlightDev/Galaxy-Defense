@@ -41,6 +41,7 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/IoCore/FileFacade.h"
 #include "Core/CommonCore/JsonHelper.h"
+#include "Core/CommonCore/Random.h"
 
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 
@@ -126,11 +127,11 @@ namespace Game
                                                                     38.88f,
                                                                     0.0f,
                                                                     150.0f);
-
-      spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(0.0f),
-                                                    glm::vec3(std::abs(levelData.LevelBoundaryMax.x - levelData.LevelBoundaryMin.x),
-                                                              50.0f,
-                                                              std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y))));
+      const auto &levelBoundary = BoundingBox3D(glm::vec3(0.0f),
+                                                glm::vec3(std::abs(levelData.LevelBoundaryMax.x - levelData.LevelBoundaryMin.x),
+                                                          50.0f,
+                                                          std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y)));
+      spaceCamera->SetLevelBoundaries(levelBoundary);
       spaceCamera->SetMaxDistanceFromTargetToCamera(150.0f);
       spaceCamera->SetMinDistanceFromTargetToCamera(20.0f);
       spaceCamera->SetDistanceFromTargetToCamera(150.0f);
@@ -157,6 +158,7 @@ namespace Game
       mCombatController->OnLevelInit();
       mUiController->OnLevelInit();
 
+      // todo: temprorary solution just to test InstancedStaticMeshComponent
       const std::shared_ptr<IMaterial> &asteroidPbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
       sceneSp->RegisterMaterialInstance(asteroidPbs_mat);
 
@@ -177,13 +179,19 @@ namespace Game
       MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "metallicMap", metallic_tex);
       MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "uvScale", uvScale);
 
-      auto instancedMeshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
+      const auto& instancedMeshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
+      const auto lvlDiffVec = levelBoundary.GetMax() - levelBoundary.GetMin();
+      const float xStep = lvlDiffVec.x * 0.1f;
+      const float zStep = lvlDiffVec.z * 0.1f;
       for (int i = 0; i < 100; ++i)
-      { 
+      {
          const auto d_ismesh = std::make_shared<InstancedMeshComponentData>("c_instancedStaticMesh" + std::to_string(i), "asteroid.fbx", asteroidPbs_mat);
          const auto &c_ismesh = std::static_pointer_cast<InstancedStaticMeshComponent>(sceneSp->CreateComponent_GameThread(instancedMeshComponentCreator, d_ismesh));
+         const auto x = levelBoundary.GetMin().x + ((i % 10) * xStep);
+         const auto z = levelBoundary.GetMin().z + ((i / 10) * zStep);
+         const auto y = levelBoundary.GetOrigin().y - (Random::Float() * 10.0f);
          c_ismesh->SetScale(glm::vec3(50));
-         c_ismesh->SetTranslation(glm::vec3(i * (2.0), 0.0f,  0.0f));
+         c_ismesh->SetTranslation(glm::vec3(x, y, z));
          a_sceneCenterActorDummy->AddComponent(c_ismesh);
          a_sceneCenterActorDummy->SetScene(sceneSp);
       }

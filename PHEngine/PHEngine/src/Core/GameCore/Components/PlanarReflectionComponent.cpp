@@ -76,17 +76,14 @@ namespace EngineCore
       {
          if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
-            {
-               sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
-                                                                                   {
-                  const auto& reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId);
-                  assert(reflectionSp);
-                  const auto& proxySp = std::static_pointer_cast<PlanarReflectionProxy>(reflectionSp);
-                  auto resourceTexture = proxySp->GetPlanarReflectionTexture();
-                  mPlanarReflectionDeferredController->GetDeferredResource(); // Just in case deferred resource wasn't initialized
-                  mPlanarReflectionDeferredController->SetResource(resourceTexture); });
-            }
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
+                                                                                {
+               const auto& reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId);
+               assert(reflectionSp);
+               const auto& proxySp = std::static_pointer_cast<PlanarReflectionProxy>(reflectionSp);
+               auto resourceTexture = proxySp->GetPlanarReflectionTexture();
+               mPlanarReflectionDeferredController->GetDeferredResource(); // Just in case deferred resource wasn't initialized
+               mPlanarReflectionDeferredController->SetResource(resourceTexture); });
          }
       }
    }

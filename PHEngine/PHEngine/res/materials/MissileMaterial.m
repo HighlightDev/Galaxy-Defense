@@ -1,6 +1,6 @@
 <general>
-	name: "BombMissile material"
-	shader: "BombMissileMaterial.glsl"
+	name: "Missile material"
+	shader: "MissileMaterial.glsl"
 	material_type: "dynamic"
 </general>
 <properties>
@@ -27,6 +27,10 @@
 	<property>
 		name: "uvScale"
 		type: "float"
+	</property>
+	<property>
+		name: "outlineColor"
+		type: "vec3"
 	</property>
 	<dynamic_property>
 		name: "cameraPosition"

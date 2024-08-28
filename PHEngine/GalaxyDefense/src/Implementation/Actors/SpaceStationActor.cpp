@@ -7,4 +7,22 @@ namespace Game
         : Actor(gameObjectName, rootComponent)
     {
     }
+
+    void SpaceStationActor::Tick(const float deltaTime)
+    {
+        Actor::Tick(deltaTime);
+
+        mTimeSinceLastShoot += deltaTime;
+    }
+
+    bool SpaceStationActor::CanShoot() const
+    {
+        constexpr float c_shootTimeout = 1.0f;
+        return mTimeSinceLastShoot >= c_shootTimeout;
+    }
+
+    void SpaceStationActor::RestartTimerSinceLastShoot()
+    {
+        mTimeSinceLastShoot = 0.0f;
+    }
 }

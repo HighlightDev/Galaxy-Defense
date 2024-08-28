@@ -66,6 +66,8 @@ namespace Game
 
         const std::vector<std::shared_ptr<MissileActor>>& GetMissileActors() const;
 
+        const std::vector<std::shared_ptr<SpaceStationActor>>& GetSpaceStationActors() const;
+
         eGameObjectsType GetGameObjectTypeByActorId(const int32_t actorId) const;
 
         eGameObjectsCollisionType GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const;
@@ -75,6 +77,8 @@ namespace Game
         void SpawnMissiles(const eMissileType missileType, const int32_t count);
 
         void SpawnAsteroids(const int32_t count);
+
+        int32_t GetSpaceStationsCount() const;
 
     private:
         std::unique_ptr<IMissileFactory> GetMissileFactoryByType(const eMissileType missileType) const;

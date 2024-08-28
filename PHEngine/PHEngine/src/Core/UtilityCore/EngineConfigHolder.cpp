@@ -58,6 +58,9 @@ namespace EngineUtility
         {
             std::make_pair("max_skeletal_mesh_bones",               std::function([=](const std::string &valueStr) { mEngineConfig.MaxSkeletBones                   = parseUInt(valueStr); })),
             std::make_pair("max_static_mesh_instances_per_batch",   std::function([=](const std::string &valueStr) { mEngineConfig.MaxStaticMeshInstancesPerBatch   = parseUInt(valueStr); })),
+            std::make_pair("enable_point_lights",                   std::function([=](const std::string &valueStr) { mEngineConfig.EnablePointLights                = parseBool(valueStr); })),
+            std::make_pair("enable_spot_lights",                    std::function([=](const std::string &valueStr) { mEngineConfig.EnableSpotLights                 = parseBool(valueStr); })),
+            std::make_pair("enable_shadows",                        std::function([=](const std::string &valueStr) { mEngineConfig.EnableShadows                    = parseBool(valueStr); })),
             std::make_pair("max_dir_light_count",                   std::function([=](const std::string &valueStr) { mEngineConfig.MaxDirLightCount                 = parseUInt(valueStr); })),
             std::make_pair("max_dir_light_shadow_map_count",        std::function([=](const std::string &valueStr) { mEngineConfig.MaxDirLightShadowMapCount        = parseUInt(valueStr); })),
             std::make_pair("max_point_light_count",                 std::function([=](const std::string &valueStr) { mEngineConfig.MaxPointLightCount               = parseUInt(valueStr); })),

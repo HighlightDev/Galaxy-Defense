@@ -12,6 +12,10 @@ namespace EngineUtility
         size_t MaxSkeletBones{0};
         size_t MaxStaticMeshInstancesPerBatch{0};
 
+        bool EnablePointLights{true};
+        bool EnableSpotLights{true};
+        bool EnableShadows{true};
+
         size_t MaxDirLightCount{0};
         size_t MaxDirLightShadowMapCount{0};
         size_t MaxPointLightCount{0};

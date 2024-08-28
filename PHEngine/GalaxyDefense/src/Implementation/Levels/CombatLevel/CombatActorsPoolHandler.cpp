@@ -101,6 +101,11 @@ namespace Game
         return mMissilesPool;
     }
 
+    const std::vector<std::shared_ptr<SpaceStationActor>>& CombatActorsPoolHandler::GetSpaceStationActors() const
+    {
+        return mSpaceStations;
+    }
+
     void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count)
     {
         const auto &sceneSp = mSceneWp.lock();
@@ -122,6 +127,11 @@ namespace Game
         const auto &asteroidsFactory = std::make_unique<AsteroidFactory>();
         const auto &asteroid = mSpaceObjectsPool.emplace_back(asteroidsFactory->CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
         asteroid->SetIsEnabled(false);
+    }
+
+    int32_t CombatActorsPoolHandler::GetSpaceStationsCount() const
+    {
+        return mSpaceStations.size();
     }
 
     std::shared_ptr<MissileActor> CombatActorsPoolHandler::GetFreeMissile(const eMissileType missileType) const

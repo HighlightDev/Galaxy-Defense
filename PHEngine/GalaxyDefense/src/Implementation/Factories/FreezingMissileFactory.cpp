@@ -46,7 +46,7 @@ namespace Game
         scene->AddActor(a_missile);
 
         MaterialParser materialParser;
-        const std::shared_ptr<IMaterial> &pbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+        const std::shared_ptr<IMaterial> &pbs_mat = materialParser.ParseMaterialDescriptor("MissileMaterial.m");
         scene->RegisterMaterialInstance(pbs_mat);
 
         const std::string albedoName = "missile1_albedo.png";
@@ -65,6 +65,8 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "roughnessMap", roughness_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
+        MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, scene->GetMainCamera(), "CameraPosition", "cameraPosition");
+        MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "outlineColor", glm::vec3(0.0f, 0.0f, 1.0f));
 
         const auto d_mesh = std::make_shared<MeshComponentData>("c_freezingMissileMesh_" + shipBulletIndexStr, "missile1_model.fbx", glm::vec3(0),
                                                                 glm::vec3(0), glm::vec3(1.5), "", pbs_mat);

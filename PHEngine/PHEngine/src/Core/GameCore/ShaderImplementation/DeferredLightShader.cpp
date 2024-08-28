@@ -103,12 +103,32 @@ namespace EngineCore
 #else
          Undefine(FragmentShader, "SHADING_MODEL_PBR");
 #endif
+         if (cfg.EnablePointLights)
+         {
+            Define(FragmentShader, "ENABLE_POINT_LIGHTING");
+         }
+         else
+         {
+            Undefine(FragmentShader, "ENABLE_POINT_LIGHTING");
+         }
 
-#ifdef __linux__
-         Undefine(FragmentShader, "ENABLE_POINT_LIGHTING");
-#else
-         Define(FragmentShader, "ENABLE_POINT_LIGHTING");
-#endif
+         if (cfg.EnableSpotLights)
+         {
+            Define(FragmentShader, "ENABLE_SPOT_LIGHTING");
+         }
+         else
+         {
+            Undefine(FragmentShader, "ENABLE_SPOT_LIGHTING");
+         }
+
+         if (cfg.EnableShadows)
+         {
+            Define(FragmentShader, "ENABLE_SHADOWS");
+         }
+         else
+         {
+            Undefine(FragmentShader, "ENABLE_SHADOWS");
+         }
       }
 
       void DeferredLightShader::SetCameraWorldPosition(const glm::vec3 &cameraWorldPosition)
