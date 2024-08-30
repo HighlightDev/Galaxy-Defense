@@ -6,8 +6,8 @@
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/BackgroundSpaceObjectActor.h"
-#include "Implementation/Events/RayCollisionEvent.h"
-#include "Implementation/Events/SphereContactCollisionEvent.h"
+#include "Implementation/Events/ElectroRayCollisionEvent.h"
+#include "Implementation/Events/ElectroRaySphereContactCollisionEvent.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Implementation/GameObjectsType.h"
@@ -38,14 +38,12 @@ namespace Game
     class CombatController : public ITickable,
                              public ILevelController,
                              public PhysicsCollisionGameThreadEvent,
-                             public RayCollisionEvent,
-                             public SphereContactCollisionEvent,
+                             public ElectroRayCollisionEvent,
+                             public ElectroRaySphereContactCollisionEvent,
                              public BroadcastGameThreadEvent,
                              public std::enable_shared_from_this<CombatController>
     {
         std::weak_ptr<Scene> mScene;
-
-        std::shared_ptr<Actor> mPlayerShip;
 
         std::shared_ptr<NavigationController> mNavigationController;
 
@@ -81,9 +79,9 @@ namespace Game
     protected:
         void ProcessEvent(const typename PhysicsCollisionGameThreadEvent::EventData_t &data) override;
 
-        void ProcessEvent(const typename RayCollisionEvent::EventData_t &data) override;
+        void ProcessEvent(const typename ElectroRayCollisionEvent::EventData_t &data) override;
 
-        void ProcessEvent(const typename SphereContactCollisionEvent::EventData_t &data) override;
+        void ProcessEvent(const typename ElectroRaySphereContactCollisionEvent::EventData_t &data) override;
 
         void ProcessEvent(const typename BroadcastGameThreadEvent::EventData_t &data) override;
 

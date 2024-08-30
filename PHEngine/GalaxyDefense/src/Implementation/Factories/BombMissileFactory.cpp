@@ -25,6 +25,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/BombMissileActor.h"
+#include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 using namespace Resources;
 using namespace EngineCore;
@@ -36,6 +37,7 @@ namespace Game
 
     std::shared_ptr<MissileActor>
     BombMissileFactory::CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,
+                                      const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler,
                                       const glm::vec3 &translation,
                                       const glm::vec3 &rotation,
                                       const glm::vec3 &scale)

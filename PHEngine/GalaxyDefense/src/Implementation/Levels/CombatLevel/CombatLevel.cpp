@@ -28,8 +28,8 @@
 
 #include "Implementation/GalaxySceneCamera.h"
 #include "Implementation/Controllers/CombatController.h"
-#include "Implementation/Events/RayCollisionEvent.h"
-#include "Implementation/Events/SphereContactCollisionEvent.h"
+#include "Implementation/Events/ElectroRayCollisionEvent.h"
+#include "Implementation/Events/ElectroRaySphereContactCollisionEvent.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
@@ -62,7 +62,7 @@ namespace Game
    CombatLevel::CombatLevel()
        : LevelBase("FirstLevel")
    {
-      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent, Event::ChangeGameModeEvent>();
+      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::ElectroRayCollisionEvent, Event::ElectroRaySphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent, Event::ChangeGameModeEvent>();
       Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent>();
    }
 

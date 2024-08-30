@@ -1,4 +1,4 @@
-#include "SphereContactCollisionEvent.h"
+#include "ElectroRaySphereContactCollisionEvent.h"
 
 namespace Event
 {

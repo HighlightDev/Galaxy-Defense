@@ -43,6 +43,25 @@ namespace Graphics::GeometryBatching
         return mBatchKey;
     }
 
+    bool InstancedGeometryBatch::IsProxyActive(const std::shared_ptr<InstancedStaticMeshSceneProxy>& sceneProxy) const
+    {
+        return sceneProxy->IsEnabled() && sceneProxy->IsVisible() && sceneProxy->IsTransformIntialized();
+    }
+
+    bool InstancedGeometryBatch::IsProxyActive(const int32_t sceneProxyId) const
+    {
+        return std::any_of(mInstancedStaticMeshSceneProxies.cbegin(), mInstancedStaticMeshSceneProxies.cend(), [sceneProxyId, this](const auto& proxyWp) {
+            const auto proxySp = proxyWp.lock();
+            return proxySp && IsProxyActive(proxySp);
+        });
+    }
+
+    int32_t InstancedGeometryBatch::GetInstanceId(const int32_t sceneProxyId) const
+    {
+        // todo: to be done
+        return -1;
+    }
+
     void InstancedGeometryBatch::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy,
                                         const glm::mat4 &viewMatrix,
                                         const glm::mat4 &projectionMatrix)
@@ -97,7 +116,7 @@ namespace Graphics::GeometryBatching
         {
             if (const auto &spProxy = wpProxy.lock())
             {
-                if (spProxy->IsEnabled() && spProxy->IsVisible() && spProxy->IsTransformIntialized())
+                if (IsProxyActive(spProxy))
                 {
                     result.emplace_back(spProxy->GetMatrix());
                 }

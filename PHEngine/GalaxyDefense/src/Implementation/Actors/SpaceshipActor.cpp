@@ -17,7 +17,7 @@ namespace Game
     SpaceshipActor::SpaceshipActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
         : Actor(gameObjectName, rootComponent),
           mModifiersHandler(std::make_unique<ModifiersHandler>()),
-          mLifePoints(10),
+          mLifePoints(30),
           mDamageEffectTimePassed(0.0f),
           mDamageEffectDuration(0.5f),
           mDamageTimeProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_damageEffect")),

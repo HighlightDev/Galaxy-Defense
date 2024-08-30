@@ -18,7 +18,11 @@ namespace Resources
 
         virtual int32_t GetInstanceObjectId() const = 0;
 
+        virtual int32_t GetInstanceProxyId() const = 0;
+
         // this id is identical to draw call instance 
         virtual int32_t GetInstanceId() const = 0;
+
+        virtual bool IsInstanceActive() const = 0;
     };
 }

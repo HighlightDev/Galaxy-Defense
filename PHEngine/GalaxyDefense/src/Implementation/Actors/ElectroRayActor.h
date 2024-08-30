@@ -21,6 +21,7 @@ namespace EngineCore
 namespace Game
 {
     class MissileExplosionVisitorBase;
+    class CombatActorsPoolHandler;
 
     class ElectroRayActor
         : public MissileActor
@@ -43,8 +44,12 @@ namespace Game
 
         std::shared_ptr<EngineObjectProperty<float>> mOpacity;
 
+        std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
+
     public:
-        ElectroRayActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
+        ElectroRayActor(const std::string &gameObjectName,
+                        const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                        const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler);
 
         bool IsInsideLevel(const BoundingBox3D &boundingBox) const override;
 

@@ -7,8 +7,9 @@
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/RayCastWithFilterAdapter.h"
 #include "Core/GameCore/Scene.h"
-#include "Implementation/Events/RayCollisionEvent.h"
+#include "Implementation/Events/ElectroRayCollisionEvent.h"
 #include "Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h"
+#include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 #include <utility>
 
@@ -17,7 +18,9 @@ using namespace Event;
 
 namespace Game
 {
-    ElectroRayActor::ElectroRayActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
+    ElectroRayActor::ElectroRayActor(const std::string &gameObjectName,
+                                     const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                                     const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler)
         : MissileActor(gameObjectName, rootComponent),
           mLineComponent(),
           mSpaceshipWhoSpawnedMeWp(),
@@ -29,7 +32,8 @@ namespace Game
           bLineOriginStartMovement(false),
           bElectroLineCollided(false),
           mCollidedSpaceship(),
-          mOpacity(std::make_shared<EngineObjectProperty<float>>(1.0f, "p_opacity"))
+          mOpacity(std::make_shared<EngineObjectProperty<float>>(1.0f, "p_opacity")),
+          mCombatActorsPoolHandler(combatActorsPoolHandler)
     {
         mMissileType = eMissileType::ELECTRO_RAY;
         AddEngineProperty(mOpacity);
@@ -71,10 +75,20 @@ namespace Game
                 if (const auto &spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock())
                 {
                     std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionPhysComponents;
+                    const auto &spaceStations = mCombatActorsPoolHandler->GetSpaceStationActors();
+                    excludeCollisionPhysComponents.reserve(spaceStations.size() + mCombatActorsPoolHandler->GetMissileActors().size() + 1);
                     if (const auto &ownerSpaceshipPhysComp = spaceshipWhoSpawnedMeSp->GetPhysicsComponent())
                     {
                         excludeCollisionPhysComponents.emplace_back(ownerSpaceshipPhysComp);
                     }
+                    const auto &spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
+                    const auto &bombMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BOMB);
+                    const auto &freezeMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING);
+                    const auto &blackHoleMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
+                    excludeCollisionPhysComponents.insert(excludeCollisionPhysComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
+                    excludeCollisionPhysComponents.insert(excludeCollisionPhysComponents.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
+                    excludeCollisionPhysComponents.insert(excludeCollisionPhysComponents.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
+                    excludeCollisionPhysComponents.insert(excludeCollisionPhysComponents.end(), blackHoleMissilePhysComponents.begin(), blackHoleMissilePhysComponents.end());
 
                     auto rayWithoutSpawnSpaceship = RayCastWithFilterAdapter(excludeCollisionPhysComponents);
                     rayWithoutSpawnSpaceship.RayTest(sceneSp->GetPhysicsWorld(), mElectroLineBegin, mElectroLineEnd);
@@ -86,9 +100,9 @@ namespace Game
                             mElectroLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                             mCollidedSpaceship = collidedActor;
                             bElectroLineCollided = true;
-                            RayCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
-                                                                        std::static_pointer_cast<MissileActor>(shared_from_this()),
-                                                                        collidedActor->shared_from_this());
+                            ElectroRayCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+                                                                               std::static_pointer_cast<MissileActor>(shared_from_this()),
+                                                                               collidedActor->shared_from_this());
                         }
                     }
                 }

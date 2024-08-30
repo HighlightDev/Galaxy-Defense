@@ -55,7 +55,13 @@ namespace Graphics::GeometryBatching
 
         std::string GetBatchKey() const;
 
+        bool IsProxyActive(const int32_t sceneProxyId) const;
+
+        // the instance id in order for rendering
+        int32_t GetInstanceId(const int32_t sceneProxyId) const;
     private:
+        bool IsProxyActive(const std::shared_ptr<InstancedStaticMeshSceneProxy>& sceneProxy) const;
+
         std::shared_ptr<ShaderType> GetShader() const;
 
         std::vector<glm::mat4> CollectAllWorldMatrices();

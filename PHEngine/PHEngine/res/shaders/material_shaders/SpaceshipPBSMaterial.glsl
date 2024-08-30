@@ -20,9 +20,7 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
     vec3 albedoColor = texture(albedo, materialIn.TextureCoordinates.xy * uvScale).rgb;
     vec3 albedo_ice_color = texture(albedo_ice, materialIn.TextureCoordinates.xy).rgb;
-    vec3 damageColor = vec3(1.0, 0.0, 0.0);
-    vec3 mixedDamageColor = mix(albedoColor, damageColor, smoothstep(0.0, 0.5, damageEffect));
-    vec3 mixedIceColor = mix(mixedDamageColor, albedo_ice_color, smoothstep(0.0, 0.5, freezingEffect));
+    vec3 mixedIceColor = mix(albedoColor, albedo_ice_color, smoothstep(0.0, 0.5, freezingEffect));
     return mixedIceColor;
 }
 
@@ -36,7 +34,7 @@ vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
 
     vec2 mixedIceMetallicRoughness = mix(vec2(metallic, roughnes), vec2(metallic_ice, roughnes_ice), smoothstep(0.0, 0.5, freezingEffect));
 
-    return (1.0 - step(0.01, damageEffect)) * mixedIceMetallicRoughness;
+    return mixedIceMetallicRoughness;
 }
 
 float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
@@ -59,5 +57,6 @@ vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 
 vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
 {
-    return vec4(0.0);
+    float emissionPrct = smoothstep(0.0, 0.5, damageEffect);
+    return vec4(1.0, 0.0, 0.0, emissionPrct);
 }

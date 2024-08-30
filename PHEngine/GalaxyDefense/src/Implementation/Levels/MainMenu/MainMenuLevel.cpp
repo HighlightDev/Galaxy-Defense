@@ -1,34 +1,5 @@
 #include "MainMenuLevel.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
-#include "Core/GameCore/ThirdPersonCamera.h"
-#include "Core/GameCore/Components/InputComponent.h"
-#include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
-#include "Core/GameCore/Tweener/TweenerParser.h"
-#include "Core/GameCore/Tweener/Tweener.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
-#include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
-#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
-#include "Core/ResourceManagerCore/Pool/TexturePool.h"
-#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
-
-#include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
-#include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
-
-#include "Core/GraphicsCore/Material/MaterialParser.h"
-#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
-
-#include "Implementation/GalaxySceneCamera.h"
-#include "Implementation/Events/RayCollisionEvent.h"
-#include "Implementation/Events/SphereContactCollisionEvent.h"
-#include "Implementation/Events/MainPlayerStatusChangedEvent.h"
-
-#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
-#include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
-#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 
 #include "Core/GameCore/Components/AudioComponents/StreamingSoundComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
@@ -37,13 +8,9 @@
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
-using namespace Graphics;
-using namespace EnginePhysics;
 using namespace IO;
 using namespace EngineCore;
 using namespace EngineCore::Scripts;
-using namespace Resources;
-using namespace Graphics;
 
 namespace Game
 {

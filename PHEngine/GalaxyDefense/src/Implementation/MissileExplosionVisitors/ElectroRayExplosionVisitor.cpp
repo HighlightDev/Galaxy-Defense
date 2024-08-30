@@ -8,7 +8,7 @@
 #include "Core/GameCore/Physics/CollisionTestImplementation/SphereCollisionTestWithFilterAdapter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/CommonCore/Assertion.h"
-#include "Implementation/Events/SphereContactCollisionEvent.h"
+#include "Implementation/Events/ElectroRaySphereContactCollisionEvent.h"
 
 #include <algorithm>
 
@@ -47,7 +47,7 @@ namespace Game
                                    [](const auto &collidedDescriptor)
                                    { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
 
-                    Event::SphereContactCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, spaceship->GetObjectId(), descriptorActorIds);
+                    Event::ElectroRaySphereContactCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, spaceship->GetObjectId(), descriptorActorIds);
                 }
             }
         }
@@ -79,7 +79,7 @@ namespace Game
                                    [](const auto &collidedDescriptor)
                                    { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
 
-                    Event::SphereContactCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, spaceObject->GetObjectId(), descriptorActorIds);
+                    Event::ElectroRaySphereContactCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, spaceObject->GetObjectId(), descriptorActorIds);
                 }
             }
         }

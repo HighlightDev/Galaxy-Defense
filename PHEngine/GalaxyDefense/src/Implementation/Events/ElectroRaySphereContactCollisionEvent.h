@@ -9,7 +9,7 @@
 
 namespace Event
 {
-   class SphereContactCollisionEvent
+   class ElectroRaySphereContactCollisionEvent
        : public TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<int32_t/*srcCollisionObject*/, std::vector<int32_t>>/*dstCollisionObjects*/>
    {
    public:
@@ -17,7 +17,7 @@ namespace Event
 
       std::string ToString() const override
       {
-         return "GameThreadSphereContactCollisionEvent";
+         return "GameThreadElectroRaySphereContactCollisionEvent";
       }
    };
 

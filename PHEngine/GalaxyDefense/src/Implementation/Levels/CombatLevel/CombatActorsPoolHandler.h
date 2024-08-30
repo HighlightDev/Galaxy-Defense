@@ -15,6 +15,11 @@ namespace EngineCore
     class Actor;
 }
 
+namespace EnginePhysics
+{
+    class PhysicsComponent;
+}
+
 namespace Game
 {
     class ElectroRayChainActor;
@@ -25,10 +30,9 @@ namespace Game
     class IMissileFactory;
 
     class CombatActorsPoolHandler
+        : public std::enable_shared_from_this<CombatActorsPoolHandler>
     {
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
-
-        std::shared_ptr<::EngineCore::Actor> mPlayerShip;
 
         std::vector<std::shared_ptr<SpaceStationActor>> mSpaceStations;
 
@@ -62,11 +66,11 @@ namespace Game
 
         std::shared_ptr<SpaceStationActor> GetSpaceStationOwnerActorById(const int32_t actorId) const;
 
-        const std::vector<std::shared_ptr<SpaceshipActor>>& GetEnemySpaceshipActors() const;
+        const std::vector<std::shared_ptr<SpaceshipActor>> &GetEnemySpaceshipActors() const;
 
-        const std::vector<std::shared_ptr<MissileActor>>& GetMissileActors() const;
+        const std::vector<std::shared_ptr<MissileActor>> &GetMissileActors() const;
 
-        const std::vector<std::shared_ptr<SpaceStationActor>>& GetSpaceStationActors() const;
+        const std::vector<std::shared_ptr<SpaceStationActor>> &GetSpaceStationActors() const;
 
         eGameObjectsType GetGameObjectTypeByActorId(const int32_t actorId) const;
 
@@ -79,6 +83,12 @@ namespace Game
         void SpawnAsteroids(const int32_t count);
 
         int32_t GetSpaceStationsCount() const;
+
+        std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> GetSpaceStationsPhysicsComponents() const;
+
+        std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> GetSpaceShipsPhysicsComponents() const;
+
+        std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> GetMissilePhysicsComponents(const eMissileType missileType) const;
 
     private:
         std::unique_ptr<IMissileFactory> GetMissileFactoryByType(const eMissileType missileType) const;

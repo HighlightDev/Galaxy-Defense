@@ -7,6 +7,7 @@
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/Actors/BlackHoleMissileActor.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/Factories/ElectroRayChainFactory.h"
@@ -15,6 +16,11 @@
 #include "Implementation/Factories/FreezingMissileFactory.h"
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
 #include "Implementation/Factories/ElectroRayFactory.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/CommonCore/Assertion.h"
+
+using namespace EnginePhysics;
 
 namespace Game
 {
@@ -54,6 +60,7 @@ namespace Game
         ElectroRayChainFactory factory;
         const auto &spawnedActor = mElectroRayChainActorPool.emplace_back(std::static_pointer_cast<ElectroRayChainActor>(factory.CreateMissile(
             sceneSp,
+            shared_from_this(),
             glm::vec3(),
             glm::vec3(),
             glm::vec3(1))));
@@ -101,7 +108,7 @@ namespace Game
         return mMissilesPool;
     }
 
-    const std::vector<std::shared_ptr<SpaceStationActor>>& CombatActorsPoolHandler::GetSpaceStationActors() const
+    const std::vector<std::shared_ptr<SpaceStationActor>> &CombatActorsPoolHandler::GetSpaceStationActors() const
     {
         return mSpaceStations;
     }
@@ -115,7 +122,11 @@ namespace Game
 
         for (size_t i = 0; i < count; ++i)
         {
-            const auto &missile = mMissilesPool.emplace_back(missileFactory->CreateMissile(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+            const auto &missile = mMissilesPool.emplace_back(missileFactory->CreateMissile(sceneSp,
+                                                                                           shared_from_this(),
+                                                                                           glm::vec3(),
+                                                                                           glm::vec3(),
+                                                                                           glm::vec3(1.0f)));
             missile->SetIsEnabled(false);
         }
     }
@@ -227,5 +238,54 @@ namespace Game
             return eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT;
 
         return eGameObjectsCollisionType::UNDEFINED;
+    }
+
+    std::vector<std::shared_ptr<PhysicsComponent>> CombatActorsPoolHandler::GetSpaceStationsPhysicsComponents() const
+    {
+        std::vector<std::shared_ptr<PhysicsComponent>> physicsComponents;
+        physicsComponents.reserve(mSpaceStations.size());
+        std::transform(mSpaceStations.cbegin(), mSpaceStations.cend(), std::back_inserter(physicsComponents), [](const auto &spaceStationActor)
+                       {
+            assert(spaceStationActor->GetPhysicsComponent());
+            return spaceStationActor->GetPhysicsComponent(); });
+        return physicsComponents;
+    }
+
+    std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> CombatActorsPoolHandler::GetSpaceShipsPhysicsComponents() const
+    {
+        std::vector<std::shared_ptr<PhysicsComponent>> physicsComponents;
+        physicsComponents.reserve(mEnemySpaceships.size());
+        std::transform(mEnemySpaceships.cbegin(), mEnemySpaceships.cend(), std::back_inserter(physicsComponents), [](const auto &spaceship)
+                       {
+            assert(spaceship->GetPhysicsComponent());
+            return spaceship->GetPhysicsComponent(); });
+        return physicsComponents;
+    }
+
+    std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> CombatActorsPoolHandler::GetMissilePhysicsComponents(const eMissileType missileType) const
+    {
+        if (eMissileType::NONE == missileType || eMissileType::ELECTRO_RAY == missileType)
+        {
+            return {};
+        }
+
+        std::vector<std::shared_ptr<PhysicsComponent>> physicsComponents;
+        for (const auto &missile : mMissilesPool)
+        {
+            if (missileType == missile->GetMissileType())
+            {
+                if (eMissileType::BLACK_HOLE == missileType)
+                {
+                    const auto &blackHoleMissile = std::static_pointer_cast<BlackHoleMissileActor>(missile);
+                    assert(physicsComponents.emplace_back(blackHoleMissile->GetCombatActivePhaseActor()->GetPhysicsComponent()));
+                    assert(physicsComponents.emplace_back(blackHoleMissile->GetExplosionPhaseActor()->GetPhysicsComponent()));
+                }
+                else
+                {
+                    assert(physicsComponents.emplace_back(missile->GetPhysicsComponent()));
+                }
+            }
+        }
+        return physicsComponents;
     }
 }

@@ -3,6 +3,7 @@
 #include "PrimitiveComponent.h"
 #include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/ResourceManagerCore/MaterialInstanceDataProviders/InstancedStaticMeshMaterialDataProvider.h"
 
 using namespace Graphics::Data;
 using namespace Graphics;
@@ -11,11 +12,11 @@ namespace EngineCore
 {
 	struct InstancedMeshComponentData;
 
-	class InstancedStaticMeshComponent : public PrimitiveComponent
+	class InstancedStaticMeshComponent
+		: public PrimitiveComponent,
+		  public InstancedStaticMeshMaterialDataProvider
 	{
 	protected:
-		using Base = PrimitiveComponent;
-
 		MeshRenderData m_renderData;
 
 	public:
@@ -43,6 +44,16 @@ namespace EngineCore
 		std::shared_ptr<IMaterial> GetMaterial() const;
 
 		BoundingBox3D GetTransformedBoundingBox() const override;
+
+		// override of InstancedStaticMeshMaterialDataProvider methods
+
+		std::string GetBatchKey() const override;
+
+		std::weak_ptr<::EngineCore::Scene> GetSceneWp() const override;
+
+		int32_t GetInstanceObjectId() const override;
+
+		int32_t GetInstanceProxyId() const override;
 	};
 
 }

@@ -12,7 +12,7 @@ using namespace EngineCore;
 
 namespace Event
 {
-   class RayCollisionEvent
+   class ElectroRayCollisionEvent
        : public TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::weak_ptr<MissileActor>/*event sender actor*/, std::weak_ptr<Actor>/*collided actor*/>>
    {
    public:
@@ -20,7 +20,7 @@ namespace Event
 
       std::string ToString() const override
       {
-         return "GameThreadRayCollisionEvent";
+         return "GameThreadElectroRayCollisionEvent";
       }
    };
 

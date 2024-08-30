@@ -27,7 +27,7 @@ namespace EngineCore
 
     void InstancedStaticMeshComponent::Tick(const float deltaTime)
     {
-        Base::Tick(deltaTime);
+        PrimitiveComponent::Tick(deltaTime);
     }
 
     void InstancedStaticMeshComponent::SetIsEnabled(const bool bEnabled)
@@ -82,4 +82,23 @@ namespace EngineCore
         return {}; // todo: for now frustum cull test is not applyed to instanced geometry, so return wrong value anyway
     }
 
+    std::string InstancedStaticMeshComponent::GetBatchKey() const
+    {
+        return m_renderData.mModelPath + "_" + m_renderData.mMaterialProxy->MaterialName;
+    }
+
+    std::weak_ptr<::EngineCore::Scene> InstancedStaticMeshComponent::GetSceneWp() const
+    {
+        return m_sceneWP;
+    }
+
+    int32_t InstancedStaticMeshComponent::GetInstanceObjectId() const
+    {
+        return mObjectId;
+    }
+
+    int32_t InstancedStaticMeshComponent::GetInstanceProxyId() const
+    {
+        return GetSceneProxyId();
+    }
 }
