@@ -18,12 +18,8 @@ namespace Graphics
       {
       private:
 
-#if DEBUG
-   
-         // info for debug 
          std::string m_uniformName;
 
-#endif
          std::vector<int32_t> m_uniformLocations;
 
       public:
@@ -34,30 +30,31 @@ namespace Graphics
 
          ~UniformArray();
 
-         void LoadUniform(size_t uniformIndex, bool arg);
+         std::string GetUniformName() const;
 
-         void LoadUniform(size_t uniformIndex, float arg);
+         void LoadUniform(size_t uniformIndex, bool arg) const;
 
-         void LoadUniform(size_t uniformIndex, int32_t arg);
+         void LoadUniform(size_t uniformIndex, float arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::vec2& arg);
+         void LoadUniform(size_t uniformIndex, int32_t arg) const;
 
-         void LoadUniform(size_t uniformIndex, glm::vec2&& arg);
+         void LoadUniform(size_t uniformIndex, const glm::vec2& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::vec3& arg);
+         void LoadUniform(size_t uniformIndex, glm::vec2&& arg) const;
 
-         void LoadUniform(size_t uniformIndex, glm::vec3&& arg);
+         void LoadUniform(size_t uniformIndex, const glm::vec3& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::vec4& arg);
+         void LoadUniform(size_t uniformIndex, glm::vec3&& arg) const;
 
-         void LoadUniform(size_t uniformIndex, glm::vec4&& arg);
+         void LoadUniform(size_t uniformIndex, const glm::vec4& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::mat2& arg);
+         void LoadUniform(size_t uniformIndex, glm::vec4&& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::mat3& arg);
+         void LoadUniform(size_t uniformIndex, const glm::mat2& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::mat4& arg);
+         void LoadUniform(size_t uniformIndex, const glm::mat3& arg) const;
 
+         void LoadUniform(size_t uniformIndex, const glm::mat4& arg) const;
       };
 
 		struct Uniform

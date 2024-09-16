@@ -154,10 +154,20 @@ namespace Graphics
                                                             const uint64_t functionId,
                                                             const bool bEnabled);
 
+         void UpdateLightComponentEnable_OnRenderThread(const int32_t lightSceneProxyIndex,
+                                                        const int32_t creatorObjectId,
+                                                        const uint64_t functionId,
+                                                        const bool bEnabled);
+
          void UpdatePrimitiveComponentVisibility_OnRenderThread(const int32_t primitiveSceneProxyIndex,
                                                                 const int32_t creatorObjectId,
                                                                 const uint64_t functionId,
                                                                 const bool visibility);
+
+         void UpdateLightComponentIsVisible_OnRenderThread(const int32_t lightSceneProxyIndex,
+                                                           const int32_t creatorObjectId,
+                                                           const uint64_t functionId,
+                                                           const bool visibility);
 
          void UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const int32_t primitiveSceneProxyIndex,
                                                                     const int32_t creatorObjectId,
@@ -227,7 +237,7 @@ namespace Graphics
 
          std::shared_ptr<InstancedGeometryBatcher> GetInstancedGeometryBatcher() const;
 
-         void OnWindowSizeChanged(const ViewPortInfo& viewPortInfo);
+         void OnWindowSizeChanged(const ViewPortInfo &viewPortInfo);
 
 #if DEBUG
 

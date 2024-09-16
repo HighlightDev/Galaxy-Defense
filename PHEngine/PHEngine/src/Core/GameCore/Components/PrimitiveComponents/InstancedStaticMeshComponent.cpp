@@ -14,9 +14,9 @@ namespace EngineCore
     InstancedStaticMeshComponent::InstancedStaticMeshComponent(const std::shared_ptr<InstancedMeshComponentData> &meshComponentData,
                                                                const MeshRenderData renderData)
         : PrimitiveComponent(meshComponentData->EngineObjectName,
-                             {},
-                             {},
-                             glm::vec3(1.0f)),
+                             meshComponentData->m_translation,
+                             meshComponentData->m_eulerRotationDegrees,
+                             meshComponentData->m_scale),
           m_renderData(renderData)
     {
     }
@@ -25,9 +25,10 @@ namespace EngineCore
     {
     }
 
-    void InstancedStaticMeshComponent::Tick(const float deltaTime)
+    void InstancedStaticMeshComponent::UnpausableTick(const float deltaTime)
     {
-        PrimitiveComponent::Tick(deltaTime);
+        PrimitiveComponent::UnpausableTick(deltaTime);
+        InstancedStaticMeshMaterialDataProvider::UpdateInstancedDataProvider();
     }
 
     void InstancedStaticMeshComponent::SetIsEnabled(const bool bEnabled)

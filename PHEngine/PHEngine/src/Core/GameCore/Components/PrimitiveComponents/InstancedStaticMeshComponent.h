@@ -30,7 +30,7 @@ namespace EngineCore
 
 		void SetIsVisible(bool isVisible) override;
 
-		void Tick(const float deltaTime) override;
+		void UnpausableTick(const float deltaTime) override;
 
 		void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 

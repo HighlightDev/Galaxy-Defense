@@ -43,7 +43,7 @@ namespace Graphics
 		{
 			GenIndexBuffer();
 			BindIndexBuffer();
-			m_allocatedBufferSize = sizeof(size_t) * GetTotalLengthOfData();
+			m_allocatedBufferSize = sizeof(uint32_t) * m_countOfIndices;
 
 			LogInfo("IndexBufferObject::SendDataToGPU => bufferSize = ", m_allocatedBufferSize);
 			glBufferData(m_bufferTarget, m_allocatedBufferSize, m_data.data(), GL_STATIC_DRAW);

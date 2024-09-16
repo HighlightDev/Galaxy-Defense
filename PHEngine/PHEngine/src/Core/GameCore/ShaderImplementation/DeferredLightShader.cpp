@@ -228,7 +228,7 @@ namespace EngineCore
          int32_t dirLightProxyIndex = 0;
          for (const auto &lightProxy : lightsProxies)
          {
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT)
+            if (lightProxy->IsEnabled() && lightProxy->IsVisible() && lightProxy->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT)
             {
                const auto &dirLProxySp = std::static_pointer_cast<DirectionalLightSceneProxy>(lightProxy);
                u_DirLightAmbientColor.LoadUniform(dirLightProxyIndex, dirLProxySp->AmbientColor);
@@ -245,7 +245,7 @@ namespace EngineCore
          int32_t pointLightProxyIndex = 0;
          for (const auto &lightProxy : lightsProxies)
          {
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT)
+            if (lightProxy->IsEnabled() && lightProxy->IsVisible() && lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT)
             {
                const auto &pointLProxySp = std::static_pointer_cast<PointLightSceneProxy>(lightProxy);
                u_PointLightDiffuseColor.LoadUniform(pointLightProxyIndex, pointLProxySp->DiffuseColor);
@@ -262,7 +262,7 @@ namespace EngineCore
          int32_t spotlightProxyIndex = 0;
          for (const auto &lightProxy : lightsProxies)
          {
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT)
+            if (lightProxy->IsEnabled() && lightProxy->IsVisible() && lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT)
             {
                const auto &spotlightProxySp = std::static_pointer_cast<SpotlightSceneProxy>(lightProxy);
                u_SpotlightAmbientColor.LoadUniform(spotlightProxyIndex, spotlightProxySp->AmbientColor);

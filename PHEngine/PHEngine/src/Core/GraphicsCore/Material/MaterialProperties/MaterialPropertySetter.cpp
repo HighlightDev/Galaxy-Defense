@@ -1,7 +1,9 @@
 #include "MaterialPropertySetter.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicInstancedFloatMaterialProperty.h"
 #include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
+#include "Core/ResourceManagerCore/MaterialInstanceDataProviders/MaterialInstanceDataProvider.h"
 #include "TextureMaterialProperty.h"
 #include "FloatMaterialProperty.h"
 #include "iVec2MaterialProperty.h"
@@ -11,9 +13,11 @@
 #include "BindingMaterialProperty.h"
 #include "Core/GameCore/EngineObject.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
 
 using namespace Resources;
 using namespace EngineCore;
+using namespace Graphics::Texture;
 
 namespace Graphics
 {
@@ -198,7 +202,7 @@ namespace Graphics
       const auto propertyType = property->GetPropertyType();
       return propertyType == MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY ||
              propertyType == MaterialProperty::eMaterialPropertyType::IVEC2_BINDING_PROPERTY ||
-             propertyType == MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY  ||
+             propertyType == MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY ||
              propertyType == MaterialProperty::eMaterialPropertyType::VEC3_BINDING_PROPERTY;
    }
 
@@ -227,6 +231,23 @@ namespace Graphics
       {
          assert(false);
       }
+   }
+
+   void MaterialPropertySetter::SetMaterialInstancedPropertyValue(const std::shared_ptr<IMaterial> &materialInstance,
+                                                                  const std::shared_ptr<MaterialInstanceDataProvider> &instanceDataProvider,
+                                                                  const std::shared_ptr<EngineObject> &gameObjectSp,
+                                                                  const std::string &gamePropertyName,
+                                                                  const std::string &bindingName)
+   {
+      assert(materialInstance);
+
+      const auto &dynamicMaterial = TryCastToDynamicMaterial(materialInstance);
+      assert(dynamicMaterial);
+      const auto property = std::dynamic_pointer_cast<DynamicInstancedFloatMaterialProperty>(dynamicMaterial->TryGetDynamicPropertyByName(bindingName));
+      assert(property);
+      auto floatBinding = std::make_shared<FloatPropertyBinding>(bindingName);
+      property->AddInstancedBinding(floatBinding, instanceDataProvider);
+      BindingAttachmentBuilder::SetAttachment(gameObjectSp, floatBinding, gamePropertyName);
    }
 
 }

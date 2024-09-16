@@ -10,9 +10,10 @@
 #include "Core/GameCore/EngineObject.h"
 #include "Core/CommonCore/Assertion.h"
 
+using namespace Resources;
+
 namespace EngineCore
 {
-
    template <typename EnginePropertyValueType>
    std::shared_ptr<EngineObjectProperty<EnginePropertyValueType>> CastBasePropertyToType(const std::shared_ptr<EngineObjectPropertyBase> &goProperty)
    {
@@ -77,14 +78,14 @@ namespace EngineCore
          case eEnginePropertyBindingType::iVec2:
          {
             const auto ivec2Binding = std::static_pointer_cast<iVec2PropertyBinding>(bindingSp);
-            const auto& gameObjectProperty = CastBasePropertyToType<glm::ivec2>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
+            const auto &gameObjectProperty = CastBasePropertyToType<glm::ivec2>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
             ivec2Binding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          case eEnginePropertyBindingType::Vec2:
          {
             const auto vec2Binding = std::static_pointer_cast<Vec2PropertyBinding>(bindingSp);
-            const auto& gameObjectProperty = CastBasePropertyToType<glm::vec2>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
+            const auto &gameObjectProperty = CastBasePropertyToType<glm::vec2>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
             vec2Binding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }

@@ -19,6 +19,8 @@ namespace Graphics
    public:
       std::shared_ptr<IMaterial> ParseMaterialDescriptor(const std::string &materialFileName);
 
+      std::string ReadMaterialNameFromMaterialDescriptor(const std::string& materialFileName);
+
    private:
       std::shared_ptr<IMaterial> ParseStaticMaterial(const std::list<std::string> &materialSrc, const std::string &materialName, const std::string &materialShaderPath);
 
@@ -29,6 +31,9 @@ namespace Graphics
 
       std::shared_ptr<DynamicMaterialProperty> GetMaterialDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t &propertiesBeginIt,
                                                                                             const XMLParserHelper::iterator_t &propertiesEndIt);
+
+      std::shared_ptr<DynamicMaterialProperty> GetMaterialInstancedDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t &propertiesBeginIt,
+                                                                                                     const XMLParserHelper::iterator_t &propertiesEndIt);
 
       MaterialNode::eMaterialPropertyType ConvertPropertyStrToPropertyTypeForMaterialOperationNode(const std::string &propertyTypeStr) const;
    };

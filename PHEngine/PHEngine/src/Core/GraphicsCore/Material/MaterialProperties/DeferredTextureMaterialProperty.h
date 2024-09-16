@@ -36,6 +36,10 @@ namespace Graphics {
          return MaterialProperty::eMaterialPropertyType::DEFERRED_TEXTURE_PROPERTY;
       }
 
+      void SetValueToUniformArray(const UniformArray& uniformArray) const override
+      {
+      }
+
       void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
       {
          if (m_value)

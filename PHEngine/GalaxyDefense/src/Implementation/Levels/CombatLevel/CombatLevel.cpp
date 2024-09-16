@@ -2,6 +2,7 @@
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Components/InputComponent.h"
+#include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GameCore/Tweener/Tweener.h"
@@ -138,6 +139,10 @@ namespace Game
       sceneSp->RegisterMainCamera(spaceCamera);
       spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);
 
+      const auto& a_light = sceneSp->GetActorByName("MainLightActor");
+      assert(a_light);
+      std::static_pointer_cast<LightComponent>(a_light->GetComponentsByType<LightComponent>().front())->SetIsVisible(true);
+
       const auto &a_skybox = sceneSp->GetActorByName("SkyboxActor");
       assert(a_skybox);
 
@@ -159,7 +164,7 @@ namespace Game
       mUiController->OnLevelInit();
 
       // todo: temprorary solution just to test InstancedStaticMeshComponent
-      const std::shared_ptr<IMaterial> &asteroidPbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+      const std::shared_ptr<IMaterial> &asteroidPbs_mat = materialParser.ParseMaterialDescriptor("AsteroidMaterial.m");
       sceneSp->RegisterMaterialInstance(asteroidPbs_mat);
 
       const std::string albedoName = "Asteroid_albedo.jpg";
@@ -179,14 +184,15 @@ namespace Game
       MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "metallicMap", metallic_tex);
       MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "uvScale", uvScale);
 
-      const auto& instancedMeshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
+      const auto &instancedMeshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
       const auto lvlDiffVec = levelBoundary.GetMax() - levelBoundary.GetMin();
       const float xStep = lvlDiffVec.x * 0.1f;
       const float zStep = lvlDiffVec.z * 0.1f;
       for (int i = 0; i < 100; ++i)
       {
-         const auto d_ismesh = std::make_shared<InstancedMeshComponentData>("c_instancedStaticMesh" + std::to_string(i), "asteroid.fbx", asteroidPbs_mat);
+         const auto d_ismesh = std::make_shared<InstancedMeshComponentData>("c_instancedStaticMesh" + std::to_string(i), "asteroid.fbx", glm::vec3(), glm::vec3(), glm::vec3(1.0), asteroidPbs_mat);
          const auto &c_ismesh = std::static_pointer_cast<InstancedStaticMeshComponent>(sceneSp->CreateComponent_GameThread(instancedMeshComponentCreator, d_ismesh));
+         MaterialPropertySetter::SetMaterialInstancedPropertyValue(asteroidPbs_mat, c_ismesh, sceneSp, "GT_DeltaSec", "freezingBlendValue");
          const auto x = levelBoundary.GetMin().x + ((i % 10) * xStep);
          const auto z = levelBoundary.GetMin().z + ((i / 10) * zStep);
          const auto y = levelBoundary.GetOrigin().y - (Random::Float() * 10.0f);

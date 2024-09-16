@@ -31,12 +31,15 @@ namespace Graphics
 
          bool bTransformationDirty{true};
 
+         bool mIsVisible{true};
+
       public:
          glm::vec3 AmbientColor;
          glm::vec3 DiffuseColor;
          glm::vec3 SpecularColor;
 
          LightSceneProxy(const bool isEnabled,
+                         const bool isVisible,
                          const glm::mat4 &relativeMatrix,
                          const glm::vec3 &ambientColor,
                          const glm::vec3 &diffuseColor,
@@ -54,6 +57,10 @@ namespace Graphics
          bool IsTransformationDirty() const;
 
          void SetIsTransformationDirty(bool value);
+
+         void SetIsVisible(const bool visible);
+
+         bool IsVisible() const;
 
          virtual std::shared_ptr<ProjectedShadowInfo> GetShadowInfo();
 

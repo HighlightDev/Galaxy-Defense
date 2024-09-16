@@ -122,7 +122,7 @@ namespace EngineCore
         assert(foundSameModuleIt == mParticleModules.end());
         mParticleModules.emplace_back(particleModule);
         std::sort(mParticleModules.begin(), mParticleModules.end(), [](const auto &leftModule, const auto &rightModule)
-                  { return (uint8_t)leftModule->GetParticleModuleType() < (uint8_t)leftModule->GetParticleModuleType(); });
+                  { return (uint8_t)leftModule->GetParticleModuleType() < (uint8_t)rightModule->GetParticleModuleType(); });
     }
 
     void ParticleSystemComponent::EmitParticles(const size_t particlesCount)

@@ -30,6 +30,10 @@ namespace Graphics {
          return MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY;
       }
 
+      void SetValueToUniformArray(const UniformArray& uniformArray) const override
+      {
+      }
+
       void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override { assert(false); } // this code should not be called, use proxy on render thread part 
 
       void SetValue(MaterialPropertyValueType value) {

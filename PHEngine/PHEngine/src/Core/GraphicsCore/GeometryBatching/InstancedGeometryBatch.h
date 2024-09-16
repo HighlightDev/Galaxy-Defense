@@ -3,6 +3,7 @@
 #include <glm/mat4x4.hpp>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
@@ -40,6 +41,8 @@ namespace Graphics::GeometryBatching
 
         std::vector<glm::mat4> mCachedWorldMatrices;
 
+        std::unordered_map<int32_t /*proxy id*/, int32_t /*instance id*/> mInstancesIdMap;
+
     public:
         explicit InstancedGeometryBatch(const std::shared_ptr<::Graphics::Proxy::InstancedStaticMeshSceneProxy> &initialSceneProxy);
 
@@ -55,15 +58,14 @@ namespace Graphics::GeometryBatching
 
         std::string GetBatchKey() const;
 
-        bool IsProxyActive(const int32_t sceneProxyId) const;
-
         // the instance id in order for rendering
         int32_t GetInstanceId(const int32_t sceneProxyId) const;
+
     private:
-        bool IsProxyActive(const std::shared_ptr<InstancedStaticMeshSceneProxy>& sceneProxy) const;
+        bool IsProxyActive(const std::shared_ptr<InstancedStaticMeshSceneProxy> &sceneProxy) const;
 
         std::shared_ptr<ShaderType> GetShader() const;
 
-        std::vector<glm::mat4> CollectAllWorldMatrices();
+        void PrepareRenderData();
     };
 }

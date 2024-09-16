@@ -7,20 +7,34 @@ uniform sampler2D normalMap;
 uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D ambientOcclusionMap;
-uniform float uvScale;
-uniform float damageEffect;
 
 uniform sampler2D albedo_ice;
 uniform sampler2D normalMap_ice;
 uniform sampler2D metallicMap_ice;
 uniform sampler2D roughnessMap_ice;
-uniform float freezingEffect;
+
+uniform float uvScale;
+
+uniform float freezingEffect[200];
+uniform float damageEffect[200];
+
+float GetFreezingEffectForCurrentInstance(in MATERIAL_VS_OUTPUT materialIn)
+{
+    int instanceID = int(materialIn.InstanceID);
+    return clamp(freezingEffect[instanceID], 0.0, 1.0);
+}
+
+float GetDamageEffectForCurrentInstance(in MATERIAL_VS_OUTPUT materialIn)
+{
+    int instanceID = int(materialIn.InstanceID);
+    return clamp(damageEffect[instanceID], 0.0, 1.0);
+}
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
     vec3 albedoColor = texture(albedo, materialIn.TextureCoordinates.xy * uvScale).rgb;
     vec3 albedo_ice_color = texture(albedo_ice, materialIn.TextureCoordinates.xy).rgb;
-    vec3 mixedIceColor = mix(albedoColor, albedo_ice_color, smoothstep(0.0, 0.5, freezingEffect));
+    vec3 mixedIceColor = mix(albedoColor, albedo_ice_color, smoothstep(0.0, 0.5, GetFreezingEffectForCurrentInstance(materialIn)));
     return mixedIceColor;
 }
 
@@ -32,7 +46,7 @@ vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
     float metallic_ice = texture(metallicMap_ice, materialIn.TextureCoordinates.xy).r;
 	float roughnes_ice = texture(roughnessMap_ice, materialIn.TextureCoordinates.xy).r;
 
-    vec2 mixedIceMetallicRoughness = mix(vec2(metallic, roughnes), vec2(metallic_ice, roughnes_ice), smoothstep(0.0, 0.5, freezingEffect));
+    vec2 mixedIceMetallicRoughness = mix(vec2(metallic, roughnes), vec2(metallic_ice, roughnes_ice), smoothstep(0.0, 0.5, GetFreezingEffectForCurrentInstance(materialIn)));
 
     return mixedIceMetallicRoughness;
 }
@@ -45,18 +59,18 @@ float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
 float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 {
 	return 1.0;
-};
+}
 
 vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 {   
     vec3 normal = (texture(normalMap, materialIn.TextureCoordinates.xy * uvScale).rgb * 2.0) - 1.0;
     vec3 normal_ice = (texture(normalMap, materialIn.TextureCoordinates.xy * uvScale).rgb * 2.0) - 1.0;
-    vec3 mixedIceNormalTangentSpace = mix(normal, normal_ice, smoothstep(0.0, 0.5, freezingEffect));
+    vec3 mixedIceNormalTangentSpace = mix(normal, normal_ice, smoothstep(0.0, 0.5, GetFreezingEffectForCurrentInstance(materialIn)));
     return transformNormalFromTangentSpaceToWorld(materialIn,mixedIceNormalTangentSpace);
 }
 
 vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
 {
-    float emissionPrct = smoothstep(0.0, 0.5, damageEffect);
+    float emissionPrct = smoothstep(0.0, 0.5, GetDamageEffectForCurrentInstance(materialIn));
     return vec4(1.0, 0.0, 0.0, emissionPrct);
 }

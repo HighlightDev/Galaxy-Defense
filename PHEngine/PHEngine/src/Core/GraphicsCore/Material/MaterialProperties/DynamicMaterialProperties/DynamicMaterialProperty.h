@@ -13,7 +13,8 @@ namespace Graphics
             FloatProperty,
             iVec2Property,
             Vec2Property,
-            Vec3Property
+            Vec3Property,
+            InstancedFloatProperty
         };
 
     protected:
@@ -26,8 +27,6 @@ namespace Graphics
             : mPropertyName(propertyName)
         {
         }
-
-        virtual void SetValueToUniform(const Uniform &uniform, const int32_t propertyIndex) const = 0;
 
         virtual eDynamicMaterialPropertyType GetPropertyType() const = 0;
 

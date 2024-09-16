@@ -10,6 +10,7 @@ namespace Graphics
       DirectionalLightSceneProxy::DirectionalLightSceneProxy(const DirectionalLightComponent *component)
           : LightSceneProxy(
                 component->IsEnabled(),
+                component->IsVisible(),
                 component->GetRelativeMatrix(),
                 component->GetRenderData()->Ambient,
                 component->GetRenderData()->Diffuse,

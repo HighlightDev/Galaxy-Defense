@@ -165,6 +165,8 @@ namespace EngineCore
 
       std::shared_ptr<Graphics::IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
 
+      std::shared_ptr<Graphics::IMaterial> GetMaterialByName(const std::string& materialName) const;
+
       std::shared_ptr<ACamera> GetCamera(const std::string &name) const;
 
       std::vector<std::shared_ptr<ACamera>> GetActiveCameras() const;

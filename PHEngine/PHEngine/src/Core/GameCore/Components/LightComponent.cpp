@@ -43,6 +43,42 @@ namespace EngineCore
       return LIGHT_COMPONENT;
    }
 
+   void LightComponent::UnpausableTick(const float deltaTime)
+   {
+      SceneComponent::UnpausableTick(deltaTime);
+
+      if (bIsEnabledStateDirty ||
+          bIsVisibleStateDirty)
+      {
+         SyncRenderData();
+      }
+   }
+
+   void LightComponent::SetIsEnabled(const bool bEnabled)
+   {
+      if (mIsEnabled->GetValue() != bEnabled)
+      {
+         mIsEnabled->SetValue(bEnabled, false);
+         bIsEnabledStateDirty = true;
+         SyncRenderData();
+      }
+   }
+
+   void LightComponent::SetIsVisible(const bool value)
+   {
+      if (mIsVisible != value)
+      {
+         mIsVisible = value;
+         bIsVisibleStateDirty = true;
+         SyncRenderData();
+      }
+   }
+
+   bool LightComponent::IsVisible() const
+   {
+      return mIsVisible;
+   }
+
    void LightComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
    {
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
@@ -63,6 +99,32 @@ namespace EngineCore
       else
       {
          SetIsTransformationDirty(true);
+      }
+   }
+
+   void LightComponent::SyncRenderData()
+   {
+      if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
+      {
+         if (const auto &sceneSP = m_sceneWP.lock())
+         {
+            if (const auto &sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+            {
+               if (bIsEnabledStateDirty)
+               {
+                  static const uint64_t functionId = Hash("LightComponent:UpdateLightComponentEnable_OnRenderThread");
+                  sceneRendererSp->UpdateLightComponentEnable_OnRenderThread(mLightSceneProxyId, GetObjectId(), functionId, mIsEnabled->GetValue());
+                  bIsEnabledStateDirty = false;
+               }
+
+               if (bIsVisibleStateDirty)
+               {
+                  static const uint64_t functionId = Hash("LightComponent:UpdateLightComponentIsVisible_OnRenderThread");
+                  sceneRendererSp->UpdateLightComponentIsVisible_OnRenderThread(mLightSceneProxyId, GetObjectId(), functionId, mIsVisible);
+                  bIsVisibleStateDirty = false;
+               }
+            }
+         }
       }
    }
 

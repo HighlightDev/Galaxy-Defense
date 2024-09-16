@@ -48,31 +48,22 @@ namespace Graphics::GeometryBatching
         return sceneProxy->IsEnabled() && sceneProxy->IsVisible() && sceneProxy->IsTransformIntialized();
     }
 
-    bool InstancedGeometryBatch::IsProxyActive(const int32_t sceneProxyId) const
-    {
-        return std::any_of(mInstancedStaticMeshSceneProxies.cbegin(), mInstancedStaticMeshSceneProxies.cend(), [sceneProxyId, this](const auto& proxyWp) {
-            const auto proxySp = proxyWp.lock();
-            return proxySp && IsProxyActive(proxySp);
-        });
-    }
-
     int32_t InstancedGeometryBatch::GetInstanceId(const int32_t sceneProxyId) const
     {
-        // todo: to be done
-        return -1;
+        return mInstancesIdMap.count(sceneProxyId) ? mInstancesIdMap.at(sceneProxyId) : -1;
     }
 
     void InstancedGeometryBatch::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy,
                                         const glm::mat4 &viewMatrix,
                                         const glm::mat4 &projectionMatrix)
     {
-        auto worldMatrices = CollectAllWorldMatrices();
+        PrepareRenderData();
         const auto &shader = GetShader();
 
         shader->ExecuteShader();
-        shader->GetVertexFactoryShader()->SetMatrices(worldMatrices, viewMatrix, projectionMatrix);
+        shader->GetVertexFactoryShader()->SetMatrices(mCachedWorldMatrices, viewMatrix, projectionMatrix);
         shader->GetMaterialShader()->LoadUniformValues(m_renderData.mMaterialProxy);
-        m_skin->GetBuffer()->RenderInstanced(GL_TRIANGLES, worldMatrices.size());
+        m_skin->GetBuffer()->RenderInstanced(GL_TRIANGLES, mCachedWorldMatrices.size());
         shader->StopShader();
     }
 
@@ -107,10 +98,11 @@ namespace Graphics::GeometryBatching
         return mShader;
     }
 
-    std::vector<glm::mat4> InstancedGeometryBatch::CollectAllWorldMatrices()
+    void InstancedGeometryBatch::PrepareRenderData()
     {
         std::vector<glm::mat4> result;
         result.reserve(mInstancedStaticMeshSceneProxies.size());
+        mInstancesIdMap.clear();
 
         for (const auto &wpProxy : mInstancedStaticMeshSceneProxies)
         {
@@ -118,11 +110,12 @@ namespace Graphics::GeometryBatching
             {
                 if (IsProxyActive(spProxy))
                 {
+                    mInstancesIdMap[spProxy->GetSceneProxyId()] = result.size();
                     result.emplace_back(spProxy->GetMatrix());
                 }
             }
         }
 
-        return result;
+        mCachedWorldMatrices = std::move(result);
     }
 }

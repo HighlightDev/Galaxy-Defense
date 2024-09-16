@@ -6,6 +6,7 @@ namespace Graphics
    {
 
       LightSceneProxy::LightSceneProxy(const bool isEnabled,
+                                       const bool isVisible,
                                        const glm::mat4 &relativeMatrix,
                                        const glm::vec3 &ambientColor,
                                        const glm::vec3 &diffuseColor,
@@ -14,6 +15,7 @@ namespace Graphics
           : SceneProxyBase(isEnabled),
             m_relativeMatrix(relativeMatrix),
             m_shadowInfo(shadowInfo),
+            mIsVisible(isVisible),
             AmbientColor(ambientColor),
             DiffuseColor(diffuseColor),
             SpecularColor(specularColor)
@@ -50,6 +52,16 @@ namespace Graphics
       void LightSceneProxy::SetIsTransformationDirty(bool value)
       {
          bTransformationDirty = value;
+      }
+
+      void LightSceneProxy::SetIsVisible(const bool visible)
+      {
+         mIsVisible = visible;
+      }
+
+      bool LightSceneProxy::IsVisible() const
+      {
+         return mIsVisible;
       }
 
       std::shared_ptr<ProjectedShadowInfo> LightSceneProxy::GetShadowInfo()

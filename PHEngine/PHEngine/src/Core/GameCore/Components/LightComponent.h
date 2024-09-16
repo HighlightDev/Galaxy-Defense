@@ -15,21 +15,25 @@ namespace EngineCore
 {
    struct LightComponentData;
 
-   class LightComponent : 
-      public SceneComponent
+   class LightComponent : public SceneComponent
    {
-      protected:
-
+   protected:
       using Base = SceneComponent;
 
       std::shared_ptr<LightRenderData> mLightRenderData;
 
+      bool mIsVisible{false};
+
       std::atomic<bool> bIsSceneProxyReady{false};
 
-      int32_t mLightSceneProxyId{-1};
-   public:
+      bool bIsEnabledStateDirty{false};
 
-      LightComponent(const std::shared_ptr<LightComponentData>& data);
+      bool bIsVisibleStateDirty{false};
+
+      int32_t mLightSceneProxyId{-1};
+
+   public:
+      LightComponent(const std::shared_ptr<LightComponentData> &data);
 
       virtual ~LightComponent();
 
@@ -41,15 +45,23 @@ namespace EngineCore
 
       int32_t GetLightSceneProxyId() const;
 
+      void UnpausableTick(const float deltaTime) override;
+
+      void SetIsEnabled(const bool value) override;
+
+      void SetIsVisible(const bool value);
+
+      bool IsVisible() const;
+
       eComponentType GetComponentType() const override;
 
-      void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
+      void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
 
       virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const = 0;
 
-      LightRenderData& GetLightRenderData();
+      LightRenderData &GetLightRenderData();
 
+      void SyncRenderData();
    };
 
 }
-

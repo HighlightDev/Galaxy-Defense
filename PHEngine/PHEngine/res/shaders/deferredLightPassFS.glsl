@@ -315,8 +315,7 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
       float lSrcDist = sqrt(lSrcDstSquared);
       vec3 Li = toLVec / lSrcDist;
 
-      float attenuation = 1.0; // for now
-      // (lSrcDstSquared);
+      float attenuation = clamp( 10.0 / lSrcDist , 0.0, 1.0);
 
       vec3 LRadiance = PointLightDiffuseColor[pointLightIndex] * attenuation;
 
@@ -404,6 +403,8 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal) {
     vec3 nToLightVec = normalize(pointLightPositionWorld - pixelWorldPos);
     float nDotP = dot(nToLightVec, nWorldNormal);
     float diffuseFactor = max(nDotP, 0.0);
+    float lSrcDist = length(pointLightPositionWorld - pixelWorldPos);
+    float attenuation = clamp(1.0 / lSrcDist , 0.0, 1.0);
     float litFactor = 1.0f;
 
     // Calculating shadow
@@ -415,7 +416,7 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal) {
     }
 
     resultDiffuseColor +=
-        PointLightDiffuseColor[pointLightIndex] * diffuseFactor * litFactor;
+        PointLightDiffuseColor[pointLightIndex] * diffuseFactor * attenuation * litFactor;
   }
 
   /* DIRECTIONAL LIGHTS */

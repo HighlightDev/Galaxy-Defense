@@ -50,8 +50,6 @@ namespace Graphics
       {
       }
 
-      void SetValueToUniform(const Uniform &uniform, const int32_t propertyIndex) const override { assert(false); } // this code should not be called, use proxy on render thread part
-
       eDynamicMaterialPropertyType GetPropertyType() const override
       {
          return DynamicMaterialProperty::eDynamicMaterialPropertyType::FloatProperty;

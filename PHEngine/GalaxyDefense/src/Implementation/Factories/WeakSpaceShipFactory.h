@@ -7,6 +7,11 @@ namespace EngineCore
     class Scene;
 }
 
+namespace Graphics
+{
+    class IMaterial;
+}
+
 namespace Game
 {
     class SpaceshipActor;
@@ -24,5 +29,7 @@ namespace Game
                         const glm::vec3 &translation,
                         const glm::vec3 &rotation,
                         const glm::vec3 &scale) override;
+
+        std::shared_ptr<::Graphics::IMaterial> GetMaterial(const std::shared_ptr<::EngineCore::Scene>& scene, bool alreadyExists) const;
     };
 }

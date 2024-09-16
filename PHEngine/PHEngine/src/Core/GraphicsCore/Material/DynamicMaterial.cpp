@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/iVec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec3MaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/InstancedFloatMaterialProperty.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/Assertion.h"
 
@@ -109,6 +110,10 @@ namespace Graphics
       else if (dynamicProperty->GetPropertyType() == DynamicMaterialProperty::eDynamicMaterialPropertyType::Vec3Property)
       {
          staticProperty = std::make_shared<Vec3MaterialProperty>(propertyName);
+      }
+      else if (dynamicProperty->GetPropertyType() == DynamicMaterialProperty::eDynamicMaterialPropertyType::InstancedFloatProperty)
+      {
+         staticProperty = std::make_shared<InstancedFloatMaterialProperty>(propertyName);
       }
 
       assert(staticProperty);

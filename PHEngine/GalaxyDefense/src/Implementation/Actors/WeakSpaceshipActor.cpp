@@ -5,7 +5,8 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Core/GameCore/Components/LightComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/DamageDealerType.h"
@@ -82,12 +83,15 @@ namespace Game
         onRouteMovementComponent->Teleport(position);
         RestoreLife();
 
+        const auto c_light = GetComponentsByType<LightComponent>().back();
+        c_light->SetIsVisible(false);
+
         mWeakSpaceshipTweener->ChangeState("s_LifecycleActive");
     }
 
     void WeakSpaceshipActor::TriggerExplosion()
     {
-        const auto c_spaceshipMesh = GetComponentsByType<StaticMeshComponent>().back();
+        const auto c_spaceshipMesh = GetComponentsByType<InstancedStaticMeshComponent>().back();
         c_spaceshipMesh->SetIsEnabled(false);
 
         const auto &c_physics = GetPhysicsComponent();
@@ -95,6 +99,9 @@ namespace Game
 
         const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
         c_particle->EmitParticles();
+        
+        const auto c_light = GetComponentsByType<LightComponent>().back();
+        c_light->SetIsVisible(true);
         mWeakSpaceshipTweener->ChangeState("s_LifecycleDestroyed");
     }
 

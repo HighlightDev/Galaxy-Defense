@@ -21,7 +21,8 @@ namespace Graphics {
          VEC3_BINDING_PROPERTY,
          VEC2_PROPERTY,
          IVEC2_PROPERTY,
-         VEC3_PROPERTY
+         VEC3_PROPERTY,
+         FLOAT_INSTANCED_PROPERTY
       };
 
    protected:
@@ -36,6 +37,8 @@ namespace Graphics {
       }
 
       virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const = 0;
+
+      virtual void SetValueToUniformArray(const UniformArray& uniformArray) const = 0;
 
       virtual eMaterialPropertyType GetPropertyType() const = 0;
 

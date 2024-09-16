@@ -73,5 +73,7 @@ MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput()
 	result.WorldTangent = GetLocalToWorldSpaceTangent();
 	result.WorldBitangent = GetLocalToWorldSpaceBitangent();
 
+	result.InstanceID = float(gl_InstanceID);
+
 	return result;
 }

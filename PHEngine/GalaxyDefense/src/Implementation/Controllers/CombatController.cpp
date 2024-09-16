@@ -143,8 +143,11 @@ namespace Game
             timer.SetIsRepeat(true);
             timer.SetCallback([pathName, this]()
                               { 
-                                const auto &freeShip = mCombatActorsPoolHandler->GetFreeSpaceshipActor();
-                                mNavigationController->PutSpaceshipOnRoute(pathName, freeShip); });
+                                if (const auto &freeShip = mCombatActorsPoolHandler->GetFreeSpaceshipActor())
+                                {
+                                    mNavigationController->PutSpaceshipOnRoute(pathName, freeShip); 
+                                } });
+
             timer.StartTimer();
         }
 
@@ -363,7 +366,7 @@ namespace Game
     {
         ValidatePoolObjects();
         UpdateMissilesData();
-        ProcessAiAction();
+        //ProcessAiAction();
 
         mNavigationController->Tick(deltaTime);
         mUserInteractionController->Tick(deltaTime);
@@ -459,10 +462,10 @@ namespace Game
 
         const auto &spaceStations = mCombatActorsPoolHandler->GetSpaceStationActors();
         std::vector<std::shared_ptr<PhysicsComponent>> excludedPhysicsComponents;
-        const auto& spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
-        const auto& bombMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BOMB);
-        const auto& freezeMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING);
-        const auto& blackHoleMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
+        const auto &spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
+        const auto &bombMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BOMB);
+        const auto &freezeMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING);
+        const auto &blackHoleMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
         excludedPhysicsComponents.reserve(spaceStations.size() + mCombatActorsPoolHandler->GetMissileActors().size());
         excludedPhysicsComponents.insert(excludedPhysicsComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
         excludedPhysicsComponents.insert(excludedPhysicsComponents.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
@@ -501,13 +504,15 @@ namespace Game
                         const auto &enemyPosition = nearestEnemy->GetRootComponent()->GetTranslation();
                         const auto &projectileShootDirection = glm::normalize(enemyPosition - spaceStationTranslation);
 
-                        const auto getRandomMissileType = [this]() {
+                        const auto getRandomMissileType = [this]()
+                        {
                             const auto missileValue = glm::clamp(static_cast<int32_t>(Random::Float() * 5.0), 1, 4);
                             const auto missileType = static_cast<eMissileType>(missileValue);
                             return mCombatActorsPoolHandler->GetFreeMissile(missileType) ? missileType : eMissileType::NONE;
                         };
                         eMissileType missileType = eMissileType::NONE;
-                        while (eMissileType::NONE == missileType) {
+                        while (eMissileType::NONE == missileType)
+                        {
                             missileType = getRandomMissileType();
                         }
 

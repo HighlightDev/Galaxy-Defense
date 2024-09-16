@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 namespace EngineCore
 {
@@ -9,10 +10,16 @@ namespace EngineCore
 
 namespace Resources
 {
-    class IMaterialInstanceDataProvider
+    class MaterialInstanceDataProvider
     {
+    protected:
+        // this id is identical to draw call instance
+        int32_t mInstanceId{-1};
+
+        bool mIsInstanceActive{false};
+
     public:
-        virtual ~IMaterialInstanceDataProvider() {}
+        virtual ~MaterialInstanceDataProvider() {}
 
         virtual std::weak_ptr<::EngineCore::Scene> GetSceneWp() const = 0;
 
@@ -20,9 +27,9 @@ namespace Resources
 
         virtual int32_t GetInstanceProxyId() const = 0;
 
-        // this id is identical to draw call instance 
-        virtual int32_t GetInstanceId() const = 0;
+        // this id is identical to draw call instance
+        int32_t GetInstanceId() const;
 
-        virtual bool IsInstanceActive() const = 0;
+        bool IsInstanceActive() const;
     };
 }

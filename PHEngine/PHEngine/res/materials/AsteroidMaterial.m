@@ -1,15 +1,11 @@
 <general>
-	name: "SpaceshipPBS.m"
-	shader: "SpaceshipPBSMaterial.glsl"
+	name: "Asteroid material"
+	shader: "AsteroidMaterial.glsl"
 	material_type: "dynamic"
 </general>
 <properties>
     <instanced_dynamic_property>
-		name: "damageEffect"
-		type: "instanced_binding_float"
-	</instanced_dynamic_property>
-	<instanced_dynamic_property>
-		name: "freezingEffect"
+		name: "freezingBlendValue"
 		type: "instanced_binding_float"
 	</instanced_dynamic_property>
 	<property>
@@ -35,21 +31,5 @@
 	<property>
 		name: "uvScale"
 		type: "float"
-	</property>
-	<property>
-		name: "albedo_ice"
-		type: "texture"
-	</property>
-	<property>
-		name: "normalMap_ice"
-		type: "texture"
-	</property>
-	<property>
-		name: "metallicMap_ice"
-		type: "texture"
-	</property>
-	<property>
-		name: "roughnessMap_ice"
-		type: "texture"
 	</property>
 </properties>

@@ -36,6 +36,8 @@ namespace Graphics
 
       std::vector<std::string> GetUniformNames() const;
 
+      std::vector<std::string> GetUniformArrayNames() const;
+
       void UpdateProperty(std::shared_ptr<MaterialProperty> property);
 
       void UpdateProperties(std::vector<std::shared_ptr<MaterialProperty>>&& updatedProperties);

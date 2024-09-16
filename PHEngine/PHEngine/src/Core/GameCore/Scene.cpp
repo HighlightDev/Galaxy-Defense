@@ -260,9 +260,16 @@ namespace EngineCore
 
    std::shared_ptr<IMaterial> Scene::GetMaterialByProxyId(const size_t proxyId) const
    {
-      const auto materialIt = std::find_if(mMaterials.begin(), mMaterials.end(), [=](const auto &material)
+      const auto materialIt = std::find_if(mMaterials.cbegin(), mMaterials.cend(), [=](const auto &material)
                                            { return material->MaterialProxyId == proxyId; });
-      return materialIt != mMaterials.end() ? *materialIt : nullptr;
+      return materialIt != mMaterials.cend() ? *materialIt : nullptr;
+   }
+
+   std::shared_ptr<Graphics::IMaterial> Scene::GetMaterialByName(const std::string& materialName) const
+   {
+      const auto materialIt = std::find_if(mMaterials.cbegin(), mMaterials.cend(), [=](const auto &material)
+                                           { return material->MaterialName == materialName; });
+      return materialIt != mMaterials.cend() ? *materialIt : nullptr;
    }
 
    void Scene::AddActor(std::shared_ptr<Actor> actor)

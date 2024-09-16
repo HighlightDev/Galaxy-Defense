@@ -14,6 +14,8 @@ struct MATERIAL_VS_OUTPUT {
   vec3 WorldTangent;
 
   vec3 WorldBitangent;
+
+  float InstanceID;
 };
 
 vec3 transformNormalFromTangentSpaceToWorld(in MATERIAL_VS_OUTPUT VsOutput,

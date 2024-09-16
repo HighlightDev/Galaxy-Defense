@@ -23,7 +23,11 @@ namespace Graphics
 
          std::vector<std::string> mUniformNames;
 
+         std::vector<std::string> mUniformArrayNames;
+
          std::vector<Uniform> Uniforms;
+
+         std::vector<UniformArray> UniformArrays;
 
       public :
 

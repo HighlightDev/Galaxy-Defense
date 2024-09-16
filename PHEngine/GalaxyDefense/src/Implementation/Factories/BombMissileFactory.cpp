@@ -37,7 +37,7 @@ namespace Game
 
     std::shared_ptr<MissileActor>
     BombMissileFactory::CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,
-                                      const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler,
+                                      const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler,
                                       const glm::vec3 &translation,
                                       const glm::vec3 &rotation,
                                       const glm::vec3 &scale)

@@ -1113,6 +1113,20 @@ namespace Graphics
             } });
       }
 
+      void DeferredShadingSceneRenderer::UpdateLightComponentEnable_OnRenderThread(const int32_t lightSceneProxyIndex,
+                                                                                   const int32_t creatorObjectId,
+                                                                                   const uint64_t functionId,
+                                                                                   const bool bEnabled)
+      {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, lightSceneProxyIndex, bEnabled]()
+                                                {
+            const auto &lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
+            if (lightSp)
+            {
+               lightSp->SetEnabled(bEnabled);
+            } });
+      }
+
       void DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const int32_t primitiveSceneProxyIndex,
                                                                                            const int32_t creatorObjectId,
                                                                                            const uint64_t functionId,
@@ -1124,6 +1138,20 @@ namespace Graphics
             if (primitiveSp)
             {
                primitiveSp->SetVisibility(visibility);
+            } });
+      }
+
+      void DeferredShadingSceneRenderer::UpdateLightComponentIsVisible_OnRenderThread(const int32_t lightSceneProxyIndex,
+                                                                                      const int32_t creatorObjectId,
+                                                                                      const uint64_t functionId,
+                                                                                      const bool visibility)
+      {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, lightSceneProxyIndex, visibility]()
+                                                {
+            const auto &lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
+            if (lightSp)
+            {
+               lightSp->SetIsVisible(visibility);
             } });
       }
 

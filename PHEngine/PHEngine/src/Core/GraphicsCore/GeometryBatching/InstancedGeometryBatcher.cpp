@@ -27,8 +27,11 @@ namespace Graphics::GeometryBatching
     std::shared_ptr<InstancedGeometryBatch> InstancedGeometryBatcher::GetBatch(const std::string &batchKey) const
     {
         assert(batchKey != "");
-        assert(mBatches.count(batchKey));
-        return mBatches.at(batchKey);
+        if (mBatches.count(batchKey))
+        {
+            return mBatches.at(batchKey);
+        }
+        return nullptr;
     }
 
     void InstancedGeometryBatcher::RemoveBatch(const std::string &batchKey)

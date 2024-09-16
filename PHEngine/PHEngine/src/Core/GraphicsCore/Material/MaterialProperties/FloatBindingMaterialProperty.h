@@ -32,6 +32,10 @@ namespace Graphics {
 
       void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override { assert(false); } // this code should not be called, use proxy on render thread part 
 
+      void SetValueToUniformArray(const UniformArray& uniformArray) const override
+      {
+      }
+
       void SetValue(MaterialPropertyValueType value) {
          mPropertyBinding = value;
       }

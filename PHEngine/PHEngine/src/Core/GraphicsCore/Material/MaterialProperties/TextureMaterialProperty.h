@@ -31,6 +31,10 @@ namespace Graphics {
          return MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY;
       }
 
+      void SetValueToUniformArray(const UniformArray& uniformArray) const override
+      {
+      }
+
       void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
       {
          int32_t slot = 10 + propertyIndex;

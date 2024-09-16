@@ -16,6 +16,7 @@
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
@@ -29,10 +30,13 @@
 
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/InstancedStaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/LightComponentCreator.h"
+#include "Core/GameCore/Components/PointLightComponent.h"
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
@@ -56,49 +60,41 @@ namespace Game
         const auto &a_enemySpaceship = std::make_shared<WeakSpaceshipActor>("a_enemyShip_" + enemyShipIndexStr, rootComponent);
         scene->AddActor(a_enemySpaceship);
 
-        MaterialParser materialParser;
-        const std::shared_ptr<IMaterial> &spaceshipPbs_mat = materialParser.ParseMaterialDescriptor("SpaceshipPBS.m");
-        scene->RegisterMaterialInstance(spaceshipPbs_mat);
+        bool bAlreadyExists = false;
+        const std::shared_ptr<IMaterial> &spaceshipPbs_mat = GetMaterial(scene, bAlreadyExists);
+        if (!bAlreadyExists)
+        {
+            const auto &albedo_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource("Ice_Cracked_albedo.jpg");
+            const auto &normal_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource("Ice_Cracked_normal.jpg");
+            const auto &roughness_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource("Ice_Cracked_roughness.jpg");
+            const auto &metallic_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource("Ice_Cracked_metallic.jpg");
 
-        const std::string albedoName = "spaceship_albedo.jpg";
-        const std::string normalName = "spaceship_normal.jpg";
-        const std::string roughnessName = "spaceship_roughness.jpg";
-        const std::string metallicName = "spaceship_metallic.jpg";
+            const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource("spaceship_albedo.jpg");
+            const auto &normal_tex = TexturePool::GetInstance()->GetOrAllocateResource("spaceship_normal.jpg");
+            const auto &roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource("spaceship_roughness.jpg");
+            const auto &metallic_tex = TexturePool::GetInstance()->GetOrAllocateResource("spaceship_metallic.jpg");
+            const float uvScale = 1.0f;
 
-        const std::string albedo_ice = "Ice_Cracked_albedo.jpg";
-        const std::string normal_ice = "Ice_Cracked_normal.jpg";
-        const std::string roughness_ice = "Ice_Cracked_roughness.jpg";
-        const std::string metallic_ice = "Ice_Cracked_metallic.jpg";
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "albedo", albedo_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "normalMap", normal_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "roughnessMap", roughness_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "metallicMap", metallic_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "uvScale", uvScale);
 
-        const auto &albedo_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedo_ice);
-        const auto &normal_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(normal_ice);
-        const auto &roughness_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughness_ice);
-        const auto &metallic_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallic_ice);
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "albedo_ice", albedo_ice_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "normalMap_ice", normal_ice_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "roughnessMap_ice", roughness_ice_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "metallicMap_ice", metallic_ice_tex);
+        }
 
-        const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoName);
-        const auto &normal_tex = TexturePool::GetInstance()->GetOrAllocateResource(normalName);
-        const auto &roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughnessName);
-        const auto &metallic_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallicName);
-        const float uvScale = 1.0f;
-
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "albedo", albedo_tex);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "normalMap", normal_tex);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "roughnessMap", roughness_tex);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "metallicMap", metallic_tex);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "uvScale", uvScale);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, a_enemySpaceship, "p_damageEffect", "damageTime");
-
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "albedo_ice", albedo_ice_tex);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "normalMap_ice", normal_ice_tex);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "roughnessMap_ice", roughness_ice_tex);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "metallicMap_ice", metallic_ice_tex);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, a_enemySpaceship, "p_freezingEffect", "freezingBlendValue");
-
-        const auto d_mesh = std::make_shared<MeshComponentData>("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
-                                                                rotation, scale, "", spaceshipPbs_mat);
-        const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
-        const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
+        const auto d_mesh = std::make_shared<InstancedMeshComponentData>("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
+                                                                         rotation, scale, spaceshipPbs_mat);
+        const auto &meshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
+        const auto &c_mesh = std::static_pointer_cast<InstancedStaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         a_enemySpaceship->AddComponent(c_mesh);
+
+        MaterialPropertySetter::SetMaterialInstancedPropertyValue(spaceshipPbs_mat, c_mesh, a_enemySpaceship, "p_damageEffect", "damageEffect");
+        MaterialPropertySetter::SetMaterialInstancedPropertyValue(spaceshipPbs_mat, c_mesh, a_enemySpaceship, "p_freezingEffect", "freezingEffect");
 
         const auto d_movement = std::make_shared<MovementComponentData>("NoPhysMoveComponentData_" + enemyShipIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<OnRouteMovementComponent>>();
@@ -113,6 +109,7 @@ namespace Game
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
         a_enemySpaceship->AddComponent(c_ghostPhysics);
 
+        MaterialParser materialParser;
         const std::shared_ptr<IMaterial> &particles_mat = materialParser.ParseMaterialDescriptor("OpaqueParticleMaterial.m");
         scene->RegisterMaterialInstance(particles_mat);
         MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacity", 1.0f);
@@ -154,6 +151,17 @@ namespace Game
 
         a_enemySpaceship->AddComponent(c_particleSystemComponent);
 
+        const auto &lightData = std::make_shared<LightComponentData>("c_light_" + enemyShipIndexStr,
+                                                                     glm::vec3(0.0, 0.0, 0.0),
+                                                                     glm::vec3(0.4, 0.1, 0.1),
+                                                                     glm::vec3(0.4, 0.4, 0.4),
+                                                                     nullptr, glm::vec3(),
+                                                                     glm::vec3(),
+                                                                     glm::vec3(1));
+        const auto &lightComponentCreator = std::make_shared<LightComponentCreator<PointLightComponent>>();
+        const auto &c_pointLight = scene->CreateComponent_GameThread(lightComponentCreator, lightData);
+        a_enemySpaceship->AddComponent(c_pointLight);
+
         scene->AddActorController(std::make_shared<AiSpaceshipActorController>(a_enemySpaceship));
 
         const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
@@ -175,5 +183,23 @@ namespace Game
         a_enemySpaceship->SetScene(scene);
 
         return a_enemySpaceship;
+    }
+
+    std::shared_ptr<::Graphics::IMaterial> WeakSpaceShipFactory::GetMaterial(const std::shared_ptr<Scene> &scene, bool alreadyExists) const
+    {
+        MaterialParser materialParser;
+        const auto &materialName = materialParser.ReadMaterialNameFromMaterialDescriptor("SpaceshipPBS.m");
+        if (const auto &spaceshipMaterialInstance = scene->GetMaterialByName(materialName))
+        {
+            alreadyExists = true;
+            return spaceshipMaterialInstance;
+        }
+        else
+        {
+            alreadyExists = false;
+            const std::shared_ptr<IMaterial> &spaceshipPbs_mat = materialParser.ParseMaterialDescriptor("SpaceshipPBS.m");
+            scene->RegisterMaterialInstance(spaceshipPbs_mat);
+            return spaceshipPbs_mat;
+        }
     }
 }

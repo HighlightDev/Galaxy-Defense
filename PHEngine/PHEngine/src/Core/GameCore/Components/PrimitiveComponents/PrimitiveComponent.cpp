@@ -44,9 +44,9 @@ namespace EngineCore
       return PRIMITIVE_COMPONENT;
    }
 
-   void PrimitiveComponent::Tick(const float deltaTime)
+   void PrimitiveComponent::UnpausableTick(const float deltaTime)
    {
-      SceneComponent::Tick(deltaTime);
+      SceneComponent::UnpausableTick(deltaTime);
 
       if (bIsEnabledStateDirty ||
           bIsVisibleStateDirty ||

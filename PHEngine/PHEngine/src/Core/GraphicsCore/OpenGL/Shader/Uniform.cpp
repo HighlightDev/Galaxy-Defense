@@ -15,9 +15,7 @@ namespace Graphics
       /* UNIFORM ARRAY */
 
       UniformArray::UniformArray(int32_t programDescriptor, size_t uniformsCount, const std::string &uniformName)
-#if DEBUG
           : m_uniformName(uniformName)
-#endif
       {
          for (size_t i = 0; i < uniformsCount; i++)
          {
@@ -31,7 +29,12 @@ namespace Graphics
       {
       }
 
-      void UniformArray::LoadUniform(size_t uniformIndex, bool arg)
+      std::string UniformArray::GetUniformName() const
+      {
+         return m_uniformName;
+      }
+
+      void UniformArray::LoadUniform(size_t uniformIndex, bool arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -48,7 +51,7 @@ namespace Graphics
          glUniform1i(uniformLocation, arg);
       }
 
-      void UniformArray::LoadUniform(size_t uniformIndex, float arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, float arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -64,7 +67,7 @@ namespace Graphics
             return;
          glUniform1f(uniformLocation, arg);
       }
-      void UniformArray::LoadUniform(size_t uniformIndex, int32_t arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, int32_t arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -80,7 +83,7 @@ namespace Graphics
             return;
          glUniform1i(uniformLocation, arg);
       }
-      void UniformArray::LoadUniform(size_t uniformIndex, const glm::vec2 &arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, const glm::vec2 &arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -96,7 +99,7 @@ namespace Graphics
             return;
          glUniform2f(uniformLocation, arg.x, arg.y);
       }
-      void UniformArray::LoadUniform(size_t uniformIndex, glm::vec2 &&arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, glm::vec2 &&arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -112,7 +115,7 @@ namespace Graphics
             return;
          glUniform2f(uniformLocation, arg.x, arg.y);
       }
-      void UniformArray::LoadUniform(size_t uniformIndex, const glm::vec3 &arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, const glm::vec3 &arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -128,7 +131,7 @@ namespace Graphics
             return;
          glUniform3f(uniformLocation, arg.x, arg.y, arg.z);
       }
-      void UniformArray::LoadUniform(size_t uniformIndex, glm::vec3 &&arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, glm::vec3 &&arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -144,7 +147,7 @@ namespace Graphics
             return;
          glUniform3f(uniformLocation, arg.x, arg.y, arg.z);
       }
-      void UniformArray::LoadUniform(size_t uniformIndex, const glm::vec4 &arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, const glm::vec4 &arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -160,7 +163,7 @@ namespace Graphics
             return;
          glUniform4f(uniformLocation, arg.x, arg.y, arg.z, arg.w);
       }
-      void UniformArray::LoadUniform(size_t uniformIndex, glm::vec4 &&arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, glm::vec4 &&arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -176,7 +179,7 @@ namespace Graphics
             return;
          glUniform4f(uniformLocation, arg.x, arg.y, arg.z, arg.w);
       }
-      void UniformArray::LoadUniform(size_t uniformIndex, const glm::mat2 &arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, const glm::mat2 &arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -192,7 +195,7 @@ namespace Graphics
             return;
          glUniformMatrix2fv(uniformLocation, 1, false, glm::value_ptr(arg));
       }
-      void UniformArray::LoadUniform(size_t uniformIndex, const glm::mat3 &arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, const glm::mat3 &arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
@@ -209,7 +212,7 @@ namespace Graphics
          glUniformMatrix3fv(uniformLocation, 1, false, glm::value_ptr(arg));
       }
 
-      void UniformArray::LoadUniform(size_t uniformIndex, const glm::mat4 &arg)
+      void UniformArray::LoadUniform(size_t uniformIndex, const glm::mat4 &arg) const
       {
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
