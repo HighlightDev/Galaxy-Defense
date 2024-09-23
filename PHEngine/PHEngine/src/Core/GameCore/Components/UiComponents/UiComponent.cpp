@@ -3,7 +3,7 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/TextHandler.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 
 #include <algorithm>
 

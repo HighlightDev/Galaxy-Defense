@@ -2,10 +2,10 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
-#include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchHolder.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxy.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Components/ComponentCreators/IComponentCreatable.h"
@@ -46,6 +46,7 @@ namespace EngineCore
          mMaterials(),
          mDynamicMaterials(),
          mTextHandler(std::make_shared<TextHandler>()),
+         mInstancedGeometryBatchHolder(std::make_shared<InstancedGeometryBatchHolder>()),
 #ifdef DEBUG
          mDebugUiController(std::make_shared<DebugUiController>()),
 #endif
@@ -86,6 +87,7 @@ namespace EngineCore
       LogInfo("Scene::PostLevelInit");
 
       mTextHandler->SetScene(shared_from_this());
+      mInstancedGeometryBatchHolder->SetScene(shared_from_this());
       mUiHandler->SetScene(shared_from_this());
 #ifdef DEBUG
       mDebugUiController->SetScene(shared_from_this());
@@ -265,7 +267,7 @@ namespace EngineCore
       return materialIt != mMaterials.cend() ? *materialIt : nullptr;
    }
 
-   std::shared_ptr<Graphics::IMaterial> Scene::GetMaterialByName(const std::string& materialName) const
+   std::shared_ptr<Graphics::IMaterial> Scene::GetMaterialByName(const std::string &materialName) const
    {
       const auto materialIt = std::find_if(mMaterials.cbegin(), mMaterials.cend(), [=](const auto &material)
                                            { return material->MaterialName == materialName; });
@@ -348,6 +350,11 @@ namespace EngineCore
       return mTextHandler;
    }
 
+   const std::shared_ptr<InstancedGeometryBatchHolder> &Scene::GetInstancedGeometryBatchHolder() const
+   {
+      return mInstancedGeometryBatchHolder;
+   }
+
    std::shared_ptr<UiHandler> Scene::GetUiHandler() const
    {
       return mUiHandler;
@@ -373,6 +380,8 @@ namespace EngineCore
             actor->Tick(delta);
          }
       }
+
+      mInstancedGeometryBatchHolder->Tick(delta);
 
       for (const auto &actorController : mActorControllers)
       {
@@ -740,6 +749,7 @@ namespace EngineCore
    {
       mUiHandler->CleanUp();
       mTextHandler->CleanUp();
+      mInstancedGeometryBatchHolder->CleanUp();
    }
 
    void Scene::UnloadActors()

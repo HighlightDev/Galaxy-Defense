@@ -3,7 +3,7 @@
 #include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/CommonCore/Random.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Particles/Emitters/IEmitter.h"

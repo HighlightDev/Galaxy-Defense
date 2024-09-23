@@ -3,7 +3,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorPositionHelper.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiItemBaseLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GameCore/LoggerExtension.h"

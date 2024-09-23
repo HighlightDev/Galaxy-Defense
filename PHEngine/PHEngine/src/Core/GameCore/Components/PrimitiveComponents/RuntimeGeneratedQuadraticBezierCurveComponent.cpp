@@ -1,6 +1,6 @@
 #include "RuntimeGeneratedQuadraticBezierCurveComponent.h"
 #include "Core/GraphicsCore/SceneProxy/RuntimeGeneratedQuadraticBezierCurveSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/UtilityCore/EngineMath.h"

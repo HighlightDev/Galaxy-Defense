@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Scene.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/Level.h"
 #include "Core/GameCore/ILevelFactory.h"
 #include "Core/GameCore/Input/InputManager.h"
@@ -47,7 +47,7 @@ namespace EngineCore
         std::shared_ptr<Level> m_level;
 
         std::shared_ptr<Scene> m_scene;
-        std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
+        std::shared_ptr<SceneRenderer> m_sceneRenderer;
         std::shared_ptr<::EngineCore::Scripts::LuaScriptProcessor> m_luaScriptProcessor;
 
         std::atomic_bool bGameThreadExecution{true};

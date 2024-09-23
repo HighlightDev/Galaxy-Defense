@@ -2,7 +2,7 @@
 #include "Core/GameCore/ACamera.h"
 #include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GraphicsCore/Texture/Texture2d.h"
 #include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"

@@ -1,4 +1,4 @@
-#include "DeferredShadingSceneRenderer.h"
+#include "SceneRenderer.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
@@ -47,7 +47,7 @@ namespace Graphics
 {
    namespace Renderer
    {
-      DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr)
+      SceneRenderer::SceneRenderer(InterThreadCommunicationMgr &interThreadMgr)
           : m_interThreadMgr(interThreadMgr),
             m_gbuffer(
                 std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
@@ -86,14 +86,14 @@ namespace Graphics
             mSpotlightProxiesVec(),
             mPlanarReflectionProxiesVec(),
             mGroupedByShadowAtlasLights(),
-            mInstancedGeometryBatcher(std::make_shared<InstancedGeometryBatcher>())
+            mInstancedGeometryBatchRenderer(std::make_shared<InstancedGeometryBatchRenderer>())
       {
-         LogInfo("DeferredShadingSceneRenderer::ctor");
+         LogInfo("SceneRenderer::ctor");
 
          Initialize();
       }
 
-      void DeferredShadingSceneRenderer::Initialize()
+      void SceneRenderer::Initialize()
       {
          InitializeCoreShaders();
 #ifdef DEBUG
@@ -101,7 +101,7 @@ namespace Graphics
 #endif
       }
 
-      void DeferredShadingSceneRenderer::InitializeCoreShaders()
+      void SceneRenderer::InitializeCoreShaders()
       {
          const auto shadersPathStr = FolderManager::GetInstance()->GetShadersPath();
 
@@ -129,9 +129,9 @@ namespace Graphics
          m_fontShader = std::make_shared<FontRenderingShader>(fontRenderingShaderParams);
       }
 
-      DeferredShadingSceneRenderer::~DeferredShadingSceneRenderer()
+      SceneRenderer::~SceneRenderer()
       {
-         LogInfo("DeferredShadingSceneRenderer::dctor");
+         LogInfo("SceneRenderer::dctor");
 
          mDepthCollectShaderNonSkeletal->CleanUp(true);
          mDepthCollectShaderSkeletal->CleanUp(true);
@@ -141,7 +141,7 @@ namespace Graphics
          m_fontShader->CleanUp(true);
       }
 
-      void DeferredShadingSceneRenderer::CleanUp()
+      void SceneRenderer::CleanUp()
       {
          SceneViewsVector.clear();
 
@@ -210,29 +210,29 @@ namespace Graphics
          bPlanarReflectionProxiesDirty = false;
       }
 
-      void DeferredShadingSceneRenderer::PostLevelInit()
+      void SceneRenderer::PostLevelInit()
       {
          RegisterFonts();
       }
 
-      InterThreadCommunicationMgr &DeferredShadingSceneRenderer::GetInterThreadCommunicationManager()
+      InterThreadCommunicationMgr &SceneRenderer::GetInterThreadCommunicationManager()
       {
          return m_interThreadMgr;
       }
 
-      std::shared_ptr<InstancedGeometryBatcher> DeferredShadingSceneRenderer::GetInstancedGeometryBatcher() const
+      std::shared_ptr<InstancedGeometryBatchRenderer> SceneRenderer::GetInstancedGeometryBatchRenderer() const
       {
-         return mInstancedGeometryBatcher;
+         return mInstancedGeometryBatchRenderer;
       }
 
-      void DeferredShadingSceneRenderer::OnWindowSizeChanged(const ViewPortInfo &viewPortInfo)
+      void SceneRenderer::OnWindowSizeChanged(const ViewPortInfo &viewPortInfo)
       {
          m_gbuffer->ResizeRenderTargets(viewPortInfo);
          m_resolvedSceneFramebuffer->ResizeRenderTargets(viewPortInfo);
          mPostFxRenderer->ResizeRenderTargets(viewPortInfo);
       }
 
-      void DeferredShadingSceneRenderer::RegisterFonts()
+      void SceneRenderer::RegisterFonts()
       {
          const auto &fonts = EngineConfigHolder::GetInstance()->GetEngineConfig().FontsVector;
 
@@ -246,7 +246,7 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::DepthPass(const std::shared_ptr<SceneView> &sceneView)
+      void SceneRenderer::DepthPass(const std::shared_ptr<SceneView> &sceneView)
       {
          if (mGroupedByShadowAtlasLights.size())
          {
@@ -476,7 +476,7 @@ namespace Graphics
          glDisable(GL_CULL_FACE);
       }
 
-      void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
+      void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
       {
          const auto &cameraProxy = sceneView->GetCameraProxy();
 
@@ -493,7 +493,7 @@ namespace Graphics
          const auto &viewMatrix = cameraProxy->GetViewMatrix();
          const auto &projectionMatrix = cameraProxy->GetProjectionMatrix();
 
-         mInstancedGeometryBatcher->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix);
+         mInstancedGeometryBatchRenderer->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix);
 
          if (mSkeletalProxiesVec.size() > 0)
          {
@@ -528,7 +528,7 @@ namespace Graphics
          m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       }
 
-      void DeferredShadingSceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy)
+      void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy)
       {
          RenderState<DepthState<false, GL_LEQUAL>, StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 0, 0xFF, 0xFF>, BlendingState<false>> renderState;
          renderState.BindRenderState();
@@ -625,7 +625,7 @@ namespace Graphics
          glDepthMask(0xFF);
       }
 
-      void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
+      void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
       {
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
@@ -675,7 +675,7 @@ namespace Graphics
          m_resolvedSceneFramebuffer->UnbindFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       }
 
-      void DeferredShadingSceneRenderer::PlanarReflectionPass()
+      void SceneRenderer::PlanarReflectionPass()
       {
          if (mPlanarReflectionProxiesVec.size() <= 0)
             return;
@@ -760,7 +760,7 @@ namespace Graphics
          glDisable(GL_CLIP_DISTANCE0);
       }
 
-      void DeferredShadingSceneRenderer::HudTextPass()
+      void SceneRenderer::HudTextPass()
       {
          const auto &renderDataMap = mFontHandler->GetFontBatcher();
 
@@ -790,7 +790,7 @@ namespace Graphics
          glDisable(GL_BLEND);
       }
 
-      void DeferredShadingSceneRenderer::GuiPass(const std::shared_ptr<SceneView> &sceneView)
+      void SceneRenderer::GuiPass(const std::shared_ptr<SceneView> &sceneView)
       {
          RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
@@ -812,7 +812,7 @@ namespace Graphics
          glViewport(viewPortInfo.OriginX, viewPortInfo.OriginY, viewPortInfo.Width, viewPortInfo.Height);
       }
 
-      void DeferredShadingSceneRenderer::PrepareSceneProxiesForRender()
+      void SceneRenderer::PrepareSceneProxiesForRender()
       {
          if (bProxiesDirty)
          {
@@ -888,7 +888,7 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::GroupLightsByShadowMap()
+      void SceneRenderer::GroupLightsByShadowMap()
       {
          mGroupedByShadowAtlasLights.clear();
          for (auto &proxy : LightProxiesVector)
@@ -921,7 +921,7 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::RenderScene_RenderThread()
+      void SceneRenderer::RenderScene_RenderThread()
       {
          PrepareSceneProxiesForRender();
 
@@ -969,22 +969,22 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::SetProxiesAreDirty(const bool bDirty)
+      void SceneRenderer::SetProxiesAreDirty(const bool bDirty)
       {
          bProxiesDirty = bDirty;
       }
 
-      void DeferredShadingSceneRenderer::SetLightProxiesAreDirty(const bool bDirty)
+      void SceneRenderer::SetLightProxiesAreDirty(const bool bDirty)
       {
          bLightProxiesDirty = bDirty;
       }
 
-      void DeferredShadingSceneRenderer::SetPlanarReflectionProxiesAreDirty(const bool bDirty)
+      void SceneRenderer::SetPlanarReflectionProxiesAreDirty(const bool bDirty)
       {
          bPlanarReflectionProxiesDirty = bDirty;
       }
 
-      std::shared_ptr<SceneView> DeferredShadingSceneRenderer::GetSceneViewByProxyId(const int32_t proxyId) const
+      std::shared_ptr<SceneView> SceneRenderer::GetSceneViewByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<SceneView> result = nullptr;
 
@@ -999,7 +999,7 @@ namespace Graphics
          return result;
       }
 
-      std::shared_ptr<PrimitiveSceneProxy> DeferredShadingSceneRenderer::GetPrimitiveProxyByProxyId(const int32_t proxyId) const
+      std::shared_ptr<PrimitiveSceneProxy> SceneRenderer::GetPrimitiveProxyByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<PrimitiveSceneProxy> result = nullptr;
 
@@ -1014,7 +1014,7 @@ namespace Graphics
          return result;
       }
 
-      std::shared_ptr<LightSceneProxy> DeferredShadingSceneRenderer::GetLightProxyByProxyId(const int32_t proxyId) const
+      std::shared_ptr<LightSceneProxy> SceneRenderer::GetLightProxyByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<LightSceneProxy> result = nullptr;
 
@@ -1029,7 +1029,7 @@ namespace Graphics
          return result;
       }
 
-      std::shared_ptr<MaterialProxy> DeferredShadingSceneRenderer::GetMaterialProxyByProxyId(const int32_t proxyId) const
+      std::shared_ptr<MaterialProxy> SceneRenderer::GetMaterialProxyByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<MaterialProxy> result = nullptr;
 
@@ -1044,7 +1044,7 @@ namespace Graphics
          return result;
       }
 
-      std::shared_ptr<PlanarReflectionProxy> DeferredShadingSceneRenderer::GetPlanarReflectionProxyByProxyId(const int32_t proxyId) const
+      std::shared_ptr<PlanarReflectionProxy> SceneRenderer::GetPlanarReflectionProxyByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<PlanarReflectionProxy> result = nullptr;
 
@@ -1059,50 +1059,50 @@ namespace Graphics
          return result;
       }
 
-      std::shared_ptr<UiSceneProxyBase> DeferredShadingSceneRenderer::GetUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId) const
+      std::shared_ptr<UiSceneProxyBase> SceneRenderer::GetUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId) const
       {
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
                                       { return canvasId == canvasProxy->GetUiItemUId(); });
          return canvasIt != mUiCanvasProxies.end() ? (*canvasIt)->GetSceneProxyById(proxyId) : nullptr;
       }
 
-      std::shared_ptr<UiCanvasSceneProxy> DeferredShadingSceneRenderer::GetCanvasSceneProxyByProxyId(const size_t proxyId) const
+      std::shared_ptr<UiCanvasSceneProxy> SceneRenderer::GetCanvasSceneProxyByProxyId(const size_t proxyId) const
       {
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
                                       { return proxyId == canvasProxy->GetUiItemUId(); });
          return canvasIt != mUiCanvasProxies.end() ? *canvasIt : nullptr;
       }
 
-      void DeferredShadingSceneRenderer::RemovePrimitiveProxyByProxyId(const int32_t proxyId)
+      void SceneRenderer::RemovePrimitiveProxyByProxyId(const int32_t proxyId)
       {
          PrimitiveProxiesVector.erase(std::remove_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto &primitiveProxy)
                                                      { return proxyId == primitiveProxy->GetSceneProxyId(); }));
       }
 
-      void DeferredShadingSceneRenderer::RemoveLightProxyByProxyId(const int32_t proxyId)
+      void SceneRenderer::RemoveLightProxyByProxyId(const int32_t proxyId)
       {
          LightProxiesVector.erase(std::remove_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto &lightProxy)
                                                  { return proxyId == lightProxy->GetSceneProxyId(); }));
       }
 
-      void DeferredShadingSceneRenderer::RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId)
+      void SceneRenderer::RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId)
       {
          PlanarReflectionProxiesVector.erase(std::remove_if(PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [proxyId](const auto &planarReflectionProxy)
                                                             { return planarReflectionProxy->GetSceneProxyId() == proxyId; }));
       }
 
-      void DeferredShadingSceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy> &materialProxy)
+      void SceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy> &materialProxy)
       {
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::MaterialProxyAdded_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::MaterialProxyAdded_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, materialProxy->GetSceneProxyId(), functionId, [this, materialProxy]()
                                                 { 
             assert(!GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
-            LogInfo("DeferredShadingSceneRenderer::MaterialProxyAdded_OnRenderThread => material name = ", materialProxy->MaterialName, "proxyId = ", materialProxy->GetSceneProxyId());
+            LogInfo("SceneRenderer::MaterialProxyAdded_OnRenderThread => material name = ", materialProxy->MaterialName, "proxyId = ", materialProxy->GetSceneProxyId());
             MaterialProxiesVector.emplace_back(materialProxy); });
       }
 
-      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
+      void SceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, bEnabled]()
                                                 {
@@ -1113,7 +1113,7 @@ namespace Graphics
             } });
       }
 
-      void DeferredShadingSceneRenderer::UpdateLightComponentEnable_OnRenderThread(const int32_t lightSceneProxyIndex,
+      void SceneRenderer::UpdateLightComponentEnable_OnRenderThread(const int32_t lightSceneProxyIndex,
                                                                                    const int32_t creatorObjectId,
                                                                                    const uint64_t functionId,
                                                                                    const bool bEnabled)
@@ -1127,7 +1127,7 @@ namespace Graphics
             } });
       }
 
-      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+      void SceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const int32_t primitiveSceneProxyIndex,
                                                                                            const int32_t creatorObjectId,
                                                                                            const uint64_t functionId,
                                                                                            const bool visibility)
@@ -1141,7 +1141,7 @@ namespace Graphics
             } });
       }
 
-      void DeferredShadingSceneRenderer::UpdateLightComponentIsVisible_OnRenderThread(const int32_t lightSceneProxyIndex,
+      void SceneRenderer::UpdateLightComponentIsVisible_OnRenderThread(const int32_t lightSceneProxyIndex,
                                                                                       const int32_t creatorObjectId,
                                                                                       const uint64_t functionId,
                                                                                       const bool visibility)
@@ -1155,7 +1155,7 @@ namespace Graphics
             } });
       }
 
-      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+      void SceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const int32_t primitiveSceneProxyIndex,
                                                                                                const int32_t creatorObjectId,
                                                                                                const uint64_t functionId,
                                                                                                const int32_t sortOrderValue)
@@ -1169,7 +1169,7 @@ namespace Graphics
             } });
       }
 
-      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+      void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(const int32_t primitiveSceneProxyIndex,
                                                                                           const int32_t creatorObjectId,
                                                                                           const uint64_t functionId,
                                                                                           const glm::mat4 &newRelativeMatrix,
@@ -1185,7 +1185,7 @@ namespace Graphics
             } });
       }
 
-      void DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread(const int32_t lightSceneProxyIndex,
+      void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(const int32_t lightSceneProxyIndex,
                                                                                       const int32_t creatorObjectId,
                                                                                       const uint64_t functionId,
                                                                                       const glm::mat4 &newRelativeMatrix)
@@ -1199,10 +1199,10 @@ namespace Graphics
             } });
       }
 
-      void DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const int32_t primitiveSceneProxyIndex)
+      void SceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const int32_t primitiveSceneProxyIndex)
       {
          static constexpr int32_t creatorObjectId = 0;
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, primitiveSceneProxyIndex, functionId, [this, primitiveSceneProxyIndex]()
                                                 {
@@ -1210,19 +1210,19 @@ namespace Graphics
             SetProxiesAreDirty(true); });
       }
 
-      void DeferredShadingSceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread()
+      void SceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread()
       {
          static constexpr int32_t creatorObjectId = 0;
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [this]()
                                                 { SetProxiesAreDirty(true); });
       }
 
-      void DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread(const int32_t lightSceneProxyIndex)
+      void SceneRenderer::LightSceneProxyDeleted_OnRenderThread(const int32_t lightSceneProxyIndex)
       {
          static constexpr int32_t creatorObjectId = 0;
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxyDeleted_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightSceneProxyIndex]()
                                                 {
@@ -1230,19 +1230,19 @@ namespace Graphics
             SetLightProxiesAreDirty(true); });
       }
 
-      void DeferredShadingSceneRenderer::LightSceneProxiesUpdated_OnRenderThread()
+      void SceneRenderer::LightSceneProxiesUpdated_OnRenderThread()
       {
          static constexpr int32_t creatorObjectId = 0;
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxiesUpdated_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxiesUpdated_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [this]()
                                                 { SetLightProxiesAreDirty(true); });
       }
 
-      void DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<ACamera> &camera, const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy)
+      void SceneRenderer::CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<ACamera> &camera, const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy)
       {
-         LogInfo("DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread => camera proxyId: ", cameraSceneProxy->GetSceneProxyId());
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread");
+         LogInfo("SceneRenderer::CameraSceneProxyAdded_OnRenderThread => camera proxyId: ", cameraSceneProxy->GetSceneProxyId());
+         static const uint64_t functionId = Hash("SceneRenderer::CameraSceneProxyAdded_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, cameraSceneProxy->GetSceneProxyId(), functionId, [this, camera, cameraSceneProxy]()
                                                 {
@@ -1250,9 +1250,9 @@ namespace Graphics
             camera->SetIsCameraProxyReady(true); });
       }
 
-      void DeferredShadingSceneRenderer::RemoveCameraSceneProxy_OnRenderThread(const int32_t cameraSceneProxyId)
+      void SceneRenderer::RemoveCameraSceneProxy_OnRenderThread(const int32_t cameraSceneProxyId)
       {
-         LogInfo("DeferredShadingSceneRenderer::RemoveCameraSceneProxy_OnRenderThread => camera proxyId: ", cameraSceneProxyId);
+         LogInfo("SceneRenderer::RemoveCameraSceneProxy_OnRenderThread => camera proxyId: ", cameraSceneProxyId);
          assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
          assert(std::any_of(SceneViewsVector.cbegin(), SceneViewsVector.cend(), [cameraSceneProxyId](const auto &sceneViewSp)
                             { return sceneViewSp->GetCameraProxy()->GetSceneProxyId() == cameraSceneProxyId; }));
@@ -1260,10 +1260,10 @@ namespace Graphics
                                                { return sceneViewSp->GetCameraProxy()->GetSceneProxyId() == cameraSceneProxyId; }));
       }
 
-      void DeferredShadingSceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<PrimitiveComponent> &primitiveComponent, const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy)
+      void SceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<PrimitiveComponent> &primitiveComponent, const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy)
       {
          static constexpr int32_t creatorObjectId = 0;
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, primitiveComponent, primitiveSceneProxy]()
                                                 {
@@ -1274,10 +1274,10 @@ namespace Graphics
             primitiveComponent->SetIsSceneProxyReady(true); });
       }
 
-      void DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightComponent> &lightComponent, const std::shared_ptr<LightSceneProxy> &lightSceneProxy)
+      void SceneRenderer::LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightComponent> &lightComponent, const std::shared_ptr<LightSceneProxy> &lightSceneProxy)
       {
          static constexpr int32_t creatorObjectId = 0;
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxyAdded_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightComponent, lightSceneProxy]()
                                                 {
@@ -1288,12 +1288,12 @@ namespace Graphics
             lightSceneProxy->PostInitialize(); });
       }
 
-      void DeferredShadingSceneRenderer::RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate)
+      void SceneRenderer::RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate)
       {
-         LogInfo("DeferredShadingSceneRenderer::RegisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
+         LogInfo("SceneRenderer::RegisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
 
          static constexpr int32_t creatorObjectId = 0;
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::RegisterText_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::RegisterText_OnRenderThread");
 
          const auto textFieldProxy = TextFieldProxy::CreateTextFieldProxyInstance(
              textField->GetTextFieldId(),
@@ -1312,23 +1312,23 @@ namespace Graphics
                                                 { RegisterText(textFieldProxy); });
       }
 
-      void DeferredShadingSceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField)
+      void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField)
       {
-         LogInfo("DeferredShadingSceneRenderer::UnregisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
+         LogInfo("SceneRenderer::UnregisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
 
          static constexpr int32_t creatorObjectId = 0;
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::UnregisterText_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::UnregisterText_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, fontName = textField->GetFontName(), textFieldId = textField->GetTextFieldId()]()
                                                 { UnregisterText(fontName, textFieldId); });
       }
 
-      void DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<::EngineCore::GUI::UiCanvas> &uiCanvas, const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
+      void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<::EngineCore::GUI::UiCanvas> &uiCanvas, const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
       {
-         LogInfo("DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
+         LogInfo("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
 
          static constexpr int32_t creatorObjectId = 0;
-         static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
+         static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, uiCanvas, uiCanvasProxy]()
                                                 {
@@ -1336,19 +1336,19 @@ namespace Graphics
             uiCanvas->SetIsSceneProxyReady(true); });
       }
 
-      void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUiId)
+      void SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUiId)
       {
-         LogInfo("DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread => UId = ", canvasUiId);
+         LogInfo("SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread => UId = ", canvasUiId);
          assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
          UnregisterUiCanvasProxy(canvasUiId);
       }
 
-      void DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiItemBase> &uiItem, const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId)
+      void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiItemBase> &uiItem, const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId)
       {
-         LogInfo("DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
+         LogInfo("SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
 
          static constexpr int32_t creatorObjectId = 0;
-         static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread");
+         static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiSceneProxy_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]()
                                                 {
@@ -1356,16 +1356,16 @@ namespace Graphics
             uiItem->SetIsSceneProxyReady(true); });
       }
 
-      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId)
+      void SceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId)
       {
-         LogInfo("DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiItemUId, " canvasUId = ", canvasUId);
+         LogInfo("SceneRenderer::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiItemUId, " canvasUId = ", canvasUId);
          assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
          UnregisterUiSceneProxy(uiItemUId, canvasUId);
       }
 
-      void DeferredShadingSceneRenderer::TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType)
+      void SceneRenderer::TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType)
       {
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::TextDataChanged_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::TextDataChanged_OnRenderThread");
 
          const auto textFontName = textField->GetFontName();
          const auto textFieldId = textField->GetTextFieldId();
@@ -1391,9 +1391,9 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::MaterialPropertiesUpdated_OnRenderThread(const int32_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties)
+      void SceneRenderer::MaterialPropertiesUpdated_OnRenderThread(const int32_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties)
       {
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::MaterialPropertiesUpdated_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::MaterialPropertiesUpdated_OnRenderThread");
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, materialProxyIndex, properties = std::move(properties)]() mutable
                                                 { 
             const auto& materialProxySp = GetMaterialProxyByProxyId(materialProxyIndex);
@@ -1403,14 +1403,14 @@ namespace Graphics
             }
             else
             {
-               LogInfo("DeferredShadingSceneRenderer::MaterialPropertiesUpdated_OnRenderThread => "
+               LogInfo("SceneRenderer::MaterialPropertiesUpdated_OnRenderThread => "
                   "Error! Current proxy index doesn't exist on RT. Proxy index = ", materialProxyIndex);
             } });
       }
 
-      void DeferredShadingSceneRenderer::PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<PlanarReflectionComponent> &planarReflectionComponent, const std::shared_ptr<PlanarReflectionProxy> &proxy)
+      void SceneRenderer::PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<PlanarReflectionComponent> &planarReflectionComponent, const std::shared_ptr<PlanarReflectionProxy> &proxy)
       {
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PlanarReflectionSceneProxyAdded");
+         static const uint64_t functionId = Hash("SceneRenderer::PlanarReflectionSceneProxyAdded");
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, proxy->GetSceneProxyId(), functionId, [proxy, planarReflectionComponent, this]()
                                                 {
                const auto& reflectionProxySp = GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
@@ -1420,10 +1420,10 @@ namespace Graphics
                planarReflectionComponent->SetIsSceneProxyReady(true); });
       }
 
-      void DeferredShadingSceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy,
+      void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy,
                                                                                                   const int32_t cameraSceneProxyId)
       {
-         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
+         static const uint64_t functionId = Hash("SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, cameraSceneProxyId, functionId, [this, cameraSceneProxyId, planarReflectionProxy]()
                                                 {
             const auto &sceneViewSp = GetSceneViewByProxyId(cameraSceneProxyId);
@@ -1433,38 +1433,38 @@ namespace Graphics
             }
             else
             {
-               LogInfo("DeferredShadingSceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => Error! Current proxy index doesn't exist on RT. Proxy index = ", cameraSceneProxyId);
+               LogInfo("SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => Error! Current proxy index doesn't exist on RT. Proxy index = ", cameraSceneProxyId);
             } });
       }
 
-      void DeferredShadingSceneRenderer::RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
+      void SceneRenderer::RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
       {
          mFontHandler->RegisterText(textFieldProxy);
       }
 
-      void DeferredShadingSceneRenderer::UnregisterText(const std::string &fontName, const int32_t textFieldProxyId)
+      void SceneRenderer::UnregisterText(const std::string &fontName, const int32_t textFieldProxyId)
       {
          mFontHandler->UnregisterText(fontName, textFieldProxyId);
       }
 
-      void DeferredShadingSceneRenderer::TextPositionChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec2 &position)
+      void SceneRenderer::TextPositionChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec2 &position)
       {
          mFontHandler->TextPositionChanged(fontName, textFieldProxyId, position);
       }
 
-      void DeferredShadingSceneRenderer::TextColorChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec3 &color)
+      void SceneRenderer::TextColorChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec3 &color)
       {
          mFontHandler->TextColorChanged(fontName, textFieldProxyId, color);
       }
 
-      void DeferredShadingSceneRenderer::TextChanged(const std::string &fontName, const int32_t textFieldProxyId, const std::string &text)
+      void SceneRenderer::TextChanged(const std::string &fontName, const int32_t textFieldProxyId, const std::string &text)
       {
          mFontHandler->TextChanged(fontName, textFieldProxyId, text);
 
          if (mFontHandler->IsTextSubscribedOnSizeChangeUpdate(fontName, textFieldProxyId))
          {
             static constexpr int32_t creatorObjectId = 0;
-            static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::TextChanged");
+            static const uint64_t functionId = Hash("SceneRenderer::TextChanged");
 
             if (const auto &sceneSp = m_interThreadMgr.GetSceneWP().lock())
             {
@@ -1478,12 +1478,12 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible)
+      void SceneRenderer::TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible)
       {
          mFontHandler->TextVisibilityChanged(fontName, textFieldProxyId, bIsVisible);
       }
 
-      void DeferredShadingSceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy)
+      void SceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy)
       {
          assert(canvasSceneProxy);
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [&](const auto &canvasProxy)
@@ -1493,13 +1493,13 @@ namespace Graphics
          canvasSceneProxy->SetFontHandler(mFontHandler);
       }
 
-      void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)
+      void SceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)
       {
          mUiCanvasProxies.erase(std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [canvasUiId](const auto &canvasProxy)
                                                { return canvasUiId == canvasProxy->GetUiItemUId(); }));
       }
 
-      void DeferredShadingSceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)
+      void SceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)
       {
          assert(sceneProxy);
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
@@ -1510,7 +1510,7 @@ namespace Graphics
          sceneProxy->OnSceneProxyRegistered();
       }
 
-      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t canvasUId)
+      void SceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t canvasUId)
       {
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
                                       { return canvasUId == canvasProxy->GetUiItemUId(); });
@@ -1520,17 +1520,17 @@ namespace Graphics
 
 #if DEBUG
 
-      void DeferredShadingSceneRenderer::SetDebugUiCanvasId(const int32_t debugCanvasProxyUId)
+      void SceneRenderer::SetDebugUiCanvasId(const int32_t debugCanvasProxyUId)
       {
          mDebugUiCanvasId = debugCanvasProxyUId;
       }
 
-      void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData)
+      void SceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData)
       {
          mDebugPhysicsRenderData = debugPhysicsRenderData;
       }
 
-      void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+      void SceneRenderer::DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          float viewMatVec[16]{0.0f};
          const float *pSource = (const float *)glm::value_ptr(viewMatrix);

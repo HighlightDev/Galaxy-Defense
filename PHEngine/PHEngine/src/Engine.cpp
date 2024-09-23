@@ -90,7 +90,7 @@ namespace EngineCore
 
       EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
-      m_sceneRenderer = std::make_shared<DeferredShadingSceneRenderer>(m_interThreadMgr);
+      m_sceneRenderer = std::make_shared<SceneRenderer>(m_interThreadMgr);
       m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
       m_interThreadMgr.SetSceneWP(m_scene);
       m_interThreadMgr.SetLuaScriptProcessorWP(m_luaScriptProcessor);

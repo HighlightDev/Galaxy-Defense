@@ -24,6 +24,8 @@ namespace EngineCore
 
 		~InstancedStaticMeshComponent() override;
 
+		void OnPostInitialized() override;
+
 		eComponentType GetComponentType() const override;
 
 		void SetIsEnabled(const bool bEnabled) override;

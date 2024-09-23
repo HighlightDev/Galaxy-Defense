@@ -58,11 +58,11 @@ namespace Graphics
          std::vector<float> result;
          result.reserve(mInstancedBindings.size());
          std::sort(mInstancedBindings.begin(), mInstancedBindings.end(), [](const auto& pairLeft, const auto& pairRight) {
-            return pairLeft.second->GetInstanceId() < pairRight.second->GetInstanceId();
+            return pairLeft.second->GetRenderInstanceId() < pairRight.second->GetRenderInstanceId();
          });
          for (const auto &[binding, instanceData] : mInstancedBindings)
          {
-            if (instanceData->IsInstanceActive() && instanceData->GetInstanceId() >= 0)
+            if (instanceData->IsInstanceActive() && instanceData->GetRenderInstanceId() >= 0)
             {
                const auto &floatBinding = std::static_pointer_cast<FloatPropertyBinding>(binding);
                result.emplace_back(floatBinding->GetValue());

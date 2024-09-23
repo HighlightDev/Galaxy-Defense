@@ -1,7 +1,7 @@
 #include "WaterPlaneComponent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/SceneProxy/WaterPlaneSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 

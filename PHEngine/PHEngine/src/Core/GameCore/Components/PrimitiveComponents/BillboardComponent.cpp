@@ -1,7 +1,7 @@
 #include "BillboardComponent.h"
 #include "Core/GraphicsCore/SceneProxy/BillboardSceneProxy.h"
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/StringHash.h"
 

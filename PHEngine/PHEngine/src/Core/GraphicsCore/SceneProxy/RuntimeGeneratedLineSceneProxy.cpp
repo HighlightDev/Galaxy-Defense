@@ -4,7 +4,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/ResourceManagerCore/Pool/RuntimeGeneratedMeshPool.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 

@@ -1,6 +1,6 @@
 #include "InterThreadCommunicationMgr.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
@@ -28,7 +28,7 @@ namespace Thread
       LogInfo("InterThreadCommunicationMgr::dctor");
    }
 
-   void InterThreadCommunicationMgr::SetSceneRendererWP(std::weak_ptr<DeferredShadingSceneRenderer> sceneRenderer)
+   void InterThreadCommunicationMgr::SetSceneRendererWP(std::weak_ptr<SceneRenderer> sceneRenderer)
    {
       mSceneRenderer = sceneRenderer;
    }
@@ -43,7 +43,7 @@ namespace Thread
       mLuaScriptProcessor = scriptProcessor;
    }
 
-   std::weak_ptr<DeferredShadingSceneRenderer> InterThreadCommunicationMgr::GetSceneRendererWP() const
+   std::weak_ptr<SceneRenderer> InterThreadCommunicationMgr::GetSceneRendererWP() const
    {
       return mSceneRenderer;
    }

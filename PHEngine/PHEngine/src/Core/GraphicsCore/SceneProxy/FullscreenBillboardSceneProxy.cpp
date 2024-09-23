@@ -1,5 +1,5 @@
 #include "FullscreenBillboardSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/Scene.h"
 
 #include <glm/mat4x4.hpp>

@@ -14,7 +14,7 @@ namespace Resources
     {
     protected:
         // this id is identical to draw call instance
-        int32_t mInstanceId{-1};
+        int32_t mRenderInstanceId{-1};
 
         bool mIsInstanceActive{false};
 
@@ -28,7 +28,7 @@ namespace Resources
         virtual int32_t GetInstanceProxyId() const = 0;
 
         // this id is identical to draw call instance
-        int32_t GetInstanceId() const;
+        int32_t GetRenderInstanceId() const;
 
         bool IsInstanceActive() const;
     };

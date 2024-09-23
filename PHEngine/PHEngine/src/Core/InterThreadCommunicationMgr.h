@@ -23,7 +23,7 @@ namespace Graphics
 {
    namespace Renderer
    {
-      class DeferredShadingSceneRenderer;
+      class SceneRenderer;
    }
 }
 
@@ -76,7 +76,7 @@ namespace Thread
 
    class InterThreadCommunicationMgr
    {
-      std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> mSceneRenderer;
+      std::weak_ptr<Graphics::Renderer::SceneRenderer> mSceneRenderer;
 
       std::weak_ptr<EngineCore::Scene> mScene;
 
@@ -123,13 +123,13 @@ namespace Thread
 
       void SetIsAllowedPushLuaThreadJobs(const bool isAllowed);
 
-      void SetSceneRendererWP(std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> sceneRenderer);
+      void SetSceneRendererWP(std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRenderer);
 
       void SetSceneWP(std::weak_ptr<EngineCore::Scene> scene);
 
       void SetLuaScriptProcessorWP(const std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> &scriptProcessor);
 
-      std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> GetSceneRendererWP() const;
+      std::weak_ptr<Graphics::Renderer::SceneRenderer> GetSceneRendererWP() const;
 
       std::weak_ptr<EngineCore::Scene> GetSceneWP() const;
 

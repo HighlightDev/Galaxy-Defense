@@ -9,8 +9,6 @@ namespace Resources
 {
     class InstancedStaticMeshMaterialDataProvider : public MaterialInstanceDataProvider
     {
-        std::atomic_bool mIsBeingUpdatedDataOnRenderThread{false};
-
     protected:
         void UpdateInstancedDataProvider(); // todo: for now
 

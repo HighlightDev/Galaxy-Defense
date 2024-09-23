@@ -4,7 +4,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Event/CameraTransformChangedEvent.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 
 #include <algorithm>
 

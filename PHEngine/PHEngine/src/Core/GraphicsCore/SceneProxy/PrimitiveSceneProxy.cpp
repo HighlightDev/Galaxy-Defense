@@ -1,5 +1,5 @@
 #include "PrimitiveSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
@@ -91,12 +91,12 @@ namespace Graphics
          return mSortOrderValue;
       }
 
-      void PrimitiveSceneProxy::SetDeferredShadingSceneRenderer(const std::weak_ptr<DeferredShadingSceneRenderer> &deferredShadingSceneRenderer)
+      void PrimitiveSceneProxy::SetDeferredShadingSceneRenderer(const std::weak_ptr<SceneRenderer> &deferredShadingSceneRenderer)
       {
          mDeferredShadingSceneRenderer = deferredShadingSceneRenderer;
       }
 
-      const std::weak_ptr<DeferredShadingSceneRenderer> &PrimitiveSceneProxy::GetDeferredShadingSceneRendererWp() const
+      const std::weak_ptr<SceneRenderer> &PrimitiveSceneProxy::GetDeferredShadingSceneRendererWp() const
       {
          return mDeferredShadingSceneRenderer;
       }

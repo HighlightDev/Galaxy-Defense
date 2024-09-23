@@ -2,9 +2,9 @@
 
 namespace Resources
 {
-    int32_t MaterialInstanceDataProvider::GetInstanceId() const
+    int32_t MaterialInstanceDataProvider::GetRenderInstanceId() const
     {
-        return mInstanceId;
+        return mRenderInstanceId;
     }
 
     bool MaterialInstanceDataProvider::IsInstanceActive() const

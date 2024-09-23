@@ -2,7 +2,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/BoundingBoxBuilder.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 
 using namespace Graphics::Renderer;
 

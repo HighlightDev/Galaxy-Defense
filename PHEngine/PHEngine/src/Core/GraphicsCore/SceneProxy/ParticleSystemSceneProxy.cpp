@@ -8,7 +8,7 @@
 #include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/StringHash.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/Scene.h"
 
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"

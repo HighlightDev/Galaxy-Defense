@@ -1,7 +1,7 @@
 #include "UiImage.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiImageSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"

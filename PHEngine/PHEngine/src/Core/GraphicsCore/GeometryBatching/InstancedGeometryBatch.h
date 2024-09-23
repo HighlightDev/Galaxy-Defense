@@ -1,71 +1,39 @@
 #pragma once
 
-#include <glm/mat4x4.hpp>
-#include <string>
 #include <vector>
-#include <unordered_map>
+#include <string>
+#include <memory>
 
-#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
-#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/InstancedStaticMeshVertexFactory.h"
-#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
-#include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
-#include "Core/GraphicsCore/Mesh/Skin.h"
-#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
+#include "Core/GameCore/ITickable.h"
 
-using namespace Graphics::Data;
-using namespace EngineCore::ShaderImpl;
-using namespace Graphics::Mesh;
-using namespace Graphics::Proxy;
-
-namespace Graphics::Proxy
+namespace EngineCore
 {
-    class InstancedStaticMeshSceneProxy;
-}
+    class InstancedStaticMeshComponent;
 
-namespace Graphics::GeometryBatching
-{
     class InstancedGeometryBatch
+        : public ITickable
     {
-        using ShaderType = VertexFactoryMaterialCompositeShader<InstancedStaticMeshVertexFactory, SimpleShader>;
+        std::vector<std::weak_ptr<InstancedStaticMeshComponent>> mInstancedStaticMeshComponents;
 
-        MeshRenderData m_renderData;
+        std::string mBatchKey;
 
-        std::shared_ptr<ShaderType> mShader;
-
-        std::shared_ptr<Skin> m_skin;
-
-        std::string mBatchKey; // model name + material name
-
-        std::vector<std::weak_ptr<InstancedStaticMeshSceneProxy>> mInstancedStaticMeshSceneProxies;
-
-        std::vector<glm::mat4> mCachedWorldMatrices;
-
-        std::unordered_map<int32_t /*proxy id*/, int32_t /*instance id*/> mInstancesIdMap;
+        std::vector<int32_t /*proxy id*/> mCachedValidInstances;
 
     public:
-        explicit InstancedGeometryBatch(const std::shared_ptr<::Graphics::Proxy::InstancedStaticMeshSceneProxy> &initialSceneProxy);
+        explicit InstancedGeometryBatch(const std::string &batchKey);
 
-        void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy,
-                    const glm::mat4 &viewMatrix,
-                    const glm::mat4 &projectionMatrix);
+        void AddInstancedMeshComponent(const std::shared_ptr<InstancedStaticMeshComponent> &componentSp);
 
-        void AddInstancedStaticMeshSceneProxy(const std::shared_ptr<::Graphics::Proxy::InstancedStaticMeshSceneProxy> &sceneProxy);
+        void Tick(const float deltaTime) override;
 
-        void RemoveInstancedStaticMeshSceneProxy(const std::shared_ptr<::Graphics::Proxy::InstancedStaticMeshSceneProxy> &sceneProxy);
+        void UnpausableTick(const float deltaTime) override;
 
-        void Initialize();
+        std::vector<int32_t> GetValidInstances() const;
 
         std::string GetBatchKey() const;
 
-        // the instance id in order for rendering
-        int32_t GetInstanceId(const int32_t sceneProxyId) const;
+        bool IsValidInstance(const int32_t proxyId) const;
 
-    private:
-        bool IsProxyActive(const std::shared_ptr<InstancedStaticMeshSceneProxy> &sceneProxy) const;
-
-        std::shared_ptr<ShaderType> GetShader() const;
-
-        void PrepareRenderData();
+        int32_t GetRenderInstanceId(const int32_t proxyId) const;
     };
 }

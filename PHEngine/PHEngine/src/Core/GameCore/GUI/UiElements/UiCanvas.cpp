@@ -1,7 +1,7 @@
 #include "UiCanvas.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiCanvasLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/UtilityCore/EngineMath.h"

@@ -55,6 +55,7 @@ namespace EngineCore
 {
    class IComponentCreatable;
    struct ComponentData;
+   class InstancedGeometryBatchHolder;
 
    class Scene : public EngineObject,
                  public ITickable,
@@ -93,6 +94,8 @@ namespace EngineCore
 
       std::shared_ptr<TextHandler> mTextHandler;
 
+      std::shared_ptr<InstancedGeometryBatchHolder> mInstancedGeometryBatchHolder;
+
 #ifdef DEBUG
       std::shared_ptr<DebugUiController> mDebugUiController;
 #endif
@@ -121,9 +124,9 @@ namespace EngineCore
 
       void UnpausableTick(const float deltaTime) override;
 
-      void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t& data) override;
+      void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
 
-      void ProcessEvent(const MouseButtonDownRootEvent::EventData_t& data) override;
+      void ProcessEvent(const MouseButtonDownRootEvent::EventData_t &data) override;
 
       void RegisterCamera(const std::shared_ptr<ACamera> &camera);
 
@@ -165,7 +168,7 @@ namespace EngineCore
 
       std::shared_ptr<Graphics::IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
 
-      std::shared_ptr<Graphics::IMaterial> GetMaterialByName(const std::string& materialName) const;
+      std::shared_ptr<Graphics::IMaterial> GetMaterialByName(const std::string &materialName) const;
 
       std::shared_ptr<ACamera> GetCamera(const std::string &name) const;
 
@@ -176,6 +179,8 @@ namespace EngineCore
       InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
 
       const std::shared_ptr<TextHandler> &GetTextHandler() const;
+
+      const std::shared_ptr<InstancedGeometryBatchHolder> &GetInstancedGeometryBatchHolder() const;
 
       std::shared_ptr<UiHandler> GetUiHandler() const;
 

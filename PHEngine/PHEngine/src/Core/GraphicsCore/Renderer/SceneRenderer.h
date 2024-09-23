@@ -23,7 +23,7 @@
 #include "Core/GraphicsCore/PostFX/PostFxRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
-#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatcher.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchRenderer.h"
 
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/PointLightDepthShader.h"
@@ -67,7 +67,7 @@ namespace Graphics
 {
    namespace Renderer
    {
-      class DeferredShadingSceneRenderer
+      class SceneRenderer
       {
          InterThreadCommunicationMgr &m_interThreadMgr;
 
@@ -114,12 +114,12 @@ namespace Graphics
          std::vector<std::shared_ptr<PlanarReflectionProxy>> mPlanarReflectionProxiesVec;
          std::vector<std::pair<size_t, std::vector<std::shared_ptr<LightSceneProxy>>>> mGroupedByShadowAtlasLights;
 
-         std::shared_ptr<InstancedGeometryBatcher> mInstancedGeometryBatcher;
+         std::shared_ptr<InstancedGeometryBatchRenderer> mInstancedGeometryBatchRenderer;
 
       public:
-         DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr);
+         SceneRenderer(InterThreadCommunicationMgr &interThreadMgr);
 
-         ~DeferredShadingSceneRenderer();
+         ~SceneRenderer();
 
          void CleanUp();
 
@@ -235,7 +235,7 @@ namespace Graphics
 
          InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
 
-         std::shared_ptr<InstancedGeometryBatcher> GetInstancedGeometryBatcher() const;
+         std::shared_ptr<InstancedGeometryBatchRenderer> GetInstancedGeometryBatchRenderer() const;
 
          void OnWindowSizeChanged(const ViewPortInfo &viewPortInfo);
 

@@ -1,7 +1,7 @@
 #include "UiRectangle.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiRectangleSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiRectangleLuaProxy.h"

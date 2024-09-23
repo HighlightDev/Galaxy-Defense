@@ -1,5 +1,5 @@
 #include "DynamicMaterial.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/iVec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2MaterialProperty.h"

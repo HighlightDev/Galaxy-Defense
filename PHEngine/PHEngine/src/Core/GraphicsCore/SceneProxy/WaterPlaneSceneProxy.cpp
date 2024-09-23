@@ -2,7 +2,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/ResourceManagerCore/SimpleMeshType.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 
 #include <glm/vec3.hpp>
 

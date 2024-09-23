@@ -1,7 +1,7 @@
 #include "DirectionalLightComponent.h"
 
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/StringHash.h"

@@ -1,8 +1,8 @@
 #include "InstancedStaticMeshSceneProxy.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
-#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatcher.h"
-#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatch.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchRenderer.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchProxy.h"
 
 using namespace Graphics::Renderer;
 using namespace EngineCore;
@@ -28,19 +28,19 @@ namespace Graphics
       {
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
          {
-            const auto &batcherSp = deferredShadingSceneRendererSp->GetInstancedGeometryBatcher();
+            const auto &batcherRendererSp = deferredShadingSceneRendererSp->GetInstancedGeometryBatchRenderer();
 
-            if (batcherSp->CheckIfBatchExists(GetBatchKey()))
+            if (batcherRendererSp->CheckIfBatchProxyExists(GetBatchKey()))
             {
-               const auto &batch = batcherSp->GetBatch(GetBatchKey());
-               batch->AddInstancedStaticMeshSceneProxy(shared_from_this());
+               const auto &batchProxy = batcherRendererSp->GetBatchProxy(GetBatchKey());
+               batchProxy->AddInstancedStaticMeshSceneProxy(shared_from_this());
             }
             else
             {
-               const auto &batch = std::make_shared<InstancedGeometryBatch>(shared_from_this());
-               const bool bSuccess = batcherSp->TryToAddBatch(batch);
+               const auto &batchProxy = std::make_shared<InstancedGeometryBatchProxy>(shared_from_this());
+               const bool bSuccess = batcherRendererSp->TryToAddBatchProxy(batchProxy);
                assert(bSuccess);
-               batch->Initialize();
+               batchProxy->Initialize();
             }
          }
       }

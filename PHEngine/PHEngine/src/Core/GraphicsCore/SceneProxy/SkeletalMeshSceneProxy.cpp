@@ -3,7 +3,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/ResourceManagerCore/Pool/PoolParameters/MeshPoolParameters.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
 using namespace Graphics::Renderer;

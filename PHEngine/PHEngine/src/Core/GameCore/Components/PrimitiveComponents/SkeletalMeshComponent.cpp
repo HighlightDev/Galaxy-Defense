@@ -2,7 +2,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 #include "Core/IoCore/FolderManager.h"

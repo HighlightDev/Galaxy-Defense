@@ -2,6 +2,8 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/ComponentData/InstancedMeshComponentData.h"
 #include "Core/GraphicsCore/SceneProxy/InstancedStaticMeshSceneProxy.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchHolder.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatch.h"
 
 #include <memory>
 #include <algorithm>
@@ -25,6 +27,29 @@ namespace EngineCore
     {
     }
 
+    void InstancedStaticMeshComponent::OnPostInitialized()
+    {
+        PrimitiveComponent::OnPostInitialized();
+
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            const auto thisSp = std::static_pointer_cast<InstancedStaticMeshComponent>(shared_from_this());
+            const auto &batchHolderSp = sceneSp->GetInstancedGeometryBatchHolder();
+            const auto &batchKey = GetBatchKey();
+            if (batchHolderSp->CheckIfBatchExists(batchKey))
+            {
+               const auto& batchSp = batchHolderSp->GetBatch(batchKey);
+               batchSp->AddInstancedMeshComponent(thisSp);
+            }
+            else
+            {
+                const auto newBatchSp = std::make_shared<InstancedGeometryBatch>(batchKey);
+                newBatchSp->AddInstancedMeshComponent(thisSp);
+                batchHolderSp->AddInstancedGeometryBatch(newBatchSp);
+            }
+        }
+    }
+
     void InstancedStaticMeshComponent::UnpausableTick(const float deltaTime)
     {
         PrimitiveComponent::UnpausableTick(deltaTime);
@@ -38,7 +63,7 @@ namespace EngineCore
         const auto &material = GetMaterial();
         if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
         {
-            material->SetIsEnabled(bEnabled);
+            material->SetIsEnabled(mIsVisible && mIsEnabled);
         }
     }
 
@@ -49,7 +74,7 @@ namespace EngineCore
         const auto &material = GetMaterial();
         if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
         {
-            material->SetIsEnabled(isVisible);
+            material->SetIsEnabled(mIsVisible && mIsEnabled);
         }
     }
 

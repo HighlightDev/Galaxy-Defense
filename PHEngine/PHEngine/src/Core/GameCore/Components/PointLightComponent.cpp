@@ -3,7 +3,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
 
 using namespace Graphics;

@@ -1,41 +1,52 @@
 #include "InstancedGeometryBatch.h"
-#include "Core/GraphicsCore/SceneProxy/InstancedStaticMeshSceneProxy.h"
-#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderUtilityFunctions.h"
-#include "Core/ResourceManagerCore/Pool/PoolParameters/MeshPoolParameters.h"
-#include "Core/ResourceManagerCore/Pool/InstancedMeshPool.h"
+#include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 
-using namespace Graphics;
-using namespace Graphics::Proxy;
-using namespace Resources;
-
-namespace Graphics::GeometryBatching
+namespace EngineCore
 {
-    InstancedGeometryBatch::InstancedGeometryBatch(const std::shared_ptr<InstancedStaticMeshSceneProxy> &initialSceneProxy)
-        : m_renderData(initialSceneProxy->GetRenderData()),
-          mBatchKey(initialSceneProxy->GetBatchKey())
+    InstancedGeometryBatch::InstancedGeometryBatch(const std::string &batchKey)
+        : mBatchKey(batchKey)
     {
-        mInstancedStaticMeshSceneProxies.emplace_back(initialSceneProxy);
     }
 
-    void InstancedGeometryBatch::Initialize()
+    void InstancedGeometryBatch::AddInstancedMeshComponent(const std::shared_ptr<InstancedStaticMeshComponent> &componentSp)
     {
-        const auto shaderIdName = m_renderData.mIsDeferredShaded ? "DeferredNonSkeletalBase Shader" : "ForwardNonSkeletalBase Shader";
-        const auto fragmentShaderName = m_renderData.mIsDeferredShaded ? "deferredFS.glsl" : "forwardFS.glsl";
-        const ShaderParams shaderParams(
-            shaderIdName,
-            FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
-            FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
+        const auto isNewComp = std::none_of(mInstancedStaticMeshComponents.cbegin(), mInstancedStaticMeshComponents.cend(), [id = componentSp->GetObjectId()](const auto &componentWp)
+                                            {
+            if (const auto& compSp = componentWp.lock())
+            {
+                return compSp->GetObjectId() == id;
+            }
+            return false; });
+        assert(isNewComp);
 
-        mShader = std::static_pointer_cast<typename InstancedGeometryBatch::ShaderType>(PrimitiveSceneProxy::CreateMaterialShader<InstancedStaticMeshVertexFactory,
-                                                                                                                                  SimpleShader>("InstancedStaticMeshVertexFactory_SimpleShader_" + m_renderData.mMaterialProxy->MaterialName,
-                                                                                                                                                shaderParams, m_renderData.mMaterialProxy));
+        mInstancedStaticMeshComponents.emplace_back(componentSp);
+    }
 
-        MeshPoolParameters poolParameters;
-        poolParameters.mModelPath = m_renderData.mModelPath;
-        poolParameters.mVertexAttributes = GetShader()->GetVertexAttributes();
+    void InstancedGeometryBatch::Tick(const float deltaTime)
+    {
+        mCachedValidInstances.clear();
+        mCachedValidInstances.reserve(mInstancedStaticMeshComponents.size());
 
-        m_skin = InstancedMeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
+        for (const auto &compWp : mInstancedStaticMeshComponents)
+        {
+            if (const auto &compSp = compWp.lock())
+            {
+                if (compSp->IsEnabled() && compSp->IsVisible())
+                {
+                    mCachedValidInstances.emplace_back(compSp->GetSceneProxyId());
+                }
+            }
+        }
+    }
+
+    void InstancedGeometryBatch::UnpausableTick(const float deltaTime)
+    {
+    }
+
+    std::vector<int32_t> InstancedGeometryBatch::GetValidInstances() const
+    {
+        return mCachedValidInstances;
     }
 
     std::string InstancedGeometryBatch::GetBatchKey() const
@@ -43,79 +54,19 @@ namespace Graphics::GeometryBatching
         return mBatchKey;
     }
 
-    bool InstancedGeometryBatch::IsProxyActive(const std::shared_ptr<InstancedStaticMeshSceneProxy>& sceneProxy) const
+    bool InstancedGeometryBatch::IsValidInstance(const int32_t proxyId) const
     {
-        return sceneProxy->IsEnabled() && sceneProxy->IsVisible() && sceneProxy->IsTransformIntialized();
+        return std::find(mCachedValidInstances.cbegin(), mCachedValidInstances.cend(), proxyId) != mCachedValidInstances.cend();
     }
-
-    int32_t InstancedGeometryBatch::GetInstanceId(const int32_t sceneProxyId) const
+    
+    int32_t InstancedGeometryBatch::GetRenderInstanceId(const int32_t proxyId) const
     {
-        return mInstancesIdMap.count(sceneProxyId) ? mInstancesIdMap.at(sceneProxyId) : -1;
-    }
-
-    void InstancedGeometryBatch::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy,
-                                        const glm::mat4 &viewMatrix,
-                                        const glm::mat4 &projectionMatrix)
-    {
-        PrepareRenderData();
-        const auto &shader = GetShader();
-
-        shader->ExecuteShader();
-        shader->GetVertexFactoryShader()->SetMatrices(mCachedWorldMatrices, viewMatrix, projectionMatrix);
-        shader->GetMaterialShader()->LoadUniformValues(m_renderData.mMaterialProxy);
-        m_skin->GetBuffer()->RenderInstanced(GL_TRIANGLES, mCachedWorldMatrices.size());
-        shader->StopShader();
-    }
-
-    void InstancedGeometryBatch::AddInstancedStaticMeshSceneProxy(const std::shared_ptr<::Graphics::Proxy::InstancedStaticMeshSceneProxy> &sceneProxy)
-    {
-        const auto alreadyContains = std::any_of(mInstancedStaticMeshSceneProxies.cbegin(), mInstancedStaticMeshSceneProxies.cend(), [sceneProxy](const auto &proxyWp)
-                                                 {
-            if (const auto& proxySp = proxyWp.lock()) {
-                return proxySp->GetSceneProxyId() == sceneProxy->GetSceneProxyId();
-            }
-            return false; });
-
-        if (!alreadyContains)
+        const auto foundIt = std::find(mCachedValidInstances.cbegin(), mCachedValidInstances.cend(), proxyId);
+        if (foundIt != mCachedValidInstances.cend())
         {
-            mInstancedStaticMeshSceneProxies.emplace_back(sceneProxy);
+            return std::distance(mCachedValidInstances.cbegin(), foundIt);
         }
+        return -1;
     }
 
-    void InstancedGeometryBatch::RemoveInstancedStaticMeshSceneProxy(const std::shared_ptr<::Graphics::Proxy::InstancedStaticMeshSceneProxy> &sceneProxy)
-    {
-        auto removeIt = std::remove_if(mInstancedStaticMeshSceneProxies.begin(), mInstancedStaticMeshSceneProxies.end(), [sceneProxy](const auto &proxyWp)
-                                       {
-            if (const auto& proxySp = proxyWp.lock()) {
-                return proxySp->GetSceneProxyId() == sceneProxy->GetSceneProxyId();
-            }
-            return false; });
-        mInstancedStaticMeshSceneProxies.erase(removeIt);
-    }
-
-    std::shared_ptr<InstancedGeometryBatch::ShaderType> InstancedGeometryBatch::GetShader() const
-    {
-        return mShader;
-    }
-
-    void InstancedGeometryBatch::PrepareRenderData()
-    {
-        std::vector<glm::mat4> result;
-        result.reserve(mInstancedStaticMeshSceneProxies.size());
-        mInstancesIdMap.clear();
-
-        for (const auto &wpProxy : mInstancedStaticMeshSceneProxies)
-        {
-            if (const auto &spProxy = wpProxy.lock())
-            {
-                if (IsProxyActive(spProxy))
-                {
-                    mInstancesIdMap[spProxy->GetSceneProxyId()] = result.size();
-                    result.emplace_back(spProxy->GetMatrix());
-                }
-            }
-        }
-
-        mCachedWorldMatrices = std::move(result);
-    }
 }

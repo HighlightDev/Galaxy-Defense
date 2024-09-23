@@ -2,7 +2,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/TextureAtlas/TextureAtlasFactory.h"
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/ResourceManagerCore/SimpleMeshType.h"
 #include "Core/ResourceManagerCore/Pool/PoolParameters/SimplePrimitivePoolParameters.h"

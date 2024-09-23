@@ -27,7 +27,7 @@ namespace Graphics
 {
    namespace Renderer
    {
-      class DeferredShadingSceneRenderer;
+      class SceneRenderer;
    }
 }
 
@@ -61,7 +61,7 @@ namespace Graphics
 
          bool bTransformInitialized;
 
-         std::weak_ptr<::Graphics::Renderer::DeferredShadingSceneRenderer> mDeferredShadingSceneRenderer;
+         std::weak_ptr<::Graphics::Renderer::SceneRenderer> mDeferredShadingSceneRenderer;
 
          int32_t mSortOrderValue{0};
 
@@ -84,9 +84,9 @@ namespace Graphics
 
          void SetTransformationMatrix(const glm::mat4 &relativeMatrix);
 
-         void SetDeferredShadingSceneRenderer(const std::weak_ptr<::Graphics::Renderer::DeferredShadingSceneRenderer> &deferredShadingSceneRenderer);
+         void SetDeferredShadingSceneRenderer(const std::weak_ptr<::Graphics::Renderer::SceneRenderer> &deferredShadingSceneRenderer);
 
-         const std::weak_ptr<::Graphics::Renderer::DeferredShadingSceneRenderer> &GetDeferredShadingSceneRendererWp() const;
+         const std::weak_ptr<::Graphics::Renderer::SceneRenderer> &GetDeferredShadingSceneRendererWp() const;
 
          virtual glm::mat4 GetMatrix() const;
 

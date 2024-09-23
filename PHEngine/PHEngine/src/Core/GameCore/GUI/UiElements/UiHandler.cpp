@@ -3,7 +3,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 
 using namespace EngineCore;
 using namespace Graphics::Proxy;
