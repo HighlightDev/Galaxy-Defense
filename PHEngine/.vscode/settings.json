@@ -133,5 +133,8 @@
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"
-    ]
+    ],
+    "lldb.displayFormat": "auto",
+    "lldb.dereferencePointers": true,
+    "lldb.consoleMode": "commands"
 }

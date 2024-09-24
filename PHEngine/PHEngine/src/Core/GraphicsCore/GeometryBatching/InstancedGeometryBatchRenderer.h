@@ -33,5 +33,7 @@ namespace Graphics::GeometryBatching
                               const glm::mat4 &projectionMatrix);
 
         void UpdateBatchInstancesData(const std::unordered_map<std::string, std::vector<int32_t>> &data);
+
+        void CleanUp();
     };
 }

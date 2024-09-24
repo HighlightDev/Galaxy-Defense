@@ -113,6 +113,8 @@ namespace Game
 
     void NavigationController::CleanUp()
     {
+        mEnemies.clear();
+        mMissiles.clear();
     }
 
     void NavigationController::Tick(const float deltaTime)

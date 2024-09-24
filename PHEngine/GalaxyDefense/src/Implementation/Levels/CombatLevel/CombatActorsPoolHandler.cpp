@@ -29,6 +29,15 @@ namespace Game
     {
     }
 
+    void CombatActorsPoolHandler::CleanUp()
+    {
+        mSpaceStations.clear();
+        mEnemySpaceships.clear();
+        mMissilesPool.clear();
+        mSpaceObjectsPool.clear();
+        mElectroRayChainActorPool.clear();
+    }
+
     std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::GetFreeElectroChainActor()
     {
         const auto freeChainActorIt = std::find_if(mElectroRayChainActorPool.cbegin(), mElectroRayChainActorPool.cend(), [](const auto &actorInPool)

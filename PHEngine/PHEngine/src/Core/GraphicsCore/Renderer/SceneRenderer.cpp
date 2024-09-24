@@ -172,6 +172,8 @@ namespace Graphics
          mUiCanvasProxies.clear();
 #endif
 
+         mInstancedGeometryBatchRenderer->CleanUp();
+
          for (const auto &planarReflectionProxy : PlanarReflectionProxiesVector)
          {
             planarReflectionProxy->CleanUp();
@@ -1114,9 +1116,9 @@ namespace Graphics
       }
 
       void SceneRenderer::UpdateLightComponentEnable_OnRenderThread(const int32_t lightSceneProxyIndex,
-                                                                                   const int32_t creatorObjectId,
-                                                                                   const uint64_t functionId,
-                                                                                   const bool bEnabled)
+                                                                    const int32_t creatorObjectId,
+                                                                    const uint64_t functionId,
+                                                                    const bool bEnabled)
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, lightSceneProxyIndex, bEnabled]()
                                                 {
@@ -1128,9 +1130,9 @@ namespace Graphics
       }
 
       void SceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const int32_t primitiveSceneProxyIndex,
-                                                                                           const int32_t creatorObjectId,
-                                                                                           const uint64_t functionId,
-                                                                                           const bool visibility)
+                                                                            const int32_t creatorObjectId,
+                                                                            const uint64_t functionId,
+                                                                            const bool visibility)
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, visibility]()
                                                 {
@@ -1142,9 +1144,9 @@ namespace Graphics
       }
 
       void SceneRenderer::UpdateLightComponentIsVisible_OnRenderThread(const int32_t lightSceneProxyIndex,
-                                                                                      const int32_t creatorObjectId,
-                                                                                      const uint64_t functionId,
-                                                                                      const bool visibility)
+                                                                       const int32_t creatorObjectId,
+                                                                       const uint64_t functionId,
+                                                                       const bool visibility)
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, lightSceneProxyIndex, visibility]()
                                                 {
@@ -1156,9 +1158,9 @@ namespace Graphics
       }
 
       void SceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const int32_t primitiveSceneProxyIndex,
-                                                                                               const int32_t creatorObjectId,
-                                                                                               const uint64_t functionId,
-                                                                                               const int32_t sortOrderValue)
+                                                                                const int32_t creatorObjectId,
+                                                                                const uint64_t functionId,
+                                                                                const int32_t sortOrderValue)
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, sortOrderValue, primitiveSceneProxyIndex]()
                                                 {
@@ -1170,10 +1172,10 @@ namespace Graphics
       }
 
       void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(const int32_t primitiveSceneProxyIndex,
-                                                                                          const int32_t creatorObjectId,
-                                                                                          const uint64_t functionId,
-                                                                                          const glm::mat4 &newRelativeMatrix,
-                                                                                          const BoundingBox3D &newTransformedBoundingBox)
+                                                                           const int32_t creatorObjectId,
+                                                                           const uint64_t functionId,
+                                                                           const glm::mat4 &newRelativeMatrix,
+                                                                           const BoundingBox3D &newTransformedBoundingBox)
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, newRelativeMatrix, newTransformedBoundingBox]()
                                                 {
@@ -1186,9 +1188,9 @@ namespace Graphics
       }
 
       void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(const int32_t lightSceneProxyIndex,
-                                                                                      const int32_t creatorObjectId,
-                                                                                      const uint64_t functionId,
-                                                                                      const glm::mat4 &newRelativeMatrix)
+                                                                       const int32_t creatorObjectId,
+                                                                       const uint64_t functionId,
+                                                                       const glm::mat4 &newRelativeMatrix)
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, newRelativeMatrix, lightSceneProxyIndex]()
                                                 {
@@ -1421,7 +1423,7 @@ namespace Graphics
       }
 
       void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy,
-                                                                                                  const int32_t cameraSceneProxyId)
+                                                                                   const int32_t cameraSceneProxyId)
       {
          static const uint64_t functionId = Hash("SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, cameraSceneProxyId, functionId, [this, cameraSceneProxyId, planarReflectionProxy]()

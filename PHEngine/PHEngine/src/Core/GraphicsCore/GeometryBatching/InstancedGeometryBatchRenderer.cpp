@@ -58,4 +58,9 @@ namespace Graphics::GeometryBatching
             batchProxySp->UpdateValidInstances(data.at(batchKey));
         }
     }
+
+    void InstancedGeometryBatchRenderer::CleanUp()
+    {
+        mBatchProxies.clear();
+    }
 }

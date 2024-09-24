@@ -47,6 +47,8 @@ namespace Game
     public:
         explicit CombatActorsPoolHandler(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
+        void CleanUp();
+
         std::shared_ptr<SpaceStationActor> CreateSpaceStationActor(const std::string &towerName,
                                                                    const glm::vec3 &translation,
                                                                    const glm::vec3 &rotation,

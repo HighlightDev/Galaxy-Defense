@@ -27,7 +27,7 @@ namespace Graphics
        : public DynamicMaterialProperty
    {
    private:
-      std::vector<std::pair<std::shared_ptr<PropertyBinding>, std::shared_ptr<MaterialInstanceDataProvider>>> mInstancedBindings;
+      std::vector<std::pair<std::shared_ptr<PropertyBinding>, std::weak_ptr<MaterialInstanceDataProvider>>> mInstancedBindings;
 
    public:
       explicit DynamicInstancedFloatMaterialProperty(const std::string &propertyName)
@@ -57,14 +57,21 @@ namespace Graphics
       {
          std::vector<float> result;
          result.reserve(mInstancedBindings.size());
-         std::sort(mInstancedBindings.begin(), mInstancedBindings.end(), [](const auto& pairLeft, const auto& pairRight) {
-            return pairLeft.second->GetRenderInstanceId() < pairRight.second->GetRenderInstanceId();
-         });
-         for (const auto &[binding, instanceData] : mInstancedBindings)
+         std::sort(mInstancedBindings.begin(), mInstancedBindings.end(), [](const auto &pairLeft, const auto &pairRight)
+                   {
+                     const auto& leftProviderSp = pairLeft.second.lock();
+                     const auto& rightProviderSp = pairRight.second.lock();
+                     if (leftProviderSp && rightProviderSp)
+                     {
+                        return leftProviderSp->GetRenderInstanceId() < rightProviderSp->GetRenderInstanceId(); 
+                     }
+                     return false; });
+         for (const auto &[bindingSp, instanceDataWp] : mInstancedBindings)
          {
-            if (instanceData->IsInstanceActive() && instanceData->GetRenderInstanceId() >= 0)
+            const auto& instanceDataSp = instanceDataWp.lock();
+            if (instanceDataSp && instanceDataSp->IsInstanceActive() && instanceDataSp->GetRenderInstanceId() >= 0)
             {
-               const auto &floatBinding = std::static_pointer_cast<FloatPropertyBinding>(binding);
+               const auto &floatBinding = std::static_pointer_cast<FloatPropertyBinding>(bindingSp);
                result.emplace_back(floatBinding->GetValue());
             }
          }

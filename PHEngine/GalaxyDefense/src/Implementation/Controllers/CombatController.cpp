@@ -366,7 +366,7 @@ namespace Game
     {
         ValidatePoolObjects();
         UpdateMissilesData();
-        //ProcessAiAction();
+        ProcessAiAction();
 
         mNavigationController->Tick(deltaTime);
         mUserInteractionController->Tick(deltaTime);
@@ -536,6 +536,12 @@ namespace Game
         {
             mUserInteractionController->CleanUp();
             mUserInteractionController.reset();
+        }
+
+        if (mCombatActorsPoolHandler)
+        {
+            mCombatActorsPoolHandler->CleanUp();
+            mCombatActorsPoolHandler.reset();
         }
     }
 }

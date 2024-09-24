@@ -192,6 +192,7 @@ namespace EngineCore
 
          const auto newLevel = m_levelFactory->CreateLevel(levelName);
          assert(newLevel);
+         m_level.reset();
          m_level = newLevel;
          m_level->SetScene(m_scene);
          PreLevelInit();
