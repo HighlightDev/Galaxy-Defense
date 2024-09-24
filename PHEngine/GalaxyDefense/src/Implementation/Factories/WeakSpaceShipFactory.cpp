@@ -80,6 +80,7 @@ namespace Game
             MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "roughnessMap", roughness_tex);
             MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "metallicMap", metallic_tex);
             MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "uvScale", uvScale);
+            MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, scene->GetMainCamera(), "CameraPosition", "cameraPosition");
 
             MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "albedo_ice", albedo_ice_tex);
             MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "normalMap_ice", normal_ice_tex);

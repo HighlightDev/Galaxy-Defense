@@ -192,7 +192,6 @@ namespace Game
       {
          const auto d_ismesh = std::make_shared<InstancedMeshComponentData>("c_instancedStaticMesh" + std::to_string(i), "asteroid.fbx", glm::vec3(), glm::vec3(), glm::vec3(1.0), asteroidPbs_mat);
          const auto &c_ismesh = std::static_pointer_cast<InstancedStaticMeshComponent>(sceneSp->CreateComponent_GameThread(instancedMeshComponentCreator, d_ismesh));
-         MaterialPropertySetter::SetMaterialInstancedPropertyValue(asteroidPbs_mat, c_ismesh, sceneSp, "GT_DeltaSec", "freezingBlendValue");
          const auto x = levelBoundary.GetMin().x + ((i % 10) * xStep);
          const auto z = levelBoundary.GetMin().z + ((i / 10) * zStep);
          const auto y = levelBoundary.GetOrigin().y - (Random::Float() * 10.0f);

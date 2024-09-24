@@ -14,6 +14,7 @@ uniform sampler2D metallicMap_ice;
 uniform sampler2D roughnessMap_ice;
 
 uniform float uvScale;
+uniform vec3 cameraPosition;
 
 uniform float freezingEffect[200];
 uniform float damageEffect[200];
@@ -28,6 +29,14 @@ float GetDamageEffectForCurrentInstance(in MATERIAL_VS_OUTPUT materialIn)
 {
     int instanceID = int(materialIn.InstanceID);
     return clamp(damageEffect[instanceID], 0.0, 1.0);
+}
+
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn);
+
+float CalculateFresnel(in vec3 viewDir, in MATERIAL_VS_OUTPUT materialIn)
+{
+	float fresnel = clamp(0.0, 1.0, 1.0 - dot(viewDir, GetMaterialWorldNormal(materialIn)));
+	return pow(fresnel, 1.5);
 }
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
@@ -71,6 +80,9 @@ vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 
 vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
 {
+    vec3 viewDir = normalize(cameraPosition - materialIn.WorldCoordinates.xyz);
+	float fresnel = CalculateFresnel(viewDir, materialIn);
     float emissionPrct = smoothstep(0.0, 0.5, GetDamageEffectForCurrentInstance(materialIn));
-    return vec4(1.0, 0.0, 0.0, emissionPrct);
+    vec3 outlineColor = vec3(1.0, 0.0, 0.0);
+	return vec4(outlineColor, fresnel * emissionPrct);
 }

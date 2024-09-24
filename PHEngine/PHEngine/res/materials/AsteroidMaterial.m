@@ -1,13 +1,9 @@
 <general>
 	name: "Asteroid material"
 	shader: "AsteroidMaterial.glsl"
-	material_type: "dynamic"
+	material_type: "static"
 </general>
 <properties>
-    <instanced_dynamic_property>
-		name: "freezingBlendValue"
-		type: "instanced_binding_float"
-	</instanced_dynamic_property>
 	<property>
 		name: "albedo"
 		type: "texture"

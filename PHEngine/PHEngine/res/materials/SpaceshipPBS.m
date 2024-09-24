@@ -12,6 +12,19 @@
 		name: "freezingEffect"
 		type: "instanced_binding_float"
 	</instanced_dynamic_property>
+	<dynamic_property>
+		name: "cameraPosition"
+		type: "vec3"
+		incremental: "false"
+		<operation>
+			<no_op>
+				<property>
+					name: "cameraPosition"
+					type: "binding_vec3"
+				</property>
+			</no_op>
+		</operation>
+	</dynamic_property>
 	<property>
 		name: "albedo"
 		type: "texture"
