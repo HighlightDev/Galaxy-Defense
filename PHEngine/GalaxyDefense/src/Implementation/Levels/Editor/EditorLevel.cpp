@@ -12,6 +12,7 @@
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
+#include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/BoundingBox3D.h"
 
@@ -107,6 +108,10 @@ namespace Game
       const auto &billboardComponent = std::static_pointer_cast<FullscreenBillboardComponent>(sceneSp->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
       billboardComponent->SetSortOrderValue(-100000);
       a_skybox->AddComponent(billboardComponent);
+
+      const auto &a_light = sceneSp->GetActorByName("MainLightActor");
+      assert(a_light);
+      std::static_pointer_cast<LightComponent>(a_light->GetComponentsByType<LightComponent>().front())->SetIsVisible(true);
 
       mLevelEditorController->OnLevelInit();
       mLevelEditorController->SetLevelAreaBoundingBox(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(100.0f)));

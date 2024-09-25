@@ -100,7 +100,10 @@ namespace Game
     {
         assert(mNavPathBuilder.GetPaths().size());
         Initialize();
-        InitializePathDebugRendering(); // for debug visualisation purpose
+        if (false)
+        {
+            InitializePathDebugRendering(); // for debug visualisation purpose
+        }
     }
 
     void NavigationController::OnPostLevelInit()

@@ -19,7 +19,7 @@ namespace Graphics
    {
       AllocateTextures();
 
-      mFramebuffer->AddRenderTexture(GL_DEPTH_ATTACHMENT, m_depthBuffer);
+      mFramebuffer->AddRenderTexture(GL_DEPTH_STENCIL_ATTACHMENT, m_depthBuffer);
       mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT0, m_positionBuffer);
       mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT1, m_normalBuffer);
       mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT2, m_albedoBuffer);
@@ -70,9 +70,9 @@ namespace Graphics
                                GL_NEAREST,
                                GL_NEAREST,
                                0,
-                               GL_DEPTH_COMPONENT24,
-                               GL_DEPTH_COMPONENT,
-                               GL_FLOAT,
+                               GL_DEPTH24_STENCIL8,
+                               GL_DEPTH_STENCIL,
+                               GL_UNSIGNED_INT_24_8,
                                GL_REPEAT,
                                true);
          m_depthBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(depthParams);
@@ -89,7 +89,6 @@ namespace Graphics
                                   GL_RGB16F,
                                   GL_RGB,
                                   GL_FLOAT,
-
                                   GL_REPEAT,
                                   true);
          m_positionBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(positionParams);
@@ -160,12 +159,12 @@ namespace Graphics
 
    void DeferredShadingGBuffer::BindDeferredGBuffer()
    {
-      RenderToFBO(*mFramebuffer, true, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      RenderToFBO(*mFramebuffer, true, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
    }
 
    void DeferredShadingGBuffer::UnbindDeferredGBuffer()
    {
-      UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+      UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
    }
 
    void DeferredShadingGBuffer::BindDepthTexture(int32_t slot)
@@ -222,7 +221,7 @@ namespace Graphics
       TryToFreeRenderTargetTextures();
 
       AllocateTextures();
-      mFramebuffer->ReassignRenderTexture(GL_DEPTH_ATTACHMENT, m_depthBuffer);
+      mFramebuffer->ReassignRenderTexture(GL_DEPTH_STENCIL_ATTACHMENT, m_depthBuffer);
       mFramebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT0, m_positionBuffer);
       mFramebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT1, m_normalBuffer);
       mFramebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT2, m_albedoBuffer);

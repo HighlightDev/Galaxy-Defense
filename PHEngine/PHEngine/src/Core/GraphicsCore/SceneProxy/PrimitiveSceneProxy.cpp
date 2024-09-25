@@ -113,7 +113,7 @@ namespace Graphics
 
       bool PrimitiveSceneProxy::CanBloomBeApplied() const
       {
-         return true;
+         return false;
       }
 
    }

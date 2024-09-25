@@ -115,7 +115,7 @@ namespace Graphics
 
       bool RuntimeGeneratedLineSceneProxy::CanBloomBeApplied() const
       {
-         return false;
+         return true;
       }
 
       bool RuntimeGeneratedLineSceneProxy::IsFrustumCullTestNeeded() const

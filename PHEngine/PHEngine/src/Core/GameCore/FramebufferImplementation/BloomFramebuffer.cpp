@@ -84,7 +84,7 @@ namespace EngineCore
 
       void BloomFramebuffer::BindColor2Framebuffer()
       {
-         RenderToFBO(*mColor2Framebuffer, true, mShrinkedResolutionViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         RenderToFBO(*mColor2Framebuffer, true, mShrinkedResolutionViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       }
 
       void BloomFramebuffer::BindColor1Texture(int32_t slot)

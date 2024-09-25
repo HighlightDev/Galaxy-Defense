@@ -40,16 +40,15 @@ namespace Graphics
       glGenFramebuffers(1, &mFramebufferId);
       glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
 
-      for (const auto &attachmentToTexture : mRenderTextures)
+      for (const auto &[attachment, textureSp] : mRenderTextures)
       {
-         const auto &renderTexture = attachmentToTexture.second;
-         if (renderTexture->GetTextureType() == eTextureType::TEXTURE_2D)
+         if (textureSp->GetTextureType() == eTextureType::TEXTURE_2D)
          {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentToTexture.first, GL_TEXTURE_2D, renderTexture->GetTextureDescriptor(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, textureSp->GetTextureDescriptor(), 0);
          }
-         else if (renderTexture->GetTextureType() == eTextureType::TEXTURE_CUBE)
+         else if (textureSp->GetTextureType() == eTextureType::TEXTURE_CUBE)
          {
-            glFramebufferTexture(GL_FRAMEBUFFER, attachmentToTexture.first, renderTexture->GetTextureDescriptor(), 0);
+            glFramebufferTexture(GL_FRAMEBUFFER, attachment, textureSp->GetTextureDescriptor(), 0);
          }
       }
 
@@ -62,16 +61,15 @@ namespace Graphics
    {
       assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
       glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
-      for (const auto &attachmentToTexture : mRenderTextures)
+      for (const auto &[attachment, textureSp] : mRenderTextures)
       {
-         const auto &renderTexture = attachmentToTexture.second;
-         if (renderTexture->GetTextureType() == eTextureType::TEXTURE_2D)
+         if (textureSp->GetTextureType() == eTextureType::TEXTURE_2D)
          {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentToTexture.first, GL_TEXTURE_2D, renderTexture->GetTextureDescriptor(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, textureSp->GetTextureDescriptor(), 0);
          }
-         else if (renderTexture->GetTextureType() == eTextureType::TEXTURE_CUBE)
+         else if (textureSp->GetTextureType() == eTextureType::TEXTURE_CUBE)
          {
-            glFramebufferTexture(GL_FRAMEBUFFER, attachmentToTexture.first, renderTexture->GetTextureDescriptor(), 0);
+            glFramebufferTexture(GL_FRAMEBUFFER, attachment, textureSp->GetTextureDescriptor(), 0);
          }
       }
       glBindFramebuffer(GL_FRAMEBUFFER, 0);

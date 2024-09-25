@@ -486,7 +486,9 @@ namespace Graphics
          glFrontFace(GL_CCW);
          glCullFace(GL_BACK);
 
-         RenderState<DepthState<true, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
+         RenderState<DepthState<true, GL_LEQUAL>, StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 0, 0xFF, 0xFF>,
+                     BlendingState<false>>
+             renderState;
          renderState.BindRenderState();
 
          // Deferred shading collect info
@@ -495,6 +497,7 @@ namespace Graphics
          const auto &viewMatrix = cameraProxy->GetViewMatrix();
          const auto &projectionMatrix = cameraProxy->GetProjectionMatrix();
 
+         glStencilFunc(GL_ALWAYS, 1, 0xFF); // write 1 to stencil
          mInstancedGeometryBatchRenderer->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix);
 
          if (mSkeletalProxiesVec.size() > 0)
@@ -507,6 +510,8 @@ namespace Graphics
                                           sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
                if (bShouldRender)
                {
+                  const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
+                  glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 or 1 depending on bloom value
                   proxy->Render(cameraProxy, viewMatrix, projectionMatrix);
                }
             }
@@ -522,17 +527,21 @@ namespace Graphics
                                           sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
                if (bShouldRender)
                {
+                  const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
+                  glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 or 1 depending on bloom value
                   proxy->Render(cameraProxy, viewMatrix, projectionMatrix);
                }
             }
          }
+
+         glDisable(GL_STENCIL_TEST);
 
          m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       }
 
       void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy)
       {
-         RenderState<DepthState<false, GL_LEQUAL>, StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 0, 0xFF, 0xFF>, BlendingState<false>> renderState;
+         RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
          renderState.BindRenderState();
          glDepthMask(0x00);
          // TODO: Make some check if light source (point or spot light) is too far from current view position
@@ -643,7 +652,7 @@ namespace Graphics
                     screenHeight = cameraViewPort.Height;
 
          m_gbuffer->CopyFramebufferDataToDstFramebuffer(m_resolvedSceneFramebuffer->GetFramebufferObjectInstance(), originX, originY, screenWidth, screenHeight,
-                                                        originX, originY, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT);
+                                                        originX, originY, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
          static constexpr int NoClearFlag = 0;
          m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(NoClearFlag);
@@ -665,7 +674,7 @@ namespace Graphics
             if (bShouldRender)
             {
                const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
-               glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 to stencil
+               glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 or 1 depending on bloom value
                proxy->Render(sceneView->GetCameraProxy(), sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
             }
          }

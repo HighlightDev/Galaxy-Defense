@@ -33,7 +33,7 @@ namespace Graphics
       glDepthMask(false);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       glDrawBuffer(GL_COLOR_ATTACHMENT0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       glViewport(0, 0, mViewPortInfo.Width, mViewPortInfo.Height);
       mResolveFxColorShader->ExecuteShader();
 
