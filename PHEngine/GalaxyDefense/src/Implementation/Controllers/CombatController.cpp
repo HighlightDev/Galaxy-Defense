@@ -10,6 +10,7 @@
 #include "Implementation/Navigation/Path.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Actors/BlackHoleMissileActor.h"
+#include "Implementation/Actors/BarrierActor.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/SphereCollisionTestWithFilterAdapter.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
@@ -116,6 +117,20 @@ namespace Game
         PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 
         mCombatActorsPoolHandler->SpawnAsteroids(20);
+        mCombatActorsPoolHandler->SpawnBarriers(1, 5);
+        const auto& lvlBoundaryMin = mLevelBounds.GetMin();
+        const auto& lvlBoundaryMax = mLevelBounds.GetMax();
+        const auto& lvlBoundaryOrigin = mLevelBounds.GetOrigin();
+        if (const auto &a_barrierSp = mCombatActorsPoolHandler->GetFreeBarrierActor())
+        {
+            a_barrierSp->SetIsEnabled(true);
+            a_barrierSp->GetRootComponent()->SetTranslation(glm::vec3(0, lvlBoundaryOrigin.y, 0));
+            a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(0, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+            a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(1, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMax.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+            a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(2, glm::vec3(lvlBoundaryMax.x, 0, lvlBoundaryMax.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+            a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(3, glm::vec3(lvlBoundaryMax.x, 0, lvlBoundaryMin.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+            a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(4, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+        }
         mNavigationController->OnLevelInit();
         mUserInteractionController->SetActorsPoolHandler(mCombatActorsPoolHandler);
         mUserInteractionController->SetOnShootCallback(std::bind(&CombatController::OnReadyToShoot, this));

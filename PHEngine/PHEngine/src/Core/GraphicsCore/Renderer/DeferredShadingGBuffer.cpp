@@ -181,13 +181,11 @@ namespace Graphics
 
    void DeferredShadingGBuffer::BindNormalTexture(int32_t slot)
    {
-
       m_normalBuffer->BindTexture(slot);
    }
 
    void DeferredShadingGBuffer::BindAlbedoTexture(int32_t slot)
    {
-
       m_albedoBuffer->BindTexture(slot);
    }
 

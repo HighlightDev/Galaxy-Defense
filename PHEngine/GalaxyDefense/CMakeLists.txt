@@ -51,6 +51,7 @@ set(
 	src/Implementation/Factories/ElectroRayChainFactory.h
 	src/Implementation/Factories/ISpaceStationFactory.h
 	src/Implementation/Factories/SpaceStationFactory.h
+	src/Implementation/Factories/BarrierFactory.h
 	src/Implementation/Modifiers/IModifiable.h
 	src/Implementation/Modifiers/GravityModifier.h
 	src/Implementation/Modifiers/FreezingModifier.h
@@ -67,6 +68,7 @@ set(
 	src/Implementation/Actors/AsteroidActor.h
 	src/Implementation/Actors/ElectroRayActor.h
 	src/Implementation/Actors/SpaceStationActor.h
+	src/Implementation/Actors/BarrierActor.h
 	src/Implementation/Actors/BackgroundSpaceObjectActor.h
 	src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h
@@ -127,6 +129,7 @@ set(
 	src/Implementation/Factories/ElectroRayFactory.cpp
 	src/Implementation/Factories/ElectroRayChainFactory.cpp
 	src/Implementation/Factories/SpaceStationFactory.cpp
+	src/Implementation/Factories/BarrierFactory.cpp
 	src/Implementation/Modifiers/GravityModifier.cpp
 	src/Implementation/Modifiers/FreezingModifier.cpp
 	src/Implementation/Modifiers/ElectroRayChainModifier.cpp
@@ -142,6 +145,7 @@ set(
 	src/Implementation/Actors/AsteroidActor.cpp
 	src/Implementation/Actors/ElectroRayActor.cpp
 	src/Implementation/Actors/SpaceStationActor.cpp
+	src/Implementation/Actors/BarrierActor.cpp
 	src/Implementation/Actors/BackgroundSpaceObjectActor.cpp
 	src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.cpp
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.cpp

@@ -8,6 +8,7 @@
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/BlackHoleMissileActor.h"
+#include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/Factories/ElectroRayChainFactory.h"
@@ -16,6 +17,7 @@
 #include "Implementation/Factories/FreezingMissileFactory.h"
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
 #include "Implementation/Factories/ElectroRayFactory.h"
+#include "Implementation/Factories/BarrierFactory.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/CommonCore/Assertion.h"
@@ -36,6 +38,7 @@ namespace Game
         mMissilesPool.clear();
         mSpaceObjectsPool.clear();
         mElectroRayChainActorPool.clear();
+        mBarriersPool.clear();
     }
 
     std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::GetFreeElectroChainActor()
@@ -85,7 +88,7 @@ namespace Game
         }
     }
 
-    std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor()
+    std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor() const
     {
         const auto &sceneSp = mSceneWp.lock();
         assert(sceneSp);
@@ -98,7 +101,7 @@ namespace Game
                                                                               glm::vec3(c_spaceshipSize)));
     }
 
-    std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor()
+    std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor() const
     {
         const auto freeShipIt = std::find_if(mEnemySpaceships.cbegin(),
                                              mEnemySpaceships.cend(),
@@ -129,7 +132,7 @@ namespace Game
         const auto &missileFactory = GetMissileFactoryByType(missileType);
         assert(missileFactory);
 
-        for (size_t i = 0; i < count; ++i)
+        for (int32_t i = 0; i < count; ++i)
         {
             const auto &missile = mMissilesPool.emplace_back(missileFactory->CreateMissile(sceneSp,
                                                                                            shared_from_this(),
@@ -147,6 +150,26 @@ namespace Game
         const auto &asteroidsFactory = std::make_unique<AsteroidFactory>();
         const auto &asteroid = mSpaceObjectsPool.emplace_back(asteroidsFactory->CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
         asteroid->SetIsEnabled(false);
+    }
+
+    void CombatActorsPoolHandler::SpawnBarriers(const int32_t barriersCount, const int32_t pillarsCount)
+    {
+        const auto &sceneSp = mSceneWp.lock();
+        assert(sceneSp);
+        const auto &barriersFactory = std::make_unique<BarrierFactory>();
+        for (int32_t i = 0; i < pillarsCount; ++i)
+        {
+            const auto &barrier = mBarriersPool.emplace_back(barriersFactory->CreateBarrier(pillarsCount, sceneSp, glm::vec3(), glm::vec3(), glm::vec3(6.0f)));
+            barrier->SetIsEnabled(false);
+        }
+    }
+
+    std::shared_ptr<BarrierActor> CombatActorsPoolHandler::GetFreeBarrierActor() const
+    {
+        const auto idleBarrierIt = std::find_if(mBarriersPool.cbegin(), mBarriersPool.cend(), [](const auto &barrierSp)
+                                                { return !barrierSp->IsEnabled(); });
+
+        return idleBarrierIt == mBarriersPool.cend() ? nullptr : *idleBarrierIt;
     }
 
     int32_t CombatActorsPoolHandler::GetSpaceStationsCount() const

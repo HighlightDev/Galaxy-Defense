@@ -40,6 +40,10 @@ namespace Game
         {
             mIsDamageEffectActive = true;
             mDamageEffectTimePassed = 0.0f;
+            mDamageMessageTimer.RestartTimer();
+            mUiComponent->SetText(mDamageTextFieldId, std::to_string(damage));
+            mUiComponent->SetVisibility(mDamageTextFieldId, true);
+            mUiComponent->SetPosition(mDamageTextFieldId, CalculatePositionForDamageText());
         }
         else
         {
@@ -50,11 +54,6 @@ namespace Game
                 playerDataProvider->SetDestroyedEnemySpaceshipsCount(playerDataProvider->GetDestroyedEnemySpaceshipsCount() + 1);
             }
         }
-
-        mDamageMessageTimer.RestartTimer();
-        mUiComponent->SetText(mDamageTextFieldId, std::to_string(damage));
-        mUiComponent->SetVisibility(mDamageTextFieldId, true);
-        mUiComponent->SetPosition(mDamageTextFieldId, CalculatePositionForDamageText());
     }
 
     void WeakSpaceshipActor::OnTweenStateChanged(const std::string &stateName)
@@ -79,7 +78,7 @@ namespace Game
     {
         mActivityState = eSpaceshipActivityState::ACTIVE;
         SetIsEnabled(true);
-        const auto& onRouteMovementComponent = GetOnRouteMovementComponent();       
+        const auto &onRouteMovementComponent = GetOnRouteMovementComponent();
         onRouteMovementComponent->Teleport(position);
         RestoreLife();
 
@@ -99,7 +98,7 @@ namespace Game
 
         const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
         c_particle->EmitParticles();
-        
+
         const auto c_light = GetComponentsByType<LightComponent>().back();
         c_light->SetIsVisible(true);
         mWeakSpaceshipTweener->ChangeState("s_LifecycleDestroyed");

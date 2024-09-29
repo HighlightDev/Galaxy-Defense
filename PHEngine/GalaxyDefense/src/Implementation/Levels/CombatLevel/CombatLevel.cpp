@@ -75,7 +75,7 @@ namespace Game
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
-      LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("LevelCreators/GalaxyDefenseIntroLvl.lua");
+      LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("LevelCreators/CombatLvl.lua");
       mLuaLevelBuilder.SetScene(sceneSp);
       mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
       mLuaLevelBuilder.RegisterCallbacks();
@@ -186,16 +186,16 @@ namespace Game
 
       const auto &instancedMeshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
       const auto lvlDiffVec = levelBoundary.GetMax() - levelBoundary.GetMin();
-      const float xStep = lvlDiffVec.x * 0.1f;
-      const float zStep = lvlDiffVec.z * 0.1f;
-      for (int i = 0; i < 100; ++i)
+      const float xStep = lvlDiffVec.x * (1.0f / 8.0f);
+      const float zStep = lvlDiffVec.z * (1.0f / 8.0f);
+      for (int i = 0; i < (8 * 8); ++i)
       {
          const auto d_ismesh = std::make_shared<InstancedMeshComponentData>("c_instancedStaticMesh" + std::to_string(i), "asteroid.fbx", glm::vec3(), glm::vec3(), glm::vec3(1.0), asteroidPbs_mat);
          const auto &c_ismesh = std::static_pointer_cast<InstancedStaticMeshComponent>(sceneSp->CreateComponent_GameThread(instancedMeshComponentCreator, d_ismesh));
-         const auto x = levelBoundary.GetMin().x + ((i % 10) * xStep);
-         const auto z = levelBoundary.GetMin().z + ((i / 10) * zStep);
+         const auto x = levelBoundary.GetMin().x + ((i % 8) * xStep);
+         const auto z = levelBoundary.GetMin().z + ((i / 8) * zStep);
          const auto y = levelBoundary.GetOrigin().y - (Random::Float() * 10.0f);
-         c_ismesh->SetScale(glm::vec3(50));
+         c_ismesh->SetScale(glm::vec3(35));
          c_ismesh->SetTranslation(glm::vec3(x, y, z));
          a_sceneCenterActorDummy->AddComponent(c_ismesh);
          a_sceneCenterActorDummy->SetScene(sceneSp);

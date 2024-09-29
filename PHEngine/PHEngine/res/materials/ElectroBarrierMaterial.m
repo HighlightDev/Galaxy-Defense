@@ -1,5 +1,5 @@
 <general>
-	name: "ElectroRay material"
+	name: "ElectroBarrier material"
 	shader: "ElectroRayMaterial.glsl"
 	material_type: "dynamic"
 </general>
@@ -13,6 +13,10 @@
 		type: "vec3"
 	</property>
 	<property>
+		name: "opacity"
+		type: "float"
+	</property>
+	<property>
 		name: "rayWidthCoef"
 		type: "float"
 	</property>
@@ -24,19 +28,6 @@
 			<no_op>
 				<property>
 					name: "gt_timeSec"
-					type: "binding_float"
-				</property>
-			</no_op>
-		</operation>
-	</dynamic_property>
-	<dynamic_property>
-		name: "opacity"
-		type: "float"
-		range: "[0.0 ; 1.0]"
-		<operation>
-			<no_op>
-				<property>
-					name: "b_opacity"
 					type: "binding_float"
 				</property>
 			</no_op>

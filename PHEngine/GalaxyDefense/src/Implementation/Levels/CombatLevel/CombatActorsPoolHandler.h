@@ -22,12 +22,13 @@ namespace EnginePhysics
 
 namespace Game
 {
+    class IMissileFactory;
     class ElectroRayChainActor;
     class MissileActor;
     class SpaceObjectActor;
     class SpaceStationActor;
     class SpaceshipActor;
-    class IMissileFactory;
+    class BarrierActor;
 
     class CombatActorsPoolHandler
         : public std::enable_shared_from_this<CombatActorsPoolHandler>
@@ -36,13 +37,15 @@ namespace Game
 
         std::vector<std::shared_ptr<SpaceStationActor>> mSpaceStations;
 
-        std::vector<std::shared_ptr<SpaceshipActor>> mEnemySpaceships;
+        mutable std::vector<std::shared_ptr<SpaceshipActor>> mEnemySpaceships;
 
         std::vector<std::shared_ptr<MissileActor>> mMissilesPool;
 
         std::vector<std::shared_ptr<SpaceObjectActor>> mSpaceObjectsPool;
 
         std::vector<std::shared_ptr<ElectroRayChainActor>> mElectroRayChainActorPool;
+
+        std::vector<std::shared_ptr<BarrierActor>> mBarriersPool;
 
     public:
         explicit CombatActorsPoolHandler(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
@@ -60,9 +63,11 @@ namespace Game
 
         std::shared_ptr<MissileActor> GetMissileOwnerActorById(const int32_t actorId) const;
 
-        std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const int32_t actorId) const;
+        std::shared_ptr<SpaceshipActor> GetFreeSpaceshipActor() const;
 
-        std::shared_ptr<SpaceshipActor> GetFreeSpaceshipActor();
+        std::shared_ptr<BarrierActor> GetFreeBarrierActor() const;
+
+        std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const int32_t actorId) const;
 
         std::shared_ptr<SpaceObjectActor> GetSpaceObjectOwnerActorById(const int32_t actorId) const;
 
@@ -84,6 +89,8 @@ namespace Game
 
         void SpawnAsteroids(const int32_t count);
 
+        void SpawnBarriers(const int32_t barriersCount, const int32_t pillarsCount);
+
         int32_t GetSpaceStationsCount() const;
 
         std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> GetSpaceStationsPhysicsComponents() const;
@@ -97,6 +104,6 @@ namespace Game
 
         std::shared_ptr<ElectroRayChainActor> SpawnElectroRayChainActor();
 
-        std::shared_ptr<SpaceshipActor> SpawnSpaceshipActor();
+        std::shared_ptr<SpaceshipActor> SpawnSpaceshipActor() const;
     };
 }

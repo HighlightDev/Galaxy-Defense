@@ -66,6 +66,7 @@ function CreateTestLevel(host)
 		,Space_Station_METALLIC.jpg
 		,space_station.obj
 		,space_station_img.png
+		,ufo.obj
 		]])
 
 	_CreateActor(host, "Actor",

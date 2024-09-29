@@ -48,7 +48,7 @@ namespace Game
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
-      static constexpr const char *lvlName = "/LevelCreators/GalaxyDefenseMainMenuLvl.lua";
+      const auto lvlName = std::string("/LevelCreators/MainMenuLvl.lua");
       LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor(lvlName);
       mLuaLevelBuilder.SetScene(sceneSp);
       mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());

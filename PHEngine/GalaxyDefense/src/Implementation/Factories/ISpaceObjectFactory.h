@@ -13,6 +13,7 @@ namespace Game
 {
     class BackgroundSpaceObjectActor;
     class SpaceObjectActor;
+    class BarrierActor;
 
     class IBackgroundSpaceObjectFactory
     {
@@ -21,7 +22,7 @@ namespace Game
                           const glm::vec3 &translation,
                           const glm::vec3 &rotation,
                           const glm::vec3 &scale,
-                          const std::string& imageName,
+                          const std::string &imageName,
                           const float billboardSize) = 0;
     };
 
@@ -32,5 +33,15 @@ namespace Game
                           const glm::vec3 &translation,
                           const glm::vec3 &rotation,
                           const glm::vec3 &scale) = 0;
+    };
+
+    class IBarrierFactory
+    {
+        virtual std::shared_ptr<BarrierActor>
+        CreateBarrier(const int32_t pillarsMeshCount,
+                      const std::shared_ptr<::EngineCore::Scene> &scene,
+                      const glm::vec3 &translation,
+                      const glm::vec3 &rotation,
+                      const glm::vec3 &scale) = 0;
     };
 }

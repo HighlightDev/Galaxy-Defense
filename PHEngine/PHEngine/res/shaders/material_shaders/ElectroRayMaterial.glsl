@@ -5,6 +5,8 @@
 uniform sampler2D noise;
 uniform float timeSec;
 uniform float opacity;
+uniform vec3 rayColor;
+uniform float rayWidthCoef;
 
 float alpha;
 
@@ -12,6 +14,8 @@ vec4 getElectroColor(in MATERIAL_VS_OUTPUT materialIn)
 {
   vec2 uv = materialIn.TextureCoordinates.xy;
   uv = uv * 2. -1.;
+  uv.y += 0.25;
+
   float intensity = texture(noise, materialIn.TextureCoordinates.xy + vec2(timeSec * 0.5f, timeSec * 0.5f)).r;
 
   float t = clamp((uv.x * -uv.x * 0.08) + 0.58, 0., 1.);          
@@ -19,7 +23,7 @@ vec4 getElectroColor(in MATERIAL_VS_OUTPUT materialIn)
     
   float g = pow(y, 0.2);
 
-  vec4 rgba = vec4(1.70, 1.48, 1.78, 1.98);
+  vec4 rgba = vec4(1.70 * rayColor.r, 1.48 * rayColor.g, 1.78 * rayColor.b, 1.98 * rayWidthCoef);
   rgba = rgba * -g + rgba;      
   rgba = rgba * rgba * rgba;
 
