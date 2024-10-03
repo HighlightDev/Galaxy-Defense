@@ -8,7 +8,7 @@ namespace Game
 {
     class LevelPlacementGrid
     {
-        static constexpr float s_gridCellSizeForTower = 20.0f;
+        static constexpr float s_gridCellSizeForTower = 10.0f;
         static constexpr float s_gridCellSizeForRoute = s_gridCellSizeForTower * 0.5f;
         static constexpr float s_gridCellSizeForTowerInv = 1.0f / s_gridCellSizeForTower;
         static constexpr float s_gridCellSizeForRouteInv = 1.0f / s_gridCellSizeForRoute;

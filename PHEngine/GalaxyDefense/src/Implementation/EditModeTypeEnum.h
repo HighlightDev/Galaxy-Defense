@@ -6,6 +6,7 @@ namespace Game
     {
         IDLE,
         EDIT_TOWERS,
-        EDIT_ROUTES
+        EDIT_ROUTES,
+        EDIT_BARRIERS
     };
 }

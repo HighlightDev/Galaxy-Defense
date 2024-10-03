@@ -17,6 +17,7 @@ set(
 	src/Implementation/Levels/Editor/LevelPlacementGrid.h
 	src/Implementation/Levels/Editor/RoutesHandler.h
 	src/Implementation/Levels/Editor/TowersHandler.h
+	src/Implementation/Levels/Editor/BarriersHandler.h
 	src/Implementation/GalaxySceneCamera.h
 	src/Implementation/AiBrain.h
 	src/Implementation/GameObjectsType.h
@@ -108,6 +109,7 @@ set(
 	src/Implementation/Levels/Editor/LevelPlacementGrid.cpp
 	src/Implementation/Levels/Editor/RoutesHandler.cpp
 	src/Implementation/Levels/Editor/TowersHandler.cpp
+	src/Implementation/Levels/Editor/BarriersHandler.cpp
 	src/Implementation/GalaxySceneCamera.cpp
 	src/Implementation/Controllers/CombatController.cpp
 	src/Implementation/AiBrain.cpp

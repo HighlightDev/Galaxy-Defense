@@ -9,6 +9,8 @@ namespace EngineUtility
 {
     struct EngineConfig
     {
+        std::string ActiveMonitor{"primary"};
+
         size_t MaxSkeletBones{0};
         size_t MaxStaticMeshInstancesPerBatch{0};
 

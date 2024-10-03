@@ -95,6 +95,7 @@ function ImageButton:onCompoundWidgetInitialize()
     self.pressButtonStateContainer:setOpacity(0.0);
     self.pressButtonStateContainer:setHeight(self.buttonHeight);
     self.pressButtonStateContainer:setWidth(self.buttonWidth);
+    self.pressButtonStateContainer:setBorderRadius(10)
     self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
     self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick",
         {

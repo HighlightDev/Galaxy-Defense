@@ -26,8 +26,6 @@ setup()
 local json = require("Ui/Core/3rdparty/json")
 local UiCanvas = require("Ui/Core/uiCanvas")
 local UiOverlay = require("Ui/Core/uiOverlay")
-local UiItem = require("Ui/Core/uiItem")
-local UiImage = require("Ui/Core/uiImage")
 local ImageButton = require("Ui/Widgets/ImageButton")
 local LabelButton = require("Ui/Widgets/LabelButton")
 local EventsHelper = require("Ui/Core/eventsHelper")
@@ -35,7 +33,8 @@ local EventsHelper = require("Ui/Core/eventsHelper")
 EditModeType = {
     IDLE = 0,
     EDIT_TOWERS = 1,
-    EDIT_ROUTES = 2
+    EDIT_ROUTES = 2,
+    EDIT_BARRIERS = 3
 }
 
 local EditorContainerState = {
@@ -63,6 +62,7 @@ local function getRandomColor()
 end
 
 RouteName = 1
+BarrierName = 1
 
 function LevelEditorOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
@@ -80,11 +80,15 @@ function LevelEditorOverlay:new(host)
     local changeContainerStateButton = ImageButton:new(host, overlay, "ChangeContainerStateButton")
     overlay:addCompoundWidget(changeContainerStateButton)
 
-    local editStationSocketsButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName)
+    local editStationSocketsButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName,
+        "EditStationSocketsButton")
     overlay:addCompoundWidget(editStationSocketsButton)
 
-    local editRoutesButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName);
+    local editRoutesButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName, "EditRoutesButton");
     overlay:addCompoundWidget(editRoutesButton)
+
+    local editBarriersButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName, "EditBarriersButton")
+    overlay:addCompoundWidget(editBarriersButton)
 
     local undoLastActionButton = ImageButton:new(host, overlay, "EditStationSocketsButton")
     overlay:addCompoundWidget(undoLastActionButton)
@@ -95,6 +99,9 @@ function LevelEditorOverlay:new(host)
     local newRouteButton = ImageButton:new(host, overlay, "NewRouteButton")
     overlay:addCompoundWidget(newRouteButton)
 
+    local newBarrierButton = ImageButton:new(host, overlay, "NewBarrierButton")
+    overlay:addCompoundWidget(newBarrierButton)
+
     changeContainerStateButton:subscribeOnMouseInputClickedCallback(function()
         self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
             EditorContainerState.Hided or EditorContainerState.Expanded
@@ -104,9 +111,11 @@ function LevelEditorOverlay:new(host)
         local buttonsVisible = self.editorContainerState == EditorContainerState.Expanded
         editStationSocketsButton:setIsVisible(buttonsVisible)
         editRoutesButton:setIsVisible(buttonsVisible)
+        editBarriersButton:setIsVisible(buttonsVisible)
         undoLastActionButton:setIsVisible(buttonsVisible)
         saveLevelButton:setIsVisible(buttonsVisible)
         newRouteButton:setIsVisible(buttonsVisible)
+        newBarrierButton:setIsVisible(buttonsVisible)
     end)
 
     editStationSocketsButton:subscribeOnMouseInputClickedCallback(function()
@@ -118,6 +127,12 @@ function LevelEditorOverlay:new(host)
     editRoutesButton:subscribeOnMouseInputClickedCallback(function()
         self.currentEditModeType = EditModeType.EDIT_ROUTES == self.currentEditModeType and EditModeType.IDLE or
             EditModeType.EDIT_ROUTES
+        EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            self.currentEditModeType)
+    end)
+    editBarriersButton:subscribeOnMouseInputClickedCallback(function()
+        self.currentEditModeType = EditModeType.EDIT_BARRIERS == self.currentEditModeType and EditModeType.IDLE or
+            EditModeType.EDIT_BARRIERS
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             self.currentEditModeType)
     end)
@@ -145,6 +160,17 @@ function LevelEditorOverlay:new(host)
         RouteName = RouteName + 1
     end)
 
+    newBarrierButton:subscribeOnMouseInputClickedCallback(function()
+        local newBarrierColor = getRandomColor()
+        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            "EditorLevelEvents", json.encode({
+                action = "new_barrier",
+                barrier_name = "barrier_" .. tostring(BarrierName),
+                barrier_color = { r = newBarrierColor.r, g = newBarrierColor.g, b = newBarrierColor.b }
+            }))
+        BarrierName = BarrierName + 1
+    end)
+
     overlay.onWindowSizeChanged = function(width, height)
         assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number")
 
@@ -162,6 +188,9 @@ function LevelEditorOverlay:new(host)
         editRoutesButton:setWidth(buttonWidth)
         editRoutesButton:setHeight(buttonHeight)
 
+        editBarriersButton:setWidth(buttonWidth)
+        editBarriersButton:setHeight(buttonHeight)
+
         undoLastActionButton:setWidth(buttonWidth)
         undoLastActionButton:setHeight(buttonHeight)
 
@@ -170,6 +199,9 @@ function LevelEditorOverlay:new(host)
 
         newRouteButton:setWidth(buttonWidth)
         newRouteButton:setHeight(buttonHeight)
+
+        newBarrierButton:setWidth(buttonWidth)
+        newBarrierButton:setHeight(buttonHeight)
     end
 
     overlay:subscribeOnAllWidgetLuaProxiesReady(function()
@@ -194,18 +226,29 @@ function LevelEditorOverlay:new(host)
         changeContainerStateButton:setWidth(buttonWidth)
         changeContainerStateButton:setHeight(buttonHeight)
         changeContainerStateButton:setImageTextureSource("arrow_left.png")
-        changeContainerStateButton:setImageRotationDegrees(180.0)
         changeContainerStateButton:setButtonBorderRadius(8)
         changeContainerStateButton:setButtonColorHexValue(0xdb9427)
         changeContainerStateButton:setUseImageCustomColor(true)
         changeContainerStateButton:setImageColorHexValue(0x000000)
         changeContainerStateButton:setZOrder(2)
 
+        undoLastActionButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
+        undoLastActionButton:setAnchor(UiItemBase.UiAnchorType.TOP,
+            UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
+        undoLastActionButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            changeContainerStateButton.widgetName, 40)
+        undoLastActionButton:setWidth(buttonWidth)
+        undoLastActionButton:setHeight(buttonHeight)
+        undoLastActionButton:setButtonBorderRadius(8)
+        undoLastActionButton:setImageTextureSource("arrow_counter_clockwise.png")
+        undoLastActionButton:setZOrder(2)
+        undoLastActionButton:setButtonColorHexValue(0xdb9427)
+
         editStationSocketsButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editStationSocketsButton:setAnchor(UiItemBase.UiAnchorType.TOP,
             UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
         editStationSocketsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            changeContainerStateButton.widgetName, 10)
+            undoLastActionButton.widgetName, 10)
         editStationSocketsButton:setWidth(buttonWidth)
         editStationSocketsButton:setHeight(buttonHeight)
         editStationSocketsButton:setButtonBorderRadius(8)
@@ -229,29 +272,43 @@ function LevelEditorOverlay:new(host)
         editRoutesButton:setZOrder(2)
         editRoutesButton:setButtonColorHexValue(0xdb9427)
 
-        undoLastActionButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
-        undoLastActionButton:setAnchor(UiItemBase.UiAnchorType.TOP,
+        editBarriersButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
+        editBarriersButton:setAnchor(UiItemBase.UiAnchorType.TOP,
             UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
-        undoLastActionButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+        editBarriersButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
             editRoutesButton.widgetName, 10)
-        undoLastActionButton:setWidth(buttonWidth)
-        undoLastActionButton:setHeight(buttonHeight)
-        undoLastActionButton:setButtonBorderRadius(8)
-        undoLastActionButton:setImageTextureSource("arrow_counter_clockwise.png")
-        undoLastActionButton:setZOrder(2)
-        undoLastActionButton:setButtonColorHexValue(0xdb9427)
+        editBarriersButton:setWidth(buttonWidth)
+        editBarriersButton:setHeight(buttonHeight)
+        editBarriersButton:setButtonBorderRadius(8)
+        editBarriersButton:setLabelText("Edit barriers")
+        editBarriersButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        editBarriersButton:setLabelTextColorHexValue(0x000000)
+        editBarriersButton:setZOrder(2)
+        editBarriersButton:setButtonColorHexValue(0xdb9427)
 
         newRouteButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         newRouteButton:setAnchor(UiItemBase.UiAnchorType.TOP,
             UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
         newRouteButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            undoLastActionButton.widgetName, 10)
+            editBarriersButton.widgetName, 40)
         newRouteButton:setWidth(buttonWidth)
         newRouteButton:setHeight(buttonHeight)
         newRouteButton:setButtonBorderRadius(8)
         newRouteButton:setImageTextureSource("route.png")
         newRouteButton:setZOrder(2)
         newRouteButton:setButtonColorHexValue(0xdb9427)
+
+        newBarrierButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
+        newBarrierButton:setAnchor(UiItemBase.UiAnchorType.TOP,
+            UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
+        newBarrierButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            newRouteButton.widgetName, 10)
+        newBarrierButton:setWidth(buttonWidth)
+        newBarrierButton:setHeight(buttonHeight)
+        newBarrierButton:setButtonBorderRadius(8)
+        newBarrierButton:setImageTextureSource("wall.png")
+        newBarrierButton:setZOrder(2)
+        newBarrierButton:setButtonColorHexValue(0xdb9427)
 
         saveLevelButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         saveLevelButton:setAnchor(UiItemBase.UiAnchorType.TOP,

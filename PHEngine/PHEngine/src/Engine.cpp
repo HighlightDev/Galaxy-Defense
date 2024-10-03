@@ -12,7 +12,6 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
-#include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/AudioCore/SoundDevice.h"
 #include "Core/CommonCore/Timer.h"
@@ -87,8 +86,6 @@ namespace EngineCore
                                  MouseButtonDownLuaThreadEvent,
                                  WindowSizeChangedLuaThreadEvent,
                                  BroadcastLuaThreadEvent>();
-
-      EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
       m_sceneRenderer = std::make_shared<SceneRenderer>(m_interThreadMgr);
       m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);

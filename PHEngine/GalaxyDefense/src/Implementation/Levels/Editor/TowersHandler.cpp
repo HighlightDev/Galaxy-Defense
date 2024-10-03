@@ -80,7 +80,7 @@ namespace Game
     while (!towersCopy.empty())
     {
       const auto &topItem = towersCopy.top();
-      towerPoints.emplace(std::get<0>(topItem), std::make_tuple(std::get<1>(topItem)->GetTranslation(), std::get<1>(topItem)->GetScale()));
+      towerPoints.emplace(std::get<0>(topItem), std::make_tuple(std::get<1>(topItem)->GetTranslation(), std::get<1>(topItem)->GetScale() * 2.0f));
       towersCopy.pop();
     }
     return towerPoints;

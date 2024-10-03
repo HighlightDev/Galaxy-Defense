@@ -8,11 +8,13 @@
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Engine.h"
 
 using namespace EngineCore;
+using namespace EngineUtility;
 using namespace Game;
 using namespace IO;
 using namespace TinyLogger;
@@ -146,6 +148,7 @@ int32_t main(int32_t argc, char **argv)
 {
   ThreadHelper::GetInstance()->RegisterThread("Render");
   FolderManager::GetInstance()->BuildSystemPathToFolders();
+  EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
   // Logger::InitLog(std::make_shared<LoggerClientConsole>());
   Logger::InitLog(std::make_shared<LoggerClientFile>());
@@ -161,7 +164,8 @@ int32_t main(int32_t argc, char **argv)
   GLFWmonitor *activeMonitor = nullptr;
   int monitorsCount = 0;
   GLFWmonitor **monitors = glfwGetMonitors(&monitorsCount);
-  if (false && monitorsCount > 1)
+  const auto& preferableActiveMonitor = EngineConfigHolder::GetInstance()->GetEngineConfig().ActiveMonitor;
+  if ("additional" == preferableActiveMonitor && monitorsCount > 1)
   {
     activeMonitor = monitors[1];
   }

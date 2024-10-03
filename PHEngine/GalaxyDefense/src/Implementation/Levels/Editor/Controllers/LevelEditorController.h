@@ -5,6 +5,7 @@
 #include "Implementation/Levels/Editor/LevelPlacementGrid.h"
 #include "Implementation/Levels/Editor/RoutesHandler.h"
 #include "Implementation/Levels/Editor/TowersHandler.h"
+#include "Implementation/Levels/Editor/BarriersHandler.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/ITickable.h"
@@ -71,6 +72,8 @@ namespace Game
         RoutesHandler mRoutesHandler;
 
         TowersHandler mTowersHandler;
+
+        BarriersHandler mBarriersHandler;
 
     public:
         explicit LevelEditorController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);

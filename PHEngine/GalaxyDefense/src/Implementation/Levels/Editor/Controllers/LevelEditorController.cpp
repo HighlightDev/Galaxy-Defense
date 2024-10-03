@@ -36,7 +36,8 @@ namespace Game
           mTowersActor(std::make_shared<Actor>("TowersActor",
                                                std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)))),
           mRoutesHandler(mSceneWp, mBezierCurvesActor),
-          mTowersHandler(mSceneWp, mTowersActor)
+          mTowersHandler(mSceneWp, mTowersActor),
+          mBarriersHandler(mSceneWp)
     {
     }
 
@@ -71,6 +72,8 @@ namespace Game
         mSplineMaterialPrefab = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
         MaterialPropertySetter::SetMaterialPropertyValue(mSplineMaterialPrefab, "opacity", 1.0f);
         sceneSp->RegisterMaterialInstance(mSplineMaterialPrefab);
+
+        mBarriersHandler.OnPostLevelInit();
     }
 
     void LevelEditorController::PostPlayLevelFinished()
@@ -174,6 +177,12 @@ namespace Game
                             const auto &tower2DPosition = nearestCellBoundingBox.GetOrigin();
                             mTowersHandler.CreateNewTower(glm::vec3(tower2DPosition.x, 0.0f, tower2DPosition.y), glm::vec3(pickerCellSize * 0.5f));
                         }
+                        else if (eEditModeType::EDIT_BARRIERS == mCurrentEditModeType)
+                        {
+                            const auto &nearestBarrierNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                            const auto &pillarPosition = glm::vec3(nearestBarrierNodePosition.x, 0.0f, nearestBarrierNodePosition.y);
+                            mBarriersHandler.CreateNewBarrierPillar(pillarPosition, glm::vec3());
+                        }
                     }
                 }
             }
@@ -218,12 +227,28 @@ namespace Game
                     }
                     if (jsonObj.contains("route_color"))
                     {
-                        glm::vec3 newRouteColor;
                         const auto r = jsonObj["route_color"].at("r").get<float>();
                         const auto g = jsonObj["route_color"].at("g").get<float>();
                         const auto b = jsonObj["route_color"].at("b").get<float>();
-                        newRouteColor = glm::vec3(r, g, b);
+                        const glm::vec3 newRouteColor = glm::vec3(r, g, b);
                         mRoutesHandler.SetNewBezierCurveColor(newRouteColor);
+                    }
+                }
+                else if ("new_barrier" == doneAction)
+                {
+                    if (jsonObj.contains("barrier_name"))
+                    {
+                        const auto &newBarrierName = jsonObj.at("barrier_name").get<std::string>();
+                        mBarriersHandler.SelectNewBarrier(newBarrierName);
+                    }
+                    if (jsonObj.contains("barrier_color"))
+                    {
+                        const auto r = jsonObj["barrier_color"].at("r").get<float>();
+                        const auto g = jsonObj["barrier_color"].at("g").get<float>();
+                        const auto b = jsonObj["barrier_color"].at("b").get<float>();
+                        const glm::vec3 newBarrierColor = glm::vec3(r, g, b);
+                        mBarriersHandler.SetBarrierColor(newBarrierColor);
+                        mBarriersHandler.SetRayColor(newBarrierColor);
                     }
                 }
                 else if ("save" == doneAction)
@@ -259,10 +284,11 @@ namespace Game
         mCurrentEditModeType = editModeType;
         const bool isVisibleTowerPlacementGridActor = eEditModeType::EDIT_TOWERS == mCurrentEditModeType;
         const bool isVisibleRoutePlacementGridActor = eEditModeType::EDIT_ROUTES == mCurrentEditModeType;
+        const bool isVisibleBarrierPlacementGridActor = eEditModeType::EDIT_BARRIERS == mCurrentEditModeType;
         mTowerPlacementGridActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
         mTowerPlacementPickerActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
-        mRoutePlacementGridActor->SetIsEnabled(isVisibleRoutePlacementGridActor);
-        mRouteNodePickerActor->SetIsEnabled(isVisibleRoutePlacementGridActor);
+        mRoutePlacementGridActor->SetIsEnabled(isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor);
+        mRouteNodePickerActor->SetIsEnabled(isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor);
     }
 
     void LevelEditorController::Initialize()
