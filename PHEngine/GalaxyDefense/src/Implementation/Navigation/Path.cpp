@@ -15,7 +15,7 @@ namespace Game
         return mPathSegments;
     }
 
-    const std::vector<glm::vec3> &Path::GetRoutePoints()
+    const std::vector<glm::vec3> &Path::GetRoutePoints() const
     {
         const auto actualPathSegmentsPointsCount = std::accumulate(mPathSegments.cbegin(), mPathSegments.cend(), 0, [](const int32_t total, const PathSegment &segment)
                                                                    { return segment.GetTotalSegmentPointsCount() + total; });

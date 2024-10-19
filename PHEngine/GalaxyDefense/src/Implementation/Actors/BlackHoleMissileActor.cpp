@@ -5,11 +5,13 @@
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h"
+#include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 namespace Game
 {
-    BlackHoleMissileActor::BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
-        : MissileActor(gameObjectName, rootComponent),
+    BlackHoleMissileActor::BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                                                 const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler)
+        : MissileActor(gameObjectName, rootComponent, combatActorsPoolHandler),
           mCombatActivePhaseActor(),
           mExplosionSecondPhaseActor()
     {
@@ -127,7 +129,7 @@ namespace Game
         mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;
         SetIsEnabled(true);
-        const auto& existingRotation = mCombatActivePhaseActor->GetRootComponent()->GetAdditionalRotation();
+        const auto &existingRotation = mCombatActivePhaseActor->GetRootComponent()->GetAdditionalRotation();
         mCombatActivePhaseActor->GetRootComponent()->SetAdditionalRotation(glm::vec3(existingRotation.x, yawDegrees, existingRotation.z));
         mCombatActivePhaseActor->GetMovementComponent()->SetDirection(direction);
         mCombatActivePhaseActor->GetMovementComponent()->Teleport(position);

@@ -44,8 +44,6 @@ namespace Game
 
         std::shared_ptr<EngineObjectProperty<float>> mOpacity;
 
-        std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
-
     public:
         ElectroRayActor(const std::string &gameObjectName,
                         const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,

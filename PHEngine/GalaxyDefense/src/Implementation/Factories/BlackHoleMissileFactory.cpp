@@ -43,7 +43,7 @@ namespace Game
 
     std::shared_ptr<MissileActor>
     BlackHoleMissileFactory::CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,
-                                           const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler,
+                                           const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler,
                                            const glm::vec3 &translation,
                                            const glm::vec3 &rotation,
                                            const glm::vec3 &scale)
@@ -51,7 +51,7 @@ namespace Game
         const auto &missileIndexStr = std::to_string(s_blackHoleMissileCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_blackHoleMissile_rootComponent_" + missileIndexStr,
                                                                                  translation, rotation, scale);
-        const auto &a_missile = std::make_shared<BlackHoleMissileActor>("a_blackHoleMissile_" + missileIndexStr, rootComponent);
+        const auto &a_missile = std::make_shared<BlackHoleMissileActor>("a_blackHoleMissile_" + missileIndexStr, rootComponent, combatActorsPoolHandler);
         scene->AddActor(a_missile);
 
         TweenerParser tweenerParser;
@@ -114,8 +114,8 @@ namespace Game
 
         {
             a_missileExplosionSecondPhase = std::make_shared<MissileActor>("a_missileExplosionSecondPhase" + missileIndexStr,
-                                                                           std::make_shared<EngineCore::SceneComponent>("c_missileExplosionSecondPhase_rootComponent_" + missileIndexStr,
-                                                                                                                        glm::vec3(), glm::vec3(), glm::vec3(1)));
+                                                                           std::make_shared<EngineCore::SceneComponent>("c_missileExplosionSecondPhase_rootComponent_" + missileIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1)),
+                                                                           combatActorsPoolHandler);
 
             MaterialParser materialParser;
 

@@ -49,8 +49,6 @@ namespace Graphics
 
          void SetLineWidth(const float lineWidth);
 
-         bool CanBloomBeApplied() const override;
-
          bool IsFrustumCullTestNeeded() const override;
 
       protected:

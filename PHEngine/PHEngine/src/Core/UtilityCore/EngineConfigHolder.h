@@ -39,6 +39,7 @@ namespace EngineUtility
 
         bool IsBloomEnabled{false};
         std::string BloomQualityName{""};
+        float BloomThreshold{0.45f};
 
         size_t MaxFontCharactersCount{0};
 

@@ -1,12 +1,15 @@
 #include "MissileActor.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 namespace Game
 {
     MissileActor::MissileActor(const std::string &gameObjectName,
-                               const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
+                               const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                               const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler)
         : Actor(gameObjectName, rootComponent)
+        , mCombatActorsPoolHandler(combatActorsPoolHandler)
     {
     }
 

@@ -10,6 +10,7 @@ using namespace EngineCore;
 namespace Game
 {
     class MissileExplosionVisitorBase;
+    class CombatActorsPoolHandler;
 
     class BlackHoleMissileActor
         : public MissileActor,
@@ -22,7 +23,8 @@ namespace Game
         std::shared_ptr<Tweener> mBlackMissileTweener;
 
     public:
-        BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
+        BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                              const std::shared_ptr<CombatActorsPoolHandler> &poolHandler);
 
         void AttachTweener(std::shared_ptr<Tweener> tweener) override;
 

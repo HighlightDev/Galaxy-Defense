@@ -36,6 +36,10 @@ namespace EngineCore
             bool bIsEnabledStateDirty{false};
             bool bIsVisibleStateDirty{false};
             bool bIsSortOrderStateDirty{false};
+            bool bIsBloomStateDirty{false};
+
+            bool mCanBloomBeApplied{false};
+
       public:
             PrimitiveComponent(const std::string &gameObjectName,
                                const glm::vec3 &translation,
@@ -75,6 +79,10 @@ namespace EngineCore
             BoundingBox3D GetBoundingBox() const;
 
             virtual BoundingBox3D GetTransformedBoundingBox() const;
+
+            void SetCanBloomBeApplied(const bool value);
+
+            bool CanBloomBeApplied() const;
 
       private:
             void SyncRenderData();

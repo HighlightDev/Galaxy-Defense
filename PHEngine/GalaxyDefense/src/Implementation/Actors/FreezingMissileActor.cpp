@@ -2,12 +2,17 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/MovementComponent.h"
 #include "Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h"
+#include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 namespace Game
 {
-    FreezingMissileActor::FreezingMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
-        : MissileActor(gameObjectName, rootComponent)
+    FreezingMissileActor::FreezingMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                                               const std::shared_ptr<CombatActorsPoolHandler> &poolHandler)
+        : MissileActor(gameObjectName, rootComponent, poolHandler)
     {
         mMissileType = eMissileType::FREEZING;
     }
@@ -21,7 +26,7 @@ namespace Game
         mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;
         SetIsEnabled(true);
-        const auto& existingRotation = GetRootComponent()->GetAdditionalRotation();
+        const auto &existingRotation = GetRootComponent()->GetAdditionalRotation();
         GetRootComponent()->SetAdditionalRotation(glm::vec3(existingRotation.x, yawDegrees, existingRotation.z));
         GetMovementComponent()->SetDirection(direction);
         GetMovementComponent()->Teleport(position);
@@ -33,7 +38,33 @@ namespace Game
         const auto c_soundList = GetComponentsByType<SoundComponent>();
         assert(c_soundList.size());
         c_soundList.back()->PlayBuffer("explosion");
-        TriggerExplosionFinished();
+
+        const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
+        c_particle->EmitParticles();
+
+        const auto c_mesh = GetComponentsByType<StaticMeshComponent>().back();
+        c_mesh->SetIsEnabled(false);
+
+        const auto &c_physics = GetPhysicsComponent();
+        c_physics->SetIsEnabled(false);
+
+        const auto &movement = GetMovementComponent();
+        movement->SetIsEnabled(false);
+    }
+    float explosionTime = 0.0f;
+    void FreezingMissileActor::Tick(const float deltaTime)
+    {
+        MissileActor::Tick(deltaTime);
+
+        if (mActivityState == eMissileActivityState::EXPLOSION)
+        {
+            explosionTime += deltaTime;
+            if (explosionTime >= 2.0f)
+            {
+                explosionTime = 0.0f;
+                TriggerExplosionFinished();
+            }
+        }
     }
 
     void FreezingMissileActor::TriggerExplosionFinished()
@@ -45,6 +76,10 @@ namespace Game
     void FreezingMissileActor::TriggerDisabled()
     {
         mActivityState = eMissileActivityState::IDLE;
+
+        const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
+        c_particle->ResetParticles();
+
         SetIsEnabled(false);
     }
 

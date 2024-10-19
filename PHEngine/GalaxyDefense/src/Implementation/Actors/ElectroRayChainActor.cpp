@@ -6,6 +6,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 #include <utility>
 
@@ -14,8 +15,9 @@ using namespace Event;
 
 namespace Game
 {
-    ElectroRayChainActor::ElectroRayChainActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
-        : MissileActor(gameObjectName, rootComponent),
+    ElectroRayChainActor::ElectroRayChainActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                                               const std::shared_ptr<CombatActorsPoolHandler> &poolHandler)
+        : MissileActor(gameObjectName, rootComponent, poolHandler),
           mLineComponent(),
           mElectroLineBegin(),
           mElectroLineEnd(),

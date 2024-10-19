@@ -80,6 +80,7 @@ namespace EngineUtility
             std::make_pair("hdr_exposure_value",                    std::function([=](const std::string &valueStr) { mEngineConfig.HdrExposureValue                 = parseFloat(valueStr); })),
             std::make_pair("enable_bloom",                          std::function([=](const std::string &valueStr) { mEngineConfig.IsBloomEnabled                   = parseBool(valueStr); })),
             std::make_pair("bloom_quality",                         std::function([=](const std::string &valueStr) { mEngineConfig.BloomQualityName                 = valueStr; })),
+            std::make_pair("bloom_threshold",                       std::function([=](const std::string &valueStr) { mEngineConfig.BloomThreshold                   = parseFloat(valueStr); })),
 #ifdef DEBUG
             std::make_pair("debug_enable_ambient_music",            std::function([=](const std::string &valueStr) { mEngineConfig.EnableAmbientMusic               = parseBool(valueStr); })),
             std::make_pair("render_debug_physics_data",             std::function([=](const std::string &valueStr) { mEngineConfig.RenderDebugPhysicsData           = parseBool(valueStr); })),

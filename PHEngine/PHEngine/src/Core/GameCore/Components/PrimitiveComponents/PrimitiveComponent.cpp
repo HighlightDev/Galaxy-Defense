@@ -3,8 +3,10 @@
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/BoundingBoxBuilder.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
+#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 
 using namespace Graphics::Renderer;
+using namespace Graphics::Proxy;
 
 namespace EngineCore
 {
@@ -50,7 +52,8 @@ namespace EngineCore
 
       if (bIsEnabledStateDirty ||
           bIsVisibleStateDirty ||
-          bIsSortOrderStateDirty)
+          bIsSortOrderStateDirty ||
+          bIsBloomStateDirty)
       {
          SyncRenderData();
       }
@@ -142,6 +145,21 @@ namespace EngineCore
       SetIsTransformationDirty(true); // Update transform for bounding box and sync with render thread
    }
 
+   void PrimitiveComponent::SetCanBloomBeApplied(const bool value)
+   {
+      if (mCanBloomBeApplied != value)
+      {
+         mCanBloomBeApplied = value;
+         bIsBloomStateDirty = true;
+         SyncRenderData();
+      }
+   }
+
+   bool PrimitiveComponent::CanBloomBeApplied() const
+   {
+      return mCanBloomBeApplied;
+   }
+
    void PrimitiveComponent::SyncRenderData()
    {
       if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
@@ -169,6 +187,19 @@ namespace EngineCore
                   static constexpr uint64_t functionId = Hash64_CT("PrimitiveComponent::UpdatePrimitiveComponentSortOrderValue_OnRenderThread()");
                   sceneRendererSp->UpdatePrimitiveComponentSortOrderValue_OnRenderThread(mSceneProxyId, GetObjectId(), functionId, mSortOrderValue);
                   bIsSortOrderStateDirty = false;
+               }
+
+               if (bIsBloomStateDirty)
+               {
+                  static constexpr uint64_t functionId = Hash64_CT("PrimitiveComponent::UpdateBloomState_OnRenderThread()");
+                  sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [this, sceneRendererSp, canBloomBeApplied = mCanBloomBeApplied]() {
+                     const auto &primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
+                     if (primitiveSp)
+                     {
+                        primitiveSp->SetCanBloomBeApplied(canBloomBeApplied);
+                     }
+                   });
+                  bIsBloomStateDirty = false;
                }
             }
          }

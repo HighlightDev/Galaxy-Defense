@@ -13,12 +13,14 @@ using namespace EngineCore;
 namespace Game
 {
     class MissileExplosionVisitorBase;
+    class CombatActorsPoolHandler;
 
     class BombMissileActor
         : public MissileActor
     {
     public:
-        BombMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
+        BombMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                         const std::shared_ptr<CombatActorsPoolHandler> &poolHandler);
 
         void TriggerSpawn(const glm::vec3 &position,
                           const glm::vec3 &direction,

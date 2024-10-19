@@ -5,13 +5,15 @@
 #include "Core/AudioCore/SoundSource.h"
 #include "Implementation/MissileExplosionVisitors/BombExplosionVisitor.h"
 #include "Core/CommonCore/Random.h"
+#include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 #include <algorithm>
 
 namespace Game
 {
-    BombMissileActor::BombMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
-        : MissileActor(gameObjectName, rootComponent)
+    BombMissileActor::BombMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                                       const std::shared_ptr<CombatActorsPoolHandler> &poolHandler)
+        : MissileActor(gameObjectName, rootComponent, poolHandler)
     {
         mMissileType = eMissileType::BOMB;
     }
@@ -25,7 +27,7 @@ namespace Game
         mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;
         SetIsEnabled(true);
-        const auto& existingRotation = GetRootComponent()->GetAdditionalRotation();
+        const auto &existingRotation = GetRootComponent()->GetAdditionalRotation();
         GetRootComponent()->SetAdditionalRotation(glm::vec3(existingRotation.x, yawDegrees, existingRotation.z));
         GetMovementComponent()->SetDirection(direction);
         GetMovementComponent()->Teleport(position);

@@ -18,6 +18,7 @@
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
 #include "Implementation/Factories/ElectroRayFactory.h"
 #include "Implementation/Factories/BarrierFactory.h"
+#include "Implementation/Factories/SpawnPortalFactory.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/CommonCore/Assertion.h"
@@ -39,6 +40,7 @@ namespace Game
         mSpaceObjectsPool.clear();
         mElectroRayChainActorPool.clear();
         mBarriersPool.clear();
+        mSpawnPortals.clear();
     }
 
     std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::GetFreeElectroChainActor()
@@ -162,6 +164,26 @@ namespace Game
             const auto &barrier = mBarriersPool.emplace_back(barriersFactory->CreateBarrier(pillarsCount, sceneSp, glm::vec3(), glm::vec3(), glm::vec3(6.0f)));
             barrier->SetIsEnabled(false);
         }
+    }
+
+    void CombatActorsPoolHandler::SpawnPortals(const int32_t count, const float portalSize)
+    {
+        const auto &sceneSp = mSceneWp.lock();
+        assert(sceneSp);
+        const auto &portalsFactory = std::make_unique<SpawnPortalFactory>();
+        for (int32_t i = 0; i < count; ++i)
+        {
+            const auto &portal = mSpawnPortals.emplace_back(portalsFactory->CreatePortal(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1.0f), portalSize));
+            portal->SetIsEnabled(false);
+        }
+    }
+
+    std::shared_ptr<Actor> CombatActorsPoolHandler::GetFreePortalActor() const
+    {
+        const auto idlePortalIt = std::find_if(mSpawnPortals.cbegin(), mSpawnPortals.cend(), [](const auto &portalSp)
+                                               { return !portalSp->IsEnabled(); });
+
+        return idlePortalIt == mSpawnPortals.cend() ? nullptr : *idlePortalIt;
     }
 
     std::shared_ptr<BarrierActor> CombatActorsPoolHandler::GetFreeBarrierActor() const

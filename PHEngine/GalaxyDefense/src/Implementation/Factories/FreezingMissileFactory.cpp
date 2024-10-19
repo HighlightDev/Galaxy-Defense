@@ -5,6 +5,7 @@
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
@@ -12,6 +13,7 @@
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+#include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
@@ -20,6 +22,14 @@
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
+
+#include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
+#include "Core/GameCore/Particles/Modules/Velocity/SimpleVelocityModule.h"
+#include "Core/GameCore/Particles/Modules/Velocity/ExplosionInitialVelocityModule.h"
+#include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
+#include "Core/GameCore/Particles/Modules/Size/SimpleSizeModule.h"
+#include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Actors/MissileActor.h"
@@ -44,7 +54,7 @@ namespace Game
         const auto &shipBulletIndexStr = std::to_string(s_bulletCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_freezingMissile_rootComponent_" + shipBulletIndexStr,
                                                                                  translation, rotation, scale);
-        const auto &a_missile = std::make_shared<FreezingMissileActor>("a_freezingMissile_" + shipBulletIndexStr, rootComponent);
+        const auto &a_missile = std::make_shared<FreezingMissileActor>("a_freezingMissile_" + shipBulletIndexStr, rootComponent, combatActorsPoolHandler);
         scene->AddActor(a_missile);
 
         MaterialParser materialParser;
@@ -75,6 +85,47 @@ namespace Game
         const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_missile->AddComponent(c_mesh);
+
+        const std::shared_ptr<IMaterial> &particles_mat = materialParser.ParseMaterialDescriptor("OpaqueParticleMaterial.m");
+        scene->RegisterMaterialInstance(particles_mat);
+        MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacity", 1.0f);
+
+        const auto d_particle = std::make_shared<ParticleSystemComponentData>("c_freezeParticleSystemComponent_" + shipBulletIndexStr, particles_mat, glm::vec3(0), 100);
+        const auto &particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
+        const auto &c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
+        auto emitter = std::make_shared<ParticleExplosionEmitter>();
+        emitter->SetOwner(c_particleSystemComponent);
+        emitter->SetThetaSlicesCount(10);
+        c_particleSystemComponent->SetParticleEmitter(emitter);
+
+        auto lifeTimeModule = std::make_shared<SimpleLifeTimeModule>();
+        lifeTimeModule->SetOwner(c_particleSystemComponent);
+        lifeTimeModule->SetLifeTime(1.5f);
+        c_particleSystemComponent->AddParticleModule(lifeTimeModule);
+
+        auto sizeModule = std::make_shared<SimpleSizeModule>();
+        sizeModule->SetOwner(c_particleSystemComponent);
+        sizeModule->SetSizeBegin(0.4f);
+        sizeModule->SetSizeEnd(0.1f);
+        c_particleSystemComponent->AddParticleModule(sizeModule);
+
+        auto initialVelocityModule = std::make_shared<ExplosionInitialVelocityModule>();
+        initialVelocityModule->SetOwner(c_particleSystemComponent);
+        c_particleSystemComponent->AddParticleModule(initialVelocityModule);
+
+        auto velocityModule = std::make_shared<SimpleVelocityModule>();
+        velocityModule->SetOwner(c_particleSystemComponent);
+        velocityModule->SetVelocityDirection(glm::vec3(0, -25.0f, 0));
+        velocityModule->SetVelocityDeviation(glm::vec3(2.0f, 0.0f, 2.0f));
+        c_particleSystemComponent->AddParticleModule(velocityModule);
+
+        auto colorModule = std::make_shared<SimpleColorModule>();
+        colorModule->SetOwner(c_particleSystemComponent);
+        colorModule->SetColorBegin(glm::vec4(0.5f, 0.5f, 1.0f, 1.0f));
+        colorModule->SetColorEnd(glm::vec4(0.3f, 0.3f, 0.7f, 1.0f));
+        c_particleSystemComponent->AddParticleModule(colorModule);
+
+        a_missile->AddComponent(c_particleSystemComponent);
 
         const auto d_movement = std::make_shared<MovementComponentData>("c_freezingMissileNoPhysMove_" + shipBulletIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();

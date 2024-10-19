@@ -76,6 +76,8 @@ namespace Graphics
 
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
+         bool mCanBloomBeApplied{false};
+
       public:
          PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent *component,
                              const std::shared_ptr<MaterialProxy> &materialProxy);
@@ -104,8 +106,6 @@ namespace Graphics
 
          virtual bool IsDeferred() const = 0;
 
-         virtual bool CanBloomBeApplied() const;
-
          virtual eMeshFacing GetMeshFrontFace() const;
 
          virtual bool IsTransformIntialized() const;
@@ -116,6 +116,10 @@ namespace Graphics
          void SetSortOrderValue(const int32_t sortOrderValue);
 
          int32_t GetSortOrderValue() const;
+
+         void SetCanBloomBeApplied(const bool value);
+
+         bool CanBloomBeApplied() const;
 
       public:
          template <typename VertexFactoryType, typename BaseShaderType>

@@ -21,7 +21,7 @@ namespace Game
     ElectroRayActor::ElectroRayActor(const std::string &gameObjectName,
                                      const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
                                      const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler)
-        : MissileActor(gameObjectName, rootComponent),
+        : MissileActor(gameObjectName, rootComponent, combatActorsPoolHandler),
           mLineComponent(),
           mSpaceshipWhoSpawnedMeWp(),
           mElectroLineBegin(),
@@ -32,8 +32,7 @@ namespace Game
           bLineOriginStartMovement(false),
           bElectroLineCollided(false),
           mCollidedSpaceship(),
-          mOpacity(std::make_shared<EngineObjectProperty<float>>(1.0f, "p_opacity")),
-          mCombatActorsPoolHandler(combatActorsPoolHandler)
+          mOpacity(std::make_shared<EngineObjectProperty<float>>(1.0f, "p_opacity"))
     {
         mMissileType = eMissileType::ELECTRO_RAY;
         AddEngineProperty(mOpacity);

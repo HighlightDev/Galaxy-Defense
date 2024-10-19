@@ -34,6 +34,7 @@ namespace EngineCore
     {
         mParticlesPool.resize(meshComponentData->m_particlesCount);
         mSortOrderValue = std::numeric_limits<int32_t>::max(); // draw this primitive the last one
+        mCanBloomBeApplied = true;
     }
 
     ParticleSystemComponent::~ParticleSystemComponent()

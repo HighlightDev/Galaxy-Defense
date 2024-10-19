@@ -19,7 +19,8 @@ namespace Graphics
             bTransformInitialized(false),
             m_relativeMatrix(component->GetRelativeMatrix()),
             mMaterialProxy(materialProxy),
-            mSortOrderValue(component->GetSortOrderValue())
+            mSortOrderValue(component->GetSortOrderValue()),
+            mCanBloomBeApplied(component->CanBloomBeApplied())
       {
       }
 
@@ -111,9 +112,14 @@ namespace Graphics
          return mSortOrderValue;
       }
 
+      void PrimitiveSceneProxy::SetCanBloomBeApplied(const bool value)
+      {
+         mCanBloomBeApplied = value;
+      }
+
       bool PrimitiveSceneProxy::CanBloomBeApplied() const
       {
-         return false;
+         return mCanBloomBeApplied;
       }
 
    }

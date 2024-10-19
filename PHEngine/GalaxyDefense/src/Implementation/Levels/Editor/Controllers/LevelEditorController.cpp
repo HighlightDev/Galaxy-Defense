@@ -345,6 +345,7 @@ namespace Game
         {
             const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_routeGridColumnLineMesh_" + std::to_string(columnIdx)), 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
+            c_mesh->SetCanBloomBeApplied(false);
             const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x + columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
             const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMin().x + columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMax().y);
             c_mesh->SetSortOrderValue(0);
@@ -357,6 +358,7 @@ namespace Game
         {
             const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_routeGridRowLineMesh_" + std::to_string(rowIdx)), 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
+            c_mesh->SetCanBloomBeApplied(false);
             const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias * 1.5f, levelAreaBoundingBox.GetMin().y + rowIdx * gridCellSize);
             const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias * 1.5f, levelAreaBoundingBox.GetMin().y + rowIdx * gridCellSize);
             c_mesh->SetSortOrderValue(0);
@@ -414,6 +416,7 @@ namespace Game
         {
             const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_towerGridColumnLineMesh_" + std::to_string(columnIdx)), 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
+            c_mesh->SetCanBloomBeApplied(false);
             const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x + columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
             const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMin().x + columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMax().y);
             c_mesh->SetSortOrderValue(0);
@@ -426,6 +429,7 @@ namespace Game
         {
             const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_towerGridRowLineMesh_" + std::to_string(rowIdx)), 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
+            c_mesh->SetCanBloomBeApplied(false);
             const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias * 1.5f, levelAreaBoundingBox.GetMin().y + rowIdx * gridCellSize);
             const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias * 1.5f, levelAreaBoundingBox.GetMin().y + rowIdx * gridCellSize);
             c_mesh->SetSortOrderValue(0);

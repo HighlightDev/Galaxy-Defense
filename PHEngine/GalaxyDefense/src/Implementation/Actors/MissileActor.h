@@ -14,6 +14,7 @@ using namespace EngineCore;
 namespace Game
 {
     class MissileExplosionVisitorBase;
+    class CombatActorsPoolHandler;
 
     enum class eMissileActivityState
     {
@@ -34,8 +35,12 @@ namespace Game
 
         eDamageDealerType mDamageDealerType{eDamageDealerType::NONE};
 
+        std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
+
     public:
-        MissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
+        MissileActor(const std::string &gameObjectName,
+                     const std::shared_ptr<EngineCore::SceneComponent> &rootComponent,
+                     const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler);
 
         virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const;
 

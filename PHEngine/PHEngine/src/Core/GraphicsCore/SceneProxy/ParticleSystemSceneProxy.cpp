@@ -119,11 +119,6 @@ namespace Graphics
             return false;
         }
 
-        bool ParticleSystemSceneProxy::CanBloomBeApplied() const
-        {
-            return true;
-        }
-
         void ParticleSystemSceneProxy::SetActiveParticlesCount(const size_t activeParticlesCount)
         {
             mActiveParticlesCount = activeParticlesCount;

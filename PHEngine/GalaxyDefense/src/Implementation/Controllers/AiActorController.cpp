@@ -23,7 +23,10 @@ namespace Game
 
             if (const auto &moveCompSp = m_movementComponentWp.lock())
             {
-                moveCompSp->Move(deltaTime);
+                if (moveCompSp->IsEnabled())
+                {
+                    moveCompSp->Move(deltaTime);
+                }
             }
         }
     }

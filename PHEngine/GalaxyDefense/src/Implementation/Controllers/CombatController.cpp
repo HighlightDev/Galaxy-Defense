@@ -80,12 +80,23 @@ namespace Game
         }
         mNavigationController->SetPathRoutes(pathRoutes);
 
-        SpaceStationFactory spaceStationFactory;
         for (const auto &[towerName, towerData] : levelData.TowersData)
         {
             const glm::vec3 &position = std::get<0>(towerData);
             const glm::vec3 &scale = std::get<1>(towerData);
             mCombatActorsPoolHandler->CreateSpaceStationActor(towerName, position, glm::vec3(), scale);
+        }
+
+        // todo: when create a new portal first check if another portals could be on the same point
+        // If more than one portal is on one start point - remove duplicated portals 
+        mCombatActorsPoolHandler->SpawnPortals(pathRoutes.size(), 10.0f);
+        for (const auto&[pathName, pathData] : pathRoutes)
+        {
+            const auto& portalSp = mCombatActorsPoolHandler->GetFreePortalActor();
+            assert(portalSp);
+            portalSp->SetIsEnabled(true);
+            pathData.GetRoutePoints();
+            portalSp->GetRootComponent()->SetTranslation(pathData.GetRouteFirstPoint());
         }
     }
 

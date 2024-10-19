@@ -53,6 +53,7 @@ set(
 	src/Implementation/Factories/ISpaceStationFactory.h
 	src/Implementation/Factories/SpaceStationFactory.h
 	src/Implementation/Factories/BarrierFactory.h
+	src/Implementation/Factories/SpawnPortalFactory.h
 	src/Implementation/Modifiers/IModifiable.h
 	src/Implementation/Modifiers/GravityModifier.h
 	src/Implementation/Modifiers/FreezingModifier.h
@@ -132,6 +133,7 @@ set(
 	src/Implementation/Factories/ElectroRayChainFactory.cpp
 	src/Implementation/Factories/SpaceStationFactory.cpp
 	src/Implementation/Factories/BarrierFactory.cpp
+	src/Implementation/Factories/SpawnPortalFactory.cpp
 	src/Implementation/Modifiers/GravityModifier.cpp
 	src/Implementation/Modifiers/FreezingModifier.cpp
 	src/Implementation/Modifiers/ElectroRayChainModifier.cpp

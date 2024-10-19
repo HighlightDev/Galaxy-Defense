@@ -10,14 +10,14 @@ namespace Game
     {
         std::vector<PathSegment> mPathSegments;
 
-        std::vector<glm::vec3> mCachedRoutePoints;
+        mutable std::vector<glm::vec3> mCachedRoutePoints;
 
     public:
         void AppendPathSegmentToTheEnd(const PathSegment &pathSegment);
 
         const std::vector<PathSegment> &GetPathSegments() const;
 
-        const std::vector<glm::vec3> &GetRoutePoints();
+        const std::vector<glm::vec3> &GetRoutePoints() const;
 
         glm::vec3 GetRouteFirstPoint() const;
     };

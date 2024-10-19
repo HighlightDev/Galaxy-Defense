@@ -36,7 +36,7 @@ namespace Game
         const auto &rayChainIndexStr = std::to_string(s_electroRayChainCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_electroRayChain_rootComponent_" + rayChainIndexStr,
                                                                                  translation, rotation, scale);
-        const auto &a_electroRayChain = std::make_shared<ElectroRayChainActor>("a_electroRayChain_" + rayChainIndexStr, rootComponent);
+        const auto &a_electroRayChain = std::make_shared<ElectroRayChainActor>("a_electroRayChain_" + rayChainIndexStr, rootComponent, combatActorsPoolHandler);
         scene->AddActor(a_electroRayChain);
 
         MaterialParser materialParser;

@@ -7,6 +7,7 @@
 namespace EngineCore
 {
     class Scene;
+    class Actor;
 }
 
 namespace Game
@@ -43,5 +44,15 @@ namespace Game
                       const glm::vec3 &translation,
                       const glm::vec3 &rotation,
                       const glm::vec3 &scale) = 0;
+    };
+
+    class IPortalFactory
+    {
+        virtual std::shared_ptr<::EngineCore::Actor>
+        CreatePortal(const std::shared_ptr<::EngineCore::Scene> &scene,
+                          const glm::vec3 &translation,
+                          const glm::vec3 &rotation,
+                          const glm::vec3 &scale,
+                          const float billboardSize) = 0;
     };
 }

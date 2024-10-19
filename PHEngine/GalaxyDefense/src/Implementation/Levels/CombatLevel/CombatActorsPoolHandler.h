@@ -47,6 +47,8 @@ namespace Game
 
         std::vector<std::shared_ptr<BarrierActor>> mBarriersPool;
 
+        std::vector<std::shared_ptr<::EngineCore::Actor>> mSpawnPortals;
+
     public:
         explicit CombatActorsPoolHandler(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
@@ -66,6 +68,8 @@ namespace Game
         std::shared_ptr<SpaceshipActor> GetFreeSpaceshipActor() const;
 
         std::shared_ptr<BarrierActor> GetFreeBarrierActor() const;
+
+        std::shared_ptr<::EngineCore::Actor> GetFreePortalActor() const;
 
         std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const int32_t actorId) const;
 
@@ -90,6 +94,8 @@ namespace Game
         void SpawnAsteroids(const int32_t count);
 
         void SpawnBarriers(const int32_t barriersCount, const int32_t pillarsCount);
+
+        void SpawnPortals(const int32_t count, const float portalSize);
 
         int32_t GetSpaceStationsCount() const;
 

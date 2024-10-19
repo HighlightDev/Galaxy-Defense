@@ -58,8 +58,6 @@ namespace Graphics
 
             bool IsFrustumCullTestNeeded() const override;
 
-            bool CanBloomBeApplied() const override;
-
             void SetActiveParticlesCount(const size_t activeParticlesCount);
 
             void CopyParticlesRawData(const void *translationBuffer,

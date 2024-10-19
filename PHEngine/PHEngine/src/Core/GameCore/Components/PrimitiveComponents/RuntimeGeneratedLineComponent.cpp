@@ -23,6 +23,7 @@ namespace EngineCore
          mLineEndWorldSpacePosition(),
          mLineWidth(1.0f)
    {
+      mCanBloomBeApplied = true;
    }
 
    RuntimeGeneratedLineComponent::~RuntimeGeneratedLineComponent()

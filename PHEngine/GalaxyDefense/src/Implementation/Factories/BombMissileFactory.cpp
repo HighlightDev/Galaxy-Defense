@@ -45,7 +45,7 @@ namespace Game
         const auto &shipBulletIndexStr = std::to_string(s_bombBulletCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_bombMissile_rootComponent_" + shipBulletIndexStr,
                                                                                  translation, rotation, scale);
-        const auto &a_missile = std::make_shared<BombMissileActor>("a_bombMissile_" + shipBulletIndexStr, rootComponent);
+        const auto &a_missile = std::make_shared<BombMissileActor>("a_bombMissile_" + shipBulletIndexStr, rootComponent, combatActorsPoolHandler);
         scene->AddActor(a_missile);
 
         MaterialParser materialParser;

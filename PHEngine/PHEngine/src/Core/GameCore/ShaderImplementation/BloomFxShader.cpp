@@ -68,7 +68,7 @@ namespace EngineCore
          const auto &bloomQuality = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName);
 
          DefineConstant<int32_t>(FragmentShader, "BLUR_WIDTH", bloomQuality.blurWidth);
-         DefineConstant<float>(FragmentShader, "bloomThreshold", 0.45f);
+         DefineConstant<float>(FragmentShader, "bloomThreshold", cfg.BloomThreshold);
          DefineConstantArray<float>(FragmentShader, "weights", EngineMath::CalculateGaussNormalizedWeights(bloomQuality.blurWidth));
       }
    }

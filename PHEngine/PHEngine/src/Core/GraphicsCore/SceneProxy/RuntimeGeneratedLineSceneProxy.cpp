@@ -113,11 +113,6 @@ namespace Graphics
          bUpdateLineGeometry = true;
       }
 
-      bool RuntimeGeneratedLineSceneProxy::CanBloomBeApplied() const
-      {
-         return true;
-      }
-
       bool RuntimeGeneratedLineSceneProxy::IsFrustumCullTestNeeded() const
       {
          return false;
