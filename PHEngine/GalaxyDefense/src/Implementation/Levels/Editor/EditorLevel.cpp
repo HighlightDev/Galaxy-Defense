@@ -86,7 +86,8 @@ namespace Game
                                                                     0.0f,
                                                                     200.0f);
 
-      spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(), glm::vec3(40.0f, 5.0f, 40.0f)));
+      constexpr float c_levelExtent = 60.0f;
+      spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(), glm::vec3(c_levelExtent, 5.0f, c_levelExtent)));
       spaceCamera->SetMaxDistanceFromTargetToCamera(200.0f);
       spaceCamera->SetMinDistanceFromTargetToCamera(50.0f);
       spaceCamera->SetDistanceFromTargetToCamera(200.0f);
@@ -114,7 +115,7 @@ namespace Game
       std::static_pointer_cast<LightComponent>(a_light->GetComponentsByType<LightComponent>().front())->SetIsVisible(true);
 
       mLevelEditorController->OnLevelInit();
-      mLevelEditorController->SetLevelAreaBoundingBox(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(40.0f)));
+      mLevelEditorController->SetLevelAreaBoundingBox(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(c_levelExtent)));
 
       mUiController->OnLevelInit();
    }

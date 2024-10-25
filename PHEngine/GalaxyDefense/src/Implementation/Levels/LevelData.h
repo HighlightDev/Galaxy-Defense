@@ -21,6 +21,8 @@ namespace Game
 
         std::unordered_map<std::string, std::vector<std::tuple<glm::vec3 /*start*/, glm::vec3 /*control point*/, glm::vec3 /*end*/>>> RoutesData;
 
+        std::unordered_map<std::string, std::vector<glm::vec3>> BarriersData;
+
         bool isDataValid() const;
 
     private:

@@ -9,6 +9,7 @@ namespace Game
     {
         auto preparedRoutesData = PrepareRouteControlPointsData(levelData.RoutesData);
         auto preparedTowersData = PrepareTowersData(levelData.TowersData);
+        auto preparedBarriersData = PrepareBarriersData(levelData.BarriersData);
 
         nlohmann::json jsonObj;
         jsonObj["level_name"] = levelData.LevelName;
@@ -16,6 +17,7 @@ namespace Game
         jsonObj["level_boundary_max"] = JsonVec2(levelData.LevelBoundaryMax);
         jsonObj["routes"] = preparedRoutesData;
         jsonObj["towers"] = preparedTowersData;
+        jsonObj["barriers"] = preparedBarriersData;
 
         return jsonObj.dump();
     }
@@ -25,14 +27,16 @@ namespace Game
         const auto &jsonObj = nlohmann::json::parse(jsonStr);
         LevelData lvlData;
         lvlData.LevelName = jsonObj.at("level_name").get<std::string>();
-        const auto& min = jsonObj.at("level_boundary_min").get<JsonVec2>();
-        const auto& max = jsonObj.at("level_boundary_max").get<JsonVec2>();
+        const auto &min = jsonObj.at("level_boundary_min").get<JsonVec2>();
+        const auto &max = jsonObj.at("level_boundary_max").get<JsonVec2>();
         lvlData.LevelBoundaryMin = glm::vec2(min.x, min.y);
         lvlData.LevelBoundaryMax = glm::vec2(max.x, max.y);
         auto preparedRoutesData = jsonObj.at("routes").get<std::unordered_map<std::string, std::vector<std::tuple<JsonVec3, JsonVec3, JsonVec3>>>>();
         lvlData.RoutesData = RestoreRouteControlPoints(preparedRoutesData);
         auto preparedTowersData = jsonObj.at("towers").get<std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>>();
         lvlData.TowersData = RestoreTowers(preparedTowersData);
+        auto preparedBarriersData = jsonObj.at("barriers").get<std::unordered_map<std::string, std::vector<JsonVec3>>>();
+        lvlData.BarriersData = RestoreBarriers(preparedBarriersData);
         return lvlData;
     }
 
@@ -120,6 +124,46 @@ namespace Game
                            const glm::vec3 &scale = glm::vec3(second.x, second.y, second.z);
                            return std::make_pair(towerPair.first, std::make_tuple(position, scale));
                        });
+
+        return result;
+    }
+
+    std::unordered_map<std::string, std::vector<JsonVec3>>
+    LevelSerializationHelper::PrepareBarriersData(const std::unordered_map<std::string, std::vector<glm::vec3>> &barrierssData) const
+    {
+        std::unordered_map<std::string, std::vector<JsonVec3>> result;
+        result.reserve(barrierssData.size());
+
+        for (const auto &[barrierName, pillarsPoints] : barrierssData)
+        {
+            result[barrierName] = {};
+            std::transform(pillarsPoints.cbegin(), pillarsPoints.cend(),
+                           std::inserter(result[barrierName], result[barrierName].begin()),
+                           [](const auto &pillarPoint)
+                           {
+                               return pillarPoint;
+                           });
+        }
+
+        return result;
+    }
+
+    std::unordered_map<std::string, std::vector<glm::vec3>>
+    LevelSerializationHelper::RestoreBarriers(const std::unordered_map<std::string, std::vector<JsonVec3>> &barriersData) const
+    {
+        std::unordered_map<std::string, std::vector<glm::vec3>> result;
+        result.reserve(barriersData.size());
+        for (const auto &[barrierName, pillarsPoints] : barriersData)
+        {
+            result[barrierName] = {};
+            std::transform(pillarsPoints.cbegin(),
+                           pillarsPoints.cend(),
+                           std::inserter(result[barrierName], result[barrierName].begin()),
+                           [](const auto &parsedBarrierPillarPoint)
+                           {
+                               return glm::vec3(parsedBarrierPillarPoint.x, parsedBarrierPillarPoint.y, parsedBarrierPillarPoint.z);
+                           });
+        }
 
         return result;
     }

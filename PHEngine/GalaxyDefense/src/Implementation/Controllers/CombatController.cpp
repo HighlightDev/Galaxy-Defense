@@ -59,9 +59,9 @@ namespace Game
         assert(sceneSp);
 
         mLevelBounds = BoundingBox3D(glm::vec3(0.0f),
-                                     glm::vec3(std::abs(levelData.LevelBoundaryMax.x - levelData.LevelBoundaryMin.x),
+                                     glm::vec3(std::abs(levelData.LevelBoundaryMax.x - levelData.LevelBoundaryMin.x) * 0.5f,
                                                50.0f,
-                                               std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y)));
+                                               std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y) * 0.5));
         mNavigationController->SetLevelBounds(mLevelBounds);
 
         std::unordered_map<std::string, Path> pathRoutes;
@@ -88,15 +88,28 @@ namespace Game
         }
 
         // todo: when create a new portal first check if another portals could be on the same point
-        // If more than one portal is on one start point - remove duplicated portals 
+        // If more than one portal is on one start point - remove duplicated portals
         mCombatActorsPoolHandler->SpawnPortals(pathRoutes.size(), 10.0f);
-        for (const auto&[pathName, pathData] : pathRoutes)
+        for (const auto &[pathName, pathData] : pathRoutes)
         {
-            const auto& portalSp = mCombatActorsPoolHandler->GetFreePortalActor();
+            const auto &portalSp = mCombatActorsPoolHandler->GetFreePortalActor();
             assert(portalSp);
             portalSp->SetIsEnabled(true);
             pathData.GetRoutePoints();
             portalSp->GetRootComponent()->SetTranslation(pathData.GetRouteFirstPoint());
+        }
+
+        for (const auto &[barrierName, barrierData] : levelData.BarriersData)
+        {
+            mCombatActorsPoolHandler->SpawnBarriers(1, barrierData.size());
+            const auto &a_barrier = mCombatActorsPoolHandler->GetFreeBarrierActor();
+            assert(a_barrier && barrierData.size() == a_barrier->GetBarrierPillarsCount());
+            int32_t pillarIndex = 0;
+            for (const auto &pillarPosition : barrierData)
+            {
+                a_barrier->TrySetBarrierPillarMeshRelativeTransform(pillarIndex++, pillarPosition, glm::vec3(), glm::vec3(6.0f, 12.0f, 6.0f));
+            }
+            a_barrier->SetIsEnabled(true);
         }
     }
 
@@ -129,9 +142,9 @@ namespace Game
 
         mCombatActorsPoolHandler->SpawnAsteroids(20);
         mCombatActorsPoolHandler->SpawnBarriers(1, 5);
-        const auto& lvlBoundaryMin = mLevelBounds.GetMin();
-        const auto& lvlBoundaryMax = mLevelBounds.GetMax();
-        const auto& lvlBoundaryOrigin = mLevelBounds.GetOrigin();
+        const auto &lvlBoundaryMin = mLevelBounds.GetMin();
+        const auto &lvlBoundaryMax = mLevelBounds.GetMax();
+        const auto &lvlBoundaryOrigin = mLevelBounds.GetOrigin();
         if (const auto &a_barrierSp = mCombatActorsPoolHandler->GetFreeBarrierActor())
         {
             a_barrierSp->SetIsEnabled(true);

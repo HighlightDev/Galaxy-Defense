@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <unordered_map>
+#include <vector>
 #include <glm/vec3.hpp>
 
 namespace EngineCore
@@ -29,7 +30,7 @@ namespace Game
     class BarriersHandler
     {
         int32_t mBarrierActorsCount{0};
-        
+
         int32_t mCurrentBarrierPillarsCount{0};
 
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
@@ -56,6 +57,10 @@ namespace Game
 
         void SetBarrierColor(const glm::vec3 &currentBarrierColor);
 
-        void SetRayColor(const glm::vec3& currentRayColor);
+        void SetRayColor(const glm::vec3 &currentRayColor);
+
+        void UndoLastBarrier();
+
+        std::unordered_map<std::string /*barrier name*/, std::vector<glm::vec3>/*pillar positions*/> CollectBarrierPoints() const;
     };
 }

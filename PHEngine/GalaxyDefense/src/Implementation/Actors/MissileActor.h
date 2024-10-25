@@ -65,5 +65,7 @@ namespace Game
         eMissileType GetMissileType() const;
 
         eDamageDealerType GetDamageDealerType() const;
+
+        std::shared_ptr<CombatActorsPoolHandler> GetCombatActorsPoolHandler() const;
     };
 }

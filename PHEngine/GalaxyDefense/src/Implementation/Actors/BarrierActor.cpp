@@ -66,4 +66,9 @@ namespace Game
     {
         return mBarrierRays.size();
     }
+
+    std::vector<std::shared_ptr<StaticMeshComponent>> BarrierActor::GetBarrierPillarsMeshComponents() const
+    {
+        return mBarrierPillars;
+    }
 }

@@ -2,6 +2,8 @@
 
 #include "MissileExplosionVisitorBase.h"
 
+#include <glm/vec3.hpp>
+
 namespace EngineCore
 {
     class Actor;
@@ -29,5 +31,10 @@ namespace Game
 
         virtual void EndExplosionForSpaceObject(const std::shared_ptr<SpaceObjectActor> &spaceObject,
                                                 const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor) override;
+
+    private:
+        void ProcessProjectileWithSpaceshipsCollision(const glm::vec3 &explosionCenterPosition);
+
+        void AddOrResetFreezingModifier(const std::shared_ptr<SpaceshipActor> &spaceship);
     };
 }

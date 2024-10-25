@@ -322,13 +322,9 @@ namespace EngineCore
          m_movementComponent->UnpausableTick(deltaTime);
       }
 
-      if (mIsEnabled->GetValue())
+      for (const auto &tweener : mTweeners)
       {
-         for (const auto &tweener : mTweeners)
-         {
-            tweener->Tick(deltaTime);
-            tweener->NotifyStateChangedObservers();
-         }
+         tweener->UnpausableTick(deltaTime);
       }
    }
 
@@ -372,13 +368,10 @@ namespace EngineCore
          m_movementComponent->Tick(deltaTime);
       }
 
-      if (mIsEnabled->GetValue())
+      for (const auto &tweener : mTweeners)
       {
-         for (const auto &tweener : mTweeners)
-         {
-            tweener->Tick(deltaTime);
-            tweener->NotifyStateChangedObservers();
-         }
+         tweener->Tick(deltaTime);
+         tweener->NotifyStateChangedObservers();
       }
    }
 

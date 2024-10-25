@@ -217,6 +217,10 @@ namespace Game
                     {
                         mTowersHandler.UndoLastTowerComponent();
                     }
+                    else if (eEditModeType::EDIT_BARRIERS == mCurrentEditModeType)
+                    {
+                        mBarriersHandler.UndoLastBarrier();
+                    }
                 }
                 else if ("new_route" == doneAction)
                 {
@@ -265,6 +269,7 @@ namespace Game
                     lvlData.LevelBoundaryMax = mLevelAreaBoundingBox.GetMax();
                     lvlData.RoutesData = mRoutesHandler.CollectRoutesControlPoints();
                     lvlData.TowersData = mTowersHandler.CollectTowerPoints();
+                    lvlData.BarriersData = mBarriersHandler.CollectBarrierPoints();
 
                     ext_assert(lvlData.isDataValid(), "Some data is missing. Level has to include name, routes and towers");
                     LevelSerializationHelper lvlSerialization;

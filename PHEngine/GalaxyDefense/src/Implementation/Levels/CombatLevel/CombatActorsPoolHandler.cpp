@@ -94,7 +94,7 @@ namespace Game
     {
         const auto &sceneSp = mSceneWp.lock();
         assert(sceneSp);
-        constexpr float c_spaceshipSize = 5.0f;
+        constexpr float c_spaceshipSize = 2.5f;
         WeakSpaceShipFactory spaceShipFactory;
 
         return mEnemySpaceships.emplace_back(spaceShipFactory.CreateSpaceShip(sceneSp,
@@ -159,7 +159,7 @@ namespace Game
         const auto &sceneSp = mSceneWp.lock();
         assert(sceneSp);
         const auto &barriersFactory = std::make_unique<BarrierFactory>();
-        for (int32_t i = 0; i < pillarsCount; ++i)
+        for (int32_t i = 0; i < barriersCount; ++i)
         {
             const auto &barrier = mBarriersPool.emplace_back(barriersFactory->CreateBarrier(pillarsCount, sceneSp, glm::vec3(), glm::vec3(), glm::vec3(6.0f)));
             barrier->SetIsEnabled(false);

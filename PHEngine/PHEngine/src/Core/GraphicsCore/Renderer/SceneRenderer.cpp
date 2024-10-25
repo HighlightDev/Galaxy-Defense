@@ -667,6 +667,15 @@ namespace Graphics
 
          for (const auto &proxy : mForwardRenderingProxiesVec)
          {
+            // todo: disable writing depth for translucent geomtry (protals, barrier rays, etc.)
+            // if (proxy->GetSortOrderValue() == -100)
+            // {
+            //    glDepthMask(GL_FALSE);
+            // }
+            // else
+            // {
+            //    glDepthMask(GL_TRUE);
+            // }
             const bool bShouldRender = proxy->IsTransformIntialized() &&
                                        proxy->IsEnabled() &&
                                        proxy->IsVisible() &&

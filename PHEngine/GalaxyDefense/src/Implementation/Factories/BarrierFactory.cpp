@@ -63,14 +63,16 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "opacity", 1.0);
 
         int32_t rayIndex = 0;
+        const auto currentBarrierIndex = s_barrierCounter - 1;
         while (rayIndex < (pillarsMeshCount - 1))
         {
             const auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_barrier_mesh_line_" + barrierIndexStr + "_ray_" + std::to_string(rayIndex),
-                                                                                    4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", electroRay_material);
+                                                                                    4, glm::vec3(0.0f, currentBarrierIndex * rayIndex * 0.1f, 0.0f), glm::vec3(), glm::vec3(1), "", electroRay_material);
             const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            c_mesh->SetSortOrderValue(200);
-            c_mesh->SetLineWidth(15.0f);
+            
+            c_mesh->SetSortOrderValue(10 + currentBarrierIndex * rayIndex);
+            c_mesh->SetLineWidth(8.0f);
             a_barrier->AddRayLineMesh(c_mesh);
             ++rayIndex;
         }

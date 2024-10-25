@@ -68,4 +68,9 @@ namespace Game
     {
         return mDamageDealerType;
     }
+
+    std::shared_ptr<CombatActorsPoolHandler> MissileActor::GetCombatActorsPoolHandler() const
+    {
+        return mCombatActorsPoolHandler;
+    }
 }

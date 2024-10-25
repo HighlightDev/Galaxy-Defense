@@ -144,7 +144,7 @@ namespace EngineCore
       template <typename ComponentT>
       typename std::enable_if<std::is_base_of<Component, ComponentT>::value,
                               std::vector<std::shared_ptr<ComponentT>>>::type
-      GetComponentsByType()
+      GetComponentsByType() const
       {
          std::vector<std::shared_ptr<ComponentT>> result;
 

@@ -112,7 +112,7 @@ namespace EngineCore
    {
       const std::map<std::string /*dstStateName*/, StateTransition> &transitions = mCurrentStateNode->GetTransitions();
 
-      assert(transitions.count(dstStateName));
+      ext_assert(transitions.count(dstStateName), "dstStateName: " + dstStateName);
 
       const StateTransition &transition = transitions.at(dstStateName);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 #include <glm/vec3.hpp>
 
 #include "Core/GameCore/Actor.h"
@@ -40,5 +41,7 @@ namespace Game
         int32_t GetBarrierPillarsCount() const;
 
         int32_t GetBarrierRaysCount() const;
+
+        std::vector<std::shared_ptr<::EngineCore::StaticMeshComponent>> GetBarrierPillarsMeshComponents() const;
     };
 }

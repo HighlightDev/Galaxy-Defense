@@ -28,6 +28,12 @@ namespace Game
         PrepareTowersData(const std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>> &towersData) const;
 
         std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>
-        RestoreTowers(const std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>& towersData) const;
+        RestoreTowers(const std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>> &towersData) const;
+
+        std::unordered_map<std::string, std::vector<JsonVec3>>
+        PrepareBarriersData(const std::unordered_map<std::string, std::vector<glm::vec3>> &barrierssData) const;
+
+        std::unordered_map<std::string, std::vector<glm::vec3>>
+        RestoreBarriers(const std::unordered_map<std::string, std::vector<JsonVec3>> &barriersData) const;
     };
 }
