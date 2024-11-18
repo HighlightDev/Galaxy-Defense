@@ -20,7 +20,8 @@ namespace Graphics
             m_relativeMatrix(component->GetRelativeMatrix()),
             mMaterialProxy(materialProxy),
             mSortOrderValue(component->GetSortOrderValue()),
-            mCanBloomBeApplied(component->CanBloomBeApplied())
+            mCanBloomBeApplied(component->CanBloomBeApplied()),
+            mDepthTestEnabled(component->IsDepthTestEnabled())
       {
       }
 
@@ -120,6 +121,16 @@ namespace Graphics
       bool PrimitiveSceneProxy::CanBloomBeApplied() const
       {
          return mCanBloomBeApplied;
+      }
+
+      bool PrimitiveSceneProxy::IsDepthTestEnabled() const
+      {
+         return mDepthTestEnabled;
+      }
+
+      void PrimitiveSceneProxy::SetDepthTestEnabled(const bool isEnabled)
+      {
+         mDepthTestEnabled = isEnabled;
       }
 
    }

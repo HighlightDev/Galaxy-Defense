@@ -4,9 +4,12 @@
 #include "Core/GameCore/Components/AudioComponents/StreamingSoundComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
+#include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Core/UtilityCore/PlatformDependentFunctions.h"
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
+#include <cstdlib>
 
 using namespace IO;
 using namespace EngineCore;
@@ -100,6 +103,24 @@ namespace Game
       Base::InitLevel();
       CreateScene();
       mUiController->OnLevelInit();
+
+      using namespace std::literals::chrono_literals;
+      mFileWatcher = std::make_unique<FileWatcher>("./res/scripts/", 1000ms, [this](std::string path, FileStatus fileStatus)
+                                                   {
+                                                      if (FileStatus::MODIFIED != fileStatus) {
+                                                         return;
+                                                      }
+                                                      const auto beforeFileNameBeginIndex = EngineUtility::LastIndexOf(path, std::string(1, SLASH));
+                                                      if (beforeFileNameBeginIndex != std::string::npos)
+                                                      {
+                                                         const auto& fileName = path.substr(beforeFileNameBeginIndex + 1);
+                                                         const auto& fileExtension = fileName.substr(EngineUtility::IndexOf(fileName, ".") + 1);
+                                                         if ("lua" == fileExtension)
+                                                         {
+                                                            LogInfo("MainMenuLevel::FileWatcher::fileSatusChanged => fileName: ", fileName, " modified. Reload scripts.");      
+                                                            RestartLuaScripts();
+                                                         }
+                                                      } });
    }
 
    void MainMenuLevel::UnloadLevel()
@@ -121,6 +142,15 @@ namespace Game
       if (mUiController)
       {
          mUiController->UnpausableTick(deltaTime);
+      }
+   }
+
+   void MainMenuLevel::RestartLuaScripts()
+   {
+      LogInfo("MainMenuLevel::RestartLuaScripts");
+      if (mUiController)
+      {
+         mUiController->RestartLuaScripts();
       }
    }
 }

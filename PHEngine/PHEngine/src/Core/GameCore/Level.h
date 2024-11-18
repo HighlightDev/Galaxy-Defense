@@ -48,6 +48,8 @@ namespace EngineCore
 
       void UnpausableTick(const float deltaTime) override;
 
+      virtual void RestartLuaScripts();
+
    private:
       void InstantiateLevelFromSerializedContainer(struct SerializeDataContainer &container);
 

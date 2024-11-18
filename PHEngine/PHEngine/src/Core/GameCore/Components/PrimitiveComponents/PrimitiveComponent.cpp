@@ -160,6 +160,21 @@ namespace EngineCore
       return mCanBloomBeApplied;
    }
 
+   bool PrimitiveComponent::IsDepthTestEnabled() const
+   {
+      return mDepthTestEnabled;
+   }
+
+   void PrimitiveComponent::SetDepthTestEnabled(const bool isEnabled)
+   {
+      if (mDepthTestEnabled != isEnabled)
+      {
+         mDepthTestEnabled = isEnabled;
+         bIsDepthTestStateDirty = true;
+         SyncRenderData();
+      }
+   }
+
    void PrimitiveComponent::SyncRenderData()
    {
       if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
@@ -192,14 +207,27 @@ namespace EngineCore
                if (bIsBloomStateDirty)
                {
                   static constexpr uint64_t functionId = Hash64_CT("PrimitiveComponent::UpdateBloomState_OnRenderThread()");
-                  sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [this, sceneRendererSp, canBloomBeApplied = mCanBloomBeApplied]() {
+                  sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [this, sceneRendererSp, canBloomBeApplied = mCanBloomBeApplied]()
+                                                                                      {
                      const auto &primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
                      if (primitiveSp)
                      {
                         primitiveSp->SetCanBloomBeApplied(canBloomBeApplied);
-                     }
-                   });
+                     } });
                   bIsBloomStateDirty = false;
+               }
+
+               if (bIsDepthTestStateDirty)
+               {
+                  static constexpr uint64_t functionId = Hash64_CT("PrimitiveComponent::UpdateDepthTestState_OnRenderThread()");
+                  sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [this, sceneRendererSp, isDepthTestEnabled = mDepthTestEnabled]()
+                                                                                      {
+                     const auto &primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
+                     if (primitiveSp)
+                     {
+                        primitiveSp->SetDepthTestEnabled(isDepthTestEnabled);
+                     } });
+                  bIsDepthTestStateDirty = false;
                }
             }
          }

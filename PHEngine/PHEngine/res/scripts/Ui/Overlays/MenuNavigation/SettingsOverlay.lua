@@ -30,6 +30,7 @@ local UiOverlay = require("Ui/Core/uiOverlay")
 local UiRectangle = require("Ui/Core/uiRectangle")
 local UiLabel = require("Ui/Core/uiLabel")
 local UiToggleButton = require("Ui/Core/uiToggleButton")
+local UiProgressBar = require("Ui/Core/uiProgressBar")
 
 SettingsOverlay = {
     buttonColor = 0x403649,
@@ -84,6 +85,9 @@ function SettingsOverlay:new(host)
             applyButton:setColorHexValue(SettingsOverlay.buttonColor)
         end
     end)
+
+    local testProgressBar = UiProgressBar:new(host, "TEST_PROGRESS_BAR")
+    pauseSettingsOverlay:addWidget(testProgressBar)
 
     local applyButtonLabel = UiLabel:new(host, "nimbus_mono")
     pauseSettingsOverlay:addWidget(applyButtonLabel)
@@ -144,6 +148,17 @@ function SettingsOverlay:new(host)
         soundLabel:setFontSize(11.0)
         soundLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
         soundLabel:setZOrder(2)
+
+        testProgressBar:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
+        testProgressBar:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName, 100.0)
+        testProgressBar:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect
+            .widgetName, 100.0)
+        testProgressBar:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, soundLabel.widgetName, 30.0)
+        testProgressBar:setHeight(50.0)
+        testProgressBar:setZOrder(2)
+        testProgressBar:setFillPercentValue(0.25)
+        testProgressBar:setEmptyColorHexValue(0xAAEEFF)
+        testProgressBar:setFilledColorHexValue(0xFFEEAA)
 
         applyButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
         applyButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,

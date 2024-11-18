@@ -1,0 +1,79 @@
+#include "UiProgressBarSceneProxy.h"
+#include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+#include "Core/IoCore/FolderManager.h"
+#include "Core/GraphicsCore/Common/ScreenQuad.h"
+#include "Core/GameCore/GUI/UiElements/UiProgressBar.h"
+
+#include <gl/glew.h>
+
+using namespace Resources;
+using namespace IO;
+using namespace EngineCore::GUI;
+
+namespace Graphics
+{
+    namespace Proxy
+    {
+        static constexpr float s_borderRadius = 10.0f;
+
+        UiProgressBarSceneProxy::UiProgressBarSceneProxy(const UiProgressBar *uiProgressBar)
+            : UiSceneProxyBase(uiProgressBar),
+              mEmptyColor(uiProgressBar->GetEmptyColor()),
+              mFilledColor(uiProgressBar->GetFilledColor()),
+              mOpacity(uiProgressBar->GetOpacity()),
+              mFillPercentValue(uiProgressBar->GetFillPercentValue())
+        {
+        }
+
+        UiProgressBarSceneProxy::~UiProgressBarSceneProxy()
+        {
+        }
+
+        void UiProgressBarSceneProxy::OnSceneProxyRegistered()
+        {
+            const auto &folderManager = FolderManager::GetInstance();
+            ShaderParams shaderParams("UiProgressBar Shader", folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiProgressBarFS.glsl", "", "", "", "");
+            mUiProgressBarShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiProgressBarShader>(shaderParams);
+        }
+
+        void UiProgressBarSceneProxy::Render()
+        {
+            mUiProgressBarShader->ExecuteShader();
+            const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
+            mUiProgressBarShader->SetTransform(mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * glm::vec2(mScale));
+            mUiProgressBarShader->SetEmptyColor(mEmptyColor);
+            mUiProgressBarShader->SetFilledColor(mFilledColor);
+            mUiProgressBarShader->SetFillPercentValue(mFillPercentValue);
+            mUiProgressBarShader->SetOpacity(mOpacity * mOverlayOpacity);
+            mUiProgressBarShader->SetBorderRadius(s_borderRadius);
+            mUiProgressBarShader->SetWidthHeightPixels(glm::vec2(static_cast<float>(mWidthHightPixels.x), static_cast<float>(mWidthHightPixels.y)));
+            ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+            mUiProgressBarShader->StopShader();
+        }
+
+        void UiProgressBarSceneProxy::SetEmptyColor(const glm::vec3 &color)
+        {
+            mEmptyColor = color;
+        }
+
+        void UiProgressBarSceneProxy::SetFilledColor(const glm::vec3 &color)
+        {
+            mFilledColor = color;
+        }
+
+        void UiProgressBarSceneProxy::SetOpacity(const float opacity)
+        {
+            mOpacity = opacity;
+        }
+
+        void UiProgressBarSceneProxy::SetFillPercentValue(const float fillValue)
+        {
+            mFillPercentValue = fillValue;
+        }
+
+        void UiProgressBarSceneProxy::CleanUp()
+        {
+            ShaderPool::GetInstance()->TryToFreeMemory(mUiProgressBarShader);
+        }
+    }
+}

@@ -7,6 +7,7 @@
 #include "UiImageReplicatorFactory.h"
 #include "UiLabelReplicatorFactory.h"
 #include "UiToggleButtonReplicatorFactory.h"
+#include "UiProgressBarReplicatorFactory.h"
 #include "Core/CommonCore/Assertion.h"
 
 namespace EngineCore
@@ -33,6 +34,8 @@ namespace EngineCore
                 return std::make_unique<UiToggleButtonReplicatorFactory>();
             case eCommonUiWidgetType::UI_BACKGROUND_OVERLAY:
                 return std::make_unique<UiBackgroundOverlayReplicatorFactory>();
+            case eCommonUiWidgetType::UI_PROGRESS_BAR:
+                return std::make_unique<UiProgressBarReplicatorFactory>();
 
             default:
                 assert(false);

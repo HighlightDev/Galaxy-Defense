@@ -241,4 +241,8 @@ namespace EngineCore
    void Level::UnpausableTick(const float deltaTime)
    {
    }
+
+   void Level::RestartLuaScripts()
+   {
+   }
 }

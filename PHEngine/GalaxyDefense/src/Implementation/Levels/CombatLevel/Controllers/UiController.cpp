@@ -56,7 +56,7 @@ namespace Game
         {
             if (const auto &luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
             {
-                const auto& luaScriptExecutor = std::dynamic_pointer_cast<LuaUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
+                const auto &luaScriptExecutor = std::dynamic_pointer_cast<LuaUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
                 assert(luaScriptExecutor);
                 luaScriptExecutor->StopScript();
                 luaScriptProcessorSp->UnregisterLuaScriptExecutor(mExecutorId);
@@ -66,6 +66,25 @@ namespace Game
         mOverlayManager->CleanUp();
     }
 
+    void UiController::RestartLuaScripts()
+    {
+        assert(!ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+
+        if (const auto &sceneSp = mSceneWp.lock())
+        {
+            if (const auto &luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
+            {
+                const auto &luaScriptExecutor = std::dynamic_pointer_cast<LuaUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
+                assert(luaScriptExecutor);
+                luaScriptExecutor->SetIsEnabled(false);
+                mOverlayManager->CleanUp();
+                static constexpr uint64_t functionId = Hash64_CT("UiController::RestartLuaScripts");
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]()
+                                                                                 { luaScriptExecutor->RestartScript(); });
+            }
+        }
+    }
+
     void UiController::Initialize()
     {
         if (const auto &sceneSp = mSceneWp.lock())
@@ -73,13 +92,12 @@ namespace Game
             if (const auto &luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
             {
                 static constexpr uint64_t functionId = Hash64_CT("UiController::Initialize");
-                const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/GalaxyDefenseCommonUiController.lua");
+                const auto &luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/GalaxyDefenseCommonUiController.lua");
                 mExecutorId = luaScriptExecutor->GetUId();
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]()
-                {
+                                                                                 {
                     luaScriptProcessorSp->RegisterLuaScriptExecutor(luaScriptExecutor);
-                    luaScriptExecutor->RunScript();
-                });
+                    luaScriptExecutor->RunScript(); });
             }
         }
     }

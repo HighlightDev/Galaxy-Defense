@@ -103,7 +103,7 @@ namespace EngineCore
       m_echoTimer.StartTimer();
 #endif
 
-      const auto& thisSp = std::dynamic_pointer_cast<Engine>(shared_from_this());
+      const auto &thisSp = std::dynamic_pointer_cast<Engine>(shared_from_this());
       PauseGameThreadEvent::GetInstance()->AddListener(thisSp);
       ExitGameThreadEvent::GetInstance()->AddListener(thisSp);
       LoadLevelGameThreadEvent::GetInstance()->AddListener(thisSp);
@@ -411,6 +411,15 @@ namespace EngineCore
       LogInfo("Engine::RecompileAllShaders");
       Resources::ShaderPool::GetInstance()->RecompileShaders();
       Resources::CompositeShaderPool::GetInstance()->RecompileShaders();
+   }
+
+   void Engine::RestartLuaScripts()
+   {
+      LogInfo("Engine::RestartLuaScripts");
+      if (m_level)
+      {
+         m_level->RestartLuaScripts();
+      }
    }
 
 #endif

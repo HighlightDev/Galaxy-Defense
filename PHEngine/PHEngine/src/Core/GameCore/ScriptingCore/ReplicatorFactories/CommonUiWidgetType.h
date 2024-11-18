@@ -13,7 +13,8 @@ namespace EngineCore
             UI_IMAGE = 4,
             UI_LABEL = 5,
             UI_TOGGLE_BUTTON = 6,
-            UI_BACKGROUND_OVERLAY = 7
+            UI_BACKGROUND_OVERLAY = 7,
+            UI_PROGRESS_BAR = 8
         };
     }
 } // namespace EngineCore

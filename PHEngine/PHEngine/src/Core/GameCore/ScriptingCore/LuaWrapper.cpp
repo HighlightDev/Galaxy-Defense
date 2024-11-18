@@ -25,7 +25,6 @@ namespace EngineCore
       LuaWrapper::~LuaWrapper()
       {
          StopExecution();
-         mState = nullptr;
       }
 
       bool LuaWrapper::ExecuteScript(const std::string &absPath)
@@ -47,7 +46,17 @@ namespace EngineCore
          if (mIsLuaScriptOpened && mState)
          {
             lua_close(mState);
+            mState = nullptr;
             mIsLuaScriptOpened = false;
+         }
+      }
+
+      void LuaWrapper::ReopenState()
+      {
+         if (!mState)
+         {
+            mState = luaL_newstate();
+            luaL_openlibs(mState);
          }
       }
 

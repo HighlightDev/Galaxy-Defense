@@ -38,6 +38,8 @@ namespace Game
       void Tick(const float deltaTime) override;
 
       void UnpausableTick(const float deltaTime) override;
+      
+      void RestartLuaScripts() override;
 
    private:
       void CreateScene();

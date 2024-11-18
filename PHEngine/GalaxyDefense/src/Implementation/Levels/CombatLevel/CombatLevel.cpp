@@ -139,7 +139,7 @@ namespace Game
       sceneSp->RegisterMainCamera(spaceCamera);
       spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);
 
-      const auto& a_light = sceneSp->GetActorByName("MainLightActor");
+      const auto &a_light = sceneSp->GetActorByName("MainLightActor");
       assert(a_light);
       std::static_pointer_cast<LightComponent>(a_light->GetComponentsByType<LightComponent>().front())->SetIsVisible(true);
 
@@ -265,6 +265,14 @@ namespace Game
       if (mCombatController)
       {
          mCombatController->UnpausableTick(deltaTime);
+      }
+   }
+
+   void CombatLevel::RestartLuaScripts()
+   {
+      if (mUiController)
+      {
+         mUiController->RestartLuaScripts();
       }
    }
 }

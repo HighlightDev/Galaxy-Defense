@@ -132,6 +132,8 @@ namespace EngineCore
 
         void RecompileAllShaders();
 
+        void RestartLuaScripts();
+
 #endif
         void CleanUp();
 

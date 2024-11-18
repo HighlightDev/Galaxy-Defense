@@ -23,6 +23,8 @@ namespace EngineCore
 
             std::unordered_map<uint64_t, std::any> mFunctors;
 
+            bool mIsEnabled{true};
+
         protected:
             std::string mScriptName;
 
@@ -45,7 +47,7 @@ namespace EngineCore
 
             const std::any &GetFunctorAny(const uint64_t functionHash) const;
 
-            const LuaWrapper& GetLuaInstance() const;
+            const LuaWrapper &GetLuaInstance() const;
 
             void SetScene(const std::weak_ptr<Scene> &scene);
 
@@ -61,9 +63,15 @@ namespace EngineCore
 
             void StopScript() override;
 
-            void OnUpdate(const float deltaTime);
+            void OnUpdate(const float deltaTime) override;
+
+            void RestartScript() override;
 
             void CleanUp() override;
+
+            bool IsEnabled() const;
+
+            void SetIsEnabled(const bool isEnabled);
 
         protected:
             void SetScript(const std::string &scriptName);

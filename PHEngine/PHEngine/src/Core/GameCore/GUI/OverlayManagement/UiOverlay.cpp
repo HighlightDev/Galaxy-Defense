@@ -128,6 +128,7 @@ namespace EngineCore
 
         void UiOverlay::CleanUp()
         {
+            mCanvas->CleanUp();
         }
     }
 }

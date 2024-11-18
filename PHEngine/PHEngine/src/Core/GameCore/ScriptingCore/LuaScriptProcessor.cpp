@@ -19,7 +19,10 @@ namespace EngineCore
         {
             for (const auto &luaScriptExecutor : mLuaScriptExecutors)
             {
-                luaScriptExecutor->OnUpdate(deltaTime);
+                if (luaScriptExecutor->IsEnabled())
+                {
+                    luaScriptExecutor->OnUpdate(deltaTime);
+                }
             }
         }
 

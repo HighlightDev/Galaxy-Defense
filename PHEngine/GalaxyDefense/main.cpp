@@ -20,6 +20,7 @@ using namespace IO;
 using namespace TinyLogger;
 
 bool bShaderRecompile = false;
+bool bLuaScriptsRestart = false;
 
 bool bShowCursor = true;
 bool bMouseButtonPressed = false;
@@ -101,9 +102,14 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
 
   if (actionType == GLFW_PRESS)
   {
-    if (key == 'R' || key == 'p')
+    if (key == 'R' || key == 'r')
     {
       bShaderRecompile = true;
+    }
+
+    if (key == 'L' || key == 'l')
+    {
+      bLuaScriptsRestart = true;
     }
 
     const eKeyboardKeys resultKey = s_modifierKeysMap.count(key) ? s_modifierKeysMap.at(key) : (eKeyboardKeys)key;
@@ -164,7 +170,7 @@ int32_t main(int32_t argc, char **argv)
   GLFWmonitor *activeMonitor = nullptr;
   int monitorsCount = 0;
   GLFWmonitor **monitors = glfwGetMonitors(&monitorsCount);
-  const auto& preferableActiveMonitor = EngineConfigHolder::GetInstance()->GetEngineConfig().ActiveMonitor;
+  const auto &preferableActiveMonitor = EngineConfigHolder::GetInstance()->GetEngineConfig().ActiveMonitor;
   if ("additional" == preferableActiveMonitor && monitorsCount > 1)
   {
     activeMonitor = monitors[1];
@@ -230,6 +236,12 @@ int32_t main(int32_t argc, char **argv)
       {
         engine->RecompileAllShaders();
         bShaderRecompile = false;
+      }
+
+      if (bLuaScriptsRestart)
+      {
+        engine->RestartLuaScripts();
+        bLuaScriptsRestart = false;
       }
 
 #endif

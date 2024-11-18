@@ -78,6 +78,8 @@ namespace Graphics
 
          bool mCanBloomBeApplied{false};
 
+         bool mDepthTestEnabled{true};
+
       public:
          PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent *component,
                              const std::shared_ptr<MaterialProxy> &materialProxy);
@@ -120,6 +122,10 @@ namespace Graphics
          void SetCanBloomBeApplied(const bool value);
 
          bool CanBloomBeApplied() const;
+
+         bool IsDepthTestEnabled() const;
+
+         void SetDepthTestEnabled(const bool isEnabled);
 
       public:
          template <typename VertexFactoryType, typename BaseShaderType>

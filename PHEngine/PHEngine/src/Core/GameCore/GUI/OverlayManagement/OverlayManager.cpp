@@ -221,7 +221,12 @@ namespace EngineCore
             {
                 overlay->CleanUp();
             }
+            for (const auto& backgroundOverlay : mBackgroundOverlays)
+            {
+                backgroundOverlay->CleanUp();
+            }
             mOverlays.clear();
+            mBackgroundOverlays.clear();
         }
     }
 }

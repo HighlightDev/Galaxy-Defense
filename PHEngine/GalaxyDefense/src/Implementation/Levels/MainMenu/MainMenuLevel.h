@@ -3,9 +3,12 @@
 #include "Implementation/Levels/LevelBase.h"
 #include "Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h"
 
+#include "Core/IoCore/FileWatcher.h"
+
 #include <memory>
 
 using namespace EngineCore;
+using namespace IO;
 
 namespace EngineCore
 {
@@ -22,6 +25,8 @@ namespace Game
       std::unique_ptr<MainMenuLevelUiController> mUiController;
 
       std::shared_ptr<Actor> mAmbientMusicDummy;
+      
+      std::unique_ptr<FileWatcher> mFileWatcher;
 
    public:
       MainMenuLevel();
@@ -41,6 +46,8 @@ namespace Game
       void Tick(const float deltaTime) override;
 
       void UnpausableTick(const float deltaTime) override;
+
+      void RestartLuaScripts() override;
 
    private:
       void CreateScene();

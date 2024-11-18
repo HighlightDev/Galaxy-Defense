@@ -37,8 +37,11 @@ namespace EngineCore
             bool bIsVisibleStateDirty{false};
             bool bIsSortOrderStateDirty{false};
             bool bIsBloomStateDirty{false};
+            bool bIsDepthTestStateDirty{false};
 
             bool mCanBloomBeApplied{false};
+
+            bool mDepthTestEnabled{true};
 
       public:
             PrimitiveComponent(const std::string &gameObjectName,
@@ -83,6 +86,10 @@ namespace EngineCore
             void SetCanBloomBeApplied(const bool value);
 
             bool CanBloomBeApplied() const;
+
+            bool IsDepthTestEnabled() const;
+
+            void SetDepthTestEnabled(const bool isEnabled);
 
       private:
             void SyncRenderData();

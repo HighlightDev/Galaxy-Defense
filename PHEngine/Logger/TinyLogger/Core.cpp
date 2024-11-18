@@ -14,7 +14,7 @@ namespace TinyLogger
       std::string result;
 
       std::for_each(mLogs.begin(), mLogs.end(), [&](const std::string &logArg)
-                    { result += "  " + logArg; });
+                    { result += " " + logArg; });
 
       return result;
    }

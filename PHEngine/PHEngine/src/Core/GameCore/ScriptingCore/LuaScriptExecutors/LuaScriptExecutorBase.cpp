@@ -72,7 +72,6 @@ namespace EngineCore
 
         void LuaScriptExecutorBase::AddFunctor(const uint64_t functorNameHash, const std::any &functor)
         {
-            assert(!mFunctors.count(functorNameHash));
             mFunctors[functorNameHash] = functor;
         }
 
@@ -115,9 +114,29 @@ namespace EngineCore
             }
         }
 
+        void LuaScriptExecutorBase::RestartScript()
+        {
+            SetIsEnabled(false);
+            StopScript();
+            mLuaInstance.ReopenState();
+            RegisterCallbacks();
+            RunScript();
+            SetIsEnabled(true);
+        }
+
         void LuaScriptExecutorBase::CleanUp()
         {
             StopScript();
+        }
+
+        bool LuaScriptExecutorBase::IsEnabled() const
+        {
+            return mIsEnabled;
+        }
+
+        void LuaScriptExecutorBase::SetIsEnabled(const bool isEnabled)
+        {
+            mIsEnabled = isEnabled;
         }
     }
 }

@@ -37,6 +37,8 @@ namespace EngineCore
          std::string GetErrorMessageAt(int32_t stackIndex) const;
 
          bool IsLuaScriptOpened() const;
+
+         void ReopenState();
       };
    }
 }

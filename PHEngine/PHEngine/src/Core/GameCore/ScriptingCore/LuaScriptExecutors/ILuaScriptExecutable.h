@@ -19,6 +19,8 @@ namespace EngineCore
 
             virtual void OnUpdate(const float deltaTime) = 0;
 
+            virtual void RestartScript() = 0;
+
             virtual void CleanUp() = 0;
         };
     }
