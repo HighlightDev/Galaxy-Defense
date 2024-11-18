@@ -5,32 +5,31 @@
 #include <gl/glew.h>
 #include <type_traits>
 
+#include "Core/CommonCore/Assertion.h"
+
 namespace Graphics
 {
    /* Depth / stencil state */
-   template <
-       bool depthTestEnabled,
-       int32_t depthFunc>
-   struct DepthState;
-
-   template <int32_t depthFunc>
-   struct DepthState<false, depthFunc>
+   struct DepthState
    {
-      static void BindDepthState()
-      {
-         glDisable(GL_DEPTH_TEST);
-         glDepthFunc(depthFunc);
-      }
-   };
+      template <typename StencilStateType, typename BlendingStateType>
+      friend class RenderState;
 
-   template <int32_t depthFunc>
-   struct DepthState<true, depthFunc>
-   {
-      static void BindDepthState()
-      {
-         glEnable(GL_DEPTH_TEST);
-         glDepthFunc(depthFunc);
-      }
+   private:
+      GLboolean _dtEnabled;
+      GLboolean _dtwMask;
+      GLenum _dtFunc;
+
+      explicit DepthState();
+
+      void BindDepthState();
+
+   public:
+      DepthState &SetIsDepthTestEnabled(const GLboolean depthTestEnabled);
+
+      DepthState &SetDepthTestWriteMask(const GLboolean depthTestWriteMask);
+
+      DepthState &SetDepthTestFunc(const GLenum depthTestFunc);
    };
 
    template <bool stencilTestEnabled,
@@ -102,17 +101,22 @@ namespace Graphics
    };
 
    // todo: implement for all cases (depth + stencil + blending)
-   template <typename DepthStateType, typename StencilStateType, typename BlendingStateType>
+   template <typename StencilStateType, typename BlendingStateType>
    class RenderState
    {
-      using depthState_t = DepthStateType;
       using blendState_t = BlendingStateType;
       using stencilState_t = StencilStateType;
 
    public:
+      static DepthState &GetDepthState()
+      {
+         static DepthState instance;
+         return instance;
+      }
+
       void BindRenderState()
       {
-         depthState_t::BindDepthState();
+         GetDepthState().BindDepthState();
          stencilState_t::BindStencilState();
          blendState_t::BindBlendState();
       }

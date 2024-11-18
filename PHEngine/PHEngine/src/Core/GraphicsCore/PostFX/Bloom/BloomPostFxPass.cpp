@@ -44,7 +44,6 @@ namespace Graphics
 
    void BloomPostFxPass::ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture, const std::shared_ptr<FramebufferBundle> &previousStepFramebuffer)
    {
-      glDepthMask(false);
 
       const auto &fullscreenViewPort = mBloomFramebuffer->GetFullScreenResolutionViewPortInfo();
       const auto &shrinkedViewPort = mBloomFramebuffer->GetShrinkedResolutionViewPortInfo();
@@ -56,7 +55,12 @@ namespace Graphics
                                                                    shrinkedViewPort.OriginX, shrinkedViewPort.OriginY, shrinkedViewPort.Width, shrinkedViewPort.Height,
                                                                    GL_STENCIL_BUFFER_BIT);
 
-      RenderState<DepthState<false, GL_LEQUAL>, StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_NOTEQUAL, 1, 0xFF, 0x00>, BlendingState<false>> renderState;
+      RenderState<StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_NOTEQUAL, 1, 0xFF, 0x00>, BlendingState<false>> renderState;
+      renderState.GetDepthState()
+          .SetIsDepthTestEnabled(false)
+          .SetDepthTestFunc(GL_LEQUAL)
+          .SetDepthTestWriteMask(false);
+
       renderState.BindRenderState();
 
       mBloomFxShader->ExecuteShader();
@@ -90,7 +94,7 @@ namespace Graphics
       }
 
       mBloomFxShader->StopShader();
-      glDepthMask(true);
+      renderState.GetDepthState().SetDepthTestWriteMask(true);
    }
 
    std::shared_ptr<ITexture> BloomPostFxPass::GetPostFxResult() const
@@ -105,8 +109,8 @@ namespace Graphics
       ShaderPool::GetInstance()->TryToFreeMemory(mBloomFxShader);
    }
 
-    void BloomPostFxPass::ResizeRenderTargets(const ViewPortInfo &viewPortInfo)
-    {
+   void BloomPostFxPass::ResizeRenderTargets(const ViewPortInfo &viewPortInfo)
+   {
       mBloomFramebuffer->ResizeRenderTargets(viewPortInfo);
-    }
+   }
 }

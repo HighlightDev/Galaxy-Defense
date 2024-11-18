@@ -255,7 +255,12 @@ namespace Graphics
             glEnable(GL_CULL_FACE);
             glFrontFace(GL_CCW);
             glCullFace(GL_BACK);
-            RenderState<DepthState<true, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
+
+            RenderState<StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
+            renderState.GetDepthState()
+                .SetIsDepthTestEnabled(true)
+                .SetDepthTestFunc(GL_LEQUAL);
+
             renderState.BindRenderState();
 
             for (auto &atlasLightGroup : mGroupedByShadowAtlasLights)
@@ -486,9 +491,10 @@ namespace Graphics
          glFrontFace(GL_CCW);
          glCullFace(GL_BACK);
 
-         RenderState<DepthState<true, GL_LEQUAL>, StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 0, 0xFF, 0xFF>,
-                     BlendingState<false>>
-             renderState;
+         RenderState<StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 0, 0xFF, 0xFF>, BlendingState<false>> renderState;
+         renderState.GetDepthState()
+             .SetIsDepthTestEnabled(true)
+             .SetDepthTestFunc(GL_LEQUAL);
          renderState.BindRenderState();
 
          // Deferred shading collect info
@@ -541,9 +547,12 @@ namespace Graphics
 
       void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy)
       {
-         RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
+         RenderState<StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
+         renderState.GetDepthState()
+             .SetIsDepthTestEnabled(false)
+             .SetDepthTestFunc(GL_LEQUAL)
+             .SetDepthTestWriteMask(false);
          renderState.BindRenderState();
-         glDepthMask(0x00);
          // TODO: Make some check if light source (point or spot light) is too far from current view position
          m_deferredLightShader->ExecuteShader();
 
@@ -633,7 +642,8 @@ namespace Graphics
          m_deferredLightShader->StopShader();
 
          glDisable(GL_CULL_FACE);
-         glDepthMask(0xFF);
+         renderState.GetDepthState().SetDepthTestWriteMask(true);
+         renderState.BindRenderState();
       }
 
       void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
@@ -657,9 +667,10 @@ namespace Graphics
          static constexpr int NoClearFlag = 0;
          m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(NoClearFlag);
 
-         RenderState<DepthState<true, GL_LEQUAL>, StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 0, 0xFF, 0xFF>,
-                     BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>
-             renderState;
+         RenderState<StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 0, 0xFF, 0xFF>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         renderState.GetDepthState()
+             .SetIsDepthTestEnabled(true)
+             .SetDepthTestFunc(GL_LEQUAL);
          renderState.BindRenderState();
 
          PrimitiveSorter sorter;
@@ -705,9 +716,10 @@ namespace Graphics
          glCullFace(GL_BACK);
          glEnable(GL_CLIP_DISTANCE0);
 
-         RenderState<DepthState<true, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>,
-                     BlendingState<false>>
-             renderState;
+         RenderState<StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
+         renderState.GetDepthState()
+             .SetIsDepthTestEnabled(true)
+             .SetDepthTestFunc(GL_LEQUAL);
 
          renderState.BindRenderState();
 
@@ -784,7 +796,11 @@ namespace Graphics
       {
          const auto &renderDataMap = mFontHandler->GetFontBatcher();
 
-         RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         RenderState<StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         renderState.GetDepthState()
+             .SetIsDepthTestEnabled(false)
+             .SetDepthTestFunc(GL_LEQUAL);
+
          renderState.BindRenderState();
 
          for (const auto &renderData : renderDataMap)
@@ -812,9 +828,13 @@ namespace Graphics
 
       void SceneRenderer::GuiPass(const std::shared_ptr<SceneView> &sceneView)
       {
-         RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         RenderState<StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         renderState.GetDepthState()
+             .SetIsDepthTestEnabled(false)
+             .SetDepthTestFunc(GL_LEQUAL)
+             .SetDepthTestWriteMask(false);
+
          renderState.BindRenderState();
-         glDepthMask(false);
 
          std::sort(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [](const auto &left, const auto &right)
                    { return left->GetCanvasZOrder() < right->GetCanvasZOrder(); });
@@ -827,9 +847,11 @@ namespace Graphics
             canvas->Render();
          }
 
-         glDepthMask(true);
          const auto &viewPortInfo = sceneView->GetCameraProxy()->GetViewPort();
          glViewport(viewPortInfo.OriginX, viewPortInfo.OriginY, viewPortInfo.Width, viewPortInfo.Height);
+
+         renderState.GetDepthState().SetDepthTestWriteMask(true);
+         renderState.BindRenderState();
       }
 
       void SceneRenderer::PrepareSceneProxiesForRender()
@@ -1568,7 +1590,10 @@ namespace Graphics
          glMatrixMode(GL_PROJECTION);
          glLoadMatrixf(projMatrix);
 
-         RenderState<DepthState<true, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         RenderState<StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         renderState.GetDepthState()
+             .SetIsDepthTestEnabled(true)
+             .SetDepthTestFunc(GL_LEQUAL);
          renderState.BindRenderState();
          // todo: delete this crap and use buffers =\
 
