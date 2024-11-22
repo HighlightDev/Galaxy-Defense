@@ -78,7 +78,7 @@ namespace Graphics
 
          bool mCanBloomBeApplied{false};
 
-         bool mDepthTestEnabled{true};
+         bool mDepthWriteMaskEnabled{true};
 
       public:
          PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent *component,
@@ -123,9 +123,9 @@ namespace Graphics
 
          bool CanBloomBeApplied() const;
 
-         bool IsDepthTestEnabled() const;
+         bool IsDepthWriteMaskEnabled() const;
 
-         void SetDepthTestEnabled(const bool isEnabled);
+         void SetDepthWriteMaskEnabled(const bool isEnabled);
 
       public:
          template <typename VertexFactoryType, typename BaseShaderType>

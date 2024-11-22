@@ -160,16 +160,16 @@ namespace EngineCore
       return mCanBloomBeApplied;
    }
 
-   bool PrimitiveComponent::IsDepthTestEnabled() const
+   bool PrimitiveComponent::IsDepthWriteMaskEnabled() const
    {
-      return mDepthTestEnabled;
+      return mDepthWriteMaskEnabled;
    }
 
-   void PrimitiveComponent::SetDepthTestEnabled(const bool isEnabled)
+   void PrimitiveComponent::SetDepthWriteMaskEnabled(const bool isEnabled)
    {
-      if (mDepthTestEnabled != isEnabled)
+      if (mDepthWriteMaskEnabled != isEnabled)
       {
-         mDepthTestEnabled = isEnabled;
+         mDepthWriteMaskEnabled = isEnabled;
          bIsDepthTestStateDirty = true;
          SyncRenderData();
       }
@@ -220,12 +220,12 @@ namespace EngineCore
                if (bIsDepthTestStateDirty)
                {
                   static constexpr uint64_t functionId = Hash64_CT("PrimitiveComponent::UpdateDepthTestState_OnRenderThread()");
-                  sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [this, sceneRendererSp, isDepthTestEnabled = mDepthTestEnabled]()
+                  sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [this, sceneRendererSp, isDepthTestEnabled = mDepthWriteMaskEnabled]()
                                                                                       {
                      const auto &primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
                      if (primitiveSp)
                      {
-                        primitiveSp->SetDepthTestEnabled(isDepthTestEnabled);
+                        primitiveSp->SetDepthWriteMaskEnabled(isDepthTestEnabled);
                      } });
                   bIsDepthTestStateDirty = false;
                }

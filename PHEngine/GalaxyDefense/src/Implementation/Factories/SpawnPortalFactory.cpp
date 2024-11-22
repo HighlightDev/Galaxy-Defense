@@ -39,6 +39,7 @@ namespace Game
         const auto data = std::make_shared<BillboardComponentData>("c_billboard_portal", billboardSize, glm::vec3(), glm::vec3(1.0f), billboard_material);
         const auto &portalComponent = std::static_pointer_cast<BillboardComponent>(scene->CreateComponent_GameThread(portalComponentCreator, data));
         portalComponent->SetSortOrderValue(-100);
+        portalComponent->SetDepthWriteMaskEnabled(false);
         a_portal->AddComponent(portalComponent);
 
         a_portal->SetScene(scene);

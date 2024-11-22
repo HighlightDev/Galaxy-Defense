@@ -64,6 +64,7 @@ namespace Game
         const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
         const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         c_mesh->SetSortOrderValue(100);
+        c_mesh->SetDepthWriteMaskEnabled(false);
         a_electroRay->SetLineComponent(c_mesh);
         a_electroRay->AddComponent(c_mesh);
 

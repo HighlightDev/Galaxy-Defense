@@ -41,7 +41,7 @@ namespace EngineCore
 
             bool mCanBloomBeApplied{false};
 
-            bool mDepthTestEnabled{true};
+            bool mDepthWriteMaskEnabled{true};
 
       public:
             PrimitiveComponent(const std::string &gameObjectName,
@@ -87,9 +87,9 @@ namespace EngineCore
 
             bool CanBloomBeApplied() const;
 
-            bool IsDepthTestEnabled() const;
+            bool IsDepthWriteMaskEnabled() const;
 
-            void SetDepthTestEnabled(const bool isEnabled);
+            void SetDepthWriteMaskEnabled(const bool isEnabled);
 
       private:
             void SyncRenderData();

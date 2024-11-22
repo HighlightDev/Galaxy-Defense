@@ -12,13 +12,16 @@ namespace Graphics
    /* Depth / stencil state */
    struct DepthState
    {
-      template <typename StencilStateType, typename BlendingStateType>
       friend class RenderState;
 
    private:
       GLboolean _dtEnabled;
       GLboolean _dtwMask;
       GLenum _dtFunc;
+
+      bool dtEnableDirty{true};
+      bool dtwMaskDirty{true};
+      bool dtFuncDirty{true};
 
       explicit DepthState();
 
@@ -32,81 +35,69 @@ namespace Graphics
       DepthState &SetDepthTestFunc(const GLenum depthTestFunc);
    };
 
-   template <bool stencilTestEnabled,
-             int32_t sfail,
-             int32_t dpfail,
-             int32_t dppass,
-             int32_t func,
-             int32_t funcRef,
-             int32_t funcMask,
-             int32_t stencilMask>
-   struct StencilState;
-
-   template <int32_t sfail,
-             int32_t dpfail,
-             int32_t dppass,
-             int32_t func,
-             int32_t funcRef,
-             int32_t funcMask,
-             int32_t stencilMask>
-   struct StencilState<false, sfail, dpfail, dppass, func, funcRef, funcMask, stencilMask>
+   struct StencilState
    {
-      static void BindStencilState()
-      {
-         glDisable(GL_STENCIL_TEST);
-         glStencilOp(sfail, dpfail, dppass);
-         glStencilFunc(func, funcRef, funcMask);
-         glStencilMask(stencilMask);
-      }
-   };
+      friend class RenderState;
 
-   template <int32_t sfail,
-             int32_t dpfail,
-             int32_t dppass,
-             int32_t func,
-             int32_t funcRef,
-             int32_t funcMask,
-             int32_t stencilMask>
-   struct StencilState<true, sfail, dpfail, dppass, func, funcRef, funcMask, stencilMask>
-   {
-      static void BindStencilState()
-      {
-         glEnable(GL_STENCIL_TEST);
-         glStencilOp(sfail, dpfail, dppass);
-         glStencilFunc(func, funcRef, funcMask);
-         glStencilMask(stencilMask);
-      }
+   private:
+      GLboolean _stEnabled;
+      GLenum _sfail;
+      GLenum _dpfail;
+      GLenum _dppass;
+      GLenum _func;
+      GLint _funcRef;
+      GLuint _funcMask;
+      GLuint _stencilMask;
+
+      bool stEnableDirty{true};
+      bool stOperationDirty{true};
+      bool stFuncDirty{true};
+      bool stMaskDirty{true};
+
+      explicit StencilState();
+
+      void BindStencilState();
+
+   public:
+      StencilState &SetIsStencilTestEnabled(const GLboolean stencilTestEnabled);
+
+      StencilState &SetStencilOperation(const GLenum sfail,
+                                        const GLenum dpfail,
+                                        const GLenum dppass);
+
+      StencilState &SetStencilFunction(const GLenum func,
+                                       const GLint funcRef,
+                                       const GLuint funcMask);
+
+      StencilState &SetStencilMask(const GLuint stencilMask);
    };
 
    /* Blending state */
-   template <bool bEnableBlending = true,
-             int32_t srcFactor = GL_SRC_ALPHA,
-             int32_t dstFactor = GL_ONE_MINUS_SRC_ALPHA>
    struct BlendingState
    {
-      static void BindBlendState()
-      {
-         glEnable(GL_BLEND);
-         glBlendFunc(srcFactor, dstFactor);
-      }
+      friend class RenderState;
+
+   private:
+      GLboolean _blendingEnabled;
+      GLenum _sfactor;
+      GLenum _dfactor;
+
+      bool blendingEnableDirty{true};
+      bool blendingFuncDirty{true};
+
+   public:
+      explicit BlendingState();
+
+      void BindBlendState();
+
+      BlendingState &SetIsBlendingEnabled(const GLboolean blendingEnabled);
+
+      BlendingState &SetBlendingFunction(const GLenum sfactor,
+                                         const GLenum dfactor);
    };
 
-   template <>
-   struct BlendingState<false>
-   {
-      static void BindBlendState()
-      {
-         glDisable(GL_BLEND);
-      }
-   };
-
-   // todo: implement for all cases (depth + stencil + blending)
-   template <typename StencilStateType, typename BlendingStateType>
    class RenderState
    {
-      using blendState_t = BlendingStateType;
-      using stencilState_t = StencilStateType;
-
    public:
       static DepthState &GetDepthState()
       {
@@ -114,11 +105,23 @@ namespace Graphics
          return instance;
       }
 
+      static StencilState &GetStencilState()
+      {
+         static StencilState instance;
+         return instance;
+      }
+
+      static BlendingState &GetBlendingState()
+      {
+         static BlendingState instance;
+         return instance;
+      }
+
       void BindRenderState()
       {
          GetDepthState().BindDepthState();
-         stencilState_t::BindStencilState();
-         blendState_t::BindBlendState();
+         GetStencilState().BindStencilState();
+         GetBlendingState().BindBlendState();
       }
    };
 }

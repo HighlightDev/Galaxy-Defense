@@ -1,0 +1,613 @@
+  0  | Timestamp: 0.489118  | Thread: Render|   main => glfwWindow create with size: width =   1920   height =   1080
+  1  | Timestamp: 0.493220  | Thread: Render|   InterThreadCommunicationMgr::ctor
+  2  | Timestamp: 0.493262  | Thread: Render|   PhysicsWorld::ctor
+  3  | Timestamp: 0.493318  | Thread: Render|   UiHandler::ctor
+  4  | Timestamp: 0.493323  | Thread: Render|   Scene::ctor
+  5  | Timestamp: 0.584515  | Thread: Render|   SoundDevice::ctor => Opened device   USB Audio Device Analog Stereo
+  6  | Timestamp: 0.584544  | Thread: Render|   GameThreadTimersHolder::RegisterTimerInstance => Current Thread:   Render
+  7  | Timestamp: 0.586654  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   1
+  8  | Timestamp: 0.589741  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   2
+  9  | Timestamp: 0.593235  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   3
+  10  | Timestamp: 0.594908  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   4
+  11  | Timestamp: 0.595800  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   5
+  12  | Timestamp: 0.597921  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   6
+  13  | Timestamp: 0.600107  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   7
+  14  | Timestamp: 0.602781  | Thread: Render|   IShader::ctor => shaderName =   ResolveFxColorShader
+  15  | Timestamp: 0.603113  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   1
+  16  | Timestamp: 0.603126  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   2
+  17  | Timestamp: 0.606868  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   3
+  18  | Timestamp: 0.606903  | Thread: Render|   SceneRenderer::ctor
+  19  | Timestamp: 0.606923  | Thread: Render|   IShader::ctor => shaderName =   StaticMeshVertexFactory
+  20  | Timestamp: 0.606960  | Thread: Render|   IShader::ctor => shaderName =   StaticMeshVertexFactory
+  21  | Timestamp: 0.606966  | Thread: Render|   IShader::ctor => shaderName =   DepthCollectShader
+  22  | Timestamp: 0.606970  | Thread: Render|   AVertexFactoryShaderModul::Init
+  23  | Timestamp: 0.606973  | Thread: Render|   AVertexFactoryShaderModule::ProcessAllPredefines
+  24  | Timestamp: 0.606978  | Thread: Render|   AVertexFactoryShaderModule::AssembleShaderSource
+  25  | Timestamp: 0.607094  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   4
+  26  | Timestamp: 0.607106  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   5
+  27  | Timestamp: 0.607673  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   6
+  28  | Timestamp: 0.607683  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   6
+  29  | Timestamp: 0.607690  | Thread: Render|   IShader::ctor => shaderName =   SkeletalMeshVertexFactory
+  30  | Timestamp: 0.607721  | Thread: Render|   IShader::ctor => shaderName =   SkeletalMeshVertexFactory<4>
+  31  | Timestamp: 0.607726  | Thread: Render|   IShader::ctor => shaderName =   DepthCollectShader
+  32  | Timestamp: 0.607730  | Thread: Render|   AVertexFactoryShaderModul::Init
+  33  | Timestamp: 0.607732  | Thread: Render|   AVertexFactoryShaderModule::ProcessAllPredefines
+  34  | Timestamp: 0.607798  | Thread: Render|   AVertexFactoryShaderModule::AssembleShaderSource
+  35  | Timestamp: 0.607931  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   7
+  36  | Timestamp: 0.607943  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   8
+  37  | Timestamp: 0.609352  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   9
+  38  | Timestamp: 0.609436  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   9
+  39  | Timestamp: 0.609444  | Thread: Render|   IShader::ctor => shaderName =   SkeletalMeshVertexFactory
+  40  | Timestamp: 0.609493  | Thread: Render|   IShader::ctor => shaderName =   SkeletalMeshVertexFactory<4>
+  41  | Timestamp: 0.609498  | Thread: Render|   IShader::ctor => shaderName =   PointLightDepthCollectShader
+  42  | Timestamp: 0.609503  | Thread: Render|   AVertexFactoryShaderModul::Init
+  43  | Timestamp: 0.609506  | Thread: Render|   AVertexFactoryShaderModule::ProcessAllPredefines
+  44  | Timestamp: 0.609575  | Thread: Render|   AVertexFactoryShaderModule::AssembleShaderSource
+  45  | Timestamp: 0.609696  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   10
+  46  | Timestamp: 0.609709  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   11
+  47  | Timestamp: 0.609713  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   12
+  48  | Timestamp: 0.612225  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   13
+  49  | Timestamp: 0.612308  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   13
+  50  | Timestamp: 0.612327  | Thread: Render|   IShader::ctor => shaderName =   StaticMeshVertexFactory
+  51  | Timestamp: 0.612362  | Thread: Render|   IShader::ctor => shaderName =   StaticMeshVertexFactory
+  52  | Timestamp: 0.612368  | Thread: Render|   IShader::ctor => shaderName =   PointLightDepthCollectShader
+  53  | Timestamp: 0.612372  | Thread: Render|   AVertexFactoryShaderModul::Init
+  54  | Timestamp: 0.612375  | Thread: Render|   AVertexFactoryShaderModule::ProcessAllPredefines
+  55  | Timestamp: 0.612379  | Thread: Render|   AVertexFactoryShaderModule::AssembleShaderSource
+  56  | Timestamp: 0.612491  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   14
+  57  | Timestamp: 0.612503  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   15
+  58  | Timestamp: 0.612507  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   16
+  59  | Timestamp: 0.613974  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   17
+  60  | Timestamp: 0.613990  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   17
+  61  | Timestamp: 0.614014  | Thread: Render|   IShader::ctor => shaderName =   DeferredLight Shader
+  62  | Timestamp: 0.614967  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   18
+  63  | Timestamp: 0.614977  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   19
+  64  | Timestamp: 0.616891  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   20
+  65  | Timestamp: 0.617030  | Thread: Render|   IShader::ctor => shaderName =   FontRendering Shader
+  66  | Timestamp: 0.617095  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   21
+  67  | Timestamp: 0.617102  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   22
+  68  | Timestamp: 0.617440  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   23
+  69  | Timestamp: 0.617875  | Thread: Render|   Level::PreLevelInit
+  70  | Timestamp: 0.617886  | Thread: Render|   Scene::OnLevelInit
+  71  | Timestamp: 0.617893  | Thread: Render|   Level::InitLevel
+  72  | Timestamp: 0.618485  | Thread: Render|   FolderManager::GetDirectoryRelativePathByFileName => file:   arrow_right_1.png
+  73  | Timestamp: 0.618696  | Thread: Render|   ResourceMap::AllocateAsync => resource type:   1  , file:   /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/ui/arrow_right_1.png
+  74  | Timestamp: 0.618709  | Thread: Render|   FolderManager::GetDirectoryRelativePathByFileName => file:   nimbus_mono.png
+  75  | Timestamp: 0.618831  | Thread: Render|   ResourceMap::AllocateAsync => resource type:   1  , file:   /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/fonts/nimbus_mono.png
+  76  | Timestamp: 0.618841  | Thread: Render|   FolderManager::GetDirectoryRelativePathByFileName => file:   nightRight.jpg
+  77  | Timestamp: 0.619026  | Thread: Render|   ResourceMap::AllocateAsync => resource type:   1  , file:   /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightRight.jpg
+  78  | Timestamp: 0.619041  | Thread: Render|   FolderManager::GetDirectoryRelativePathByFileName => file:   nightLeft.jpg
+  79  | Timestamp: 0.619188  | Thread: Render|   ResourceMap::AllocateAsync => resource type:   1  , file:   /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightLeft.jpg
+  80  | Timestamp: 0.619204  | Thread: Render|   FolderManager::GetDirectoryRelativePathByFileName => file:   nightTop.jpg
+  81  | Timestamp: 0.619364  | Thread: Render|   ResourceMap::AllocateAsync => resource type:   1  , file:   /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightTop.jpg
+  82  | Timestamp: 0.619378  | Thread: Render|   FolderManager::GetDirectoryRelativePathByFileName => file:   nightBottom.jpg
+  83  | Timestamp: 0.619512  | Thread: Render|   ResourceMap::AllocateAsync => resource type:   1  , file:   /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBottom.jpg
+  84  | Timestamp: 0.619528  | Thread: Render|   FolderManager::GetDirectoryRelativePathByFileName => file:   nightBack.jpg
+  85  | Timestamp: 0.620059  | Thread: Render|   ResourceMap::AllocateAsync => resource type:   1  , file:   /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBack.jpg
+  86  | Timestamp: 0.620073  | Thread: Render|   FolderManager::GetDirectoryRelativePathByFileName => file:   nightFront.jpg
+  87  | Timestamp: 0.620288  | Thread: Render|   ResourceMap::AllocateAsync => resource type:   1  , file:   /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightFront.jpg
+  88  | Timestamp: 0.620302  | Thread: Render|   FolderManager::GetDirectoryRelativePathByFileName => file:   piano-loop2.wav
+  89  | Timestamp: 0.635742  | Thread: Render|   ResourceMap::AllocateAsync => resource type:   3  , file:   /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/audio/piano-loop2.wav
+  90  | Timestamp: 0.714456  | Thread: Render|   Scene::RegisterMainCamera => name =   MainCamera
+  91  | Timestamp: 0.714479  | Thread: Render|   Scene::RegisterCamera => id =   4  , cameraSceneProxyId:   0
+  92  | Timestamp: 0.714486  | Thread: Render|   SceneRenderer::CameraSceneProxyAdded_OnRenderThread => camera proxyId:   0
+  93  | Timestamp: 0.714593  | Thread: Render|   Scene::RegisterMaterialInstance => name =   SpaceSkyboxMaterial.m
+  94  | Timestamp: 0.722402  | Thread: Render|   CubemapTexture::ctor(const std::vector<std::string> &) => m_texDescriptor =   8
+  95  | Timestamp: 0.722582  | Thread: Render|   Scene::RegisterComponentSceneProxy => componentName =   SpaceSkyboxComponent
+  96  | Timestamp: 0.722598  | Thread: Render|   Scene::RegisterComponentSceneProxy => primitive proxy added, sceneProxyId =  2
+  97  | Timestamp: 0.722669  | Thread: Render|   Level::PostPhysicsInitialize
+  98  | Timestamp: 0.722674  | Thread: Render|   Scene::PostPhysicsInitialize
+  99  | Timestamp: 0.722677  | Thread: Render|   Level::PostLevelInit
+  100  | Timestamp: 0.722680  | Thread: Render|   Scene::PostLevelInit
+  101  | Timestamp: 0.722696  | Thread: Render|   VertexArrayObject::ctor
+  102  | Timestamp: 0.722721  | Thread: Render|   VertexArrayObject::GenVAO => descriptor =   1
+  103  | Timestamp: 0.722726  | Thread: Render|   VertexBufferObject::ctor => for empty VBO
+  104  | Timestamp: 0.722729  | Thread: Render|   VertexBufferObject::ctor => for empty VBO
+  105  | Timestamp: 0.722736  | Thread: Render|   VertexArrayObject::BindBuffersToVao => descriptor =   1
+  106  | Timestamp: 0.722743  | Thread: Render|   VertexBufferObject::SendDataToGPU => descriptor =   1   bufferSize =   48000
+  107  | Timestamp: 0.722775  | Thread: Render|   VertexBufferObject::SendDataToGPU => descriptor =   2   bufferSize =   48000
+  108  | Timestamp: 0.725127  | Thread: Render|   Texture2d::ctor(const std::string&, ITextureMipMapState*) => texDescriptor =   9
+  109  | Timestamp: 0.737224  | Thread: Render|   Level::PostPlayLevelFinished
+  110  | Timestamp: 0.737339  | Thread: Render|   Scene::PostPlayLevelFinished
+  111  | Timestamp: 0.737357  | Thread: Render|   UiCanvas::ctor =>   0
+  112  | Timestamp: 0.737366  | Thread: Render|   UiHandler::CreateDebugCanvas => uid =   0
+  113  | Timestamp: 0.737374  | Thread: Render|   SceneRenderer::RegisterUiCanvasProxy_OnRenderThread => UId =   0
+  114  | Timestamp: 0.737408  | Thread: Render|   GameThreadTimersHolder::RegisterTimerInstance => Current Thread:   Render
+  115  | Timestamp: 0.737449  | Thread: Render|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   0   canvasUId =   0
+  116  | Timestamp: 0.737479  | Thread: Render|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   1   canvasUId =   0
+  117  | Timestamp: 0.737501  | Thread: Render|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   2   canvasUId =   0
+  118  | Timestamp: 0.737523  | Thread: Render|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   3   canvasUId =   0
+  119  | Timestamp: 0.737545  | Thread: Render|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   4   canvasUId =   0
+  120  | Timestamp: 0.737567  | Thread: Render|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   5   canvasUId =   0
+  121  | Timestamp: 0.737590  | Thread: Render|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   6   canvasUId =   0
+  122  | Timestamp: 0.737718  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelContainer_0
+  123  | Timestamp: 0.737735  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   421   mHeight:   0
+  124  | Timestamp: 0.737748  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   421   mHeight:   1042
+  125  | Timestamp: 0.737754  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   0   bounding box:   origin = ivec2:{x=210 y=521}; half extent = ivec2:{x=210 y=521}
+  126  | Timestamp: 0.737761  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   421   mHeight:   1042   rootWidth:   1920   rootHeight:   1043
+  127  | Timestamp: 0.737774  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelRenderFPSLabel_1
+  128  | Timestamp: 0.737779  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=0}   mWidth:   400   mHeight:   20
+  129  | Timestamp: 0.737787  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=992}   mWidth:   400   mHeight:   20
+  130  | Timestamp: 0.737791  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   1   bounding box:   origin = ivec2:{x=220 y=1002}; half extent = ivec2:{x=200 y=10}
+  131  | Timestamp: 0.737796  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=992}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  132  | Timestamp: 0.737805  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelGameFPSLabel_2
+  133  | Timestamp: 0.737809  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=0}   mWidth:   400   mHeight:   20
+  134  | Timestamp: 0.737816  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  135  | Timestamp: 0.737821  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=220 y=972}; half extent = ivec2:{x=200 y=10}
+  136  | Timestamp: 0.737825  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  137  | Timestamp: 0.737834  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  138  | Timestamp: 0.737838  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=0}   mWidth:   400   mHeight:   20
+  139  | Timestamp: 0.737844  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  140  | Timestamp: 0.737848  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=220 y=942}; half extent = ivec2:{x=200 y=10}
+  141  | Timestamp: 0.737854  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  142  | Timestamp: 0.737863  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelGameFPSLabel_2
+  143  | Timestamp: 0.737867  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  144  | Timestamp: 0.737873  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  145  | Timestamp: 0.737877  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=220 y=972}; half extent = ivec2:{x=200 y=10}
+  146  | Timestamp: 0.737881  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  147  | Timestamp: 0.737892  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  148  | Timestamp: 0.737896  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  149  | Timestamp: 0.737902  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  150  | Timestamp: 0.737906  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=220 y=942}; half extent = ivec2:{x=200 y=10}
+  151  | Timestamp: 0.737910  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  152  | Timestamp: 0.737920  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  153  | Timestamp: 0.737924  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  154  | Timestamp: 0.737930  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  155  | Timestamp: 0.737934  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=220 y=942}; half extent = ivec2:{x=200 y=10}
+  156  | Timestamp: 0.737938  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  157  | Timestamp: 0.737946  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelUpperImage_4
+  158  | Timestamp: 0.737950  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=0}   mWidth:   320   mHeight:   321
+  159  | Timestamp: 0.737955  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=571}   mWidth:   320   mHeight:   321
+  160  | Timestamp: 0.737960  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   4   bounding box:   origin = ivec2:{x=210 y=731}; half extent = ivec2:{x=160 y=160}
+  161  | Timestamp: 0.737965  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=571}   mWidth:   320   mHeight:   321   rootWidth:   1920   rootHeight:   1043
+  162  | Timestamp: 0.737974  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  163  | Timestamp: 0.737977  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=0}   mWidth:   320   mHeight:   321
+  164  | Timestamp: 0.737983  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  165  | Timestamp: 0.737987  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=210 y=360}; half extent = ivec2:{x=160 y=160}
+  166  | Timestamp: 0.737993  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321   rootWidth:   1920   rootHeight:   1043
+  167  | Timestamp: 0.738002  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  168  | Timestamp: 0.738006  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  169  | Timestamp: 0.738012  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  170  | Timestamp: 0.738016  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=210 y=360}; half extent = ivec2:{x=160 y=160}
+  171  | Timestamp: 0.738022  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321   rootWidth:   1920   rootHeight:   1043
+  172  | Timestamp: 0.738030  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelArrowRightImage_6
+  173  | Timestamp: 0.738034  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=0}   mWidth:   160   mHeight:   160
+  174  | Timestamp: 0.738039  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   160   mHeight:   160
+  175  | Timestamp: 0.738043  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   6   bounding box:   origin = ivec2:{x=115 y=115}; half extent = ivec2:{x=80 y=80}
+  176  | Timestamp: 0.738047  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   160   mHeight:   160   rootWidth:   1920   rootHeight:   1043
+  177  | Timestamp: 0.738058  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   421   mHeight:   1042
+  178  | Timestamp: 0.738064  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   421   mHeight:   1042
+  179  | Timestamp: 0.738068  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   0   bounding box:   origin = ivec2:{x=210 y=521}; half extent = ivec2:{x=210 y=521}
+  180  | Timestamp: 0.738072  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   421   mHeight:   1042   rootWidth:   1920   rootHeight:   1043
+  181  | Timestamp: 0.738082  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelRenderFPSLabel_1
+  182  | Timestamp: 0.738086  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=992}   mWidth:   400   mHeight:   20
+  183  | Timestamp: 0.738091  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=992}   mWidth:   400   mHeight:   20
+  184  | Timestamp: 0.738098  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   1   bounding box:   origin = ivec2:{x=220 y=1002}; half extent = ivec2:{x=200 y=10}
+  185  | Timestamp: 0.738102  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=992}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  186  | Timestamp: 0.738111  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelGameFPSLabel_2
+  187  | Timestamp: 0.738115  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  188  | Timestamp: 0.738121  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  189  | Timestamp: 0.738126  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=220 y=972}; half extent = ivec2:{x=200 y=10}
+  190  | Timestamp: 0.738131  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  191  | Timestamp: 0.738140  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  192  | Timestamp: 0.738144  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  193  | Timestamp: 0.738149  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  194  | Timestamp: 0.738153  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=220 y=942}; half extent = ivec2:{x=200 y=10}
+  195  | Timestamp: 0.738159  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  196  | Timestamp: 0.738168  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelGameFPSLabel_2
+  197  | Timestamp: 0.738172  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  198  | Timestamp: 0.738178  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  199  | Timestamp: 0.738182  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=220 y=972}; half extent = ivec2:{x=200 y=10}
+  200  | Timestamp: 0.738186  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  201  | Timestamp: 0.738198  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  202  | Timestamp: 0.738204  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  203  | Timestamp: 0.738213  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  204  | Timestamp: 0.738219  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=220 y=942}; half extent = ivec2:{x=200 y=10}
+  205  | Timestamp: 0.738225  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  206  | Timestamp: 0.738238  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  207  | Timestamp: 0.738243  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  208  | Timestamp: 0.738252  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  209  | Timestamp: 0.738256  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=220 y=942}; half extent = ivec2:{x=200 y=10}
+  210  | Timestamp: 0.738261  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  211  | Timestamp: 0.738270  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelUpperImage_4
+  212  | Timestamp: 0.738274  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=571}   mWidth:   320   mHeight:   321
+  213  | Timestamp: 0.738280  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=571}   mWidth:   320   mHeight:   321
+  214  | Timestamp: 0.738284  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   4   bounding box:   origin = ivec2:{x=210 y=731}; half extent = ivec2:{x=160 y=160}
+  215  | Timestamp: 0.738288  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=571}   mWidth:   320   mHeight:   321   rootWidth:   1920   rootHeight:   1043
+  216  | Timestamp: 0.738297  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  217  | Timestamp: 0.738301  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  218  | Timestamp: 0.738307  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  219  | Timestamp: 0.738311  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=210 y=360}; half extent = ivec2:{x=160 y=160}
+  220  | Timestamp: 0.738317  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321   rootWidth:   1920   rootHeight:   1043
+  221  | Timestamp: 0.738326  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  222  | Timestamp: 0.738330  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  223  | Timestamp: 0.738336  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  224  | Timestamp: 0.738340  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=210 y=360}; half extent = ivec2:{x=160 y=160}
+  225  | Timestamp: 0.738344  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321   rootWidth:   1920   rootHeight:   1043
+  226  | Timestamp: 0.738355  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelArrowRightImage_6
+  227  | Timestamp: 0.738359  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   160   mHeight:   160
+  228  | Timestamp: 0.738364  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   160   mHeight:   160
+  229  | Timestamp: 0.738368  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   6   bounding box:   origin = ivec2:{x=115 y=115}; half extent = ivec2:{x=80 y=80}
+  230  | Timestamp: 0.738373  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   160   mHeight:   160   rootWidth:   1920   rootHeight:   1043
+  231  | Timestamp: 0.738387  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=992}   mWidth:   400   mHeight:   20
+  232  | Timestamp: 0.738393  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=992}   mWidth:   400   mHeight:   20
+  234  | Timestamp: 0.738397  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   1   bounding box:   origin = ivec2:{x=220 y=1002}; half extent = ivec2:{x=200 y=10}
+  233  | Timestamp: 0.738394  | Thread: Render|   SceneRenderer::MaterialProxyAdded_OnRenderThread => material name =   SpaceSkyboxMaterial.m  proxyId =   1
+  235  | Timestamp: 0.738401  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=992}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  236  | Timestamp: 0.738410  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelGameFPSLabel_2
+  237  | Timestamp: 0.738415  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  238  | Timestamp: 0.738421  | Thread: Render|   IShader::ctor => shaderName =   SpaceSkyboxMaterial.m
+  239  | Timestamp: 0.738422  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  240  | Timestamp: 0.738426  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=220 y=972}; half extent = ivec2:{x=200 y=10}
+  241  | Timestamp: 0.738432  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  242  | Timestamp: 0.738444  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  243  | Timestamp: 0.738450  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  244  | Timestamp: 0.738458  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  245  | Timestamp: 0.738464  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=220 y=942}; half extent = ivec2:{x=200 y=10}
+  246  | Timestamp: 0.738472  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  247  | Timestamp: 0.738485  | Thread: Render|   IShader::ctor => shaderName =   SkyboxVertexFactory
+  248  | Timestamp: 0.738488  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  249  | Timestamp: 0.738497  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20
+  250  | Timestamp: 0.738502  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=220 y=972}; half extent = ivec2:{x=200 y=10}
+  251  | Timestamp: 0.738509  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  252  | Timestamp: 0.738515  | Thread: Render|   IShader::ctor => shaderName =   SkyboxVertexFactory_SimpleShader_SpaceSkyboxMaterial.m
+  254  | Timestamp: 0.738527  | Thread: Render|   IShader::ctor => shaderName =   SkyboxForwardShader
+  253  | Timestamp: 0.738527  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  255  | Timestamp: 0.738531  | Thread: Render|   AVertexFactoryShaderModul::Init
+  257  | Timestamp: 0.738535  | Thread: Render|   AVertexFactoryShaderModule::ProcessAllPredefines
+  256  | Timestamp: 0.738534  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  258  | Timestamp: 0.738543  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  259  | Timestamp: 0.738550  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=220 y=942}; half extent = ivec2:{x=200 y=10}
+  260  | Timestamp: 0.738557  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  261  | Timestamp: 0.738576  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  262  | Timestamp: 0.738586  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20
+  263  | Timestamp: 0.738592  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=220 y=942}; half extent = ivec2:{x=200 y=10}
+  264  | Timestamp: 0.738600  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   400   mHeight:   20   rootWidth:   1920   rootHeight:   1043
+  265  | Timestamp: 0.738616  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=571}   mWidth:   320   mHeight:   321
+  266  | Timestamp: 0.738625  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=571}   mWidth:   320   mHeight:   321
+  267  | Timestamp: 0.738635  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   4   bounding box:   origin = ivec2:{x=210 y=731}; half extent = ivec2:{x=160 y=160}
+  268  | Timestamp: 0.738643  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=571}   mWidth:   320   mHeight:   321   rootWidth:   1920   rootHeight:   1043
+  269  | Timestamp: 0.738658  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  271  | Timestamp: 0.738666  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   24
+  270  | Timestamp: 0.738665  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  273  | Timestamp: 0.738680  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   25
+  272  | Timestamp: 0.738676  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  274  | Timestamp: 0.738684  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=210 y=360}; half extent = ivec2:{x=160 y=160}
+  275  | Timestamp: 0.738695  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321   rootWidth:   1920   rootHeight:   1043
+  276  | Timestamp: 0.738713  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  277  | Timestamp: 0.738725  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321
+  278  | Timestamp: 0.738732  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=210 y=360}; half extent = ivec2:{x=160 y=160}
+  279  | Timestamp: 0.738739  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   320   mHeight:   321   rootWidth:   1920   rootHeight:   1043
+  280  | Timestamp: 0.738761  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   160   mHeight:   160
+  281  | Timestamp: 0.738770  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   160   mHeight:   160
+  282  | Timestamp: 0.738777  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   6   bounding box:   origin = ivec2:{x=115 y=115}; half extent = ivec2:{x=80 y=80}
+  283  | Timestamp: 0.738784  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   160   mHeight:   160   rootWidth:   1920   rootHeight:   1043
+  284  | Timestamp: 0.738941  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelContainer_0
+  285  | Timestamp: 0.738953  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   440   mHeight:   1042
+  286  | Timestamp: 0.738969  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   440   mHeight:   1080
+  287  | Timestamp: 0.738977  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   0   bounding box:   origin = ivec2:{x=220 y=540}; half extent = ivec2:{x=220 y=540}
+  288  | Timestamp: 0.738985  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   440   mHeight:   1080   rootWidth:   1920   rootHeight:   1080
+  289  | Timestamp: 0.739004  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelRenderFPSLabel_1
+  290  | Timestamp: 0.739012  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=992}   mWidth:   420   mHeight:   20
+  291  | Timestamp: 0.739021  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=1030}   mWidth:   420   mHeight:   20
+  292  | Timestamp: 0.739028  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   1   bounding box:   origin = ivec2:{x=230 y=1040}; half extent = ivec2:{x=210 y=10}
+  293  | Timestamp: 0.739038  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=1030}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  294  | Timestamp: 0.739055  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelGameFPSLabel_2
+  295  | Timestamp: 0.739062  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=962}   mWidth:   420   mHeight:   20
+  296  | Timestamp: 0.739072  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20
+  297  | Timestamp: 0.739079  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=230 y=1010}; half extent = ivec2:{x=210 y=10}
+  298  | Timestamp: 0.739089  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  299  | Timestamp: 0.739105  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  300  | Timestamp: 0.739113  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=932}   mWidth:   420   mHeight:   20
+  301  | Timestamp: 0.739123  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  302  | Timestamp: 0.739130  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=230 y=980}; half extent = ivec2:{x=210 y=10}
+  303  | Timestamp: 0.739137  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  304  | Timestamp: 0.739156  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelGameFPSLabel_2
+  305  | Timestamp: 0.739163  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20
+  306  | Timestamp: 0.739174  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20
+  307  | Timestamp: 0.739181  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=230 y=1010}; half extent = ivec2:{x=210 y=10}
+  308  | Timestamp: 0.739188  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  309  | Timestamp: 0.739206  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  310  | Timestamp: 0.739214  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  311  | Timestamp: 0.739224  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  312  | Timestamp: 0.739231  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=230 y=980}; half extent = ivec2:{x=210 y=10}
+  313  | Timestamp: 0.739238  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  314  | Timestamp: 0.739252  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  315  | Timestamp: 0.739263  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  316  | Timestamp: 0.739275  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  317  | Timestamp: 0.739282  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=230 y=980}; half extent = ivec2:{x=210 y=10}
+  318  | Timestamp: 0.739289  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  319  | Timestamp: 0.739305  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelUpperImage_4
+  320  | Timestamp: 0.739313  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=571}   mWidth:   340   mHeight:   340
+  321  | Timestamp: 0.739321  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=590}   mWidth:   340   mHeight:   340
+  322  | Timestamp: 0.739341  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   4   bounding box:   origin = ivec2:{x=220 y=760}; half extent = ivec2:{x=170 y=170}
+  323  | Timestamp: 0.739351  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=590}   mWidth:   340   mHeight:   340   rootWidth:   1920   rootHeight:   1080
+  324  | Timestamp: 0.739367  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  325  | Timestamp: 0.739376  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  326  | Timestamp: 0.739388  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  327  | Timestamp: 0.739396  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=220 y=370}; half extent = ivec2:{x=170 y=170}
+  328  | Timestamp: 0.739404  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340   rootWidth:   1920   rootHeight:   1080
+  329  | Timestamp: 0.739425  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  330  | Timestamp: 0.739434  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  331  | Timestamp: 0.739444  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  332  | Timestamp: 0.739452  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=220 y=370}; half extent = ivec2:{x=170 y=170}
+  333  | Timestamp: 0.739460  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340   rootWidth:   1920   rootHeight:   1080
+  334  | Timestamp: 0.739481  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelArrowRightImage_6
+  335  | Timestamp: 0.739489  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   170   mHeight:   170
+  336  | Timestamp: 0.739499  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   170   mHeight:   170
+  337  | Timestamp: 0.739507  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   6   bounding box:   origin = ivec2:{x=120 y=120}; half extent = ivec2:{x=85 y=85}
+  338  | Timestamp: 0.739515  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   170   mHeight:   170   rootWidth:   1920   rootHeight:   1080
+  339  | Timestamp: 0.739527  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   26
+  340  | Timestamp: 0.739537  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   440   mHeight:   1080
+  341  | Timestamp: 0.739546  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   440   mHeight:   1080
+  342  | Timestamp: 0.739548  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   26
+  343  | Timestamp: 0.739553  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   0   bounding box:   origin = ivec2:{x=220 y=540}; half extent = ivec2:{x=220 y=540}
+  344  | Timestamp: 0.739560  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   0   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   440   mHeight:   1080   rootWidth:   1920   rootHeight:   1080
+  345  | Timestamp: 0.739577  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelRenderFPSLabel_1
+  346  | Timestamp: 0.739584  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=1030}   mWidth:   420   mHeight:   20
+  347  | Timestamp: 0.739587  | Thread: Render|   IShader::ctor => shaderName =   SpaceSkyboxMaterial.m
+  348  | Timestamp: 0.739591  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=1030}   mWidth:   420   mHeight:   20
+  349  | Timestamp: 0.739596  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   1   bounding box:   origin = ivec2:{x=230 y=1040}; half extent = ivec2:{x=210 y=10}
+  350  | Timestamp: 0.739607  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   1   mAbsoluteOrigin:   ivec2:{x=20 y=1030}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  351  | Timestamp: 0.739619  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelGameFPSLabel_2
+  352  | Timestamp: 0.739625  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20
+  353  | Timestamp: 0.739633  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20
+  354  | Timestamp: 0.739634  | Thread: Render|   IShader::ctor => shaderName =   SkyboxVertexFactory
+  355  | Timestamp: 0.739639  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=230 y=1010}; half extent = ivec2:{x=210 y=10}
+  356  | Timestamp: 0.739650  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  357  | Timestamp: 0.739665  | Thread: Render|   IShader::ctor => shaderName =   SkyboxVertexFactory_CapturePlanarReflectionShader_SpaceSkyboxMaterial.m
+  358  | Timestamp: 0.739666  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  359  | Timestamp: 0.739672  | Thread: Render|   IShader::ctor => shaderName =   PlanarReflectionShader
+  360  | Timestamp: 0.739673  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  361  | Timestamp: 0.739678  | Thread: Render|   AVertexFactoryShaderModul::Init
+  362  | Timestamp: 0.739682  | Thread: Render|   AVertexFactoryShaderModule::ProcessAllPredefines
+  363  | Timestamp: 0.739683  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  364  | Timestamp: 0.739690  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=230 y=980}; half extent = ivec2:{x=210 y=10}
+  365  | Timestamp: 0.739698  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  366  | Timestamp: 0.739718  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelGameFPSLabel_2
+  367  | Timestamp: 0.739725  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20
+  368  | Timestamp: 0.739734  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20
+  369  | Timestamp: 0.739740  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   2   bounding box:   origin = ivec2:{x=230 y=1010}; half extent = ivec2:{x=210 y=10}
+  370  | Timestamp: 0.739745  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   2   mAbsoluteOrigin:   ivec2:{x=20 y=1000}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  371  | Timestamp: 0.739765  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  372  | Timestamp: 0.739771  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  373  | Timestamp: 0.739782  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  374  | Timestamp: 0.739788  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=230 y=980}; half extent = ivec2:{x=210 y=10}
+  375  | Timestamp: 0.739794  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  376  | Timestamp: 0.739809  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelLuaFPSLabel_3
+  377  | Timestamp: 0.739816  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  378  | Timestamp: 0.739836  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20
+  379  | Timestamp: 0.739845  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   3   bounding box:   origin = ivec2:{x=230 y=980}; half extent = ivec2:{x=210 y=10}
+  380  | Timestamp: 0.739852  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   3   mAbsoluteOrigin:   ivec2:{x=20 y=970}   mWidth:   420   mHeight:   20   rootWidth:   1920   rootHeight:   1080
+  382  | Timestamp: 0.739866  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelUpperImage_4
+  381  | Timestamp: 0.739864  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   27
+  383  | Timestamp: 0.739874  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=590}   mWidth:   340   mHeight:   340
+  384  | Timestamp: 0.739881  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   28
+  385  | Timestamp: 0.739882  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=590}   mWidth:   340   mHeight:   340
+  386  | Timestamp: 0.739900  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   4   bounding box:   origin = ivec2:{x=220 y=760}; half extent = ivec2:{x=170 y=170}
+  387  | Timestamp: 0.739907  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=590}   mWidth:   340   mHeight:   340   rootWidth:   1920   rootHeight:   1080
+  388  | Timestamp: 0.739921  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  389  | Timestamp: 0.739927  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  390  | Timestamp: 0.739936  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  391  | Timestamp: 0.739942  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=220 y=370}; half extent = ivec2:{x=170 y=170}
+  392  | Timestamp: 0.739953  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340   rootWidth:   1920   rootHeight:   1080
+  393  | Timestamp: 0.739968  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  394  | Timestamp: 0.739975  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  395  | Timestamp: 0.739985  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  396  | Timestamp: 0.739992  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=220 y=370}; half extent = ivec2:{x=170 y=170}
+  397  | Timestamp: 0.740000  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340   rootWidth:   1920   rootHeight:   1080
+  398  | Timestamp: 0.740018  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelArrowRightImage_6
+  399  | Timestamp: 0.740025  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   170   mHeight:   170
+  400  | Timestamp: 0.740034  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   170   mHeight:   170
+  401  | Timestamp: 0.740040  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   6   bounding box:   origin = ivec2:{x=120 y=120}; half extent = ivec2:{x=85 y=85}
+  402  | Timestamp: 0.740047  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   170   mHeight:   170   rootWidth:   1920   rootHeight:   1080
+  403  | Timestamp: 0.740071  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=590}   mWidth:   340   mHeight:   340
+  404  | Timestamp: 0.740080  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=590}   mWidth:   340   mHeight:   340
+  405  | Timestamp: 0.740087  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   4   bounding box:   origin = ivec2:{x=220 y=760}; half extent = ivec2:{x=170 y=170}
+  406  | Timestamp: 0.740094  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   4   mAbsoluteOrigin:   ivec2:{x=50 y=590}   mWidth:   340   mHeight:   340   rootWidth:   1920   rootHeight:   1080
+  407  | Timestamp: 0.740109  | Thread: Game|   UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name:   DebugPanelBottomImage_5
+  408  | Timestamp: 0.740116  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  409  | Timestamp: 0.740126  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  410  | Timestamp: 0.740137  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=220 y=370}; half extent = ivec2:{x=170 y=170}
+  411  | Timestamp: 0.740144  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340   rootWidth:   1920   rootHeight:   1080
+  412  | Timestamp: 0.740162  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  413  | Timestamp: 0.740173  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340
+  414  | Timestamp: 0.740180  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   5   bounding box:   origin = ivec2:{x=220 y=370}; half extent = ivec2:{x=170 y=170}
+  415  | Timestamp: 0.740186  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   5   mAbsoluteOrigin:   ivec2:{x=50 y=200}   mWidth:   340   mHeight:   340   rootWidth:   1920   rootHeight:   1080
+  416  | Timestamp: 0.740205  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   170   mHeight:   170
+  417  | Timestamp: 0.740213  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   170   mHeight:   170
+  418  | Timestamp: 0.740219  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   6   bounding box:   origin = ivec2:{x=120 y=120}; half extent = ivec2:{x=85 y=85}
+  419  | Timestamp: 0.740226  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   6   mAbsoluteOrigin:   ivec2:{x=35 y=35}   mWidth:   170   mHeight:   170   rootWidth:   1920   rootHeight:   1080
+  420  | Timestamp: 0.740689  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   29
+  421  | Timestamp: 0.740704  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   29
+  422  | Timestamp: 0.740726  | Thread: Render|   VertexArrayObject::ctor
+  423  | Timestamp: 0.740735  | Thread: Render|   VertexArrayObject::GenVAO => descriptor =   2
+  424  | Timestamp: 0.740747  | Thread: Render|   VertexBufferObject::ctor
+  425  | Timestamp: 0.740757  | Thread: Render|   VertexArrayObject::BindBuffersToVao => descriptor =   2
+  426  | Timestamp: 0.740765  | Thread: Render|   VertexBufferObject::SendDataToGPU => descriptor =   3   bufferSize =   432
+  427  | Timestamp: 0.740860  | Thread: Render|   IShader::ctor => shaderName =   UiRectangle Shader
+  428  | Timestamp: 0.740977  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   30
+  429  | Timestamp: 0.740990  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   31
+  430  | Timestamp: 0.741416  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   1  , luaProxyId:   2
+  431  | Timestamp: 0.741432  | Thread: Game|   UiCanvas::ctor =>   1
+  432  | Timestamp: 0.741443  | Thread: Game|   UiHandler::CreateCanvas => uid =   1
+  433  | Timestamp: 0.741451  | Thread: Game|   SceneRenderer::RegisterUiCanvasProxy_OnRenderThread => UId =   1
+  434  | Timestamp: 0.741469  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   32
+  435  | Timestamp: 0.741486  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   DebugPanelContainer_0  , readiness value:   1
+  436  | Timestamp: 0.741493  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   0  , luaProxyId:   3
+  437  | Timestamp: 0.741501  | Thread: Render|   IShader::ctor => shaderName =   UiLabel Shader
+  438  | Timestamp: 0.741547  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   3  , luaProxyId:   4
+  439  | Timestamp: 0.741564  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   33
+  440  | Timestamp: 0.741571  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   34
+  441  | Timestamp: 0.741589  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   3  , luaProxyId:   5
+  442  | Timestamp: 0.741657  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   5  , luaProxyId:   6
+  443  | Timestamp: 0.741692  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   3  , luaProxyId:   7
+  444  | Timestamp: 0.741757  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   5  , luaProxyId:   8
+  445  | Timestamp: 0.741796  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   3  , luaProxyId:   9
+  446  | Timestamp: 0.741865  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   5  , luaProxyId:   10
+  447  | Timestamp: 0.741900  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   3  , luaProxyId:   11
+  448  | Timestamp: 0.741907  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   35
+  449  | Timestamp: 0.741928  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   DebugPanelRenderFPSLabel_1  , readiness value:   1
+  450  | Timestamp: 0.741944  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   DebugPanelGameFPSLabel_2  , readiness value:   1
+  451  | Timestamp: 0.741955  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   DebugPanelLuaFPSLabel_3  , readiness value:   1
+  453  | Timestamp: 0.741964  | Thread: Render|   IShader::ctor => shaderName =   UiImage Shader
+  452  | Timestamp: 0.741962  | Thread: Lua|   LuaCommonUiFunctions::CreateCommonUiWidget => widgetType:   5  , luaProxyId:   12
+  454  | Timestamp: 0.742020  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   2   doesn't exist
+  456  | Timestamp: 0.742033  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   36
+  455  | Timestamp: 0.742033  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   2   doesn't exist
+  458  | Timestamp: 0.742041  | Thread: Render|   IShader::SendToGpuSingleShaderSource => shaderId =   37
+  457  | Timestamp: 0.742041  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   2   doesn't exist
+  459  | Timestamp: 0.742047  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   4   doesn't exist
+  460  | Timestamp: 0.742051  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   4   doesn't exist
+  461  | Timestamp: 0.742056  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   5   doesn't exist
+  462  | Timestamp: 0.742060  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   5   doesn't exist
+  463  | Timestamp: 0.742064  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   6   doesn't exist
+  464  | Timestamp: 0.742068  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   6   doesn't exist
+  465  | Timestamp: 0.742072  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   7   doesn't exist
+  466  | Timestamp: 0.742076  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   7   doesn't exist
+  467  | Timestamp: 0.742080  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   8   doesn't exist
+  468  | Timestamp: 0.742083  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   8   doesn't exist
+  469  | Timestamp: 0.742087  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   9   doesn't exist
+  470  | Timestamp: 0.742096  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   9   doesn't exist
+  471  | Timestamp: 0.742100  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   10   doesn't exist
+  472  | Timestamp: 0.742104  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   10   doesn't exist
+  473  | Timestamp: 0.742108  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   11   doesn't exist
+  474  | Timestamp: 0.742112  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   11   doesn't exist
+  475  | Timestamp: 0.742116  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   12   doesn't exist
+  476  | Timestamp: 0.742119  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   12   doesn't exist
+  477  | Timestamp: 0.742161  | Thread: Game|   UiOverlay::OpenOverlay => overlay:   MainMenuOverlay
+  478  | Timestamp: 0.742366  | Thread: Render|   IShader::AccessAllUniformLocations => shaderProgramId =   38
+  479  | Timestamp: 0.742381  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   DebugPanelUpperImage_4  , readiness value:   1
+  480  | Timestamp: 0.742393  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   DebugPanelBottomImage_5  , readiness value:   1
+  481  | Timestamp: 0.742401  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   DebugPanelArrowRightImage_6  , readiness value:   1
+  482  | Timestamp: 0.748838  | Thread: Render|   Texture2d::ctor(const std::string&, ITextureMipMapState*) => texDescriptor =   10
+  483  | Timestamp: 0.749036  | Thread: Render|   Texture2d::CleanUp => texDescriptor =   1
+  484  | Timestamp: 0.749049  | Thread: Render|   Texture2d::CleanUp => texDescriptor =   2
+  485  | Timestamp: 0.749055  | Thread: Render|   Texture2d::CleanUp => texDescriptor =   3
+  486  | Timestamp: 0.749059  | Thread: Render|   Texture2d::CleanUp => texDescriptor =   4
+  487  | Timestamp: 0.749064  | Thread: Render|   Texture2d::CleanUp => texDescriptor =   5
+  488  | Timestamp: 0.749068  | Thread: Render|   Texture2d::CleanUp => texDescriptor =   6
+  489  | Timestamp: 0.751005  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   11
+  490  | Timestamp: 0.754436  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   12
+  491  | Timestamp: 0.757552  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   13
+  492  | Timestamp: 0.758992  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   14
+  493  | Timestamp: 0.759027  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   15
+  494  | Timestamp: 0.760471  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   16
+  495  | Timestamp: 0.760535  | Thread: Render|   Texture2d::CleanUp => texDescriptor =   7
+  496  | Timestamp: 0.760562  | Thread: Render|   Texture2d::ctor(const TexParams &) => texDescriptor =   17
+  497  | Timestamp: 0.761204  | Thread: Render|   VertexArrayObject::ctor
+  498  | Timestamp: 0.761214  | Thread: Render|   VertexArrayObject::GenVAO => descriptor =   3
+  499  | Timestamp: 0.761222  | Thread: Render|   VertexBufferObject::ctor
+  500  | Timestamp: 0.761226  | Thread: Render|   VertexBufferObject::ctor
+  501  | Timestamp: 0.761232  | Thread: Render|   VertexArrayObject::BindBuffersToVao => descriptor =   3
+  502  | Timestamp: 0.761240  | Thread: Render|   VertexBufferObject::SendDataToGPU => descriptor =   4   bufferSize =   72
+  503  | Timestamp: 0.761284  | Thread: Render|   VertexBufferObject::SendDataToGPU => descriptor =   5   bufferSize =   48
+  504  | Timestamp: 0.762231  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   2   doesn't exist
+  505  | Timestamp: 0.762263  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   12   doesn't exist
+  506  | Timestamp: 0.762270  | Thread: Lua|   UiItemBase::SetIsLuaProxyReady => name:   UiLabel_15  , readiness value:   1
+  507  | Timestamp: 0.762299  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   11   doesn't exist
+  508  | Timestamp: 0.762305  | Thread: Lua|   UiItemBase::SetIsLuaProxyReady => name:   UiRectangle_14  , readiness value:   1
+  509  | Timestamp: 0.762311  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   10   doesn't exist
+  510  | Timestamp: 0.762314  | Thread: Lua|   UiItemBase::SetIsLuaProxyReady => name:   UiLabel_13  , readiness value:   1
+  511  | Timestamp: 0.762319  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   9   doesn't exist
+  512  | Timestamp: 0.762323  | Thread: Lua|   UiItemBase::SetIsLuaProxyReady => name:   UiRectangle_12  , readiness value:   1
+  513  | Timestamp: 0.762329  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   8   doesn't exist
+  514  | Timestamp: 0.762332  | Thread: Lua|   UiItemBase::SetIsLuaProxyReady => name:   UiLabel_11  , readiness value:   1
+  515  | Timestamp: 0.762338  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   7   doesn't exist
+  516  | Timestamp: 0.762341  | Thread: Lua|   UiItemBase::SetIsLuaProxyReady => name:   UiRectangle_10  , readiness value:   1
+  517  | Timestamp: 0.762346  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   5   doesn't exist
+  518  | Timestamp: 0.762350  | Thread: Lua|   UiItemBase::SetIsLuaProxyReady => name:   UiRectangle_8  , readiness value:   1
+  519  | Timestamp: 0.762363  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   4   doesn't exist
+  520  | Timestamp: 0.762368  | Thread: Lua|   UiItemBase::SetIsLuaProxyReady => name:   MainMenuBackgroundContainer_7  , readiness value:   1
+  521  | Timestamp: 0.762375  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   3   doesn't exist
+  522  | Timestamp: 0.762379  | Thread: Lua|   LuaScriptProcessor::GetLuaProxy => Error: luaProxy:   6   doesn't exist
+  523  | Timestamp: 0.762382  | Thread: Lua|   UiItemBase::SetIsLuaProxyReady => name:   UiLabel_9  , readiness value:   1
+  524  | Timestamp: 0.762571  | Thread: Game|   GameThreadTimersHolder::RegisterTimerInstance => Current Thread:   Game
+  525  | Timestamp: 0.764462  | Thread: Game|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   7   canvasUId =   1
+  526  | Timestamp: 0.764517  | Thread: Game|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   8   canvasUId =   1
+  527  | Timestamp: 0.764557  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  528  | Timestamp: 0.764568  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  529  | Timestamp: 0.764574  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   7   bounding box:   origin = ivec2:{x=0 y=0}; half extent = ivec2:{x=0 y=0}
+  530  | Timestamp: 0.764581  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0   rootWidth:   1920   rootHeight:   1080
+  531  | Timestamp: 0.764626  | Thread: Game|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   9   canvasUId =   1
+  532  | Timestamp: 0.764644  | Thread: Game|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   10   canvasUId =   1
+  533  | Timestamp: 0.764678  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  534  | Timestamp: 0.764687  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  535  | Timestamp: 0.764692  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   7   bounding box:   origin = ivec2:{x=0 y=0}; half extent = ivec2:{x=0 y=0}
+  536  | Timestamp: 0.764702  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0   rootWidth:   1920   rootHeight:   1080
+  537  | Timestamp: 0.764719  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   8   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  538  | Timestamp: 0.764724  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   8   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  539  | Timestamp: 0.764730  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   8   bounding box:   origin = ivec2:{x=0 y=0}; half extent = ivec2:{x=0 y=0}
+  540  | Timestamp: 0.764736  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   8   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0   rootWidth:   1920   rootHeight:   1080
+  541  | Timestamp: 0.764771  | Thread: Game|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   11   canvasUId =   1
+  542  | Timestamp: 0.764795  | Thread: Game|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   12   canvasUId =   1
+  543  | Timestamp: 0.764837  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  544  | Timestamp: 0.764846  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  545  | Timestamp: 0.764851  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   7   bounding box:   origin = ivec2:{x=0 y=0}; half extent = ivec2:{x=0 y=0}
+  546  | Timestamp: 0.764862  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0   rootWidth:   1920   rootHeight:   1080
+  547  | Timestamp: 0.764880  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   10   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  548  | Timestamp: 0.764886  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   10   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  549  | Timestamp: 0.764890  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   10   bounding box:   origin = ivec2:{x=0 y=0}; half extent = ivec2:{x=0 y=0}
+  550  | Timestamp: 0.764894  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   10   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0   rootWidth:   1920   rootHeight:   1080
+  551  | Timestamp: 0.764925  | Thread: Game|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   13   canvasUId =   1
+  552  | Timestamp: 0.764958  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   12   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  553  | Timestamp: 0.764965  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   12   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  554  | Timestamp: 0.764969  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   12   bounding box:   origin = ivec2:{x=0 y=0}; half extent = ivec2:{x=0 y=0}
+  555  | Timestamp: 0.764974  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   12   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0   rootWidth:   1920   rootHeight:   1080
+  556  | Timestamp: 0.765005  | Thread: Game|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   14   canvasUId =   1
+  557  | Timestamp: 0.765037  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  558  | Timestamp: 0.765044  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  559  | Timestamp: 0.765048  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   7   bounding box:   origin = ivec2:{x=0 y=0}; half extent = ivec2:{x=0 y=0}
+  560  | Timestamp: 0.765052  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   7   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0   rootWidth:   1920   rootHeight:   1080
+  561  | Timestamp: 0.765138  | Thread: Game|   SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId =   15   canvasUId =   1
+  562  | Timestamp: 0.765175  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   14   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  563  | Timestamp: 0.765183  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   14   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0
+  564  | Timestamp: 0.765187  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   14   bounding box:   origin = ivec2:{x=0 y=0}; half extent = ivec2:{x=0 y=0}
+  565  | Timestamp: 0.765192  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   14   mAbsoluteOrigin:   ivec2:{x=0 y=0}   mWidth:   0   mHeight:   0   rootWidth:   1920   rootHeight:   1080
+  566  | Timestamp: 0.765512  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=480 y=0}   mWidth:   960   mHeight:   0
+  567  | Timestamp: 0.765523  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   7   mAbsoluteOrigin:   ivec2:{x=480 y=72}   mWidth:   960   mHeight:   936
+  568  | Timestamp: 0.765531  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   7   bounding box:   origin = ivec2:{x=960 y=540}; half extent = ivec2:{x=480 y=468}
+  569  | Timestamp: 0.765539  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   7   mAbsoluteOrigin:   ivec2:{x=480 y=72}   mWidth:   960   mHeight:   936   rootWidth:   1920   rootHeight:   1080
+  570  | Timestamp: 0.765848  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   8   mAbsoluteOrigin:   ivec2:{x=500 y=0}   mWidth:   920   mHeight:   160
+  571  | Timestamp: 0.765857  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   8   mAbsoluteOrigin:   ivec2:{x=500 y=790}   mWidth:   920   mHeight:   160
+  572  | Timestamp: 0.765863  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   8   bounding box:   origin = ivec2:{x=960 y=870}; half extent = ivec2:{x=460 y=80}
+  573  | Timestamp: 0.765868  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   8   mAbsoluteOrigin:   ivec2:{x=500 y=790}   mWidth:   920   mHeight:   160   rootWidth:   1920   rootHeight:   1080
+  574  | Timestamp: 0.766167  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   9   mAbsoluteOrigin:   ivec2:{x=500 y=0}   mWidth:   920   mHeight:   0
+  575  | Timestamp: 0.766177  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   9   mAbsoluteOrigin:   ivec2:{x=500 y=790}   mWidth:   920   mHeight:   160
+  576  | Timestamp: 0.766183  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   9   bounding box:   origin = ivec2:{x=960 y=870}; half extent = ivec2:{x=460 y=80}
+  577  | Timestamp: 0.766188  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   9   mAbsoluteOrigin:   ivec2:{x=500 y=790}   mWidth:   920   mHeight:   160   rootWidth:   1920   rootHeight:   1080
+  578  | Timestamp: 0.766494  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   10   mAbsoluteOrigin:   ivec2:{x=500 y=0}   mWidth:   920   mHeight:   160
+  579  | Timestamp: 0.766504  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   10   mAbsoluteOrigin:   ivec2:{x=500 y=572}   mWidth:   920   mHeight:   160
+  580  | Timestamp: 0.766510  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   10   bounding box:   origin = ivec2:{x=960 y=652}; half extent = ivec2:{x=460 y=80}
+  581  | Timestamp: 0.766515  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   10   mAbsoluteOrigin:   ivec2:{x=500 y=572}   mWidth:   920   mHeight:   160   rootWidth:   1920   rootHeight:   1080
+  582  | Timestamp: 0.766817  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   11   mAbsoluteOrigin:   ivec2:{x=500 y=0}   mWidth:   920   mHeight:   0
+  583  | Timestamp: 0.766826  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   11   mAbsoluteOrigin:   ivec2:{x=500 y=572}   mWidth:   920   mHeight:   160
+  584  | Timestamp: 0.766831  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   11   bounding box:   origin = ivec2:{x=960 y=652}; half extent = ivec2:{x=460 y=80}
+  585  | Timestamp: 0.766842  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   11   mAbsoluteOrigin:   ivec2:{x=500 y=572}   mWidth:   920   mHeight:   160   rootWidth:   1920   rootHeight:   1080
+  586  | Timestamp: 0.767143  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   12   mAbsoluteOrigin:   ivec2:{x=500 y=0}   mWidth:   920   mHeight:   160
+  587  | Timestamp: 0.767152  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   12   mAbsoluteOrigin:   ivec2:{x=500 y=354}   mWidth:   920   mHeight:   160
+  588  | Timestamp: 0.767163  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   12   bounding box:   origin = ivec2:{x=960 y=434}; half extent = ivec2:{x=460 y=80}
+  589  | Timestamp: 0.767169  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   12   mAbsoluteOrigin:   ivec2:{x=500 y=354}   mWidth:   920   mHeight:   160   rootWidth:   1920   rootHeight:   1080
+  590  | Timestamp: 0.767463  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   13   mAbsoluteOrigin:   ivec2:{x=500 y=0}   mWidth:   920   mHeight:   0
+  591  | Timestamp: 0.767473  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   13   mAbsoluteOrigin:   ivec2:{x=500 y=354}   mWidth:   920   mHeight:   160
+  592  | Timestamp: 0.767477  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   13   bounding box:   origin = ivec2:{x=960 y=434}; half extent = ivec2:{x=460 y=80}
+  593  | Timestamp: 0.767489  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   13   mAbsoluteOrigin:   ivec2:{x=500 y=354}   mWidth:   920   mHeight:   160   rootWidth:   1920   rootHeight:   1080
+  594  | Timestamp: 0.767887  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   14   mAbsoluteOrigin:   ivec2:{x=500 y=0}   mWidth:   920   mHeight:   160
+  595  | Timestamp: 0.767907  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   14   mAbsoluteOrigin:   ivec2:{x=500 y=136}   mWidth:   920   mHeight:   160
+  596  | Timestamp: 0.767912  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   14   bounding box:   origin = ivec2:{x=960 y=216}; half extent = ivec2:{x=460 y=80}
+  597  | Timestamp: 0.767925  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   14   mAbsoluteOrigin:   ivec2:{x=500 y=136}   mWidth:   920   mHeight:   160   rootWidth:   1920   rootHeight:   1080
+  598  | Timestamp: 0.768225  | Thread: Game|   UiItemBase::CalculateHorizontalAnchorPositions => uid:   15   mAbsoluteOrigin:   ivec2:{x=500 y=0}   mWidth:   920   mHeight:   0
+  599  | Timestamp: 0.768235  | Thread: Game|   UiItemBase::CalculateVerticalAnchorPositions => uid:   15   mAbsoluteOrigin:   ivec2:{x=500 y=136}   mWidth:   920   mHeight:   160
+  600  | Timestamp: 0.768239  | Thread: Game|   UiItemBase::RebuildBoundingArea => uid:   15   bounding box:   origin = ivec2:{x=960 y=216}; half extent = ivec2:{x=460 y=80}
+  601  | Timestamp: 0.768245  | Thread: Game|   UiItemBase::RebuildNormalizedTransform => uid:   15   mAbsoluteOrigin:   ivec2:{x=500 y=136}   mWidth:   920   mHeight:   160   rootWidth:   1920   rootHeight:   1080
+  602  | Timestamp: 0.780174  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   MainMenuBackgroundContainer_7  , readiness value:   1
+  603  | Timestamp: 0.780233  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   UiRectangle_8  , readiness value:   1
+  604  | Timestamp: 0.780269  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   UiLabel_9  , readiness value:   1
+  605  | Timestamp: 0.780280  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   UiRectangle_10  , readiness value:   1
+  606  | Timestamp: 0.780296  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   UiLabel_11  , readiness value:   1
+  607  | Timestamp: 0.780306  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   UiRectangle_12  , readiness value:   1
+  608  | Timestamp: 0.787603  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   UiLabel_13  , readiness value:   1
+  609  | Timestamp: 0.787675  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   UiRectangle_14  , readiness value:   1
+  610  | Timestamp: 0.787695  | Thread: Render|   UiItemBase::SetIsSceneProxyReady => name:   UiLabel_15  , readiness value:   1
+  611  | Timestamp: 2.158005  | Thread: Game|   Scene::MouseButtonDownRootEvent => Mouse press events will be propagated only to UI input system
+  612  | Timestamp: 2.244863  | Thread: Game|   Scene::MouseButtonDownRootEvent => Mouse press events will be propagated only to UI input system

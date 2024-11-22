@@ -78,7 +78,8 @@
         "compare": "cpp",
         "concepts": "cpp",
         "ranges": "cpp",
-        "stop_token": "cpp"
+        "stop_token": "cpp",
+        "stack": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "Lua.diagnostics.globals": [
@@ -129,7 +130,8 @@
         "_SendChangeEditModeGameThreadEvent",
         "_SendBroadcastGameThreadEvent",
         "_AddUiItemSequenceAnimation",
-        "_StartUiItemSequenceAnimation"
+        "_StartUiItemSequenceAnimation",
+        "_SetBindingToMaterial"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

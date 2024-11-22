@@ -21,7 +21,7 @@ namespace Graphics
             mMaterialProxy(materialProxy),
             mSortOrderValue(component->GetSortOrderValue()),
             mCanBloomBeApplied(component->CanBloomBeApplied()),
-            mDepthTestEnabled(component->IsDepthTestEnabled())
+            mDepthWriteMaskEnabled(component->IsDepthWriteMaskEnabled())
       {
       }
 
@@ -123,14 +123,14 @@ namespace Graphics
          return mCanBloomBeApplied;
       }
 
-      bool PrimitiveSceneProxy::IsDepthTestEnabled() const
+      bool PrimitiveSceneProxy::IsDepthWriteMaskEnabled() const
       {
-         return mDepthTestEnabled;
+         return mDepthWriteMaskEnabled;
       }
 
-      void PrimitiveSceneProxy::SetDepthTestEnabled(const bool isEnabled)
+      void PrimitiveSceneProxy::SetDepthWriteMaskEnabled(const bool isEnabled)
       {
-         mDepthTestEnabled = isEnabled;
+         mDepthWriteMaskEnabled = isEnabled;
       }
 
    }

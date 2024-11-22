@@ -55,11 +55,20 @@ namespace Graphics
                                                                    shrinkedViewPort.OriginX, shrinkedViewPort.OriginY, shrinkedViewPort.Width, shrinkedViewPort.Height,
                                                                    GL_STENCIL_BUFFER_BIT);
 
-      RenderState<StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_NOTEQUAL, 1, 0xFF, 0x00>, BlendingState<false>> renderState;
+      RenderState renderState;
+      renderState.GetBlendingState()
+          .SetIsBlendingEnabled(false);
+
       renderState.GetDepthState()
           .SetIsDepthTestEnabled(false)
           .SetDepthTestFunc(GL_LEQUAL)
           .SetDepthTestWriteMask(false);
+
+      renderState.GetStencilState()
+          .SetIsStencilTestEnabled(true)
+          .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
+          .SetStencilFunction(GL_NOTEQUAL, 1, 0xFF)
+          .SetStencilMask(0x00);
 
       renderState.BindRenderState();
 
@@ -95,6 +104,7 @@ namespace Graphics
 
       mBloomFxShader->StopShader();
       renderState.GetDepthState().SetDepthTestWriteMask(true);
+      renderState.BindRenderState();
    }
 
    std::shared_ptr<ITexture> BloomPostFxPass::GetPostFxResult() const

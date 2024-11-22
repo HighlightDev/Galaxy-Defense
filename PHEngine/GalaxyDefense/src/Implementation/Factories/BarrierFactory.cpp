@@ -70,6 +70,7 @@ namespace Game
                                                                                     4, glm::vec3(0.0f, currentBarrierIndex * rayIndex * 0.1f, 0.0f), glm::vec3(), glm::vec3(1), "", electroRay_material);
             const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+            c_mesh->SetDepthWriteMaskEnabled(false);
             
             c_mesh->SetSortOrderValue(10 + currentBarrierIndex * rayIndex);
             c_mesh->SetLineWidth(8.0f);
