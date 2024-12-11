@@ -9,4 +9,4 @@ LoggerClient.h
 LogInterface.h
 )
 
-add_library(TinyLogger ${HEADERS} ${SOURCES})
+add_library(TinyLogger SHARED ${HEADERS} ${SOURCES})

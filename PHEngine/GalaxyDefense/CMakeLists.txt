@@ -193,6 +193,7 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set(GAME_SRC_INCLUDE ${PROJECT_SOURCE_DIR}/${EXECUTABLE_NAME}/src/)
 set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
 set(LOGGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
+set(UNWIND_TOOL_INCLUDE ${PROJECT_SOURCE_DIR}/UnwindTool/includes/)
 set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal/include/)
 set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
 set(GLM_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLM/include/)
@@ -306,3 +307,11 @@ target_link_libraries(${EXECUTABLE_NAME}
     PRIVATE TinyLogger
     PRIVATE PHEngine
 )
+
+message(STATUS "LibUnwind enabled: ${ENABLE_LIBUNWIND}")
+if(ENABLE_LIBUNWIND)
+    target_link_libraries(${EXECUTABLE_NAME}
+        PRIVATE UnwindTool
+    )
+else()
+endif(ENABLE_LIBUNWIND)

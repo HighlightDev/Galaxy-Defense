@@ -5,6 +5,7 @@
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiLabelLuaProxy.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/UtilityCore/JsonUtilities.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
@@ -20,7 +21,7 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiLabel::UiLabel(const std::string &fontName, const std::string& name)
+        UiLabel::UiLabel(const std::string &fontName, const std::string &name)
             : UiItemBase(name),
               mText(""),
               mOpacity(1.0f),
@@ -87,28 +88,7 @@ namespace EngineCore
             }
             if (jsonObj.contains("text_color"))
             {
-                const auto colorProps = jsonObj["text_color"];
-                glm::vec3 color;
-                for (auto it = colorProps.cbegin(); it != colorProps.cend(); ++it)
-                {
-                    const auto key = it.key();
-                    if ("r" == key)
-                    {
-                        color.r = it->get<float>();
-                    }
-                    else if ("g" == key)
-                    {
-                        color.g = it->get<float>();
-                    }
-                    else if ("b" == key)
-                    {
-                        color.b = it->get<float>();
-                    }
-                    else
-                    {
-                        assert(false);
-                    }
-                }
+                const glm::vec3 color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["text_color"]);
                 if (!EngineMath::CheckSimilarityVec3(color, mTextColor))
                 {
                     mTextColor = color;
@@ -308,7 +288,8 @@ namespace EngineCore
                     if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), opacity = mOpacity, text = mText, textColor = mTextColor, textLineWidth = mTextLineWidth, fontSize = mFontSize, textHorizontalAlignment = mTextHorizontalAlignment]() {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), opacity = mOpacity, text = mText, textColor = mTextColor, textLineWidth = mTextLineWidth, fontSize = mFontSize, textHorizontalAlignment = mTextHorizontalAlignment]()
+                                                                                         {
                             if (const auto &labelLuaProxy = std::static_pointer_cast<UiLabelLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
                             {
                                 labelLuaProxy->SetOpacity_FromGameThread(opacity);
@@ -317,8 +298,7 @@ namespace EngineCore
                                 labelLuaProxy->SetTextLineWidth_FromGameThread(textLineWidth);
                                 labelLuaProxy->SetFontSize_FromGameThread(fontSize);
                                 labelLuaProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
-                            } 
-                        });
+                            } });
                     }
                 }
             }

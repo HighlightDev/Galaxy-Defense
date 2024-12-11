@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/UtilityCore/JsonUtilities.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiToggleButtonLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
@@ -141,7 +142,7 @@ namespace EngineCore
             const auto &jsonObj = nlohmann::json::parse(luaJsonPropsStr);
             if (jsonObj.contains("toggle_on_color"))
             {
-                const auto &toggleOnColor = ExtractRGBColorFromJsonByKey(jsonObj, "toggle_on_color");
+                const glm::vec3 toggleOnColor = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["toggle_on_color"]);
                 if (!EngineMath::CheckSimilarityVec3(toggleOnColor, mToggleOnColor))
                 {
                     mToggleOnColor = toggleOnColor;
@@ -150,7 +151,7 @@ namespace EngineCore
             }
             if (jsonObj.contains("toggle_off_color"))
             {
-                const auto &toggleOffColor = ExtractRGBColorFromJsonByKey(jsonObj, "toggle_off_color");
+             const glm::vec3 toggleOffColor = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["toggle_off_color"]);
                 if (!EngineMath::CheckSimilarityVec3(toggleOffColor, mToggleOffColor))
                 {
                     mToggleOffColor = toggleOffColor;
@@ -242,33 +243,6 @@ namespace EngineCore
                     }
                 }
             }
-        }
-
-        glm::vec3 UiToggleButton::ExtractRGBColorFromJsonByKey(const nlohmann::json &jsonObject, const std::string &key)
-        {
-            glm::vec3 color;
-            const auto colorProps = jsonObject[key];
-            for (auto it = colorProps.cbegin(); it != colorProps.cend(); ++it)
-            {
-                const auto key = it.key();
-                if ("r" == key)
-                {
-                    color.r = it->get<float>();
-                }
-                else if ("g" == key)
-                {
-                    color.g = it->get<float>();
-                }
-                else if ("b" == key)
-                {
-                    color.b = it->get<float>();
-                }
-                else
-                {
-                    assert(false);
-                }
-            }
-            return color;
         }
     }
 }

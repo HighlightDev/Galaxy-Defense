@@ -41,8 +41,8 @@
 #include "Core/GameCore/Components/ComponentCreators/SkeletalMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/SkyboxComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/ScriptingCore/Common/JsonParserHelper.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
+#include "Core/UtilityCore/JsonUtilities.h"
 
 #include <unordered_map>
 #include <json/json.hpp>
@@ -91,22 +91,22 @@ namespace EngineCore
                                                                                            const std::string &componentDataJsonStr) const
         {
             const auto &jsonObj = nlohmann::json::parse(componentDataJsonStr);
-            const std::string objectName = JsonParserHelper::FromJsonToString("gameObjectName", jsonObj);
+            const std::string objectName = nlohmann_utilities::GetStringFromJson(jsonObj["gameObjectName"]);
 
             std::shared_ptr<ComponentData> componentData;
 
             if ("PointLightComponent" == componentType)
             {
-                const auto translation = JsonParserHelper::FromJsonToVec3("translation", jsonObj);
-                const auto ambient = JsonParserHelper::FromJsonToVec3Color("ambient", jsonObj);
-                const auto diffuse = JsonParserHelper::FromJsonToVec3Color("diffuse", jsonObj);
-                const auto specular = JsonParserHelper::FromJsonToVec3Color("specular", jsonObj);
-                const auto attenutation = JsonParserHelper::FromJsonToVec3("attenutation", jsonObj);
-                const auto radianceRadius = JsonParserHelper::FromJsonToFloat("radianceRadius", jsonObj);
+                const auto translation = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["translation"]);
+                const auto ambient = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["ambient"]);
+                const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
+                const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
+                const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenutation"]);
+                const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["radianceRadius"]);
                 std::shared_ptr<ProjectedShadowInfo> shadowInfo;
                 if (jsonObj.contains("shadowAtlasSize"))
                 {
-                    const auto shadowAtlasSize = JsonParserHelper::FromJsonToInt("shadowAtlasSize", jsonObj);
+                    const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
                     const auto &pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(glm::ivec2(shadowAtlasSize));
                     shadowInfo = std::make_shared<ProjectedPointLightShadowInfo>(pointLightTAR);
                 }
@@ -115,17 +115,17 @@ namespace EngineCore
             }
             else if ("DirectionalLightComponent" == componentType)
             {
-                const auto rotation = JsonParserHelper::FromJsonToVec3("rotation", jsonObj);
-                const auto direction = JsonParserHelper::FromJsonToVec3("direction", jsonObj);
-                const auto ambient = JsonParserHelper::FromJsonToVec3Color("ambient", jsonObj);
-                const auto diffuse = JsonParserHelper::FromJsonToVec3Color("diffuse", jsonObj);
-                const auto specular = JsonParserHelper::FromJsonToVec3Color("specular", jsonObj);
+                const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
+                const auto direction = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["direction"]);
+                const auto ambient = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["ambient"]);
+                const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
+                const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
                 std::shared_ptr<ProjectedShadowInfo> shadowInfo;
                 if (jsonObj.contains("shadowAtlasSize"))
                 {
                     const auto &cfg = EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig();
                     const float orthoHalfExtent = cfg.ShadowOrthoProjectionHalfExtent;
-                    const auto shadowAtlasSize = JsonParserHelper::FromJsonToInt("shadowAtlasSize", jsonObj);
+                    const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
                     const auto &directionalLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize));
                     shadowInfo = std::make_shared<ProjectedDirectionalLightShadowInfo>(directionalLightTAR, orthoHalfExtent);
                 }
@@ -134,18 +134,18 @@ namespace EngineCore
             }
             else if ("SpotlightComponent" == componentType)
             {
-                const auto translation = JsonParserHelper::FromJsonToVec3("translation", jsonObj);
-                const auto rotation = JsonParserHelper::FromJsonToVec3("rotation", jsonObj);
-                const auto ambient = JsonParserHelper::FromJsonToVec3Color("ambient", jsonObj);
-                const auto diffuse = JsonParserHelper::FromJsonToVec3Color("diffuse", jsonObj);
-                const auto specular = JsonParserHelper::FromJsonToVec3Color("specular", jsonObj);
-                const auto attenutation = JsonParserHelper::FromJsonToVec3("attenutation", jsonObj);
-                const auto radianceRadius = JsonParserHelper::FromJsonToFloat("radianceRadius", jsonObj);
-                const auto cutoff = JsonParserHelper::FromJsonToFloat("cutoff", jsonObj);
+                const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
+                const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
+                const auto ambient = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["ambient"]);
+                const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
+                const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
+                const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenutation"]);
+                const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["radianceRadius"]);
+                const auto cutoff = nlohmann_utilities::GetFloatFromJson(jsonObj["cutoff"]);
                 std::shared_ptr<ProjectedShadowInfo> shadowInfo;
                 if (jsonObj.contains("shadowAtlasSize"))
                 {
-                    const auto shadowAtlasSize = JsonParserHelper::FromJsonToInt("shadowAtlasSize", jsonObj);
+                    const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
                     const auto &pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize));
                     shadowInfo = std::make_shared<ProjectedSpotlightShadowInfo>(pointLightTAR);
                 }
@@ -154,12 +154,12 @@ namespace EngineCore
             }
             else if ("StaticMeshComponent" == componentType || "SkeletalMeshComponent" == componentType)
             {
-                const auto pathToMesh = JsonParserHelper::FromJsonToString("meshName", jsonObj);
-                const auto translation = JsonParserHelper::FromJsonToVec3("translation", jsonObj);
-                const auto rotation = JsonParserHelper::FromJsonToVec3("rotation", jsonObj);
-                const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
-                const auto luaScriptRelPath = JsonParserHelper::FromJsonToString("luaScriptName", jsonObj);
-                const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
+                const auto pathToMesh = nlohmann_utilities::GetStringFromJson(jsonObj["meshName"]);
+                const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
+                const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
+                const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
+                const auto luaScriptRelPath = nlohmann_utilities::GetStringFromJson(jsonObj["luaScriptName"]);
+                const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj["materialProxyId"]);
                 const auto &material = sceneSp->GetMaterialByProxyId(materialProxyId);
                 assert(material);
 
@@ -169,27 +169,27 @@ namespace EngineCore
             {
                 std::shared_ptr<PhysicsDescriptor> descriptor;
                 std::shared_ptr<CollisionShapeBase> collisionShape;
-                const auto collisionShapeStr = JsonParserHelper::FromJsonToString("collisionShape", jsonObj);
+                const auto collisionShapeStr = nlohmann_utilities::GetStringFromJson(jsonObj["collisionShape"]);
                 if ("box" == collisionShapeStr)
                 {
-                    const auto halfExtent = JsonParserHelper::FromJsonToVec3("halfExtent", jsonObj);
+                    const auto halfExtent = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["halfExtent"]);
                     collisionShape = std::make_shared<CollisionBoxShape>(halfExtent);
                 }
                 else if ("capsule" == collisionShapeStr)
                 {
-                    const auto radius = JsonParserHelper::FromJsonToFloat("radius", jsonObj);
-                    const auto height = JsonParserHelper::FromJsonToFloat("height", jsonObj);
+                    const auto radius = nlohmann_utilities::GetFloatFromJson(jsonObj["radius"]);
+                    const auto height = nlohmann_utilities::GetFloatFromJson(jsonObj["height"]);
                     collisionShape = std::make_shared<CollisionCapsuleShape>(radius, height);
                 }
                 else if ("plane" == collisionShapeStr)
                 {
-                    const auto normal = JsonParserHelper::FromJsonToVec3("normal", jsonObj);
-                    const auto d = JsonParserHelper::FromJsonToFloat("d", jsonObj);
+                    const auto normal = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["normal"]);
+                    const auto d = nlohmann_utilities::GetFloatFromJson(jsonObj["d"]);
                     collisionShape = std::make_shared<CollisionPlaneShape>(normal, d);
                 }
                 else if ("sphere" == collisionShapeStr)
                 {
-                    const auto radius = JsonParserHelper::FromJsonToFloat("radius", jsonObj);
+                    const auto radius = nlohmann_utilities::GetFloatFromJson(jsonObj["radius"]);
                     collisionShape = std::make_shared<CollisionSphereShape>(radius);
                 }
                 else if ("compoundShape" == collisionShapeStr)
@@ -206,18 +206,18 @@ namespace EngineCore
                     }*/
                 }
 
-                const auto mass = JsonParserHelper::FromJsonToFloat("mass", jsonObj);
+                const auto mass = nlohmann_utilities::GetFloatFromJson(jsonObj["mass"]);
                 if ("RigidBodyPhysicsComponent" == componentType)
                 {
-                    const auto physicsBodyType = static_cast<ePhysicsBodyType>(JsonParserHelper::FromJsonToInt("physicsBodyType", jsonObj));
+                    const auto physicsBodyType = static_cast<ePhysicsBodyType>(nlohmann_utilities::GetIntFromJson(jsonObj["physicsBodyType"]));
                     descriptor = std::make_shared<RigidBodyController>(sceneSp->GetPhysicsWorld(), collisionShape, physicsBodyType, mass);
                 }
                 else if ("CharacterPhysicsComponent" == componentType)
                 {
-                    const auto capsuleRadius = JsonParserHelper::FromJsonToFloat("capsuleRadius", jsonObj);
-                    const auto capsuleHeight = JsonParserHelper::FromJsonToFloat("capsuleHeight", jsonObj);
+                    const auto capsuleRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["capsuleRadius"]);
+                    const auto capsuleHeight = nlohmann_utilities::GetFloatFromJson(jsonObj["capsuleHeight"]);
 
-                    const auto stepHeight = JsonParserHelper::FromJsonToFloat("stepHeight", jsonObj);
+                    const auto stepHeight = nlohmann_utilities::GetFloatFromJson(jsonObj["stepHeight"]);
                     descriptor = std::make_shared<DynamicCharacterController>(sceneSp->GetPhysicsWorld(), capsuleRadius, capsuleHeight, mass, stepHeight);
                 }
                 else if ("GhostPhysicsComponent" == componentType)
@@ -229,19 +229,19 @@ namespace EngineCore
             }
             else if ("HumanoidPhysicsMovementComponent" == componentType)
             {
-                const auto launchDirection = JsonParserHelper::FromJsonToVec3("launchDirection", jsonObj);
-                const auto cameraName = JsonParserHelper::FromJsonToString("cameraName", jsonObj);
+                const auto launchDirection = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["launchDirection"]);
+                const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj["cameraName"]);
                 componentData = std::make_shared<HumanoidMovementComponentData>(objectName, launchDirection, cameraName);
             }
             else if ("PlatformTraverseComponent" == componentType)
             {
-                const auto scriptName = JsonParserHelper::FromJsonToString("scriptName", jsonObj);
+                const auto scriptName = nlohmann_utilities::GetStringFromJson(jsonObj["scriptName"]);
                 componentData = std::make_shared<PlatformTraverseComponentData>(objectName, scriptName);
             }
             else if ("SkyboxComponent" == componentType)
             {
-                const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
-                const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
+                const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
+                const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj["materialProxyId"]);
                 const auto &material = sceneSp->GetMaterialByProxyId(materialProxyId);
                 assert(material);
 
@@ -249,26 +249,26 @@ namespace EngineCore
             }
             else if ("WaterPlaneComponent" == componentType)
             {
-                const auto translation = JsonParserHelper::FromJsonToVec3("translation", jsonObj);
-                const auto rotation = JsonParserHelper::FromJsonToVec3("rotation", jsonObj);
-                const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
-                const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
+                const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
+                const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
+                const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
+                const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj["materialProxyId"]);
                 const auto &material = sceneSp->GetMaterialByProxyId(materialProxyId);
                 assert(material);
                 componentData = std::make_shared<MeshComponentData>("", objectName, translation, rotation, scale, "", material);
             }
             else if ("PlanarReflectionComponent" == componentType)
             {
-                const auto translation = JsonParserHelper::FromJsonToVec3("translation", jsonObj);
-                const auto rotation = JsonParserHelper::FromJsonToVec3("rotation", jsonObj);
-                const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
-                const auto cameraName = JsonParserHelper::FromJsonToString("cameraName", jsonObj);
+                const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
+                const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
+                const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
+                const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj["cameraName"]);
                 const auto ownerCameraSp = sceneSp->GetCamera(cameraName);
                 assert(ownerCameraSp);
-                const auto viewPortX = JsonParserHelper::FromJsonToInt("viewPortX", jsonObj);
-                const auto viewPortY = JsonParserHelper::FromJsonToInt("viewPortY", jsonObj);
-                const auto viewPortWidth = JsonParserHelper::FromJsonToInt("viewPortWidth", jsonObj);
-                const auto viewPortHeight = JsonParserHelper::FromJsonToInt("viewPortHeight", jsonObj);
+                const auto viewPortX = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortX"]);
+                const auto viewPortY = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortY"]);
+                const auto viewPortWidth = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortWidth"]);
+                const auto viewPortHeight = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortHeight"]);
                 componentData = std::make_shared<PlanarReflectionComponentData>(objectName,
                                                                                 translation,
                                                                                 rotation,

@@ -82,8 +82,6 @@ namespace EngineCore
             void SyncDataOnRenderThread();
 
             void SyncDataOnLuaThread();
-
-            glm::vec3 ExtractRGBColorFromJsonByKey(const nlohmann::json& jsonObject, const std::string& key);
         };
     }
 }

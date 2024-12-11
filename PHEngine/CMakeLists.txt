@@ -28,16 +28,22 @@ endif()
 find_package(OpenGL REQUIRED)
 find_package(OpenAL REQUIRED)
 
+option(ENABLE_LIBUNWIND "Enables compilation of libunwind dependent code" OFF)
+
+if(ENABLE_LIBUNWIND)
+    add_compile_definitions(
+        USE_LIBUNWIND
+    )
+endif(ENABLE_LIBUNWIND)
+
 add_compile_definitions(
     GLM_ENABLE_EXPERIMENTAL
     BT_USE_DOUBLE_PRECISION
 )
 
-add_subdirectory(Logger/TinyLogger)
 add_subdirectory(PHEngine/src)
-#add_subdirectory(TinyGame)
 add_subdirectory(GalaxyDefense)
-
-
-
-
+add_subdirectory(Logger/TinyLogger)
+if(ENABLE_LIBUNWIND)
+    add_subdirectory(UnwindTool)
+endif(ENABLE_LIBUNWIND)

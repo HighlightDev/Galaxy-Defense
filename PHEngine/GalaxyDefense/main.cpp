@@ -13,6 +13,12 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Engine.h"
 
+#ifdef USE_LIBUNWIND
+#include "TinyUnwinder.h"
+#include <signal.h>
+#include <stdlib.h>
+#endif
+
 using namespace EngineCore;
 using namespace EngineUtility;
 using namespace Game;
@@ -150,8 +156,21 @@ void window_position_changed_callback(GLFWwindow *window, int xpos, int ypos)
   DisplayDeviceDataProvider::GetInstance()->SetWindowPos(xpos, ypos);
 }
 
+#ifdef USE_LIBUNWIND
+
+void handler(int sig)
+{
+  Tools::Unwind::TinyUnwinder unwinder;
+  LogInfo("Callstack BackTrace: \n", unwinder.GetStackBacktraceStr());
+  Logger::StopLogThread(); // join logger thread
+  exit(1);
+}
+#endif
+
 int32_t main(int32_t argc, char **argv)
 {
+  signal(SIGSEGV, handler); // install our handler
+
   ThreadHelper::GetInstance()->RegisterThread("Render");
   FolderManager::GetInstance()->BuildSystemPathToFolders();
   EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");

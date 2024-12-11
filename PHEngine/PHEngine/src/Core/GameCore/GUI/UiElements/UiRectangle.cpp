@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/UtilityCore/JsonUtilities.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiRectangleLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
@@ -153,28 +154,7 @@ namespace EngineCore
             const auto &jsonObj = nlohmann::json::parse(luaJsonPropsStr);
             if (jsonObj.contains("color"))
             {
-                const auto colorProps = jsonObj["color"];
-                glm::vec3 color;
-                for (auto it = colorProps.cbegin(); it != colorProps.cend(); ++it)
-                {
-                    const auto key = it.key();
-                    if ("r" == key)
-                    {
-                        color.r = it->get<float>();
-                    }
-                    else if ("g" == key)
-                    {
-                        color.g = it->get<float>();
-                    }
-                    else if ("b" == key)
-                    {
-                        color.b = it->get<float>();
-                    }
-                    else
-                    {
-                        assert(false);
-                    }
-                }
+                const glm::vec3 color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["color"]);
                 if (!EngineMath::CheckSimilarityVec3(color, mColor))
                 {
                     mColor = color;

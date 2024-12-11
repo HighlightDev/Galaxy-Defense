@@ -5,7 +5,7 @@
 #include "Core/GraphicsCore/SceneViewInfo/ViewProjectionInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewOrthographicInfo.h"
-#include "Core/GameCore/ScriptingCore/Common/JsonParserHelper.h"
+#include "Core/UtilityCore/JsonUtilities.h"
 
 #include <json/json.hpp>
 
@@ -130,24 +130,24 @@ namespace EngineCore
    std::shared_ptr<ViewProjectionInfo> EngineObjectCreator::CreateViewProjectionInfo(const std::string &jsonArgs) const
    {
       const auto &jsonObj = nlohmann::json::parse(jsonArgs);
-      const auto &projectionType = JsonParserHelper::FromJsonToString("projectionType", jsonObj);
+      const auto &projectionType = nlohmann_utilities::GetStringFromJson(jsonObj["projectionType"]);
 
       if ("Perspective" == projectionType)
       {
-         const float fov = JsonParserHelper::FromJsonToFloat("FoV", jsonObj);
-         const float aspectRatio = JsonParserHelper::FromJsonToFloat("AspectRatio", jsonObj);
-         const float nearPlane = JsonParserHelper::FromJsonToFloat("NearPlane", jsonObj);
-         const float farPlane = JsonParserHelper::FromJsonToFloat("FarPlane", jsonObj);
+         const float fov = nlohmann_utilities::GetFloatFromJson(jsonObj["FoV"]);
+         const float aspectRatio = nlohmann_utilities::GetFloatFromJson(jsonObj["AspectRatio"]);
+         const float nearPlane = nlohmann_utilities::GetFloatFromJson(jsonObj["NearPlane"]);
+         const float farPlane = nlohmann_utilities::GetFloatFromJson(jsonObj["FarPlane"]);
          return std::make_shared<ViewPerspectiveInfo>(fov, aspectRatio, nearPlane, farPlane);
       }
       else if ("Orthographic" == projectionType)
       {
-         const float left = JsonParserHelper::FromJsonToFloat("left", jsonObj);
-         const float right = JsonParserHelper::FromJsonToFloat("right", jsonObj);
-         const float bottom = JsonParserHelper::FromJsonToFloat("bottom", jsonObj);
-         const float top = JsonParserHelper::FromJsonToFloat("top", jsonObj);
-         const float zNear = JsonParserHelper::FromJsonToFloat("zNear", jsonObj);
-         const float zFar = JsonParserHelper::FromJsonToFloat("zFar", jsonObj);
+         const float left = nlohmann_utilities::GetFloatFromJson(jsonObj["left"]);
+         const float right = nlohmann_utilities::GetFloatFromJson(jsonObj["right"]);
+         const float bottom = nlohmann_utilities::GetFloatFromJson(jsonObj["bottom"]);
+         const float top = nlohmann_utilities::GetFloatFromJson(jsonObj["top"]);
+         const float zNear = nlohmann_utilities::GetFloatFromJson(jsonObj["zNear"]);
+         const float zFar = nlohmann_utilities::GetFloatFromJson(jsonObj["zFar"]);
          return std::make_shared<ViewOrthographicInfo>(left, right, bottom, top, zNear, zFar);
       }
 
