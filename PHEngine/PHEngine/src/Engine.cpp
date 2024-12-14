@@ -95,12 +95,14 @@ namespace EngineCore
       m_luaThread = std::thread(std::bind(&Engine::LuaThreadPulse, this));
 
 #if DEBUG
-      m_echoTimer.SetIntervalMs(2000);
-      m_echoTimer.SetIsRepeat(true);
-      m_echoTimer.SetIsPausable(false);
-      m_echoTimer.SetCallback([]()
-                              { LogInfo("EchoTimer::Timeout => Time passed: 2 seconds"); });
-      m_echoTimer.StartTimer();
+      m_resourceConsumptionLogTimer.SetIntervalMs(3000);
+      m_resourceConsumptionLogTimer.SetIsRepeat(true);
+      m_resourceConsumptionLogTimer.SetIsPausable(false);
+      m_resourceConsumptionLogTimer.SetCallback([resObs = &mResourceUsageObserver]() { 
+         resObs->CollectResourceConsumptionInfo();
+         LogInfo("Pid:", resObs->GetPid(), " mem mb:", resObs->GetLastMemoryUsageMegabytes());
+      });
+      m_resourceConsumptionLogTimer.StartTimer();
 #endif
 
       const auto &thisSp = std::dynamic_pointer_cast<Engine>(shared_from_this());

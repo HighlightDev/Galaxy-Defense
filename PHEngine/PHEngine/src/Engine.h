@@ -11,6 +11,10 @@
 #include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/CommonCore/Timer.h"
 
+#if DEBUG
+#include "Core/CommonCore/ResourceUsageObserver.h"
+#endif
+
 #include <thread>
 #include <chrono>
 #include <atomic>
@@ -42,7 +46,7 @@ namespace EngineCore
 
         std::shared_ptr<InputManager> mInputManager;
 
-        std::shared_ptr<ILevelFactory> m_levelFactory; 
+        std::shared_ptr<ILevelFactory> m_levelFactory;
 
         std::shared_ptr<Level> m_level;
 
@@ -72,7 +76,9 @@ namespace EngineCore
         bool bExitGame{false};
 
 #if DEBUG
-        GameThreadTimer m_echoTimer;
+        ResourceUsageObserver mResourceUsageObserver;
+
+        GameThreadTimer m_resourceConsumptionLogTimer;
 #endif
 
     public:
@@ -82,13 +88,13 @@ namespace EngineCore
 
         void Initialize();
 
-        void SetLevelFactory(const std::shared_ptr<ILevelFactory>& lvlFactory);
+        void SetLevelFactory(const std::shared_ptr<ILevelFactory> &lvlFactory);
 
         void PreLevelInit();
 
         void OnLevelInit();
 
-        void PlayLevel(const std::string& levelName);
+        void PlayLevel(const std::string &levelName);
 
         void PostLevelInit();
 
