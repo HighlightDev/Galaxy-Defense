@@ -61,7 +61,7 @@ add_compile_definitions(
     BT_USE_DOUBLE_PRECISION
 )
 
-add_subdirectory(PHEngine/src)
+add_subdirectory(PHEngine)
 add_subdirectory(GalaxyDefense)
 add_subdirectory(Logger/TinyLogger)
 if(ENABLE_LIBUNWIND)

@@ -1,3 +1,6 @@
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/PHEngine/cmake)
+include(Utility)
+
 set(
     HEADERS
     src/Implementation/Components/MovementComponents/OnRouteMovementComponent.h
@@ -217,6 +220,19 @@ target_include_directories(${EXECUTABLE_NAME}
     PUBLIC ${NLOHMANN_JSON_INCLUDE}
 )
 
+set(BULLET_LIBS
+    Bullet3Collision
+    BulletCollision
+    Bullet3Common
+    Bullet3Dynamics
+    Bullet3Geometry
+    BulletDynamics
+    LinearMath
+    BulletInverseDynamics
+    ConvexDecomposition
+    BulletRobotics
+    BulletSoftBody)
+
 set(LIB_LOCATION_PREFIX "")
 if(WIN32)
     message("ARCH_x64: ${ARCH_x64}")
@@ -226,79 +242,17 @@ if(WIN32)
         set(LIB_LOCATION_PREFIX Win/x86/)
     endif(ARCH_x64)
 
-    find_library(GLEW_LIBRARIES glew32 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/lib/${LIB_LOCATION_PREFIX}/Release/)
-    if(NOT GLEW_LIBRARIES)
-        message(FATAL_ERROR "GLEW libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${GLEW_LIBRARIES})
-    endif()
-
-    find_library(LUA_LIBRARIES lua54 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    if(NOT LUA_LIBRARIES)
-        message(FATAL_ERROR "Lua libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LUA_LIBRARIES})
-    endif()
-
-    find_library(ASSIMP_LIBRARIES assimp-vc143-mtd ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    if(NOT ASSIMP_LIBRARIES)
-        message(FATAL_ERROR "Assimp libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${ASSIMP_LIBRARIES})
-    endif()
-
-    find_library(BULLET3COLLISION_LIBRARIES Bullet3Collision ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(BULLETCOLLISION_LIBRARIES BulletCollision ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(BULLET3COMMON_LIBRARIES Bullet3Common ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(BULLET3DYNAMICS_LIBRARIES Bullet3Dynamics ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(BULLET3GEOMETRY_LIBRARIES Bullet3Geometry ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(BULLETDYNAMICS_LIBRARIES BulletDynamics ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(BULLETLINEARMATH_LIBRARIES LinearMath ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(BULLETINVERSEDYNAMICS_LIBRARIES BulletInverseDynamics ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(CONVEXDECOMPOSITION_LIBRARIES ConvexDecomposition ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(BULLETROBOTICS_LIBRARIES BulletRobotics ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    find_library(BULLETSOFTBODY_LIBRARIES BulletSoftBody ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    if(NOT BULLET3DYNAMICS_LIBRARIES
-        OR NOT BULLET3COLLISION_LIBRARIES
-        OR NOT BULLETCOLLISION_LIBRARIES
-        OR NOT BULLET3COMMON_LIBRARIES
-        OR NOT BULLET3GEOMETRY_LIBRARIES
-        OR NOT BULLETDYNAMICS_LIBRARIES
-        OR NOT BULLETLINEARMATH_LIBRARIES
-        OR NOT BULLETINVERSEDYNAMICS_LIBRARIES
-        OR NOT CONVEXDECOMPOSITION_LIBRARIES
-        OR NOT BULLETROBOTICS_LIBRARIES
-        OR NOT BULLETSOFTBODY_LIBRARIES)
-        message(FATAL_ERROR "BulletPhysics libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC
-            PUBLIC ${BULLETCOLLISION_LIBRARIES}
-            PUBLIC ${BULLET3COLLISION_LIBRARIES}
-            PUBLIC ${BULLET3DYNAMICS_LIBRARIES}
-            PUBLIC ${BULLETDYNAMICS_LIBRARIES}
-            PUBLIC ${BULLET3COMMON_LIBRARIES}
-            PUBLIC ${BULLET3GEOMETRY_LIBRARIES}
-            PUBLIC ${BULLETLINEARMATH_LIBRARIES}
-            PUBLIC ${BULLETINVERSEDYNAMICS_LIBRARIES}
-            PUBLIC ${CONVEXDECOMPOSITION_LIBRARIES}
-            PUBLIC ${BULLETROBOTICS_LIBRARIES}
-            PUBLIC ${BULLETSOFTBODY_LIBRARIES}
-        )
-    endif()
-
-
-    find_library(SNDFILE_LIBRARIES sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    if(NOT SNDFILE_LIBRARIES)
-        message(FATAL_ERROR "SndFile libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${SNDFILE_LIBRARIES})
-    endif()
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC glew32 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/lib/${LIB_LOCATION_PREFIX}/Release/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC lua54 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/lib/${LIB_LOCATION_PREFIX}/Debug/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC assimp-vc143-mtd ${ENGINE_DEPENDENCIES_DIR}/Assimp/lib/${LIB_LOCATION_PREFIX}/Debug/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC glfw3 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/${LIB_LOCATION_PREFIX}/)
+    findLibrariesAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC BULLET_LIBS ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
 elseif(UNIX)
     set(LIB_LOCATION_PREFIX "Unix")
 
     target_link_libraries(${EXECUTABLE_NAME} PRIVATE X11)
     target_link_libraries(${EXECUTABLE_NAME} PRIVATE Threads::Threads)
-
 
     if(NOT CMAKE_DL_LIBS)
         message(FATAL_ERROR "DL library wasn't found!")
@@ -306,80 +260,12 @@ elseif(UNIX)
         target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${CMAKE_DL_LIBS})
     endif()
 
-    find_library(GLEW_LIBRARIES GLEW ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/lib/Unix/)
-    if(NOT GLEW_LIBRARIES)
-        message(FATAL_ERROR "GLEW libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${GLEW_LIBRARIES})
-    endif()
-
-    find_library(LUA_LIBRARIES lua ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/lib/Unix/Release/)
-    if(NOT LUA_LIBRARIES)
-        message(FATAL_ERROR "Lua libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LUA_LIBRARIES})
-    endif()
-
-    find_library(ASSIMP_LIBRARIES assimp ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/lib/Unix/Release/)
-    if(NOT ASSIMP_LIBRARIES)
-        message(FATAL_ERROR "Assimp libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${ASSIMP_LIBRARIES})
-    endif()
-
-    find_library(BULLET3COLLISION_LIBRARIES Bullet3Collision ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(BULLETCOLLISION_LIBRARIES BulletCollision ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(BULLET3COMMON_LIBRARIES Bullet3Common ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(BULLET3DYNAMICS_LIBRARIES Bullet3Dynamics ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(BULLET3GEOMETRY_LIBRARIES Bullet3Geometry ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(BULLETDYNAMICS_LIBRARIES BulletDynamics ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(BULLETLINEARMATH_LIBRARIES LinearMath ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(BULLETINVERSEDYNAMICS_LIBRARIES BulletInverseDynamics ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(CONVEXDECOMPOSITION_LIBRARIES ConvexDecomposition ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(BULLETROBOTICS_LIBRARIES BulletRobotics ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    find_library(BULLETSOFTBODY_LIBRARIES BulletSoftBody ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-    if(NOT BULLET3DYNAMICS_LIBRARIES
-        OR NOT BULLET3COLLISION_LIBRARIES
-        OR NOT BULLETCOLLISION_LIBRARIES
-        OR NOT BULLET3COMMON_LIBRARIES
-        OR NOT BULLET3GEOMETRY_LIBRARIES
-        OR NOT BULLETDYNAMICS_LIBRARIES
-        OR NOT BULLETLINEARMATH_LIBRARIES
-        OR NOT BULLETINVERSEDYNAMICS_LIBRARIES
-        OR NOT CONVEXDECOMPOSITION_LIBRARIES
-        OR NOT BULLETROBOTICS_LIBRARIES
-        OR NOT BULLETSOFTBODY_LIBRARIES)
-        message(FATAL_ERROR "BulletPhysics libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC
-            PUBLIC ${BULLETCOLLISION_LIBRARIES}
-            PUBLIC ${BULLET3COLLISION_LIBRARIES}
-            PUBLIC ${BULLET3DYNAMICS_LIBRARIES}
-            PUBLIC ${BULLETDYNAMICS_LIBRARIES}
-            PUBLIC ${BULLET3COMMON_LIBRARIES}
-            PUBLIC ${BULLET3GEOMETRY_LIBRARIES}
-            PUBLIC ${BULLETLINEARMATH_LIBRARIES}
-            PUBLIC ${BULLETINVERSEDYNAMICS_LIBRARIES}
-            PUBLIC ${CONVEXDECOMPOSITION_LIBRARIES}
-            PUBLIC ${BULLETROBOTICS_LIBRARIES}
-            PUBLIC ${BULLETSOFTBODY_LIBRARIES}
-        )
-    endif()
-
-    find_library(SNDFILE_LIBRARIES sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/Unix/)
-    if(NOT SNDFILE_LIBRARIES)
-        message(FATAL_ERROR "SndFile libraries were not found!")
-    else()
-        target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${SNDFILE_LIBRARIES})
-    endif()
-endif()
-
-## COMMON LIBRARIES
-find_library(GLFW_LIBRARIES glfw3 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/${LIB_LOCATION_PREFIX}/)
-if(NOT GLFW_LIBRARIES)
-    message(FATAL_ERROR "GLFW libraries were not found!")
-else()
-    target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${GLFW_LIBRARIES})
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC assimp ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/lib/Unix/Release/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC lua ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/lib/Unix/Release/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC GLEW ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/lib/Unix/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/Unix/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC glfw3 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/Unix/)
+    findLibrariesAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC BULLET_LIBS ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
 endif()
 
 target_link_libraries(${EXECUTABLE_NAME}
