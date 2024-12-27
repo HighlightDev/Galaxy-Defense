@@ -169,7 +169,9 @@ void handler(int sig)
 
 int32_t main(int32_t argc, char **argv)
 {
+#ifdef USE_LIBUNWIND
   signal(SIGSEGV, handler); // install our handler
+#endif
 
   ThreadHelper::GetInstance()->RegisterThread("Render");
   FolderManager::GetInstance()->BuildSystemPathToFolders();
@@ -184,8 +186,8 @@ int32_t main(int32_t argc, char **argv)
   if (!glfwInit())
     return -1;
 
-  // auto width = 1200;
-  // auto height = 900;
+  auto width = 1200;
+   auto height = 900;
   GLFWmonitor *activeMonitor = nullptr;
   int monitorsCount = 0;
   GLFWmonitor **monitors = glfwGetMonitors(&monitorsCount);
@@ -200,9 +202,9 @@ int32_t main(int32_t argc, char **argv)
   }
   // Create a windowed mode window and its OpenGL context
   get_screen_rezolution(activeMonitor);
-  const auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
-  const auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
-  window = glfwCreateWindow(width, height, "PHEngine", activeMonitor, NULL);
+  //const auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
+  //const auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
+  window = glfwCreateWindow(width, height, "PHEngine", nullptr, NULL);
   LogInfo("main => glfwWindow create with size: width = ", width, " height = ", height);
 
   if (!window)

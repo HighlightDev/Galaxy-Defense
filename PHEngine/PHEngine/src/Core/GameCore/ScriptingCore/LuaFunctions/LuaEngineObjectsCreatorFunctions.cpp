@@ -72,6 +72,7 @@ namespace EngineCore
       void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper &luaWrapper)
       {
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync, this, std::placeholders::_1), "_LazyLoadResourcesAsync");
+         LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::OpenAudioStreams"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::OpenAudioStreams, this, std::placeholders::_1), "_OpenAudioStreams");
 
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateActor"), int32_t(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateActor, this, std::placeholders::_1), "_CreateActor");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateAndAttachComponentToActor"), void(int32_t /*actorObjectId*/, std::string /*componentType*/, std::string /*component data json*/)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateAndAttachComponentToActor, this, std::placeholders::_1), "_CreateAndAttachComponentToActor");
@@ -104,6 +105,19 @@ namespace EngineCore
          }
 
          ResourceMap::GetInstance()->WaitUntilResourcesLoad();
+      }
+
+      void LuaEngineObjectsCreatorFunctions::OpenAudioStreams(const std::tuple<std::string> &dataNames)
+      {
+         const std::string &audioNamesStr = std::get<0>(dataNames);
+         assert(!audioNamesStr.empty());
+
+         const std::vector<std::string> &audioNames = Split(audioNamesStr, ',');
+         for (std::string audioName : audioNames)
+         {
+            audioName = Trim(audioName);
+            ResourceMap::GetInstance()->OpenAudioStream(audioName);
+         }
       }
 
       /* -------------------  Create Actor ----------------------------*/

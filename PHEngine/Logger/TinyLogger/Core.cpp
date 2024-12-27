@@ -1,6 +1,7 @@
 #include "Core.h"
 
 #include <algorithm>
+#include <functional>
 
 namespace TinyLogger
 {

@@ -19,7 +19,7 @@ namespace EngineUtility
 
 	const char *get_module_file_name(HMODULE module)
 	{
-		size_t size = 1;
+		DWORD size = 1;
 		char *buffer;
 		for (;;)
 		{

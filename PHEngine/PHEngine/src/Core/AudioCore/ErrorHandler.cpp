@@ -12,25 +12,23 @@ namespace EngineCore
             switch (error)
             {
             case AL_INVALID_NAME:
-                LogInfo("AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function");
+                LogInfo("OpenAL::CheckAlErrors => AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function");
                 break;
             case AL_INVALID_ENUM:
-                LogInfo("AL_INVALID_ENUM: an invalid enum value was passed to an OpenAL function");
+                LogInfo("OpenAL::CheckAlErrors => AL_INVALID_ENUM: an invalid enum value was passed to an OpenAL function");
                 break;
             case AL_INVALID_VALUE:
-                LogInfo("AL_INVALID_VALUE: an invalid value was passed to an OpenAL function");
+                LogInfo("OpenAL::CheckAlErrors => AL_INVALID_VALUE: an invalid value was passed to an OpenAL function");
                 break;
             case AL_INVALID_OPERATION:
-                LogInfo("AL_INVALID_OPERATION: the requested operation is not valid");
+                LogInfo("OpenAL::CheckAlErrors => AL_INVALID_OPERATION: the requested operation is not valid");
                 break;
             case AL_OUT_OF_MEMORY:
-                LogInfo("AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory");
+                LogInfo("OpenAL::CheckAlErrors => AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory");
                 break;
             default:
-                LogInfo("UNKNOWN AL ERROR: ", error);
+                LogInfo("OpenAL::CheckAlErrors => UNKNOWN AL ERROR: ", error);
             }
-
-            assert(false);
         }
     }
 

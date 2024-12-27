@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <cstddef>
 #include <climits>
+#include <cstdint>
 
 namespace EngineCore
 {

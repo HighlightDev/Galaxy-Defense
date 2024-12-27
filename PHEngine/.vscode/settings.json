@@ -79,7 +79,8 @@
         "concepts": "cpp",
         "ranges": "cpp",
         "stop_token": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "stb_vorbis.c": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "Lua.diagnostics.globals": [
@@ -131,7 +132,8 @@
         "_SendBroadcastGameThreadEvent",
         "_AddUiItemSequenceAnimation",
         "_StartUiItemSequenceAnimation",
-        "_SetBindingToMaterial"
+        "_SetBindingToMaterial",
+        "_OpenAudioStreams"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

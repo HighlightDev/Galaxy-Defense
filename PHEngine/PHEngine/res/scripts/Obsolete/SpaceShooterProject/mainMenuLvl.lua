@@ -36,7 +36,7 @@ local function initialize(host)
 		,nightBottom.jpg
 		,nightBack.jpg
 		,nightFront.jpg
-        ,piano-loop2.wav
+        ,piano-loop2.ogg
 		]])
 
     _CreateFirstPersonCamera(host,

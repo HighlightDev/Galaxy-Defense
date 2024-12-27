@@ -55,6 +55,8 @@ namespace EngineCore
          /* -------------------  Load asynchronously resources by names ----------------------------*/
          void LazyLoadResourcesAsync(const std::tuple<std::string> &dataNames);
 
+         void OpenAudioStreams(const std::tuple<std::string> &dataName);
+
          /* -------------------  Create Actor ----------------------------*/
          int32_t CreateActor(const std::tuple<std::string /*Actor type*/,
                                               std::string /*Actor name*/,

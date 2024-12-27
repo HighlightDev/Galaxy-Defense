@@ -1,32 +1,52 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
-#set(PROJECT_NAME TinyGame)
 set(PROJECT_NAME GalaxyDefenseProject)
 
 project(${PROJECT_NAME} VERSION 1.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+if(WIN32)
+    if(MSVC)
+        add_compile_options(/bigobj)
+    else()
+        add_compile_options(-Wa,-mbig-obj)
+    endif()
 
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX17)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. Please use a different C++ compiler.")
-endif()
+    option(ARCH_x64 "Build for architecture x64. Default is x86" TRUE)
+    if(ARCH_x64)
+        message("Compile for x64 architecture.")
+    else()
+        message("Compile for x86 architecture.")
+    endif()
+endif(WIN32)
+
 
 if(UNIX)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+
+    include(CheckCXXCompilerFlag)
+    CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
+    CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+    if(COMPILER_SUPPORTS_CXX17)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+    elseif(COMPILER_SUPPORTS_CXX0X)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    else()
+        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. Please use a different C++ compiler.")
+    endif()
+
     find_package(X11 REQUIRED)
     find_package(Threads REQUIRED)
+    find_package(OpenAL REQUIRED)
+
+elseif(WIN32)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED True)
+    set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
 find_package(OpenGL REQUIRED)
-find_package(OpenAL REQUIRED)
 
 option(ENABLE_LIBUNWIND "Enables compilation of libunwind dependent code" OFF)
 

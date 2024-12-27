@@ -2,6 +2,9 @@
 
 #include "Implementation/LevelProgressSystem/ILevelRequirementTracker.h"
 
+#include <stdint.h>
+#include <cstdint>
+
 namespace Game
 {
     class DestroySpaceshipsTracker

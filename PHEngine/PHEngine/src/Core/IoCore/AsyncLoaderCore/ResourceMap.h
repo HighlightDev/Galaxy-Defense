@@ -21,6 +21,8 @@ namespace IO
 
       std::map<std::string, Resource *> ReadyToReadResources;
 
+      std::map<std::string, AudioStreamResource*> AudioStreamResources;
+
    public:
       std::unique_ptr<AsyncDataProxy> mAsyncDataProxy;
 
@@ -29,6 +31,8 @@ namespace IO
       void AllocateAsync(const std::string &key);
 
       void AllocateSync(const std::string &key);
+
+      void OpenAudioStream(const std::string &key);
 
       void WaitUntilResourcesLoad();
 

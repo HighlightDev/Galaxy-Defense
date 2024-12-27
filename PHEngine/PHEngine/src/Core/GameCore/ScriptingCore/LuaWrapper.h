@@ -4,6 +4,8 @@
 #include <unordered_set>
 #include <list>
 #include <vector>
+#include <stdint.h>
+#include <cstdint>
 
 extern "C"
 {

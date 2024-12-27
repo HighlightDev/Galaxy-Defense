@@ -14,19 +14,8 @@ namespace Graphics
          , bTransitionEnabled(false)
       {
          assert(m_animatedSkin);
-
-         // TODO: TEMP SOLUTION
-         bool bResult = false;
-         if (m_animatedSkin->GetAnimatedMeshData()->AnimationIndices.size() > 5)
-         {
-            bResult = SetSrcAnimationByIndex(8);
-         }
-         else
-         {
-            bResult = SetSrcAnimationByIndex(0);
-         }
-
-         assert((bResult));
+         const auto bResult = SetSrcAnimationByIndex(0);
+         assert(bResult);
       }
 
       bool AnimationPlayer::SetDstAnimationByIndex(const size_t index)

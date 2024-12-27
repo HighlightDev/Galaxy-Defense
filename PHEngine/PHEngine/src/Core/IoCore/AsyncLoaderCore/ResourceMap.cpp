@@ -32,7 +32,7 @@ namespace IO
 
    ResourceMap *ResourceMap::GetInstance()
    {
-      static ResourceMap instance; 
+      static ResourceMap instance;
       return &instance;
    }
 
@@ -49,7 +49,14 @@ namespace IO
          delete resource;
       }
 
+      for (auto &[streamName, audioStreamResouce] : AudioStreamResources)
+      {
+         audioStreamResouce->Clear();
+         delete audioStreamResouce;
+      }
+
       ReadyToReadResources.clear();
+      AudioStreamResources.clear();
       mAsyncDataProxy->ResourcesMap.clear();
    }
 
@@ -59,16 +66,18 @@ namespace IO
 
    bool ResourceMap::TryGetResource(Resource *&outResource, const std::string &key)
    {
-      const bool bValid = ReadyToReadResources.count(key) > 0;
+      const bool bIsValidResource = ReadyToReadResources.count(key) > 0;
+      const bool bIsValidAudioStreamResource = AudioStreamResources.count(key) > 0;
 
-      if (bValid)
+      if (bIsValidResource || bIsValidAudioStreamResource)
       {
-         outResource = ReadyToReadResources[key];
+         outResource = bIsValidResource ? ReadyToReadResources[key]
+                                        : AudioStreamResources[key];
       }
 
-      return bValid;
+      return bIsValidResource || bIsValidAudioStreamResource;
    }
-   
+
    void ResourceMap::UnloadResource(const std::string &key)
    {
       if (ReadyToReadResources.count(key) > 0)
@@ -156,6 +165,20 @@ namespace IO
       default:
          break;
       }
+   }
+
+   void ResourceMap::OpenAudioStream(const std::string &key)
+   {
+      if (AudioStreamResources.count(key) > 0)
+      {
+         LogInfo("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
+         return;
+      }
+
+      const eResourceType resType = ResourceExtensionsInfo::GetResourceTypeByFileExtension(key);
+      const std::string &fileFullPath = GET_FUL_PATH_TO_FILE(key);
+      assert(resType == eResourceType::AUDIO);
+      AudioStreamResources[key] = static_cast<AudioStreamResource *>(mAudioLoader.GetStreamResource(fileFullPath));
    }
 
    void ResourceMap::WaitUntilResourcesLoad()

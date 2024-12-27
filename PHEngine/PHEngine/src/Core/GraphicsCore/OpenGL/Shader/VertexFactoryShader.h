@@ -1,6 +1,9 @@
 #pragma once
+
 #include "IShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderUtilityFunctions.h"
+
+#include <memory>
 
 namespace Graphics
 {
@@ -34,7 +37,7 @@ namespace Graphics
          std::string GetShaderSource() const;
 
          template <typename ValueType>
-         void DefineConstant(const std::string &name, ValueType &&value)
+         void DefineConstant(const std::string &name, ValueType value)
          {
             std::string formatedValue = MacroConverter<ValueType>::GetValue(std::forward<ValueType>(value));
             mConstantDefines.emplace_back(name, formatedValue);

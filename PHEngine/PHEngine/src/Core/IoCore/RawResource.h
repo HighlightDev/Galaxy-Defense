@@ -5,73 +5,99 @@
 #include "Core/IoCore/AudioLoaderCore/AudioResourceInfo.h"
 #include "Core/IoCore/MeshLoaderCore/MeshResourceInfo.h"
 
+#include <memory>
+
+namespace IO::Audio
+{
+   class StbSoundStream;
+}
+
 using namespace IO::Audio;
 
 namespace IO
 {
-   struct Resource {
+   struct Resource
+   {
+      eResourceType mResourceType = eResourceType::UNDEFINED_TYPE;
 
-      eResourceType ResourceType = eResourceType::UNDEFINED_TYPE;
-
-      void* DATA;
+      void *mData;
 
       virtual void Clear()
       {
-         free(DATA);
+         free(mData);
       }
    };
 
-   struct TextureResource 
-      : public Resource
+   struct TextureResource
+       : public Resource
    {
-      TextureResourceInfo TexInfo;
+      TextureResourceInfo mTexInfo;
 
       TextureResource()
-         : Resource()
+          : Resource()
       {
-         ResourceType = eResourceType::TEXTURE;
-      }
-
-      void Clear() override {
-         free(DATA);
-      }
-   };
-
-   struct MeshResource
-      : public Resource
-   {
-      MeshResource()
-         : Resource()
-      {
-         ResourceType = eResourceType::MESH;
+         mResourceType = eResourceType::TEXTURE;
       }
 
       void Clear() override
       {
-         MeshResourceInfo* data = GetMeshResourceInfo();
+         free(mData);
+      }
+   };
+
+   struct MeshResource
+       : public Resource
+   {
+      MeshResource()
+          : Resource()
+      {
+         mResourceType = eResourceType::MESH;
+      }
+
+      void Clear() override
+      {
+         MeshResourceInfo *data = GetMeshResourceInfo();
          delete data;
       }
 
-      MeshResourceInfo* GetMeshResourceInfo() const {
-         MeshResourceInfo* data = (MeshResourceInfo*)DATA;
+      MeshResourceInfo *GetMeshResourceInfo() const
+      {
+         MeshResourceInfo *data = (MeshResourceInfo *)mData;
          return data;
       }
    };
 
    struct AudioResource
-      : public Resource
+       : public Resource
    {
-       AudioResourceInfo AudioInfo;
+      AudioResourceInfo AudioInfo;
 
       AudioResource()
-         : Resource()
+          : Resource()
       {
-         ResourceType = eResourceType::AUDIO;
+         mResourceType = eResourceType::AUDIO;
       }
 
       void Clear() override
       {
-         free(DATA);
+         free(mData);
+      }
+   };
+
+   struct AudioStreamResource
+       : public AudioResource
+   {
+      std::shared_ptr<StbSoundStream> mStream;
+
+      AudioStreamResource()
+          : AudioResource()
+      {
+         mResourceType = eResourceType::AUDIO_STREAM;
+      }
+
+      void Clear() override
+      {
+         free(mData);
       }
    };
 

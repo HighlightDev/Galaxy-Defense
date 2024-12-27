@@ -80,15 +80,15 @@ namespace Graphics
 
 				TextureResource *texResource = static_cast<TextureResource *>(outResource);
 
-				texParam.TexBufferWidth = texResource->TexInfo.Width;
-				texParam.TexBufferHeight = texResource->TexInfo.Height;
+				texParam.TexBufferWidth = texResource->mTexInfo.Width;
+				texParam.TexBufferHeight = texResource->mTexInfo.Height;
 
-				if (texResource->TexInfo.PixelComponents == 3)
+				if (texResource->mTexInfo.PixelComponents == 3)
 				{
 					texParam.TexPixelFormat = GL_RGB;
 					texParam.TexPixelInternalFormat = GL_RGB;
 				}
-				else if (texResource->TexInfo.PixelComponents == 4)
+				else if (texResource->mTexInfo.PixelComponents == 4)
 				{
 					texParam.TexPixelFormat = GL_RGBA;
 					texParam.TexPixelInternalFormat = GL_RGBA;
@@ -103,7 +103,7 @@ namespace Graphics
 					throw std::invalid_argument("Every texture must have same pixel format.");
 				}
 
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texIndex, 0, texParam.TexPixelInternalFormat, texParam.TexBufferWidth, texParam.TexBufferHeight, 0, texParam.TexPixelFormat, texParam.TexPixelType, texResource->DATA);
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texIndex, 0, texParam.TexPixelInternalFormat, texParam.TexBufferWidth, texParam.TexBufferHeight, 0, texParam.TexPixelFormat, texParam.TexPixelType, texResource->mData);
 
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

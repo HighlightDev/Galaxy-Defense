@@ -87,7 +87,7 @@ namespace Game
 
         const auto &soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
         const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator, std::make_shared<ComponentData>("c_bombMissileSound_" + shipBulletIndexStr)));
-        c_sound->CreateSoundBuffer("explosion1.ogg", "explosion");
+        c_sound->CreateSoundBuffer("explosion1.wav", "explosion");
         c_sound->GetSoundSource()->SetGain(0.2f);
         a_missile->AddComponent(c_sound);
 

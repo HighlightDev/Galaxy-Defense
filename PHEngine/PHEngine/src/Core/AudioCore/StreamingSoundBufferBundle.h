@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "Core/AudioCore/SoundMemoryChunk.h"
+#include "Core/AudioCore/SoundStream.h"
 
 namespace EngineCore
 {
@@ -18,7 +18,7 @@ namespace EngineCore
 
 		ALuint mSoundDescriptor;
 
-		std::shared_ptr<SoundMemoryChunk> mSoundMemoryChunk;
+		std::shared_ptr<SoundStream> mSoundMemoryChunk;
 
 		size_t mBufferDataCursor = 0;
 

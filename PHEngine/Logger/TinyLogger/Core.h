@@ -6,6 +6,7 @@
 #include <mutex>
 #include <thread>
 #include <atomic>
+#include <memory>
 
 #include "LoggerClient.h"
 

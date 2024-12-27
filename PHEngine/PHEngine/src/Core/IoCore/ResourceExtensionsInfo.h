@@ -10,7 +10,8 @@ namespace IO
       UNDEFINED_TYPE,
       TEXTURE,
       MESH,
-      AUDIO
+      AUDIO,
+      AUDIO_STREAM
    };
 
    struct ResourceExtensionsInfo

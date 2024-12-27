@@ -77,7 +77,7 @@ namespace IO
 
 			m_lastAllocatedMemory = (void *)membuf;
 
-         return m_lastAllocatedMemory;
+			return m_lastAllocatedMemory;
 		}
 
 		void SndFileLoader::ReleaseAudioMemory()

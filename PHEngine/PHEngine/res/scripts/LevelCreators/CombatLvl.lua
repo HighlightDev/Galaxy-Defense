@@ -59,7 +59,7 @@ function CreateTestLevel(host)
 		,spaceship.obj
 		,missile1_model.fbx
 		,asteroid.fbx
-		,explosion1.ogg
+		,explosion1.wav
 		,Space_Station_COLOR.png
 		,Space_Station_NORMAL.png
 		,Space_Station_ROUGHNESS.jpg

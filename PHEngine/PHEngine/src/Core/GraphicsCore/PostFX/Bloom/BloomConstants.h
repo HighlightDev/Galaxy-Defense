@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 #include <string>
+#include <cstdint>
+#include <stdint.h>
 
 namespace Graphics
 {

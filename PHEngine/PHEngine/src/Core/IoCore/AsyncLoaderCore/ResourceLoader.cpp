@@ -3,6 +3,7 @@
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
 #include "Core/IoCore/MeshLoaderCore/AssimpLoader/AssimpLoader.h"
 #include "Core/IoCore/AudioLoaderCore/SndFileLoader/SndFileLoader.h"
+#include "Core/IoCore/AudioLoaderCore/StbFileLoader/StbImlementation.h"
 #include "Core/GraphicsCore/Texture/TexParams.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/RawResource.h"
@@ -43,8 +44,8 @@ namespace IO
       textureResourceLoader.ReleaseTextureMemory(); // Release memory allocated for texture
 
       TextureResource *resource = new TextureResource();
-      resource->DATA = localData;
-      resource->TexInfo = texResourceInfo;
+      resource->mData = localData;
+      resource->mTexInfo = texResourceInfo;
 
       return resource;
    }
@@ -69,7 +70,7 @@ namespace IO
       data->meshAttributes = loader.GetMeshAttributes();
 
       MeshResource *resource = new MeshResource();
-      resource->DATA = data;
+      resource->mData = data;
 
       return resource;
    }
@@ -85,19 +86,28 @@ namespace IO
 
    Resource *AudioResourceLoader::LoadResource(const std::string &key)
    {
-      SndFileLoader loader;
-
-      AudioResourceInfo audioResourceInfo;
-      void *data = loader.AllocateMemoryForAudioSource(key, audioResourceInfo);
-
-      const size_t dataSize = audioResourceInfo.mNumBytes;
+      StbFileLoader stbLoader;
+      AudioResourceInfo stbAudioResourceInfo;
+      void *stbData = stbLoader.AllocateMemoryForAudioSource(key, stbAudioResourceInfo);
+      const size_t dataSize = stbAudioResourceInfo.mNumBytes;
       void *localData = malloc(dataSize);
-      memcpy(localData, data, dataSize);
-      loader.ReleaseAudioMemory();
+      memcpy(localData, stbData, stbAudioResourceInfo.mNumBytes);
+      stbLoader.ReleaseAudioMemory();
 
       AudioResource *resource = new AudioResource();
-      resource->DATA = localData;
-      resource->AudioInfo = audioResourceInfo;
+      resource->mData = localData;
+      resource->AudioInfo = stbAudioResourceInfo;
+      return resource;
+   }
+
+   Resource *AudioResourceLoader::GetStreamResource(const std::string &key)
+   {
+      StbFileLoader stbLoader;
+      AudioResourceInfo stbAudioResourceInfo;
+      AudioStreamResource *resource = new AudioStreamResource();
+      resource->mStream = stbLoader.OpenStream(key, stbAudioResourceInfo);
+      resource->mData = nullptr;
+      resource->AudioInfo = stbAudioResourceInfo;
       return resource;
    }
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
+#include <stdint.h>
 
 #ifdef _WIN32
 #include <windows.h>

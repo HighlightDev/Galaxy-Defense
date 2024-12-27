@@ -3,6 +3,8 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialProperty.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 
+#include <algorithm>
+
 namespace Graphics
 {
 

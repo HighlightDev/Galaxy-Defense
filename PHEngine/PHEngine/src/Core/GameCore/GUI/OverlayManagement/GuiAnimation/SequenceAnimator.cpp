@@ -6,6 +6,8 @@
 #include "AnimationControllers/AnimationControllerFactory.h"
 #include "AnimationControllers/IAnimationController.h"
 
+#include <algorithm>
+
 namespace EngineCore
 {
     namespace GUI

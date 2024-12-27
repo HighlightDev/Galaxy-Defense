@@ -36,8 +36,11 @@ local function initialize(host)
 		,nightBottom.jpg
 		,nightBack.jpg
 		,nightFront.jpg
-        ,piano-loop2.wav
 		]])
+
+    _OpenAudioStreams(host,
+        [[piano-loop2.ogg
+        ]])
 
     _CreateFirstPersonCamera(host,
         "MainCamera",                                        --cameraName
@@ -48,7 +51,7 @@ local function initialize(host)
             AspectRatio = 16.0 / 9.0,
             NearPlane = 1.0,
             FarPlane = 500.0
-        }), --projectionInfo
+        }),      --projectionInfo
         50.0,    --initPitchDeg
         20.0,    --initYawDeg
         0, 0, 0, --init camera position

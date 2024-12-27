@@ -22,7 +22,7 @@ namespace Resources
         const AudioResource *audioResource = static_cast<AudioResource *>(outResource);
         assert(audioResource);
 
-        const auto& buffer = std::make_shared<SoundBuffer>(audioResource->DATA, audioResource->AudioInfo);
+        const auto& buffer = std::make_shared<SoundBuffer>(audioResource->mData, audioResource->AudioInfo);
         return buffer;
     }
     void SoundBufferAllocationPolicy::DeallocateMemory(const std::shared_ptr<SoundBuffer> &arg)

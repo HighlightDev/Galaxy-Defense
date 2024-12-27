@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <memory>
 #include <unordered_map>
+#include <string>
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "IFramebufferObject.h"

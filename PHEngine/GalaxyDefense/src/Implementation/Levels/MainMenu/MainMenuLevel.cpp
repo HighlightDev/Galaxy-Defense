@@ -74,7 +74,7 @@ namespace Game
             const auto musicComponentCreator = std::make_shared<AudioComponentCreator<StreamingSoundComponent>>();
             const auto c_streamingMusic = std::static_pointer_cast<StreamingSoundComponent>(
                 sceneSp->CreateComponent_GameThread(musicComponentCreator, std::make_shared<ComponentData>("c_ambientMusic")));
-            c_streamingMusic->CreateStreamingSoundSource("piano-loop2.wav");
+            c_streamingMusic->CreateStreamingSoundSource("piano-loop2.ogg");
             c_streamingMusic->SetIsLoopSound(true);
             c_streamingMusic->SetGain(0.1f);
             mAmbientMusicDummy->AddComponent(c_streamingMusic);

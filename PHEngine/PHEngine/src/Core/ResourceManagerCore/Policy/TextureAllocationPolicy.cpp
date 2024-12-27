@@ -1,5 +1,7 @@
 #include "TextureAllocationPolicy.h"
 
+#include <stdexcept>
+
 namespace Resources
 {
     std::shared_ptr<ITexture> TextureAllocationPolicy::AllocateMemory(const std::string &arg)
