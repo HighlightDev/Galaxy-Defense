@@ -22,12 +22,12 @@ target_include_directories(${LIBRARY_NAME}
 
 find_library(LIBUNWIND_LIB libunwind.so /usr/lib/)
 find_library(LIBUNWIND_PTRACE_LIB libunwind-ptrace.so /usr/lib/)
-if(NOT LIBUNWIND_LIBRARIES
+if(NOT LIBUNWIND_LIB
     OR NOT LIBUNWIND_PTRACE_LIB)
     message(FATAL_ERROR "Libunwind libraries were not found!")
 else()
     message(STATUS "Libunwind libraries were found!")
     target_link_libraries(${LIBRARY_NAME}
-        PRIVATE ${LIBUNWIND_LIBRARIES}
+        PRIVATE ${LIBUNWIND_LIB}
         PRIVATE ${LIBUNWIND_PTRACE_LIB})
 endif()
