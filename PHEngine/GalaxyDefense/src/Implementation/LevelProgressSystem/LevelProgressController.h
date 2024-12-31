@@ -1,21 +1,30 @@
 #pragma once
 
+#include "LevelProgressStage.h"
 #include "Core/GameCore/ITickable.h"
-#include "LevelProgressBlueprint.h"
 
+#include <queue>
 #include <memory>
+#include <string>
 
 namespace Game
 {
-    class LevelProgressController : public ITickable
+    class LevelProgressController
+        : public ITickable
     {
-        std::shared_ptr<LevelProgressBlueprint> mLvlProgressBlueprint;
+        std::shared_ptr<LevelProgressStage> mCurrentStage;
+
+        std::queue<std::shared_ptr<LevelProgressStage>> mLevelProgressStages;
 
     public:
+        LevelProgressController();
+
+        void InitNextStage();
+
         void Tick(const float deltaTime) override;
 
         void UnpausableTick(const float deltaTime) override;
 
-        void AddLevelProgressBlueprint(const std::shared_ptr<LevelProgressBlueprint> &lvlProgressBlueprint);
+        void AddLevelProgressStage(const std::shared_ptr<LevelProgressStage> &lvlProgressStage);
     };
 }

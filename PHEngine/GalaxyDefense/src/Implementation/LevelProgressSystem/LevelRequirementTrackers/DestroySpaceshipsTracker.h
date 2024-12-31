@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Implementation/LevelProgressSystem/ILevelRequirementTracker.h"
+#include "ILevelRequirementTracker.h"
 
 #include <stdint.h>
 #include <cstdint>

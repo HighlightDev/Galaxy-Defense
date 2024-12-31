@@ -12,47 +12,34 @@ namespace Game
 
     void LevelProgressStage::Init()
     {
-        for (const auto &requirement : mLevelProgressRequirements)
-        {
-            mLevelProgressRequirementTrackers.emplace_back(requirement->CreateRequirementTracker());
-        }
     }
 
-    void LevelProgressStage::AddLevelProgressRequirement(const std::shared_ptr<ILevelProgressRequirement> &lvlProgressRequirement)
+    void LevelProgressStage::AddLevelProgressRequirementTracker(const std::shared_ptr<ILevelRequirementTracker> &lvlReqTracker)
     {
-        mLevelProgressRequirements.emplace_back(lvlProgressRequirement);
+        mLevelProgressRequirementTrackers.emplace_back(lvlReqTracker);
     }
 
     void LevelProgressStage::Tick(const float deltaTime)
     {
-        bool isPendingRemovalAchivedRequirements = false;
+        mTotalAchivedReqTrackers = 0;
         for (const auto &requirementTracker : mLevelProgressRequirementTrackers)
         {
             requirementTracker->Tick(deltaTime);
-
-            isPendingRemovalAchivedRequirements |= requirementTracker->IsRequirementAchived();
-        }
-
-        if (isPendingRemovalAchivedRequirements)
-        {
-            auto requirementRemoveIt = std::remove_if(mLevelProgressRequirements.begin(), mLevelProgressRequirements.end(), [this](const auto& levelProgressRequirement) {
-                const auto trackerIt = std::find_if(mLevelProgressRequirementTrackers.cbegin(), mLevelProgressRequirementTrackers.cend(), [requirementName = levelProgressRequirement->ToString()](const auto& tracker) {
-                    return tracker->GetName() == requirementName;
-                });
-                assert(trackerIt != mLevelProgressRequirementTrackers.cend());
-                return (*trackerIt)->IsRequirementAchived();
-            });
-
-            mLevelProgressRequirements.erase(requirementRemoveIt, mLevelProgressRequirements.end());
-
-            auto trackerRemoveIt = std::remove_if(mLevelProgressRequirementTrackers.begin(), mLevelProgressRequirementTrackers.end(), [](const auto& tracker) {
-                return tracker->IsRequirementAchived();
-            });
-            mLevelProgressRequirementTrackers.erase(trackerRemoveIt);
+            mTotalAchivedReqTrackers += requirementTracker->IsRequirementAchived() ? 1 : 0;
         }
     }
 
     void LevelProgressStage::UnpausableTick(const float deltaTime)
     {
+    }
+
+    bool LevelProgressStage::IsStageCompleted() const
+    {
+        return mTotalAchivedReqTrackers == static_cast<int32_t>(mLevelProgressRequirementTrackers.size());
+    }
+
+    std::string LevelProgressStage::GetName() const
+    {
+        return mStageName;
     }
 } // namespace Game

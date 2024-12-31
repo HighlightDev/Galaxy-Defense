@@ -4,7 +4,14 @@ namespace Game
 {
    LevelBase::LevelBase(const std::string &levelName)
        : Level(levelName),
-         mLvlProgressController(std::make_unique<LevelProgressController>())
+         mLvlProgressController(std::make_shared<LevelProgressController>())
    {
+   }
+
+   void LevelBase::PostLevelInit()
+   {
+      Level::PostLevelInit();
+
+      mLvlProgressController->InitNextStage();
    }
 }

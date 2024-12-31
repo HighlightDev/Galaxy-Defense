@@ -27,7 +27,7 @@ setup()
 local Vec3 = require("Ui/Core/vec3")
 local Json = require("Ui/Core/3rdparty/json")
 
-function CreateTestLevel(host)
+function CreateLevel(host)
     _LazyLoadResourcesAsync(host,
         [[arrow_right_1.png,
 		nimbus_mono.png,
@@ -84,7 +84,7 @@ function CreateTestLevel(host)
 end
 
 function System_OnStart(host)
-    CreateTestLevel(host)
+    CreateLevel(host)
 end
 
 function System_OnUpdate(host, deltaTime)

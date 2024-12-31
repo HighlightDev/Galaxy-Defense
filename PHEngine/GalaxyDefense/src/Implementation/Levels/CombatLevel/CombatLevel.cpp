@@ -1,5 +1,4 @@
 #include "CombatLevel.h"
-#include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/LightComponent.h"
@@ -34,6 +33,7 @@
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
+#include "Implementation/LuaExecutors/LuaCombatLevelExecutor.h"
 
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
@@ -75,7 +75,7 @@ namespace Game
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
-      LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("LevelCreators/CombatLvl.lua");
+      LuaCombatLevelExecutor mLuaLevelBuilder = LuaCombatLevelExecutor("LevelCreators/CombatLvl.lua", mLvlProgressController);
       mLuaLevelBuilder.SetScene(sceneSp);
       mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
       mLuaLevelBuilder.RegisterCallbacks();
@@ -252,6 +252,11 @@ namespace Game
       if (mCombatController)
       {
          mCombatController->Tick(deltaTime);
+      }
+
+      if (mLvlProgressController)
+      {
+         mLvlProgressController->Tick(deltaTime);
       }
    }
 

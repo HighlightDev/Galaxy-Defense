@@ -81,14 +81,16 @@ set(
     src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h
     src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
+    src/Implementation/LuaExecutors/LuaCombatLevelExecutor.h
     src/Implementation/LuaFunctions/LuaGameEventsFunctions.h
+    src/Implementation/LuaFunctions/LuaLvlProgressFunctions.h
     src/Implementation/DataProviders/PlayerDataProvider.h
     src/Implementation/DataProviders/LevelDataProvider.h
-    src/Implementation/LevelProgressSystem/LevelProgressController.h
     src/Implementation/LevelProgressSystem/LevelProgressStage.h
-    src/Implementation/LevelProgressSystem/ILevelProgressRequirement.h
-    src/Implementation/LevelProgressSystem/ILevelRequirementTracker.h
+    src/Implementation/LevelProgressSystem/LevelRequirementTrackers/ILevelRequirementTracker.h
     src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.h
+    src/Implementation/LevelProgressSystem/LevelRequirementTrackerJsonFactories/ILevelRequirementTrackerFactory.h
+    src/Implementation/LevelProgressSystem/LevelRequirementTrackerJsonFactories/LevelRequirementsTrackerFactory.h
     src/Implementation/Navigation/NavigationPathBuilder.h
     src/Implementation/Navigation/PathSegment.h
     src/Implementation/Navigation/Path.h
@@ -160,13 +162,15 @@ set(
     src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.cpp
     src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
+    src/Implementation/LuaExecutors/LuaCombatLevelExecutor.cpp
     src/Implementation/LuaFunctions/LuaGameEventsFunctions.cpp
+    src/Implementation/LuaFunctions/LuaLvlProgressFunctions.cpp
     src/Implementation/DataProviders/PlayerDataProvider.cpp
     src/Implementation/DataProviders/LevelDataProvider.cpp
-    src/Implementation/LevelProgressSystem/LevelProgressController.cpp
     src/Implementation/LevelProgressSystem/LevelProgressStage.cpp
-    src/Implementation/LevelProgressSystem/LevelProgressBlueprint.cpp
+    src/Implementation/LevelProgressSystem/LevelProgressController.cpp
     src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.cpp
+    src/Implementation/LevelProgressSystem/LevelRequirementTrackerJsonFactories/LevelRequirementsTrackerFactory.cpp
     src/Implementation/Navigation/NavigationPathBuilder.cpp
     src/Implementation/Navigation/PathSegment.cpp
     src/Implementation/Navigation/Path.cpp

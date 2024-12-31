@@ -26,7 +26,7 @@ setup()
 
 local Json = require("Ui/Core/3rdparty/json")
 
-local function initialize(host)
+local function CreateLevel(host)
     _LazyLoadResourcesAsync(host,
         [[arrow_right_1.png
 		,nimbus_mono.png
@@ -80,7 +80,7 @@ local function initialize(host)
 end
 
 function System_OnStart(host)
-    initialize(host)
+    CreateLevel(host)
 end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)

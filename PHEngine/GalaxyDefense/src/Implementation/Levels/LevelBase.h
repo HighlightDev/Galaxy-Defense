@@ -13,12 +13,14 @@ namespace Game
    class LevelBase : public Level
    {
    protected:
-      std::unique_ptr<LevelProgressController> mLvlProgressController;
+      std::shared_ptr<LevelProgressController> mLvlProgressController;
 
    public:
       explicit LevelBase(const std::string &levelName);
 
       ~LevelBase() = default;
+
+      void PostLevelInit() override;
    };
 
 }

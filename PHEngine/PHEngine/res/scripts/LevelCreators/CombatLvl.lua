@@ -15,7 +15,7 @@ local function setup()
 		local unixLikePath = pathToCurrentScript:gsub("\\", "/")
 		unixLikePath = unixLikePath:gsub("//", "/")
 		local _, endindex = string.find(unixLikePath, "scripts/")
-        unixLikePath = string.sub(unixLikePath, 1, endindex)
+		unixLikePath = string.sub(unixLikePath, 1, endindex)
 		package.path = package.path .. ";" .. unixLikePath .. "?.lua"
 	end
 end
@@ -27,7 +27,7 @@ setup()
 local Vec3 = require("Ui/Core/vec3")
 local Json = require("Ui/Core/3rdparty/json")
 
-function CreateTestLevel(host)
+function CreateLevel(host)
 	_LazyLoadResourcesAsync(host,
 		[[arrow_right_1.png
 		,nimbus_mono.png
@@ -103,8 +103,28 @@ function CreateTestLevel(host)
 		"")
 end
 
+function CreateLevelProgressStages(host)
+	local stagesQueue = {};
+	local trackers = {}
+	trackers[1] = {
+		type = "DestroySpaceshipsTracker",
+		spaceships_count = 15
+	}
+	trackers[2] = {
+		type = "DestroySpaceshipsTracker",
+		spaceships_count = 5
+	}
+	local stage = {
+		name = "weak_spaceships_attack",
+		trackers = trackers
+	}
+	stagesQueue[1] = stage
+	_SetLevelProgressStagesQueue(host, Json.encode(stagesQueue))
+end
+
 function System_OnStart(host)
-	CreateTestLevel(host)
+	CreateLevel(host)
+	CreateLevelProgressStages(host)
 end
 
 function System_OnUpdate(host, deltaTime)

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "ILevelProgressRequirement.h"
-#include "ILevelRequirementTracker.h"
+#include "LevelRequirementTrackers/ILevelRequirementTracker.h"
 #include "Core/GameCore/ITickable.h"
 
 #include <vector>
@@ -15,12 +14,12 @@ namespace Game
     {
         std::string mStageName;
 
-        std::vector<std::shared_ptr<ILevelProgressRequirement>> mLevelProgressRequirements;
-
         std::vector<std::shared_ptr<ILevelRequirementTracker>> mLevelProgressRequirementTrackers;
 
+        int32_t mTotalAchivedReqTrackers{0};
+
     public:
-        explicit LevelProgressStage(const std::string& stageName);
+        explicit LevelProgressStage(const std::string &stageName);
 
         void Init();
 
@@ -28,6 +27,10 @@ namespace Game
 
         void UnpausableTick(const float deltaTime) override;
 
-        void AddLevelProgressRequirement(const std::shared_ptr<ILevelProgressRequirement> &lvlProgressRequirement);
+        void AddLevelProgressRequirementTracker(const std::shared_ptr<ILevelRequirementTracker> &lvlReqTracker);
+
+        bool IsStageCompleted() const;
+
+        std::string GetName() const;
     };
 } // namespace Game

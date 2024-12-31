@@ -166,6 +166,11 @@ namespace EngineCore
 
    void Engine::UnloadCurrentLevel()
    {
+#ifdef DEBUG
+      const auto &resObserver = ResourceUsageObserver::GetInstance();
+      resObserver->CollectResourceConsumptionInfo();
+      LogInfo("Engine::UnloadCurrentLevel: mem before lvl unload: ", resObserver->GetLastMemoryUsageMegabytes());
+#endif
       // Clear jobs for game and lua threads
       m_interThreadMgr.SetIsAllowedPushGameThreadJobs(false);
       m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(false);
@@ -179,6 +184,10 @@ namespace EngineCore
       ResourceMap::GetInstance()->CleanUp();
       m_interThreadMgr.SetIsAllowedPushGameThreadJobs(true);
       m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(true);
+#ifdef DEBUG
+      resObserver->CollectResourceConsumptionInfo();
+      LogInfo("Engine::UnloadCurrentLevel: mem after lvl unload: ", resObserver->GetLastMemoryUsageMegabytes());
+#endif
    }
 
    void Engine::PlayLevel(const std::string &levelName)
