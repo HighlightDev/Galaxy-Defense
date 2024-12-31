@@ -15,6 +15,7 @@ namespace Resources
 {
     std::shared_ptr<SoundBuffer> SoundBufferAllocationPolicy::AllocateMemory(const std::string &arg)
     {
+        LogInfo("SoundBufferAllocationPolicy::AllocateMemory: ", arg);
         Resource *outResource;
         const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
         assert(bResourceValid);
@@ -27,6 +28,7 @@ namespace Resources
     }
     void SoundBufferAllocationPolicy::DeallocateMemory(const std::shared_ptr<SoundBuffer> &arg)
     {
+        LogInfo("SoundBufferAllocationPolicy::DeallocateMemory: ", arg->GetBufferDesc());
         arg->CleanUp();
     }
 

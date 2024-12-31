@@ -6,9 +6,6 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#include <wchar.h>
-#include <psapi.h>
-#pragma comment(lib, "Psapi.lib")
 constexpr auto SLASH = '\\';
 #elif __linux__
 #include <filesystem>
@@ -20,8 +17,6 @@ constexpr auto SLASH = '\\';
 namespace EngineUtility
 {
    static std::string sPATH_TO_EXE = "";
-
-   uint64_t getProcessMemorySize();
 
 #ifdef _WIN32 // compile only for windows operating system
    const char *get_module_file_name(HMODULE module = NULL);

@@ -16,6 +16,7 @@ namespace Resources
 {
     std::shared_ptr<SoundStream> SoundStreamAllocationPolicy::AllocateMemory(const std::string &arg)
     {
+        LogInfo("SoundStreamAllocationPolicy::AllocateMemory: ", arg);
         Resource *outResource;
         const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
         assert(bResourceValid);
@@ -28,6 +29,7 @@ namespace Resources
 
     void SoundStreamAllocationPolicy::DeallocateMemory(const std::shared_ptr<SoundStream> &arg)
     {
+        LogInfo("SoundStreamAllocationPolicy::DeallocateMemory");
         arg->CleanUp();
     }
 

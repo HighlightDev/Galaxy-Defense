@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
 #include "Core/GameCore/BoundingBoxBuilder.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/ResourceManagerCore/SimpleMeshType.h"
 
 #include <gl/glew.h>
@@ -16,6 +17,7 @@ namespace Resources
 {
    std::shared_ptr<Skin> SimplePrimitiveAllocationPolicy::AllocateMemory(const SimplePrimitivePoolParameters &arg)
    {
+      LogInfo("SimplePrimitiveAllocationPolicy::AllocateMemory: ", static_cast<int32_t>(arg.mSimplePrimitiveType));
       const auto typeMesh = arg.mSimplePrimitiveType;
 
       std::shared_ptr<Skin> resultSkin;
@@ -207,7 +209,7 @@ namespace Resources
          assert(vao->GetVertexBufferObjects().size());
          vao->BindBuffersToVao();
 
-         resultSkin = std::make_shared<Skin>(vao, boundingBox);
+         resultSkin = std::make_shared<Skin>(vao, boundingBox, std::to_string(static_cast<int32_t>(arg.mSimplePrimitiveType)));
       }
 
       return resultSkin;
@@ -215,6 +217,7 @@ namespace Resources
 
    void SimplePrimitiveAllocationPolicy::DeallocateMemory(const std::shared_ptr<Skin> &arg)
    {
+      LogInfo("SimplePrimitiveAllocationPolicy::DeallocateMemory: ", arg->GetMeshName());
       arg->CleanUp();
    }
 

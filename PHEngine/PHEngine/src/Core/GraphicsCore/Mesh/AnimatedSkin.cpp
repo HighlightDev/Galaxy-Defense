@@ -12,8 +12,9 @@ namespace Graphics
 
 		AnimatedSkin::AnimatedSkin(const std::shared_ptr<VertexArrayObject> &vao,
 								   std::shared_ptr<AnimatedMeshData> animatedMeshData,
-								   const BoundingBox3D &boundingBox)
-			: Skin(vao, boundingBox),
+								   const BoundingBox3D &boundingBox,
+								   const std::string &meshName)
+			: Skin(vao, boundingBox, meshName),
 			  m_animatedMeshData(animatedMeshData)
 		{
 			LogInfo("AnimatedSkin::ctor => RootNode name=", animatedMeshData->RootNode->Name);

@@ -11,10 +11,6 @@
 #include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/CommonCore/Timer.h"
 
-#if DEBUG
-#include "Core/CommonCore/ResourceUsageObserver.h"
-#endif
-
 #include <thread>
 #include <chrono>
 #include <atomic>
@@ -76,8 +72,6 @@ namespace EngineCore
         bool bExitGame{false};
 
 #if DEBUG
-        ResourceUsageObserver mResourceUsageObserver;
-
         GameThreadTimer m_resourceConsumptionLogTimer;
 #endif
 

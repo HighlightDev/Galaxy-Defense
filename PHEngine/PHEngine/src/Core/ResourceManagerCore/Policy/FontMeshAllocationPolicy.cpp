@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include "Core/CommonCore/Assertion.h"
 
@@ -18,6 +19,7 @@ namespace Resources
 {
 	std::shared_ptr<TextMesh> FontMeshAllocationPolicy::AllocateMemory(const FontParams &arg)
 	{
+		LogInfo("FontMeshAllocationPolicy::AllocateMemory: ", arg.FontName);
 		VertexArrayObject vao;
 
 		static constexpr size_t verticesPerCharacter = 6;
@@ -49,6 +51,7 @@ namespace Resources
 
 	void FontMeshAllocationPolicy::DeallocateMemory(const std::shared_ptr<TextMesh> &arg)
 	{
+		LogInfo("FontMeshAllocationPolicy::DeallocateMemory: ", arg->GetBuffer()->GetDescriptor());
 		arg->CleanUp();
 	}
 

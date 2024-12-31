@@ -5,9 +5,10 @@ namespace Graphics
 	namespace Mesh
 	{
 
-		Skin::Skin(const std::shared_ptr<VertexArrayObject> &vao, const BoundingBox3D &boundingBox)
+		Skin::Skin(const std::shared_ptr<VertexArrayObject> &vao, const BoundingBox3D &boundingBox, const std::string& meshName)
 			: m_buffer(vao),
-			  mBoundingBox(boundingBox)
+			  mBoundingBox(boundingBox),
+			  mMeshName(meshName)
 		{
 		}
 
@@ -28,6 +29,11 @@ namespace Graphics
 		const std::shared_ptr<VertexArrayObject> &Skin::GetBuffer() const
 		{
 			return m_buffer;
+		}
+
+		std::string Skin::GetMeshName() const
+		{
+			return mMeshName;
 		}
 
 		void Skin::CleanUp()

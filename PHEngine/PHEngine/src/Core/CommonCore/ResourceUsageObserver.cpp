@@ -1,15 +1,40 @@
 #include "ResourceUsageObserver.h"
 
-#ifdef __linux__
+#ifdef _WIN32
+#include <windows.h>
+#include <wchar.h>
+#include <psapi.h>
+#pragma comment(lib, "Psapi.lib")
+#elif __linux__
 #include <sys/sysinfo.h>
 #include <sys/types.h>
 #include <unistd.h>
 #endif
 #include <fstream>
 
+ResourceUsageObserver::ResourceUsageObserver()
+{
+#ifdef _WIN32
+   mPid = static_cast<int32_t>(GetCurrentProcessId());
+#endif
+}
+
+ResourceUsageObserver* ResourceUsageObserver::GetInstance()
+{
+    static ResourceUsageObserver s_instance;
+    return &s_instance;
+}
+
 void ResourceUsageObserver::CollectResourceConsumptionInfo()
 {
-#ifdef __linux__
+   static constexpr double BYTES_IN_MBYTE = 1024 * 1024;
+   static constexpr double INV_BYTES_IN_MBYTE = 1.0 / BYTES_IN_MBYTE;
+#ifdef _WIN32
+   PROCESS_MEMORY_COUNTERS pmc;
+   GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+   uint64_t mHeapCapacity = static_cast<uint64_t>(pmc.WorkingSetSize);
+   mLastMemUsageMegabytes = static_cast<double>(mHeapCapacity) * INV_BYTES_IN_MBYTE;
+#elif __linux__
     std::string _1, _2, _3, _4, _5, _6, _7, _8, _9, _10,
         _11, _12, _13, _14, _15, _16;
     // RAM
@@ -26,10 +51,9 @@ void ResourceUsageObserver::CollectResourceConsumptionInfo()
     std::ifstream statStream("/proc/self/stat");
     statStream >> mPid >> _1 >> _2 >> _3 >> _4 >> _5 >> _6 >> _7 >> _8 >> _9 >> _10 >> _11 >> _12 >> utime >>
         stime >> cutime >> cstime >> _13 >> _14 >> _15 >> _16 >> starttime >> vsize >> rss;
-
-    static constexpr double BYTES_IN_MBYTE = 1024 * 1024;
+    
     static const double pageSizeBytes = sysconf(_SC_PAGE_SIZE);
-    const double PAGE_SIZE_MB = pageSizeBytes / BYTES_IN_MBYTE;
+    const double PAGE_SIZE_MB = pageSizeBytes * INV_BYTES_IN_MBYTE;
     mLastMemUsageMegabytes = static_cast<double>(rss) * PAGE_SIZE_MB;
 #endif
 }

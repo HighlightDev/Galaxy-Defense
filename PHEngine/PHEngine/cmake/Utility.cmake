@@ -2,7 +2,7 @@ function(findLibraryAndLinkToTarget targetName linkFlag libraryName absPathToLib
     unset(FOUND_LIBRARY CACHE)
     find_library(FOUND_LIBRARY ${libraryName} ${absPathToLibrary})
     if(NOT FOUND_LIBRARY)
-        message(FATAL_ERROR "${libraryName} wasn't found in ${absPathToLibrary}!")
+        message(FATAL_ERROR "${libraryName} wasn't found for target ${targetName} in ${absPathToLibrary}")
     else()
         message(STATUS "Found ${libraryName} for target ${targetName}.")
         target_link_libraries(${targetName} ${linkFlag} ${FOUND_LIBRARY})

@@ -1,11 +1,15 @@
 #include "TextureAllocationPolicy.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <stdexcept>
+
+using namespace EngineCore;
 
 namespace Resources
 {
     std::shared_ptr<ITexture> TextureAllocationPolicy::AllocateMemory(const std::string &arg)
     {
+        LogInfo("TextureAllocationPolicy::AllocateMemory: ", arg);
         std::vector<std::string> pathToTextures = EngineUtility::Split(arg, ',');
 
         switch (pathToTextures.size())
@@ -21,6 +25,7 @@ namespace Resources
 
     void TextureAllocationPolicy::DeallocateMemory(std::shared_ptr<ITexture> arg)
     {
+        LogInfo("TextureAllocationPolicy::DeallocateMemory: ", arg->GetTextureDescriptor());
         arg->CleanUp();
     }
 

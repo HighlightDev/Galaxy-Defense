@@ -75,7 +75,7 @@ if(WIN32)
     message(FATAL_ERROR "OPENAL_LIBRARY wasn't found!")
   endif()
 
-  findLibraryAndLinkToTarget(PHEngine PUBLIC glew32 ${ENGINE_DEPENDENCIES_DIR}/GLEW/${LIB_LOCATION_PREFIX}/Release/)
+  findLibraryAndLinkToTarget(PHEngine PUBLIC glew32 ${ENGINE_DEPENDENCIES_DIR}/GLEW/lib/${LIB_LOCATION_PREFIX}/Release/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC lua54 ${ENGINE_DEPENDENCIES_DIR}/Lua54/lib/${LIB_LOCATION_PREFIX}/Debug/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC assimp-vc143-mtd ${ENGINE_DEPENDENCIES_DIR}/Assimp/lib/${LIB_LOCATION_PREFIX}/Debug/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC sndfile ${ENGINE_DEPENDENCIES_DIR}/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)

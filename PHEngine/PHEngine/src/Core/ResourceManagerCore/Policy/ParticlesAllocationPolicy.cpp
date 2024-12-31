@@ -16,6 +16,7 @@ namespace Resources
 {
 	std::shared_ptr<Skin> ParticlesAllocationPolicy::AllocateMemory(const ParticlePoolParameters &arg)
 	{
+		LogInfo("ParticlesAllocationPolicy::AllocateMemory: ", arg.mParticleComponentName);
 		std::shared_ptr<Skin> resultSkin;
 
 		{
@@ -55,7 +56,7 @@ namespace Resources
 			vao->AddVBO(vertexVBO);
 			vao->BindBuffersToVao();
 
-			resultSkin = std::make_shared<Skin>(vao, BoundingBox3D());
+			resultSkin = std::make_shared<Skin>(vao, BoundingBox3D(), arg.mParticleComponentName);
 		}
 
 		return resultSkin;
@@ -63,6 +64,7 @@ namespace Resources
 
 	void ParticlesAllocationPolicy::DeallocateMemory(std::shared_ptr<Skin> arg)
 	{
+		LogInfo("ParticlesAllocationPolicy::DeallocateMemory: ", arg->GetMeshName());
 		arg->CleanUp();
 	}
 

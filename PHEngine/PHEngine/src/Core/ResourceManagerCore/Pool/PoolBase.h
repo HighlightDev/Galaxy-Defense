@@ -59,7 +59,7 @@ namespace Resources
     {
       if (referenceMap.count(key))
       {
-        auto referenceCount = referenceMap[key];
+        auto& referenceCount = referenceMap[key];
         --referenceCount;
         if (referenceCount == 0)
         {
@@ -107,7 +107,6 @@ namespace Resources
     }
 
   public:
-
     PoolBase() = default;
 
     virtual ~PoolBase() = default;
@@ -116,7 +115,7 @@ namespace Resources
 
     void CleanUp()
     {
-      LogInfo( ToString(), "::CleanUp");
+      LogInfo(ToString(), "::CleanUp");
       for (auto it = resourceMap.begin(); it != resourceMap.end(); ++it)
       {
         auto key = it->first;
@@ -146,12 +145,14 @@ namespace Resources
       return GetOrAllocateResourceBridge<InnerAllocationType>(key);
     }
 
-    std::optional<key_t> GetKeyOptional(const sharedValue_t& value) const
+    std::optional<key_t> GetKeyOptional(const sharedValue_t &value) const
     {
       auto predicate = [&value](auto &keyvalue)
       {
-        if (keyvalue.second == value) return true;
-        if (keyvalue.second && value) return (*keyvalue.second) == (*value);
+        if (keyvalue.second == value)
+          return true;
+        if (keyvalue.second && value)
+          return (*keyvalue.second) == (*value);
         return false;
       };
       auto it = std::find_if(resourceMap.begin(), resourceMap.end(), predicate);
@@ -194,7 +195,7 @@ namespace Resources
     bool TryToFreeMemory(sharedValue_t value)
     {
       bool bMemoryFreed = false;
-      const std::optional<key_t>& optionalKey = GetKeyOptional(value);
+      const std::optional<key_t> &optionalKey = GetKeyOptional(value);
 
       if (optionalKey.has_value())
       {

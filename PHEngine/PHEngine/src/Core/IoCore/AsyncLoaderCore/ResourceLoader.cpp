@@ -7,12 +7,18 @@
 #include "Core/GraphicsCore/Texture/TexParams.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/RawResource.h"
+#include "Core/GameCore/LoggerExtension.h"
+
+#ifdef DEBUG
+#include "Core/CommonCore/ResourceUsageObserver.h"
+#endif
 
 using namespace IO::Images;
 using namespace IO::Images::Stb;
 using namespace IO::Audio;
 using namespace Graphics::Texture;
 using namespace MeshLoader::Assimp;
+using namespace EngineCore;
 
 namespace IO
 {
@@ -47,6 +53,13 @@ namespace IO
       resource->mData = localData;
       resource->mTexInfo = texResourceInfo;
 
+#ifdef DEBUG
+      const auto &resObs = ResourceUsageObserver::GetInstance();
+      resObs->CollectResourceConsumptionInfo();
+      LogInfo("TextureResourceLoader::LoadResource: ", key, ", memAfterAllocation: ", resObs->GetLastMemoryUsageMegabytes());
+#else
+      LogInfo("TextureResourceLoader::LoadResource: ", key);
+#endif
       return resource;
    }
 
@@ -71,6 +84,14 @@ namespace IO
 
       MeshResource *resource = new MeshResource();
       resource->mData = data;
+
+#ifdef DEBUG
+      const auto &resObs = ResourceUsageObserver::GetInstance();
+      resObs->CollectResourceConsumptionInfo();
+      LogInfo("MeshResourceLoader::LoadResource: ", key, ", memAfterAllocation: ", resObs->GetLastMemoryUsageMegabytes());
+#else
+      LogInfo("MeshResourceLoader::LoadResource: ", key);
+#endif
 
       return resource;
    }
@@ -97,6 +118,14 @@ namespace IO
       AudioResource *resource = new AudioResource();
       resource->mData = localData;
       resource->AudioInfo = stbAudioResourceInfo;
+
+#ifdef DEBUG
+      const auto &resObs = ResourceUsageObserver::GetInstance();
+      resObs->CollectResourceConsumptionInfo();
+      LogInfo("AudioResourceLoader::LoadResource: ", key, ", memAfterAllocation: ", resObs->GetLastMemoryUsageMegabytes());
+#else
+      LogInfo("AudioResourceLoader::LoadResource: ", key);
+#endif
       return resource;
    }
 
@@ -108,6 +137,13 @@ namespace IO
       resource->mStream = stbLoader.OpenStream(key, stbAudioResourceInfo);
       resource->mData = nullptr;
       resource->AudioInfo = stbAudioResourceInfo;
+#ifdef DEBUG
+      const auto &resObs = ResourceUsageObserver::GetInstance();
+      resObs->CollectResourceConsumptionInfo();
+      LogInfo("AudioResourceLoader::GetStreamResource: ", key, ", memAfterAllocation: ", resObs->GetLastMemoryUsageMegabytes());
+#else
+      LogInfo("AudioResourceLoader::GetStreamResource: ", key);
+#endif
       return resource;
    }
 }

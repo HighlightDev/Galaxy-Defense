@@ -36,6 +36,8 @@ namespace Graphics {
       {
       }
 
+      virtual ~MaterialProperty() = default;
+
       virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const = 0;
 
       virtual void SetValueToUniformArray(const UniformArray& uniformArray) const = 0;

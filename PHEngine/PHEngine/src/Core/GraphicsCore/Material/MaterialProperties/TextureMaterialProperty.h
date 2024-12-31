@@ -2,6 +2,10 @@
 
 #include "MaterialProperty.h"
 
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
+
+using namespace Resources;
+
 namespace Graphics {
 
    struct TextureMaterialProperty
@@ -19,6 +23,11 @@ namespace Graphics {
          : MaterialProperty(propertyName)
          , m_value(propertyValue)
       {
+      }
+
+      ~TextureMaterialProperty() override
+      {
+         TexturePool::GetInstance()->TryToFreeMemory(m_value);
       }
 
       TextureMaterialProperty(const std::string& propertyName)

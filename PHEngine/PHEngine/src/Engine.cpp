@@ -2,6 +2,7 @@
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/FontMeshPool.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
+#include "Core/ResourceManagerCore/Pool/InstancedMeshPool.h"
 #include "Core/ResourceManagerCore/Pool/ParticlesPool.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
@@ -31,6 +32,10 @@
 #include "Core/GameCore/Event/MouseScrollEvent.h"
 #include "Core/GameCore/Event/MouseButtonDownEvent.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
+
+#if DEBUG
+#include "Core/CommonCore/ResourceUsageObserver.h"
+#endif
 
 using namespace TinyLogger;
 using namespace IO;
@@ -98,10 +103,11 @@ namespace EngineCore
       m_resourceConsumptionLogTimer.SetIntervalMs(3000);
       m_resourceConsumptionLogTimer.SetIsRepeat(true);
       m_resourceConsumptionLogTimer.SetIsPausable(false);
-      m_resourceConsumptionLogTimer.SetCallback([resObs = &mResourceUsageObserver]() { 
+      m_resourceConsumptionLogTimer.SetCallback([]()
+                                                { 
+         const auto& resObs = ResourceUsageObserver::GetInstance();
          resObs->CollectResourceConsumptionInfo();
-         LogInfo("Pid:", resObs->GetPid(), " mem mb:", resObs->GetLastMemoryUsageMegabytes());
-      });
+         LogInfo("Pid:", resObs->GetPid(), " mem mb:", resObs->GetLastMemoryUsageMegabytes()); });
       m_resourceConsumptionLogTimer.StartTimer();
 #endif
 
@@ -120,6 +126,7 @@ namespace EngineCore
 
       CompositeShaderPool::GetInstance()->CleanUp();
       FontMeshPool::GetInstance()->CleanUp();
+      InstancedMeshPool::GetInstance()->CleanUp();
       MeshPool::GetInstance()->CleanUp();
       TexturePool::GetInstance()->CleanUp();
       ParticlesPool::GetInstance()->CleanUp();
@@ -129,7 +136,6 @@ namespace EngineCore
       SoundBufferPool::GetInstance()->CleanUp();
       SoundStreamPool::GetInstance()->CleanUp();
       RuntimeGeneratedMeshPool::GetInstance()->CleanUp();
-
       mActiveAudioOutputDevice->CleanUp();
    }
 

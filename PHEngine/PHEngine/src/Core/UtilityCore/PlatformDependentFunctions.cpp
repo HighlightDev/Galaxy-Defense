@@ -9,14 +9,6 @@ namespace EngineUtility
 {
 #ifdef _WIN32 // compile only for windows operating system
 
-	uint64_t getProcessMemorySize()
-	{
-		PROCESS_MEMORY_COUNTERS pmc;
-		GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-		uint64_t mHeapCapacity = static_cast<uint64_t>(pmc.WorkingSetSize);
-		return mHeapCapacity;
-	}
-
 	const char *get_module_file_name(HMODULE module)
 	{
 		DWORD size = 1;
@@ -38,12 +30,6 @@ namespace EngineUtility
 		return buffer;
 	}
 #elif __linux__ // compile only for linux system operating system
-
-	uint64_t getProcessMemorySize()
-	{
-		// todo: not implemented yet
-		return 0;
-	}
 
 	std::string get_module_file_name()
 	{

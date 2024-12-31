@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/ThreadHelper.h"
+#include "Core/IoCore/FolderManager.h"
 
 using namespace EngineCore;
 
@@ -19,7 +20,7 @@ namespace IO
 
     void FileWatcher::initialize()
     {
-        for (auto &file : std::filesystem::recursive_directory_iterator(mPathToWatch))
+        for (auto &file : std::filesystem::recursive_directory_iterator(FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch))
         {
             mPaths[file.path().string()] = std::filesystem::last_write_time(file);
         }
@@ -62,7 +63,7 @@ namespace IO
                 }
             }
 
-            for (auto &file : std::filesystem::recursive_directory_iterator(mPathToWatch))
+            for (auto &file : std::filesystem::recursive_directory_iterator(FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch))
             {
                 auto currentFileLastWriteTime = std::filesystem::last_write_time(file);
 

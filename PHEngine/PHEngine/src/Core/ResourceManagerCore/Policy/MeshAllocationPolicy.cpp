@@ -14,6 +14,7 @@
 
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/GameCore/BoundingBoxBuilder.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <gl/glew.h>
 #include <vector>
@@ -28,6 +29,8 @@ namespace Resources
 {
 	std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParameters &arg)
 	{
+		LogInfo("MeshAllocationPolicy::AllocateMemory: ", arg.mModelPath);
+
 		std::shared_ptr<Skin> resultSkin;
 		BoundingBox3D boundingBox;
 
@@ -122,11 +125,11 @@ namespace Resources
 			if (meshInfo->meshAnimatedData)
 			{
 				// todo: this part will crash due to pointer deletion when resource will be deleted
-				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<AnimatedMeshData>(meshInfo->meshAnimatedData), boundingBox);
+				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<AnimatedMeshData>(meshInfo->meshAnimatedData), boundingBox, arg.mModelPath);
 			}
 			else
 			{
-				resultSkin = std::make_shared<Skin>(vao, boundingBox);
+				resultSkin = std::make_shared<Skin>(vao, boundingBox, arg.mModelPath);
 			}
 		}
 
@@ -134,6 +137,7 @@ namespace Resources
 	}
 	void MeshAllocationPolicy::DeallocateMemory(std::shared_ptr<Skin> arg)
 	{
+		LogInfo("MeshAllocationPolicy::DeallocateMemory: ", arg->GetMeshName());
 		arg->CleanUp();
 	}
 

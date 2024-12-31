@@ -2,6 +2,7 @@
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/GameCore/BoundingBox3D.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
@@ -16,6 +17,7 @@ namespace Resources
 {
 	std::shared_ptr<Skin> RuntimeGeneratedMeshAllocationPolicy::AllocateMemory(const RuntimeGeneratedMeshPoolParameters &arg)
 	{
+		LogInfo("RuntimeGeneratedMeshAllocationPolicy::AllocateMemory: ", arg.mComponentName);
 		std::shared_ptr<Skin> resultSkin;
 
 		{
@@ -44,7 +46,7 @@ namespace Resources
 			assert(vao->GetVertexBufferObjects().size());
 			vao->BindBuffersToVao();
 
-			resultSkin = std::make_shared<Skin>(vao, BoundingBox3D());
+			resultSkin = std::make_shared<Skin>(vao, BoundingBox3D(), arg.mComponentName);
 		}
 
 		return resultSkin;
@@ -52,6 +54,7 @@ namespace Resources
 
 	void RuntimeGeneratedMeshAllocationPolicy::DeallocateMemory(std::shared_ptr<Skin> arg)
 	{
+		LogInfo("RuntimeGeneratedMeshAllocationPolicy::DeallocateMemory: ", arg->GetMeshName());
 		arg->CleanUp();
 	}
 

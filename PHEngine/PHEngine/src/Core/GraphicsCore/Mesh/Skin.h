@@ -20,9 +20,11 @@ namespace Graphics
 
          BoundingBox3D mBoundingBox;
 
+         std::string mMeshName;
+
       public:
 
-         Skin(const std::shared_ptr<VertexArrayObject>& vao, const BoundingBox3D& boundingBox);
+         Skin(const std::shared_ptr<VertexArrayObject>& vao, const BoundingBox3D& boundingBox, const std::string& meshName);
 
          virtual ~Skin();
 
@@ -31,6 +33,8 @@ namespace Graphics
          const std::shared_ptr<VertexArrayObject>& GetBuffer() const;
 
          BoundingBox3D GetBoundingBox() const;
+
+         std::string GetMeshName() const;
 
          virtual void CleanUp();
       };

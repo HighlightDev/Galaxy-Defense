@@ -233,7 +233,6 @@ set(BULLET_LIBS
     BulletRobotics
     BulletSoftBody)
 
-set(LIB_LOCATION_PREFIX "")
 if(WIN32)
     message("ARCH_x64: ${ARCH_x64}")
     if(ARCH_x64)
@@ -244,7 +243,7 @@ if(WIN32)
 
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC glew32 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/lib/${LIB_LOCATION_PREFIX}/Release/)
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC lua54 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC assimp-vc143-mtd ${ENGINE_DEPENDENCIES_DIR}/Assimp/lib/${LIB_LOCATION_PREFIX}/Debug/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC assimp-vc143-mtd ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/lib/${LIB_LOCATION_PREFIX}/Debug/)
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC glfw3 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/${LIB_LOCATION_PREFIX}/)
     findLibrariesAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC BULLET_LIBS ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
