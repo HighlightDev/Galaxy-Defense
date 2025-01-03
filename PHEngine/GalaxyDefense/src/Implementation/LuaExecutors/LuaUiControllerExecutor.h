@@ -20,12 +20,15 @@ namespace Game
    class LuaUiControllerExecutor
        : public LuaScriptExecutorBase
    {
+   protected:
       std::vector<std::shared_ptr<ILuaFunctionable>> mLuaFunctions;
 
    public:
       LuaUiControllerExecutor(const std::string &scriptName);
 
       ~LuaUiControllerExecutor();
+
+      virtual void Initialize();
 
       void RunScript() override;
 

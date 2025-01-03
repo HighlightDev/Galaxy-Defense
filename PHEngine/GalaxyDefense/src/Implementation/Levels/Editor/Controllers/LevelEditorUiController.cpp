@@ -74,6 +74,7 @@ namespace Game
             {
                 static constexpr uint64_t functionId = Hash64_CT("LevelEditorUiController::Initialize");
                 const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/EditorUiController.lua");
+                luaScriptExecutor->Initialize();
                 mExecutorId = luaScriptExecutor->GetUId();
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]()
                 {

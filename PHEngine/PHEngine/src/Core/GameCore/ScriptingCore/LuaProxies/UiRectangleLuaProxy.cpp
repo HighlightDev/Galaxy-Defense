@@ -67,7 +67,7 @@ namespace EngineCore
             }
         }
 
-         void UiRectangleLuaProxy::SetBorderRadius_FromGrameThread(const float borderRadius)
+         void UiRectangleLuaProxy::SetBorderRadius_FromGameThread(const float borderRadius)
          {
             if (!EngineMath::FloatsNearEqual(mBorderRadius, borderRadius))
             {

@@ -12,7 +12,7 @@ namespace Game
       {
          return std::make_shared<MainMenuLevel>();
       }
-      else if ("FirstLevel" == levelName)
+      else if ("CombatLevel" == levelName)
       {
          return std::make_shared<CombatLevel>();
       }

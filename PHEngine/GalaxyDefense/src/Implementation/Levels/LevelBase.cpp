@@ -7,11 +7,4 @@ namespace Game
          mLvlProgressController(std::make_shared<LevelProgressController>())
    {
    }
-
-   void LevelBase::PostLevelInit()
-   {
-      Level::PostLevelInit();
-
-      mLvlProgressController->InitNextStage();
-   }
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Implementation/Levels/LevelBase.h"
-#include "Implementation/Levels/CombatLevel/Controllers/UiController.h"
+#include "Implementation/Levels/CombatLevel/Controllers/CombatLevelUiController.h"
 #include "Implementation/Levels/LevelData.h"
 
 using namespace EngineCore;
@@ -16,7 +16,7 @@ namespace Game
 
       std::shared_ptr<CombatController> mCombatController;
 
-      std::unique_ptr<UiController> mUiController;
+      std::unique_ptr<CombatLevelUiController> mUiController;
 
    public:
       CombatLevel();

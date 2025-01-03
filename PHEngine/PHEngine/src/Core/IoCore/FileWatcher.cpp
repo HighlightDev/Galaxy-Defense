@@ -20,7 +20,11 @@ namespace IO
 
     void FileWatcher::initialize()
     {
+#ifdef WIN32
         for (auto &file : std::filesystem::recursive_directory_iterator(FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch))
+#elif __linux__
+        for (auto &file : std::filesystem::recursive_directory_iterator(mPathToWatch))
+#endif
         {
             mPaths[file.path().string()] = std::filesystem::last_write_time(file);
         }
@@ -63,7 +67,11 @@ namespace IO
                 }
             }
 
+#ifdef WIN32
             for (auto &file : std::filesystem::recursive_directory_iterator(FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch))
+#elif __linux__
+            for (auto &file : std::filesystem::recursive_directory_iterator(mPathToWatch))
+#endif
             {
                 auto currentFileLastWriteTime = std::filesystem::last_write_time(file);
 

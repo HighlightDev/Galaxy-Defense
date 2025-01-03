@@ -164,7 +164,9 @@ namespace EngineCore
             bool IsTransformDirty() const override;
             std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
             std::weak_ptr<::EngineCore::Scene> GetScene() const override;
+            const std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> &GetAnchors() const;
 
+            void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             void SetZOrder(const size_t z_order) override;
             void SetWidth(const size_t width) override;
             void SetHeight(const size_t height) override;
@@ -205,7 +207,7 @@ namespace EngineCore
             void CleanUp() override;
 
             bool CheckIfInterceptsMouseEvent(const glm::ivec2 &currentMousePosition) const;
-
+            
         protected:
             void SetIsTransformDirty(const bool isDirty);
 
@@ -215,7 +217,7 @@ namespace EngineCore
 
             void SetIsPropertiesShouldBeUpdatedOnLuaThread(const bool update);
 
-            void UpdateAnchorTransform();
+            virtual void UpdateAnchorTransform();
 
             std::shared_ptr<IUiTransformable> TryFindAncestryUiItem(const std::string &name) const;
 
@@ -232,8 +234,6 @@ namespace EngineCore
             void SyncDataOnRenderThread();
 
             void SyncDataOnLuaThread();
-
-            void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
 
             void UpdateScaleProperty();
 

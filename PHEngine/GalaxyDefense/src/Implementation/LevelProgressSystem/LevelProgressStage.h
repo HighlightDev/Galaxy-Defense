@@ -32,5 +32,9 @@ namespace Game
         bool IsStageCompleted() const;
 
         std::string GetName() const;
+
+        int32_t GetProgressRequirementsCount() const;
+
+        std::vector<std::shared_ptr<ILevelRequirementTracker>> GetLevelProgressRequirementTrackers() const;
     };
 } // namespace Game

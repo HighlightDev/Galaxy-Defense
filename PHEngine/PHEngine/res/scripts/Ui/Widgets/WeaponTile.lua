@@ -84,6 +84,7 @@ function WeaponTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
+    anchorMargin = nil == anchorMargin and 0 or anchorMargin
     if srcAnchor == UiItemBase.UiAnchorType.LEFT then
         self.anchorMargins.left = anchorMargin
     elseif srcAnchor == UiItemBase.UiAnchorType.RIGHT then

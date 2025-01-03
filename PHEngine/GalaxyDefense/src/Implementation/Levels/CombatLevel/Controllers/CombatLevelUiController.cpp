@@ -1,4 +1,4 @@
-#include "UiController.h"
+#include "CombatLevelUiController.h"
 
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
@@ -9,6 +9,9 @@
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/InterThreadCommunicationMgr.h"
 
+#include "Implementation/LuaExecutors/LuaCombatLevelUiControllerExecutor.h"
+#include "Implementation/LevelProgressSystem/LevelProgressController.h"
+
 using namespace IO;
 using namespace EngineCore;
 using namespace EngineCore::Scripts;
@@ -16,47 +19,49 @@ using namespace Thread;
 
 namespace Game
 {
-    UiController::UiController(const std::weak_ptr<Scene> &scene)
+    CombatLevelUiController::CombatLevelUiController(const std::weak_ptr<Scene> &scene,
+                                                     const std::shared_ptr<LevelProgressController> &lvlProgressController)
         : mSceneWp(scene),
-          mOverlayManager(std::make_shared<OverlayManager>(mSceneWp))
+          mOverlayManager(std::make_shared<OverlayManager>(mSceneWp)),
+          mLevelProgressController(lvlProgressController)
     {
     }
 
-    void UiController::UnpausableTick(const float deltaTime)
+    void CombatLevelUiController::UnpausableTick(const float deltaTime)
     {
         mOverlayManager->UnpausableTick(deltaTime);
     }
 
-    void UiController::Tick(const float deltaTime)
+    void CombatLevelUiController::Tick(const float deltaTime)
     {
         mOverlayManager->Tick(deltaTime);
     }
 
-    void UiController::OnPreLevelInit()
+    void CombatLevelUiController::OnPreLevelInit()
     {
     }
 
-    void UiController::OnLevelInit()
+    void CombatLevelUiController::OnLevelInit()
     {
     }
 
-    void UiController::OnPostLevelInit()
+    void CombatLevelUiController::OnPostLevelInit()
     {
     }
 
-    void UiController::PostPlayLevelFinished()
+    void CombatLevelUiController::PostPlayLevelFinished()
     {
         Initialize();
         mOverlayManager->Initialize();
     }
 
-    void UiController::CleanUp()
+    void CombatLevelUiController::CleanUp()
     {
         if (const auto &sceneSp = mSceneWp.lock())
         {
             if (const auto &luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
             {
-                const auto &luaScriptExecutor = std::dynamic_pointer_cast<LuaUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
+                const auto &luaScriptExecutor = std::dynamic_pointer_cast<LuaCombatLevelUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
                 assert(luaScriptExecutor);
                 luaScriptExecutor->StopScript();
                 luaScriptProcessorSp->UnregisterLuaScriptExecutor(mExecutorId);
@@ -66,7 +71,7 @@ namespace Game
         mOverlayManager->CleanUp();
     }
 
-    void UiController::RestartLuaScripts()
+    void CombatLevelUiController::RestartLuaScripts()
     {
         assert(!ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
 
@@ -74,25 +79,27 @@ namespace Game
         {
             if (const auto &luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
             {
-                const auto &luaScriptExecutor = std::dynamic_pointer_cast<LuaUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
+                const auto &luaScriptExecutor = std::dynamic_pointer_cast<LuaCombatLevelUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
                 assert(luaScriptExecutor);
                 luaScriptExecutor->SetIsEnabled(false);
                 mOverlayManager->CleanUp();
-                static constexpr uint64_t functionId = Hash64_CT("UiController::RestartLuaScripts");
+                static constexpr uint64_t functionId = Hash64_CT("CombatLevelUiController::RestartLuaScripts");
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]()
                                                                                  { luaScriptExecutor->RestartScript(); });
             }
         }
     }
 
-    void UiController::Initialize()
+    void CombatLevelUiController::Initialize()
     {
         if (const auto &sceneSp = mSceneWp.lock())
         {
             if (const auto &luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
             {
-                static constexpr uint64_t functionId = Hash64_CT("UiController::Initialize");
-                const auto &luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/GalaxyDefenseCommonUiController.lua");
+                static constexpr uint64_t functionId = Hash64_CT("CombatLevelUiController::Initialize");
+                const auto &luaScriptExecutor = std::make_shared<LuaCombatLevelUiControllerExecutor>("Ui/Controllers/GalaxyDefenseCommonUiController.lua",
+                                                                                                     mLevelProgressController);
+                luaScriptExecutor->Initialize();
                 mExecutorId = luaScriptExecutor->GetUId();
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]()
                                                                                  {

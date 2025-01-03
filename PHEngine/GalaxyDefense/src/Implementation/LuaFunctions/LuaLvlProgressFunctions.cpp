@@ -52,6 +52,9 @@ namespace Game
    void LuaLvlProgressFunctions::RegisterCallbacks(const LuaWrapper &luaWrapper)
    {
       LuaCallbackBindingHelper<Hash64_CT("LuaLvlProgressFunctions::SetLevelProgressStagesQueue"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaLvlProgressFunctions::SetLevelProgressStagesQueue, this, std::placeholders::_1), "_SetLevelProgressStagesQueue");
+      LuaCallbackBindingHelper<Hash64_CT("LuaLvlProgressFunctions::GetCurrentProgressRequirementsCount"), int32_t()>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaLvlProgressFunctions::GetCurrentProgressRequirementsCount, this, std::placeholders::_1), "_GetCurrentProgressRequirementsCount");
+      LuaCallbackBindingHelper<Hash64_CT("LuaLvlProgressFunctions::GetCurrentProgressStageName"), std::string()>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaLvlProgressFunctions::GetCurrentProgressStageName, this, std::placeholders::_1), "_GetCurrentProgressStageName");
+      LuaCallbackBindingHelper<Hash64_CT("LuaLvlProgressFunctions::GetCurrentProgressStageRequirementTrackers"), std::string()>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaLvlProgressFunctions::GetCurrentProgressStageRequirementTrackers, this, std::placeholders::_1), "_GetCurrentProgressStageRequirementTrackers");
    }
 
    void LuaLvlProgressFunctions::SetLevelProgressStagesQueue(const std::tuple<std::string /*level progress stages queue json*/> &data)
@@ -76,5 +79,34 @@ namespace Game
 
       assert(levelProgressStageSp);
       mLevelProgressController->AddLevelProgressStage(levelProgressStageSp);
+   }
+
+   int32_t LuaLvlProgressFunctions::GetCurrentProgressRequirementsCount(const std::tuple<> &data) const
+   {
+      return mLevelProgressController->GetCurrentProgressRequirementsCount();
+   }
+
+   std::string LuaLvlProgressFunctions::GetCurrentProgressStageName(const std::tuple<> &data) const
+   {
+      return mLevelProgressController->GetCurrentProgressStageName();
+   }
+
+   std::string LuaLvlProgressFunctions::GetCurrentProgressStageRequirementTrackers(const std::tuple<> &data)
+   {
+      const auto &requirementTrackers = mLevelProgressController->GetLevelProgressRequirementTrackers();
+
+      if (requirementTrackers.size())
+      {
+         nlohmann::json requirementTrackersJsonObj;
+
+         int32_t trackerIndex = 0;
+         for (const auto &tracker : requirementTrackers)
+         {
+            requirementTrackersJsonObj[trackerIndex++] = tracker->SerializeParameters();
+         }
+
+         return requirementTrackersJsonObj.dump();
+      }
+      return "";
    }
 }

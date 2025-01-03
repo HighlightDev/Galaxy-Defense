@@ -187,24 +187,33 @@ int32_t main(int32_t argc, char **argv)
     return -1;
 
   auto width = 1200;
-   auto height = 900;
+  auto height = 900;
   GLFWmonitor *activeMonitor = nullptr;
   int monitorsCount = 0;
   GLFWmonitor **monitors = glfwGetMonitors(&monitorsCount);
+  const auto &windowMode = EngineConfigHolder::GetInstance()->GetEngineConfig().WindowMode;
   const auto &preferableActiveMonitor = EngineConfigHolder::GetInstance()->GetEngineConfig().ActiveMonitor;
-  if ("additional" == preferableActiveMonitor && monitorsCount > 1)
+  if ("fullscreen" == windowMode)
   {
-    activeMonitor = monitors[1];
+    if ("additional" == preferableActiveMonitor && monitorsCount > 1)
+    {
+      activeMonitor = monitors[1];
+    }
+    else
+    {
+      activeMonitor = glfwGetPrimaryMonitor();
+    }
   }
-  else
-  {
-    activeMonitor = glfwGetPrimaryMonitor();
-  }
-  // Create a windowed mode window and its OpenGL context
+
   get_screen_rezolution(activeMonitor);
-  //const auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
-  //const auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
-  window = glfwCreateWindow(width, height, "PHEngine", nullptr, NULL);
+
+  if ("fullscreen" == windowMode)
+  {
+    width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
+    height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
+  }
+
+  window = glfwCreateWindow(width, height, "PHEngine", activeMonitor, NULL);
   LogInfo("main => glfwWindow create with size: width = ", width, " height = ", height);
 
   if (!window)

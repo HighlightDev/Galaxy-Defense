@@ -19,8 +19,6 @@ namespace Game
       explicit LevelBase(const std::string &levelName);
 
       ~LevelBase() = default;
-
-      void PostLevelInit() override;
    };
 
 }

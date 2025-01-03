@@ -12,4 +12,11 @@ namespace Game
         DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED, // total amount of destroyed by player enemy spaceships,
         SELECTED_TOWER_CHANGED
     };
+
+    enum class eLevelProgressStatusType
+    {
+        NONE,
+        CURRENT_STAGE_CHANGED,
+        REQUIREMENT_TRACKERS_STATUS_CHANGED
+    };
 }

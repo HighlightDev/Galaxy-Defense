@@ -3,6 +3,10 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
 
+#include "Implementation/Events/LevelProgressChangedEvent.h"
+
+#include <json/json.hpp>
+
 using namespace EngineCore;
 
 namespace Game
@@ -14,12 +18,28 @@ namespace Game
 
     void LevelProgressController::InitNextStage()
     {
-        mCurrentStage = nullptr;
+        bool sendEvent = false;
         if (mLevelProgressStages.size())
         {
             mCurrentStage = mLevelProgressStages.front();
             mLevelProgressStages.pop();
             mCurrentStage->Init();
+            sendEvent = true;
+        }
+        else if (mCurrentStage)
+        {
+            mCurrentStage = nullptr;
+            sendEvent = true;
+        }
+
+        if (sendEvent)
+        {
+            nlohmann::json jsonObj;
+            jsonObj["level_progress_status_type"] = static_cast<int32_t>(eLevelProgressStatusType::CURRENT_STAGE_CHANGED);
+            const auto &eventParams = jsonObj.dump();
+            Event::LuaLevelProgressChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION,
+                                                                          eLevelProgressStatusType::CURRENT_STAGE_CHANGED,
+                                                                          eventParams);
         }
     }
 
@@ -41,9 +61,43 @@ namespace Game
                 InitNextStage();
             }
         }
+        else
+        {
+            InitNextStage();
+        }
     }
 
     void LevelProgressController::UnpausableTick(const float deltaTime)
     {
+    }
+
+    int32_t LevelProgressController::GetCurrentProgressRequirementsCount() const
+    {
+        if (mCurrentStage)
+        {
+            return mCurrentStage->GetProgressRequirementsCount();
+        }
+
+        return 0;
+    }
+
+    std::string LevelProgressController::GetCurrentProgressStageName() const
+    {
+        if (mCurrentStage)
+        {
+            return mCurrentStage->GetName();
+        }
+
+        return "";
+    }
+
+    std::vector<std::shared_ptr<ILevelRequirementTracker>> LevelProgressController::GetLevelProgressRequirementTrackers() const
+    {
+        if (mCurrentStage)
+        {
+            return mCurrentStage->GetLevelProgressRequirementTrackers();
+        }
+
+        return {};
     }
 }

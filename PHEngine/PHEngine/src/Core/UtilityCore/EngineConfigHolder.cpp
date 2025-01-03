@@ -56,6 +56,7 @@ namespace EngineUtility
 
         std::unordered_map<std::string, std::function<void(const std::string &valueStr)>> config_values_map =
         {
+            std::make_pair("window_mode",                           std::function([=](const std::string &valueStr) { mEngineConfig.WindowMode                       = valueStr; })),
             std::make_pair("active_monitor",                        std::function([=](const std::string &valueStr) { mEngineConfig.ActiveMonitor                    = valueStr; })),
             std::make_pair("max_skeletal_mesh_bones",               std::function([=](const std::string &valueStr) { mEngineConfig.MaxSkeletBones                   = parseUInt(valueStr); })),
             std::make_pair("max_static_mesh_instances_per_batch",   std::function([=](const std::string &valueStr) { mEngineConfig.MaxStaticMeshInstancesPerBatch   = parseUInt(valueStr); })),

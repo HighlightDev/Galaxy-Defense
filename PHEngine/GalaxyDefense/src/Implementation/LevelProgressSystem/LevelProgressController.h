@@ -9,6 +9,8 @@
 
 namespace Game
 {
+    class ILevelRequirementTracker;
+
     class LevelProgressController
         : public ITickable
     {
@@ -26,5 +28,11 @@ namespace Game
         void UnpausableTick(const float deltaTime) override;
 
         void AddLevelProgressStage(const std::shared_ptr<LevelProgressStage> &lvlProgressStage);
+
+        int32_t GetCurrentProgressRequirementsCount() const;
+
+        std::string GetCurrentProgressStageName() const;
+
+        std::vector<std::shared_ptr<ILevelRequirementTracker>> GetLevelProgressRequirementTrackers() const;
     };
 }

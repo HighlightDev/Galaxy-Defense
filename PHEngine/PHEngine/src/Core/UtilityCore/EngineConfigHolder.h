@@ -9,6 +9,7 @@ namespace EngineUtility
 {
     struct EngineConfig
     {
+        std::string WindowMode{"fullscreen"};
         std::string ActiveMonitor{"primary"};
 
         size_t MaxSkeletBones{0};

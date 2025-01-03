@@ -50,5 +50,11 @@ namespace Game
 
    private:
       void SetLevelProgressStagesQueue(const std::tuple<std::string /*level progress stages queue json*/> &data);
+
+      int32_t GetCurrentProgressRequirementsCount(const std::tuple<> &data) const;
+
+      std::string GetCurrentProgressStageName(const std::tuple<> &data) const;
+
+      std::string GetCurrentProgressStageRequirementTrackers(const std::tuple<> &data);
    };
 }

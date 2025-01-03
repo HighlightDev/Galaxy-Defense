@@ -31,6 +31,7 @@
 #include "Implementation/Events/ElectroRayCollisionEvent.h"
 #include "Implementation/Events/ElectroRaySphereContactCollisionEvent.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
+#include "Implementation/Events/LevelProgressChangedEvent.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
 #include "Implementation/LuaExecutors/LuaCombatLevelExecutor.h"
@@ -61,10 +62,10 @@ namespace Game
 {
 
    CombatLevel::CombatLevel()
-       : LevelBase("FirstLevel")
+       : LevelBase("CombatLevel")
    {
-      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::ElectroRayCollisionEvent, Event::ElectroRaySphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent, Event::ChangeGameModeEvent>();
-      Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent>();
+      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::ElectroRayCollisionEvent, Event::ElectroRaySphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent, Event::ChangeGameModeEvent, Event::LevelProgressChangedEvent>();
+      Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent, Event::LuaLevelProgressChangedEvent>();
    }
 
    CombatLevel::~CombatLevel()
@@ -89,7 +90,7 @@ namespace Game
       assert(sceneSp);
       Base::PreLevelInit();
       mCombatController = std::make_shared<CombatController>(sceneSp);
-      mUiController = std::make_unique<UiController>(sceneSp);
+      mUiController = std::make_unique<CombatLevelUiController>(sceneSp, mLvlProgressController);
       mCombatController->OnPreLevelInit();
       mUiController->OnPreLevelInit();
    }

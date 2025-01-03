@@ -10,6 +10,10 @@ namespace Game
    LuaUiControllerExecutor::LuaUiControllerExecutor(const std::string &scriptName)
        : LuaScriptExecutorBase(scriptName)
    {
+   }
+
+   void LuaUiControllerExecutor::Initialize()
+   {
       mLuaFunctions = {std::make_shared<LuaCommonUiFunctions>(this),
                        std::make_shared<LuaCommonEngineFunctions>(this),
                        std::make_shared<LuaEngineEventsFunctions>(this),

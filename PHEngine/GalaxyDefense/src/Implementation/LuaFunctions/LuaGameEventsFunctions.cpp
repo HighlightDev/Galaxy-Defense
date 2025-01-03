@@ -28,11 +28,13 @@ namespace Game
    LuaGameEventsFunctions::~LuaGameEventsFunctions()
    {
       LuaMainPlayerStatusChangedEvent::GetInstance()->RemoveListener(LuaMainPlayerStatusChangedEvent::GetInstanceId());
+      LuaLevelProgressChangedEvent::GetInstance()->RemoveListener(LuaLevelProgressChangedEvent::GetInstanceId());
    }
 
    void LuaGameEventsFunctions::Initialize()
    {
       LuaMainPlayerStatusChangedEvent::GetInstance()->AddListener(shared_from_this());
+      LuaLevelProgressChangedEvent::GetInstance()->AddListener(shared_from_this());
    }
 
    void LuaGameEventsFunctions::SetScene(const std::weak_ptr<Scene> &sceneWp)
@@ -69,6 +71,33 @@ namespace Game
                                                                          (void *)mOwnerPtr,
                                                                          std::string("PlayerStatusChanged"),
                                                                          std::get<1>(data));
+#ifdef DEBUG
+      const auto &errorMsg = mOwnerPtr->GetLuaInstance().GetErrorMessageAt(-1);
+      if (errorMsg.size() > 1)
+      {
+         std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
+         LogInfo("ERROR: Lua script execution failed:", errorMsg);
+         assert(false);
+      }
+#endif
+   }
+
+   void LuaGameEventsFunctions::ProcessEvent(const LuaLevelProgressChangedEvent::EventData_t &data)
+   {
+      LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(),
+                                                                         "System_OnGameEventTriggered",
+                                                                         (void *)mOwnerPtr,
+                                                                         std::string("LevelProgressChanged"),
+                                                                         std::get<1>(data));
+#ifdef DEBUG
+      const auto &errorMsg = mOwnerPtr->GetLuaInstance().GetErrorMessageAt(-1);
+      if (errorMsg.size() > 1)
+      {
+         std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
+         LogInfo("ERROR: Lua script execution failed:", errorMsg);
+         assert(false);
+      }
+#endif
    }
 
    int32_t LuaGameEventsFunctions::GetSelectedMissileType(const std::tuple<> &data) const

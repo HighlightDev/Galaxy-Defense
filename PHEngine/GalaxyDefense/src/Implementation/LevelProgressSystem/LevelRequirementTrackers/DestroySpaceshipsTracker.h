@@ -12,9 +12,11 @@ namespace Game
     {
         const int32_t mEnemySpaceshipsToDestroyCount;
 
-        int32_t mCurrentStageDestroyedEnemySpaceshipsInitialCount;
+        int32_t mCurrentStageDestroyedEnemySpaceshipsInitialCount{0};
 
-        int32_t mDestroyedEnemySpaceships;
+        int32_t mDestroyedEnemySpaceships{0};
+
+        int32_t mLastDestroyedEnemySpaceshipsValue{0};
 
     public:
         explicit DestroySpaceshipsTracker(const int32_t enemySpaceshipsCount);
@@ -26,5 +28,12 @@ namespace Game
         void Tick(const float deltaTime) override;
 
         void UnpausableTick(const float deltaTime) override;
+
+        std::unordered_map<std::string, std::string> SerializeParameters() const override;
+
+        bool CheckIfRequirementIsDirty(const bool unsetDirtyFlag) override;
+
+    private:
+        void SetDestroyedEnemySpaceships(const int32_t value);
     };
 }

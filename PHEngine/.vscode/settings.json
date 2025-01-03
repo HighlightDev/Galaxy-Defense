@@ -154,7 +154,9 @@
         "_StartUiItemSequenceAnimation",
         "_SetBindingToMaterial",
         "_OpenAudioStreams",
-        "_SetLevelProgressStagesQueue"
+        "_SetLevelProgressStagesQueue",
+        "_GetCurrentProgressRequirementsCount",
+        "_GetCurrentProgressStageRequirementTrackers"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

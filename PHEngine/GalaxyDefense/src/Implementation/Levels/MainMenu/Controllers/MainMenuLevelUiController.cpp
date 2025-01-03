@@ -42,12 +42,12 @@ namespace Game
 
     void MainMenuLevelUiController::OnPostLevelInit()
     {
+        Initialize();
+        mOverlayManager->Initialize();
     }
 
     void MainMenuLevelUiController::PostPlayLevelFinished()
     {
-        Initialize();
-        mOverlayManager->Initialize();
     }
 
     void MainMenuLevelUiController::CleanUp()
@@ -93,6 +93,7 @@ namespace Game
             {
                 static constexpr uint64_t functionId = Hash64_CT("MainMenuLevelUiController::Initialize");
                 const auto &luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/MainMenuUiController.lua");
+                luaScriptExecutor->Initialize();
                 mExecutorId = luaScriptExecutor->GetUId();
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]()
                                                                                  {

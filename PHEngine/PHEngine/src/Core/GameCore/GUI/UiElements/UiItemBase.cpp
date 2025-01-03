@@ -123,6 +123,11 @@ namespace EngineCore
             return std::weak_ptr<Scene>();
         }
 
+        const std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> &UiItemBase::GetAnchors() const
+        {
+            return mAnchors;
+        }
+
         const std::weak_ptr<UiCanvas> &UiItemBase::GetParentCanvas() const
         {
             return mParentCanvas;
@@ -189,7 +194,7 @@ namespace EngineCore
 
         void UiItemBase::SetWidth(const size_t width)
         {
-            assert(width > 0);
+            ext_assert(width > 0, "Name: " + GetName());
             if (mWidth != width)
             {
                 mWidth = width;
@@ -199,7 +204,7 @@ namespace EngineCore
 
         void UiItemBase::SetHeight(const size_t height)
         {
-            assert(height > 0);
+            ext_assert(height > 0, "Name: " + GetName());
             if (mHeight != height)
             {
                 mHeight = height;

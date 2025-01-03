@@ -3,7 +3,6 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/GUI/OverlayManagement/OverlayManager.h"
 #include "Implementation/Controllers/ILevelController.h"
-#include "Implementation/LuaExecutors/LuaUiControllerExecutor.h"
 
 #include <memory>
 
@@ -16,17 +15,22 @@ using namespace EngineCore::GUI;
 
 namespace Game
 {
-    class UiController : public ITickable,
-                         public ILevelController
+    class LevelProgressController;
+
+    class CombatLevelUiController : public ITickable,
+                                    public ILevelController
     {
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
         std::shared_ptr<OverlayManager> mOverlayManager;
 
+        std::shared_ptr<LevelProgressController> mLevelProgressController;
+
         size_t mExecutorId;
 
     public:
-        UiController(const std::weak_ptr<::EngineCore::Scene> &scene);
+        CombatLevelUiController(const std::weak_ptr<::EngineCore::Scene> &scene,
+                                const std::shared_ptr<LevelProgressController> &lvlProgressController);
 
         void Tick(const float deltaTime) override;
 

@@ -9,7 +9,7 @@ set(
     src/Implementation/Levels/LevelSerializationHelper.h
     src/Implementation/Levels/LevelData.h
     src/Implementation/Levels/CombatLevel/CombatLevel.h
-    src/Implementation/Levels/CombatLevel/Controllers/UiController.h
+    src/Implementation/Levels/CombatLevel/Controllers/CombatLevelUiController.h
     src/Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h
     src/Implementation/Levels/CombatLevel/SmartPicker.h
     src/Implementation/Levels/MainMenu/MainMenuLevel.h
@@ -40,6 +40,7 @@ set(
     src/Implementation/Events/MainPlayerStatusChangedEvent.h
     src/Implementation/Events/ChangeGameModeEvent.h
     src/Implementation/Events/ChangeEditModeEvent.h
+    src/Implementation/Events/LevelProgressChangedEvent.h
     src/Implementation/GameModeTypeEnum.h
     src/Implementation/EditModeTypeEnum.h
     src/Implementation/Factories/ISpaceShipFactory.h
@@ -82,6 +83,7 @@ set(
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h
     src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
     src/Implementation/LuaExecutors/LuaCombatLevelExecutor.h
+    src/Implementation/LuaExecutors/LuaCombatLevelUiControllerExecutor.h
     src/Implementation/LuaFunctions/LuaGameEventsFunctions.h
     src/Implementation/LuaFunctions/LuaLvlProgressFunctions.h
     src/Implementation/DataProviders/PlayerDataProvider.h
@@ -104,7 +106,7 @@ set(
     src/Implementation/Levels/LevelSerializationHelper.cpp
     src/Implementation/Levels/LevelData.cpp
     src/Implementation/Levels/CombatLevel/CombatLevel.cpp
-    src/Implementation/Levels/CombatLevel/Controllers/UiController.cpp
+    src/Implementation/Levels/CombatLevel/Controllers/CombatLevelUiController.cpp
     src/Implementation/Levels/CombatLevel/CombatActorsPoolHandler.cpp
     src/Implementation/Levels/CombatLevel/SmartPicker.cpp
     src/Implementation/Levels/MainMenu/MainMenuLevel.cpp
@@ -128,6 +130,7 @@ set(
     src/Implementation/Events/MainPlayerStatusChangedEvent.cpp
     src/Implementation/Events/ChangeGameModeEvent.cpp
     src/Implementation/Events/ChangeEditModeEvent.cpp
+    src/Implementation/Events/LevelProgressChangedEvent.cpp
     src/Implementation/Factories/WeakSpaceShipFactory.cpp
     src/Implementation/Factories/BombMissileFactory.cpp
     src/Implementation/Factories/FreezingMissileFactory.cpp
@@ -163,6 +166,7 @@ set(
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.cpp
     src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
     src/Implementation/LuaExecutors/LuaCombatLevelExecutor.cpp
+    src/Implementation/LuaExecutors/LuaCombatLevelUiControllerExecutor.cpp
     src/Implementation/LuaFunctions/LuaGameEventsFunctions.cpp
     src/Implementation/LuaFunctions/LuaLvlProgressFunctions.cpp
     src/Implementation/DataProviders/PlayerDataProvider.cpp

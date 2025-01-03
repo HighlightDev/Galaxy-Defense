@@ -25,6 +25,7 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 local CommonUiWidgetCreator = require("Ui/Core/commonUiWidgetCreator")
 local json = require("Ui/Core/3rdparty/json")
+local ActionQueue = require("Ui/Core/actionQueue")
 
 UiOverlay = {
 }
@@ -45,8 +46,11 @@ function UiOverlay:createOverlay(host, overlayName, overlayCanvas)
         widgets = {},
         compoundWidgets = {},
         allWidgetLuaProxiesReady = false,
-        allWidgetLuaProxiesReadyCallbacks = {}
+        allWidgetLuaProxiesReadyCallbacks = {},
+        actionQueue = nil
     }
+
+    newObj.actionQueue = ActionQueue:new()
 
     self.__index = self
     return setmetatable(newObj, self)
@@ -69,8 +73,11 @@ function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
         widgets = {},
         compoundWidgets = {},
         allWidgetLuaProxiesReady = false,
-        allWidgetLuaProxiesReadyCallbacks = {}
+        allWidgetLuaProxiesReadyCallbacks = {},
+        actionQueue = nil
     }
+
+    newObj.actionQueue = ActionQueue:new()
 
     self.__index = self
     return setmetatable(newObj, self)
@@ -138,6 +145,10 @@ function UiOverlay:update(host, deltaTime)
                 value:onCompoundWidgetInitialize()
             end
         end
+    end
+
+    if self.allWidgetLuaProxiesReady and self.actionQueue:hasPendingActions() then
+        self.actionQueue:processActions() --process pending actions
     end
 
     for _, value in pairs(self.widgets) do

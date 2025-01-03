@@ -229,7 +229,7 @@ namespace EngineCore
                             {
                                 rectangleLuaProxy->SetOpacity_FromGameThread(opacity);
                                 rectangleLuaProxy->SetColor_FromGameThread(color);
-                                rectangleLuaProxy->SetBorderRadius_FromGrameThread(borderRadius); 
+                                rectangleLuaProxy->SetBorderRadius_FromGameThread(borderRadius); 
                             } });
                     }
                 }

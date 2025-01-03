@@ -78,7 +78,7 @@ function MainMenuOverlay:new(host)
     end)
     newGameButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            "FirstLevel")
+            "CombatLevel")
     end)
 
     local newGameButtonLabel = UiLabel:new(host, "nimbus_mono")

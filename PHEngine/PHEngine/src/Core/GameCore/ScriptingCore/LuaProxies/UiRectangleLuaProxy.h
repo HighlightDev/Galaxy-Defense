@@ -37,7 +37,7 @@ namespace EngineCore
 
             void SetOpacity_FromGameThread(const float opacity);
 
-            void SetBorderRadius_FromGrameThread(const float borderRadius);
+            void SetBorderRadius_FromGameThread(const float borderRadius);
         };
     }
 }

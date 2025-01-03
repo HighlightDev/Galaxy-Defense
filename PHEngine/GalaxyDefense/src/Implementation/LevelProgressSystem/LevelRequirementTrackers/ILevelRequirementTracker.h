@@ -3,6 +3,7 @@
 #include "Core/GameCore/ITickable.h"
 
 #include <string>
+#include <unordered_map>
 
 namespace Game
 {
@@ -13,5 +14,9 @@ namespace Game
         virtual bool IsRequirementAchived() const = 0;
 
         virtual std::string GetName() const = 0;
+
+        virtual std::unordered_map<std::string, std::string> SerializeParameters() const = 0;
+
+        virtual bool CheckIfRequirementIsDirty(const bool unsetDirtyFlag) = 0;
     };
 }
