@@ -86,6 +86,10 @@ end
 function UiOverlay:__gc(self)
 end
 
+function UiOverlay:getOverlayCanvas()
+    return self.overlayCanvas
+end
+
 function UiOverlay:updateFromReplicatorData(host)
     self.overlayCanvas:updateFromReplicatorData(host)
 
@@ -115,6 +119,30 @@ function UiOverlay:addCompoundWidget(compoundWidget)
         compoundWidget.onCompoundWidgetInitialize ~= nil and
         type(compoundWidget.onCompoundWidgetInitialize) == "function")
     self.compoundWidgets[#self.compoundWidgets + 1] = compoundWidget
+end
+
+function UiOverlay:removeWidget(widget)
+    assert(widget ~= nil and type(widget) == "table")
+    if widget.typeName ~= nil and type(widget.typeName) == "string" then
+        for index, iterate_widget in pairs(self.widgets) do
+            if widget.luaProxyId == iterate_widget.luaProxyId then
+                table.remove(self.widgets, index)
+                break
+            end
+        end
+    elseif widget.onCompoundWidgetInitialize ~= nil and
+        type(widget.onCompoundWidgetInitialize) == "function" then
+        assert(widget.backgroundTile.luaProxyReady)
+        for index, iterate_widget in pairs(self.compoundWidgets) do
+            if iterate_widget.backgroundTile ~= nil then
+                assert(widget.backgroundTile ~= nil, "backgroundTile is null")
+                if widget.backgroundTile.luaProxyId == iterate_widget.backgroundTile.luaProxyId then
+                    table.remove(self.compoundWidgets, index)
+                    break
+                end
+            end
+        end
+    end
 end
 
 function UiOverlay:subscribeOnAllWidgetLuaProxiesReady(callback)
@@ -152,6 +180,10 @@ function UiOverlay:update(host, deltaTime)
     end
 
     for _, value in pairs(self.widgets) do
+        value:update(host)
+    end
+
+    for _, value in pairs(self.compoundWidgets) do
         value:update(host)
     end
 end

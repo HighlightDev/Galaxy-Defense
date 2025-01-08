@@ -64,6 +64,7 @@ function UiRectangle:new(host, name)
     uiRectangleObj.typeName = "UiRectangle"
     uiRectangleObj.luaProxyId = luaProxyId
     uiRectangleObj.rectangleProperties = rectangleProperties
+    uiRectangleObj.host = host
 
     return uiRectangleObj
 end

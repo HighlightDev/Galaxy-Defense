@@ -51,7 +51,8 @@ function ImageAndLabelTile:new(host, overlay)
             right = 0,
             bottom = 0,
             top = 0,
-        }
+        },
+        luaProxiesReadyCallback = nil
     }
 
     newObj.backgroundTile = UiRectangle:new(host)
@@ -64,6 +65,14 @@ function ImageAndLabelTile:new(host, overlay)
 
     self.__index = self
     return setmetatable(newObj, self)
+end
+
+function ImageAndLabelTile:subscribeOnLuaProxiesReady(callback)
+    print("subscribeOnLuaProxiesReady: " .. self.backgroundTile.luaProxyId)
+    self.luaProxiesReadyCallback = callback
+end
+
+function ImageAndLabelTile:update(host)
 end
 
 function ImageAndLabelTile:setWidth(width)
@@ -137,6 +146,20 @@ function ImageAndLabelTile:setLabelText(labelText)
     self.label:setText(labelText)
 end
 
+function ImageAndLabelTile:setLabelVisibility(isVisible)
+    assert(isVisible ~= nil and type(isVisible) == "boolean")
+    self.label:setIsVisible(isVisible)
+end
+
+function ImageAndLabelTile:rotateImage(rotateDegrees)
+    assert(rotateDegrees ~= nil and type(rotateDegrees) == "number")
+    self.image:setRotationDegrees(rotateDegrees)
+end
+
+function ImageAndLabelTile:setFlipImage(isFlipped)
+    self.image:setIsFlipped(isFlipped)
+end
+
 function ImageAndLabelTile:setTextureSource(texSource)
     assert(texSource ~= nil and type(texSource) == "string")
     self.image:setTextureSource(texSource)
@@ -148,6 +171,14 @@ end
 
 function ImageAndLabelTile:setBackgroundTileOpacity(opacity)
     self.backgroundTile:setOpacity(opacity)
+end
+
+function ImageAndLabelTile:setImageColorHexValue(colorHex)
+    self.image:setColorHexValue(colorHex)
+end
+
+function ImageAndLabelTile:setUseImageCustomColor(isCustom)
+    self.image:setUseImageCustomColor(isCustom)
 end
 
 function ImageAndLabelTile:resizeWidgets()
@@ -175,6 +206,10 @@ end
 
 function ImageAndLabelTile:onPreCompoundWidgetInitialize()
     self.widgetName = self.backgroundTile.widgetName
+
+    if self.luaProxiesReadyCallback ~= nil then
+        self.luaProxiesReadyCallback(self.host)
+    end
 end
 
 function ImageAndLabelTile:onCompoundWidgetInitialize()

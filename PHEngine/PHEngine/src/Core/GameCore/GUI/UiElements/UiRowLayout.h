@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <glm/mat4x4.hpp>
 
+#include "Transform2D/UiRowAlignmentType.h"
+
 namespace EngineCore
 {
     namespace Scripts
@@ -25,6 +27,8 @@ namespace EngineCore
         {
             uint32_t mSpacing{0};
 
+            eUiRowAlignmentType mAlignmentType{eUiRowAlignmentType::LEFT};
+
         public:
             UiRowLayout(const std::string &name = std::string(""));
 
@@ -36,7 +40,13 @@ namespace EngineCore
 
             uint32_t GetSpacing() const;
 
+            void SetAlignment(const eUiRowAlignmentType alignmentType);
+
+            eUiRowAlignmentType GetAlignment() const;
+
             void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+
+            void UnpausableTick(const float deltaTime) override;
 
         protected:
             void UpdateAnchorTransform() override;

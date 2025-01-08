@@ -75,6 +75,7 @@ function UiToggleButton:new(host, isStateOn, name)
     uiToggleObj.luaProxyId = luaProxyId
     uiToggleObj.toggleButtonProperties = toggleButtonProperties
     uiToggleObj.onStateChangedCallback = nil
+    uiToggleObj.host = host
 
     return uiToggleObj
 end

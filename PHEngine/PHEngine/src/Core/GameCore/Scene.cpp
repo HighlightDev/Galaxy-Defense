@@ -625,6 +625,7 @@ namespace EngineCore
    {
       if (mLuaReplicators.count(replicatorId))
       {
+         mLuaReplicators.at(replicatorId)->CleanUp();
          mLuaReplicators.erase(replicatorId);
          return true;
       }

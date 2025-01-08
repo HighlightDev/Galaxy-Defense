@@ -156,7 +156,8 @@
         "_OpenAudioStreams",
         "_SetLevelProgressStagesQueue",
         "_GetCurrentProgressRequirementsCount",
-        "_GetCurrentProgressStageRequirementTrackers"
+        "_GetCurrentProgressStageRequirementTrackers",
+        "_DestroyCommonUiWidget"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

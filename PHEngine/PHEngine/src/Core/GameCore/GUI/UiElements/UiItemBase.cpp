@@ -1126,6 +1126,7 @@ namespace EngineCore
             {
                 child->CleanUp();
             }
+            RemoveLuaProxy();
             mChildren.clear();
         }
 

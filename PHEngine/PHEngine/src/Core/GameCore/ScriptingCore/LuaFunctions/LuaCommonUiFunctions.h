@@ -59,6 +59,8 @@ namespace EngineCore
 
          int32_t CreateCommonUiWidget(const std::tuple<int32_t, std::string> &data);
 
+         void DestroyCommonUiWidget(const std::tuple<int32_t> &data);
+
          bool IsLuaProxyReady(const std::tuple<int32_t> &data);
 
          std::string GetUiWidgetName(const std::tuple<int32_t> &data);

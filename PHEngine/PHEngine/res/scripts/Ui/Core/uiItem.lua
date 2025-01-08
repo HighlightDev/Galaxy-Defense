@@ -43,6 +43,7 @@ function UiItem:new(host, name)
 
     local uiItemObj = UiItem.uiItemBaseClass.new(self)
     uiItemObj.luaProxyId = luaProxyId
+    uiItemObj.host = host
 
     return uiItemObj
 end

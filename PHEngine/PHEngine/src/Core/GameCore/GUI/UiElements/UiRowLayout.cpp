@@ -47,32 +47,79 @@ namespace EngineCore
             return mSpacing;
         }
 
+        void UiRowLayout::SetAlignment(const eUiRowAlignmentType alignmentType)
+        {
+            if (mAlignmentType != alignmentType)
+            {
+                mAlignmentType = alignmentType;
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+                SetIsTransformDirty(true);
+            }
+        }
+
+        eUiRowAlignmentType UiRowLayout::GetAlignment() const
+        {
+            return mAlignmentType;
+        }
+
         void UiRowLayout::RecalculatePositionsForChildren()
         {
             if (mChildren.size() && mWidth > 0 && mHeight > 0)
             {
                 const auto spacingsCount = mChildren.size() - 1;
-                // auto potentialAccumulatedWidthOfChildren = std::accumulate(mChildren.cbegin(), mChildren.cend(), 0, [](const int32_t total, const std::shared_ptr<UiItemBase> &child)
-                //                                                            { return child->GetWidth() + total; });
+                const auto childWidthZero = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto &child)
+                                                        { return child->GetWidth() == 0; });
+                auto potentialAccumulatedWidthOfChildren = 0;
+                if (!childWidthZero)
+                {
+                    potentialAccumulatedWidthOfChildren = std::accumulate(mChildren.cbegin(), mChildren.cend(), 0, [](const int32_t total, const std::shared_ptr<UiItemBase> &child)
+                                                                          { return child->GetWidth() + total; });
 
-                // potentialAccumulatedWidthOfChildren += spacingsCount * mSpacing;
+                    potentialAccumulatedWidthOfChildren += spacingsCount * mSpacing;
+                }
+
                 const uint32_t normalizedChildWidth = static_cast<uint32_t>((mWidth - (spacingsCount * mSpacing)) / mChildren.size());
 
                 int32_t childIndex = 0;
-                uint32_t childPositionXCursor = mAbsoluteOrigin.x;
+                uint32_t childPositionXCursor = mAbsoluteOrigin.x; // eUiRowAlignmentType::LEFT
+                if (mAlignmentType == eUiRowAlignmentType::RIGHT)
+                {
+                    childPositionXCursor = mAbsoluteOrigin.x + (mWidth - potentialAccumulatedWidthOfChildren);
+                }
+                else if (mAlignmentType == eUiRowAlignmentType::CENTER)
+                {
+                    if (!childWidthZero && potentialAccumulatedWidthOfChildren < mWidth)
+                    {
+                        childPositionXCursor = mAbsoluteOrigin.x + (mWidth - potentialAccumulatedWidthOfChildren) / 2;
+                    }
+                }
+
                 for (const auto &child : mChildren)
                 {
                     const auto &anchors = child->GetAnchors();
                     ext_assert(anchors.size() == 0, "Ui widget cannot have anchors inside layout widget.");
 
-                    // const auto childWidth = potentialAccumulatedWidthOfChildren > mWidth ? normalizedChildWidth : child->GetWidth();
-                    const auto childWidth = normalizedChildWidth;
-                    child->SetWidth(childWidth);
-                    child->SetAbsoluteOrigin(glm::ivec2(childPositionXCursor, mAbsoluteOrigin.y));
+                    const auto childWidth = (childWidthZero || potentialAccumulatedWidthOfChildren > mWidth) ? normalizedChildWidth : child->GetWidth();
 
+                    child->SetWidth(childWidth);
+                    const auto positionY = child->GetHeight() > mHeight ? mAbsoluteOrigin.y : mAbsoluteOrigin.y + ((mHeight - child->GetHeight()) * 0.5);
+                    child->SetAbsoluteOrigin(glm::ivec2(childPositionXCursor, positionY));
                     childPositionXCursor += childWidth + mSpacing;
                 }
             }
+        }
+
+        void UiRowLayout::UnpausableTick(const float deltaTime)
+        {
+            const auto childTransformDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto &child)
+                                                         { return child->IsTransformDirty(); });
+
+            if (childTransformDirty)
+            {
+                SetIsTransformDirty(true);
+            }
+
+            UiItem::UnpausableTick(deltaTime);
         }
 
         std::shared_ptr<LuaProxy> UiRowLayout::ReplicateLuaProxy()
@@ -99,6 +146,15 @@ namespace EngineCore
                     SetIsTransformDirty(true);
                 }
             }
+            if (jsonObj.contains("alignment"))
+            {
+                const auto alignmentType = static_cast<eUiRowAlignmentType>(nlohmann_utilities::GetIntFromJson(jsonObj["alignment"]));
+                if (mAlignmentType != alignmentType)
+                {
+                    mAlignmentType = alignmentType;
+                    SetIsTransformDirty(true);
+                }
+            }
         }
 
         void UiRowLayout::OnPropertiesShouldBeUpdatedOnLuaThread()
@@ -118,11 +174,12 @@ namespace EngineCore
                     if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), spacing = mSpacing]()
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), spacing = mSpacing, alignment = mAlignmentType]()
                                                                                          {
                             if (const auto &layoutLuaProxy = std::static_pointer_cast<UiRowLayoutLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
                             {
                                 layoutLuaProxy->SetSpacing_FromGameThread(spacing);
+                                layoutLuaProxy->SetAlignment_FromGameThread(alignment);
                             } });
                     }
                 }

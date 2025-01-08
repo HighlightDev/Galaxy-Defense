@@ -73,6 +73,7 @@ function UiImage:new(host, name)
     }
 
     local uiImageObj = UiImage.uiItemBaseClass.new(self)
+    uiImageObj.host = host
     uiImageObj.typeName = "UiImage"
     uiImageObj.luaProxyId = luaProxyId
     uiImageObj.imageProperties = imageProperties

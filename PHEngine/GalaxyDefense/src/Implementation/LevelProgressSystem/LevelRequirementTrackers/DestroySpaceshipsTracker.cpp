@@ -9,6 +9,10 @@ namespace Game
     DestroySpaceshipsTracker::DestroySpaceshipsTracker(const int32_t enemySpaceshipsCount)
         : mEnemySpaceshipsToDestroyCount(enemySpaceshipsCount)
     {
+    }
+
+    void DestroySpaceshipsTracker::Init()
+    {
         mCurrentStageDestroyedEnemySpaceshipsInitialCount = PlayerDataProvider::GetInstance()->GetDestroyedEnemySpaceshipsCount();
     }
 

@@ -53,4 +53,11 @@ function CommonUiWidgetCreator:createUiWidget(host, commonUiWidgetType, jsonPara
     return widgetLuaProxyId
 end
 
+function CommonUiWidgetCreator:destroyUiWidget(host, luaProxyId)
+    assert(host ~= nil)
+    assert(luaProxyId ~= nil and type(luaProxyId) == "number" and luaProxyId > -1)
+    print("CommonUiWidgetCreator::destroyUiWidget => luaProxyId: " .. tostring(luaProxyId))
+    _DestroyCommonUiWidget(host, luaProxyId)
+end
+
 return CommonUiWidgetCreator

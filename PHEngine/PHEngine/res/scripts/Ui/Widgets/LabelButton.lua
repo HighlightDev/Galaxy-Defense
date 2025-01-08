@@ -37,28 +37,36 @@ function LabelButton:new(host, overlay, labelFontName, name)
         host = host,
         overlayCanvasName = "",
         parentName = "",
-        buttonContainer = nil,
+        backgroundTile = nil,
         label = nil,
         pressButtonStateContainer = nil,
         buttonWidth = 0,
         buttonHeight = 0,
         containerColor = 0xffffff,
-        widgetName = ""
+        widgetName = "",
+        luaProxiesReadyCallback = nil
     }
 
     local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
     local containerName = debugName ~= nil and "LabelButton_" .. debugName or nil
     local labelName = debugName ~= nil and "LabelButton_" .. debugName or nil
-    newObj.buttonContainer = UiRectangle:new(host, containerName)
+    newObj.backgroundTile = UiRectangle:new(host, containerName)
     newObj.label = UiLabel:new(host, labelFontName, labelName)
     newObj.pressButtonStateContainer = UiRectangle:new(host)
 
-    overlay:addWidget(newObj.buttonContainer)
+    overlay:addWidget(newObj.backgroundTile)
     overlay:addWidget(newObj.label)
     overlay:addWidget(newObj.pressButtonStateContainer)
 
     self.__index = self
     return setmetatable(newObj, self)
+end
+
+function LabelButton:subscribeOnLuaProxiesReady(callback)
+    self.luaProxiesReadyCallback = callback
+end
+
+function LabelButton:update(host)
 end
 
 function LabelButton:setParent(host, overlayCanvasName, parentName)
@@ -71,7 +79,11 @@ function LabelButton:setParent(host, overlayCanvasName, parentName)
 end
 
 function LabelButton:onPreCompoundWidgetInitialize()
-    self.widgetName = self.buttonContainer.widgetName
+    self.widgetName = self.backgroundTile.widgetName
+
+    if self.luaProxiesReadyCallback ~= nil then
+        self.luaProxiesReadyCallback(self.host)
+    end
 end
 
 function LabelButton:onCompoundWidgetInitialize()
@@ -79,21 +91,21 @@ function LabelButton:onCompoundWidgetInitialize()
     local labelTopMargin = self.buttonHeight * 0.15
     local labelSideMargin = self.buttonWidth * 0.1
 
-    self.buttonContainer:setParent(self.host, self.overlayCanvasName, self.parentName)
-    self.buttonContainer:setZOrder(3);
-    self.buttonContainer:setHeight(self.buttonHeight);
-    self.buttonContainer:setWidth(self.buttonWidth);
-    self.buttonContainer:setColorHexValue(self.containerColor)
-    self.buttonContainer:enableMouseInputReceiverBase(self.host)
+    self.backgroundTile:setParent(self.host, self.overlayCanvasName, self.parentName)
+    self.backgroundTile:setZOrder(3);
+    self.backgroundTile:setHeight(self.buttonHeight);
+    self.backgroundTile:setWidth(self.buttonWidth);
+    self.backgroundTile:setColorHexValue(self.containerColor)
+    self.backgroundTile:enableMouseInputReceiverBase(self.host)
 
-    self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
+    self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setZOrder(4);
     self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
         UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        self.buttonContainer.widgetName);
+        self.backgroundTile.widgetName);
     self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
         UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.buttonContainer.widgetName);
+        self.backgroundTile.widgetName);
     self.pressButtonStateContainer:setOpacity(0.0);
     self.pressButtonStateContainer:setHeight(self.buttonHeight);
     self.pressButtonStateContainer:setWidth(self.buttonWidth);
@@ -140,14 +152,14 @@ function LabelButton:onCompoundWidgetInitialize()
         self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonClick")
     end)
 
-    self.label:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
+    self.label:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.label:setZOrder(4);
     self.label:setHeight(labelHeight);
-    self.label:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, self.buttonContainer.widgetName,
+    self.label:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, self.backgroundTile.widgetName,
         labelSideMargin)
-    self.label:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, self.buttonContainer.widgetName,
+    self.label:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, self.backgroundTile.widgetName,
         labelSideMargin)
-    self.label:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, self.buttonContainer.widgetName,
+    self.label:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, self.backgroundTile.widgetName,
         labelTopMargin)
 end
 
@@ -177,13 +189,13 @@ function LabelButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchor
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
-    self.buttonContainer:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
+    self.backgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     self:resizeWidgets()
 end
 
 function LabelButton:subscribeOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.buttonContainer:subscribeOnMouseInputClickedCallback(callback)
+    self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
 end
 
 function LabelButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
@@ -195,7 +207,7 @@ function LabelButton:addAnimation(host, animationName, animationFunctionType, an
         animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
     assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
 
-    self.buttonContainer:addAnimation(host, animationName, animationFunctionType, animationDuration,
+    self.backgroundTile:addAnimation(host, animationName, animationFunctionType, animationDuration,
         animatedPropertyName,
         animatedPropertyType, propertySrcValue, propertyDstValue)
     self.label:addAnimation(host, animationName, animationFunctionType, animationDuration,
@@ -207,7 +219,7 @@ function LabelButton:startAnimation(host, animationName)
     assert(host ~= nil and type(host) == "userdata")
     assert(animationName ~= nil and type(animationName) == "string")
 
-    self.buttonContainer:startAnimation(host, animationName)
+    self.backgroundTile:startAnimation(host, animationName)
     self.label:startAnimation(host, animationName)
 end
 
@@ -218,7 +230,7 @@ end
 
 function LabelButton:setButtonBorderRadius(radius)
     assert(radius ~= nil and type(radius) == "number")
-    self.buttonContainer:setBorderRadius(radius)
+    self.backgroundTile:setBorderRadius(radius)
 end
 
 function LabelButton:setLabelOpacity(opacity)
@@ -229,8 +241,8 @@ end
 function LabelButton:resizeWidgets()
     local labelHeight = self.buttonHeight * 0.75
 
-    self.buttonContainer:setHeight(self.buttonHeight);
-    self.buttonContainer:setWidth(self.buttonWidth);
+    self.backgroundTile:setHeight(self.buttonHeight);
+    self.backgroundTile:setWidth(self.buttonWidth);
     self.label:setHeight(labelHeight);
 end
 
@@ -238,7 +250,7 @@ function LabelButton:setButtonColorHexValue(colorHex)
     assert(colorHex ~= nil and type(colorHex) == "number")
 
     self.containerColor = colorHex
-    self.buttonContainer:setColorHexValue(colorHex)
+    self.backgroundTile:setColorHexValue(colorHex)
 end
 
 function LabelButton:setLabelTextColorHexValue(colorHex)
@@ -249,13 +261,13 @@ end
 
 function LabelButton:setZOrder(zOrder)
     assert(zOrder ~= nil and type(zOrder) == "number")
-    self.buttonContainer:setZOrder(zOrder)
+    self.backgroundTile:setZOrder(zOrder)
     self.label:setZOrder(zOrder + 1)
 end
 
 function LabelButton:setIsVisible(isVisible)
     assert(isVisible ~= nil and type(isVisible) == "boolean")
-    self.buttonContainer:setIsVisible(isVisible)
+    self.backgroundTile:setIsVisible(isVisible)
     self.label:setIsVisible(isVisible)
 end
 

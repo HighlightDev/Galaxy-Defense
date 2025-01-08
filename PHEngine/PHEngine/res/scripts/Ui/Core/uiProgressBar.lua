@@ -73,6 +73,7 @@ function UiProgressBar:new(host, name)
     uiProgressBarObj.typeName = "UiProgressBar"
     uiProgressBarObj.luaProxyId = luaProxyId
     uiProgressBarObj.progressBarProperties = progressBarProperties
+    uiProgressBarObj.host = host
 
     return uiProgressBarObj
 end

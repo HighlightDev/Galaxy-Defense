@@ -11,6 +11,8 @@ namespace Game
         : public ITickable
     {
     public:
+        virtual void Init() = 0;
+
         virtual bool IsRequirementAchived() const = 0;
 
         virtual std::string GetName() const = 0;

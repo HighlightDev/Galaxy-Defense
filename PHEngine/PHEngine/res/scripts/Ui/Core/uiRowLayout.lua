@@ -28,6 +28,11 @@ local CommonUiWidgetCreator = require("Ui/Core/commonUiWidgetCreator")
 local json = require("Ui/Core/3rdparty/json")
 
 UiRowLayout = UiItemBase:new()
+UiRowLayout.UiRowAlignmentType = {
+    LEFT = 0,
+    RIGHT = 1,
+    CENTER = 2
+}
 
 function UiRowLayout:new(host, name)
     assert(host ~= nil)
@@ -47,12 +52,17 @@ function UiRowLayout:new(host, name)
             value = 0,
             dirty = false
         },
+        alignment = {
+            value = UiRowLayout.UiRowAlignmentType.LEFT,
+            dirty = false
+        }
     }
 
     local uiRowLayoutObj = UiRowLayout.uiItemBaseClass.new(self)
     uiRowLayoutObj.typeName = "UiRowLayout"
     uiRowLayoutObj.luaProxyId = luaProxyId
     uiRowLayoutObj.rowLayoutProperties = rowLayoutProperties
+    uiRowLayoutObj.host = host
 
     return uiRowLayoutObj
 end
@@ -66,7 +76,10 @@ function UiRowLayout:updateFromReplicatorData(host)
             self:extractUiItemBaseReplicatorData(parsedJson)
 
             if parsedJson["spacing"] ~= nil then
-                self.rowLayoutProperties.spacing.value = parsedJson["spacing"]
+                self.rowLayoutProperties.spacing.value = tonumber(parsedJson["spacing"])
+            end
+            if parsedJson["alignment"] ~= nil then
+                self.rowLayoutProperties.alignment.value = tonumber(parsedJson["alignment"])
             end
         end
     end
@@ -96,6 +109,15 @@ function UiRowLayout:setSpacing(spacing)
     if self.rowLayoutProperties.spacing.value ~= spacing then
         self.rowLayoutProperties.spacing.value = spacing
         self.rowLayoutProperties.spacing.dirty = true
+    end
+end
+
+function UiRowLayout:setAlignment(alignment)
+    assert(alignment ~= nil and alignment >= UiRowLayout.UiRowAlignmentType.LEFT and
+        alignment <= UiRowLayout.UiRowAlignmentType.CENTER)
+    if self.rowLayoutProperties.alignment.value ~= alignment then
+        self.rowLayoutProperties.alignment.value = alignment
+        self.rowLayoutProperties.alignment.dirty = true
     end
 end
 

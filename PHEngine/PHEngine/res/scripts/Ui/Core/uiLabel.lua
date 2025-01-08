@@ -83,6 +83,7 @@ function UiLabel:new(host, fontName, name)
     uiLabelObj.typeName = "UiLabel"
     uiLabelObj.luaProxyId = luaProxyId
     uiLabelObj.labelProperties = labelProperties
+    uiLabelObj.host = host
 
     return uiLabelObj
 end

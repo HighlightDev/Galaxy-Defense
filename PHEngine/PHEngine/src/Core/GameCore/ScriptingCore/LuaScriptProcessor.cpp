@@ -94,7 +94,9 @@ namespace EngineCore
 
         void LuaScriptProcessor::RemoveLuaProxy(const int32_t luaProxyId)
         {
-            assert(GetLuaProxy(luaProxyId));
+            const auto& luaProxySp = GetLuaProxy(luaProxyId);
+            assert(luaProxySp);
+            luaProxySp->CleanUp();
             mLuaProxies.erase(std::remove_if(mLuaProxies.begin(), mLuaProxies.end(), [luaProxyId](const auto &luaProxySp)
                                              { return luaProxySp->GetLuaProxyId() == luaProxyId; }));
         }

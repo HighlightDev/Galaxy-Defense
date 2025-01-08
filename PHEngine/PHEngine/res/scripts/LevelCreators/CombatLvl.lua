@@ -67,6 +67,7 @@ function CreateLevel(host)
 		,space_station.obj
 		,space_station_img.png
 		,ufo.obj
+		,check.png
 		]])
 
 	_CreateActor(host, "Actor",
@@ -108,17 +109,24 @@ function CreateLevelProgressStages(host)
 	local trackers = {}
 	trackers[1] = {
 		type = "DestroySpaceshipsTracker",
-		spaceships_count = 15
+		spaceships_count = 2
 	}
 	trackers[2] = {
 		type = "DestroySpaceshipsTracker",
-		spaceships_count = 5
+		spaceships_count = 10
 	}
 	local stage = {
 		name = "weak_spaceships_attack",
 		trackers = trackers
 	}
 	stagesQueue[1] = stage
+
+	stage = {
+		name = "hard_spaceships_attach",
+		trackers = trackers
+	}
+
+	stagesQueue[2] = stage
 	_SetLevelProgressStagesQueue(host, Json.encode(stagesQueue))
 end
 

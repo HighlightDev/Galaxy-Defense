@@ -60,6 +60,7 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CloseCurrentOverlay"), void()>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CloseCurrentOverlay, this, std::placeholders::_1), "_CloseCurrentOverlay");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CloseBackgroundOverlay"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CloseBackgroundOverlay, this, std::placeholders::_1), "_CloseBackgroundOverlay");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CreateCommonUiWidget"), int32_t(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CreateCommonUiWidget, this, std::placeholders::_1), "_CreateCommonUiWidget");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::DestroyCommonUiWidget"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::DestroyCommonUiWidget, this, std::placeholders::_1), "_DestroyCommonUiWidget");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::IsLuaProxyReady"), bool(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::IsLuaProxyReady, this, std::placeholders::_1), "_IsLuaProxyReady");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated, this, std::placeholders::_1), "_OnCommonUiWidgetDataUpdated");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetGameThreadData"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetGameThreadData, this, std::placeholders::_1), "_GetGameThreadData");
@@ -136,6 +137,16 @@ namespace EngineCore
          const int32_t luaProxyId = replicatorFactory->CreateReplicator(mSceneWp, mLuaScriptProcessor, jsonParametersStr);
          LogInfo("LuaCommonUiFunctions::CreateCommonUiWidget => widgetType: ", static_cast<uint8_t>(commonUiWidgetType), ", luaProxyId: ", luaProxyId);
          return luaProxyId;
+      }
+
+      void LuaCommonUiFunctions::DestroyCommonUiWidget(const std::tuple<int32_t> &data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         if (const auto &sceneSp = mSceneWp.lock())
+         {
+            const auto& replicatorSp = sceneSp->GetEngineToLuaReplicatorByLuaProxyId(luaProxyId);
+            sceneSp->UnregisterEngineToLuaReplicator(replicatorSp->GetReplicatorId());
+         }
       }
 
       bool LuaCommonUiFunctions::IsLuaProxyReady(const std::tuple<int32_t> &data)

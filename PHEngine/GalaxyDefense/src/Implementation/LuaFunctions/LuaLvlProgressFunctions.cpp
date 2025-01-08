@@ -75,10 +75,9 @@ namespace Game
             const auto &reqTrackerType = trackerJsonRoot.at("type");
             levelProgressStageSp->AddLevelProgressRequirementTracker(trackerFactory->CreateLevelRequirementTracker(reqTrackerType, trackerJsonRoot));
          }
+         assert(levelProgressStageSp);
+         mLevelProgressController->AddLevelProgressStage(levelProgressStageSp);
       }
-
-      assert(levelProgressStageSp);
-      mLevelProgressController->AddLevelProgressStage(levelProgressStageSp);
    }
 
    int32_t LuaLvlProgressFunctions::GetCurrentProgressRequirementsCount(const std::tuple<> &data) const

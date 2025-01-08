@@ -321,6 +321,17 @@ function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
     self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin ~= nil and anchorMargin or 0
 end
 
+function UiItemBase:fill(dstUiItemWidgetName)
+    assert(dstUiItemWidgetName ~= nil and type(dstUiItemWidgetName) == "string")
+    self.properties.anchors.dirty = true
+    for anchor = UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.BOTTOM, 1 do
+        self.properties.anchors.value[anchor].dstAnchor = anchor
+        self.properties.anchors.value[anchor].dstUiItemWidgetName = dstUiItemWidgetName
+        local existingMargin = self.properties.anchors.value[anchor].srcAnchorMargin
+        self.properties.anchors.value[anchor].srcAnchorMargin = existingMargin ~= nil and existingMargin or 0
+    end
+end
+
 function UiItemBase:setAnchorMargin(srcAnchor, anchorMargin)
     assert(srcAnchor ~= nil and srcAnchor > UiItemBase.UiAnchorType.NONE and
         srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER and anchorMargin ~= nil and type(anchorMargin) == "number")

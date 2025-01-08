@@ -21,6 +21,8 @@ namespace Game
     public:
         explicit DestroySpaceshipsTracker(const int32_t enemySpaceshipsCount);
 
+        void Init() override;
+
         bool IsRequirementAchived() const override;
 
         std::string GetName() const override;

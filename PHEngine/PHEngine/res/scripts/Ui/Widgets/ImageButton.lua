@@ -37,28 +37,36 @@ function ImageButton:new(host, overlay, name)
         host = host,
         overlayCanvasName = "",
         parentName = "",
-        buttonContainer = nil,
+        backgroundTile = nil,
         image = nil,
         pressButtonStateContainer = nil,
         buttonWidth = 0,
         buttonHeight = 0,
         containerColor = 0xffffff,
         widgetName = "",
+        luaProxiesReadyCallback = nil
     }
 
     local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
     local containerName = debugName ~= nil and "ImageButton_" .. debugName or nil
     local imageName = debugName ~= nil and "ImageButton_" .. debugName or nil
-    newObj.buttonContainer = UiRectangle:new(host, containerName)
+    newObj.backgroundTile = UiRectangle:new(host, containerName)
     newObj.image = UiImage:new(host, imageName)
     newObj.pressButtonStateContainer = UiRectangle:new(host)
 
-    overlay:addWidget(newObj.buttonContainer)
+    overlay:addWidget(newObj.backgroundTile)
     overlay:addWidget(newObj.image)
     overlay:addWidget(newObj.pressButtonStateContainer)
 
     self.__index = self
     return setmetatable(newObj, self)
+end
+
+function ImageButton:subscribeOnLuaProxiesReady(callback)
+    self.luaProxiesReadyCallback = callback
+end
+
+function ImageButton:update(host)
 end
 
 function ImageButton:setParent(host, overlayCanvasName, parentName)
@@ -71,27 +79,31 @@ function ImageButton:setParent(host, overlayCanvasName, parentName)
 end
 
 function ImageButton:onPreCompoundWidgetInitialize()
-    self.widgetName = self.buttonContainer.widgetName
+    self.widgetName = self.backgroundTile.widgetName
+
+    if self.luaProxiesReadyCallback ~= nil then
+        self.luaProxiesReadyCallback(self.host)
+    end
 end
 
 function ImageButton:onCompoundWidgetInitialize()
     local imageSize = math.min(self.buttonWidth * 0.75, self.buttonHeight)
 
-    self.buttonContainer:setParent(self.host, self.overlayCanvasName, self.parentName)
-    self.buttonContainer:setZOrder(3);
-    self.buttonContainer:setHeight(self.buttonHeight);
-    self.buttonContainer:setWidth(self.buttonWidth);
-    self.buttonContainer:setColorHexValue(self.containerColor)
-    self.buttonContainer:enableMouseInputReceiverBase(self.host)
+    self.backgroundTile:setParent(self.host, self.overlayCanvasName, self.parentName)
+    self.backgroundTile:setZOrder(3);
+    self.backgroundTile:setHeight(self.buttonHeight);
+    self.backgroundTile:setWidth(self.buttonWidth);
+    self.backgroundTile:setColorHexValue(self.containerColor)
+    self.backgroundTile:enableMouseInputReceiverBase(self.host)
 
-    self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
+    self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setZOrder(4);
     self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
         UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        self.buttonContainer.widgetName);
+        self.backgroundTile.widgetName);
     self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
         UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.buttonContainer.widgetName);
+        self.backgroundTile.widgetName);
     self.pressButtonStateContainer:setOpacity(0.0);
     self.pressButtonStateContainer:setHeight(self.buttonHeight);
     self.pressButtonStateContainer:setWidth(self.buttonWidth);
@@ -139,14 +151,14 @@ function ImageButton:onCompoundWidgetInitialize()
         self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonClick")
     end)
 
-    self.image:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
+    self.image:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.image:setZOrder(4);
     self.image:setHeight(imageSize);
     self.image:setWidth(imageSize);
     self.image:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        self.buttonContainer.widgetName);
+        self.backgroundTile.widgetName);
     self.image:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.buttonContainer.widgetName);
+        self.backgroundTile.widgetName);
 end
 
 function ImageButton:setWidth(width)
@@ -167,13 +179,13 @@ function ImageButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchor
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
-    self.buttonContainer:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
+    self.backgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     self:resizeWidgets()
 end
 
 function ImageButton:subscribeOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.buttonContainer:subscribeOnMouseInputClickedCallback(callback)
+    self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
 end
 
 function ImageButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
@@ -185,7 +197,7 @@ function ImageButton:addAnimation(host, animationName, animationFunctionType, an
         animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
     assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
 
-    self.buttonContainer:addAnimation(host, animationName, animationFunctionType, animationDuration,
+    self.backgroundTile:addAnimation(host, animationName, animationFunctionType, animationDuration,
         animatedPropertyName,
         animatedPropertyType, propertySrcValue, propertyDstValue)
     self.image:addAnimation(host, animationName, animationFunctionType, animationDuration,
@@ -197,7 +209,7 @@ function ImageButton:startAnimation(host, animationName)
     assert(host ~= nil and type(host) == "userdata")
     assert(animationName ~= nil and type(animationName) == "string")
 
-    self.buttonContainer:startAnimation(host, animationName)
+    self.backgroundTile:startAnimation(host, animationName)
     self.image:startAnimation(host, animationName)
 end
 
@@ -208,7 +220,7 @@ end
 
 function ImageButton:setButtonBorderRadius(radius)
     assert(radius ~= nil and type(radius) == "number")
-    self.buttonContainer:setBorderRadius(radius)
+    self.backgroundTile:setBorderRadius(radius)
 end
 
 function ImageButton:setImageRotationDegrees(angleDegrees)
@@ -223,8 +235,8 @@ end
 function ImageButton:resizeWidgets()
     local imageSize = math.min(self.buttonWidth * 0.75, self.buttonHeight)
 
-    self.buttonContainer:setHeight(self.buttonHeight);
-    self.buttonContainer:setWidth(self.buttonWidth);
+    self.backgroundTile:setHeight(self.buttonHeight);
+    self.backgroundTile:setWidth(self.buttonWidth);
     self.image:setHeight(imageSize);
     self.image:setWidth(imageSize);
 end
@@ -233,7 +245,7 @@ function ImageButton:setButtonColorHexValue(colorHex)
     assert(colorHex ~= nil and type(colorHex) == "number")
 
     self.containerColor = colorHex
-    self.buttonContainer:setColorHexValue(colorHex)
+    self.backgroundTile:setColorHexValue(colorHex)
 end
 
 function ImageButton:setUseImageCustomColor(isUsed)
@@ -250,13 +262,13 @@ end
 
 function ImageButton:setZOrder(zOrder)
     assert(zOrder ~= nil and type(zOrder) == "number")
-    self.buttonContainer:setZOrder(zOrder)
+    self.backgroundTile:setZOrder(zOrder)
     self.image:setZOrder(zOrder + 1)
 end
 
 function ImageButton:setIsVisible(isVisible)
     assert(isVisible ~= nil and type(isVisible) == "boolean")
-    self.buttonContainer:setIsVisible(isVisible)
+    self.backgroundTile:setIsVisible(isVisible)
     self.image:setIsVisible(isVisible)
 end
 

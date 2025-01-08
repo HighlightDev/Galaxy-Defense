@@ -15,6 +15,10 @@ namespace Game
 
     void LevelProgressStage::Init()
     {
+        for (const auto &requirement : mLevelProgressRequirementTrackers)
+        {
+            requirement->Init();
+        }
     }
 
     void LevelProgressStage::AddLevelProgressRequirementTracker(const std::shared_ptr<ILevelRequirementTracker> &lvlReqTracker)

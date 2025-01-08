@@ -15,7 +15,8 @@ namespace EngineCore
     {
         UiRowLayoutLuaProxy::UiRowLayoutLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiRowLayout> &ownerUiItem)
             : UiItemLuaProxy(ownerUiItem),
-              mSpacing(ownerUiItem->GetSpacing())
+              mSpacing(ownerUiItem->GetSpacing()),
+              mAlignmentType(ownerUiItem->GetAlignment())
         {
         }
 
@@ -24,6 +25,15 @@ namespace EngineCore
             if (mSpacing != value)
             {
                 mSpacing = value;
+                mIsLuaDataDirty = true;
+            }
+        }
+
+        void UiRowLayoutLuaProxy::SetAlignment_FromGameThread(const eUiRowAlignmentType alignmentType)
+        {
+            if (mAlignmentType != alignmentType)
+            {
+                mAlignmentType = alignmentType;
                 mIsLuaDataDirty = true;
             }
         }
@@ -50,6 +60,7 @@ namespace EngineCore
             const auto &baseJsonStr = UiItemBaseLuaProxy::GetGameThreadData();
             auto jsonObj = nlohmann::json::parse(baseJsonStr);
             jsonObj["spacing"] = mSpacing;
+            jsonObj["alignment"] = static_cast<int32_t>(mAlignmentType);
             return jsonObj.dump();
         }
     }

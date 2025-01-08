@@ -75,6 +75,7 @@ function UiCanvas:new(host, originX, originY, width, height, name)
     canvasObj.width = width
     canvasObj.height = height
     canvasObj.properties = canvasProperties
+    canvasObj.host = host
     return canvasObj
 end
 
