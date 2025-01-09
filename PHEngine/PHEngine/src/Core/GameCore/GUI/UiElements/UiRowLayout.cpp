@@ -64,21 +64,27 @@ namespace EngineCore
 
         void UiRowLayout::RecalculatePositionsForChildren()
         {
-            if (mChildren.size() && mWidth > 0 && mHeight > 0)
+            const uint32_t visibleChildrenCount = std::count_if(mChildren.cbegin(), mChildren.cend(), [](const auto &child)
+                                                                { return child->IsVisible(); });
+            if (visibleChildrenCount && mWidth > 0 && mHeight > 0)
             {
-                const auto spacingsCount = mChildren.size() - 1;
                 const auto childWidthZero = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto &child)
-                                                        { return child->GetWidth() == 0; });
-                auto potentialAccumulatedWidthOfChildren = 0;
-                if (!childWidthZero)
-                {
-                    potentialAccumulatedWidthOfChildren = std::accumulate(mChildren.cbegin(), mChildren.cend(), 0, [](const int32_t total, const std::shared_ptr<UiItemBase> &child)
-                                                                          { return child->GetWidth() + total; });
+                                                        { return child->IsVisible() ? child->GetWidth() == 0 : false; });
 
-                    potentialAccumulatedWidthOfChildren += spacingsCount * mSpacing;
+                if (childWidthZero)
+                {
+                    return;
                 }
 
-                const uint32_t normalizedChildWidth = static_cast<uint32_t>((mWidth - (spacingsCount * mSpacing)) / mChildren.size());
+                LogInfo("UiRowLayout::RecalculatePositionsForChildren: id: ", GetUId(), " visibleChildrenCount: ", visibleChildrenCount);
+                const auto spacingsCount = visibleChildrenCount - 1;
+                auto potentialAccumulatedWidthOfChildren = 0;
+                potentialAccumulatedWidthOfChildren = std::accumulate(mChildren.cbegin(), mChildren.cend(), 0, [](const int32_t total, const std::shared_ptr<UiItemBase> &child)
+                                                                      { return child->IsVisible() ? child->GetWidth() + total : total; });
+
+                potentialAccumulatedWidthOfChildren += spacingsCount * mSpacing;
+
+                const uint32_t normalizedChildWidth = static_cast<uint32_t>((mWidth - (spacingsCount * mSpacing)) / visibleChildrenCount);
 
                 int32_t childIndex = 0;
                 uint32_t childPositionXCursor = mAbsoluteOrigin.x; // eUiRowAlignmentType::LEFT
@@ -88,7 +94,7 @@ namespace EngineCore
                 }
                 else if (mAlignmentType == eUiRowAlignmentType::CENTER)
                 {
-                    if (!childWidthZero && potentialAccumulatedWidthOfChildren < mWidth)
+                    if (potentialAccumulatedWidthOfChildren < mWidth)
                     {
                         childPositionXCursor = mAbsoluteOrigin.x + (mWidth - potentialAccumulatedWidthOfChildren) / 2;
                     }
@@ -96,10 +102,14 @@ namespace EngineCore
 
                 for (const auto &child : mChildren)
                 {
+                    if (!child->IsVisible())
+                    {
+                        continue;
+                    }
                     const auto &anchors = child->GetAnchors();
                     ext_assert(anchors.size() == 0, "Ui widget cannot have anchors inside layout widget.");
 
-                    const auto childWidth = (childWidthZero || potentialAccumulatedWidthOfChildren > mWidth) ? normalizedChildWidth : child->GetWidth();
+                    const auto childWidth = (potentialAccumulatedWidthOfChildren > mWidth) ? normalizedChildWidth : child->GetWidth();
 
                     child->SetWidth(childWidth);
                     const auto positionY = child->GetHeight() > mHeight ? mAbsoluteOrigin.y : mAbsoluteOrigin.y + ((mHeight - child->GetHeight()) * 0.5);
@@ -112,7 +122,7 @@ namespace EngineCore
         void UiRowLayout::UnpausableTick(const float deltaTime)
         {
             const auto childTransformDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto &child)
-                                                         { return child->IsTransformDirty(); });
+                                                         { return child->IsTransformDirty() || child->IsVisibleDirty(); });
 
             if (childTransformDirty)
             {

@@ -141,6 +141,12 @@ function ImageAndLabelTile:startAnimation(host, animationName)
     self.label:startAnimation(host, animationName)
 end
 
+function ImageAndLabelTile:setIsVisible(isVisible)
+    self.backgroundTile:setIsVisible(isVisible)
+    self.image:setIsVisible(isVisible)
+    self.label:setIsVisible(isVisible)
+end
+
 function ImageAndLabelTile:setLabelText(labelText)
     assert(labelText ~= nil and type(labelText) == "string")
     self.label:setText(labelText)
@@ -185,6 +191,7 @@ function ImageAndLabelTile:resizeWidgets()
     local imageSize = self.tileWidth * 0.75
 
     self.backgroundTile:setHeight(self.tileHeight);
+    print("self.backgroundTile:setWidth : " .. tostring(self.tileWidth))
     self.backgroundTile:setWidth(self.tileWidth);
     self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.LEFT, self.anchorMargins.left);
     self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.RIGHT, self.anchorMargins.right);

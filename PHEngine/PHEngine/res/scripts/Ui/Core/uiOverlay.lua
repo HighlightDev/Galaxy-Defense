@@ -83,6 +83,12 @@ function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
     return setmetatable(newObj, self)
 end
 
+function UiOverlay:addActionWithPredicate(action, predicate)
+    assert(action ~= nil and type(action) == "function")
+    assert(predicate ~= nil and type(predicate) == "function")
+    self.actionQueue:addAction(action, predicate)
+end
+
 function UiOverlay:__gc(self)
 end
 
@@ -161,7 +167,8 @@ function UiOverlay:update(host, deltaTime)
         end
         if allProxiesReady and self.overlayCanvas.luaProxyReady then
             self.allWidgetLuaProxiesReady = true
-            for _, value in pairs(self.compoundWidgets) do
+            for index, value in pairs(self.compoundWidgets) do
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" .. tostring(index))
                 value:onPreCompoundWidgetInitialize()
             end
 

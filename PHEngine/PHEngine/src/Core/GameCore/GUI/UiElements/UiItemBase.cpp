@@ -222,6 +222,7 @@ namespace EngineCore
             if (mIsVisible != isVisible)
             {
                 mIsVisible = isVisible;
+                SetIsVisibleDirty(true);
                 SetChildrenIsVisible(mIsVisible);
                 SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
@@ -416,6 +417,16 @@ namespace EngineCore
         void UiItemBase::SetIsTransformDirty(const bool isDirty)
         {
             mIsTransformDirty = isDirty;
+        }
+
+        bool UiItemBase::IsVisibleDirty() const
+        {
+            return mIsVisibleDirty;
+        }
+
+        void UiItemBase::SetIsVisibleDirty(const bool isDirty)
+        {
+            mIsVisibleDirty = isDirty;
         }
 
         void UiItemBase::SetIsPropertiesShouldBeUpdatedOnRenderThread(const bool update)
@@ -845,6 +856,7 @@ namespace EngineCore
                 if (mIsVisible != isVisible)
                 {
                     mIsVisible = isVisible;
+                    SetIsVisibleDirty(true);
                     SetChildrenIsVisible(mIsVisible);
                     SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
                 }
@@ -960,6 +972,7 @@ namespace EngineCore
         void UiItemBase::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnLuaThread");
+            SetIsVisibleDirty(false);
             if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())

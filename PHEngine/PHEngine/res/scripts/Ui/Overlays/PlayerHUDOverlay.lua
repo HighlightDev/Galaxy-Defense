@@ -80,6 +80,7 @@ PlayerHUDOverlay = {
 }
 
 RequirementTrackers = {}
+RequirementTrackersIdle = {}
 
 local function invertTable(table)
     local s = {}
@@ -157,27 +158,52 @@ local function updateRequirementTileData(levelProgressTile, trackerJson)
     end
 end
 
-local function createRequirementTiles(host, playerHUDOverlay, requirementTrackers)
-    for key, trackerWidget in pairs(RequirementTrackers) do
-        playerHUDOverlay:removeWidget(trackerWidget)
-        RequirementTrackers[key] = nil
-    end
-    RequirementTrackers = {}
-
-    for index = 1, #requirementTrackers, 1 do
+local function fillRequirementTilesPool(host, playerHUDOverlay, count)
+    for i = 1, count, 1 do
         local levelProgressTile = ImageAndLabelTile:new(host, playerHUDOverlay)
         playerHUDOverlay:addCompoundWidget(levelProgressTile)
-        RequirementTrackers[#RequirementTrackers + 1] = levelProgressTile
+        RequirementTrackersIdle[#RequirementTrackersIdle + 1] = levelProgressTile
+
         levelProgressTile:subscribeOnLuaProxiesReady(function(host)
             levelProgressTile:setParent(host, playerHUDOverlay:getOverlayCanvas().widgetName,
-                playerHUDOverlay.levelProgressRowLayout.widgetName)
+            playerHUDOverlay.levelProgressRowLayout.widgetName)
             local tileSize = 100 -- temporary for now
             levelProgressTile:setWidth(tileSize)
             levelProgressTile:setHeight(tileSize)
             levelProgressTile:setTextureSource("space_station_img.png")
-            levelProgressTile:setBackgroundTileOpacity(0.0)
-            updateRequirementTileData(levelProgressTile, requirementTrackers[index])
+            levelProgressTile:setBackgroundTileOpacity(1.0)
+            levelProgressTile:setIsVisible(false)
         end)
+    end
+end
+
+local function updateRequirementTiles(host, playerHUDOverlay, requirementTrackers)
+    -- move active requirements tiles to idle state
+    for _, activeTrackerTile in pairs(RequirementTrackers) do
+        activeTrackerTile:setIsVisible(false)
+        RequirementTrackersIdle[#RequirementTrackersIdle + 1] = activeTrackerTile
+    end
+    RequirementTrackers = {}
+
+    local action = function()
+        for index = 1, #requirementTrackers, 1 do
+            local trackerTile = RequirementTrackersIdle[index]
+            table.remove(RequirementTrackersIdle, index)
+            RequirementTrackers[index] = trackerTile
+            local trackerJson = requirementTrackers[index]
+            updateRequirementTileData(trackerTile, trackerJson)
+            trackerTile:setIsVisible(true)
+        end
+    end
+
+    local predicate = function()
+        return playerHUDOverlay.allWidgetLuaProxiesReady
+    end
+
+    if predicate() then
+        action()
+    else
+        playerHUDOverlay:addActionWithPredicate(action, predicate)
     end
 end
 
@@ -261,6 +287,8 @@ function PlayerHUDOverlay:new(host)
     playerHUDOverlay:addWidget(levelProgressRowLayout)
     playerHUDOverlay.levelProgressRowLayout = levelProgressRowLayout
 
+    fillRequirementTilesPool(host, playerHUDOverlay, 10)
+
     playerHUDOverlay.testDamage = function()
         PlayerHUDOverlay.testAvailableHearts = PlayerHUDOverlay.testAvailableHearts - 1
         if PlayerHUDOverlay.testAvailableHearts <= 0 then
@@ -334,7 +362,7 @@ function PlayerHUDOverlay:new(host)
             local requirementTrackersJson = _GetCurrentProgressStageRequirementTrackers(host)
             if requirementTrackersJson ~= nil and requirementTrackersJson ~= "" then
                 local parsedJson = json.decode(requirementTrackersJson)
-                createRequirementTiles(host, playerHUDOverlay, parsedJson)
+                updateRequirementTiles(host, playerHUDOverlay, parsedJson)
             end
         elseif #RequirementTrackers > 0 then
             showAllRequirementsAchived()

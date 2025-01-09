@@ -75,6 +75,8 @@ namespace EngineCore
 
             bool mIsVisible;
 
+            bool mIsVisibleDirty{false};
+
             bool mCanInterceptMouseInputEvents;
 
             bool mIsTransformDirty;
@@ -165,6 +167,7 @@ namespace EngineCore
             std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
             std::weak_ptr<::EngineCore::Scene> GetScene() const override;
             const std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> &GetAnchors() const;
+            bool IsVisibleDirty() const;
 
             void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             void SetZOrder(const size_t z_order) override;
@@ -210,6 +213,8 @@ namespace EngineCore
             
         protected:
             void SetIsTransformDirty(const bool isDirty);
+
+            void SetIsVisibleDirty(const bool isDirty);
 
             void SetChildrenIsVisible(const bool isVisible);
 
