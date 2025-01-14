@@ -87,9 +87,6 @@ function LabelButton:onPreCompoundWidgetInitialize()
 end
 
 function LabelButton:onCompoundWidgetInitialize()
-    local labelHeight = self.buttonHeight * 0.75
-    local labelTopMargin = self.buttonHeight * 0.15
-    local labelSideMargin = self.buttonWidth * 0.1
 
     self.backgroundTile:setParent(self.host, self.overlayCanvasName, self.parentName)
     self.backgroundTile:setZOrder(3);
@@ -100,15 +97,8 @@ function LabelButton:onCompoundWidgetInitialize()
 
     self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setZOrder(4);
-    self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        self.backgroundTile.widgetName);
-    self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.backgroundTile.widgetName);
+    self.pressButtonStateContainer:fill(self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setOpacity(0.0);
-    self.pressButtonStateContainer:setHeight(self.buttonHeight);
-    self.pressButtonStateContainer:setWidth(self.buttonWidth);
     self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
     self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick",
         {
@@ -154,13 +144,7 @@ function LabelButton:onCompoundWidgetInitialize()
 
     self.label:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.label:setZOrder(4);
-    self.label:setHeight(labelHeight);
-    self.label:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, self.backgroundTile.widgetName,
-        labelSideMargin)
-    self.label:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, self.backgroundTile.widgetName,
-        labelSideMargin)
-    self.label:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, self.backgroundTile.widgetName,
-        labelTopMargin)
+    self.label:fill(self.backgroundTile.widgetName)
 end
 
 function LabelButton:setLabelTextHorizontalAlignment(textHorizontalAlignment)
@@ -196,6 +180,11 @@ end
 function LabelButton:subscribeOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
     self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
+end
+
+function LabelButton:setOnMouseInputCursorHoverStateChangedCallback(callback)
+    assert(callback ~= nil and type(callback) == "function")
+    self.backgroundTile:setOnMouseInputCursorHoverStateChangedCallback(callback)
 end
 
 function LabelButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
@@ -269,6 +258,14 @@ function LabelButton:setIsVisible(isVisible)
     assert(isVisible ~= nil and type(isVisible) == "boolean")
     self.backgroundTile:setIsVisible(isVisible)
     self.label:setIsVisible(isVisible)
+end
+
+function LabelButton:setLabelFontSize(fontSize)
+    self.label:setFontSize(fontSize)
+end
+
+function LabelButton:setPressStateButtonColorHexValues(colorHex)
+    self.pressButtonStateContainer:setColorHexValue(colorHex)
 end
 
 return LabelButton

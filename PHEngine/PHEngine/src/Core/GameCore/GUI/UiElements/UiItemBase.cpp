@@ -489,7 +489,7 @@ namespace EngineCore
         {
             if (mAnchors.count(eUiAnchor::HORIZONTAL_CENTER))
             {
-                assert(mWidth != 0); // don't forget to set the width in addition to the horizontal center alignment settings
+                ext_assert(mWidth != 0, "uiid: " + std::to_string(mUId)); // don't forget to set the width in addition to the horizontal center alignment settings
                 const auto &dstAnchor = mAnchors.at(eUiAnchor::HORIZONTAL_CENTER);
                 const auto &dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.GetDstUiItemName());
                 assert(dstAnchoringUiItem);

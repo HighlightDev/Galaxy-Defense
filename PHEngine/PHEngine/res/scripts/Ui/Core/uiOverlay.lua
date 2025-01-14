@@ -168,7 +168,6 @@ function UiOverlay:update(host, deltaTime)
         if allProxiesReady and self.overlayCanvas.luaProxyReady then
             self.allWidgetLuaProxiesReady = true
             for index, value in pairs(self.compoundWidgets) do
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" .. tostring(index))
                 value:onPreCompoundWidgetInitialize()
             end
 

@@ -31,6 +31,7 @@ local UiRectangle = require("Ui/Core/uiRectangle")
 local UiLabel = require("Ui/Core/uiLabel")
 local UiToggleButton = require("Ui/Core/uiToggleButton")
 local UiProgressBar = require("Ui/Core/uiProgressBar")
+local LabelButton = require("Ui/Widgets/LabelButton")
 
 SettingsOverlay = {
     buttonColor = 0x403649,
@@ -73,40 +74,34 @@ function SettingsOverlay:new(host)
     local soundLabel = UiLabel:new(host, "nimbus_mono")
     pauseSettingsOverlay:addWidget(soundLabel)
 
-    local applyButton = UiRectangle:new(host)
-    pauseSettingsOverlay:addWidget(applyButton)
+    local applyButton = LabelButton:new(host, pauseSettingsOverlay, "nimbus_mono", "ApplyButton")
+    pauseSettingsOverlay:addCompoundWidget(applyButton)
     applyButton:subscribeOnMouseInputClickedCallback(function()
         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
     end)
     applyButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            applyButton:setColorHexValue(SettingsOverlay.hoveredButtonColor)
+            applyButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
         else
-            applyButton:setColorHexValue(SettingsOverlay.buttonColor)
+            applyButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
         end
     end)
 
     local testProgressBar = UiProgressBar:new(host, "TEST_PROGRESS_BAR")
     pauseSettingsOverlay:addWidget(testProgressBar)
 
-    local applyButtonLabel = UiLabel:new(host, "nimbus_mono")
-    pauseSettingsOverlay:addWidget(applyButtonLabel)
-
-    local cancelButton = UiRectangle:new(host)
-    pauseSettingsOverlay:addWidget(cancelButton)
+    local cancelButton = LabelButton:new(host, pauseSettingsOverlay, "nimbus_mono", "CancelButton")
+    pauseSettingsOverlay:addCompoundWidget(cancelButton)
     cancelButton:subscribeOnMouseInputClickedCallback(function()
         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
     end)
     cancelButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            cancelButton:setColorHexValue(SettingsOverlay.hoveredButtonColor)
+            cancelButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
         else
-            cancelButton:setColorHexValue(SettingsOverlay.buttonColor)
+            cancelButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
         end
     end)
-
-    local cancelButtonLabel = UiLabel:new(host, "nimbus_mono")
-    pauseSettingsOverlay:addWidget(cancelButtonLabel)
 
     pauseSettingsOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
         print("pauseSettingsOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
@@ -150,10 +145,12 @@ function SettingsOverlay:new(host)
         soundLabel:setZOrder(2)
 
         testProgressBar:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
-        testProgressBar:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName, 100.0)
+        testProgressBar:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+            100.0)
         testProgressBar:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect
             .widgetName, 100.0)
-        testProgressBar:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, soundLabel.widgetName, 30.0)
+        testProgressBar:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, soundLabel.widgetName,
+            30.0)
         testProgressBar:setHeight(50.0)
         testProgressBar:setZOrder(2)
         testProgressBar:setFillPercentValue(0.25)
@@ -167,23 +164,13 @@ function SettingsOverlay:new(host)
             50)
         applyButton:setWidth(buttonWidth)
         applyButton:setHeight(100)
-        applyButton:setColorHexValue(SettingsOverlay.buttonColor)
+        applyButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
         applyButton:setZOrder(2)
-        applyButton:enableMouseInputReceiverBase(host)
-        applyButton:setBorderRadius(SettingsOverlay.buttonRadius)
-
-        applyButtonLabel:setParent(host, pauseSettingsOverlayCanvas.widgetName, applyButton.widgetName)
-        applyButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, applyButton.widgetName, 0)
-        applyButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, applyButton.widgetName,
-            0)
-        applyButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, applyButton.widgetName, 0)
-        applyButtonLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, applyButton
-            .widgetName, 0)
-        applyButtonLabel:setText("Apply")
-        applyButtonLabel:setTextColorHexValue(0xFFFFFF)
-        applyButtonLabel:setFontSize(20.0)
-        applyButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
-        applyButtonLabel:setZOrder(3)
+        applyButton:setButtonBorderRadius(SettingsOverlay.buttonRadius)
+        applyButton:setLabelText("Apply")
+        applyButton:setLabelTextColorHexValue(0xFFFFFF)
+        applyButton:setLabelFontSize(20.0)
+        applyButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
 
         cancelButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
         cancelButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, applyButton.widgetName,
@@ -192,24 +179,13 @@ function SettingsOverlay:new(host)
             50)
         cancelButton:setWidth(buttonWidth)
         cancelButton:setHeight(100)
-        cancelButton:setColorHexValue(SettingsOverlay.buttonColor)
+        cancelButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
         cancelButton:setZOrder(2)
-        cancelButton:enableMouseInputReceiverBase(host)
-        cancelButton:setBorderRadius(SettingsOverlay.buttonRadius)
-
-        cancelButtonLabel:setParent(host, pauseSettingsOverlayCanvas.widgetName, cancelButton.widgetName)
-        cancelButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, cancelButton.widgetName,
-            0)
-        cancelButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, cancelButton
-            .widgetName, 0)
-        cancelButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, cancelButton.widgetName, 0)
-        cancelButtonLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            cancelButton.widgetName, 0)
-        cancelButtonLabel:setText("Cancel")
-        cancelButtonLabel:setTextColorHexValue(0xFFFFFF)
-        cancelButtonLabel:setFontSize(20.0)
-        cancelButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
-        cancelButtonLabel:setZOrder(3)
+        cancelButton:setButtonBorderRadius(SettingsOverlay.buttonRadius)
+        cancelButton:setLabelText("Cancel")
+        cancelButton:setLabelTextColorHexValue(0xFFFFFF)
+        cancelButton:setLabelFontSize(20.0)
+        cancelButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
     end)
 
     pauseSettingsOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
