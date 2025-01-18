@@ -91,6 +91,7 @@ set(
     src/Implementation/LevelProgressSystem/LevelProgressStage.h
     src/Implementation/LevelProgressSystem/LevelRequirementTrackers/ILevelRequirementTracker.h
     src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.h
+    src/Implementation/LevelProgressSystem/LevelRequirementTrackers/MissedSpaceshipsTracker.h
     src/Implementation/LevelProgressSystem/LevelRequirementTrackerJsonFactories/ILevelRequirementTrackerFactory.h
     src/Implementation/LevelProgressSystem/LevelRequirementTrackerJsonFactories/LevelRequirementsTrackerFactory.h
     src/Implementation/Navigation/NavigationPathBuilder.h
@@ -174,6 +175,7 @@ set(
     src/Implementation/LevelProgressSystem/LevelProgressStage.cpp
     src/Implementation/LevelProgressSystem/LevelProgressController.cpp
     src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.cpp
+    src/Implementation/LevelProgressSystem/LevelRequirementTrackers/MissedSpaceshipsTracker.cpp
     src/Implementation/LevelProgressSystem/LevelRequirementTrackerJsonFactories/LevelRequirementsTrackerFactory.cpp
     src/Implementation/Navigation/NavigationPathBuilder.cpp
     src/Implementation/Navigation/PathSegment.cpp

@@ -8,13 +8,13 @@ namespace Game
         return &levelDataProvider;
     }
 
-    int32_t LevelDataProvider::GetCurrentStageAliveEnemySpaceshipsCount() const
+    int32_t LevelDataProvider::GetCurrentStageSurvivedEnemySpaceshipsCount() const
     {
-        return mCurrentStageAliveEnemySpaceshipsCount;
+        return mCurrentStageSurvivedEnemySpaceshipsCount;
     }
 
-    void LevelDataProvider::SetCurrentStageAliveEnemySpaceshipsCount(const int32_t currentStageAliveEnemySpaceshipsCount)
+    void LevelDataProvider::SetCurrentStageSurvivedEnemySpaceshipsCount(const int32_t count)
     {
-        mCurrentStageAliveEnemySpaceshipsCount = currentStageAliveEnemySpaceshipsCount;
+        mCurrentStageSurvivedEnemySpaceshipsCount = count;
     }
 }

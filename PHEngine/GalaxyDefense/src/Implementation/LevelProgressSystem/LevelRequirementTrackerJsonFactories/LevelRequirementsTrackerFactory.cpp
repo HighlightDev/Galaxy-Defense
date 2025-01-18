@@ -5,6 +5,7 @@
 
 #include "Implementation/LevelProgressSystem/LevelRequirementTrackers/ILevelRequirementTracker.h"
 #include "Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.h"
+#include "Implementation/LevelProgressSystem/LevelRequirementTrackers/MissedSpaceshipsTracker.h"
 
 namespace Game
 {
@@ -17,6 +18,12 @@ namespace Game
             const auto enemiesCount = nlohmann_utilities::GetIntFromJson(trackerRootJson.at("spaceships_count"));
             auto destroySpaceShipsTracker = std::make_unique<DestroySpaceshipsTracker>(enemiesCount);
             return destroySpaceShipsTracker;
+        }
+        if ("MissedSpaceshipsTracker" == requirementTrackerType)
+        {
+            const auto doNotMissSpaceshipsCount = nlohmann_utilities::GetIntFromJson(trackerRootJson.at("spaceships_count"));
+            auto destroySpacehipsTracker = std::make_unique<MissedSpaceshipsTracker>(doNotMissSpaceshipsCount);
+            return destroySpacehipsTracker;
         }
         else
         {

@@ -68,6 +68,7 @@ function CreateLevel(host)
 		,space_station_img.png
 		,ufo.obj
 		,check.png
+		,cancel.png
 		]])
 
 	_CreateActor(host, "Actor",
@@ -108,8 +109,8 @@ function CreateLevelProgressStages(host)
 	local stagesQueue = {};
 	local trackers = {}
 	trackers[1] = {
-		type = "DestroySpaceshipsTracker",
-		spaceships_count = 5
+		type = "MissedSpaceshipsTracker",
+		spaceships_count = 20
 	}
 	trackers[2] = {
 		type = "DestroySpaceshipsTracker",

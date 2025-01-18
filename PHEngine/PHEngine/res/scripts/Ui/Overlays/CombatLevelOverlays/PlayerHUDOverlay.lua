@@ -100,6 +100,13 @@ local function showTileRequirementAchived(requirementTile)
     requirementTile:setUseImageCustomColor(true)
 end
 
+local function showTileRequirementFailed(requirementTile)
+    requirementTile:setTextureSource("cancel.png")
+    requirementTile:setLabelVisibility(false)
+    requirementTile:setImageColorHexValue(0xFFFFFF)
+    requirementTile:setUseImageCustomColor(true)
+end
+
 local function showAllRequirementsAchived()
     for _, requirementTile in pairs(RequirementTrackers) do
         showTileRequirementAchived(requirementTile)
@@ -144,7 +151,7 @@ local function onWeaponButtonPressed(host, buttonTypeName)
         }))
 end
 
-local function updateRequirementTileData(levelProgressTile, trackerJson)
+local function updateRequirementTileData(host, levelProgressTile, trackerJson)
     local name = trackerJson["name"]
     if name == "DestroySpaceshipsTracker" then
         local leftSpaceshipsCount = trackerJson["left_to_destroy_spaceships_count"]
@@ -152,6 +159,18 @@ local function updateRequirementTileData(levelProgressTile, trackerJson)
             levelProgressTile:setLabelText(leftSpaceshipsCount)
         else
             showTileRequirementAchived(levelProgressTile)
+        end
+    elseif name == "MissedSpaceshipsTracker" then
+        local doNotMissCount = tonumber(trackerJson["not_to_miss_spaceships_count"])
+        local missedCount = tonumber(trackerJson["missed_spaceships_count"])
+        local stillCanMiss = math.max(doNotMissCount - missedCount, 0)
+        if stillCanMiss > 0 then
+            levelProgressTile:setLabelText(tostring(stillCanMiss))
+        else
+            showTileRequirementFailed(levelProgressTile)
+            UiOverlayManager:openOverlay(host, "LevelFailedOverlay")
+            EventsHelper:sendPauseGameThreadEvent(host,
+                EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
         end
     else
         assert(false, "Not supported requirement: " .. name)
@@ -191,7 +210,7 @@ local function updateRequirementTiles(host, playerHUDOverlay, requirementTracker
             table.remove(RequirementTrackersIdle, index)
             RequirementTrackers[index] = trackerTile
             local trackerJson = requirementTrackers[index]
-            updateRequirementTileData(trackerTile, trackerJson)
+            updateRequirementTileData(host, trackerTile, trackerJson)
             trackerTile:setIsVisible(true)
         end
     end
@@ -366,7 +385,6 @@ function PlayerHUDOverlay:new(host)
             end
         elseif #RequirementTrackers > 0 then
             showAllRequirementsAchived()
-            UiOverlayManager:openOverlay(host, "LevelFailedOverlay")
         end
     end
 
@@ -379,7 +397,7 @@ function PlayerHUDOverlay:new(host)
                 for index, trackerJsonRoot in pairs(parsedJson) do
                     local requirementTrackerTile = RequirementTrackers[index]
                     assert(requirementTrackerTile ~= nil)
-                    updateRequirementTileData(requirementTrackerTile, trackerJsonRoot)
+                    updateRequirementTileData(host, requirementTrackerTile, trackerJsonRoot)
                 end
             end
         end

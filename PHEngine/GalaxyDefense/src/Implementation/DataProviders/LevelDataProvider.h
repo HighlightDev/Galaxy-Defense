@@ -7,7 +7,7 @@ namespace Game
 {
     class LevelDataProvider
     {
-        int32_t mCurrentStageAliveEnemySpaceshipsCount{0};
+        int32_t mCurrentStageSurvivedEnemySpaceshipsCount{0};
         
     private:
         LevelDataProvider() = default;
@@ -15,8 +15,8 @@ namespace Game
     public:
         static LevelDataProvider *GetInstance();
 
-        int32_t GetCurrentStageAliveEnemySpaceshipsCount() const;
+        int32_t GetCurrentStageSurvivedEnemySpaceshipsCount() const;
 
-        void SetCurrentStageAliveEnemySpaceshipsCount(const int32_t currentStageAliveEnemySpaceships);
+        void SetCurrentStageSurvivedEnemySpaceshipsCount(const int32_t count);
     };
 }

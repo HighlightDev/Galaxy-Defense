@@ -18,7 +18,17 @@ namespace Game
 
     bool DestroySpaceshipsTracker::IsRequirementAchived() const
     {
-        return mDestroyedEnemySpaceships >= mEnemySpaceshipsToDestroyCount;
+        return mDestroyedEnemySpaceships > mEnemySpaceshipsToDestroyCount;
+    }
+
+    bool DestroySpaceshipsTracker::IsRequirementFailed() const
+    {
+        return false;
+    }
+
+    eLevelRequirementTrackerType DestroySpaceshipsTracker::GetType() const
+    {
+        return eLevelRequirementTrackerType::NEED_TO_ACHIVE;
     }
 
     std::string DestroySpaceshipsTracker::GetName() const

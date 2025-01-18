@@ -54,7 +54,9 @@ namespace Game
 
     bool LevelProgressStage::IsStageCompleted() const
     {
-        return mTotalAchivedReqTrackers == static_cast<int32_t>(mLevelProgressRequirementTrackers.size());
+        const int32_t needToAchiveCount = std::count_if(mLevelProgressRequirementTrackers.cbegin(), mLevelProgressRequirementTrackers.cend(), [](const auto &trackerSp)
+                                                        { return eLevelRequirementTrackerType::NEED_TO_ACHIVE == trackerSp->GetType(); });
+        return mTotalAchivedReqTrackers == needToAchiveCount;
     }
 
     std::string LevelProgressStage::GetName() const

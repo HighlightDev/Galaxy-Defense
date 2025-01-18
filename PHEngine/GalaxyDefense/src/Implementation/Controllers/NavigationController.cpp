@@ -17,6 +17,7 @@
 #include "Implementation/Navigation/Path.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/MissileActor.h"
+#include "Implementation/DataProviders/LevelDataProvider.h"
 
 #include <array>
 #include <glm/vec3.hpp>
@@ -151,6 +152,8 @@ namespace Game
             const auto &routeMoveComp = spaceship->GetOnRouteMovementComponent();
             if (routeMoveComp->GetIsDistanceCompleted())
             {
+                const auto &levelDataProviderPtr = LevelDataProvider::GetInstance();
+                levelDataProviderPtr->SetCurrentStageSurvivedEnemySpaceshipsCount(levelDataProviderPtr->GetCurrentStageSurvivedEnemySpaceshipsCount() + 1);
                 spaceship->SetSpaceshipActivityState(eSpaceshipActivityState::PENDING_DISABLE);
             }
         }
