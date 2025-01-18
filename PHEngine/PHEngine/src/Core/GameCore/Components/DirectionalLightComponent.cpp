@@ -104,7 +104,7 @@ namespace EngineCore
       return eComponentType::LIGHT_COMPONENT;
    }
 
-   void DirectionalLightComponent::ProcessEvent(const PlayerMovedGameThreadEvent::EventData_t &data)
+   void DirectionalLightComponent::ProcessEvent(const PlayerMovedGameThreadEvent* sender, const PlayerMovedGameThreadEvent::EventData_t &data)
    {
       if (const auto playerTranslationOffset = std::get<0>(data).lock())
       {
@@ -121,7 +121,7 @@ namespace EngineCore
       }
    }
 
-   void DirectionalLightComponent::ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent::EventData_t &data)
+   void DirectionalLightComponent::ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent* sender, const PhysicsComponentUpdatedGameThreadEvent::EventData_t &data)
    {
       bIsRenderDataDirty = true;
    }

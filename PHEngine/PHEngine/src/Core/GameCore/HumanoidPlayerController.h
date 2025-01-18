@@ -31,7 +31,7 @@ namespace EngineCore
 
       void Tick(const float deltaTime) override;
 
-      void ProcessEvent(const typename PhysicsComponentUpdatedGameThreadEvent::EventData_t& data) override;
+      void ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent* sender, const typename PhysicsComponentUpdatedGameThreadEvent::EventData_t& data) override;
 
    };
 

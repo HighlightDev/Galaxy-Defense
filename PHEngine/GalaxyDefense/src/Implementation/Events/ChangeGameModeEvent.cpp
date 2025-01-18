@@ -2,5 +2,5 @@
 
 namespace Event
 {
-    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eGameModeType>>;
+    template class TEvent<ChangeGameModeEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eGameModeType>>;
 }

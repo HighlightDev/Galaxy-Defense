@@ -93,21 +93,21 @@ namespace EngineCore
       actorData.ComponentsData.emplace_back(lightCompData);
    }
 
-   void PointLightComponent::ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent::EventData_t &data)
+   void PointLightComponent::ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent* sender, const PhysicsComponentUpdatedGameThreadEvent::EventData_t &data)
    {
       static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 
       NotifySceneProxyThatShadowmapIsDirty(functionId);
    }
 
-   void PointLightComponent::ProcessEvent(const KinematicBodyMovedGameThreadEvent::EventData_t &data)
+   void PointLightComponent::ProcessEvent(const KinematicBodyMovedGameThreadEvent* sender, const KinematicBodyMovedGameThreadEvent::EventData_t &data)
    {
       static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 
       NotifySceneProxyThatShadowmapIsDirty(functionId);
    }
 
-   void PointLightComponent::ProcessEvent(const PlayerMovedGameThreadEvent::EventData_t &data)
+   void PointLightComponent::ProcessEvent(const PlayerMovedGameThreadEvent* sender, const PlayerMovedGameThreadEvent::EventData_t &data)
    {
       static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 

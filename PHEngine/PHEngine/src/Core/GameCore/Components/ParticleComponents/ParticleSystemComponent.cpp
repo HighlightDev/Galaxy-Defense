@@ -215,19 +215,20 @@ namespace EngineCore
                                                                                     {
                                                                                         const auto &proxyPtr =
                                                                                             std::static_pointer_cast<ParticleSystemSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(mSceneProxyId));
-                                                                                        assert(proxyPtr);
-
-                                                                                        if (activeParticlesCount > 0)
+                                                                                        if (proxyPtr)
                                                                                         {
-                                                                                            proxyPtr->CopyParticlesRawData(mParticlesRawDataHandler.GetTranslationData(),
-                                                                                                                           mParticlesRawDataHandler.GetTranslationActiveDataChunkSize(),
-                                                                                                                           mParticlesRawDataHandler.GetRotationSizeData(),
-                                                                                                                           mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize(),
-                                                                                                                           mParticlesRawDataHandler.GetColorData(),
-                                                                                                                           mParticlesRawDataHandler.GetColorActiveDataChunkSize());
-                                                                                        }
+                                                                                            if (activeParticlesCount > 0)
+                                                                                            {
+                                                                                                proxyPtr->CopyParticlesRawData(mParticlesRawDataHandler.GetTranslationData(),
+                                                                                                                               mParticlesRawDataHandler.GetTranslationActiveDataChunkSize(),
+                                                                                                                               mParticlesRawDataHandler.GetRotationSizeData(),
+                                                                                                                               mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize(),
+                                                                                                                               mParticlesRawDataHandler.GetColorData(),
+                                                                                                                               mParticlesRawDataHandler.GetColorActiveDataChunkSize());
+                                                                                            }
 
-                                                                                        proxyPtr->SetActiveParticlesCount(activeParticlesCount);
+                                                                                            proxyPtr->SetActiveParticlesCount(activeParticlesCount);
+                                                                                        }
                                                                                     });
             }
         }

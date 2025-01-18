@@ -187,7 +187,7 @@ namespace EnginePhysics
    }
 #endif
 
-   void PhysicsWorld::ProcessEvent(const Event::PhysicsDescriptorRemovedGameThreadEvent::EventData_t &data)
+   void PhysicsWorld::ProcessEvent(const PhysicsDescriptorRemovedGameThreadEvent* sender, const Event::PhysicsDescriptorRemovedGameThreadEvent::EventData_t &data)
    {
       if (mPhysicsDescriptors.size())
       {

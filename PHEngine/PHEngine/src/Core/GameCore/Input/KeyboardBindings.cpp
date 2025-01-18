@@ -77,7 +77,7 @@ namespace EngineCore
       KeyboardButtonDownGameThreadEvent::GetInstance()->AddListener(shared_from_this());
    }
 
-   void KeyboardBindings::ProcessEvent(const KeyboardButtonDownGameThreadEvent::EventData_t &eventData)
+   void KeyboardBindings::ProcessEvent(const KeyboardButtonDownGameThreadEvent* sender, const KeyboardButtonDownGameThreadEvent::EventData_t &eventData)
    {
       mKeyboardMaskVec = std::get<0>(eventData);
 

@@ -40,7 +40,7 @@ namespace EngineCore
             mReleasedKeysOnCurrentTick.clear();
         }
 
-        void EngineInputLuaProxy::ProcessEvent(const typename KeyboardButtonDownLuaThreadEvent::EventData_t &data)
+        void EngineInputLuaProxy::ProcessEvent(const KeyboardButtonDownLuaThreadEvent* sender, const typename KeyboardButtonDownLuaThreadEvent::EventData_t &data)
         {
             const auto &keyboardKeysState = std::get<0>(data);
 
@@ -80,17 +80,17 @@ namespace EngineCore
             }
         }
 
-        void EngineInputLuaProxy::ProcessEvent(const typename MouseMovedLuaThreadEvent::EventData_t &data)
+        void EngineInputLuaProxy::ProcessEvent(const MouseMovedLuaThreadEvent* sender, const typename MouseMovedLuaThreadEvent::EventData_t &data)
         {
             // todo: to be implemented later
         }
 
-        void EngineInputLuaProxy::ProcessEvent(const typename MouseScrollLuaThreadEvent::EventData_t &data)
+        void EngineInputLuaProxy::ProcessEvent(const MouseScrollLuaThreadEvent* sender, const typename MouseScrollLuaThreadEvent::EventData_t &data)
         {
             // todo: to be implemented later
         }
 
-        void EngineInputLuaProxy::ProcessEvent(const typename MouseButtonDownLuaThreadEvent::EventData_t &data)
+        void EngineInputLuaProxy::ProcessEvent(const MouseButtonDownLuaThreadEvent* sender, const typename MouseButtonDownLuaThreadEvent::EventData_t &data)
         {
             // todo: to be implemented later
         }

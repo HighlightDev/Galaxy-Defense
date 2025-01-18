@@ -34,7 +34,7 @@ namespace EngineCore
       PlayerMovedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
    }
 
-   void HumanoidPlayerController::ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent::EventData_t &data)
+   void HumanoidPlayerController::ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent* sender, const PhysicsComponentUpdatedGameThreadEvent::EventData_t &data)
    {
       const std::string &actorName = std::move(std::get<0>(data));
 

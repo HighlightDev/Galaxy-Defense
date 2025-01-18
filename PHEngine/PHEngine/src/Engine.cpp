@@ -62,6 +62,7 @@ namespace EngineCore
       PauseGameThreadEvent::GetInstance()->RemoveListener(PauseGameThreadEvent::GetInstanceId());
       ExitGameThreadEvent::GetInstance()->RemoveListener(ExitGameThreadEvent::GetInstanceId());
       LoadLevelGameThreadEvent::GetInstance()->RemoveListener(LoadLevelGameThreadEvent::GetInstanceId());
+      RestartLevelGameThreadEvent::GetInstance()->RemoveListener(RestartLevelGameThreadEvent::GetInstanceId());
    }
 
    void Engine::Initialize()
@@ -82,7 +83,8 @@ namespace EngineCore
                                  LoadLevelGameThreadEvent,
                                  WindowSizeChangedGameThreadEvent,
                                  BroadcastGameThreadEvent,
-                                 MouseButtonDownRootEvent>();
+                                 MouseButtonDownRootEvent,
+                                 RestartLevelGameThreadEvent>();
 
       LuaThreadEventDispatcher::GetInstance()
           ->RegisterEventsByType<KeyboardButtonDownLuaThreadEvent,
@@ -115,6 +117,7 @@ namespace EngineCore
       PauseGameThreadEvent::GetInstance()->AddListener(thisSp);
       ExitGameThreadEvent::GetInstance()->AddListener(thisSp);
       LoadLevelGameThreadEvent::GetInstance()->AddListener(thisSp);
+      RestartLevelGameThreadEvent::GetInstance()->AddListener(thisSp);
    }
 
    void Engine::CleanUp()
@@ -219,6 +222,31 @@ namespace EngineCore
       }
    }
 
+   void Engine::RestartLevel()
+   {
+      assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+      assert(m_levelFactory);
+      assert(m_level);
+
+      bLevelIsLoading.store(true, std::memory_order::memory_order_seq_cst);
+      bPauseGameThreadExecution.store(false, std::memory_order::memory_order_seq_cst);
+      const auto currentLevelName = m_level->GetLevelName();
+      UnloadCurrentLevel();
+
+      const auto newLevel = m_levelFactory->CreateLevel(currentLevelName);
+      assert(newLevel);
+      m_level.reset();
+      m_level = newLevel;
+      m_level->SetScene(m_scene);
+      PreLevelInit();
+      OnLevelInit();
+      PostPhysicsInitialize();
+      PostLevelInit();
+      ResourceMap::GetInstance()->WaitUntilResourcesLoad();
+      PostPlayLevelFinished();
+      bLevelIsLoading.store(false, std::memory_order::memory_order_seq_cst);
+   }
+
    void Engine::PreLevelInit()
    {
       m_level->PreLevelInit();
@@ -258,24 +286,31 @@ namespace EngineCore
    float sumGtFramesTime = 0.0f;
    float sumLuaThreadFramesTime = 0.0f;
 
-   void Engine::ProcessEvent(const PauseGameThreadEvent::EventData_t &data)
+   void Engine::ProcessEvent(const PauseGameThreadEvent *sender, const PauseGameThreadEvent::EventData_t &data)
    {
       bPauseGameThreadExecution.store(std::get<0>(data));
    }
 
-   void Engine::ProcessEvent(const ExitGameThreadEvent::EventData_t &data)
+   void Engine::ProcessEvent(const ExitGameThreadEvent *sender, const ExitGameThreadEvent::EventData_t &data)
    {
       bExitGame = true;
       StopGameThreadExecution();
       StopLuaThreadExecution();
    }
 
-   void Engine::ProcessEvent(const LoadLevelGameThreadEvent::EventData_t &data)
+   void Engine::ProcessEvent(const LoadLevelGameThreadEvent *sender, const LoadLevelGameThreadEvent::EventData_t &data)
    {
       const auto lvlName = std::get<0>(data);
       static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::LoadLevelGameThreadEvent");
       m_interThreadMgr.ExecuteOnRenderThread(Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, lvlName]()
                                              { PlayLevel(lvlName); });
+   }
+
+   void Engine::ProcessEvent(const RestartLevelGameThreadEvent *sender, const RestartLevelGameThreadEvent::EventData_t &data)
+   {
+      static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::RestartLevelGameThreadEvent");
+      m_interThreadMgr.ExecuteOnRenderThread(Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this]()
+                                             { RestartLevel(); });
    }
 
    void Engine::LuaThreadPulse()

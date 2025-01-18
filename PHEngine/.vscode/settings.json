@@ -157,7 +157,8 @@
         "_SetLevelProgressStagesQueue",
         "_GetCurrentProgressRequirementsCount",
         "_GetCurrentProgressStageRequirementTrackers",
-        "_DestroyCommonUiWidget"
+        "_DestroyCommonUiWidget",
+        "_SendRestartLevelGameThreadEvent"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

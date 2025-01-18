@@ -41,4 +41,10 @@ function EventsHelper:sendBroadcastGameThreadEvent(host, enqueueJobPolicy, event
     assert(jsonParameters ~= nil and type(jsonParameters) == "string")
     _SendBroadcastGameThreadEvent(host, enqueueJobPolicy, eventHeader, jsonParameters)
 end
+
+function EventsHelper:sendRestartLevelGameThreadEvent(host, enqueueJobPolicy)
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
+    _SendRestartLevelGameThreadEvent(host, enqueueJobPolicy)
+end
+
 return EventsHelper

@@ -16,13 +16,14 @@ using namespace EngineCore;
 
 namespace Event
 {
-   template <eEventThreadType threadType, typename EventHandlePolicy>
+   template <typename DerivedEventType, eEventThreadType threadType, typename EventHandlePolicy>
    class TEvent : public IEvent
    {
    public:
       using EventHandlePolicy_t = EventHandlePolicy;
-      using Event_t = TEvent<threadType, EventHandlePolicy>;
+      using Event_t = TEvent<DerivedEventType, threadType, EventHandlePolicy>;
       using EventData_t = typename EventHandlePolicy_t::TupleData_t;
+      using DerivedEventType_t = DerivedEventType;
 
    private:
       static constexpr eEventThreadType mThreadType = threadType;
@@ -31,7 +32,7 @@ namespace Event
 
       EventHandlePolicy mPolicy[2];
 
-      std::vector<std::weak_ptr<TEvent<threadType, EventHandlePolicy_t>>> m_listeners;
+      std::vector<std::weak_ptr<Event_t>> m_listeners;
 
    protected:
       TEvent()
@@ -71,7 +72,7 @@ namespace Event
             {
                if (const auto &listenerSp = listenerWp.lock())
                {
-                  listenerSp->ProcessEvent(packedData);
+                  listenerSp->ProcessEvent(static_cast<DerivedEventType_t*>(this), packedData);
                }
             }
          }
@@ -100,6 +101,6 @@ namespace Event
       }
 
    protected:
-      virtual void ProcessEvent(const EventData_t &data) {}
+      virtual void ProcessEvent(const DerivedEventType_t* senderPtr, const EventData_t &data) {}
    };
 }

@@ -40,11 +40,11 @@ namespace EngineCore
 
       void Initialize();
 
-      void ProcessEvent(const typename MouseMovedGameThreadEvent::EventData_t &data) override;
+      void ProcessEvent(const MouseMovedGameThreadEvent *sender, const typename MouseMovedGameThreadEvent::EventData_t &data) override;
 
-      void ProcessEvent(const typename MouseScrollGameThreadEvent::EventData_t &data) override;
+      void ProcessEvent(const MouseScrollGameThreadEvent *sender, const typename MouseScrollGameThreadEvent::EventData_t &data) override;
 
-      void ProcessEvent(const typename MouseButtonDownGameThreadEvent::EventData_t &data) override;
+      void ProcessEvent(const MouseButtonDownGameThreadEvent *sender, const typename MouseButtonDownGameThreadEvent::EventData_t &data) override;
 
       bool IsMouseMoveEventDirty() const;
 

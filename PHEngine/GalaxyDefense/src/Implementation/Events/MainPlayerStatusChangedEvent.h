@@ -9,10 +9,10 @@ using namespace Game;
 namespace Event
 {
    class MainPlayerStatusChangedEvent
-       : public TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eMainPlayerStatusType, std::string/*args*/>>
+       : public TEvent<MainPlayerStatusChangedEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eMainPlayerStatusType, std::string/*args*/>>
    {
    public:
-      using Event_t = TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eMainPlayerStatusType, std::string/*args*/>>::Event_t;
+      using Event_t = TEvent<MainPlayerStatusChangedEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eMainPlayerStatusType, std::string/*args*/>>::Event_t;
 
       std::string ToString() const override
       {
@@ -21,10 +21,10 @@ namespace Event
    };
 
    class LuaMainPlayerStatusChangedEvent
-       : public TEvent<eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<eMainPlayerStatusType, std::string/*args*/>>
+       : public TEvent<LuaMainPlayerStatusChangedEvent, eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<eMainPlayerStatusType, std::string/*args*/>>
    {
    public:
-      using Event_t = TEvent<eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<eMainPlayerStatusType, std::string/*args*/>>::Event_t;
+      using Event_t = TEvent<LuaMainPlayerStatusChangedEvent, eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<eMainPlayerStatusType, std::string/*args*/>>::Event_t;
 
       std::string ToString() const override
       {

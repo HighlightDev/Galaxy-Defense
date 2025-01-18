@@ -453,7 +453,7 @@ namespace EngineCore
       mUiHandler->UnpausableTick(deltaTime);
    }
 
-   void Scene::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
+   void Scene::ProcessEvent(const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t &data)
    {
       if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
       {
@@ -463,7 +463,7 @@ namespace EngineCore
       }
    }
 
-   void Scene::ProcessEvent(const MouseButtonDownRootEvent::EventData_t &data)
+   void Scene::ProcessEvent(const MouseButtonDownRootEvent* sender, const MouseButtonDownRootEvent::EventData_t &data)
    {
       const auto &currentMousePosition = std::get<0>(data);
       const auto invertedScreenYPosition = static_cast<int32_t>(mScreenResolutionProperty->GetValue().y) - currentMousePosition.y;

@@ -56,7 +56,7 @@ namespace EngineCore
 
       void Initialize();
 
-      void ProcessEvent(const typename KeyboardButtonDownGameThreadEvent::EventData_t &data) override;
+      void ProcessEvent(const KeyboardButtonDownGameThreadEvent* sender, const typename KeyboardButtonDownGameThreadEvent::EventData_t &data) override;
 
       void UpdateKyboardState();
 

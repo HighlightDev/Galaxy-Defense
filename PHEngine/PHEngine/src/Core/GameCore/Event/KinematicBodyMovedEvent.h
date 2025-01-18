@@ -11,10 +11,10 @@ namespace Event
 {
 
    class KinematicBodyMovedGameThreadEvent
-      : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EnginePhysics::PhysicsDescriptor>, EngineCore::EulerAnglesTransform>>
+      : public TEvent<KinematicBodyMovedGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EnginePhysics::PhysicsDescriptor>, EngineCore::EulerAnglesTransform>>
    {
    public:
-      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EnginePhysics::PhysicsDescriptor>, EngineCore::EulerAnglesTransform>>::Event_t;
+      using Event_t = TEvent<KinematicBodyMovedGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EnginePhysics::PhysicsDescriptor>, EngineCore::EulerAnglesTransform>>::Event_t;
 
       std::string ToString() const override {
          return "KinematicBodyMovedGameThreadEvent";

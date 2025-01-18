@@ -57,7 +57,9 @@ namespace EngineCore
 
          void SendBroadcastGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string /*event header*/, std::string /*json parameters*/> &data);
 
-         void ProcessEvent(const WindowSizeChangedLuaThreadEvent::EventData_t &data) override;
+         void SendRestartLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/>& data);
+
+         void ProcessEvent(const WindowSizeChangedLuaThreadEvent* sender, const WindowSizeChangedLuaThreadEvent::EventData_t &data) override;
       };
    }
 }

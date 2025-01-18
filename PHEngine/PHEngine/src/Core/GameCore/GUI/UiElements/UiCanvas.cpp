@@ -363,7 +363,7 @@ namespace EngineCore
             CollectChildrenWithDescendingZOrder();
         }
 
-        void UiCanvas::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
+        void UiCanvas::ProcessEvent(const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t &data)
         {
             const glm::ivec4 newViewPortInfo = static_cast<glm::ivec4>(std::get<0>(data));
             mWidthHeight = glm::ivec2(newViewPortInfo.z, newViewPortInfo.w);

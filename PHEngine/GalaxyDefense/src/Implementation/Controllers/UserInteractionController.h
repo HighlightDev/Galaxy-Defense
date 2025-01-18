@@ -73,7 +73,7 @@ namespace Game
 
       void CleanUp() override;
 
-      void ProcessEvent(const typename ChangeGameModeEvent::EventData_t &data) override;
+      void ProcessEvent(const ChangeGameModeEvent* sender, const typename ChangeGameModeEvent::EventData_t &data) override;
 
       void Initialize();
 

@@ -187,7 +187,7 @@ namespace EngineCore
             void CleanUp() override;
 
         protected:
-            void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
+            void ProcessEvent(const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
 
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
 

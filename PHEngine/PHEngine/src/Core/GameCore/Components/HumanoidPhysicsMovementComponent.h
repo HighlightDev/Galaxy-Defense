@@ -40,7 +40,7 @@ namespace EngineCore
 
       void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      void ProcessEvent(const typename CameraTransformChangedGameThreadEvent::EventData_t &data) override;
+      void ProcessEvent(const CameraTransformChangedGameThreadEvent* sender, const typename CameraTransformChangedGameThreadEvent::EventData_t &data) override;
 
       void Move(const float deltaTime) override;
 

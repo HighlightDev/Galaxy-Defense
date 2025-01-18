@@ -64,7 +64,7 @@ namespace Game
       LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent"), void(int32_t, int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent, this, std::placeholders::_1), "_SendChangeEditModeGameThreadEvent");
    }
 
-   void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent::EventData_t &data)
+   void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent* sender, const LuaMainPlayerStatusChangedEvent::EventData_t &data)
    {
       LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(),
                                                                          "System_OnGameEventTriggered",
@@ -82,7 +82,7 @@ namespace Game
 #endif
    }
 
-   void LuaGameEventsFunctions::ProcessEvent(const LuaLevelProgressChangedEvent::EventData_t &data)
+   void LuaGameEventsFunctions::ProcessEvent(const LuaLevelProgressChangedEvent* sender, const LuaLevelProgressChangedEvent::EventData_t &data)
    {
       LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(),
                                                                          "System_OnGameEventTriggered",

@@ -11,6 +11,7 @@
 #include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/GameCore/Event/ExitGameEvent.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
+#include "Core/GameCore/Event/RestartLevelEvent.h"
 
 #include <json/json.hpp>
 
@@ -61,6 +62,7 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendExitGameThreadEvent"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineEventsFunctions::SendExitGameThreadEvent, this, std::placeholders::_1), "_SendExitGameThreadEvent");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent, this, std::placeholders::_1), "_SendLoadLevelGameThreadEvent");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendBroadcastGameThreadEvent"), void(int32_t, std::string, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineEventsFunctions::SendBroadcastGameThreadEvent, this, std::placeholders::_1), "_SendBroadcastGameThreadEvent");
+         LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent, this, std::placeholders::_1), "_SendRestartLevelGameThreadEvent");
       }
 
       void LuaEngineEventsFunctions::SendPauseGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, bool /*true: pause, false: unpause*/> &data)
@@ -115,7 +117,19 @@ namespace EngineCore
          }
       }
 
-      void LuaEngineEventsFunctions::ProcessEvent(const WindowSizeChangedLuaThreadEvent::EventData_t &data)
+      void LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/> &data)
+      {
+         const auto enqueuePolicy = std::get<0>(data);
+
+         if (const auto &sceneSp = mSceneWp.lock())
+         {
+            static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent");
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, []()
+                                                                              { RestartLevelGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION); });
+         }
+      }
+
+      void LuaEngineEventsFunctions::ProcessEvent(const WindowSizeChangedLuaThreadEvent *sender, const WindowSizeChangedLuaThreadEvent::EventData_t &data)
       {
          const auto viewPortInfo = std::get<0>(data);
          nlohmann::json jsonObj;

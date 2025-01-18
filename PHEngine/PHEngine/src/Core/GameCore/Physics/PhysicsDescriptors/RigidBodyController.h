@@ -29,7 +29,7 @@ namespace EnginePhysics
 
       void SetMotionStateWorldTransform(const btQuaternion &quat, const btVector3 &translation) override;
 
-      void ProcessEvent(const typename Event::KinematicBodyMovedGameThreadEvent::EventData_t &data) override;
+      void ProcessEvent(const KinematicBodyMovedGameThreadEvent* sender, const typename Event::KinematicBodyMovedGameThreadEvent::EventData_t &data) override;
 
       ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 

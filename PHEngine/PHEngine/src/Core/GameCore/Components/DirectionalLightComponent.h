@@ -47,8 +47,8 @@ namespace EngineCore
 
    protected:
 
-      void ProcessEvent(const typename PlayerMovedGameThreadEvent::EventData_t& data) override;
-      void ProcessEvent(const typename PhysicsComponentUpdatedGameThreadEvent::EventData_t& data) override;
+      void ProcessEvent(const PlayerMovedGameThreadEvent* sender, const typename PlayerMovedGameThreadEvent::EventData_t& data) override;
+      void ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent* sender, const typename PhysicsComponentUpdatedGameThreadEvent::EventData_t& data) override;
 
    private:
 

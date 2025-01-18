@@ -197,7 +197,7 @@ namespace Game
     {
     }
 
-    void LevelEditorController::ProcessEvent(const BroadcastGameThreadEvent::EventData_t &data)
+    void LevelEditorController::ProcessEvent(const BroadcastGameThreadEvent* sender, const BroadcastGameThreadEvent::EventData_t &data)
     {
         const auto eventHeader = std::get<0>(data);
 
@@ -283,7 +283,7 @@ namespace Game
         }
     }
 
-    void LevelEditorController::ProcessEvent(const ChangeEditModeEvent::EventData_t &data)
+    void LevelEditorController::ProcessEvent(const ChangeEditModeEvent* sender, const ChangeEditModeEvent::EventData_t &data)
     {
         const auto editModeType = std::get<0>(data);
         mCurrentEditModeType = editModeType;
@@ -301,7 +301,7 @@ namespace Game
         mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(mLevelAreaBoundingBox);
         InitializeRoutePlacementGrid();
         InitializeTowerPlacementGrid();
-        ProcessEvent(std::make_tuple<eEditModeType>(eEditModeType::IDLE));
+        ProcessEvent(nullptr, std::make_tuple<eEditModeType>(eEditModeType::IDLE));
     }
 
     void LevelEditorController::InitializeRoutePlacementGrid()

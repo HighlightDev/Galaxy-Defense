@@ -10,10 +10,10 @@ using namespace EngineCore;
 namespace Event
 {
     class BroadcastGameThreadEvent
-        : public TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>
+        : public TEvent<BroadcastGameThreadEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>
     {
     public:
-        using Event_t = TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>::Event_t;
+        using Event_t = TEvent<BroadcastGameThreadEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>::Event_t;
 
         std::string ToString() const override
         {
@@ -22,10 +22,10 @@ namespace Event
     };
 
     class BroadcastLuaThreadEvent
-        : public TEvent<eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>
+        : public TEvent<BroadcastLuaThreadEvent, eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>
     {
     public:
-        using Event_t = TEvent<eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>::Event_t;
+        using Event_t = TEvent<BroadcastLuaThreadEvent, eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>::Event_t;
 
         std::string ToString() const override
         {

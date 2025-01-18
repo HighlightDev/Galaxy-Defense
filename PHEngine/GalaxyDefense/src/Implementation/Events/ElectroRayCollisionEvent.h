@@ -13,10 +13,10 @@ using namespace EngineCore;
 namespace Event
 {
    class ElectroRayCollisionEvent
-       : public TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::weak_ptr<MissileActor>/*event sender actor*/, std::weak_ptr<Actor>/*collided actor*/>>
+       : public TEvent<ElectroRayCollisionEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::weak_ptr<MissileActor>/*event sender actor*/, std::weak_ptr<Actor>/*collided actor*/>>
    {
    public:
-      using Event_t = TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::weak_ptr<MissileActor>, std::weak_ptr<Actor>>>::Event_t;
+      using Event_t = TEvent<ElectroRayCollisionEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::weak_ptr<MissileActor>, std::weak_ptr<Actor>>>::Event_t;
 
       std::string ToString() const override
       {

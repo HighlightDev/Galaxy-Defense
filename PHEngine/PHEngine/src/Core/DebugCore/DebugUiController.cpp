@@ -274,7 +274,7 @@ namespace EngineCore
             }
         }
 
-        void DebugUiController::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
+        void DebugUiController::ProcessEvent(const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t &data)
         {
             RecalculateWidgetsSize();
         }

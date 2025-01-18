@@ -40,19 +40,19 @@ namespace EngineCore
         SubscribeOnEvents();
     }
 
-    void MouseBindings::ProcessEvent(const typename MouseMovedGameThreadEvent::EventData_t &mouseData)
+    void MouseBindings::ProcessEvent(const MouseMovedGameThreadEvent* sender, const typename MouseMovedGameThreadEvent::EventData_t &mouseData)
     {
         const glm::ivec4 &mouseMoveData = std::get<0>(mouseData);
         PushMouseMoveEvent(mouseMoveData);
     }
 
-    void MouseBindings::ProcessEvent(const typename MouseScrollGameThreadEvent::EventData_t &mouseData)
+    void MouseBindings::ProcessEvent(const MouseScrollGameThreadEvent* sender, const typename MouseScrollGameThreadEvent::EventData_t &mouseData)
     {
         const eMouseScrollDirection mouseScrollDirection = std::get<0>(mouseData);
         PushMouseScrollEvent(mouseScrollDirection);
     }
 
-    void MouseBindings::ProcessEvent(const typename MouseButtonDownGameThreadEvent::EventData_t &data)
+    void MouseBindings::ProcessEvent(const MouseButtonDownGameThreadEvent* sender, const typename MouseButtonDownGameThreadEvent::EventData_t &data)
     {
         if (eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS == std::get<0>(data))
         {

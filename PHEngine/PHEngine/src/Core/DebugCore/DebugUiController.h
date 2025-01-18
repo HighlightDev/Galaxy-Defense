@@ -74,7 +74,7 @@ namespace EngineCore
 
             void SetLuaFpsText(const std::string &fpsText);
 
-            void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
+            void ProcessEvent(const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
 
         private:
             void InitializeWidgets();

@@ -8,10 +8,10 @@
 namespace Event
 {
    class PhysicsComponentUpdatedGameThreadEvent
-      : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::string>>
+      : public TEvent<PhysicsComponentUpdatedGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::string>>
    {
    public:
-      using Event = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::string>>::Event_t;
+      using Event = TEvent<PhysicsComponentUpdatedGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::string>>::Event_t;
       
       std::string ToString() const override {
          return "PhysicsComponentUpdatedGameThreadEvent";

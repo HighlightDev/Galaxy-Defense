@@ -86,7 +86,7 @@ namespace EngineCore
             }
         }
 
-        void UiInputSystem::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
+        void UiInputSystem::ProcessEvent(const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t &data)
         {
             mScreenHeight = static_cast<size_t>(std::get<0>(data).Height);
         }

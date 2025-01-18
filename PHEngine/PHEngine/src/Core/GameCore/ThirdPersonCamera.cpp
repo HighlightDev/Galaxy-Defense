@@ -55,7 +55,7 @@ namespace EngineCore
       PlayerMovedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ThirdPersonCamera>(shared_from_this()));
    }
 
-   void ThirdPersonCamera::ProcessEvent(const PlayerMovedGameThreadEvent::EventData_t &data)
+   void ThirdPersonCamera::ProcessEvent(const PlayerMovedGameThreadEvent* sender, const PlayerMovedGameThreadEvent::EventData_t &data)
    {
       m_bThirdPersonTargetTransformationDirty = true;
       m_lerpTimeElapsed = 0.0f;

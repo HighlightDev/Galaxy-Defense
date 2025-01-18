@@ -59,7 +59,7 @@ namespace EngineCore
 
       void Tick(const float DeltaTime) override;
 
-      void ProcessEvent(const typename PlayerMovedGameThreadEvent::EventData_t &data) override;
+      void ProcessEvent(const PlayerMovedGameThreadEvent* sender, const typename PlayerMovedGameThreadEvent::EventData_t &data) override;
 
       void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY) override;
 

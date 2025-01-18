@@ -9,6 +9,7 @@
 #include "Core/GameCore/Event/PauseGameEvent.h"
 #include "Core/GameCore/Event/ExitGameEvent.h"
 #include "Core/GameCore/Event/LoadLevelEvent.h"
+#include "Core/GameCore/Event/RestartLevelEvent.h"
 #include "Core/CommonCore/Timer.h"
 
 #include <thread>
@@ -36,6 +37,7 @@ namespace EngineCore
         : public PauseGameThreadEvent,
           public ExitGameThreadEvent,
           public LoadLevelGameThreadEvent,
+          public RestartLevelGameThreadEvent,
           public std::enable_shared_from_this<Engine>
     {
         InterThreadCommunicationMgr m_interThreadMgr;
@@ -90,6 +92,8 @@ namespace EngineCore
 
         void PlayLevel(const std::string &levelName);
 
+        void RestartLevel();
+
         void PostLevelInit();
 
         void PostPhysicsInitialize();
@@ -100,11 +104,13 @@ namespace EngineCore
 
         void ProcessLuaThreadEvents(const eExecutionOrder order);
 
-        void ProcessEvent(const PauseGameThreadEvent::EventData_t &data) override;
+        void ProcessEvent(const PauseGameThreadEvent* sender, const PauseGameThreadEvent::EventData_t &data) override;
 
-        void ProcessEvent(const ExitGameThreadEvent::EventData_t &data) override;
+        void ProcessEvent(const ExitGameThreadEvent* sender, const ExitGameThreadEvent::EventData_t &data) override;
 
-        void ProcessEvent(const LoadLevelGameThreadEvent::EventData_t &data) override;
+        void ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLevelGameThreadEvent::EventData_t &data) override;
+
+        void ProcessEvent(const RestartLevelGameThreadEvent* sender, const RestartLevelGameThreadEvent::EventData_t& data) override;
 
         void GameThreadPulse();
 

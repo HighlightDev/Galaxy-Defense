@@ -63,6 +63,6 @@ namespace EnginePhysics
 #endif
 
       protected:
-            void ProcessEvent(const typename Event::PhysicsDescriptorRemovedGameThreadEvent::EventData_t &data) override;
+            void ProcessEvent(const PhysicsDescriptorRemovedGameThreadEvent* sender, const typename Event::PhysicsDescriptorRemovedGameThreadEvent::EventData_t &data) override;
       };
 }

@@ -94,9 +94,9 @@ namespace Game
 
         void UnpausableTick(const float deltaTime) override;
 
-        void ProcessEvent(const ChangeEditModeEvent::EventData_t &data) override;
+        void ProcessEvent(const ChangeEditModeEvent* sender, const ChangeEditModeEvent::EventData_t &data) override;
 
-        void ProcessEvent(const BroadcastGameThreadEvent::EventData_t &data) override;
+        void ProcessEvent(const BroadcastGameThreadEvent* sender, const BroadcastGameThreadEvent::EventData_t &data) override;
 
         void SetLevelAreaBoundingBox(const BoundingBox2D<glm::vec2> &levelAreaBoundingBox);
 

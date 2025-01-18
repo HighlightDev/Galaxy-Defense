@@ -23,7 +23,7 @@ namespace Graphics
       return std::static_pointer_cast<Texture2dAtlasHandler>(mShadowmapHandler);
    }
 
-   void ProjectedSpotlightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t &data)
+   void ProjectedSpotlightShadowInfo::ProcessEvent(const TextureAtlasGeneratedGameThreadEvent* sender, const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t &data)
    {
       if (eTextureType::TEXTURE_2D == std::get<0>(data))
       {

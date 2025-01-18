@@ -166,7 +166,7 @@ local function fillRequirementTilesPool(host, playerHUDOverlay, count)
 
         levelProgressTile:subscribeOnLuaProxiesReady(function(host)
             levelProgressTile:setParent(host, playerHUDOverlay:getOverlayCanvas().widgetName,
-            playerHUDOverlay.levelProgressRowLayout.widgetName)
+                playerHUDOverlay.levelProgressRowLayout.widgetName)
             local tileSize = 100 -- temporary for now
             levelProgressTile:setWidth(tileSize)
             levelProgressTile:setHeight(tileSize)
@@ -366,6 +366,7 @@ function PlayerHUDOverlay:new(host)
             end
         elseif #RequirementTrackers > 0 then
             showAllRequirementsAchived()
+            UiOverlayManager:openOverlay(host, "LevelFailedOverlay")
         end
     end
 
@@ -623,19 +624,17 @@ function PlayerHUDOverlay:new(host)
                 elseif statusType == PlayerStatusType.DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED then
                 end
             end
-        else
-            if "LevelProgressChanged" == eventName then
-                assert(jsonArgs ~= nil and type(jsonArgs) == "string")
-                local parsedJson = json.decode(jsonArgs)
-                if parsedJson["level_progress_status_type"] ~= nil then
-                    local lvlProgressStatusType = tonumber(parsedJson["level_progress_status_type"])
-                    if lvlProgressStatusType == LevelProgressStatusType.CURRENT_STAGE_CHANGED then
-                        print("CURRENT_STAGE_CHANGED")
-                        playerHUDOverlay.onCurrentLevelProgressStageChanged()
-                    elseif lvlProgressStatusType == LevelProgressStatusType.REQUIREMENT_TRACKERS_STATUS_CHANGED then
-                        print("REQUIREMENT_TRACKERS_STATUS_CHANGED")
-                        playerHUDOverlay.onRequirementTrackersStatusChanged()
-                    end
+        elseif "LevelProgressChanged" == eventName then
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            local parsedJson = json.decode(jsonArgs)
+            if parsedJson["level_progress_status_type"] ~= nil then
+                local lvlProgressStatusType = tonumber(parsedJson["level_progress_status_type"])
+                if lvlProgressStatusType == LevelProgressStatusType.CURRENT_STAGE_CHANGED then
+                    print("CURRENT_STAGE_CHANGED")
+                    playerHUDOverlay.onCurrentLevelProgressStageChanged()
+                elseif lvlProgressStatusType == LevelProgressStatusType.REQUIREMENT_TRACKERS_STATUS_CHANGED then
+                    print("REQUIREMENT_TRACKERS_STATUS_CHANGED")
+                    playerHUDOverlay.onRequirementTrackersStatusChanged()
                 end
             end
         end

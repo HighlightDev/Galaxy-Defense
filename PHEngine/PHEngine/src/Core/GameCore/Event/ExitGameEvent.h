@@ -5,10 +5,10 @@
 namespace Event
 {
    struct ExitGameThreadEvent
-      : public TEvent<eEventThreadType::GAME_THREAD, NoDataEventPolicy>
+      : public TEvent<ExitGameThreadEvent, eEventThreadType::GAME_THREAD, NoDataEventPolicy>
    {
    public:
-      using Event_t = TEvent<eEventThreadType::GAME_THREAD, NoDataEventPolicy>::Event_t;
+      using Event_t = TEvent<ExitGameThreadEvent, eEventThreadType::GAME_THREAD, NoDataEventPolicy>::Event_t;
 
       std::string ToString() const override {
          return "ExitGameThreadEvent";

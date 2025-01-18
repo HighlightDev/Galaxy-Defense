@@ -6,10 +6,10 @@
 namespace Event
 {
     class WindowSizeChangedGameThreadEvent
-        : public TEvent<Event::eEventThreadType::GAME_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>
+        : public TEvent<WindowSizeChangedGameThreadEvent, Event::eEventThreadType::GAME_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>
     {
     public:
-        using Event_t = TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
+        using Event_t = TEvent<WindowSizeChangedGameThreadEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
 
         std::string ToString() const override
         {
@@ -18,10 +18,10 @@ namespace Event
     };
 
     class WindowSizeChangedLuaThreadEvent
-        : public TEvent<Event::eEventThreadType::LUA_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>
+        : public TEvent<WindowSizeChangedLuaThreadEvent, Event::eEventThreadType::LUA_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>
     {
     public:
-        using Event_t = TEvent<eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
+        using Event_t = TEvent<WindowSizeChangedLuaThreadEvent, eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
 
         std::string ToString() const override
         {

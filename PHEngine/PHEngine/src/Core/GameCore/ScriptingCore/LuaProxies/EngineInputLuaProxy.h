@@ -44,13 +44,13 @@ namespace EngineCore
 
             void CleanUp();
 
-            void ProcessEvent(const typename KeyboardButtonDownLuaThreadEvent::EventData_t &data) override;
+            void ProcessEvent(const KeyboardButtonDownLuaThreadEvent *sender, const typename KeyboardButtonDownLuaThreadEvent::EventData_t &data) override;
 
-            void ProcessEvent(const typename MouseMovedLuaThreadEvent::EventData_t &data) override;
+            void ProcessEvent(const MouseMovedLuaThreadEvent *sender, const typename MouseMovedLuaThreadEvent::EventData_t &data) override;
 
-            void ProcessEvent(const typename MouseScrollLuaThreadEvent::EventData_t &data) override;
+            void ProcessEvent(const MouseScrollLuaThreadEvent *sender, const typename MouseScrollLuaThreadEvent::EventData_t &data) override;
 
-            void ProcessEvent(const typename MouseButtonDownLuaThreadEvent::EventData_t &data) override;
+            void ProcessEvent(const MouseButtonDownLuaThreadEvent *sender, const typename MouseButtonDownLuaThreadEvent::EventData_t &data) override;
 
             void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
 

@@ -74,7 +74,7 @@ namespace EngineCore
       actorData.ComponentsData.emplace_back(data);
    }
 
-   void HumanoidPhysicsMovementComponent::ProcessEvent(const CameraTransformChangedGameThreadEvent::EventData_t &data)
+   void HumanoidPhysicsMovementComponent::ProcessEvent(const CameraTransformChangedGameThreadEvent* sender, const CameraTransformChangedGameThreadEvent::EventData_t &data)
    {
       auto &cameraPtr = std::get<0>(data);
 

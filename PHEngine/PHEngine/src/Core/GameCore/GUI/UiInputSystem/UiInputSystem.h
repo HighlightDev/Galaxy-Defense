@@ -49,7 +49,7 @@ namespace EngineCore
 
             void UnpausableTick(const float deltaTime) override;
 
-            void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
+            void ProcessEvent(const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
 
         private:
             void OnMousePressedTimerTimeout();

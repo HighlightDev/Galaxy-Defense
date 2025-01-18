@@ -195,7 +195,7 @@ namespace Game
       return mSelectedSpaceStationId;
    }
 
-   void UserInteractionController::ProcessEvent(const typename ChangeGameModeEvent::EventData_t &data)
+   void UserInteractionController::ProcessEvent(const ChangeGameModeEvent* sender, const typename ChangeGameModeEvent::EventData_t &data)
    {
       const eGameModeType newGameModeType = std::get<0>(data);
       if (mCurrentGameModeType != newGameModeType)

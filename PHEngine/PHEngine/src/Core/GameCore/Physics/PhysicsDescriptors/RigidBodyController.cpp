@@ -114,7 +114,7 @@ namespace EnginePhysics
       return bResult;
    }
 
-   void RigidBodyController::ProcessEvent(const Event::KinematicBodyMovedGameThreadEvent::EventData_t &data)
+   void RigidBodyController::ProcessEvent(const KinematicBodyMovedGameThreadEvent* sender, const Event::KinematicBodyMovedGameThreadEvent::EventData_t &data)
    {
       if (const auto &kinematicObjDescSp = std::get<0>(data).lock())
       {

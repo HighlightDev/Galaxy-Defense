@@ -206,7 +206,7 @@ namespace Game
         LaunchMisile(activeSpaceStationActor, activeSpaceStationPosition, projectileShootDirection, selectedMissileType);
     }
 
-    void CombatController::ProcessEvent(const typename PhysicsCollisionGameThreadEvent::EventData_t &data)
+    void CombatController::ProcessEvent(const PhysicsCollisionGameThreadEvent* sender, const typename PhysicsCollisionGameThreadEvent::EventData_t &data)
     {
         const ePhysicsCollisionStateType collisionEventType = std::get<0>(data);
         const ePhysicsBodyType physBodyType = std::get<1>(data);
@@ -306,7 +306,7 @@ namespace Game
         }
     }
 
-    void CombatController::ProcessEvent(const typename ElectroRayCollisionEvent::EventData_t &data)
+    void CombatController::ProcessEvent(const ElectroRayCollisionEvent* sender, const typename ElectroRayCollisionEvent::EventData_t &data)
     {
         const auto &eventSenderMissileWp = std::get<0>(data);
         const auto &collidedActorWp = std::get<1>(data);
@@ -334,7 +334,7 @@ namespace Game
         }
     }
 
-    void CombatController::ProcessEvent(const typename ElectroRaySphereContactCollisionEvent::EventData_t &data)
+    void CombatController::ProcessEvent(const ElectroRaySphereContactCollisionEvent* sender, const typename ElectroRaySphereContactCollisionEvent::EventData_t &data)
     {
         const auto &srcActorId = std::get<0>(data);
         const auto &collidedActorIds = std::move(std::get<1>(data));
@@ -375,7 +375,7 @@ namespace Game
         }
     }
 
-    void CombatController::ProcessEvent(const typename BroadcastGameThreadEvent::EventData_t &data)
+    void CombatController::ProcessEvent(const BroadcastGameThreadEvent* sender, const typename BroadcastGameThreadEvent::EventData_t &data)
     {
         const auto &eventHeader = std::get<0>(data);
         const auto &jsonParams = std::get<1>(data);

@@ -77,13 +77,13 @@ namespace Game
         void InitFromLevelData(const LevelData &levelData);
 
     protected:
-        void ProcessEvent(const typename PhysicsCollisionGameThreadEvent::EventData_t &data) override;
+        void ProcessEvent(const PhysicsCollisionGameThreadEvent* sender, const typename PhysicsCollisionGameThreadEvent::EventData_t &data) override;
 
-        void ProcessEvent(const typename ElectroRayCollisionEvent::EventData_t &data) override;
+        void ProcessEvent(const ElectroRayCollisionEvent* sender, const typename ElectroRayCollisionEvent::EventData_t &data) override;
 
-        void ProcessEvent(const typename ElectroRaySphereContactCollisionEvent::EventData_t &data) override;
+        void ProcessEvent(const ElectroRaySphereContactCollisionEvent* sender, const typename ElectroRaySphereContactCollisionEvent::EventData_t &data) override;
 
-        void ProcessEvent(const typename BroadcastGameThreadEvent::EventData_t &data) override;
+        void ProcessEvent(const BroadcastGameThreadEvent* sender, const typename BroadcastGameThreadEvent::EventData_t &data) override;
 
     private:
         void ProcessAiAction(); // todo: move this functionality to AI controller

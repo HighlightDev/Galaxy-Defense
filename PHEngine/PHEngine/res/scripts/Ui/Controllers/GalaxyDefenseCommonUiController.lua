@@ -28,7 +28,8 @@ local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
-local PlayerHUDOverlay = require("Ui/Overlays/PlayerHUDOverlay")
+local PlayerHUDOverlay = require("Ui/Overlays/CombatLevelOverlays/PlayerHUDOverlay")
+local LevelFailedOverlay = require("Ui/Overlays/CombatLevelOverlays/LevelFailedOverlay")
 local json = require("Ui/Core/3rdparty/json")
 
 GlobalContext = {
@@ -79,9 +80,14 @@ local function createPauseSettingsOverlay(host)
     return SettingsOverlay:new(host)
 end
 
+local function createLevelFailedOverlay(host)
+    return LevelFailedOverlay:new(host)
+end
+
 local function initialize(host)
     UiOverlays["PauseSettingsOverlay"] = createPauseSettingsOverlay(host)
     UiOverlays["PauseMenuOverlay"] = createPauseOverlay(host)
+    UiOverlays["LevelFailedOverlay"] = createLevelFailedOverlay(host)
     UiBackgroundOverlays["PlayerHUDOverlay"] = createPlayerHUDOverlay(host)
 end
 

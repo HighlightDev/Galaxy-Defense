@@ -12,9 +12,9 @@ using namespace EngineCore;
 namespace Event
 {
    struct MouseButtonDownRootEvent
-       : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>
+       : public TEvent<MouseButtonDownRootEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>
    {
-      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>::Event_t;
+      using Event_t = TEvent<MouseButtonDownRootEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>::Event_t;
 
       std::string ToString() const override
       {
@@ -23,10 +23,10 @@ namespace Event
    };
 
    struct MouseButtonDownGameThreadEvent
-       : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>
+       : public TEvent<MouseButtonDownGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>
    {
    public:
-      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>::Event_t;
+      using Event_t = TEvent<MouseButtonDownRootEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>::Event_t;
 
       std::string ToString() const override
       {
@@ -35,10 +35,10 @@ namespace Event
    };
 
    struct MouseButtonDownLuaThreadEvent
-       : public TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>
+       : public TEvent<MouseButtonDownLuaThreadEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>
    {
    public:
-      using Event_t = TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>::Event_t;
+      using Event_t = TEvent<MouseButtonDownLuaThreadEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>::Event_t;
 
       std::string ToString() const override
       {

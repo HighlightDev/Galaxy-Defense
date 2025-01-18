@@ -35,7 +35,7 @@ namespace Graphics
 
       void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
 
-      void ProcessEvent(const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t& data) override;
+      void ProcessEvent(const TextureAtlasGeneratedGameThreadEvent* sender, const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t& data) override;
 
       six_mat4x4 GetShadowViewMatrices() const;
 

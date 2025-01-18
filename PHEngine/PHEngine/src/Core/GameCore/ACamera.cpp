@@ -142,7 +142,7 @@ namespace EngineCore
       }
    }
 
-   void ACamera::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
+   void ACamera::ProcessEvent(const WindowSizeChangedGameThreadEvent *sender, const WindowSizeChangedGameThreadEvent::EventData_t &data)
    {
       const auto newViewPortInfo = std::get<0>(data);
       mViewPort = newViewPortInfo;
