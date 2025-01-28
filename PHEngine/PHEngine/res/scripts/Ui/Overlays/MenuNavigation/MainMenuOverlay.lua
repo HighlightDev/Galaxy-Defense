@@ -69,7 +69,7 @@ function MainMenuOverlay:new(host)
 
     local newGameButton = LabelButton:new(host, mainMenuOverlay_1, "nimbus_mono", "NewGameButton")
     mainMenuOverlay_1:addCompoundWidget(newGameButton)
-    newGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    newGameButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             newGameButton:setButtonColorHexValue(MainMenuOverlay.hoveredButtonColor)
         else
@@ -83,7 +83,7 @@ function MainMenuOverlay:new(host)
 
     local editorLvlButton = LabelButton:new(host, mainMenuOverlay_1, "nimbus_mono", "EditorLvlButton")
     mainMenuOverlay_1:addCompoundWidget(editorLvlButton)
-    editorLvlButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    editorLvlButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             editorLvlButton:setButtonColorHexValue(MainMenuOverlay.hoveredButtonColor)
         else
@@ -97,7 +97,7 @@ function MainMenuOverlay:new(host)
 
     local settingsButton = LabelButton:new(host, mainMenuOverlay_1, "nimbus_mono", "SettingsButton")
     mainMenuOverlay_1:addCompoundWidget(settingsButton)
-    settingsButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    settingsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             settingsButton:setButtonColorHexValue(MainMenuOverlay.hoveredButtonColor)
         else
@@ -110,7 +110,7 @@ function MainMenuOverlay:new(host)
     exitGameButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
     end)
-    exitGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    exitGameButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             exitGameButton:setButtonColorHexValue(MainMenuOverlay.hoveredButtonColor)
         else

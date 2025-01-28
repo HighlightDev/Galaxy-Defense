@@ -76,7 +76,7 @@ function PauseOverlay:new(host)
         UiOverlayManager:closeCurrentOverlay(host)
         UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
     end)
-    continueButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    continueButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             continueButton:setButtonColorHexValue(PauseOverlay.hoveredButtonColor)
         else
@@ -89,7 +89,7 @@ function PauseOverlay:new(host)
     settingsButton:subscribeOnMouseInputClickedCallback(function()
         UiOverlayManager:openOverlay(host, "PauseSettingsOverlay")
     end)
-    settingsButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    settingsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             settingsButton:setButtonColorHexValue(PauseOverlay.hoveredButtonColor)
         else
@@ -99,7 +99,7 @@ function PauseOverlay:new(host)
 
     local exitToMainMenuButton = LabelButton:new(host, pauseMenuOverlay, "nimbus_mono", "ExitToMainMenuButton")
     pauseMenuOverlay:addCompoundWidget(exitToMainMenuButton)
-    exitToMainMenuButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    exitToMainMenuButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             exitToMainMenuButton:setButtonColorHexValue(PauseOverlay.hoveredButtonColor)
         else
@@ -116,7 +116,7 @@ function PauseOverlay:new(host)
     exitGameButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
     end)
-    exitGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    exitGameButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             exitGameButton:setButtonColorHexValue(PauseOverlay.hoveredButtonColor)
         else

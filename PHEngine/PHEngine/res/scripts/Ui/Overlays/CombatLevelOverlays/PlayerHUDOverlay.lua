@@ -43,17 +43,6 @@ PlayerStatusType = {
     SELECTED_TOWER_CHANGED = 6
 }
 
-LevelProgressStatusType = {
-    NONE = 0,
-    CURRENT_STAGE_CHANGED = 1,
-    REQUIREMENT_TRACKERS_STATUS_CHANGED = 2
-}
-
-GameModeType = {
-    COMBAT = 0,
-    SPACE_STATION_PLACEMENT = 1
-}
-
 MissileType = {
     NONE = 0,
     BOMB = 1,
@@ -75,12 +64,7 @@ PlayerHUDOverlay = {
     inactiveTileColor = { x = 0.85, y = 0.58, z = 0.15 },
     activeTileColor = { x = 1.0, y = 0.0, z = 0.0 },
     missilesCountLabelColor = 0xFFFFFF,
-    levelProgressContainer = nil,
-    levelProgressRowLayout = nil
 }
-
-RequirementTrackers = {}
-RequirementTrackersIdle = {}
 
 local function invertTable(table)
     local s = {}
@@ -91,27 +75,6 @@ local function invertTable(table)
 end
 
 local InvertedMissileTable = invertTable(MissileType)
-
-local function showTileRequirementAchived(requirementTile)
-    requirementTile:setTextureSource("check.png")
-    requirementTile:setLabelVisibility(false)
-    requirementTile:setFlipImage(true)
-    requirementTile:setImageColorHexValue(0xFFFFFF)
-    requirementTile:setUseImageCustomColor(true)
-end
-
-local function showTileRequirementFailed(requirementTile)
-    requirementTile:setTextureSource("cancel.png")
-    requirementTile:setLabelVisibility(false)
-    requirementTile:setImageColorHexValue(0xFFFFFF)
-    requirementTile:setUseImageCustomColor(true)
-end
-
-local function showAllRequirementsAchived()
-    for _, requirementTile in pairs(RequirementTrackers) do
-        showTileRequirementAchived(requirementTile)
-    end
-end
 
 local function getSelectedMissileType(host)
     return tonumber(_GetSelectedMissileType(host))
@@ -149,81 +112,6 @@ local function onWeaponButtonPressed(host, buttonTypeName)
             action = "button_press",
             button_type = buttonTypeName
         }))
-end
-
-local function updateRequirementTileData(host, levelProgressTile, trackerJson)
-    local name = trackerJson["name"]
-    if name == "DestroySpaceshipsTracker" then
-        local leftSpaceshipsCount = trackerJson["left_to_destroy_spaceships_count"]
-        if tonumber(leftSpaceshipsCount) > 0 then
-            levelProgressTile:setLabelText(leftSpaceshipsCount)
-        else
-            showTileRequirementAchived(levelProgressTile)
-        end
-    elseif name == "MissedSpaceshipsTracker" then
-        local doNotMissCount = tonumber(trackerJson["not_to_miss_spaceships_count"])
-        local missedCount = tonumber(trackerJson["missed_spaceships_count"])
-        local stillCanMiss = math.max(doNotMissCount - missedCount, 0)
-        if stillCanMiss > 0 then
-            levelProgressTile:setLabelText(tostring(stillCanMiss))
-        else
-            showTileRequirementFailed(levelProgressTile)
-            UiOverlayManager:openOverlay(host, "LevelFailedOverlay")
-            EventsHelper:sendPauseGameThreadEvent(host,
-                EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
-        end
-    else
-        assert(false, "Not supported requirement: " .. name)
-    end
-end
-
-local function fillRequirementTilesPool(host, playerHUDOverlay, count)
-    for i = 1, count, 1 do
-        local levelProgressTile = ImageAndLabelTile:new(host, playerHUDOverlay)
-        playerHUDOverlay:addCompoundWidget(levelProgressTile)
-        RequirementTrackersIdle[#RequirementTrackersIdle + 1] = levelProgressTile
-
-        levelProgressTile:subscribeOnLuaProxiesReady(function(host)
-            levelProgressTile:setParent(host, playerHUDOverlay:getOverlayCanvas().widgetName,
-                playerHUDOverlay.levelProgressRowLayout.widgetName)
-            local tileSize = 100 -- temporary for now
-            levelProgressTile:setWidth(tileSize)
-            levelProgressTile:setHeight(tileSize)
-            levelProgressTile:setTextureSource("space_station_img.png")
-            levelProgressTile:setBackgroundTileOpacity(1.0)
-            levelProgressTile:setIsVisible(false)
-        end)
-    end
-end
-
-local function updateRequirementTiles(host, playerHUDOverlay, requirementTrackers)
-    -- move active requirements tiles to idle state
-    for _, activeTrackerTile in pairs(RequirementTrackers) do
-        activeTrackerTile:setIsVisible(false)
-        RequirementTrackersIdle[#RequirementTrackersIdle + 1] = activeTrackerTile
-    end
-    RequirementTrackers = {}
-
-    local action = function()
-        for index = 1, #requirementTrackers, 1 do
-            local trackerTile = RequirementTrackersIdle[index]
-            table.remove(RequirementTrackersIdle, index)
-            RequirementTrackers[index] = trackerTile
-            local trackerJson = requirementTrackers[index]
-            updateRequirementTileData(host, trackerTile, trackerJson)
-            trackerTile:setIsVisible(true)
-        end
-    end
-
-    local predicate = function()
-        return playerHUDOverlay.allWidgetLuaProxiesReady
-    end
-
-    if predicate() then
-        action()
-    else
-        playerHUDOverlay:addActionWithPredicate(action, predicate)
-    end
 end
 
 function PlayerHUDOverlay:new(host)
@@ -298,16 +186,6 @@ function PlayerHUDOverlay:new(host)
     MissileWidgetsMap.ELECTRO_RAY = weaponTile3
     MissileWidgetsMap.BLACK_HOLE = weaponTile4
 
-    local levelProgressContainer = UiRectangle:new(host, "LvlProgressContainer")
-    playerHUDOverlay:addWidget(levelProgressContainer)
-    playerHUDOverlay.levelProgressContainer = levelProgressContainer
-
-    local levelProgressRowLayout = UiRowLayout:new(host, "LvlProgressRow")
-    playerHUDOverlay:addWidget(levelProgressRowLayout)
-    playerHUDOverlay.levelProgressRowLayout = levelProgressRowLayout
-
-    fillRequirementTilesPool(host, playerHUDOverlay, 10)
-
     playerHUDOverlay.testDamage = function()
         PlayerHUDOverlay.testAvailableHearts = PlayerHUDOverlay.testAvailableHearts - 1
         if PlayerHUDOverlay.testAvailableHearts <= 0 then
@@ -367,37 +245,6 @@ function PlayerHUDOverlay:new(host)
                 local activeWidgetsTable = MissileWidgetsMap[missileTypeName]
                 if activeWidgetsTable ~= nil then
                     activeWidgetsTable:setLabelText(tostring(missilesCount))
-                end
-            end
-        end
-    end
-
-    playerHUDOverlay.onCurrentLevelProgressStageChanged = function()
-        local currentProgressRequirementsCount = _GetCurrentProgressRequirementsCount(host)
-        print("PlayerHUDOverlay::onCurrentLevelProgressStageChanged : req count: " ..
-            tostring(currentProgressRequirementsCount))
-
-        if currentProgressRequirementsCount > 0 then
-            local requirementTrackersJson = _GetCurrentProgressStageRequirementTrackers(host)
-            if requirementTrackersJson ~= nil and requirementTrackersJson ~= "" then
-                local parsedJson = json.decode(requirementTrackersJson)
-                updateRequirementTiles(host, playerHUDOverlay, parsedJson)
-            end
-        elseif #RequirementTrackers > 0 then
-            showAllRequirementsAchived()
-        end
-    end
-
-    playerHUDOverlay.onRequirementTrackersStatusChanged = function()
-        local requirementTrackersJson = _GetCurrentProgressStageRequirementTrackers(host)
-        if requirementTrackersJson ~= nil and requirementTrackersJson ~= "" then
-            local parsedJson = json.decode(requirementTrackersJson)
-            if parsedJson ~= nil and parsedJson ~= "" then
-                assert(#parsedJson == #RequirementTrackers)
-                for index, trackerJsonRoot in pairs(parsedJson) do
-                    local requirementTrackerTile = RequirementTrackers[index]
-                    assert(requirementTrackerTile ~= nil)
-                    updateRequirementTileData(host, requirementTrackerTile, trackerJsonRoot)
                 end
             end
         end
@@ -608,21 +455,6 @@ function PlayerHUDOverlay:new(host)
         lifeImage5:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
             .widgetName)
 
-        levelProgressContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
-        levelProgressContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            playerHUDOverlayCanvas.widgetName, 10)
-        levelProgressContainer:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-            playerHUDOverlayCanvas.widgetName, 10)
-        local levelProgressContainerWidth = windowWidth / 5.0
-        levelProgressContainer:setWidth(levelProgressContainerWidth)
-        levelProgressContainer:setHeight(levelProgressContainerWidth * 0.5)
-        levelProgressContainer:setOpacity(0.3)
-
-        levelProgressRowLayout:setParent(host, playerHUDOverlayCanvas.widgetName, levelProgressContainer.widgetName)
-        levelProgressRowLayout:fill(levelProgressContainer.widgetName)
-        levelProgressRowLayout:setSpacing(35)
-        levelProgressRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
-
         playerHUDOverlay:onMissilesDataChanged()   -- initialize all data missiles widgets
         playerHUDOverlay:onCurrentMissileChanged() -- initialize current missile widget
     end)
@@ -640,19 +472,6 @@ function PlayerHUDOverlay:new(host)
                 elseif statusType == PlayerStatusType.MISSILES_COUNT_CHANGED then
                     playerHUDOverlay.onMissilesDataChanged()
                 elseif statusType == PlayerStatusType.DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED then
-                end
-            end
-        elseif "LevelProgressChanged" == eventName then
-            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
-            local parsedJson = json.decode(jsonArgs)
-            if parsedJson["level_progress_status_type"] ~= nil then
-                local lvlProgressStatusType = tonumber(parsedJson["level_progress_status_type"])
-                if lvlProgressStatusType == LevelProgressStatusType.CURRENT_STAGE_CHANGED then
-                    print("CURRENT_STAGE_CHANGED")
-                    playerHUDOverlay.onCurrentLevelProgressStageChanged()
-                elseif lvlProgressStatusType == LevelProgressStatusType.REQUIREMENT_TRACKERS_STATUS_CHANGED then
-                    print("REQUIREMENT_TRACKERS_STATUS_CHANGED")
-                    playerHUDOverlay.onRequirementTrackersStatusChanged()
                 end
             end
         end

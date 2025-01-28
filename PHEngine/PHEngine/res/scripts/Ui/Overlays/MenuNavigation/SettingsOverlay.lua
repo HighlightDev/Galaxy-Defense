@@ -79,7 +79,7 @@ function SettingsOverlay:new(host)
     applyButton:subscribeOnMouseInputClickedCallback(function()
         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
     end)
-    applyButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    applyButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             applyButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
         else
@@ -95,7 +95,7 @@ function SettingsOverlay:new(host)
     cancelButton:subscribeOnMouseInputClickedCallback(function()
         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
     end)
-    cancelButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    cancelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             cancelButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
         else

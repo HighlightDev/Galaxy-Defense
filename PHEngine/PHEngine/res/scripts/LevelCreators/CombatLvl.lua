@@ -69,6 +69,8 @@ function CreateLevel(host)
 		,ufo.obj
 		,check.png
 		,cancel.png
+		,plus.png
+		,minus.png
 		]])
 
 	_CreateActor(host, "Actor",

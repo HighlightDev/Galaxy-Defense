@@ -8,6 +8,7 @@
 #include "Implementation/Actors/BackgroundSpaceObjectActor.h"
 #include "Implementation/Events/ElectroRayCollisionEvent.h"
 #include "Implementation/Events/ElectroRaySphereContactCollisionEvent.h"
+#include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Implementation/GameObjectsType.h"
@@ -17,6 +18,7 @@
 #include "Implementation/Levels/LevelData.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
+#include "Implementation/GameModeTypeEnum.h"
 #include "Implementation/MissileType.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/CommonCore/Timer.h"
@@ -41,6 +43,7 @@ namespace Game
                              public ElectroRayCollisionEvent,
                              public ElectroRaySphereContactCollisionEvent,
                              public BroadcastGameThreadEvent,
+                             public ChangeGameModeEvent,
                              public std::enable_shared_from_this<CombatController>
     {
         std::weak_ptr<Scene> mScene;
@@ -54,6 +57,8 @@ namespace Game
         BoundingBox3D mLevelBounds;
 
         std::unordered_map<std::string, GameThreadTimer> mSpawnEnemyOnRouteTimers;
+
+        eGameModeType mGameModeType{eGameModeType::INIT};
 
     public:
         CombatController(const std::weak_ptr<Scene> &scene);
@@ -77,13 +82,15 @@ namespace Game
         void InitFromLevelData(const LevelData &levelData);
 
     protected:
-        void ProcessEvent(const PhysicsCollisionGameThreadEvent* sender, const typename PhysicsCollisionGameThreadEvent::EventData_t &data) override;
+        void ProcessEvent(const PhysicsCollisionGameThreadEvent *sender, const typename PhysicsCollisionGameThreadEvent::EventData_t &data) override;
 
-        void ProcessEvent(const ElectroRayCollisionEvent* sender, const typename ElectroRayCollisionEvent::EventData_t &data) override;
+        void ProcessEvent(const ElectroRayCollisionEvent *sender, const typename ElectroRayCollisionEvent::EventData_t &data) override;
 
-        void ProcessEvent(const ElectroRaySphereContactCollisionEvent* sender, const typename ElectroRaySphereContactCollisionEvent::EventData_t &data) override;
+        void ProcessEvent(const ElectroRaySphereContactCollisionEvent *sender, const typename ElectroRaySphereContactCollisionEvent::EventData_t &data) override;
 
-        void ProcessEvent(const BroadcastGameThreadEvent* sender, const typename BroadcastGameThreadEvent::EventData_t &data) override;
+        void ProcessEvent(const BroadcastGameThreadEvent *sender, const typename BroadcastGameThreadEvent::EventData_t &data) override;
+
+        void ProcessEvent(const ChangeGameModeEvent *sender, const typename ChangeGameModeEvent::EventData_t &data) override;
 
     private:
         void ProcessAiAction(); // todo: move this functionality to AI controller
@@ -98,5 +105,7 @@ namespace Game
         void UpdateMissilesData();
 
         void OnReadyToShoot();
+
+        void OnCombatPreparationCompleted();
     };
 }

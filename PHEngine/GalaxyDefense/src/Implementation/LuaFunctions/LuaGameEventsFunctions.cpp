@@ -29,12 +29,14 @@ namespace Game
    {
       LuaMainPlayerStatusChangedEvent::GetInstance()->RemoveListener(LuaMainPlayerStatusChangedEvent::GetInstanceId());
       LuaLevelProgressChangedEvent::GetInstance()->RemoveListener(LuaLevelProgressChangedEvent::GetInstanceId());
+      LuaChangeGameModeEvent::GetInstance()->RemoveListener(LuaChangeGameModeEvent::GetInstanceId());
    }
 
    void LuaGameEventsFunctions::Initialize()
    {
       LuaMainPlayerStatusChangedEvent::GetInstance()->AddListener(shared_from_this());
       LuaLevelProgressChangedEvent::GetInstance()->AddListener(shared_from_this());
+      LuaChangeGameModeEvent::GetInstance()->AddListener(shared_from_this());
    }
 
    void LuaGameEventsFunctions::SetScene(const std::weak_ptr<Scene> &sceneWp)
@@ -64,7 +66,7 @@ namespace Game
       LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent"), void(int32_t, int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent, this, std::placeholders::_1), "_SendChangeEditModeGameThreadEvent");
    }
 
-   void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent* sender, const LuaMainPlayerStatusChangedEvent::EventData_t &data)
+   void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent *sender, const LuaMainPlayerStatusChangedEvent::EventData_t &data)
    {
       LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(),
                                                                          "System_OnGameEventTriggered",
@@ -82,13 +84,34 @@ namespace Game
 #endif
    }
 
-   void LuaGameEventsFunctions::ProcessEvent(const LuaLevelProgressChangedEvent* sender, const LuaLevelProgressChangedEvent::EventData_t &data)
+   void LuaGameEventsFunctions::ProcessEvent(const LuaLevelProgressChangedEvent *sender, const LuaLevelProgressChangedEvent::EventData_t &data)
    {
       LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(),
                                                                          "System_OnGameEventTriggered",
                                                                          (void *)mOwnerPtr,
                                                                          std::string("LevelProgressChanged"),
                                                                          std::get<1>(data));
+#ifdef DEBUG
+      const auto &errorMsg = mOwnerPtr->GetLuaInstance().GetErrorMessageAt(-1);
+      if (errorMsg.size() > 1)
+      {
+         std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
+         LogInfo("ERROR: Lua script execution failed:", errorMsg);
+         assert(false);
+      }
+#endif
+   }
+
+   void LuaGameEventsFunctions::ProcessEvent(const LuaChangeGameModeEvent *sender, const LuaChangeGameModeEvent::EventData_t &data)
+   {
+      nlohmann::json gameModeJson;
+      gameModeJson["game_mode_type"] = std::to_string(static_cast<int32_t>(std::get<0>(data)));
+
+      LuaFunctionInvoker<void(void *, std::string, int32_t)>::Invoke(mOwnerPtr->GetLuaInstance(),
+                                                                     "System_OnGameEventTriggered",
+                                                                     (void *)mOwnerPtr,
+                                                                     std::string("GameModeChanged"),
+                                                                     gameModeJson.dump());
 #ifdef DEBUG
       const auto &errorMsg = mOwnerPtr->GetLuaInstance().GetErrorMessageAt(-1);
       if (errorMsg.size() > 1)
@@ -135,6 +158,8 @@ namespace Game
          sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [gameModeType]()
                                                                            { ChangeGameModeEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, static_cast<eGameModeType>(gameModeType)); });
       }
+
+      LuaChangeGameModeEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, static_cast<eGameModeType>(gameModeType));
    }
 
    void LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, int32_t /*edit mode type*/> &data)

@@ -38,7 +38,7 @@ namespace Game
 
       std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
 
-      eGameModeType mCurrentGameModeType{eGameModeType::COMBAT};
+      eGameModeType mCurrentGameModeType{eGameModeType::INIT};
 
       std::weak_ptr<ThirdPersonCamera> mMainSceneCamera;
 

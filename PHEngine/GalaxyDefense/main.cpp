@@ -28,9 +28,6 @@ using namespace TinyLogger;
 bool bShaderRecompile = false;
 bool bLuaScriptsRestart = false;
 
-bool bShowCursor = true;
-bool bMouseButtonPressed = false;
-
 static std::shared_ptr<InputManager> engineInputManager = nullptr;
 
 void get_window_pos(GLFWwindow *window)
@@ -65,19 +62,6 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
   else if (GLFW_RELEASE == action)
   {
     engineInputManager->TriggerOnMouseButtonKeyUp((eMouseKeys)button);
-  }
-
-  if (GLFW_MOUSE_BUTTON_2 == button)
-  {
-    if (GLFW_PRESS == action)
-    {
-      bMouseButtonPressed = true;
-      bShowCursor = !bShowCursor;
-    }
-    else if (GLFW_RELEASE == action)
-    {
-      bMouseButtonPressed = false;
-    }
   }
 }
 
@@ -232,6 +216,7 @@ int32_t main(int32_t argc, char **argv)
   glfwSetMouseButtonCallback(window, mouse_button_callback);
   glfwSetWindowSizeCallback(window, window_size_changed_callback);
   glfwSetWindowPosCallback(window, window_position_changed_callback);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
   GLenum initResult = glewInit();
 
@@ -256,11 +241,6 @@ int32_t main(int32_t argc, char **argv)
       // Poll for and process events
       glfwPollEvents();
 #ifdef DEBUG
-
-      if (bMouseButtonPressed)
-      {
-        glfwSetInputMode(window, GLFW_CURSOR, bShowCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-      }
 
       if (bShaderRecompile)
       {

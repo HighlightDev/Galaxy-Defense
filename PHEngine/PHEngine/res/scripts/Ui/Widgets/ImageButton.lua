@@ -188,6 +188,11 @@ function ImageButton:subscribeOnMouseInputClickedCallback(callback)
     self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
 end
 
+function ImageButton:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
+    assert(callback ~= nil and type(callback) == "function")
+    self.backgroundTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
+end
+
 function ImageButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
                                   animatedPropertyType, propertySrcValue, propertyDstValue)
     assert(host ~= nil and type(host) == "userdata")

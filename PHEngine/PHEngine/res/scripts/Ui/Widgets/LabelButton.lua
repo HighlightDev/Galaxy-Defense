@@ -182,9 +182,9 @@ function LabelButton:subscribeOnMouseInputClickedCallback(callback)
     self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
 end
 
-function LabelButton:setOnMouseInputCursorHoverStateChangedCallback(callback)
+function LabelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.backgroundTile:setOnMouseInputCursorHoverStateChangedCallback(callback)
+    self.backgroundTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
 end
 
 function LabelButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,

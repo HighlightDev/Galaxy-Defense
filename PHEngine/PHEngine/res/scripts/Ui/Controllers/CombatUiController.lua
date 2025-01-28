@@ -29,8 +29,16 @@ local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
 local PlayerHUDOverlay = require("Ui/Overlays/CombatLevelOverlays/PlayerHUDOverlay")
+local CombatOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatOverlay")
 local LevelFailedOverlay = require("Ui/Overlays/CombatLevelOverlays/LevelFailedOverlay")
+local CombatPreparationOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatPreparationOverlay")
 local json = require("Ui/Core/3rdparty/json")
+
+GameModeType = {
+    INIT = 0,
+    COMBAT = 1,
+    SPACE_STATION_PLACEMENT = 2
+}
 
 GlobalContext = {
 }
@@ -42,6 +50,7 @@ UiBackgroundOverlays = {
 }
 
 local pressButtonCooldown = 0.0
+local gameModeType = GameModeType.INIT
 
 local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
     if keyboardPressedKeyNames ~= nil then
@@ -49,18 +58,17 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
             if value == "Escape" then
                 if pressButtonCooldown >= 0.5 then
                     pressButtonCooldown = 0.0
-                    if "PauseMenuOverlay" == UiOverlayManager:getCurrentOverlayName(host) then
+                    local currentOverlayName = UiOverlayManager:getCurrentOverlayName(host)
+                    if "PauseMenuOverlay" == currentOverlayName then
                         EventsHelper:sendPauseGameThreadEvent(host,
                             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
                         UiOverlayManager:closeCurrentOverlay(host)
-                        -- restore active background overlays
-                        --UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
-                    else
+                        UiOverlayManager:openBackgroundOverlay(host, "CombatOverlay")
+                    elseif "LevelFailedOverlay" ~= currentOverlayName then
                         EventsHelper:sendPauseGameThreadEvent(host,
                             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
                         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
-                        --store active background overlays
-                        --UiOverlayManager:closeBackgroundOverlay(host, "PlayerHUDOverlay")
+                        UiOverlayManager:closeBackgroundOverlay(host, "CombatOverlay")
                     end
                 end
             end
@@ -84,11 +92,21 @@ local function createLevelFailedOverlay(host)
     return LevelFailedOverlay:new(host)
 end
 
+local function createCombatOverlay(host)
+    return CombatOverlay:new(host)
+end
+
+local function createCombatPreparationOverlay(host)
+    return CombatPreparationOverlay:new(host)
+end
+
 local function initialize(host)
     UiOverlays["PauseSettingsOverlay"] = createPauseSettingsOverlay(host)
     UiOverlays["PauseMenuOverlay"] = createPauseOverlay(host)
     UiOverlays["LevelFailedOverlay"] = createLevelFailedOverlay(host)
     UiBackgroundOverlays["PlayerHUDOverlay"] = createPlayerHUDOverlay(host)
+    UiBackgroundOverlays["CombatOverlay"] = createCombatOverlay(host)
+    UiBackgroundOverlays["CombatPreparationOverlay"] = createCombatPreparationOverlay(host)
 end
 
 function System_OnStart(host)
@@ -163,6 +181,19 @@ function System_OnGameEventTriggered(host, eventName, jsonArgs)
                     else
                         UiOverlayManager:closeBackgroundOverlay(host, "PlayerHUDOverlay")
                     end
+                end
+            end
+        end
+    elseif "GameModeChanged" == eventName then
+        assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+        local parsedJson = json.decode(jsonArgs)
+        local newGameModeType = tonumber(parsedJson["game_mode_type"])
+        if newGameModeType ~= nil then
+            if gameModeType ~= newGameModeType then
+                if GameModeType.SPACE_STATION_PLACEMENT == newGameModeType then
+                    UiOverlayManager:openOverlay(host, "CombatPreparationOverlay")
+                elseif GameModeType.COMBAT == newGameModeType then
+                    UiOverlayManager:openBackgroundOverlay(host, "CombatOverlay")
                 end
             end
         end

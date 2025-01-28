@@ -22,4 +22,16 @@ namespace Event
       }
    };
 
+    class LuaChangeGameModeEvent
+       : public TEvent<LuaChangeGameModeEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<eGameModeType>>
+   {
+   public:
+      using Event_t = TEvent<LuaChangeGameModeEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<eGameModeType>>::Event_t;
+
+      std::string ToString() const override
+      {
+         return "LuaChangeGameModeEvent";
+      }
+   };
+
 }

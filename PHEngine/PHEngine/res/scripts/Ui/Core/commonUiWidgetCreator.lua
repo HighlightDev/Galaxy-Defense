@@ -56,7 +56,7 @@ end
 function CommonUiWidgetCreator:destroyUiWidget(host, luaProxyId)
     assert(host ~= nil)
     assert(luaProxyId ~= nil and type(luaProxyId) == "number" and luaProxyId > -1)
-    print("CommonUiWidgetCreator::destroyUiWidget => luaProxyId: " .. tostring(luaProxyId))
+    --print("CommonUiWidgetCreator::destroyUiWidget => luaProxyId: " .. tostring(luaProxyId))
     _DestroyCommonUiWidget(host, luaProxyId)
 end
 

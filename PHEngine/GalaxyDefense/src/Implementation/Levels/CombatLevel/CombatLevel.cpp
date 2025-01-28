@@ -65,7 +65,7 @@ namespace Game
        : LevelBase("CombatLevel")
    {
       Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::ElectroRayCollisionEvent, Event::ElectroRaySphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent, Event::ChangeGameModeEvent, Event::LevelProgressChangedEvent>();
-      Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent, Event::LuaLevelProgressChangedEvent>();
+      Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent, Event::LuaLevelProgressChangedEvent, Event::LuaChangeGameModeEvent>();
    }
 
    CombatLevel::~CombatLevel()
@@ -212,9 +212,9 @@ namespace Game
 
    void CombatLevel::PostPlayLevelFinished()
    {
-      Base::PostPlayLevelFinished();
       mCombatController->PostPlayLevelFinished();
       mUiController->PostPlayLevelFinished();
+      Base::PostPlayLevelFinished();
    }
 
    void CombatLevel::InitLevel()

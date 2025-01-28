@@ -36,11 +36,6 @@ local LabelButton = require("Ui/Widgets/LabelButton")
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EventsHelper = require("Ui/Core/eventsHelper")
 
-GameModeType = {
-    COMBAT = 0,
-    SPACE_STATION_PLACEMENT = 1
-}
-
 LevelFailedOverlay = {
     buttonColor = 0x403649,
     hoveredButtonColor = 0x201b24,
@@ -79,7 +74,7 @@ function LevelFailedOverlay:new(host)
     restartButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendRestartLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
     end)
-    restartButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    restartButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             restartButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
         else
@@ -93,7 +88,7 @@ function LevelFailedOverlay:new(host)
         EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "MainMenuLevel")
     end)
-    exitToMainMenuButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    exitToMainMenuButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             exitToMainMenuButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
         else

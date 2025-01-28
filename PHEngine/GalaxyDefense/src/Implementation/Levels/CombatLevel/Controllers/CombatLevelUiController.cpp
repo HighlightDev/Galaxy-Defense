@@ -97,7 +97,7 @@ namespace Game
             if (const auto &luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
             {
                 static constexpr uint64_t functionId = Hash64_CT("CombatLevelUiController::Initialize");
-                const auto &luaScriptExecutor = std::make_shared<LuaCombatLevelUiControllerExecutor>("Ui/Controllers/GalaxyDefenseCommonUiController.lua",
+                const auto &luaScriptExecutor = std::make_shared<LuaCombatLevelUiControllerExecutor>("Ui/Controllers/CombatUiController.lua",
                                                                                                      mLevelProgressController);
                 luaScriptExecutor->Initialize();
                 mExecutorId = luaScriptExecutor->GetUId();
