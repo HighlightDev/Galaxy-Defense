@@ -58,6 +58,7 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OpenOverlay"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OpenOverlay, this, std::placeholders::_1), "_OpenOverlay");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OpenBackgroundOverlay"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OpenBackgroundOverlay, this, std::placeholders::_1), "_OpenBackgroundOverlay");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CloseCurrentOverlay"), void()>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CloseCurrentOverlay, this, std::placeholders::_1), "_CloseCurrentOverlay");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CloseOverlayAndClearHistory"), void()>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CloseOverlayAndClearHistory, this, std::placeholders::_1), "_CloseOverlayAndClearHistory");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CloseBackgroundOverlay"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CloseBackgroundOverlay, this, std::placeholders::_1), "_CloseBackgroundOverlay");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CreateCommonUiWidget"), int32_t(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CreateCommonUiWidget, this, std::placeholders::_1), "_CreateCommonUiWidget");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::DestroyCommonUiWidget"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::DestroyCommonUiWidget, this, std::placeholders::_1), "_DestroyCommonUiWidget");
@@ -118,6 +119,14 @@ namespace EngineCore
          }
       }
 
+      void LuaCommonUiFunctions::CloseOverlayAndClearHistory(const std::tuple<> &emptyData)
+      {
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            luaProcessorSp->GetOverlayManagerLuaProxy()->CloseOverlayAndClearHistory();
+         }
+      }
+
       void LuaCommonUiFunctions::CloseBackgroundOverlay(const std::tuple<std::string> &overlayName)
       {
          const auto &overlayToClose = std::get<0>(overlayName);
@@ -144,7 +153,7 @@ namespace EngineCore
          const auto luaProxyId = std::get<0>(data);
          if (const auto &sceneSp = mSceneWp.lock())
          {
-            const auto& replicatorSp = sceneSp->GetEngineToLuaReplicatorByLuaProxyId(luaProxyId);
+            const auto &replicatorSp = sceneSp->GetEngineToLuaReplicatorByLuaProxyId(luaProxyId);
             sceneSp->UnregisterEngineToLuaReplicator(replicatorSp->GetReplicatorId());
          }
       }

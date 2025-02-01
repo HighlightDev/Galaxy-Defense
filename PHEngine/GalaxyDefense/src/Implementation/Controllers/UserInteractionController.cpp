@@ -16,10 +16,14 @@
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
+#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
 
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Implementation/Levels/CombatLevel/SmartPicker.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
+
+#include <json/json.hpp>
 
 using namespace IO;
 using namespace Graphics;
@@ -44,12 +48,14 @@ namespace Game
 
    UserInteractionController::~UserInteractionController()
    {
-      ChangeGameModeEvent::GetInstance()->RemoveListener(GetInstanceId());
+      ChangeGameModeEvent::GetInstance()->RemoveListener(ChangeGameModeEvent::GetInstanceId());
+      BroadcastGameThreadEvent::GetInstance()->RemoveListener(BroadcastGameThreadEvent::GetInstanceId());
    }
 
    void UserInteractionController::Initialize()
    {
       ChangeGameModeEvent::GetInstance()->AddListener(shared_from_this());
+      BroadcastGameThreadEvent::GetInstance()->AddListener(shared_from_this());
 
       const auto &sceneSp = mSceneWp.lock();
       assert(sceneSp);
@@ -69,16 +75,19 @@ namespace Game
 
       const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
       const auto &d_mesh = std::make_shared<MeshComponentData>("MissileProjectileMeshComponent",
-                                                                             "plane.obj",
-                                                                             glm::vec3(),
-                                                                             glm::vec3(),
-                                                                             glm::vec3(pickerCellSize, 1.0f, pickerCellSize),
-                                                                             "",
-                                                                             missileProjectileMaterial);
+                                                               "plane.obj",
+                                                               glm::vec3(),
+                                                               glm::vec3(),
+                                                               glm::vec3(pickerCellSize, 1.0f, pickerCellSize),
+                                                               "",
+                                                               missileProjectileMaterial);
       const auto &c_mesh = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
       c_mesh->SetSortOrderValue(1);
       mProjectileMarkerActor->AddComponent(c_mesh);
       mProjectileMarkerActor->SetIsEnabled(false);
+
+      InitializeTowerGrid();
+      HideTowerGrid();
    }
 
    void UserInteractionController::SetLevelBounds(const BoundingBox3D &levelBounds)
@@ -195,12 +204,33 @@ namespace Game
       return mSelectedSpaceStationId;
    }
 
-   void UserInteractionController::ProcessEvent(const ChangeGameModeEvent* sender, const typename ChangeGameModeEvent::EventData_t &data)
+   void UserInteractionController::ProcessEvent(const ChangeGameModeEvent *sender, const typename ChangeGameModeEvent::EventData_t &data)
    {
       const eGameModeType newGameModeType = std::get<0>(data);
       if (mCurrentGameModeType != newGameModeType)
       {
          mCurrentGameModeType = newGameModeType;
+      }
+   }
+
+   void UserInteractionController::ProcessEvent(const BroadcastGameThreadEvent *sender, const typename BroadcastGameThreadEvent::EventData_t &data)
+   {
+      const auto eventHeader = std::get<0>(data);
+      const auto jsonParamsStr = std::get<1>(data);
+      if ("CombatLevelEvents" == eventHeader)
+      {
+         const auto jsonRoot = nlohmann::json::parse(jsonParamsStr);
+         if (jsonRoot.at("action").get<std::string>() == "tower_grid_visibility")
+         {
+            if (jsonRoot.at("visible").get<bool>())
+            {
+               ShowTowerGrid();
+            }
+            else
+            {
+               HideTowerGrid();
+            }
+         }
       }
    }
 
@@ -228,5 +258,69 @@ namespace Game
    glm::vec3 UserInteractionController::GetProjectileMarkerPosition() const
    {
       return mProjectileMarkerActor->GetRootComponent()->GetTranslation();
+   }
+
+   void UserInteractionController::ShowTowerGrid()
+   {
+      mTowerPlacementGridActor->SetIsEnabled(true);
+   }
+
+   void UserInteractionController::HideTowerGrid()
+   {
+      mTowerPlacementGridActor->SetIsEnabled(false);
+   }
+
+   void UserInteractionController::InitializeTowerGrid()
+   {
+      const auto &sceneSp = mSceneWp.lock();
+      assert(sceneSp);
+      const auto levelExtent = mLevelBounds.GetHalfExtent().x * 2.0;
+      mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(levelExtent)));
+      mTowerPlacementGridActor = std::make_shared<Actor>("TowerPlacementGridActor", std::make_shared<SceneComponent>("TowerPlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+      sceneSp->AddActor(mTowerPlacementGridActor);
+      const glm::ivec2 towerGridColumnsAndRowsCount = mLevelPlacementGrid->GetTowerGridColumnsAndRowsCount();
+      const int32_t columnsLineCount = towerGridColumnsAndRowsCount.x + 1;
+      const int32_t rowsLineCount = towerGridColumnsAndRowsCount.y + 1;
+
+      MaterialParser materialParser;
+      const std::shared_ptr<IMaterial> &lineMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
+      sceneSp->RegisterMaterialInstance(lineMaterial);
+      MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 0.5f);
+      MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(1.0f));
+
+      const auto &rtMeshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
+      const auto &levelAreaBoundingBox = mLevelPlacementGrid->GetTowerLevelAreaBoundingBox();
+
+      const int32_t leftSideColumnsCount = columnsLineCount / 2;
+      const int32_t rightSideColumnsCount = columnsLineCount - leftSideColumnsCount;
+      static constexpr float grid_elevation_bias = 1.0f;
+      const auto gridCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
+      for (int32_t columnIdx = 0; columnIdx < columnsLineCount; ++columnIdx)
+      {
+         const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_towerGridColumnLineMesh_" + std::to_string(columnIdx)), 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
+         const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
+         c_mesh->SetCanBloomBeApplied(false);
+         const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x + columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
+         const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMin().x + columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMax().y);
+         c_mesh->SetSortOrderValue(1);
+         c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
+         c_mesh->SetLineEndWorldSpacePosition(lineEnd);
+         c_mesh->SetLineWidth(1.0f);
+         mTowerPlacementGridActor->AddComponent(c_mesh);
+      }
+
+      for (int32_t rowIdx = 0; rowIdx < rowsLineCount; ++rowIdx)
+      {
+         const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_towerGridRowLineMesh_" + std::to_string(rowIdx)), 4, glm::vec3(0), glm::vec3(0.0), glm::vec3(1), "", lineMaterial);
+         const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
+         c_mesh->SetCanBloomBeApplied(false);
+         const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias * 1.5f, levelAreaBoundingBox.GetMin().y + rowIdx * gridCellSize);
+         const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias * 1.5f, levelAreaBoundingBox.GetMin().y + rowIdx * gridCellSize);
+         c_mesh->SetSortOrderValue(0);
+         c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
+         c_mesh->SetLineEndWorldSpacePosition(lineEnd);
+         c_mesh->SetLineWidth(1.0f);
+         mTowerPlacementGridActor->AddComponent(c_mesh);
+      }
    }
 }

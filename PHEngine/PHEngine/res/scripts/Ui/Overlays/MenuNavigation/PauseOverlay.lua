@@ -74,7 +74,6 @@ function PauseOverlay:new(host)
         EventsHelper:sendPauseGameThreadEvent(host,
             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
         UiOverlayManager:closeCurrentOverlay(host)
-        UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
     end)
     continueButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then

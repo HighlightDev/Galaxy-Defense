@@ -18,6 +18,7 @@ namespace EngineCore
         OverlayManager::OverlayManager(const std::weak_ptr<Scene> &scene)
             : EngineToLuaReplicatorBase(),
               mOverlays(),
+              mActiveOverlaysHistory(),
               mCurrentOpenedOverlay(),
               mSceneWp(scene)
         {
@@ -81,17 +82,29 @@ namespace EngineCore
             return mSceneWp;
         }
 
-        void OverlayManager::OpenOverlay(const std::string &overlayName)
+        void OverlayManager::OpenOverlay(const std::string &overlayName, const bool isRestoreFromHistory)
         {
             const auto &foundOverlay = FindOverlay(overlayName);
             assert(foundOverlay);
+
             if (mCurrentOpenedOverlay)
             {
+                if (mCurrentOpenedOverlay->GetOverlayName() == overlayName)
+                {
+                    LogInfo("OverlayManager::OpenOverlay: Attempt to open already opened overlay ", overlayName);
+                    return;
+                }
                 if (mCurrentOpenedOverlay->HasFadeOutAnimation())
                 {
                     mPendingAnimationFinishesToOpenOverlay = true;
                 }
                 mCurrentOpenedOverlay->CloseOverlay();
+                LogInfo("OverlayManager::OpenOverlay: store to history ", mCurrentOpenedOverlay->GetOverlayName());
+
+                if (!isRestoreFromHistory)
+                {
+                    mActiveOverlaysHistory.push(mCurrentOpenedOverlay->GetOverlayName()); // store current overlay to stack, to be able to restore this overlay
+                }
             }
             mCurrentOpenedOverlay = foundOverlay;
             if (!mPendingAnimationFinishesToOpenOverlay)
@@ -130,7 +143,31 @@ namespace EngineCore
             if (mCurrentOpenedOverlay)
             {
                 mCurrentOpenedOverlay->CloseOverlay();
+
+                if (mActiveOverlaysHistory.size())
+                {
+                    // Restore previously opened overlay
+                    const auto currentActiveOverlayName = mActiveOverlaysHistory.top();
+                    mActiveOverlaysHistory.pop();
+                    OpenOverlay(currentActiveOverlayName, true);
+                    LogInfo("OverlayManager::CloseCurrentOverlay: remove from history ", currentActiveOverlayName);
+                }
+                else
+                {
+                    // History is empty, nothing to restore
+                    mCurrentOpenedOverlay = nullptr;
+                    SyncLuaThreadData();
+                }
+            }
+        }
+
+        void OverlayManager::CloseOverlayAndClearHistory()
+        {
+            if (mCurrentOpenedOverlay)
+            {
+                mCurrentOpenedOverlay->CloseOverlay();
                 mCurrentOpenedOverlay = nullptr;
+                std::stack<std::string>().swap(mActiveOverlaysHistory);
                 SyncLuaThreadData();
             }
         }
@@ -221,7 +258,7 @@ namespace EngineCore
             {
                 overlay->CleanUp();
             }
-            for (const auto& backgroundOverlay : mBackgroundOverlays)
+            for (const auto &backgroundOverlay : mBackgroundOverlays)
             {
                 backgroundOverlay->CleanUp();
             }

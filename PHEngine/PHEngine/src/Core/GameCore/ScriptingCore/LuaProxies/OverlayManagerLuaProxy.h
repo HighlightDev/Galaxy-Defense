@@ -47,6 +47,8 @@ namespace EngineCore
 
             void CloseCurrentOverlay();
 
+            void CloseOverlayAndClearHistory();
+
             void CloseBackgroundOverlay(const std::string& overlayName);
         };
     }

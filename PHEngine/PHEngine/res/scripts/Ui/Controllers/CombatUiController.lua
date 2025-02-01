@@ -63,10 +63,10 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
                         EventsHelper:sendPauseGameThreadEvent(host,
                             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
                         UiOverlayManager:closeCurrentOverlay(host)
-                        UiOverlayManager:openBackgroundOverlay(host, "CombatOverlay")
                     elseif "LevelFailedOverlay" ~= currentOverlayName then
                         EventsHelper:sendPauseGameThreadEvent(host,
                             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
+                        print("UiOverlayManager:openOverlay(host, PauseMenuOverlay)")
                         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
                         UiOverlayManager:closeBackgroundOverlay(host, "CombatOverlay")
                     end

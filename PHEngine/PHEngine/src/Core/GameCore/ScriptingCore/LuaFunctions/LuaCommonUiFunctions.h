@@ -55,6 +55,8 @@ namespace EngineCore
 
          void CloseCurrentOverlay(const std::tuple<> &emptyData);
 
+         void CloseOverlayAndClearHistory(const std::tuple<> &emptyData);
+
          void CloseBackgroundOverlay(const std::tuple<std::string> &emptyData);
 
          int32_t CreateCommonUiWidget(const std::tuple<int32_t, std::string> &data);

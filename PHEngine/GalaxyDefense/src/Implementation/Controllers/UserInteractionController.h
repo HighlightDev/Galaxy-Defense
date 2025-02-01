@@ -3,9 +3,11 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/CommonCore/Timer.h"
+#include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Implementation/Controllers/ILevelController.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/GameModeTypeEnum.h"
+#include "Implementation/Levels/Editor/LevelPlacementGrid.h"
 
 #include <functional>
 
@@ -30,6 +32,7 @@ namespace Game
        : public ILevelController,
          public ITickable,
          public ChangeGameModeEvent,
+         public BroadcastGameThreadEvent,
          public std::enable_shared_from_this<UserInteractionController>
    {
       std::weak_ptr<::EngineCore::Scene> mSceneWp;
@@ -49,6 +52,10 @@ namespace Game
       int32_t mSelectedSpaceStationId{-1};
 
       std::shared_ptr<::EngineCore::Actor> mProjectileMarkerActor;
+
+      std::unique_ptr<LevelPlacementGrid> mLevelPlacementGrid;
+
+      std::shared_ptr<Actor> mTowerPlacementGridActor;
 
       GameThreadTimer mReadyToShootTimer;
 
@@ -73,13 +80,15 @@ namespace Game
 
       void CleanUp() override;
 
-      void ProcessEvent(const ChangeGameModeEvent* sender, const typename ChangeGameModeEvent::EventData_t &data) override;
+      void ProcessEvent(const ChangeGameModeEvent *sender, const typename ChangeGameModeEvent::EventData_t &data) override;
+
+      void ProcessEvent(const BroadcastGameThreadEvent* sender, const typename BroadcastGameThreadEvent::EventData_t& data);
 
       void Initialize();
 
       void SetLevelBounds(const BoundingBox3D &mLevelBounds);
 
-      void SetOnShootCallback(const std::function<void()>& callback);
+      void SetOnShootCallback(const std::function<void()> &callback);
 
       void SetActorsPoolHandler(const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler);
 
@@ -90,5 +99,12 @@ namespace Game
       void HideMissileProjectile();
 
       glm::vec3 GetProjectileMarkerPosition() const;
+
+      void ShowTowerGrid();
+
+      void HideTowerGrid();
+
+   private:
+      void InitializeTowerGrid();
    };
 }

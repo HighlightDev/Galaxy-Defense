@@ -26,6 +26,7 @@ setup()
 local CommonUiWidgetCreator = require("Ui/Core/commonUiWidgetCreator")
 local json = require("Ui/Core/3rdparty/json")
 local ActionQueue = require("Ui/Core/actionQueue")
+local TimerManager = require("Ui/Core/timer")
 
 UiOverlay = {
 }
@@ -51,6 +52,7 @@ function UiOverlay:createOverlay(host, overlayName, overlayCanvas)
     }
 
     newObj.actionQueue = ActionQueue:new()
+    newObj.timerManager = TimerManager:new()
 
     self.__index = self
     return setmetatable(newObj, self)
@@ -78,6 +80,7 @@ function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
     }
 
     newObj.actionQueue = ActionQueue:new()
+    newObj.timerManager = TimerManager:new()
 
     self.__index = self
     return setmetatable(newObj, self)
@@ -87,6 +90,10 @@ function UiOverlay:addActionWithPredicate(action, predicate)
     assert(action ~= nil and type(action) == "function")
     assert(predicate ~= nil and type(predicate) == "function")
     self.actionQueue:addAction(action, predicate)
+end
+
+function UiOverlay:getTimerManager()
+    return self.timerManager
 end
 
 function UiOverlay:__gc(self)
@@ -184,6 +191,8 @@ function UiOverlay:update(host, deltaTime)
     if self.allWidgetLuaProxiesReady and self.actionQueue:hasPendingActions() then
         self.actionQueue:processActions() --process pending actions
     end
+
+    self.timerManager:updateTimers()
 
     for _, value in pairs(self.widgets) do
         value:update(host)

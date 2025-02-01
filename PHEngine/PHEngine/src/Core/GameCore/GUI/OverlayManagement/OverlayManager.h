@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_set>
+#include <stack>
 
 namespace EngineCore
 {
@@ -33,6 +34,8 @@ namespace EngineCore
 
             std::unordered_set<std::string> mActiveBackgroundOverlays;
 
+            std::stack<std::string> mActiveOverlaysHistory;
+
             std::shared_ptr<IUiOverlay> mCurrentOpenedOverlay;
 
             std::weak_ptr<::EngineCore::Scene> mSceneWp;
@@ -58,11 +61,13 @@ namespace EngineCore
 
             std::shared_ptr<IUiOverlay> GetBackgroundOverlayByName(const std::string &name);
 
-            void OpenOverlay(const std::string &overlayName);
+            void OpenOverlay(const std::string &overlayName, const bool isRestoreFromHistory = false);
 
             void OpenBackgroundOverlay(const std::string &overlayName);
 
             void CloseCurrentOverlay();
+
+            void CloseOverlayAndClearHistory();
 
             void CloseBackgroundOverlay(const std::string &overlayName);
 

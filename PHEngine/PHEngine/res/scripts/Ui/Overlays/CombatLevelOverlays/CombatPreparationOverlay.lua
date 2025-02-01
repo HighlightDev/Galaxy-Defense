@@ -39,27 +39,31 @@ local EventsHelper = require("Ui/Core/eventsHelper")
 CombatPreparationOverlay = {
     buttonColor = 0x5e0d9a,
     hoveredButtonColor = 0x850edc,
-    buttonRadius = 6
+    buttonRadius = 6,
+    localTimerManager = nil
 }
 
 function CombatPreparationOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
 
-    local combatPreparationOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
+    local combatPreparationOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight,
+        "CombatPreparationOverlayCanvas")
     combatPreparationOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, combatPreparationOverlayCanvas.luaProxyId)
     end)
     local combatPreparationOverlay = UiOverlay:createOverlay(host, "CombatPreparationOverlay",
         combatPreparationOverlayCanvas)
 
-    local backgroundRect = UiRectangle:new(host)
-    combatPreparationOverlay:addWidget(backgroundRect)
+    combatPreparationOverlay.localTimerManager = combatPreparationOverlay:getTimerManager()
 
     local panelHeight = windowHeight * 0.15
     local buttonSize = panelHeight * 0.8
+    local panelWidth = (buttonSize * 2) + 70
+    local buttonMarginHeight = (panelHeight - buttonSize) * 0.5
 
-    local panelWidth = (buttonSize * 2) + 50
+    local backgroundRect = UiRectangle:new(host)
+    combatPreparationOverlay:addWidget(backgroundRect)
 
     local backgroundRect = UiRectangle:new(host)
     combatPreparationOverlay:addWidget(backgroundRect)
@@ -70,8 +74,35 @@ function CombatPreparationOverlay:new(host)
     local createObjectButton = ImageButton:new(host, combatPreparationOverlay, "CreateObjectButton")
     combatPreparationOverlay:addCompoundWidget(createObjectButton)
 
-    createObjectButton:subscribeOnMouseInputClickedCallback(function()
+    local combatPreparationRowLayout = UiRowLayout:new(host, "CombatPreparationRowLayout")
+    combatPreparationOverlay:addWidget(combatPreparationRowLayout)
 
+    local removeObjectButton = ImageButton:new(host, combatPreparationOverlay, "RemoveObjectButton")
+    combatPreparationOverlay:addCompoundWidget(removeObjectButton)
+
+    local createMenuDropDownRowLayout = UiRowLayout:new(host, "CreateMenuDropDownRowLayout")
+    combatPreparationOverlay:addWidget(createMenuDropDownRowLayout)
+
+    local createTowerButton = ImageButton:new(host, combatPreparationOverlay, "CreateTowerButton")
+    combatPreparationOverlay:addCompoundWidget(createTowerButton)
+
+    local hidePopupTimerId = combatPreparationOverlay.localTimerManager:createTimer(function()
+        createMenuDropDownRowLayout:setIsVisible(false)
+        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            "CombatLevelEvents", json.encode({
+                action = "tower_grid_visibility",
+                visible = false
+            }))
+    end, false, 20.0)
+
+    createObjectButton:subscribeOnMouseInputClickedCallback(function()
+        createMenuDropDownRowLayout:setIsVisible(true)
+        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            "CombatLevelEvents", json.encode({
+                action = "tower_grid_visibility",
+                visible = true
+            }))
+        combatPreparationOverlay.localTimerManager:restartTimer(hidePopupTimerId)
     end)
 
     createObjectButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
@@ -82,11 +113,15 @@ function CombatPreparationOverlay:new(host)
         end
     end)
 
-    local removeObjectButton = ImageButton:new(host, combatPreparationOverlay, "RemoveObjectButton")
-    combatPreparationOverlay:addCompoundWidget(removeObjectButton)
+    createTowerButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            combatPreparationOverlay.localTimerManager:stopTimer(hidePopupTimerId)
+        else
+            combatPreparationOverlay.localTimerManager:restartTimer(hidePopupTimerId)
+        end
+    end)
 
     removeObjectButton:subscribeOnMouseInputClickedCallback(function()
-
     end)
 
     removeObjectButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
@@ -114,7 +149,7 @@ function CombatPreparationOverlay:new(host)
 
         combatPreparationRowLayout:setParent(host, combatPreparationOverlayCanvas.widgetName, backgroundRect.widgetName)
         combatPreparationRowLayout:fill(backgroundRect.widgetName)
-        combatPreparationRowLayout:setSpacing(15)
+        combatPreparationRowLayout:setSpacing(45)
         combatPreparationRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
 
         createObjectButton:setParent(host, combatPreparationOverlayCanvas.widgetName,
@@ -132,6 +167,28 @@ function CombatPreparationOverlay:new(host)
         removeObjectButton:setButtonColorHexValue(CombatPreparationOverlay.buttonColor)
         removeObjectButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
         removeObjectButton:setImageTextureSource("minus.png")
+
+        createMenuDropDownRowLayout:setParent(host, combatPreparationOverlayCanvas.widgetName,
+            backgroundRect.widgetName)
+        createMenuDropDownRowLayout:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+            UiItemBase.UiAnchorType.HORIZONTAL_CENTER, backgroundRect.widgetName)
+        createMenuDropDownRowLayout:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
+            UiItemBase.UiAnchorType.VERTICAL_CENTER, backgroundRect.widgetName)
+        createMenuDropDownRowLayout:setVerticalCenterOffset(panelHeight - buttonMarginHeight)
+        createMenuDropDownRowLayout:setSpacing(45)
+        createMenuDropDownRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
+        createMenuDropDownRowLayout:setWidth(buttonSize + 10)
+        createMenuDropDownRowLayout:setHeight(buttonSize + 10)
+        createMenuDropDownRowLayout:setIsVisible(false)
+
+        createTowerButton:setParent(host, combatPreparationOverlayCanvas.widgetName,
+            createMenuDropDownRowLayout.widgetName)
+        createTowerButton:setWidth(buttonSize)
+        createTowerButton:setHeight(buttonSize)
+        createTowerButton:setButtonColorHexValue(CombatPreparationOverlay.buttonColor)
+        createTowerButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
+        createTowerButton:setImageTextureSource("space_station_img.png")
+        createTowerButton:setImageRotationDegrees(180)
     end)
 
     combatPreparationOverlay.onGameEventTriggered = function(eventName, jsonArgs) end

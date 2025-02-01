@@ -75,6 +75,7 @@ namespace Game
                                                50.0f,
                                                std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y) * 0.5));
         mNavigationController->SetLevelBounds(mLevelBounds);
+        mUserInteractionController->SetLevelBounds(mLevelBounds);
 
         std::unordered_map<std::string, Path> pathRoutes;
 

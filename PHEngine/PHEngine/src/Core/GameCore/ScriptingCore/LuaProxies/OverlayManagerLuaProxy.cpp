@@ -89,6 +89,22 @@ namespace EngineCore
             }
         }
 
+        void OverlayManagerLuaProxy::CloseOverlayAndClearHistory()
+        {
+            static constexpr auto functionId = Hash64_CT("OverlayManagerLuaProxy::CloseOverlayAndClearHistory");
+            if (const auto sceneSp = mSceneWp.lock())
+            {
+                const auto replicatorId = GetReplicatorId();
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]()
+                                                                                  {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto & overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
+                    assert(overlayManager);
+                    overlayManager->CloseOverlayAndClearHistory(); });
+            }
+        }
+
         void OverlayManagerLuaProxy::CloseBackgroundOverlay(const std::string &overlayName)
         {
             static constexpr auto functionId = Hash64_CT("OverlayManagerLuaProxy::CloseBackgroundOverlay");
