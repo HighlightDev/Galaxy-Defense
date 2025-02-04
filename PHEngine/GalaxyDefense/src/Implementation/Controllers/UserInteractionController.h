@@ -1,110 +1,142 @@
 #pragma once
 
-#include "Core/GameCore/BoundingBox3D.h"
-#include "Core/GameCore/ITickable.h"
 #include "Core/CommonCore/Timer.h"
+#include "Core/GameCore/BoundingBox3D.h"
+#include "Core/GameCore/EngineObjectProperty.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
+#include "Core/GameCore/ITickable.h"
 #include "Implementation/Controllers/ILevelController.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/GameModeTypeEnum.h"
 #include "Implementation/Levels/Editor/LevelPlacementGrid.h"
 
+#include <glm/vec3.hpp>
+
 #include <functional>
+#include <unordered_map>
+#include <vector>
 
 using namespace Event;
 using namespace EngineCore;
 
-namespace EngineCore
-{
-   class InputComponent;
-   class ThirdPersonCamera;
-   class SceneComponent;
-   class Scene;
-   class Actor;
-}
+namespace EngineCore {
+class InputComponent;
+class ThirdPersonCamera;
+class SceneComponent;
+class Scene;
+class Actor;
+} // namespace EngineCore
 
-namespace Game
-{
-   class CombatActorsPoolHandler;
-   class SmartPicker;
+namespace Game {
+class CombatActorsPoolHandler;
+class SmartPicker;
 
-   class UserInteractionController
-       : public ILevelController,
-         public ITickable,
-         public ChangeGameModeEvent,
-         public BroadcastGameThreadEvent,
-         public std::enable_shared_from_this<UserInteractionController>
-   {
-      std::weak_ptr<::EngineCore::Scene> mSceneWp;
+class UserInteractionController : public ILevelController,
+                                  public ITickable,
+                                  public ChangeGameModeEvent,
+                                  public BroadcastGameThreadEvent,
+                                  public std::enable_shared_from_this<UserInteractionController> {
+    std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
-      BoundingBox3D mLevelBounds;
+    BoundingBox3D mLevelBounds;
 
-      std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
+    std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
 
-      eGameModeType mCurrentGameModeType{eGameModeType::INIT};
+    eGameModeType mCurrentGameModeType{eGameModeType::INIT};
 
-      std::weak_ptr<ThirdPersonCamera> mMainSceneCamera;
+    std::weak_ptr<ThirdPersonCamera> mMainSceneCamera;
 
-      std::shared_ptr<SmartPicker> mSmartPicker;
+    std::shared_ptr<SmartPicker> mSmartPicker;
 
-      std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
+    std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
 
-      int32_t mSelectedSpaceStationId{-1};
+    int32_t mSelectedSpaceStationId{-1};
 
-      std::shared_ptr<::EngineCore::Actor> mProjectileMarkerActor;
+    std::shared_ptr<::EngineCore::Actor> mProjectileMarkerActor;
 
-      std::unique_ptr<LevelPlacementGrid> mLevelPlacementGrid;
+    std::unique_ptr<LevelPlacementGrid> mLevelPlacementGrid;
 
-      std::shared_ptr<Actor> mTowerPlacementGridActor;
+    std::shared_ptr<Actor> mTowerPlacementGridActor;
 
-      GameThreadTimer mReadyToShootTimer;
+    std::shared_ptr<Actor> mPlacementAllowedAreaActor;
 
-      std::function<void()> mShootCallback;
+    std::shared_ptr<Actor> mGhostTowerActor;
 
-   public:
-      UserInteractionController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
+    GameThreadTimer mReadyToShootTimer;
 
-      ~UserInteractionController() override;
+    GameThreadTimer mReloadPlacementTower;
 
-      void Tick(const float deltaTime) override;
+    std::function<void()> mShootCallback;
 
-      void UnpausableTick(const float deltaTime) override;
+    float mTowerCellSize{0.0f};
 
-      void OnPreLevelInit() override;
+    std::vector<glm::vec3> mTowerPlacementCells;
 
-      void OnLevelInit() override;
+    std::unordered_map<std::string, std::pair<glm::vec3, std::shared_ptr<Actor>>> mPlacedTowers;
 
-      void OnPostLevelInit() override;
+    bool mGhostTowerEnabled{false};
 
-      void PostPlayLevelFinished() override;
+    std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostTowerBlendColorProperty;
 
-      void CleanUp() override;
+public:
+    UserInteractionController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
-      void ProcessEvent(const ChangeGameModeEvent *sender, const typename ChangeGameModeEvent::EventData_t &data) override;
+    ~UserInteractionController() override;
 
-      void ProcessEvent(const BroadcastGameThreadEvent* sender, const typename BroadcastGameThreadEvent::EventData_t& data);
+    void Tick(const float deltaTime) override;
 
-      void Initialize();
+    void UnpausableTick(const float deltaTime) override
+    {
+    }
 
-      void SetLevelBounds(const BoundingBox3D &mLevelBounds);
+    void OnPreLevelInit() override;
 
-      void SetOnShootCallback(const std::function<void()> &callback);
+    void OnLevelInit() override;
 
-      void SetActorsPoolHandler(const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler);
+    void OnPostLevelInit() override;
 
-      int32_t GetSelectedSpaceStationId() const;
+    void PostPlayLevelFinished() override;
 
-      void ShowMissileProjectile();
+    void CleanUp() override;
 
-      void HideMissileProjectile();
+    void ProcessEvent(const ChangeGameModeEvent* sender, const typename ChangeGameModeEvent::EventData_t& data) override;
 
-      glm::vec3 GetProjectileMarkerPosition() const;
+    void ProcessEvent(const BroadcastGameThreadEvent* sender, const typename BroadcastGameThreadEvent::EventData_t& data);
 
-      void ShowTowerGrid();
+    void Initialize();
 
-      void HideTowerGrid();
+    void SetLevelBounds(const BoundingBox3D& mLevelBounds);
 
-   private:
-      void InitializeTowerGrid();
-   };
-}
+    void SetOnShootCallback(const std::function<void()>& callback);
+
+    void SetActorsPoolHandler(const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler);
+
+    void
+    SetTowersData(const std::unordered_map<std::string, std::tuple<glm::vec3 /*position*/, glm::vec3 /*scale*/>>& towersData);
+
+    int32_t GetSelectedSpaceStationId() const;
+
+    void ShowMissileProjectile();
+
+    void HideMissileProjectile();
+
+    glm::vec3 GetProjectileMarkerPosition() const;
+
+    void SetTowerGridVisibility(const bool isVisible);
+
+    void SetGhostTowerVisibility(const bool isVisible);
+
+private:
+    void InitializeTowerGrid();
+
+    void InitializePlacementAllowedArea();
+
+    void InitializeGhostTower();
+
+    bool IsTowerPositionValid(const glm::vec3 position) const;
+
+    void ProcessSpaceStationPlacementStage();
+
+    void ProcessCombatStage();
+};
+} // namespace Game
