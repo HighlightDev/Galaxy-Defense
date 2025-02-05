@@ -377,17 +377,17 @@ void UserInteractionController::InitializeTowerGrid()
     const int32_t rowsLineCount = towerGridColumnsAndRowsCount.y + 1;
 
     MaterialParser materialParser;
-    const std::shared_ptr<IMaterial>& lineMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
+    const std::shared_ptr<IMaterial>& lineMaterial = materialParser.ParseMaterialDescriptor("TowerPlacementGridMaterial.m");
     sceneSp->RegisterMaterialInstance(lineMaterial);
     MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 0.5f);
-    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(1.0f));
+    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(0.5f, 0.5f, 1.0f));
 
     const auto& rtMeshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
     const auto& levelAreaBoundingBox = mLevelPlacementGrid->GetTowerLevelAreaBoundingBox();
 
     const int32_t leftSideColumnsCount = columnsLineCount / 2;
     const int32_t rightSideColumnsCount = columnsLineCount - leftSideColumnsCount;
-    static constexpr float grid_elevation_bias = 1.0f;
+    static constexpr float grid_elevation_bias = 0.01f;
     const auto gridCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
     for (int32_t columnIdx = 0; columnIdx < columnsLineCount; ++columnIdx) {
         const auto& d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(
@@ -408,7 +408,7 @@ void UserInteractionController::InitializeTowerGrid()
         c_mesh->SetSortOrderValue(10);
         c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
         c_mesh->SetLineEndWorldSpacePosition(lineEnd);
-        c_mesh->SetLineWidth(1.0f);
+        c_mesh->SetLineWidth(0.3f);
         mTowerPlacementGridActor->AddComponent(c_mesh);
     }
 
@@ -435,7 +435,7 @@ void UserInteractionController::InitializeTowerGrid()
         c_mesh->SetSortOrderValue(-10);
         c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
         c_mesh->SetLineEndWorldSpacePosition(lineEnd);
-        c_mesh->SetLineWidth(1.0f);
+        c_mesh->SetLineWidth(0.3f);
         mTowerPlacementGridActor->AddComponent(c_mesh);
     }
 }
