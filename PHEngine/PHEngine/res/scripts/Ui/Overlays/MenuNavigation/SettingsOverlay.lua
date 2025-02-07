@@ -32,10 +32,9 @@ local UiLabel = require("Ui/Core/uiLabel")
 local UiToggleButton = require("Ui/Core/uiToggleButton")
 local UiProgressBar = require("Ui/Core/uiProgressBar")
 local LabelButton = require("Ui/Widgets/LabelButton")
+local Styles = require("Ui/Common/styles")
 
 SettingsOverlay = {
-    buttonColor = 0x403649,
-    hoveredButtonColor = 0x201b24,
     buttonRadius = 6
 }
 
@@ -81,9 +80,9 @@ function SettingsOverlay:new(host)
     end)
     applyButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            applyButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
+            applyButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
-            applyButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
+            applyButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
@@ -97,9 +96,9 @@ function SettingsOverlay:new(host)
     end)
     cancelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            cancelButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
+            cancelButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
-            cancelButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
+            cancelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
@@ -115,7 +114,7 @@ function SettingsOverlay:new(host)
             pauseSettingsOverlayCanvas.widgetName, menuVerticalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             pauseSettingsOverlayCanvas.widgetName, menuVerticalMargin)
-        backgroundRect:setColorHexValue(0x6C5B7B)
+        backgroundRect:setColorHexValue(Styles.Colors.panelColor)
         backgroundRect:setZOrder(1)
         backgroundRect:setBorderRadius(SettingsOverlay.buttonRadius)
 
@@ -128,7 +127,7 @@ function SettingsOverlay:new(host)
         soundToggleButton:setHeight(buttonWidth / 4.0)
         soundToggleButton:setZOrder(2)
         soundToggleButton:setToggleOnColorHexValue(0xFFB732)
-        soundToggleButton:setToggleOffColorHexValue(SettingsOverlay.buttonColor)
+        soundToggleButton:setToggleOffColorHexValue(Styles.Colors.buttonColor)
         soundToggleButton:enableToggleButtonMouseInputReceiver(host)
 
         soundLabel:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
@@ -164,7 +163,7 @@ function SettingsOverlay:new(host)
             50)
         applyButton:setWidth(buttonWidth)
         applyButton:setHeight(100)
-        applyButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
+        applyButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         applyButton:setZOrder(2)
         applyButton:setButtonBorderRadius(SettingsOverlay.buttonRadius)
         applyButton:setLabelText("Apply")
@@ -179,7 +178,7 @@ function SettingsOverlay:new(host)
             50)
         cancelButton:setWidth(buttonWidth)
         cancelButton:setHeight(100)
-        cancelButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
+        cancelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         cancelButton:setZOrder(2)
         cancelButton:setButtonBorderRadius(SettingsOverlay.buttonRadius)
         cancelButton:setLabelText("Cancel")

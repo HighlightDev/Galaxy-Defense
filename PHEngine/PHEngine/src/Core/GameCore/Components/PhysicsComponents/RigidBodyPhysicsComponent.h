@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
-#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 
 #include <glm/ext/quaternion_float.hpp>
 
@@ -10,20 +10,15 @@ using namespace EngineCore;
 
 namespace EnginePhysics {
 
-   class RigidBodyPhysicsComponent 
-      : public PhysicsComponent
-   {
+class RigidBodyPhysicsComponent : public PhysicsComponent {
 
-   public:
+public:
+    RigidBodyPhysicsComponent(const std::shared_ptr<PhysicsComponentData>& data);
 
-      RigidBodyPhysicsComponent(const std::shared_ptr<PhysicsComponentData>& data);
+    ~RigidBodyPhysicsComponent() override;
 
-      ~RigidBodyPhysicsComponent() override;
+    void Tick(const float deltaTime) override;
 
-      void Tick(const float deltaTime) override;
-
-      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
-   };
-}
-
+    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+};
+} // namespace EnginePhysics

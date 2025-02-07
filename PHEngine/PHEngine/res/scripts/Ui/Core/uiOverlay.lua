@@ -48,7 +48,9 @@ function UiOverlay:createOverlay(host, overlayName, overlayCanvas)
         compoundWidgets = {},
         allWidgetLuaProxiesReady = false,
         allWidgetLuaProxiesReadyCallbacks = {},
-        actionQueue = nil
+        actionQueue = nil,
+        derivedUpdateCallback = function()
+        end
     }
 
     newObj.actionQueue = ActionQueue:new()
@@ -76,7 +78,9 @@ function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
         compoundWidgets = {},
         allWidgetLuaProxiesReady = false,
         allWidgetLuaProxiesReadyCallbacks = {},
-        actionQueue = nil
+        actionQueue = nil,
+        derivedUpdateCallback = function()
+        end
     }
 
     newObj.actionQueue = ActionQueue:new()
@@ -200,6 +204,10 @@ function UiOverlay:update(host, deltaTime)
 
     for _, value in pairs(self.compoundWidgets) do
         value:update(host)
+    end
+
+    if self.derivedUpdateCallback ~= nil then
+        self.derivedUpdateCallback()
     end
 end
 

@@ -1,128 +1,126 @@
 #pragma once
 
-#include "Shapes/CollisionShapeBase.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
+#include "Shapes/CollisionShapeBase.h"
 
-#include <vector>
-#include <memory>
-#include <BulletPhys/btBulletDynamicsCommon.h>
 #include <BulletPhys/BulletCollision/CollisionDispatch/btCollisionObject.h>
+#include <BulletPhys/btBulletDynamicsCommon.h>
 
-namespace EnginePhysics
-{
-   struct MotionModifiers
-   {
-      btVector3 LinearFactor;
-      btVector3 AngularFactor;
+#include <memory>
+#include <vector>
 
-      MotionModifiers();
+namespace EnginePhysics {
+struct MotionModifiers {
+    btVector3 LinearFactor;
+    btVector3 AngularFactor;
 
-      MotionModifiers(const btVector3 &linearFactor, const btVector3 &angularFactor);
-   };
+    MotionModifiers();
 
-   class PhysicsWorld;
+    MotionModifiers(const btVector3& linearFactor, const btVector3& angularFactor);
+};
 
-   class PhysicsDescriptor
-       : public std::enable_shared_from_this<PhysicsDescriptor>
-   {
-   protected:
-      static int32_t mTotalIds;
+class PhysicsWorld;
 
-      const ePhysicsBodyType mBodyType;
+class PhysicsDescriptor : public std::enable_shared_from_this<PhysicsDescriptor> {
+protected:
+    static int32_t mTotalIds;
 
-      int32_t mCurrentId;
+    const ePhysicsBodyType mBodyType;
 
-      int32_t mOwnerComponentEngineObjectId;
+    int32_t mCurrentId;
 
-      int32_t mOwnerActorEngineObjectId;
+    int32_t mOwnerComponentEngineObjectId;
 
-      std::shared_ptr<PhysicsWorld> mPhysicsWorld;
+    int32_t mOwnerActorEngineObjectId;
 
-      std::shared_ptr<CollisionShapeBase> mShape;
+    std::shared_ptr<PhysicsWorld> mPhysicsWorld;
 
-      btMotionState *mMotionState;
+    std::shared_ptr<CollisionShapeBase> mShape;
 
-      // default value is 0.0f which means that this physics body is completely STATIC
-      float mMass;
+    btMotionState* mMotionState;
 
-      btVector3 mInertia;
+    // default value is 0.0f which means that this physics body is completely STATIC
+    float mMass;
 
-      btRigidBody *mRigidBody;
+    btVector3 mInertia;
 
-      btQuaternion mRotator;
+    btRigidBody* mRigidBody;
 
-      btVector3 mTranslation;
+    btQuaternion mRotator;
 
-      btVector3 mVelocity;
+    btVector3 mTranslation;
 
-      btTransform mPrevTransform;
+    btVector3 mVelocity;
 
-      MotionModifiers mMotionModifier;
+    btTransform mPrevTransform;
 
-      bool mIsCollisionEnabled;
+    MotionModifiers mMotionModifier;
 
-   public:
-      PhysicsDescriptor(const std::shared_ptr<PhysicsWorld> &pPhysicsWorld,
-                        const std::shared_ptr<CollisionShapeBase> &shape,
-                        const ePhysicsBodyType bodyType,
-                        const float mass = 0.0f,
-                        const MotionModifiers &motionModifier = MotionModifiers());
+    bool mIsCollisionEnabled;
 
-      virtual ~PhysicsDescriptor();
+public:
+    PhysicsDescriptor(
+        const std::shared_ptr<PhysicsWorld>& pPhysicsWorld,
+        const std::shared_ptr<CollisionShapeBase>& shape,
+        const ePhysicsBodyType bodyType,
+        const float mass = 0.0f,
+        const MotionModifiers& motionModifier = MotionModifiers());
 
-      virtual void Initialize();
+    virtual ~PhysicsDescriptor();
 
-      virtual void CleanUp();
+    virtual void Initialize();
 
-      virtual void CompletePhysicsDescriptorConstruction() = 0;
+    virtual void CleanUp();
 
-      virtual void UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime) = 0;
+    virtual void CompletePhysicsDescriptorConstruction() = 0;
 
-      virtual void SetMotionStateWorldTransform(const btQuaternion &quat, const btVector3 &translation) = 0;
+    virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) = 0;
 
-      virtual void PostPhysicsSimulationUpdate(const float deltaTime);
+    virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) = 0;
 
-      virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const = 0;
+    virtual void PostPhysicsSimulationUpdate(const float deltaTime);
 
-      virtual std::vector<btCollisionObject *> GetCollisionObjects() const;
+    virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const = 0;
 
-      const std::shared_ptr<CollisionShapeBase> &GetShape() const;
+    virtual std::vector<btCollisionObject*> GetCollisionObjects() const;
 
-      size_t GetId() const;
+    const std::shared_ptr<CollisionShapeBase>& GetShape() const;
 
-      float GetMass() const;
+    size_t GetId() const;
 
-      ePhysicsBodyType GetPhysicsBodyType() const;
+    float GetMass() const;
 
-      MotionModifiers GetMotionModifiers() const;
+    ePhysicsBodyType GetPhysicsBodyType() const;
 
-      void SetLinearVelocity(const btVector3 &velocity);
+    MotionModifiers GetMotionModifiers() const;
 
-      btRigidBody *GetRigidBody() const;
+    void SetLinearVelocity(const btVector3& velocity);
 
-      btMotionState *GetMotionState() const;
+    btRigidBody* GetRigidBody() const;
 
-      btVector3 GetTranslation() const;
+    btMotionState* GetMotionState() const;
 
-      btQuaternion GetRotator() const;
+    btVector3 GetTranslation() const;
 
-      btVector3 GetVelocity() const;
+    btQuaternion GetRotator() const;
 
-      void SetTranslation(const btVector3 &translation);
+    btVector3 GetVelocity() const;
 
-      void SetRotator(const btQuaternion &rotator);
+    void SetTranslation(const btVector3& translation);
 
-      virtual void SetIsCollisionEnabled(const bool isEnabled);
+    void SetRotator(const btQuaternion& rotator);
 
-      bool GetIsCollisionEnabled() const;
+    virtual void SetIsCollisionEnabled(const bool isEnabled);
 
-      void SetOwnerComponentEngineObjectId(const int32_t ownerComponentEngineObjectId);
+    bool GetIsCollisionEnabled() const;
 
-      int32_t GetOwnerComponentEngineObjectId() const;
+    void SetOwnerComponentEngineObjectId(const int32_t ownerComponentEngineObjectId);
 
-      void SetOwnerActorEngineObjectId(const int32_t ownerActorEngineObjectId);
+    int32_t GetOwnerComponentEngineObjectId() const;
 
-      int32_t GetOwnerActorEngineObjectId() const;
-   };
+    void SetOwnerActorEngineObjectId(const int32_t ownerActorEngineObjectId);
 
-}
+    int32_t GetOwnerActorEngineObjectId() const;
+};
+
+} // namespace EnginePhysics

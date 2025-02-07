@@ -4,34 +4,30 @@
 
 using namespace Graphics::OpenGL;
 
-namespace Graphics
-{
+namespace Graphics {
 
-	class ScreenQuad
-	{
+class ScreenQuad {
 
-		static ScreenQuad* m_instance;
+    static ScreenQuad* m_instance;
 
-		VertexArrayObject* m_vao;
+    VertexArrayObject* m_vao;
 
-		ScreenQuad();
+    ScreenQuad();
 
-		void Init();
+    void Init();
 
-	public:
+public:
+    ~ScreenQuad();
 
-		~ScreenQuad();
+    static ScreenQuad* GetInstance()
+    {
+        if (!m_instance)
+            m_instance = new ScreenQuad();
 
-		static ScreenQuad* GetInstance()
-		{
-			if (!m_instance)
-				m_instance = new ScreenQuad();
+        return m_instance;
+    }
 
-			return m_instance;
-		}
+    VertexArrayObject* GetBuffer() const;
+};
 
-      VertexArrayObject* GetBuffer() const;
-	};
-
-}
-
+} // namespace Graphics

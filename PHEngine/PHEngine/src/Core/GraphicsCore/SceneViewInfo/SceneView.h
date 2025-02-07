@@ -3,32 +3,30 @@
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 
 #include <memory>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 using namespace Graphics::Proxy;
 
-namespace Graphics
-{
-   class SceneView
-   {
-      std::shared_ptr<CameraSceneProxy> mCameraProxy;
+namespace Graphics {
+class SceneView {
+    std::shared_ptr<CameraSceneProxy> mCameraProxy;
 
-      const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& mPrimitiveProxies;
+    const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& mPrimitiveProxies;
 
-      std::unordered_map<size_t/*proxy id*/, bool> mVisibilityMap;
+    std::unordered_map<size_t /*proxy id*/, bool> mVisibilityMap;
 
-   public:
+public:
+    SceneView(
+        const std::shared_ptr<CameraSceneProxy>& cameraProxy,
+        const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& primitiveProxies);
 
-      SceneView(const std::shared_ptr<CameraSceneProxy>& cameraProxy, const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& primitiveProxies);
+    ~SceneView();
 
-      ~SceneView();
+    std::shared_ptr<CameraSceneProxy> GetCameraProxy() const;
 
-      std::shared_ptr<CameraSceneProxy> GetCameraProxy() const;
+    void DoVisibilityTest();
 
-      void DoVisibilityTest();
-
-      bool IsPrimitiveVisible(const size_t proxyId) const;
-
-   };
-}
+    bool IsPrimitiveVisible(const size_t proxyId) const;
+};
+} // namespace Graphics

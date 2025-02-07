@@ -1,69 +1,66 @@
 #pragma once
 
-#include "MaterialProperty.h"
-
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "MaterialProperty.h"
 
 using namespace Resources;
 
 namespace Graphics {
 
-   struct TextureMaterialProperty
-      : public MaterialProperty
-   {
-      using MaterialPropertyValueType = std::shared_ptr<ITexture>;
+struct TextureMaterialProperty : public MaterialProperty {
+    using MaterialPropertyValueType = std::shared_ptr<ITexture>;
 
-   private:
+private:
+    MaterialPropertyValueType m_value;
 
-      MaterialPropertyValueType m_value;
+public:
+    TextureMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
+        : MaterialProperty(propertyName)
+        , m_value(propertyValue)
+    {
+    }
 
-   public:
+    ~TextureMaterialProperty() override
+    {
+        TexturePool::GetInstance()->TryToFreeMemory(m_value);
+    }
 
-      TextureMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
-         : MaterialProperty(propertyName)
-         , m_value(propertyValue)
-      {
-      }
+    TextureMaterialProperty(const std::string& propertyName)
+        : MaterialProperty(propertyName)
+    {
+    }
 
-      ~TextureMaterialProperty() override
-      {
-         TexturePool::GetInstance()->TryToFreeMemory(m_value);
-      }
+    eMaterialPropertyType GetPropertyType() const override
+    {
+        return MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY;
+    }
 
-      TextureMaterialProperty(const std::string& propertyName)
-         : MaterialProperty(propertyName)
-      {
-      }
+    void SetValueToUniformArray(const UniformArray& uniformArray) const override
+    {
+    }
 
-      eMaterialPropertyType GetPropertyType() const override
-      {
-         return MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY;
-      }
-
-      void SetValueToUniformArray(const UniformArray& uniformArray) const override
-      {
-      }
-
-      void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
-      {
-         int32_t slot = 10 + propertyIndex;
-         if (m_value)
-         {
+    void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+    {
+        int32_t slot = 10 + propertyIndex;
+        if (m_value) {
             m_value->BindTexture(slot);
             uniform.LoadUniform(slot);
-         }
-      }
+        }
+    }
 
-      inline void SetValue(MaterialPropertyValueType value) {
-         m_value = value;
-      }
+    inline void SetValue(MaterialPropertyValueType value)
+    {
+        m_value = value;
+    }
 
-      inline void SetValue(ITexture* value) {
-         m_value = std::shared_ptr<ITexture>(value);
-      }
+    inline void SetValue(ITexture* value)
+    {
+        m_value = std::shared_ptr<ITexture>(value);
+    }
 
-      inline std::shared_ptr<ITexture> GetValue() const {
-         return m_value;
-      }
-   };
-}
+    inline std::shared_ptr<ITexture> GetValue() const
+    {
+        return m_value;
+    }
+};
+} // namespace Graphics

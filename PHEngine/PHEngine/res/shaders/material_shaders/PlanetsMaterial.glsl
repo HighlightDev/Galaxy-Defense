@@ -10,30 +10,30 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
     vec4 sampleColor = texture(albedo, materialIn.TextureCoordinates.xy);
     alphaValue = sampleColor.a;
-	return sampleColor.rgb;
+    return sampleColor.rgb;
 }
 
 vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return vec2(0);
+    return vec2(0);
 }
 
 float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return 0.0;
+    return 0.0;
 }
 
 float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return alphaValue;
+    return alphaValue;
 };
 
 vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return vec3(0);
+    return vec3(0);
 }
 
 vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return vec4(0.0);
+    return vec4(0.0);
 }

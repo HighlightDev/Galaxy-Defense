@@ -30,10 +30,9 @@ local UiCanvas = require("Ui/Core/uiCanvas")
 local UiOverlay = require("Ui/Core/uiOverlay")
 local UiRectangle = require("Ui/Core/uiRectangle")
 local LabelButton = require("Ui/Widgets/LabelButton")
+local Styles = require("Ui/Common/styles")
 
 PauseOverlay = {
-    buttonColor = 0x403649,
-    hoveredButtonColor = 0x201b24,
     buttonRadius = 6
 }
 
@@ -77,9 +76,9 @@ function PauseOverlay:new(host)
     end)
     continueButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            continueButton:setButtonColorHexValue(PauseOverlay.hoveredButtonColor)
+            continueButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
-            continueButton:setButtonColorHexValue(PauseOverlay.buttonColor)
+            continueButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
@@ -90,9 +89,9 @@ function PauseOverlay:new(host)
     end)
     settingsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            settingsButton:setButtonColorHexValue(PauseOverlay.hoveredButtonColor)
+            settingsButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
-            settingsButton:setButtonColorHexValue(PauseOverlay.buttonColor)
+            settingsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
@@ -100,14 +99,14 @@ function PauseOverlay:new(host)
     pauseMenuOverlay:addCompoundWidget(exitToMainMenuButton)
     exitToMainMenuButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            exitToMainMenuButton:setButtonColorHexValue(PauseOverlay.hoveredButtonColor)
+            exitToMainMenuButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
-            exitToMainMenuButton:setButtonColorHexValue(PauseOverlay.buttonColor)
+            exitToMainMenuButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
     exitToMainMenuButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-        "MainMenuLevel")
+            "MainMenuLevel")
     end)
 
     local exitGameButton = LabelButton:new(host, pauseMenuOverlay, "nimbus_mono", "ExitGameButton")
@@ -117,9 +116,9 @@ function PauseOverlay:new(host)
     end)
     exitGameButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            exitGameButton:setButtonColorHexValue(PauseOverlay.hoveredButtonColor)
+            exitGameButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
-            exitGameButton:setButtonColorHexValue(PauseOverlay.buttonColor)
+            exitGameButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
@@ -135,7 +134,7 @@ function PauseOverlay:new(host)
             pauseMenuOverlayCanvas.widgetName, menuVerticalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
             pauseMenuOverlayCanvas.widgetName, menuVerticalMargin)
-        backgroundRect:setColorHexValue(0x6C5B7B)
+        backgroundRect:setColorHexValue(Styles.Colors.panelColor)
         backgroundRect:setZOrder(1)
         backgroundRect:setBorderRadius(PauseOverlay.buttonRadius)
 
@@ -147,7 +146,7 @@ function PauseOverlay:new(host)
         continueButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName,
             buttonVerticalMarginHeight)
         continueButton:setHeight(buttonHeight)
-        continueButton:setButtonColorHexValue(PauseOverlay.buttonColor)
+        continueButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         continueButton:setZOrder(2)
         continueButton:setButtonBorderRadius(PauseOverlay.buttonRadius)
         continueButton:setLabelText("Continue")
@@ -164,7 +163,7 @@ function PauseOverlay:new(host)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, continueButton.widgetName,
             buttonVerticalMarginHeight)
         settingsButton:setHeight(buttonHeight)
-        settingsButton:setButtonColorHexValue(PauseOverlay.buttonColor)
+        settingsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         settingsButton:setZOrder(2)
         settingsButton:setButtonBorderRadius(PauseOverlay.buttonRadius)
         settingsButton:setLabelText("Settings")
@@ -181,7 +180,7 @@ function PauseOverlay:new(host)
         exitToMainMenuButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
             settingsButton.widgetName, buttonVerticalMarginHeight)
         exitToMainMenuButton:setHeight(buttonHeight)
-        exitToMainMenuButton:setButtonColorHexValue(PauseOverlay.buttonColor)
+        exitToMainMenuButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         exitToMainMenuButton:setZOrder(2)
         exitToMainMenuButton:setButtonBorderRadius(PauseOverlay.buttonRadius)
         exitToMainMenuButton:setLabelText("Exit to main menu")
@@ -198,7 +197,7 @@ function PauseOverlay:new(host)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
             exitToMainMenuButton.widgetName, buttonVerticalMarginHeight)
         exitGameButton:setHeight(buttonHeight)
-        exitGameButton:setButtonColorHexValue(PauseOverlay.buttonColor)
+        exitGameButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         exitGameButton:setZOrder(2)
         exitGameButton:setButtonBorderRadius(PauseOverlay.buttonRadius)
         exitGameButton:setLabelText("Exit game")

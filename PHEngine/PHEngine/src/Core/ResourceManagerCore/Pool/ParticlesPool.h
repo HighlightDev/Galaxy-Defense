@@ -1,27 +1,23 @@
 #pragma once
-#include "PoolBase.h"
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/ResourceManagerCore/Policy/ParticlesAllocationPolicy.h"
 #include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
+#include "PoolBase.h"
 
 using namespace EngineCore;
 
-namespace Resources
-{
-   class ParticlesPool :
-      public PoolBase<Skin, ParticlePoolParameters, ParticlesAllocationPolicy>
-   {
-      static std::unique_ptr<ParticlesPool> m_instance;
+namespace Resources {
+class ParticlesPool : public PoolBase<Skin, ParticlePoolParameters, ParticlesAllocationPolicy> {
+    static std::unique_ptr<ParticlesPool> m_instance;
 
-   public:
+public:
+    using poolType_t = PoolBase<Skin, ParticlePoolParameters, ParticlesAllocationPolicy>;
 
-      using poolType_t = PoolBase<Skin, ParticlePoolParameters, ParticlesAllocationPolicy>;
+    std::string ToString() const override;
 
-      std::string ToString() const override;
+    static std::unique_ptr<ParticlesPool>& GetInstance();
 
-      static std::unique_ptr<ParticlesPool>& GetInstance();
+    static void ReloadInstance();
+};
 
-      static void ReloadInstance();
-   };
-
-}
+} // namespace Resources

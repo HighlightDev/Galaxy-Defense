@@ -1,71 +1,60 @@
 #pragma once
 
-#include <memory>
-#include <any>
-
 #include "Core/CommonCore/Assertion.h"
 
-namespace Graphics
-{
-   struct MaterialNode
-   {
-      enum class eMaterialPropertyType
-      {
-         UNDEFINED,
-         FLOAT,
-         VEC2,
-         IVEC2,
-         VEC3
-      };
+#include <any>
+#include <memory>
 
-      enum class eMaterialNodeType
-      {
-         START,
-         VALUE,
-         UNARY_OP,
-         BINARY_OP,
-      };
+namespace Graphics {
+struct MaterialNode {
+    enum class eMaterialPropertyType { UNDEFINED, FLOAT, VEC2, IVEC2, VEC3 };
 
-      enum class eMaterialOperationType
-      {
-         NONE,
-         UNARY_INCREMENT,
-         UNARY_DECREMENT,
-         UNARY_NO_OPERATION,
-         BINARY_ADD,
-         BINARY_MUL,
-         BINARY_SUB,
-         BINARY_DIV
-      };
+    enum class eMaterialNodeType {
+        START,
+        VALUE,
+        UNARY_OP,
+        BINARY_OP,
+    };
 
-      MaterialNode(const eMaterialPropertyType materialPropertyType)
-          : mMaterialPropertyType(materialPropertyType)
-      {
-      }
+    enum class eMaterialOperationType {
+        NONE,
+        UNARY_INCREMENT,
+        UNARY_DECREMENT,
+        UNARY_NO_OPERATION,
+        BINARY_ADD,
+        BINARY_MUL,
+        BINARY_SUB,
+        BINARY_DIV
+    };
 
-      virtual ~MaterialNode() = default;
+    MaterialNode(const eMaterialPropertyType materialPropertyType)
+        : mMaterialPropertyType(materialPropertyType)
+    {
+    }
 
-      virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) = 0;
+    virtual ~MaterialNode() = default;
 
-      virtual eMaterialNodeType GetMaterialNodeType() const = 0;
+    virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) = 0;
 
-      virtual eMaterialOperationType GetMaterialOperationType() const = 0;
+    virtual eMaterialNodeType GetMaterialNodeType() const = 0;
 
-      virtual std::any TraverseGraph() = 0;
+    virtual eMaterialOperationType GetMaterialOperationType() const = 0;
 
-      eMaterialPropertyType GetMaterialPropertyType() const
-      {
-         return mMaterialPropertyType;
-      }
+    virtual std::any TraverseGraph() = 0;
 
-   protected:
-      void SetPropertyType(const MaterialNode::eMaterialPropertyType propertyType)
-      {
-         mMaterialPropertyType = propertyType;
-      }
+    eMaterialPropertyType GetMaterialPropertyType() const
+    {
+        return mMaterialPropertyType;
+    }
 
-   private:
-      eMaterialPropertyType mMaterialPropertyType;
-   };
+protected:
+    void SetPropertyType(const MaterialNode::eMaterialPropertyType propertyType)
+    {
+        mMaterialPropertyType = propertyType;
+    }
 
-}
+private:
+    eMaterialPropertyType mMaterialPropertyType;
+};
+
+} // namespace Graphics

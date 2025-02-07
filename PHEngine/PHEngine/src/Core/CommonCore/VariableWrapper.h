@@ -2,46 +2,42 @@
 
 #include <functional>
 
-namespace EngineCore
-{
+namespace EngineCore {
 
-   template <typename Type>
-   struct VariableWrapper
-   {
-      using wrapped_type = Type;
-      using callback_type = typename std::function<void(void)>;
+template<typename Type>
+struct VariableWrapper {
+    using wrapped_type = Type;
+    using callback_type = typename std::function<void(void)>;
 
-   private:
+private:
+    wrapped_type mValue;
+    callback_type mCallback;
 
-      wrapped_type mValue;
-      callback_type mCallback;
+public:
+    VariableWrapper(wrapped_type initValue, callback_type&& callback)
+        : mValue(initValue)
+        , mCallback(std::move(callback))
+    {
+    }
 
-   public:
+    template<typename ValueType>
+    VariableWrapper<wrapped_type>& operator=(ValueType&& value)
+    {
+        SetValue(value);
+        return *this;
+    }
 
-      VariableWrapper(wrapped_type initValue, callback_type&& callback)
-         : mValue(initValue)
-         , mCallback(std::move(callback))
-      {
-      }
+    template<typename ValueType>
+    void SetValue(ValueType&& value)
+    {
+        mValue = value;
+        mCallback();
+    }
 
-      template <typename ValueType>
-      VariableWrapper<wrapped_type>& operator=(ValueType&& value)
-      {
-         SetValue(value);
-         return *this;
-      }
+    wrapped_type GetValue() const
+    {
+        return mValue;
+    }
+};
 
-      template <typename ValueType>
-      void SetValue(ValueType&& value)
-      {
-         mValue = value;
-         mCallback();
-      }
-
-      wrapped_type GetValue() const
-      {
-         return mValue;
-      }
-   };
-
-}
+} // namespace EngineCore

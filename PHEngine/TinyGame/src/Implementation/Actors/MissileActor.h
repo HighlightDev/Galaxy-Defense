@@ -2,56 +2,47 @@
 
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/BoundingBox3D.h"
-#include "Implementation/MissileType.h"
 #include "Implementation/DamageDealerType.h"
+#include "Implementation/MissileType.h"
 
 #include <functional>
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
 using namespace EngineCore;
 
-namespace Game
-{
-    class MissileExplosionVisitorBase;
-    
-    enum class eMissileActivityState
-    {
-        IDLE,
-        ACTIVE,
-        EXPLOSION,
-        EXPLOSION_FINISHED
-    };
+namespace Game {
+class MissileExplosionVisitorBase;
 
-    class MissileActor
-        : public Actor
-    {
-    protected:
-        eMissileActivityState mActivityState{eMissileActivityState::IDLE};
+enum class eMissileActivityState { IDLE, ACTIVE, EXPLOSION, EXPLOSION_FINISHED };
 
-        eMissileType mMissileType{eMissileType::NONE};
+class MissileActor : public Actor {
+protected:
+    eMissileActivityState mActivityState{eMissileActivityState::IDLE};
 
-        eDamageDealerType mDamageDealerType{eDamageDealerType::NONE};
+    eMissileType mMissileType{eMissileType::NONE};
 
-    public:
-        MissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
+    eDamageDealerType mDamageDealerType{eDamageDealerType::NONE};
 
-        virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const;
+public:
+    MissileActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
-        virtual void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType);
+    virtual bool IsInsideLevel(const BoundingBox3D& boundingBox) const;
 
-        virtual void TriggerExplosion();
+    virtual void TriggerSpawn(const glm::vec3& position, const eDamageDealerType ownerType);
 
-        virtual void TriggerExplosionFinished();
+    virtual void TriggerExplosion();
 
-        virtual void TriggerDisabled();
+    virtual void TriggerExplosionFinished();
 
-        virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor();
+    virtual void TriggerDisabled();
 
-        eMissileActivityState GetMissileActivityState() const;
+    virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor();
 
-        eMissileType GetMissileType() const;
+    eMissileActivityState GetMissileActivityState() const;
 
-        eDamageDealerType GetDamageDealerType() const;
-    };
-}
+    eMissileType GetMissileType() const;
+
+    eDamageDealerType GetDamageDealerType() const;
+};
+} // namespace Game

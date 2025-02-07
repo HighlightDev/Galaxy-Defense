@@ -9,6 +9,7 @@
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/GameModeTypeEnum.h"
 #include "Implementation/Levels/Editor/LevelPlacementGrid.h"
+#include "Implementation/StatusTypes.h"
 
 #include <glm/vec3.hpp>
 
@@ -138,5 +139,7 @@ private:
     void ProcessSpaceStationPlacementStage();
 
     void ProcessCombatStage();
+
+    void TriggerPlayerStatusChangedEvent(const eMainPlayerStatusType statusChanged, const std::string& jsonArgs);
 };
 } // namespace Game

@@ -1,33 +1,32 @@
 #pragma once
 
-#include <vector>
-#include <array>
 #include <glm/vec3.hpp>
 
-namespace Game
-{
-    class PathSegment
-    {
-        std::array<glm::vec3, 3> mQuadraticBezierControlPoints;
+#include <array>
+#include <vector>
 
-        size_t mSubdivisionsCount{1};
+namespace Game {
+class PathSegment {
+    std::array<glm::vec3, 3> mQuadraticBezierControlPoints;
 
-        std::vector<glm::vec3> mTotalSegmentPoints;
+    size_t mSubdivisionsCount{1};
 
-    public:
-        void SetControlPoints(const std::array<glm::vec3, 3> &controlPointsArray);
+    std::vector<glm::vec3> mTotalSegmentPoints;
 
-        const std::array<glm::vec3, 3> &GetQuadraticBezierControlPoints() const;
+public:
+    void SetControlPoints(const std::array<glm::vec3, 3>& controlPointsArray);
 
-        void SetSubdivisionsCount(const size_t subdivisionsCount);
+    const std::array<glm::vec3, 3>& GetQuadraticBezierControlPoints() const;
 
-        size_t GetSubdivisionCount() const;
+    void SetSubdivisionsCount(const size_t subdivisionsCount);
 
-        const std::vector<glm::vec3> &GetTotalSegmentPoints() const;
+    size_t GetSubdivisionCount() const;
 
-        size_t GetTotalSegmentPointsCount() const;
+    const std::vector<glm::vec3>& GetTotalSegmentPoints() const;
 
-    private:
-        void RecalculateTotalSegmentPoints();
-    };
-}
+    size_t GetTotalSegmentPointsCount() const;
+
+private:
+    void RecalculateTotalSegmentPoints();
+};
+} // namespace Game

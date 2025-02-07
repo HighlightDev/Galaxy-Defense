@@ -1,6 +1,6 @@
 #version 400
-                
-layout (location = 12) in vec4 ParticlePosition;
+
+layout(location = 12) in vec4 ParticlePosition;
 
 uniform mat4 worldMatrix;
 uniform mat4 viewMatrix;

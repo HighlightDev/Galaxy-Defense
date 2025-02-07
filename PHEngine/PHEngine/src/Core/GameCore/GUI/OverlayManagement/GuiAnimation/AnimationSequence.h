@@ -4,31 +4,29 @@
 
 #include <vector>
 
-namespace EngineCore::GUI
-{
-    class AnimationSequence
-    {
-        std::vector<AnimationData> mAnimationDataInSequence;
+namespace EngineCore::GUI {
+class AnimationSequence {
+    std::vector<AnimationData> mAnimationDataInSequence;
 
-        int32_t mCurrentAnimationDataIndex{-1};
+    int32_t mCurrentAnimationDataIndex{-1};
 
-        float mAnimationTimePassed{0.0f};
+    float mAnimationTimePassed{0.0f};
 
-    public:
-        void SetAnimationDataInSequence(const std::vector<AnimationData> &animationDataList);
+public:
+    void SetAnimationDataInSequence(const std::vector<AnimationData>& animationDataList);
 
-        void SetCurrentAnimationDataIndex(const int32_t animationDataIndex);
+    void SetCurrentAnimationDataIndex(const int32_t animationDataIndex);
 
-        void SetPassedAnimationTime(const float animationTime);
+    void SetPassedAnimationTime(const float animationTime);
 
-        void AddDeltaTimeToAnimationTime(const float deltaTime);
+    void AddDeltaTimeToAnimationTime(const float deltaTime);
 
-        const std::vector<AnimationData> &GetAnimationDataInSequence() const;
+    const std::vector<AnimationData>& GetAnimationDataInSequence() const;
 
-        int32_t GetCurrentAnimationDataIndex() const;
+    int32_t GetCurrentAnimationDataIndex() const;
 
-        float GetPassedAnimationTime() const;
+    float GetPassedAnimationTime() const;
 
-        bool TryToMoveToNextAnimation();
-    };
-}
+    bool TryToMoveToNextAnimation();
+};
+} // namespace EngineCore::GUI

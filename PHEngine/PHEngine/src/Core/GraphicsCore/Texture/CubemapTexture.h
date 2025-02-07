@@ -1,47 +1,44 @@
 #pragma once
 
-#include <vector>
-#include <string>
-
 #include "ITexture.h"
 
-namespace Graphics
-{
-	namespace Texture
-	{
+#include <string>
+#include <vector>
 
-		class CubemapTexture : public ITexture
-		{
-			std::vector<TexParams> m_texParams;
+namespace Graphics {
+namespace Texture {
 
-		public:
-			CubemapTexture(const std::vector<std::string> &pathToTextures);
+class CubemapTexture : public ITexture {
+    std::vector<TexParams> m_texParams;
 
-			CubemapTexture(TexParams cubemapTexParams);
+public:
+    CubemapTexture(const std::vector<std::string>& pathToTextures);
 
-			virtual ~CubemapTexture();
+    CubemapTexture(TexParams cubemapTexParams);
 
-			void BindTexture(uint32_t textureSlot) const override;
+    virtual ~CubemapTexture();
 
-			void UnbindTexture(uint32_t textureSlot) const override;
+    void BindTexture(uint32_t textureSlot) const override;
 
-			void CleanUp() override;
+    void UnbindTexture(uint32_t textureSlot) const override;
 
-			uint32_t GetTextureDescriptor() const override;
+    void CleanUp() override;
 
-			glm::ivec2 GetTextureRezolution() const override;
+    uint32_t GetTextureDescriptor() const override;
 
-			TexParams GetTextureParameters() const override;
+    glm::ivec2 GetTextureRezolution() const override;
 
-			float GetTextureAspectRatio() const override;
+    TexParams GetTextureParameters() const override;
 
-			eTextureType GetTextureType() const override;
+    float GetTextureAspectRatio() const override;
 
-		private:
-			uint32_t CreateCubemapTexture(const std::vector<std::string> &pathToTextures);
+    eTextureType GetTextureType() const override;
 
-			uint32_t CreateEmptyCubemapTexture();
-		};
+private:
+    uint32_t CreateCubemapTexture(const std::vector<std::string>& pathToTextures);
 
-	}
-}
+    uint32_t CreateEmptyCubemapTexture();
+};
+
+} // namespace Texture
+} // namespace Graphics

@@ -3,17 +3,13 @@
 #include <memory>
 #include <string>
 
-namespace EngineCore
-{
+namespace EngineCore {
 
-   class Level;
+class Level;
 
-   class ILevelFactory
-   {
-   public:
+class ILevelFactory {
+public:
+    virtual std::shared_ptr<Level> CreateLevel(const std::string& levelName) const = 0;
+};
 
-      virtual std::shared_ptr<Level> CreateLevel(const std::string& levelName) const = 0;
-   };
-
-}
-
+} // namespace EngineCore

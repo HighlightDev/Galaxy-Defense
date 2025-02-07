@@ -2,43 +2,42 @@
 
 #include "IModifiable.h"
 
-#include <memory>
 #include <glm/vec3.hpp>
 
-namespace Game
-{
-    class SpaceshipActor;
+#include <memory>
 
-    class FreezingModifier : public IModifiable
-    {
-        std::weak_ptr<SpaceshipActor> mOwnerWp;
+namespace Game {
+class SpaceshipActor;
 
-        float mFreezingPower;
+class FreezingModifier : public IModifiable {
+    std::weak_ptr<SpaceshipActor> mOwnerWp;
 
-        float mFreezingTimer;
-        float mFreezingTimeout;
+    float mFreezingPower;
 
-    public:
-        FreezingModifier(const std::weak_ptr<SpaceshipActor> &owner);
+    float mFreezingTimer;
+    float mFreezingTimeout;
 
-        eModifierType GetModifierType() const override;
+public:
+    FreezingModifier(const std::weak_ptr<SpaceshipActor>& owner);
 
-        int32_t CreatorObjectId() const override;
+    eModifierType GetModifierType() const override;
 
-        void Tick(const float deltaTime) override;
+    int32_t CreatorObjectId() const override;
 
-        void UnpausableTick(const float deltaTime) override{};
+    void Tick(const float deltaTime) override;
 
-        bool IsExpired() const override;
+    void UnpausableTick(const float deltaTime) override { };
 
-        void OnPreRemoved() override;
+    bool IsExpired() const override;
 
-        void SetFreezingPower(const float power);
+    void OnPreRemoved() override;
 
-        void ResetFreezingTimer();
+    void SetFreezingPower(const float power);
 
-        void SetFreezingTimeout(const float timeout);
+    void ResetFreezingTimer();
 
-        float GetFreezingTimer() const;
-    };
-}
+    void SetFreezingTimeout(const float timeout);
+
+    float GetFreezingTimer() const;
+};
+} // namespace Game

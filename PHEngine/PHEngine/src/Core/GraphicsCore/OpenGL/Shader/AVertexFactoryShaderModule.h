@@ -1,39 +1,35 @@
 #pragma once
 
-#include "Shader.h"
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
-#include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
+#include "Shader.h"
 
-namespace Graphics
-{
-   namespace OpenGL
-   {
-      class AVertexFactoryShaderModule
-          : public IShader
-      {
-      protected:
-         std::shared_ptr<VertexFactoryShader> mVertexFactoryShader;
+namespace Graphics {
+namespace OpenGL {
+class AVertexFactoryShaderModule : public IShader {
+protected:
+    std::shared_ptr<VertexFactoryShader> mVertexFactoryShader;
 
-      public:
-         AVertexFactoryShaderModule(const CompositeShaderParams &shaderParams,
-                                    std::shared_ptr<VertexFactoryShader> vertexFactoryShader);
+public:
+    AVertexFactoryShaderModule(
+        const CompositeShaderParams& shaderParams, std::shared_ptr<VertexFactoryShader> vertexFactoryShader);
 
-      protected:
-         void Init();
+protected:
+    void Init();
 
-         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+    void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         void ProcessAllPredefines() override;
+    void ProcessAllPredefines() override;
 
-         virtual bool AssembleShaderSource();
+    virtual bool AssembleShaderSource();
 
-         virtual std::shared_ptr<Shader> GetBaseShader() const = 0;
+    virtual std::shared_ptr<Shader> GetBaseShader() const = 0;
 
 #if DEBUG
-         void RecompileShader() override;
+    void RecompileShader() override;
 #endif
-      };
-   }
-}
+};
+} // namespace OpenGL
+} // namespace Graphics

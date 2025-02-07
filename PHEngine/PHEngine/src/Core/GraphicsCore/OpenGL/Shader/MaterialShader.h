@@ -6,57 +6,49 @@
 
 #include <vector>
 
-namespace Graphics
-{
-   namespace OpenGL
-   {
-      class MaterialShader
-         : public IShader
-      {
+namespace Graphics {
+namespace OpenGL {
+class MaterialShader : public IShader {
 
-         std::string mShaderSource;
+    std::string mShaderSource;
 
-         std::vector<ShaderGenericDefineConstant> mConstantDefines;
-         std::vector<ShaderGenericDefine> mDefines;
+    std::vector<ShaderGenericDefineConstant> mConstantDefines;
+    std::vector<ShaderGenericDefine> mDefines;
 
-      protected:
+protected:
+    std::vector<std::string> mUniformNames;
 
-         std::vector<std::string> mUniformNames;
+    std::vector<std::string> mUniformArrayNames;
 
-         std::vector<std::string> mUniformArrayNames;
+    std::vector<Uniform> Uniforms;
 
-         std::vector<Uniform> Uniforms;
+    std::vector<UniformArray> UniformArrays;
 
-         std::vector<UniformArray> UniformArrays;
+public:
+    virtual ~MaterialShader();
 
-      public :
+    MaterialShader(std::shared_ptr<MaterialProxy> materialProxy);
 
-         virtual ~MaterialShader();
+    std::string GetShaderSource() const;
 
-         MaterialShader(std::shared_ptr<MaterialProxy> materialProxy);
+    virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy);
 
-         std::string GetShaderSource() const;
-         
-         virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy);
+    void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+    template<typename ValueType>
+    void DefineConstant(const std::string& name, ValueType&& value)
+    {
+        std::string formatedValue = MacroConverter<ValueType>::GetValue(std::forward<ValueType>(value));
+        mConstantDefines.emplace_back(ShaderGenericDefineConstant(name, formatedValue));
+    }
 
-         template <typename ValueType>
-         void DefineConstant(const std::string& name, ValueType&& value)
-         {
-            std::string formatedValue = MacroConverter<ValueType>::GetValue(std::forward<ValueType>(value));
-            mConstantDefines.emplace_back(ShaderGenericDefineConstant(name, formatedValue));
-         }
+    void Define(const std::string& name);
 
-         void Define(const std::string& name);
+    void Undefine(const std::string& name);
 
-         void Undefine(const std::string& name);
-
-      private:
-
-         void InitMaterialShader(const std::string& pathToMaterialShader);
-         void LoadMaterialShaderSource(const std::string& relativePathToMaterialShader);
-      };
-   }
-}
-
+private:
+    void InitMaterialShader(const std::string& pathToMaterialShader);
+    void LoadMaterialShaderSource(const std::string& relativePathToMaterialShader);
+};
+} // namespace OpenGL
+} // namespace Graphics

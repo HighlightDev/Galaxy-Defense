@@ -5,41 +5,39 @@
 
 using namespace EngineCore;
 
-namespace Game
-{
-   class CombatController;
+namespace Game {
+class CombatController;
 
-   class PrologueLevel : public LevelBase
-   {
-      using Base = LevelBase;
+class PrologueLevel : public LevelBase {
+    using Base = LevelBase;
 
-      std::shared_ptr<CombatController> mCombatController;
+    std::shared_ptr<CombatController> mCombatController;
 
-      std::unique_ptr<UiController> mUiController;
+    std::unique_ptr<UiController> mUiController;
 
-   public:
-      PrologueLevel();
+public:
+    PrologueLevel();
 
-      ~PrologueLevel() override;
+    ~PrologueLevel() override;
 
-      void InitLevel() override;
+    void InitLevel() override;
 
-      void PreLevelInit() override;
+    void PreLevelInit() override;
 
-      void PostLevelInit() override;
+    void PostLevelInit() override;
 
-      void PostPlayLevelFinished() override;
+    void PostPlayLevelFinished() override;
 
-      void RunLuaBuildLevelScript();
+    void RunLuaBuildLevelScript();
 
-      void UnloadLevel() override;
+    void UnloadLevel() override;
 
-      void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-      void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTime) override;
 
-   private:
-      void CreateScene();
-   };
+private:
+    void CreateScene();
+};
 
-}
+} // namespace Game

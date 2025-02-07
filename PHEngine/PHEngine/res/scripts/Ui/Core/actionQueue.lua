@@ -20,7 +20,7 @@ function ActionQueue:addAction(action, predicate)
     assert(predicate ~= nil and type(predicate) == "function")
 
     self.actions[#self.actions + 1] = action
-    self.predicates[#self.predicates+1] = predicate
+    self.predicates[#self.predicates + 1] = predicate
 end
 
 function ActionQueue:processActions()

@@ -1,94 +1,89 @@
 #pragma once
 
-#include <glm/vec3.hpp>
-#include <glm/vec2.hpp>
-#include <stdint.h>
-#include <string>
-#include <memory>
-
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 
-namespace EngineCore
-{
-    enum class eTextChangedDataType
-    {
-        VISIBILITY,
-        OFFSET,
-        COLOR,
-        TEXT
-    };
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <stdint.h>
 
-    class HudTextField
-    {
-        int32_t mTextFieldId;
+#include <memory>
+#include <string>
 
-        bool mIsVisible;
+namespace EngineCore {
+enum class eTextChangedDataType { VISIBILITY, OFFSET, COLOR, TEXT };
 
-        std::string mFontName;
+class HudTextField {
+    int32_t mTextFieldId;
 
-        std::string mText;
+    bool mIsVisible;
 
-        float mFontSize;
+    std::string mFontName;
 
-        glm::vec3 mColor;
+    std::string mText;
 
-        glm::vec2 mPosition;
+    float mFontSize;
 
-        float mLineMaxWidth;
+    glm::vec3 mColor;
 
-        int32_t mNumberOfLines;
+    glm::vec2 mPosition;
 
-        eTextHorizontalAlignmentType mTextHorizontalAlignment;
+    float mLineMaxWidth;
 
-        glm::vec2 mScreenSpaceSize;
+    int32_t mNumberOfLines;
 
-    public:
-        HudTextField(const std::string &fontName,
-                     const float fontSize,
-                     const std::string &text,
-                     const glm::vec3 &color,
-                     const glm::vec2 &position,
-                     const float lineMaxSize,
-                     const int32_t numberOfLines,
-                     const eTextHorizontalAlignmentType textHorizontalAlignment);
+    eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
-        HudTextField(const std::string &fontName,
-                     const float fontSize,
-                     const glm::vec3 &color,
-                     const float lineMaxSize,
-                     const int32_t numberOfLines,
-                     const eTextHorizontalAlignmentType textHorizontalAlignment);
+    glm::vec2 mScreenSpaceSize;
 
-        int32_t GetTextFieldId() const;
+public:
+    HudTextField(
+        const std::string& fontName,
+        const float fontSize,
+        const std::string& text,
+        const glm::vec3& color,
+        const glm::vec2& position,
+        const float lineMaxSize,
+        const int32_t numberOfLines,
+        const eTextHorizontalAlignmentType textHorizontalAlignment);
 
-        bool GetIsVisible() const;
+    HudTextField(
+        const std::string& fontName,
+        const float fontSize,
+        const glm::vec3& color,
+        const float lineMaxSize,
+        const int32_t numberOfLines,
+        const eTextHorizontalAlignmentType textHorizontalAlignment);
 
-        std::string GetFontName() const;
+    int32_t GetTextFieldId() const;
 
-        float GetFontSize() const;
+    bool GetIsVisible() const;
 
-        std::string GetText() const;
+    std::string GetFontName() const;
 
-        glm::vec3 GetColor() const;
+    float GetFontSize() const;
 
-        glm::vec2 GetPosition() const;
+    std::string GetText() const;
 
-        void SetText(const std::string &text);
+    glm::vec3 GetColor() const;
 
-        void SetVisibility(const bool isVisible);
+    glm::vec2 GetPosition() const;
 
-        void SetColor(const glm::vec3 &color);
+    void SetText(const std::string& text);
 
-        void SetPosition(const glm::vec2 &position);
+    void SetVisibility(const bool isVisible);
 
-        float GetLineMaxSize() const;
+    void SetColor(const glm::vec3& color);
 
-        int32_t GetNumberOfLines() const;
+    void SetPosition(const glm::vec2& position);
 
-        eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
+    float GetLineMaxSize() const;
 
-        void SetTextScreenSpaceSize(const glm::vec2 &screenSpaceSize);
+    int32_t GetNumberOfLines() const;
 
-        glm::vec2 GetScreenSpaceSize() const;
-    };
-}
+    eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
+
+    void SetTextScreenSpaceSize(const glm::vec2& screenSpaceSize);
+
+    glm::vec2 GetScreenSpaceSize() const;
+};
+} // namespace EngineCore

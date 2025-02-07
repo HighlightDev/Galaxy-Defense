@@ -1,53 +1,48 @@
 #pragma once
 
-#include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
+#include "Core/GraphicsCore/Texture/ITexture.h"
 
 using namespace Graphics::Texture;
 using namespace Graphics::OpenGL;
 
 namespace Graphics {
 
-   struct MaterialProperty
-   {
-      enum class eMaterialPropertyType
-      {
-         FLOAT_PROPERTY,
-         TEXTURE_PROPERTY,
-         DEFERRED_TEXTURE_PROPERTY,
-         FLOAT_BINDING_PROPERTY,
-         IVEC2_BINDING_PROPERTY,
-         VEC2_BINDING_PROPERTY,
-         VEC3_BINDING_PROPERTY,
-         VEC2_PROPERTY,
-         IVEC2_PROPERTY,
-         VEC3_PROPERTY,
-         FLOAT_INSTANCED_PROPERTY
-      };
+struct MaterialProperty {
+    enum class eMaterialPropertyType {
+        FLOAT_PROPERTY,
+        TEXTURE_PROPERTY,
+        DEFERRED_TEXTURE_PROPERTY,
+        FLOAT_BINDING_PROPERTY,
+        IVEC2_BINDING_PROPERTY,
+        VEC2_BINDING_PROPERTY,
+        VEC3_BINDING_PROPERTY,
+        VEC2_PROPERTY,
+        IVEC2_PROPERTY,
+        VEC3_PROPERTY,
+        FLOAT_INSTANCED_PROPERTY
+    };
 
-   protected:
+protected:
+    std::string mPropertyName;
 
-      std::string mPropertyName;
+public:
+    MaterialProperty(const std::string& propertyName)
+        : mPropertyName(propertyName)
+    {
+    }
 
-   public:
+    virtual ~MaterialProperty() = default;
 
-      MaterialProperty(const std::string& propertyName)
-         : mPropertyName(propertyName)
-      {
-      }
+    virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const = 0;
 
-      virtual ~MaterialProperty() = default;
+    virtual void SetValueToUniformArray(const UniformArray& uniformArray) const = 0;
 
-      virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const = 0;
+    virtual eMaterialPropertyType GetPropertyType() const = 0;
 
-      virtual void SetValueToUniformArray(const UniformArray& uniformArray) const = 0;
-
-      virtual eMaterialPropertyType GetPropertyType() const = 0;
-
-      std::string GetPropertyName() const
-      {
-         return mPropertyName;
-      }
-
-   };
-}
+    std::string GetPropertyName() const
+    {
+        return mPropertyName;
+    }
+};
+} // namespace Graphics

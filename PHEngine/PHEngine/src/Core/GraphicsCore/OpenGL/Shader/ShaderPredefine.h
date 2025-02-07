@@ -1,57 +1,47 @@
 #pragma once
-#include <string>
-
 #include "ShaderType.h"
 
-namespace Graphics
-{
-   namespace OpenGL
-   {
-      struct ShaderGenericDefineConstant
-      {
-         std::string m_Name;
-         std::string m_Value;
+#include <string>
 
-         ShaderGenericDefineConstant(const std::string &name, const std::string &value);
-      };
+namespace Graphics {
+namespace OpenGL {
+struct ShaderGenericDefineConstant {
+    std::string m_Name;
+    std::string m_Value;
 
-      struct ShaderGenericDefine
-      {
-         std::string m_Name;
-         bool bDefined;
+    ShaderGenericDefineConstant(const std::string& name, const std::string& value);
+};
 
-         ShaderGenericDefine(const std::string &name, const bool isDefined);
-      };
+struct ShaderGenericDefine {
+    std::string m_Name;
+    bool bDefined;
 
-      struct ShaderGenericConstantArray
-      {
-         std::string m_Name;
-         std::string m_InnerTypeName;
-         std::string m_Value;
+    ShaderGenericDefine(const std::string& name, const bool isDefined);
+};
 
-         ShaderGenericConstantArray(const std::string &name, const std::string &innerTypeName, const std::string &value);
-      };
+struct ShaderGenericConstantArray {
+    std::string m_Name;
+    std::string m_InnerTypeName;
+    std::string m_Value;
 
-      struct ShaderDefineConstant
-          : public ShaderGenericDefineConstant
-      {
-         eShaderType m_ShaderType;
-         ShaderDefineConstant(const std::string &name, const std::string &value, const eShaderType shaderType);
-      };
+    ShaderGenericConstantArray(const std::string& name, const std::string& innerTypeName, const std::string& value);
+};
 
-      struct ShaderConstantArray
-          : public ShaderGenericConstantArray
-      {
-         eShaderType m_ShaderType;
-         ShaderConstantArray(const std::string &name, const std::string &innerTypeName, const std::string &value, const eShaderType shaderType);
-      };
+struct ShaderDefineConstant : public ShaderGenericDefineConstant {
+    eShaderType m_ShaderType;
+    ShaderDefineConstant(const std::string& name, const std::string& value, const eShaderType shaderType);
+};
 
-      struct ShaderDefine
-          : public ShaderGenericDefine
-      {
+struct ShaderConstantArray : public ShaderGenericConstantArray {
+    eShaderType m_ShaderType;
+    ShaderConstantArray(
+        const std::string& name, const std::string& innerTypeName, const std::string& value, const eShaderType shaderType);
+};
 
-         eShaderType m_ShaderType;
-         ShaderDefine(const std::string &name, const bool isDefined, const eShaderType shaderType);
-      };
-   }
-}
+struct ShaderDefine : public ShaderGenericDefine {
+
+    eShaderType m_ShaderType;
+    ShaderDefine(const std::string& name, const bool isDefined, const eShaderType shaderType);
+};
+} // namespace OpenGL
+} // namespace Graphics

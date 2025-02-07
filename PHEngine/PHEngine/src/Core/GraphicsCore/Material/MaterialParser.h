@@ -6,35 +6,40 @@
 #include <list>
 #include <memory>
 
-namespace Graphics
-{
-   struct MaterialProperty;
-   struct DynamicMaterialProperty;
+namespace Graphics {
+struct MaterialProperty;
+struct DynamicMaterialProperty;
 
-   class MaterialParser
-   {
+class MaterialParser {
 
-      MaterialNodeDecorator mMaterialNodeDecorator;
+    MaterialNodeDecorator mMaterialNodeDecorator;
 
-   public:
-      std::shared_ptr<IMaterial> ParseMaterialDescriptor(const std::string &materialFileName);
+public:
+    std::shared_ptr<IMaterial> ParseMaterialDescriptor(const std::string& materialFileName);
 
-      std::string ReadMaterialNameFromMaterialDescriptor(const std::string& materialFileName);
+    std::string ReadMaterialNameFromMaterialDescriptor(const std::string& materialFileName);
 
-   private:
-      std::shared_ptr<IMaterial> ParseStaticMaterial(const std::list<std::string> &materialSrc, const std::string &materialName, const std::string &materialShaderPath);
+private:
+    std::shared_ptr<IMaterial> ParseStaticMaterial(
+        const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath);
 
-      std::shared_ptr<IMaterial> ParseDynamicMaterial(const std::list<std::string> &materialSrc, const std::string &materialName, const std::string &materialShaderPath);
+    std::shared_ptr<IMaterial> ParseDynamicMaterial(
+        const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath);
 
-      XMLParserHelper::iterator_t ProcessDynamicProperty(const std::string &propertyType, std::shared_ptr<MaterialNode> node,
-                                                         XMLParserHelper::iterator_t &propertiesBeginIt, const XMLParserHelper::iterator_t &propertiesEndIt, std::vector<std::shared_ptr<MaterialProperty>> &innerDynamicMaterialProperties);
+    XMLParserHelper::iterator_t ProcessDynamicProperty(
+        const std::string& propertyType,
+        std::shared_ptr<MaterialNode> node,
+        XMLParserHelper::iterator_t& propertiesBeginIt,
+        const XMLParserHelper::iterator_t& propertiesEndIt,
+        std::vector<std::shared_ptr<MaterialProperty>>& innerDynamicMaterialProperties);
 
-      std::shared_ptr<DynamicMaterialProperty> GetMaterialDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t &propertiesBeginIt,
-                                                                                            const XMLParserHelper::iterator_t &propertiesEndIt);
+    std::shared_ptr<DynamicMaterialProperty> GetMaterialDynamicPropertyAndAdvanceIterator(
+        XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt);
 
-      std::shared_ptr<DynamicMaterialProperty> GetMaterialInstancedDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t &propertiesBeginIt,
-                                                                                                     const XMLParserHelper::iterator_t &propertiesEndIt);
+    std::shared_ptr<DynamicMaterialProperty> GetMaterialInstancedDynamicPropertyAndAdvanceIterator(
+        XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt);
 
-      MaterialNode::eMaterialPropertyType ConvertPropertyStrToPropertyTypeForMaterialOperationNode(const std::string &propertyTypeStr) const;
-   };
-}
+    MaterialNode::eMaterialPropertyType
+    ConvertPropertyStrToPropertyTypeForMaterialOperationNode(const std::string& propertyTypeStr) const;
+};
+} // namespace Graphics

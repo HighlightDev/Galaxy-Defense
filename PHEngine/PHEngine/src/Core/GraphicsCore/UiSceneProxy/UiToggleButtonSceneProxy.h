@@ -1,54 +1,49 @@
 #pragma once
 
-#include "UiSceneProxyBase.h"
 #include "Core/GameCore/ShaderImplementation/UiRectangleShader.h"
+#include "UiSceneProxyBase.h"
 
 #include <glm/vec4.hpp>
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class UiToggleButton;
-    }
+namespace EngineCore {
+namespace GUI {
+class UiToggleButton;
 }
+} // namespace EngineCore
 
 using namespace EngineCore::ShaderImpl;
 
-namespace Graphics
-{
-    namespace Proxy
-    {
-        class UiToggleButtonSceneProxy : public UiSceneProxyBase
-        {
-            std::shared_ptr<UiRectangleShader> mUiRectangleShader;
+namespace Graphics {
+namespace Proxy {
+class UiToggleButtonSceneProxy : public UiSceneProxyBase {
+    std::shared_ptr<UiRectangleShader> mUiRectangleShader;
 
-            glm::vec3 mToggleOffColor;
+    glm::vec3 mToggleOffColor;
 
-            glm::vec3 mToggleOnColor;
+    glm::vec3 mToggleOnColor;
 
-            float mOpacity;
+    float mOpacity;
 
-            bool mIsStateOn;
+    bool mIsStateOn;
 
-        public:
-            UiToggleButtonSceneProxy(const ::EngineCore::GUI::UiToggleButton* uiRectangle);
+public:
+    UiToggleButtonSceneProxy(const ::EngineCore::GUI::UiToggleButton* uiRectangle);
 
-            ~UiToggleButtonSceneProxy() override;
+    ~UiToggleButtonSceneProxy() override;
 
-            void Render() override;
+    void Render() override;
 
-            void SetToggleOnColor(const glm::vec3 &color);
+    void SetToggleOnColor(const glm::vec3& color);
 
-            void SetToggleOffColor(const glm::vec3 &color);
+    void SetToggleOffColor(const glm::vec3& color);
 
-            void SetOpacity(const float opacity);
+    void SetOpacity(const float opacity);
 
-            void SetState(const bool state);
+    void SetState(const bool state);
 
-            void CleanUp() override;
+    void CleanUp() override;
 
-            void OnSceneProxyRegistered() override;
-        };
-    }
-}
+    void OnSceneProxyRegistered() override;
+};
+} // namespace Proxy
+} // namespace Graphics

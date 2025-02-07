@@ -1,61 +1,59 @@
 #pragma once
 
-#include <vector>
-
 #include "Word.h"
 
-namespace EngineCore
-{
+#include <vector>
+
+namespace EngineCore {
+/**
+ * Represents a line of text during the loading of a text.
+ */
+class TextLine {
+    float mMaxWidth;
+
+    float mSpaceSize;
+
+    std::vector<Word> mWords;
+
+    float mCurrentLineLength;
+
+public:
     /**
-     * Represents a line of text during the loading of a text.
+     * Creates an empty line.
+     *
+     * @param spaceWidth
+     *            - the screen-space width of a space character.
+     * @param fontSize
+     *            - the size of font being used.
+     * @param maxLength
+     *            - the screen-space maximum length of a line.
      */
-    class TextLine
-    {
-        float mMaxWidth;
+    TextLine(const float spaceWidth, const float fontSize, const float maxWidth);
 
-        float mSpaceSize;
+    TextLine(const TextLine& line) = default;
 
-        std::vector<Word> mWords;
+    TextLine(TextLine&& line);
 
-        float mCurrentLineLength;
+    TextLine& operator=(TextLine&& line);
 
-    public:
-        /**
-         * Creates an empty line.
-         *
-         * @param spaceWidth
-         *            - the screen-space width of a space character.
-         * @param fontSize
-         *            - the size of font being used.
-         * @param maxLength
-         *            - the screen-space maximum length of a line.
-         */
-        TextLine(const float spaceWidth, const float fontSize, const float maxWidth);
+    TextLine& operator=(const TextLine& line) = default;
 
-        TextLine(const TextLine &line) = default;
+    bool IsEnoughSpaceForWord(const Word& word) const;
 
-        TextLine(TextLine &&line);
+    void AddWord(Word word);
+    /**
+     * @return The max length of the line.
+     */
+    float GetMaxLength() const;
 
-        TextLine &operator=(TextLine &&line);
+    /**
+     * @return The current screen-space length of the line.
+     */
+    float GetLineLength() const;
 
-        TextLine &operator=(const TextLine &line) = default;
-
-        bool IsEnoughSpaceForWord(const Word &word) const;
-
-        void AddWord(Word word);
-        /**
-         * @return The max length of the line.
-         */
-        float GetMaxLength() const;
-
-        /**
-         * @return The current screen-space length of the line.
-         */
-        float GetLineLength() const;
-
-        /**
-         * @return The list of words in the line.
-         */
-        const std::vector<Word> &GetWords() const;
-    };
-}
+    /**
+     * @return The list of words in the line.
+     */
+    const std::vector<Word>& GetWords() const;
+};
+} // namespace EngineCore

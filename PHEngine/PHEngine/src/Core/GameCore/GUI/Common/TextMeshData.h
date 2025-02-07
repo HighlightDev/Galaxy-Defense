@@ -2,27 +2,26 @@
 
 #include <vector>
 
-namespace EngineCore
-{
+namespace EngineCore {
 
-	/**
-	 * Stores the vertex data for all the quads on which a text will be rendered.
-	 * @author Karl
-	 *
-	 */
-	struct TextMeshData
-	{
-		std::vector<float> mVertexPositions;
-		std::vector<float> mTextureCoords;
+/**
+ * Stores the vertex data for all the quads on which a text will be rendered.
+ * @author Karl
+ *
+ */
+struct TextMeshData {
+    std::vector<float> mVertexPositions;
+    std::vector<float> mTextureCoords;
 
-		float mTextWidth;
-		float mTextHeight;
+    float mTextWidth;
+    float mTextHeight;
 
-		TextMeshData();
+    TextMeshData();
 
-		TextMeshData(const std::vector<float> &vertexPositions,
-					 const std::vector<float> &textureCoords,
-					 const float textWidth,
-					 const float textHeight);
-	};
-}
+    TextMeshData(
+        const std::vector<float>& vertexPositions,
+        const std::vector<float>& textureCoords,
+        const float textWidth,
+        const float textHeight);
+};
+} // namespace EngineCore

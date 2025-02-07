@@ -1,98 +1,91 @@
 #pragma once
 
-#include <set>
-#include <map>
-#include <vector>
-#include <string>
-#include <assimp/mesh.h>
-#include <assimp/scene.h>
-
 #include "Core/IoCore/MeshLoaderCore/AnimationSequenceData.h"
 #include "Core/IoCore/MeshLoaderCore/MeshBoneInfo.h"
 #include "Core/IoCore/MeshLoaderCore/MeshNode.h"
+
+#include <assimp/mesh.h>
+#include <assimp/scene.h>
+
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
 
 #define MAX_BONES_PER_VERT 4
 
 using namespace MeshLoader;
 
-namespace MeshLoader
-{
-   namespace Assimp
-   {
+namespace MeshLoader {
+namespace Assimp {
 
-      struct MeshDataCollector
-      {
-      private:
+struct MeshDataCollector {
+private:
+    struct VertexBoneData {
+        size_t BoneIndices[MAX_BONES_PER_VERT]{0};
+        float Weights[MAX_BONES_PER_VERT]{0.0f};
 
-         struct VertexBoneData
-         {
-            size_t BoneIndices[MAX_BONES_PER_VERT]{ 0 };
-            float Weights[MAX_BONES_PER_VERT]{ 0.0f };
+        bool IsFilled = false;
 
-            bool IsFilled = false;
+        void AddBoneData(size_t boneIndex, float weight);
+    };
 
-            void AddBoneData(size_t boneIndex, float weight);
-         };
+public:
+    const aiScene* mScene;
 
-      public:
+    std::map<std::string /* Node Name */, MeshNode*> MeshNodeMapping;
+    MeshNode* meshRootNode = nullptr;
 
-         const aiScene* mScene;
+    std::map<std::string /* Bone Name */, MeshBoneInfo> BoneMapping;
 
-         std::map<std::string /* Node Name */, MeshNode*> MeshNodeMapping;
-         MeshNode* meshRootNode = nullptr;
+    glm::mat4 GlobalInverseTransform;
 
-         std::map<std::string /* Bone Name */, MeshBoneInfo> BoneMapping;
+    std::map<std::string /* Animation Name */, AnimationMappingData> AnimationMapping;
+    std::vector<std::string /*Animation Name*/> AnimationIndices;
 
-         glm::mat4 GlobalInverseTransform;
+    std::vector<float> BoneWeights;
 
-         std::map<std::string /* Animation Name */, AnimationMappingData> AnimationMapping;
-         std::vector<std::string /*Animation Name*/> AnimationIndices;
+    std::vector<int32_t> BoneIndices;
 
-         std::vector<float> BoneWeights;
+    std::vector<uint32_t> VertexIndices;
 
-         std::vector<int32_t> BoneIndices;
+    std::vector<float> Positions;
 
-         std::vector<uint32_t> VertexIndices;
+    std::vector<float> TextureCoordinates;
 
-         std::vector<float> Positions;
+    std::vector<float> Normals;
 
-         std::vector<float> TextureCoordinates;
+    std::vector<float> TangentNormals;
 
-         std::vector<float> Normals;
+    std::vector<float> BitangetNormals;
 
-         std::vector<float> TangentNormals;
+    std::map<std::string /* Bone Name */, uint32_t /* Bone index */> BoneIndexMapping;
 
-         std::vector<float> BitangetNormals;
+public:
+    MeshDataCollector(const aiScene* scene);
 
-         std::map<std::string /* Bone Name */, uint32_t /* Bone index */> BoneIndexMapping;
+    void Collect();
 
-      public:
+private:
+    void CollectNodeHierarchy(const aiNode* pNode, MeshNode* meshNode);
 
-         MeshDataCollector(const aiScene* scene);
+    void CollectBones();
 
-         void Collect();
+    void CollectAnimation();
 
-      private:
+    void AnimationIterateNodes(
+        const aiAnimation* pAnimation, const aiNode* pNode, AnimationMappingData::NodeAnimationBinding_t& nodeAnimationBindings);
 
-         void CollectNodeHierarchy(const aiNode* pNode, MeshNode* meshNode);
+    void CollectVertexData();
 
-         void CollectBones();
+    void VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData);
 
-         void CollectAnimation();
+    void StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData);
 
-         void AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode, AnimationMappingData::NodeAnimationBinding_t& nodeAnimationBindings);
+    void StoreVertexData(const aiMesh* pMesh);
 
-         void CollectVertexData();
+    void StoreIndices(size_t meshBaseVertexIndex, const aiMesh* pMesh);
+};
 
-         void VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData);
-
-         void StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData);
-
-         void StoreVertexData(const aiMesh* pMesh);
-
-         void StoreIndices(size_t meshBaseVertexIndex, const aiMesh* pMesh);
-      };
-
-      
-   }
-}
+} // namespace Assimp
+} // namespace MeshLoader

@@ -1,71 +1,70 @@
 #pragma once
 
-#include <memory>
 #include <AL/al.h>
 #include <glm/vec3.hpp>
+
+#include <memory>
 #include <string>
 
-namespace EngineCore
-{
-    class StreamingSoundBufferBundle;
+namespace EngineCore {
+class StreamingSoundBufferBundle;
 
-    class StreamingSoundSource
-    {
-        ALuint mSourceDesc;
+class StreamingSoundSource {
+    ALuint mSourceDesc;
 
-        float mPitch;
+    float mPitch;
 
-        float mGain;
+    float mGain;
 
-        glm::vec3 mPosition;
+    glm::vec3 mPosition;
 
-        glm::vec3 mVelocity;
+    glm::vec3 mVelocity;
 
-        bool mIsPlaybackEnabled;
+    bool mIsPlaybackEnabled;
 
-        bool mIsLoopSound;
+    bool mIsLoopSound;
 
-        std::shared_ptr<StreamingSoundBufferBundle> mStreamingBufferBundle;
+    std::shared_ptr<StreamingSoundBufferBundle> mStreamingBufferBundle;
 
-    public:
-        StreamingSoundSource(const std::string& soundName);
+public:
+    StreamingSoundSource(const std::string& soundName);
 
-        ~StreamingSoundSource();
+    ~StreamingSoundSource();
 
-        void CleanUp();
+    void CleanUp();
 
-        void SetPitch(const float pitch);
+    void SetPitch(const float pitch);
 
-        void SetGain(const float gain);
+    void SetGain(const float gain);
 
-        void SetPosition(const glm::vec3& position);
+    void SetPosition(const glm::vec3& position);
 
-        void SetVelocity(const glm::vec3& velocity);
+    void SetVelocity(const glm::vec3& velocity);
 
-        void SetIsLoopSound(const bool isLoopSound);
+    void SetIsLoopSound(const bool isLoopSound);
 
-        void Play();
+    void Play();
 
-        void Stop();
+    void Stop();
 
-        ALint GetCurrentSourceState() const;
+    ALint GetCurrentSourceState() const;
 
-        float GetPitch() const;
+    float GetPitch() const;
 
-        float GetGain() const;
-        
-        glm::vec3 GetPosition() const;
+    float GetGain() const;
 
-        glm::vec3 GetVelocity() const;
+    glm::vec3 GetPosition() const;
 
-        bool IsSoundLooped() const;
+    glm::vec3 GetVelocity() const;
 
-        void UpdateBufferStream();
+    bool IsSoundLooped() const;
 
-        bool IsPlaying() const;
+    void UpdateBufferStream();
 
-    private:
-        void Init(const std::string& soundName);
-    };
+    bool IsPlaying() const;
 
-}
+private:
+    void Init(const std::string& soundName);
+};
+
+} // namespace EngineCore

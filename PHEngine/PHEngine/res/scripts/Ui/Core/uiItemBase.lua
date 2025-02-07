@@ -124,6 +124,7 @@ function UiItemBase:new()
     uiItemBaseObj.onMouseInputPressStateChangedCallbacks = {}
     uiItemBaseObj.onMouseInputCursorHoverStateChangedCallback = nil
     uiItemBaseObj.onMouseInputClickedCallbacks = {}
+    uiItemBaseObj.isUiInputEnabled = true
 
     return uiItemBaseObj
 end
@@ -142,6 +143,11 @@ function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
         type(uiWidgetParentName) == "string" and
         uiWidgetParentName ~= "", debug.traceback())
     _SetUiWidgetParent(host, self.luaProxyId, canvasName, uiWidgetParentName)
+end
+
+function UiItemBase:setIsUiInputEnabled(isUiInputEnabled)
+    assert(isUiInputEnabled ~= nil and type(isUiInputEnabled) == "boolean")
+    self.isUiInputEnabled = isUiInputEnabled
 end
 
 function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
@@ -203,7 +209,7 @@ function UiItemBase:updateFromReplicatorMouseInputData(host)
     assert(host ~= nil and type(host) == "userdata")
     if self.luaProxyReady then
         local replicatorMouseInputJsonData = _GetMouseInputData(host, self.luaProxyId)
-        if replicatorMouseInputJsonData ~= "" then
+        if self.isUiInputEnabled and replicatorMouseInputJsonData ~= "" then
             local parsedJson = json.decode(replicatorMouseInputJsonData)
             if parsedJson["input_press_state"] ~= nil then
                 local newState = tonumber(parsedJson["input_press_state"])

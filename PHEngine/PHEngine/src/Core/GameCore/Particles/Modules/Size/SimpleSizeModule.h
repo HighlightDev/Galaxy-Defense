@@ -2,24 +2,21 @@
 
 #include "Core/GameCore/Particles/Modules/Size/ISizeModule.h"
 
-namespace EngineCore
-{
-    class SimpleSizeModule
-        : public ISizeModule
-    {
-        float mSizeBegin;
+namespace EngineCore {
+class SimpleSizeModule : public ISizeModule {
+    float mSizeBegin;
 
-        float mSizeEnd;
+    float mSizeEnd;
 
-    public:
-        SimpleSizeModule();
+public:
+    SimpleSizeModule();
 
-        void Update(Particle &particle, const float deltaTime) override;
+    void Update(Particle& particle, const float deltaTime) override;
 
-        void SetSizeBegin(const float sizeBegin);
+    void SetSizeBegin(const float sizeBegin);
 
-        void SetSizeEnd(const float sizeEnd);
+    void SetSizeEnd(const float sizeEnd);
 
-        void OnEmitParticles() override;
-    };
-}
+    void OnEmitParticles() override;
+};
+} // namespace EngineCore

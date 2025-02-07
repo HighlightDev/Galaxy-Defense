@@ -1,157 +1,147 @@
 #include "PlatformTraverseComponent.h"
-#include "Core/UtilityCore/EngineMath.h"
+
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+#include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
-#include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/InterThreadCommunicationMgr.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 using namespace EngineCore::Scripts;
 
-namespace EngineCore
+namespace EngineCore {
+PlatformTraverseComponent::PlatformTraverseComponent(const std::shared_ptr<PlatformTraverseComponentData>& data)
+    : Component(data->EngineObjectName)
+    , mScriptExecutor(std::make_shared<LuaPlatformTraverseScriptExecutor>(data->mScriptName, this))
+    , mDestinationPoint("NO")
+    , mTime(0.0f)
 {
-   PlatformTraverseComponent::PlatformTraverseComponent(const std::shared_ptr<PlatformTraverseComponentData> &data)
-       : Component(data->EngineObjectName),
-         mScriptExecutor(std::make_shared<LuaPlatformTraverseScriptExecutor>(data->mScriptName, this)),
-         mDestinationPoint("NO"),
-         mTime(0.0f)
-   {
-   }
+}
 
-   PlatformTraverseComponent::~PlatformTraverseComponent()
-   {
-   }
+PlatformTraverseComponent::~PlatformTraverseComponent()
+{
+}
 
-   void PlatformTraverseComponent::OnSceneOwnerInitialized()
-   {
-      Component::OnSceneOwnerInitialized();
+void PlatformTraverseComponent::OnSceneOwnerInitialized()
+{
+    Component::OnSceneOwnerInitialized();
 
-      if (const auto &spOwner = GetOwner().lock())
-      {
-         const auto &rootComponent = spOwner->GetRootComponent();
-         assert(rootComponent);
+    if (const auto& spOwner = GetOwner().lock()) {
+        const auto& rootComponent = spOwner->GetRootComponent();
+        assert(rootComponent);
 
-         if (const auto &sceneSp = spOwner->GetSceneOwner().lock())
-         {
-            if (const auto& scriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
-            {
-               mScriptExecutor->SetScene(sceneSp);
-               mScriptExecutor->SetLuaScriptProcessor(scriptProcessorSp);
+        if (const auto& sceneSp = spOwner->GetSceneOwner().lock()) {
+            if (const auto& scriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
+                mScriptExecutor->SetScene(sceneSp);
+                mScriptExecutor->SetLuaScriptProcessor(scriptProcessorSp);
 
-               scriptProcessorSp->RegisterLuaScriptExecutor(mScriptExecutor);
+                scriptProcessorSp->RegisterLuaScriptExecutor(mScriptExecutor);
             }
-         }
+        }
 
-         const auto &physComponent = spOwner->GetPhysicsComponent();
+        const auto& physComponent = spOwner->GetPhysicsComponent();
 
-         if (physComponent)
-         {
+        if (physComponent) {
             mBehaviorVisitor = std::make_unique<PlatformTraverseComponentVisitorWithPhys>(rootComponent, physComponent);
-         }
-         else
-         {
+        } else {
             mBehaviorVisitor = std::make_unique<PlatformTraverseComponentVisitorNoPhys>(rootComponent);
-         }
+        }
 
-         mBehaviorVisitor->Init();
+        mBehaviorVisitor->Init();
 
-         mScriptExecutor->RunScript();
-      }
-   }
+        mScriptExecutor->RunScript();
+    }
+}
 
-   eComponentType PlatformTraverseComponent::GetComponentType() const
-   {
-      return PLATFORM_MOVEMENT_COMPONENT;
-   }
+eComponentType PlatformTraverseComponent::GetComponentType() const
+{
+    return PLATFORM_MOVEMENT_COMPONENT;
+}
 
-   const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> &PlatformTraverseComponent::GetMovementPoints() const
-   {
-      return mMovementPoints;
-   }
+const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>>&
+PlatformTraverseComponent::GetMovementPoints() const
+{
+    return mMovementPoints;
+}
 
-   void PlatformTraverseComponent::AddMovementPoint(const std::string &pointName, const EulerAnglesTransform &t, const float transitionTime)
-   {
-      assert(!mMovementPoints.count(pointName));
+void PlatformTraverseComponent::AddMovementPoint(
+    const std::string& pointName, const EulerAnglesTransform& t, const float transitionTime)
+{
+    assert(!mMovementPoints.count(pointName));
 
-      mMovementPoints.emplace(pointName, std::make_tuple(t, transitionTime));
-   }
+    mMovementPoints.emplace(pointName, std::make_tuple(t, transitionTime));
+}
 
-   void PlatformTraverseComponent::SetDestinationPoint(const std::string &pointName)
-   {
-      mDestinationPoint = pointName;
-      mLastDestinationPoint = pointName;
-      const EulerAnglesTransform &transform = std::get<0>(mMovementPoints[mDestinationPoint]);
-      mBehaviorVisitor->CommitMovementStarted(transform);
-   }
+void PlatformTraverseComponent::SetDestinationPoint(const std::string& pointName)
+{
+    mDestinationPoint = pointName;
+    mLastDestinationPoint = pointName;
+    const EulerAnglesTransform& transform = std::get<0>(mMovementPoints[mDestinationPoint]);
+    mBehaviorVisitor->CommitMovementStarted(transform);
+}
 
-   std::string PlatformTraverseComponent::GetDestinationPoint() const
-   {
-      return mDestinationPoint;
-   }
+std::string PlatformTraverseComponent::GetDestinationPoint() const
+{
+    return mDestinationPoint;
+}
 
-   void PlatformTraverseComponent::Move(const float deltaTime)
-   {
-      mTime += deltaTime;
+void PlatformTraverseComponent::Move(const float deltaTime)
+{
+    mTime += deltaTime;
 
-      const float transitionTime = std::get<1>(mMovementPoints[mDestinationPoint]);
+    const float transitionTime = std::get<1>(mMovementPoints[mDestinationPoint]);
 
-      mBehaviorVisitor->LerpTransformation(mTime, transitionTime);
+    mBehaviorVisitor->LerpTransformation(mTime, transitionTime);
 
-      // If component is at final time position
-      if (EngineMath::FloatsNearEqual(mTime, transitionTime))
-      {
-         mTime = 0.0f;
-         mDestinationPoint = "NO";
-      }
-      mTime = fmod(mTime, transitionTime);
-   }
+    // If component is at final time position
+    if (EngineMath::FloatsNearEqual(mTime, transitionTime)) {
+        mTime = 0.0f;
+        mDestinationPoint = "NO";
+    }
+    mTime = fmod(mTime, transitionTime);
+}
 
-   void PlatformTraverseComponent::Tick(const float deltaTime)
-   {
-      Component::Tick(deltaTime);
+void PlatformTraverseComponent::Tick(const float deltaTime)
+{
+    Component::Tick(deltaTime);
 
-      if (mDestinationPoint != "NO")
-      {
-         Move(deltaTime);
+    if (mDestinationPoint != "NO") {
+        Move(deltaTime);
 
-         mBehaviorVisitor->CommitMove();
+        mBehaviorVisitor->CommitMove();
 
-         EulerAnglesTransform transform;
-         transform.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
+        EulerAnglesTransform transform;
+        transform.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
 
-         if (const auto &spOwner = GetOwner().lock())
-         {
-            if (auto physCompSP = spOwner->GetPhysicsComponent())
-            {
-               const auto physDescriptor = physCompSP->GetDescriptor();
-               KinematicBodyMovedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, physDescriptor, transform);
+        if (const auto& spOwner = GetOwner().lock()) {
+            if (auto physCompSP = spOwner->GetPhysicsComponent()) {
+                const auto physDescriptor = physCompSP->GetDescriptor();
+                KinematicBodyMovedGameThreadEvent::GetInstance()->SendEvent(
+                    Event::eExecutionOrder::POST_EXECUTION, physDescriptor, transform);
             }
-         }
-      }
-      else
-      {
-         if (mMovementPoints.size())
-         {
+        }
+    } else {
+        if (mMovementPoints.size()) {
             auto itNext = (++(mMovementPoints.find(mLastDestinationPoint)));
             if (itNext == mMovementPoints.end())
-               itNext = mMovementPoints.begin();
+                itNext = mMovementPoints.begin();
 
             mBehaviorVisitor->CommitMovementFinished();
             SetDestinationPoint(itNext->first);
-         }
-      }
-   }
-
-   void PlatformTraverseComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
-   {
-      auto &actorData = GetSerializeDataActor(dataContainer);
-
-      std::shared_ptr<SerializeDataPlatformTraverseComponent> data = std::make_shared<SerializeDataPlatformTraverseComponent>();
-      data->ComponentName = EngineObjectName;
-      data->ScriptName = mScriptExecutor->GetScriptName();
-
-      actorData.ComponentsData.emplace_back(data);
-   }
+        }
+    }
 }
+
+void PlatformTraverseComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+{
+    auto& actorData = GetSerializeDataActor(dataContainer);
+
+    std::shared_ptr<SerializeDataPlatformTraverseComponent> data = std::make_shared<SerializeDataPlatformTraverseComponent>();
+    data->ComponentName = EngineObjectName;
+    data->ScriptName = mScriptExecutor->GetScriptName();
+
+    actorData.ComponentsData.emplace_back(data);
+}
+} // namespace EngineCore

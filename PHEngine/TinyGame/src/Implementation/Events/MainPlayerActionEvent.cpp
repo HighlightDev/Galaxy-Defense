@@ -2,7 +2,6 @@
 
 using namespace Event;
 
-namespace Event
-{
-    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMainPlayerActionEnum>>;
+namespace Event {
+template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMainPlayerActionEnum>>;
 }

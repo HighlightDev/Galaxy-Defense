@@ -1,74 +1,68 @@
 #pragma once
 
-#include "TextureAtlasCell.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
+#include "TextureAtlasCell.h"
 
-#include <memory>
-#include <map>
-#include <tuple>
 #include <glm/vec2.hpp>
+
+#include <map>
+#include <memory>
+#include <tuple>
 
 using namespace Graphics::Texture;
 
-namespace Graphics
-{
+namespace Graphics {
 
-   class TextureAtlas
-   {
-      friend class TextureAtlasFactory;
+class TextureAtlas {
+    friend class TextureAtlasFactory;
 
-      virtual void AllocateReservedMemory() = 0;
+    virtual void AllocateReservedMemory() = 0;
 
-      void DeallocateMemory();
+    void DeallocateMemory();
 
-   protected:
+protected:
+    int32_t shadow_map_size;
 
-      int32_t shadow_map_size;
+    std::shared_ptr<ITexture> m_atlasTexture;
 
-      std::shared_ptr<ITexture> m_atlasTexture;
+    eTextureType m_type = eTextureType::UNDEFINED;
 
-      eTextureType m_type = eTextureType::UNDEFINED;
+public:
+    ~TextureAtlas() = default;
 
-   public:
+    eTextureType GetType() const;
+};
 
-      ~TextureAtlas() = default;
+class TextureAtlas2D : public TextureAtlas {
+    friend class TextureAtlasFactory;
 
-      eTextureType GetType() const;
-   };
+    std::map<size_t, TextureAtlasCell> Cells;
 
-   class TextureAtlas2D : public TextureAtlas
-   {
-      friend class TextureAtlasFactory;
+    void AllocateReservedMemory() override;
 
-      std::map<size_t, TextureAtlasCell> Cells;
+    void ShrinkReservedMemory();
 
-      void AllocateReservedMemory() override;
+public:
+    explicit TextureAtlas2D();
 
-      void ShrinkReservedMemory();
+    ~TextureAtlas2D();
 
-   public: 
+    TextureAtlas2D(const TextureAtlas2D&) = default;
+};
 
-      explicit TextureAtlas2D();
+class TextureAtlasCube : public TextureAtlas {
+    friend class TextureAtlasFactory;
 
-      ~TextureAtlas2D();
+    std::pair<size_t, std::tuple<glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2>> m_sizes;
 
-      TextureAtlas2D(const TextureAtlas2D&) = default;
-   };
+    void AllocateReservedMemory() override;
 
-   class TextureAtlasCube : public TextureAtlas
-   {
-      friend class TextureAtlasFactory;
+public:
+    explicit TextureAtlasCube(
+        size_t requestId, std::tuple<glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2> m_sizes);
 
-      std::pair<size_t, std::tuple<glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2>> m_sizes;
+    ~TextureAtlasCube();
 
-      void AllocateReservedMemory() override;
-
-   public:
-
-      explicit TextureAtlasCube(size_t requestId, std::tuple<glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2> m_sizes);
-
-      ~TextureAtlasCube();
-
-      TextureAtlasCube(const TextureAtlasCube&) = default;
-   };
-}
+    TextureAtlasCube(const TextureAtlasCube&) = default;
+};
+} // namespace Graphics

@@ -1,7 +1,6 @@
 function CreateTestLevel(host)
-	
-	_LoadResourcesAsync(host, 
-	[[brick_mid.jpg
+	_LoadResourcesAsync(host,
+		[[brick_mid.jpg
 	,brick_nm_mid.jpg
 	,city_house_2_Col.jpg
 	,city_house_2_Nor.jpg
@@ -43,7 +42,7 @@ function CreateTestLevel(host)
 	,playerCube.obj
 	,arial.png
 	]])
-	 
+
 	local aTra = { x = 0, y = 0, z = 0 }
 	local aRot = { x = 0, y = 0, z = 0 }
 	local aSca = { x = 1, y = 1, z = 1 }
@@ -51,42 +50,43 @@ function CreateTestLevel(host)
 	--void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)
 	-- *********************************CREATE MAIN CAMERA******************************** --
 	_CreateThirdPersonCamera(host, "MainCamera",
-	0, 0, _GetWindowWidth(host), _GetWindowHeight(host),
-	50.0,
-	20.0,
-	20.0,
-	0, 5, 0,
-	1) -- is main camera on scene
+		0, 0, _GetWindowWidth(host), _GetWindowHeight(host),
+		50.0,
+		20.0,
+		20.0,
+		0, 5, 0,
+		1) -- is main camera on scene
 
 
 	-- ****************************PLANAR REFLECTION***************************** --
 
 	local planarReflectionCD = _CreatePlanarReflectionComponentData(host, "planarReflectionComponent",
-	0, 2, 0,
-	0, 0, 0,
-	1, 1, 1,
-	"MainCamera",
-	0, 0, _GetWindowWidth(host), _GetWindowHeight(host))
+		0, 2, 0,
+		0, 0, 0,
+		1, 1, 1,
+		"MainCamera",
+		0, 0, _GetWindowWidth(host), _GetWindowHeight(host))
 	_CreateComponent(host, "PlanarReflectionComponent", planarReflectionCD)
 
 	-- ****************************LIGHT***************************** --
 
 	-- OBSOLETE
-	local lightActor = _CreateActor(host, "MainLightActor", aTra.x,aTra.y,aTra.z, aRot.x,aRot.y,aRot.z,aSca.x, aSca.y, aSca.z)
-	
+	local lightActor = _CreateActor(host, "MainLightActor", aTra.x, aTra.y, aTra.z, aRot.x, aRot.y, aRot.z, aSca.x,
+		aSca.y, aSca.z)
+
 	if lightActor ~= nil then
 		local rotation = { x = 0, y = 0, z = 0 }
 		local direction = { x = -0.5, y = -0.5, z = 0 }
-		local ambient = { x = 0.2, y = 0.2, z = 0.2}
+		local ambient = { x = 0.2, y = 0.2, z = 0.2 }
 		local diffuse = { x = 1.68, y = 1.5, z = 1.5 }
 		local specular = { x = 0.7, y = 0.7, z = 0.7 }
-		
+
 		local attenuation = { x = 0, y = 0, z = 0 }
-		local pointLTranslation = {x = 15 , y = 15, z = 0}
-	
+		local pointLTranslation = { x = 15, y = 15, z = 0 }
+
 		local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
-		local dirShadowInfo1= _CreateLightProjectionShadowInfo(host, 256, "direct_light")
-	
+		local dirShadowInfo1 = _CreateLightProjectionShadowInfo(host, 256, "direct_light")
+
 		local dirLightComponentData = _CreateDirLightComponentData(host, "MainLightComp",
 			rotation.x, rotation.y, rotation.z,
 			direction.x, direction.y, direction.z,
@@ -96,7 +96,7 @@ function CreateTestLevel(host)
 			dirShadowInfo
 		)
 		local dirLightComponent = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData)
-		 _AttachComponentToActor(host, "MainLightActor", dirLightComponent)
+		_AttachComponentToActor(host, "MainLightActor", dirLightComponent)
 
 		--	local dirLightComponentData1 = _CreateDirLightComponentData(host, "MainLightComp1",
 		--	rotation.x, rotation.y, rotation.z,
@@ -124,7 +124,7 @@ function CreateTestLevel(host)
 		--_AttachComponentToActor(host, "MainLightActor", pointLightComponent)
 
 		--local spotlightShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "spotlight")
-		--local spotlightCD = _CreateSpotlightComponentData(host, 
+		--local spotlightCD = _CreateSpotlightComponentData(host,
 		--	"spotlightComp",
 		--	-15, 5, 0,
 		--	rotation.x, 0, rotation.z,
@@ -142,10 +142,10 @@ function CreateTestLevel(host)
 	-- ****************************BIG GROUND***************************** --
 	-- OBSOLETE
 	local groundActor = _CreateActor(host, "Ground",
-	0, 0, 0,
-	0, 0, 0,
-	1, 1, 1)
-	
+		0, 0, 0,
+		0, 0, 0,
+		1, 1, 1)
+
 	if groundActor ~= nil then
 		local material = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 		_SetTextureToMaterial(host, material, "brick_mid.jpg", "albedo")
@@ -154,7 +154,8 @@ function CreateTestLevel(host)
 		_SetTextureToMaterial(host, material, "dummy_metallic_roughness.png", "metallicMap")
 		_SetFloatToMaterial(host, material, 10.0, "uvScale")
 
-		local meshData = _CreateMeshComponentData(host, "floor1Comp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 50, 1, 50, "", material)
+		local meshData = _CreateMeshComponentData(host, "floor1Comp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 50, 1, 50, "",
+			material)
 		local floorComponent = _CreateComponent(host, "StaticMeshComponent", meshData)
 		_AttachComponentToActor(host, "Ground", floorComponent)
 
@@ -168,11 +169,11 @@ function CreateTestLevel(host)
 	-- ****************************SMALL GROUND***************************** --
 	-- OBSOLETE
 	local smallGroundActor = _CreateActor(host, "SmallGround",
-	0, 10, 0,
-	0, 0, 0,
-	1, 1, 1)
+		0, 10, 0,
+		0, 0, 0,
+		1, 1, 1)
 
-	if smallGroundActor ~= nil then 
+	if smallGroundActor ~= nil then
 		local material1 = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 		_SetTextureToMaterial(host, material1, "brick_mid.jpg", "albedo")
 		_SetTextureToMaterial(host, material1, "brick_nm_mid.jpg", "normalMap")
@@ -180,8 +181,10 @@ function CreateTestLevel(host)
 		_SetTextureToMaterial(host, material1, "dummy_metallic_roughness.png", "metallicMap")
 		_SetFloatToMaterial(host, material1, 1, "uvScale")
 
-		local smallMeshData = _CreateMeshComponentData(host, "playerCubeMeshComp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material1)
-		local moveCompData = _CreatePlatformTraverseComponentData(host, "moveCompData", "platformMovementComponentAction.lua")
+		local smallMeshData = _CreateMeshComponentData(host, "playerCubeMeshComp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8,
+			1, 8, "", material1)
+		local moveCompData = _CreatePlatformTraverseComponentData(host, "moveCompData",
+			"platformMovementComponentAction.lua")
 		local floorComponent = _CreateComponent(host, "StaticMeshComponent", smallMeshData)
 		local moveComponent = _CreateComponent(host, "PlatformTraverseComponent", moveCompData)
 		_AttachComponentToActor(host, "SmallGround", floorComponent)
@@ -197,11 +200,11 @@ function CreateTestLevel(host)
 	-- THIS IS A CODE SNIPPET FOR SPOTLIGHT TEST
 	-- OBSOLETE
 	local smallGroundActor1 = _CreateActor(host, "SmallGround1",
-	5, 8, 0,
-	0, 0, 90,
-	1, 1, 1)
+		5, 8, 0,
+		0, 0, 90,
+		1, 1, 1)
 
-	if smallGroundActor1 ~= nil then 
+	if smallGroundActor1 ~= nil then
 		local material2 = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 		_SetTextureToMaterial(host, material2, "Brick_Medieval_albedo.jpg", "albedo")
 		_SetTextureToMaterial(host, material2, "Brick_Medieval_normal.jpg", "normalMap")
@@ -209,7 +212,8 @@ function CreateTestLevel(host)
 		_SetTextureToMaterial(host, material2, "Brick_Medieval_metallic.jpg", "metallicMap")
 		_SetFloatToMaterial(host, material2, 1, "uvScale")
 
-		local smallMeshData1 = _CreateMeshComponentData(host, "playerCubeMeshComp1", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material2)
+		local smallMeshData1 = _CreateMeshComponentData(host, "playerCubeMeshComp1", "playerCube.obj", 0, 0, 0, 0, 0, 0,
+			8, 1, 8, "", material2)
 		local floorComponent1 = _CreateComponent(host, "StaticMeshComponent", smallMeshData1)
 		_AttachComponentToActor(host, "SmallGround1", floorComponent1)
 
@@ -222,12 +226,12 @@ function CreateTestLevel(host)
 
 	-- ***************************HOUSE******************** --
 	-- OBSOLETE
-	local house = _CreateActor(host, "House", 
-	5, 15, 0,
-	0, 0, 0,
-	1, 1, 1)
+	local house = _CreateActor(host, "House",
+		5, 15, 0,
+		0, 0, 0,
+		1, 1, 1)
 
-	if house ~= nil then 
+	if house ~= nil then
 		local houseMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 		_SetTextureToMaterial(host, houseMat, "spaceship_albedo.jpg", "albedo")
 		_SetTextureToMaterial(host, houseMat, "spaceship_normal.jpg", "normalMap")
@@ -236,11 +240,11 @@ function CreateTestLevel(host)
 		_SetFloatToMaterial(host, houseMat, 1.0, "uvScale")
 
 		local houseData = _CreateMeshComponentData(host, "houseMeshComp", "spaceship.obj",
-		0, 0, 0,
-		0, 0, 0,
-		4.5, 4.5, 4.5, 
-		"",
-		houseMat)
+			0, 0, 0,
+			0, 0, 0,
+			4.5, 4.5, 4.5,
+			"",
+			houseMat)
 
 		local meshComponent = _CreateComponent(host, "StaticMeshComponent", houseData)
 		_AttachComponentToActor(host, "House", meshComponent)
@@ -254,10 +258,10 @@ function CreateTestLevel(host)
 
 	-- ***************************TEST******************** --
 	-- OBSOLETE
-	local test = _CreateActor(host, "test", 
-	15, 5, 0,
-	0, 0, 0,
-	1, 1, 1)
+	local test = _CreateActor(host, "test",
+		15, 5, 0,
+		0, 0, 0,
+		1, 1, 1)
 
 	if test ~= nil then
 		local testMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
@@ -268,51 +272,53 @@ function CreateTestLevel(host)
 		_SetFloatToMaterial(host, testMat, 5.0, "uvScale")
 
 		local testData = _CreateMeshComponentData(host, "testMeshComponent", "witcher.obj",
-		0, 0, 0,
-		0, 0, 0,
-		1.5, 1.5, 1.5, 
-		"",
-		testMat)
+			0, 0, 0,
+			0, 0, 0,
+			1.5, 1.5, 1.5,
+			"",
+			testMat)
 
 		local testMeshComponent = _CreateComponent(host, "StaticMeshComponent", testData)
 		_AttachComponentToActor(host, "test", testMeshComponent)
 
 		local compoundShape = _CreatePhysicsCompoundShape(host)
-		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), -4, 0, 0, 0 ,0 ,0)
-		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), 4, 0, 0, 0 ,0 ,0)
+		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), -4, 0, 0, 0, 0, 0)
+		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), 4, 0, 0, 0, 0, 0)
 		local testDesc = _CreateRigidBodyController(host, compoundShape, "DYNAMIC_BODY", 1000.0)
 		local testCompData = _CreatePhysicsComponentData(host, "testPhyComp", testDesc)
-		_AttachComponentToActor(host, "test",  _CreateComponent(host, "RigidBodyPhysicsComponent", testCompData))
+		_AttachComponentToActor(host, "test", _CreateComponent(host, "RigidBodyPhysicsComponent", testCompData))
 	end
 
 	-- ***************************SKYBOX******************** --
 	-- OBSOLETE
-	local skyboxActor = _CreateActor(host, "Skybox actor", 
-	0, 0, 0,
-	0, 0, 0,
-	1, 1, 1)
+	local skyboxActor = _CreateActor(host, "Skybox actor",
+		0, 0, 0,
+		0, 0, 0,
+		1, 1, 1)
 
 	local skyboxMat = _CreateMaterial(host, "SkyboxMaterial.m")
-	_SetTextureToMaterial(host, skyboxMat, "dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg","dayTexture")
+	_SetTextureToMaterial(host, skyboxMat, "dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg",
+		"dayTexture")
 
-	_SetTextureToMaterial(host, skyboxMat,"nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",	"nightTexture")
+	_SetTextureToMaterial(host, skyboxMat,
+		"nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg", "nightTexture")
 
 	_SetBindingToMaterial(host, skyboxMat, "EngineScene", "GT_DeltaSec", "deltaTime")
 	_SetFloatToMaterial(host, skyboxMat, 0.1, "mul_coef")
 
 	local skyboxData = _CreateSkyboxComponentData(host, "SkyboxComp",
-	140, 140, 140,
-	skyboxMat)
+		140, 140, 140,
+		skyboxMat)
 
 	local skyboxComponent = _CreateComponent(host, "SkyboxComponent", skyboxData)
 	_AttachComponentToActor(host, "Skybox actor", skyboxComponent)
 
 	-- ***************************SKELET******************** --
 	-- OBSOLETE
-	local buddy = _CreateActor(host, "SkeletBuddy", 
-	10, 50, 10,
-	0, 0, 0,
-	1, 1, 1)
+	local buddy = _CreateActor(host, "SkeletBuddy",
+		10, 50, 10,
+		0, 0, 0,
+		1, 1, 1)
 
 	local buddyMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 	_SetTextureToMaterial(host, buddyMat, "dummy_nm.png", "albedo")
@@ -324,13 +330,14 @@ function CreateTestLevel(host)
 	local skeletDesc = _CreateDynamicCharacterController(host, 1, 2.5, 10, 1.0)
 	local skeletPhysCompData = _CreatePhysicsComponentData(host, "buddyPhyComp", skeletDesc)
 	local skeletInputCompData = _CreateInputComponentData(host, "skeletInputComp")
-	local skeletMovementCompData = _CreateCharacterMovementComponentData(host, "charMovementCompData", 0, 0, 0, "MainCamera")
+	local skeletMovementCompData = _CreateCharacterMovementComponentData(host, "charMovementCompData", 0, 0, 0,
+		"MainCamera")
 	local buddyData = _CreateMeshComponentData(host, "buddyMeshComp", "player_walk.fbx",
-	0, -0.6, 0,
-	0, 0, 0,
-	3, 3, 3, 
-	"skeletComponentAction.lua",
-	buddyMat)
+		0, -0.6, 0,
+		0, 0, 0,
+		3, 3, 3,
+		"skeletComponentAction.lua",
+		buddyMat)
 
 	local skeletPhysComp = _CreateComponent(host, "CharacterPhysicsComponent", skeletPhysCompData)
 	local skeletInputComponent = _CreateComponent(host, "InputComponent", skeletInputCompData)
@@ -343,16 +350,16 @@ function CreateTestLevel(host)
 	_AttachComponentToActor(host, "SkeletBuddy", skeletMovementComponent)
 
 	local buddyAnimationTweener = _CreateTweener(host, buddy, "playerAnimation.tween")
-	_SetTweenerBinding(host, buddyAnimationTweener, "buddyMeshComp", "animationBinding", "")	
+	_SetTweenerBinding(host, buddyAnimationTweener, "buddyMeshComp", "animationBinding", "")
 
 	_AttachPlayerControllerToActor(host, buddy)
 
 	-- ****************************WATER***************************** --
 	-- OBSOLETE
 	local waterActor = _CreateActor(host, "WaterActor",
-	20, 2, 0,
-	0, 0, 0,
-	1, 1, 1)
+		20, 2, 0,
+		0, 0, 0,
+		1, 1, 1)
 
 	if waterActor ~= nil then
 		local waterMat = _CreateMaterial(host, "WaterMaterial.m")
@@ -362,7 +369,8 @@ function CreateTestLevel(host)
 		_SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTime")
 		_SetFloatToMaterial(host, waterMat, 0.5, "mul_coef")
 
-		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 20, 1, 20, waterMat)
+		local waterMeshData = _CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 20, 1, 20,
+			waterMat)
 		local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
 		_AttachComponentToActor(host, "WaterActor", waterComponent)
 	end

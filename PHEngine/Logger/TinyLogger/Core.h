@@ -1,60 +1,52 @@
 #pragma once
-#include <vector>
-#include <queue>
-#include <string>
-#include <initializer_list>
-#include <mutex>
-#include <thread>
-#include <atomic>
-#include <memory>
-
 #include "LoggerClient.h"
 
-namespace TinyLogger
-{
-   struct LogMessage
-   {
-   private:
+#include <atomic>
+#include <initializer_list>
+#include <memory>
+#include <mutex>
+#include <queue>
+#include <string>
+#include <thread>
+#include <vector>
 
-      std::vector<std::string> mLogs;
+namespace TinyLogger {
+struct LogMessage {
+private:
+    std::vector<std::string> mLogs;
 
-   public:
+public:
+    LogMessage(std::vector<std::string>&& messages);
 
-      LogMessage(std::vector<std::string>&& messages);
-   
-      std::string GetLog() const;
-   };
+    std::string GetLog() const;
+};
 
-   class LoggerServer
-   {
-      std::mutex mWriteToFileMutex;
-      std::thread mLogThread;
-      std::atomic<bool> mIsThreadRunning{ false };
+class LoggerServer {
+    std::mutex mWriteToFileMutex;
+    std::thread mLogThread;
+    std::atomic<bool> mIsThreadRunning{false};
 
-      std::queue<LogMessage> mMessageQueue;
-      std::vector<std::shared_ptr<LoggerClientBase>> mLoggerClients;
+    std::queue<LogMessage> mMessageQueue;
+    std::vector<std::shared_ptr<LoggerClientBase>> mLoggerClients;
 
-      LoggerServer();
+    LoggerServer();
 
-   public:
+public:
+    static LoggerServer* GetInstance_();
 
-      static LoggerServer* GetInstance_();
+    void AddLoggerClient(const std::shared_ptr<LoggerClientBase>& clientBase);
 
-      void AddLoggerClient(const std::shared_ptr<LoggerClientBase>& clientBase);
+    void StartLogThread();
 
-      void StartLogThread();
+    void StopLogThread();
 
-      void StopLogThread();
+    void EnqueuLogMessage(LogMessage message);
 
-      void EnqueuLogMessage(LogMessage message);
+private:
+    void WriteLogMessage();
 
-   private:
+    void UpdateLoggerMainLoop();
 
-      void WriteLogMessage();
-
-      void UpdateLoggerMainLoop();
-
-      std::string ConcatMessages();
-   };
-}
-
+    std::string ConcatMessages();
+};
+} // namespace TinyLogger

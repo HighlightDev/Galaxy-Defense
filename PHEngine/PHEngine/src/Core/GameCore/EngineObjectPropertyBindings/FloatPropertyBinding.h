@@ -1,55 +1,51 @@
 #pragma once
 
-#include <string>
-
-#include "PropertyBinding.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/EngineObjectProperty.h"
+#include "PropertyBinding.h"
 
-namespace EngineCore
-{
+#include <string>
 
-   struct FloatPropertyBinding
-       : public PropertyBinding
-   {
-   private:
-      std::weak_ptr<EngineObjectProperty<float>> mGoPropertyWp;
+namespace EngineCore {
 
-   public:
-      FloatPropertyBinding(const std::string &bindingName)
-          : PropertyBinding(bindingName), mGoPropertyWp()
-      {
-      }
+struct FloatPropertyBinding : public PropertyBinding {
+private:
+    std::weak_ptr<EngineObjectProperty<float>> mGoPropertyWp;
 
-      void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<float>> gameObjectProperty)
-      {
-         assert(gameObjectProperty);
-         mGoPropertyWp = gameObjectProperty;
-         bPropertyConnected = true;
-      }
+public:
+    FloatPropertyBinding(const std::string& bindingName)
+        : PropertyBinding(bindingName)
+        , mGoPropertyWp()
+    {
+    }
 
-      void SetValue(float value)
-      {
-         assert(bPropertyConnected);
-         if (const auto &propertySp = mGoPropertyWp.lock())
-         {
+    void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<float>> gameObjectProperty)
+    {
+        assert(gameObjectProperty);
+        mGoPropertyWp = gameObjectProperty;
+        bPropertyConnected = true;
+    }
+
+    void SetValue(float value)
+    {
+        assert(bPropertyConnected);
+        if (const auto& propertySp = mGoPropertyWp.lock()) {
             propertySp->SetValue(value);
-         }
-      }
+        }
+    }
 
-      float GetValue() const
-      {
-         assert(bPropertyConnected);
-         if (const auto &propertySp = mGoPropertyWp.lock())
-         {
+    float GetValue() const
+    {
+        assert(bPropertyConnected);
+        if (const auto& propertySp = mGoPropertyWp.lock()) {
             return propertySp->GetValue();
-         }
-         return 0.0f;
-      }
+        }
+        return 0.0f;
+    }
 
-      eEnginePropertyBindingType GetBindingType() const override
-      {
-         return eEnginePropertyBindingType::FloatScalar;
-      }
-   };
-}
+    eEnginePropertyBindingType GetBindingType() const override
+    {
+        return eEnginePropertyBindingType::FloatScalar;
+    }
+};
+} // namespace EngineCore

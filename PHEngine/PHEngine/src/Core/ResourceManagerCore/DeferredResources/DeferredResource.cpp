@@ -5,7 +5,6 @@
 using namespace Graphics;
 using namespace Graphics::Texture;
 
-namespace Resources
-{
-   template struct DeferredResource<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>;
+namespace Resources {
+template struct DeferredResource<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>;
 }

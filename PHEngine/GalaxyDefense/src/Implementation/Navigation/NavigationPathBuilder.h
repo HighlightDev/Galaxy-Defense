@@ -2,24 +2,22 @@
 
 #include "Path.h"
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
-namespace Game
-{
-    class NavigationPathBuilder
-    {
-        std::unordered_map<std::string, Path> mPaths;
+namespace Game {
+class NavigationPathBuilder {
+    std::unordered_map<std::string, Path> mPaths;
 
-    public:
-        void AddPath(const std::string& pathName, const Path &pathSegment);
+public:
+    void AddPath(const std::string& pathName, const Path& pathSegment);
 
-        Path GetPathByName(const std::string& name) const;
+    Path GetPathByName(const std::string& name) const;
 
-        bool TryToRemovePathByName(const std::string& name);
+    bool TryToRemovePathByName(const std::string& name);
 
-        const std::unordered_map<std::string, Path>& GetPaths() const;
+    const std::unordered_map<std::string, Path>& GetPaths() const;
 
-        std::unordered_map<std::string, Path>& GetPaths();
-    };
-}
+    std::unordered_map<std::string, Path>& GetPaths();
+};
+} // namespace Game

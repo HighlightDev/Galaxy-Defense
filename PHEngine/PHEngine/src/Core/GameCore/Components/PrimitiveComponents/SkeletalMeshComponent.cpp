@@ -1,150 +1,152 @@
 #include "SkeletalMeshComponent.h"
-#include "Core/GameCore/Scene.h"
+
 #include "Core/CommonCore/StringHash.h"
-#include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
+#include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
+#include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
-#include "Core/GameCore/ScriptingCore/LuaCore.inl"
-#include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
-#include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
+#include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
+#include "Core/IoCore/FolderManager.h"
+
+#include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
 using namespace EngineCore::Scripts;
 
-namespace EngineCore
+namespace EngineCore {
+SkeletalMeshComponent::SkeletalMeshComponent(
+    const std::shared_ptr<MeshComponentData>& meshComponentData, const MeshRenderData& renderData)
+    : PrimitiveComponent(
+          meshComponentData->EngineObjectName,
+          meshComponentData->m_translation,
+          meshComponentData->m_eulerRotationDegrees,
+          meshComponentData->m_scale)
+    , m_renderData(renderData)
+    , mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() + meshComponentData->m_luaScriptPath)
+    , mLuaInstance(std::make_unique<LuaWrapper>())
+    , mUpdateDataResetTimeCounter(0.0f)
+    , update_data_reset_time(0.1f)
+    , mTimeIncreaseMultiply(1.0f)
+    , LuaScriptName(meshComponentData->m_luaScriptPath)
+    , SrcAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "SrcAnimTime"))
+    , DstAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "DstAnimTime"))
+    , SrcAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "SrcAnimName"))
+    , DstAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "DstAnimName"))
+    , TransitionValue(std::make_shared<EngineObjectProperty<float>>(0.0f, "AnimTransitionValue"))
+    , bTransitionEnabled(std::make_shared<EngineObjectProperty<bool>>(false, "bAnimTransitionEnabled"))
 {
-   SkeletalMeshComponent::SkeletalMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const MeshRenderData &renderData)
-       : PrimitiveComponent(meshComponentData->EngineObjectName,
-                            meshComponentData->m_translation,
-                            meshComponentData->m_eulerRotationDegrees,
-                            meshComponentData->m_scale),
-         m_renderData(renderData),
-         mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() +
-                           meshComponentData->m_luaScriptPath),
-         mLuaInstance(std::make_unique<LuaWrapper>()),
-         mUpdateDataResetTimeCounter(0.0f),
-         update_data_reset_time(0.1f),
-         mTimeIncreaseMultiply(1.0f),
-         LuaScriptName(meshComponentData->m_luaScriptPath),
-         SrcAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "SrcAnimTime")),
-         DstAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "DstAnimTime")),
-         SrcAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "SrcAnimName")),
-         DstAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "DstAnimName")),
-         TransitionValue(std::make_shared<EngineObjectProperty<float>>(0.0f, "AnimTransitionValue")),
-         bTransitionEnabled(std::make_shared<EngineObjectProperty<bool>>(false, "bAnimTransitionEnabled"))
-   {
-      /* Meta table */
-      AddEngineProperty(SrcAnimationTime);
-      AddEngineProperty(DstAnimationTime);
-      AddEngineProperty(SrcAnimationName);
-      AddEngineProperty(DstAnimationName);
-      AddEngineProperty(TransitionValue);
-      AddEngineProperty(bTransitionEnabled);
-      /* Meta table */
-   }
-
-   SkeletalMeshComponent::~SkeletalMeshComponent()
-   {
-   }
-
-   void SkeletalMeshComponent::OnSceneOwnerInitialized()
-   {
-      PrimitiveComponent::OnSceneOwnerInitialized();
-
-      if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath))
-      {
-         mTimeIncreaseMultiply = GetLuaGlobalVariable<float>::Value(*mLuaInstance.get(), "AnimationTimeMultiply", -1);
-      }
-   }
-
-   void SkeletalMeshComponent::SetIsEnabled(const bool bEnabled)
-   {
-      PrimitiveComponent::SetIsEnabled(bEnabled);
-
-      const auto &material = GetMaterial();
-      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
-      {
-         material->SetIsEnabled(bEnabled);
-      }
-   }
-
-   void SkeletalMeshComponent::SetIsVisible(bool isVisible)
-   {
-      PrimitiveComponent::SetIsVisible(isVisible);
-
-      const auto &material = GetMaterial();
-      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
-      {
-         material->SetIsEnabled(isVisible);
-      }
-   }
-
-   std::shared_ptr<IMaterial> SkeletalMeshComponent::GetMaterial() const
-   {
-      // get from scene corresponding to material proxy material instance
-      std::shared_ptr<IMaterial> materialResult = nullptr;
-      if (const auto &sceneSP = m_sceneWP.lock())
-      {
-         materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
-      }
-      assert(materialResult != nullptr);
-      return materialResult;
-   }
-
-   eComponentType SkeletalMeshComponent::GetComponentType() const
-   {
-      return PRIMITIVE_COMPONENT;
-   }
-
-   void SkeletalMeshComponent::Tick(const float deltaTime)
-   {
-      SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTime * mTimeIncreaseMultiply));
-      mUpdateDataResetTimeCounter += deltaTime;
-      const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
-      mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
-
-      if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst) && (bUpdateData || bIsRenderDataDirty))
-      {
-         SyncDataWithRenderThread();
-         bIsRenderDataDirty = false;
-      }
-   }
-
-   void SkeletalMeshComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
-   {
-      auto &actorData = GetSerializeDataActor(dataContainer);
-
-      auto staticCompData = SerializeHelper::GetSerializedDataSkeletalMesh(this);
-      actorData.ComponentsData.emplace_back(staticCompData);
-   }
-
-   void SkeletalMeshComponent::SyncDataWithRenderThread()
-   {
-      static const uint64_t functionId = Hash("SkeletalMeshComponent::SyncDataWithRenderThread");
-      if (const auto &sceneSp = m_sceneWP.lock())
-      {
-         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
-         {
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [sceneRenderer, sceneProxyId = mSceneProxyId, isTransition = bTransitionEnabled->GetValue(), transitionValue = TransitionValue->GetValue(), srcAnimationTime = SrcAnimationTime->GetValue(), dstAnimationTime = DstAnimationTime->GetValue(), srcAnimation = SrcAnimationName->GetValue(), dstAnimation = DstAnimationName->GetValue()]()
-                                                                                {
-               if (const auto &primitiveProxySp = std::static_pointer_cast<SkeletalMeshSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId)))
-               {
-                  primitiveProxySp->UpdateAnimationData(isTransition,
-                                                transitionValue,
-                                                srcAnimationTime,
-                                                dstAnimationTime,
-                                                srcAnimation,
-                                                dstAnimation);
-               } });
-         }
-      }
-   }
-
-   std::shared_ptr<PrimitiveSceneProxy> SkeletalMeshComponent::CreateSceneProxy() const
-   {
-      return std::make_shared<SkeletalMeshSceneProxy>(this);
-   }
+    /* Meta table */
+    AddEngineProperty(SrcAnimationTime);
+    AddEngineProperty(DstAnimationTime);
+    AddEngineProperty(SrcAnimationName);
+    AddEngineProperty(DstAnimationName);
+    AddEngineProperty(TransitionValue);
+    AddEngineProperty(bTransitionEnabled);
+    /* Meta table */
 }
+
+SkeletalMeshComponent::~SkeletalMeshComponent()
+{
+}
+
+void SkeletalMeshComponent::OnSceneOwnerInitialized()
+{
+    PrimitiveComponent::OnSceneOwnerInitialized();
+
+    if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath)) {
+        mTimeIncreaseMultiply = GetLuaGlobalVariable<float>::Value(*mLuaInstance.get(), "AnimationTimeMultiply", -1);
+    }
+}
+
+void SkeletalMeshComponent::SetIsEnabled(const bool bEnabled)
+{
+    PrimitiveComponent::SetIsEnabled(bEnabled);
+
+    const auto& material = GetMaterial();
+    if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType()) {
+        material->SetIsEnabled(bEnabled);
+    }
+}
+
+void SkeletalMeshComponent::SetIsVisible(bool isVisible)
+{
+    PrimitiveComponent::SetIsVisible(isVisible);
+
+    const auto& material = GetMaterial();
+    if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType()) {
+        material->SetIsEnabled(isVisible);
+    }
+}
+
+std::shared_ptr<IMaterial> SkeletalMeshComponent::GetMaterial() const
+{
+    // get from scene corresponding to material proxy material instance
+    std::shared_ptr<IMaterial> materialResult = nullptr;
+    if (const auto& sceneSP = m_sceneWP.lock()) {
+        materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
+    }
+    assert(materialResult != nullptr);
+    return materialResult;
+}
+
+eComponentType SkeletalMeshComponent::GetComponentType() const
+{
+    return PRIMITIVE_COMPONENT;
+}
+
+void SkeletalMeshComponent::Tick(const float deltaTime)
+{
+    SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTime * mTimeIncreaseMultiply));
+    mUpdateDataResetTimeCounter += deltaTime;
+    const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
+    mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
+
+    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst) && (bUpdateData || bIsRenderDataDirty)) {
+        SyncDataWithRenderThread();
+        bIsRenderDataDirty = false;
+    }
+}
+
+void SkeletalMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+{
+    auto& actorData = GetSerializeDataActor(dataContainer);
+
+    auto staticCompData = SerializeHelper::GetSerializedDataSkeletalMesh(this);
+    actorData.ComponentsData.emplace_back(staticCompData);
+}
+
+void SkeletalMeshComponent::SyncDataWithRenderThread()
+{
+    static const uint64_t functionId = Hash("SkeletalMeshComponent::SyncDataWithRenderThread");
+    if (const auto& sceneSp = m_sceneWP.lock()) {
+        if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                GetObjectId(),
+                functionId,
+                [sceneRenderer,
+                 sceneProxyId = mSceneProxyId,
+                 isTransition = bTransitionEnabled->GetValue(),
+                 transitionValue = TransitionValue->GetValue(),
+                 srcAnimationTime = SrcAnimationTime->GetValue(),
+                 dstAnimationTime = DstAnimationTime->GetValue(),
+                 srcAnimation = SrcAnimationName->GetValue(),
+                 dstAnimation = DstAnimationName->GetValue()]() {
+                    if (const auto& primitiveProxySp = std::static_pointer_cast<SkeletalMeshSceneProxy>(
+                            sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
+                        primitiveProxySp->UpdateAnimationData(
+                            isTransition, transitionValue, srcAnimationTime, dstAnimationTime, srcAnimation, dstAnimation);
+                    }
+                });
+        }
+    }
+}
+
+std::shared_ptr<PrimitiveSceneProxy> SkeletalMeshComponent::CreateSceneProxy() const
+{
+    return std::make_shared<SkeletalMeshSceneProxy>(this);
+}
+} // namespace EngineCore

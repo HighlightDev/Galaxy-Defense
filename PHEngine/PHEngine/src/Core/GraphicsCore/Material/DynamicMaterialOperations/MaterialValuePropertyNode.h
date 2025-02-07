@@ -1,25 +1,23 @@
 #pragma once
 #include "MaterialValueNode.h"
 
-namespace Graphics
-{
-   struct MaterialProperty;
+namespace Graphics {
+struct MaterialProperty;
 
-   struct MaterialValuePropertyNode : public MaterialValueNode
-   {
-   private:
-      std::shared_ptr<MaterialProperty> mValueProperty;
+struct MaterialValuePropertyNode : public MaterialValueNode {
+private:
+    std::shared_ptr<MaterialProperty> mValueProperty;
 
-   public:
-      ~MaterialValuePropertyNode() override;
+public:
+    ~MaterialValuePropertyNode() override;
 
-      explicit MaterialValuePropertyNode(std::shared_ptr<MaterialProperty> valueProperty,
-                                         const MaterialNode::eMaterialPropertyType materialPropertyType);
+    explicit MaterialValuePropertyNode(
+        std::shared_ptr<MaterialProperty> valueProperty, const MaterialNode::eMaterialPropertyType materialPropertyType);
 
-      eValueType GetValueType() const override;
+    eValueType GetValueType() const override;
 
-      std::shared_ptr<MaterialProperty> GetValueProperty() const;
+    std::shared_ptr<MaterialProperty> GetValueProperty() const;
 
-      std::any TraverseGraph() override;
-   };
-}
+    std::any TraverseGraph() override;
+};
+} // namespace Graphics

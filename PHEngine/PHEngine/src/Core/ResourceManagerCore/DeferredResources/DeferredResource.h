@@ -3,98 +3,83 @@
 #include <future>
 #include <memory>
 
-namespace Resources
-{
-   enum class eDeferredResourceType
-   {
-      NONE,
-      TEXTURE,
-      FLOAT
-   };
+namespace Resources {
+enum class eDeferredResourceType { NONE, TEXTURE, FLOAT };
 
-   struct IDeferredResource
-   {
-      virtual eDeferredResourceType GetResourceType() const = 0;
-   };
+struct IDeferredResource {
+    virtual eDeferredResourceType GetResourceType() const = 0;
+};
 
-   template <typename TResource, eDeferredResourceType resourceType>
-   struct DeferredResource 
-      : public IDeferredResource
-   {
-      using arg_t = TResource;
+template<typename TResource, eDeferredResourceType resourceType>
+struct DeferredResource : public IDeferredResource {
+    using arg_t = TResource;
 
-   private:
+private:
+    std::shared_future<arg_t> mResourceFuture;
 
-      std::shared_future<arg_t> mResourceFuture;
+    bool bIsFutureInitialized;
 
-      bool bIsFutureInitialized;
+    arg_t mResource;
 
-      arg_t mResource;
+    bool bResourceSaved;
 
-      bool bResourceSaved;
+public:
+    DeferredResource()
+        : bIsFutureInitialized(false)
+        , bResourceSaved(false)
+    {
+    }
 
-   public:
+    virtual ~DeferredResource()
+    {
+    }
 
-      DeferredResource()
-         : bIsFutureInitialized(false)
-         , bResourceSaved(false)
-      {
-      }
+    void Initialize(std::shared_future<arg_t> sharedFuture)
+    {
+        mResourceFuture = sharedFuture;
+        bIsFutureInitialized = true;
+    }
 
-      virtual ~DeferredResource() {
+    bool GetIsFutureInitialized() const
+    {
+        return bIsFutureInitialized;
+    }
 
-      }
-
-      void Initialize(std::shared_future<arg_t> sharedFuture)
-      {
-         mResourceFuture = sharedFuture;
-         bIsFutureInitialized = true;
-      }
-
-      bool GetIsFutureInitialized() const {
-         return bIsFutureInitialized;
-      }
-
-      arg_t GetResource()
-      {
-         if (!bResourceSaved)
-         {
+    arg_t GetResource()
+    {
+        if (!bResourceSaved) {
             mResource = mResourceFuture.get();
             bResourceSaved = true;
-         }
+        }
 
-         return mResource;
-      }
+        return mResource;
+    }
 
-      bool TryGetResource(arg_t& out)
-      {
-         bool bSuccess = false;
+    bool TryGetResource(arg_t& out)
+    {
+        bool bSuccess = false;
 
-         if (bResourceSaved)
-         {
+        if (bResourceSaved) {
             out = mResource;
             bSuccess = true;
-         }
-         else if (IsReady())
-         {
+        } else if (IsReady()) {
             out = mResourceFuture.get();
             mResource = out;
             bSuccess = true;
             bResourceSaved = true;
-         }
-        
+        }
 
-         return bSuccess;
-      }
+        return bSuccess;
+    }
 
-      bool IsReady() {
-         return mResourceFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
-      }
+    bool IsReady()
+    {
+        return mResourceFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+    }
 
-      eDeferredResourceType GetResourceType() const override
-      {
-         return resourceType;
-      }
-
-   };
-}
+    eDeferredResourceType GetResourceType() const override
+    {
+        return resourceType;
+    }
+};
+} // namespace Resources

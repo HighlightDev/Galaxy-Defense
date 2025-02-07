@@ -1,82 +1,63 @@
 #pragma once
 
-#include <glm/vec3.hpp>
 #include <glm/ext/quaternion_float.hpp>
+#include <glm/vec3.hpp>
 
-namespace EngineCore
-{
+namespace EngineCore {
 
-   struct TranslationTransform
-   {
-      glm::vec3 Translation;
+struct TranslationTransform {
+    glm::vec3 Translation;
 
-      TranslationTransform(const glm::vec3& translation);
-   };
+    TranslationTransform(const glm::vec3& translation);
+};
 
-   struct ScaleTransform
-   {
-      glm::vec3 Scale;
+struct ScaleTransform {
+    glm::vec3 Scale;
 
-      ScaleTransform(const glm::vec3& scale);
-   };
+    ScaleTransform(const glm::vec3& scale);
+};
 
-   struct RotatorTransform
-   {
-      glm::quat Rotator;
+struct RotatorTransform {
+    glm::quat Rotator;
 
-      RotatorTransform(const glm::quat& rotator);
-   };
+    RotatorTransform(const glm::quat& rotator);
+};
 
-   struct EulerRotationTransform
-   {
-      glm::vec3 RotationEulerAngles;
+struct EulerRotationTransform {
+    glm::vec3 RotationEulerAngles;
 
-      EulerRotationTransform(const glm::vec3& eulerRotationAngles);
-   };
+    EulerRotationTransform(const glm::vec3& eulerRotationAngles);
+};
 
-   struct NoScaleEulerRotationTransform
-      : public TranslationTransform
-      , public EulerRotationTransform
-   {
-      NoScaleEulerRotationTransform(const glm::vec3& translation, const glm::vec3& eulerAngles);
-   };
+struct NoScaleEulerRotationTransform : public TranslationTransform, public EulerRotationTransform {
+    NoScaleEulerRotationTransform(const glm::vec3& translation, const glm::vec3& eulerAngles);
+};
 
-   struct BoundingBoxTransform
-      : public TranslationTransform
-      , public ScaleTransform
-   {
-      BoundingBoxTransform();
+struct BoundingBoxTransform : public TranslationTransform, public ScaleTransform {
+    BoundingBoxTransform();
 
-      BoundingBoxTransform(const glm::vec3& translation, const glm::vec3& scale);
-   };
+    BoundingBoxTransform(const glm::vec3& translation, const glm::vec3& scale);
+};
 
-   struct EulerAnglesTransform
-      : public TranslationTransform
-      , public EulerRotationTransform
-      , public ScaleTransform
-   {
+struct EulerAnglesTransform : public TranslationTransform, public EulerRotationTransform, public ScaleTransform {
 
-      EulerAnglesTransform();
+    EulerAnglesTransform();
 
-      EulerAnglesTransform(const EulerAnglesTransform& transform);
+    EulerAnglesTransform(const EulerAnglesTransform& transform);
 
-      EulerAnglesTransform(const glm::vec3& translation, const glm::vec3& eulerAngles, const glm::vec3& scale);
+    EulerAnglesTransform(const glm::vec3& translation, const glm::vec3& eulerAngles, const glm::vec3& scale);
 
-      EulerAnglesTransform& operator=(const EulerAnglesTransform& t);
-   };
+    EulerAnglesTransform& operator=(const EulerAnglesTransform& t);
+};
 
-   struct Transform 
-      : public TranslationTransform
-      , public RotatorTransform
-      , public ScaleTransform
-   {
-      Transform();
+struct Transform : public TranslationTransform, public RotatorTransform, public ScaleTransform {
+    Transform();
 
-      Transform(const Transform& transform);
+    Transform(const Transform& transform);
 
-      Transform(const glm::vec3& translation, const glm::quat& rotator, const glm::vec3& scale);
+    Transform(const glm::vec3& translation, const glm::quat& rotator, const glm::vec3& scale);
 
-      Transform& operator=(const Transform& t);
-   };
+    Transform& operator=(const Transform& t);
+};
 
-}
+} // namespace EngineCore

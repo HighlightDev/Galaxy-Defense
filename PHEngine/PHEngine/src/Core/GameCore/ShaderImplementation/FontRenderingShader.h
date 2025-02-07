@@ -7,41 +7,37 @@
 
 using namespace Graphics::OpenGL;
 
-namespace EngineCore
-{
-    namespace ShaderImpl
-    {
-        class FontRenderingShader : public Shader
-        {
+namespace EngineCore {
+namespace ShaderImpl {
+class FontRenderingShader : public Shader {
 
-        private:
-            Uniform u_fontAtlas, u_position, u_color, u_shadowWidth, u_shadowOffset, u_opacity;
+private:
+    Uniform u_fontAtlas, u_position, u_color, u_shadowWidth, u_shadowOffset, u_opacity;
 
-        public:
-            FontRenderingShader();
+public:
+    FontRenderingShader();
 
-            virtual ~FontRenderingShader();
+    virtual ~FontRenderingShader();
 
-            FontRenderingShader(const ShaderParams &params);
+    FontRenderingShader(const ShaderParams& params);
 
-            void SetFontAtlasSlot(const int32_t slot);
+    void SetFontAtlasSlot(const int32_t slot);
 
-            void SetPosition(const glm::vec2& position);
+    void SetPosition(const glm::vec2& position);
 
-            void SetColor(const glm::vec3& color);
+    void SetColor(const glm::vec3& color);
 
-            void SetOpacity(const float opacity);
+    void SetOpacity(const float opacity);
 
-            void SetShadowWidth(const float shadowWidth);
+    void SetShadowWidth(const float shadowWidth);
 
-            void SetShadowOffset(const glm::vec2& shadowOffset);
+    void SetShadowOffset(const glm::vec2& shadowOffset);
 
-        protected:
+protected:
+    void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
-            void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+    void SetShaderPredefine() override;
+};
 
-            void SetShaderPredefine() override;
-        };
-
-    }
-}
+} // namespace ShaderImpl
+} // namespace EngineCore

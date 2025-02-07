@@ -1,127 +1,118 @@
 #pragma once
 
-#include <cstddef>
-#include <stdint.h>
-#include <gl/glew.h>
-#include <type_traits>
-
 #include "Core/CommonCore/Assertion.h"
 
-namespace Graphics
-{
-   /* Depth / stencil state */
-   struct DepthState
-   {
-      friend class RenderState;
+#include <gl/glew.h>
+#include <stdint.h>
 
-   private:
-      GLboolean _dtEnabled;
-      GLboolean _dtwMask;
-      GLenum _dtFunc;
+#include <cstddef>
+#include <type_traits>
 
-      bool dtEnableDirty{true};
-      bool dtwMaskDirty{true};
-      bool dtFuncDirty{true};
+namespace Graphics {
+/* Depth / stencil state */
+struct DepthState {
+    friend class RenderState;
 
-      explicit DepthState();
+private:
+    GLboolean _dtEnabled;
+    GLboolean _dtwMask;
+    GLenum _dtFunc;
 
-      void BindDepthState();
+    bool dtEnableDirty{true};
+    bool dtwMaskDirty{true};
+    bool dtFuncDirty{true};
 
-   public:
-      DepthState &SetIsDepthTestEnabled(const GLboolean depthTestEnabled);
+    explicit DepthState();
 
-      DepthState &SetDepthTestWriteMask(const GLboolean depthTestWriteMask);
+    void BindDepthState();
 
-      DepthState &SetDepthTestFunc(const GLenum depthTestFunc);
-   };
+public:
+    DepthState& SetIsDepthTestEnabled(const GLboolean depthTestEnabled);
 
-   struct StencilState
-   {
-      friend class RenderState;
+    DepthState& SetDepthTestWriteMask(const GLboolean depthTestWriteMask);
 
-   private:
-      GLboolean _stEnabled;
-      GLenum _sfail;
-      GLenum _dpfail;
-      GLenum _dppass;
-      GLenum _func;
-      GLint _funcRef;
-      GLuint _funcMask;
-      GLuint _stencilMask;
+    DepthState& SetDepthTestFunc(const GLenum depthTestFunc);
+};
 
-      bool stEnableDirty{true};
-      bool stOperationDirty{true};
-      bool stFuncDirty{true};
-      bool stMaskDirty{true};
+struct StencilState {
+    friend class RenderState;
 
-      explicit StencilState();
+private:
+    GLboolean _stEnabled;
+    GLenum _sfail;
+    GLenum _dpfail;
+    GLenum _dppass;
+    GLenum _func;
+    GLint _funcRef;
+    GLuint _funcMask;
+    GLuint _stencilMask;
 
-      void BindStencilState();
+    bool stEnableDirty{true};
+    bool stOperationDirty{true};
+    bool stFuncDirty{true};
+    bool stMaskDirty{true};
 
-   public:
-      StencilState &SetIsStencilTestEnabled(const GLboolean stencilTestEnabled);
+    explicit StencilState();
 
-      StencilState &SetStencilOperation(const GLenum sfail,
-                                        const GLenum dpfail,
-                                        const GLenum dppass);
+    void BindStencilState();
 
-      StencilState &SetStencilFunction(const GLenum func,
-                                       const GLint funcRef,
-                                       const GLuint funcMask);
+public:
+    StencilState& SetIsStencilTestEnabled(const GLboolean stencilTestEnabled);
 
-      StencilState &SetStencilMask(const GLuint stencilMask);
-   };
+    StencilState& SetStencilOperation(const GLenum sfail, const GLenum dpfail, const GLenum dppass);
 
-   /* Blending state */
-   struct BlendingState
-   {
-      friend class RenderState;
+    StencilState& SetStencilFunction(const GLenum func, const GLint funcRef, const GLuint funcMask);
 
-   private:
-      GLboolean _blendingEnabled;
-      GLenum _sfactor;
-      GLenum _dfactor;
+    StencilState& SetStencilMask(const GLuint stencilMask);
+};
 
-      bool blendingEnableDirty{true};
-      bool blendingFuncDirty{true};
+/* Blending state */
+struct BlendingState {
+    friend class RenderState;
 
-   public:
-      explicit BlendingState();
+private:
+    GLboolean _blendingEnabled;
+    GLenum _sfactor;
+    GLenum _dfactor;
 
-      void BindBlendState();
+    bool blendingEnableDirty{true};
+    bool blendingFuncDirty{true};
 
-      BlendingState &SetIsBlendingEnabled(const GLboolean blendingEnabled);
+public:
+    explicit BlendingState();
 
-      BlendingState &SetBlendingFunction(const GLenum sfactor,
-                                         const GLenum dfactor);
-   };
+    void BindBlendState();
 
-   class RenderState
-   {
-   public:
-      static DepthState &GetDepthState()
-      {
-         static DepthState instance;
-         return instance;
-      }
+    BlendingState& SetIsBlendingEnabled(const GLboolean blendingEnabled);
 
-      static StencilState &GetStencilState()
-      {
-         static StencilState instance;
-         return instance;
-      }
+    BlendingState& SetBlendingFunction(const GLenum sfactor, const GLenum dfactor);
+};
 
-      static BlendingState &GetBlendingState()
-      {
-         static BlendingState instance;
-         return instance;
-      }
+class RenderState {
+public:
+    static DepthState& GetDepthState()
+    {
+        static DepthState instance;
+        return instance;
+    }
 
-      void BindRenderState()
-      {
-         GetDepthState().BindDepthState();
-         GetStencilState().BindStencilState();
-         GetBlendingState().BindBlendState();
-      }
-   };
-}
+    static StencilState& GetStencilState()
+    {
+        static StencilState instance;
+        return instance;
+    }
+
+    static BlendingState& GetBlendingState()
+    {
+        static BlendingState instance;
+        return instance;
+    }
+
+    void BindRenderState()
+    {
+        GetDepthState().BindDepthState();
+        GetStencilState().BindStencilState();
+        GetBlendingState().BindBlendState();
+    }
+};
+} // namespace Graphics

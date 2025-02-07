@@ -1,75 +1,67 @@
 #pragma once
 
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <memory>
-
+#include "Core/GameCore/FramebufferImplementation/ShadowFramebuffer.h"
+#include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GraphicsCore/TextureAtlas/TextureAtlasFactory.h"
 #include "Core/GraphicsCore/TextureAtlas/TextureAtlasSpaceRequest.h"
-#include "Core/GraphicsCore/Texture/ITexture.h"
-#include "Core/GameCore/FramebufferImplementation/ShadowFramebuffer.h"
+
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+
+#include <memory>
 
 using namespace Graphics::Texture;
 using namespace EngineCore::FramebufferImpl;
 
-namespace Graphics
-{
+namespace Graphics {
 
-   enum class LightType
-   {
-      UNDEFINED,
-      DIRECTIONAL_LIGHT,
-      POINT_LIGHT,
-      SPOT_LIGHT
-   };
+enum class LightType { UNDEFINED, DIRECTIONAL_LIGHT, POINT_LIGHT, SPOT_LIGHT };
 
-   class ProjectedShadowInfo
-       : public std::enable_shared_from_this<ProjectedShadowInfo>
-   {
-   protected:
-      LightType m_lightType;
+class ProjectedShadowInfo : public std::enable_shared_from_this<ProjectedShadowInfo> {
+protected:
+    LightType m_lightType;
 
-      TextureAtlasSpaceRequest mShadowmapAtlasRequest;
+    TextureAtlasSpaceRequest mShadowmapAtlasRequest;
 
-      mutable std::shared_ptr<ShadowFramebuffer> m_shadowFramebuffer;
+    mutable std::shared_ptr<ShadowFramebuffer> m_shadowFramebuffer;
 
-      glm::mat4 m_shadowBiasMatrix;
+    glm::mat4 m_shadowBiasMatrix;
 
-      bool bShadowmapDirty;
+    bool bShadowmapDirty;
 
-      glm::vec3 mPlayerPositionOffset;
+    glm::vec3 mPlayerPositionOffset;
 
-      std::shared_ptr<TextureAtlasHandler> mShadowmapHandler;
+    std::shared_ptr<TextureAtlasHandler> mShadowmapHandler;
 
-   public:
-      ProjectedShadowInfo(const TextureAtlasSpaceRequest &shadowmapAtlasRequest);
+public:
+    ProjectedShadowInfo(const TextureAtlasSpaceRequest& shadowmapAtlasRequest);
 
-      virtual ~ProjectedShadowInfo();
+    virtual ~ProjectedShadowInfo();
 
-      virtual void Initialize(); 
+    virtual void Initialize();
 
-      virtual void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const;
+    virtual void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const;
 
-      void SetIsShadowMapDirty(const bool bDirty);
+    void SetIsShadowMapDirty(const bool bDirty);
 
-      void SetPlayerPositionOffset(const glm::vec3 &offset);
+    void SetPlayerPositionOffset(const glm::vec3& offset);
 
-      std::shared_ptr<ITexture> GetAtlasResource() const;
+    std::shared_ptr<ITexture> GetAtlasResource() const;
 
-      LightType GetLightType() const;
+    LightType GetLightType() const;
 
-      glm::vec3 GetPlayerPositionOffset() const;
+    glm::vec3 GetPlayerPositionOffset() const;
 
-      bool IsShadowMapDirty() const;
+    bool IsShadowMapDirty() const;
 
-      TextureAtlasSpaceRequest GetTextureAtlasSpaceRequest() const;
+    TextureAtlasSpaceRequest GetTextureAtlasSpaceRequest() const;
 
-      void CleanUp();
+    void CleanUp();
 
-   protected:
-      void AllocateFramebuffer() const;
+protected:
+    void AllocateFramebuffer() const;
 
-      void DeallocateFramebuffer() const;
-   };
+    void DeallocateFramebuffer() const;
+};
 
-}
+} // namespace Graphics

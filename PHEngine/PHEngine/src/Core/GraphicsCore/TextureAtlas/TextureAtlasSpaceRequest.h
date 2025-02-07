@@ -2,17 +2,13 @@
 
 #include "TextureAtlasHandler.h"
 
-namespace Graphics
-{
-   class TextureAtlasSpaceRequest
-   {
-      static size_t m_requestId;
+namespace Graphics {
+class TextureAtlasSpaceRequest {
+    static size_t m_requestId;
 
-   public:
+public:
+    size_t MyRequestId;
 
-      size_t MyRequestId;
-
-      TextureAtlasSpaceRequest();
-   };
-}
-
+    TextureAtlasSpaceRequest();
+};
+} // namespace Graphics

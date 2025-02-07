@@ -1,17 +1,17 @@
 #pragma once
 
-#include <cstdint>
 #include <stdint.h>
 
-class ResourceUsageObserver
-{
+#include <cstdint>
+
+class ResourceUsageObserver {
     int32_t mPid{-1};
     double mLastMemUsageMegabytes{0.0};
 
     explicit ResourceUsageObserver();
 
 public:
-    static ResourceUsageObserver *GetInstance();
+    static ResourceUsageObserver* GetInstance();
 
     void CollectResourceConsumptionInfo();
 

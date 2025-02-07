@@ -6,29 +6,23 @@
 
 using namespace Graphics::OpenGL;
 
-namespace EngineCore
-{
-   namespace ShaderImpl
-   {
-      class SimpleShader :
-         public Shader
-      {
+namespace EngineCore {
+namespace ShaderImpl {
+class SimpleShader : public Shader {
 
-         using Base = Shader;
+    using Base = Shader;
 
-      public:
+public:
+    SimpleShader(const ShaderParams& params)
+        : Shader(params)
+    {
+    }
 
-         SimpleShader(const ShaderParams& params)
-            : Shader(params)
-         {
-         }
+    void AccessAllUniformLocations(uint32_t shaderProgramId)
+    {
+        Base::AccessAllUniformLocations(shaderProgramId);
+    }
+};
 
-         void AccessAllUniformLocations(uint32_t shaderProgramId)
-         {
-            Base::AccessAllUniformLocations(shaderProgramId);
-         }
-      };
-
-   }
-}
-
+} // namespace ShaderImpl
+} // namespace EngineCore

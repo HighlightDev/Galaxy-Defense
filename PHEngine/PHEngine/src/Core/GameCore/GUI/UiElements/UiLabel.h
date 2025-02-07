@@ -1,102 +1,95 @@
 #pragma once
 
-#include "UiItemBase.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "UiItemBase.h"
 
 #include <glm/vec3.hpp>
 
-namespace Graphics
-{
-    namespace Proxy
-    {
-        class UiSceneProxyBase;
-    }
+namespace Graphics {
+namespace Proxy {
+class UiSceneProxyBase;
 }
+} // namespace Graphics
 
-namespace EngineCore
-{
-    namespace Scripts
-    {
-        class LuaProxy;
-    }
+namespace EngineCore {
+namespace Scripts {
+class LuaProxy;
 }
+} // namespace EngineCore
 
 using namespace EngineCore;
 
-namespace EngineCore
-{
-    class UiCanvas;
+namespace EngineCore {
+class UiCanvas;
 
-    namespace GUI
-    {
-        class UiLabel : public UiItemBase
-        {
-            std::string mText;
+namespace GUI {
+class UiLabel : public UiItemBase {
+    std::string mText;
 
-            float mOpacity;
+    float mOpacity;
 
-            const std::string mFontName;
+    const std::string mFontName;
 
-            float mFontSize;
+    float mFontSize;
 
-            float mTextLineWidth;
+    float mTextLineWidth;
 
-            glm::vec3 mTextColor;
+    glm::vec3 mTextColor;
 
-            eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
+    eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
-        public:
-            explicit UiLabel(const std::string &fontName, const std::string& name = std::string(""));
+public:
+    explicit UiLabel(const std::string& fontName, const std::string& name = std::string(""));
 
-            ~UiLabel() override;
+    ~UiLabel() override;
 
-            void SetText(const std::string &text);
+    void SetText(const std::string& text);
 
-            std::string GetText() const;
+    std::string GetText() const;
 
-            void SetOpacity(const float opacity);
+    void SetOpacity(const float opacity);
 
-            float GetOpacity() const;
+    float GetOpacity() const;
 
-            std::string GetFontName() const;
+    std::string GetFontName() const;
 
-            float GetTextLineWidth() const;
+    float GetTextLineWidth() const;
 
-            void SetFontSize(const float fontSize);
+    void SetFontSize(const float fontSize);
 
-            float GetFontSize() const;
+    float GetFontSize() const;
 
-            void SetTextColor(const glm::vec3 &color);
+    void SetTextColor(const glm::vec3& color);
 
-            void SetTextColor(const uint32_t hexColor);
+    void SetTextColor(const uint32_t hexColor);
 
-            glm::vec3 GetTextColor() const;
+    glm::vec3 GetTextColor() const;
 
-            void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
+    void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 
-            eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
+    eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
 
-            std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
+    std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
-            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
+    std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
-            void OnPropertiesShouldBeUpdatedOnRenderThread() override;
+    void OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
-            void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+    void OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
-            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+    void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
-            std::string GetUiTypeString() const override;
+    std::string GetUiTypeString() const override;
 
-        protected:
-            void OnRegistered() override;
+protected:
+    void OnRegistered() override;
 
-            void OnUnregistered() override;
+    void OnUnregistered() override;
 
-        private:
-            void SyncDataOnRenderThread();
+private:
+    void SyncDataOnRenderThread();
 
-            void SyncDataOnLuaThread();
-        };
-    }
-}
+    void SyncDataOnLuaThread();
+};
+} // namespace GUI
+} // namespace EngineCore

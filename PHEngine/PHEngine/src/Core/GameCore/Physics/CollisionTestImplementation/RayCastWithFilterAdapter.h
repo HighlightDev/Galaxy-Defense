@@ -2,28 +2,28 @@
 
 #include "BulletRayCastWithFilter.h"
 
-#include <vector>
-#include <memory>
 #include <glm/vec3.hpp>
 
-namespace EnginePhysics
-{
-    class PhysicsDescriptor;
-    class PhysicsWorld;
-    class PhysicsComponent;
+#include <memory>
+#include <vector>
 
-    class RayCastWithFilterAdapter : public BulletRayCastWithFilter
-    {
-    public:
-        RayCastWithFilterAdapter();
+namespace EnginePhysics {
+class PhysicsDescriptor;
+class PhysicsWorld;
+class PhysicsComponent;
 
-        explicit RayCastWithFilterAdapter(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
+class RayCastWithFilterAdapter : public BulletRayCastWithFilter {
+public:
+    RayCastWithFilterAdapter();
 
-        void RayTest(const std::shared_ptr<PhysicsWorld> &physWorld, const glm::vec3 &rayFromPosition, const glm::vec3 &rayToPosition);
+    explicit RayCastWithFilterAdapter(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
 
-        const PhysicsDescriptor *GetCollisionHitPhysicsDescriptor() const;
+    void
+    RayTest(const std::shared_ptr<PhysicsWorld>& physWorld, const glm::vec3& rayFromPosition, const glm::vec3& rayToPosition);
 
-    private:
-        void Initialize(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
-    };
-}
+    const PhysicsDescriptor* GetCollisionHitPhysicsDescriptor() const;
+
+private:
+    void Initialize(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
+};
+} // namespace EnginePhysics

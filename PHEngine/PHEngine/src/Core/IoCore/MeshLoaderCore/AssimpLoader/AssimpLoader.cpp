@@ -1,59 +1,54 @@
 #include "AssimpLoader.h"
+
 #include "Core/CommonCore/Assertion.h"
 
-#include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 #include <string>
 
-namespace MeshLoader
+namespace MeshLoader {
+namespace Assimp {
+AssimpLoader::AssimpLoader(const std::string& modelFilePath)
+    : m_animatedMeshData(nullptr)
+    , m_meshAttributes(nullptr)
 {
-   namespace Assimp
-   {
-      AssimpLoader::AssimpLoader(const std::string& modelFilePath)
-         : m_animatedMeshData(nullptr)
-         , m_meshAttributes(nullptr)
-      {
-         size_t LOAD_FLAGS = (
-            aiProcess_Triangulate |
-            aiProcess_GenSmoothNormals |
-            aiProcess_FlipUVs |
-            aiProcess_JoinIdenticalVertices |
-            aiProcess_CalcTangentSpace | 
-            aiProcess_LimitBoneWeights);
+    size_t LOAD_FLAGS
+        = (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices
+           | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights);
 
-         importer_t importer;
-         const aiScene* scene = importer.ReadFile(modelFilePath, LOAD_FLAGS);
+    importer_t importer;
+    const aiScene* scene = importer.ReadFile(modelFilePath, LOAD_FLAGS);
 
-         assert((scene));
-         LoadMeshAndAnimations(scene);
-      }
-
-      AssimpLoader::~AssimpLoader()
-      {
-      }
-
-      MeshAttributes* AssimpLoader::GetMeshAttributes() const
-      {
-         return m_meshAttributes;
-      }
-
-      AnimatedMeshData* AssimpLoader::GetAnimatedMeshData() const
-      {
-         return m_animatedMeshData;
-      }
-
-      void AssimpLoader::LoadMeshAndAnimations(const struct aiScene* scene)
-      {
-         MeshDataCollector collector(scene);
-         collector.Collect();
-
-         m_meshAttributes = new MeshAttributes(collector);
-
-         if (scene->HasAnimations())
-         {
-            m_animatedMeshData = new AnimatedMeshData(collector);
-         }
-      }
-
-   }
+    assert((scene));
+    LoadMeshAndAnimations(scene);
 }
+
+AssimpLoader::~AssimpLoader()
+{
+}
+
+MeshAttributes* AssimpLoader::GetMeshAttributes() const
+{
+    return m_meshAttributes;
+}
+
+AnimatedMeshData* AssimpLoader::GetAnimatedMeshData() const
+{
+    return m_animatedMeshData;
+}
+
+void AssimpLoader::LoadMeshAndAnimations(const struct aiScene* scene)
+{
+    MeshDataCollector collector(scene);
+    collector.Collect();
+
+    m_meshAttributes = new MeshAttributes(collector);
+
+    if (scene->HasAnimations()) {
+        m_animatedMeshData = new AnimatedMeshData(collector);
+    }
+}
+
+} // namespace Assimp
+} // namespace MeshLoader

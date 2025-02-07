@@ -12,29 +12,29 @@ float alpha;
 
 vec4 getElectroColor(in MATERIAL_VS_OUTPUT materialIn)
 {
-  vec2 uv = materialIn.TextureCoordinates.xy;
-  uv = uv * 2. -1.;
-  uv.y += 0.25;
+    vec2 uv = materialIn.TextureCoordinates.xy;
+    uv = uv * 2. - 1.;
+    uv.y += 0.25;
 
-  float intensity = texture(noise, materialIn.TextureCoordinates.xy + vec2(timeSec * 0.5f, timeSec * 0.5f)).r;
+    float intensity = texture(noise, materialIn.TextureCoordinates.xy + vec2(timeSec * 0.5f, timeSec * 0.5f)).r;
 
-  float t = clamp((uv.x * -uv.x * 0.08) + 0.58, 0., 1.);          
-  float y = abs(intensity * -t + uv.y);
-    
-  float g = pow(y, 0.2);
+    float t = clamp((uv.x * -uv.x * 0.08) + 0.58, 0., 1.);
+    float y = abs(intensity * -t + uv.y);
 
-  vec4 rgba = vec4(1.70 * rayColor.r, 1.48 * rayColor.g, 1.78 * rayColor.b, 1.98 * rayWidthCoef);
-  rgba = rgba * -g + rgba;      
-  rgba = rgba * rgba * rgba;
+    float g = pow(y, 0.2);
 
-  return rgba;
+    vec4 rgba = vec4(1.70 * rayColor.r, 1.48 * rayColor.g, 1.78 * rayColor.b, 1.98 * rayWidthCoef);
+    rgba = rgba * -g + rgba;
+    rgba = rgba * rgba * rgba;
+
+    return rgba;
 }
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
     vec4 color = getElectroColor(materialIn);
     alpha = color.a;
-	return color.rgb;
+    return color.rgb;
 }
 
 vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
@@ -44,12 +44,12 @@ vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
 
 float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return 0.0;
+    return 0.0;
 }
 
 float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return alpha * opacity;
+    return alpha * opacity;
 };
 
 vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
@@ -59,5 +59,5 @@ vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 
 vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return vec4(0.0);
+    return vec4(0.0);
 }

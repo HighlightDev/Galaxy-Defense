@@ -1,114 +1,108 @@
 #pragma once
 
-#include "LuaProxy.h"
-#include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorType.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorData.h"
+#include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorType.h"
 #include "Core/GameCore/ScriptingCore/Common/LuaMouseInputState.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/IAnimatableLuaProxy.h"
+#include "LuaProxy.h"
 
 #include <string>
-#include <unordered_map>
 #include <tuple>
+#include <unordered_map>
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class UiItemBase;
-        class AnimationData;
-        class AnimationSequence;
-    }
-}
+namespace EngineCore {
+namespace GUI {
+class UiItemBase;
+class AnimationData;
+class AnimationSequence;
+} // namespace GUI
+} // namespace EngineCore
 
 using namespace EngineCore::GUI;
 
-namespace EngineCore
-{
-    namespace Scripts
-    {
-        class UiItemBaseLuaProxy
-            : public LuaProxy,
-              public IAnimatableLuaProxy
-        {
-            std::string mUiItemName;
+namespace EngineCore {
+namespace Scripts {
+class UiItemBaseLuaProxy : public LuaProxy, public IAnimatableLuaProxy {
+    std::string mUiItemName;
 
-            bool mIsVisible;
+    bool mIsVisible;
 
-            bool mCanInterceptMouseInputEvents;
+    bool mCanInterceptMouseInputEvents;
 
-            size_t mZOrder;
+    size_t mZOrder;
 
-            size_t mWidth;
+    size_t mWidth;
 
-            size_t mHeight;
+    size_t mHeight;
 
-            std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> mAnchors;
+    std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> mAnchors;
 
-            int32_t mHorizontalCenterOffset;
+    int32_t mHorizontalCenterOffset;
 
-            int32_t mVerticalCenterOffset;
+    int32_t mVerticalCenterOffset;
 
-        protected:
-            bool mIsMouseInputDataDirty{false};
+protected:
+    bool mIsMouseInputDataDirty{false};
 
-            bool mInputClicked{false};
+    bool mInputClicked{false};
 
-            eLuaMouseInputPressState mInputPressState{eLuaMouseInputPressState::MOUSE_BUTTON_RELEASED};
+    eLuaMouseInputPressState mInputPressState{eLuaMouseInputPressState::MOUSE_BUTTON_RELEASED};
 
-            eLuaMouseInputCursorHoverState mInputCursorHoverState{eLuaMouseInputCursorHoverState::CURSOR_HOVER_LEAVED};
+    eLuaMouseInputCursorHoverState mInputCursorHoverState{eLuaMouseInputCursorHoverState::CURSOR_HOVER_LEAVED};
 
-            bool mIsMouseInputReceiverEnabled{false};
+    bool mIsMouseInputReceiverEnabled{false};
 
-        public:
-            explicit UiItemBaseLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiItemBase> &ownerUiItemBase);
+public:
+    explicit UiItemBaseLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiItemBase>& ownerUiItemBase);
 
-            std::string GetUiItemName() const;
+    std::string GetUiItemName() const;
 
-            void SetParent(const std::string &canvasName, const std::string &parentUiName);
+    void SetParent(const std::string& canvasName, const std::string& parentUiName);
 
-            void SetIsVisible_FromGameThread(const bool isVisible);
+    void SetIsVisible_FromGameThread(const bool isVisible);
 
-            void SetIfCanInterceptMouseInputEvents_FromGameThread(const bool intercepts);
+    void SetIfCanInterceptMouseInputEvents_FromGameThread(const bool intercepts);
 
-            void SetZOrder_FromGameThread(const size_t zOrder);
+    void SetZOrder_FromGameThread(const size_t zOrder);
 
-            void SetWidth_FromGameThread(const size_t width);
+    void SetWidth_FromGameThread(const size_t width);
 
-            void SetHeight_FromGameThread(const size_t height);
+    void SetHeight_FromGameThread(const size_t height);
 
-            void SetAnchor_FromGameThread(const eUiAnchor srcAnchor, const UiAnchorData &uiAnchorData);
+    void SetAnchor_FromGameThread(const eUiAnchor srcAnchor, const UiAnchorData& uiAnchorData);
 
-            void SetHorizontalCenterOffset_FromGameThread(const int32_t horizontalCenterOffset);
+    void SetHorizontalCenterOffset_FromGameThread(const int32_t horizontalCenterOffset);
 
-            void SetVerticalCenterOffset_FromGameThread(const int32_t verticalCenterOffset);
+    void SetVerticalCenterOffset_FromGameThread(const int32_t verticalCenterOffset);
 
-            void SetInputClicked_FromGameThread(const bool isClicked);
+    void SetInputClicked_FromGameThread(const bool isClicked);
 
-            void SetInputPressState_FromGameThread(const eLuaMouseInputPressState cursorHoverState);
+    void SetInputPressState_FromGameThread(const eLuaMouseInputPressState cursorHoverState);
 
-            void SetInputCursorHoverState_FromGameThread(const eLuaMouseInputCursorHoverState pressState);
+    void SetInputCursorHoverState_FromGameThread(const eLuaMouseInputCursorHoverState pressState);
 
-            void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
+    void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
 
-            std::string GetGameThreadData() override;
+    std::string GetGameThreadData() override;
 
-            std::string GetMouseInputData();
+    std::string GetMouseInputData();
 
-            bool IsVisible() const;
+    bool IsVisible() const;
 
-            bool GetIfCanInterceptMouseInputEvents() const;
+    bool GetIfCanInterceptMouseInputEvents() const;
 
-            void EnableMouseInputReceiverBase();
+    void EnableMouseInputReceiverBase();
 
-            bool IsMouseInputDataDirty() const;
+    bool IsMouseInputDataDirty() const;
 
-            void AddAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationData &animationData) override;
+    void AddAnimation(const std::string& animationName, const ::EngineCore::GUI::AnimationData& animationData) override;
 
-            void StartAnimation(const std::string &animationName) override;
+    void StartAnimation(const std::string& animationName) override;
 
-            void AddSequenceAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationSequence &animationSequence) override;
+    void AddSequenceAnimation(
+        const std::string& animationName, const ::EngineCore::GUI::AnimationSequence& animationSequence) override;
 
-            void StartSequenceAnimation(const std::string &animationSequenceName) override;
-        };
-    }
-}
+    void StartSequenceAnimation(const std::string& animationSequenceName) override;
+};
+} // namespace Scripts
+} // namespace EngineCore

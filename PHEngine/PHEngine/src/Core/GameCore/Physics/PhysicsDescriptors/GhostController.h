@@ -1,65 +1,63 @@
 #pragma once
 
-#include <BulletPhys/btBulletDynamicsCommon.h>
-#include <BulletPhys/btBulletCollisionCommon.h>
+#include "PhysicsDescriptor.h"
+
 #include <BulletPhys/BulletCollision/CollisionDispatch/btGhostObject.h>
+#include <BulletPhys/btBulletCollisionCommon.h>
+#include <BulletPhys/btBulletDynamicsCommon.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#include "PhysicsDescriptor.h"
+namespace EnginePhysics {
+class PhysicsWorld;
 
-namespace EnginePhysics
-{
-   class PhysicsWorld;
+class GhostController : public PhysicsDescriptor, public btCollisionWorld::ContactResultCallback {
+private:
+    btPairCachingGhostObject* mGhostObject;
+    int32_t mSavedCollisionFilterGroup;
+    int32_t mSavedCollisionFilterMask;
 
-   class GhostController
-       : public PhysicsDescriptor,
-         public btCollisionWorld::ContactResultCallback
-   {
-   private:
-      btPairCachingGhostObject *mGhostObject;
-      int32_t mSavedCollisionFilterGroup;
-      int32_t mSavedCollisionFilterMask;
+    btTransform mMotionTransform;
 
-      btTransform mMotionTransform;
+    float mCollisionCooldown;
+    static constexpr float sCollisionCooldownTimeout = 0.1f;
 
-      float mCollisionCooldown;
-      static constexpr float sCollisionCooldownTimeout = 0.1f;
+public:
+    GhostController(
+        const std::shared_ptr<PhysicsWorld>& pPhysicsWorld,
+        const std::shared_ptr<CollisionShapeBase>& shape,
+        const float mass,
+        const int32_t collisionFilterGroup = btBroadphaseProxy::DefaultFilter,
+        const int32_t collisionFilterMask = btBroadphaseProxy::AllFilter);
 
-   public:
-      GhostController(const std::shared_ptr<PhysicsWorld> &pPhysicsWorld,
-                      const std::shared_ptr<CollisionShapeBase> &shape,
-                      const float mass,
-                      const int32_t collisionFilterGroup = btBroadphaseProxy::DefaultFilter,
-                      const int32_t collisionFilterMask = btBroadphaseProxy::AllFilter);
+    ~GhostController() override;
 
-      ~GhostController() override;
+    void CleanUp() override;
 
-      void CleanUp() override;
+    void CompletePhysicsDescriptorConstruction() override;
 
-      void CompletePhysicsDescriptorConstruction() override;
+    void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
 
-      void UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime) override;
+    void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
 
-      void SetMotionStateWorldTransform(const btQuaternion &quat, const btVector3 &translation) override;
+    void PostPhysicsSimulationUpdate(const float deltaTime) override;
 
-      void PostPhysicsSimulationUpdate(const float deltaTime) override;
+    void SetIsCollisionEnabled(const bool isCollisionEnabled) override;
 
-      void SetIsCollisionEnabled(const bool isCollisionEnabled) override;
+    ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 
-      ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
+    std::vector<btCollisionObject*> GetCollisionObjects() const override;
 
-      std::vector<btCollisionObject *> GetCollisionObjects() const override;
+private:
+    void ParseGhostContacts();
 
-   private:
-      void ParseGhostContacts();
-
-      btScalar addSingleResult(btManifoldPoint &cp,
-                               const btCollisionObjectWrapper *colObj0,
-                               int partId0,
-                               int index0,
-                               const btCollisionObjectWrapper *colObj1,
-                               int partId1,
-                               int index1) override;
-   };
-}
+    btScalar addSingleResult(
+        btManifoldPoint& cp,
+        const btCollisionObjectWrapper* colObj0,
+        int partId0,
+        int index0,
+        const btCollisionObjectWrapper* colObj1,
+        int partId1,
+        int index1) override;
+};
+} // namespace EnginePhysics

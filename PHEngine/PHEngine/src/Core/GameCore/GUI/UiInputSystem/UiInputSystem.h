@@ -1,58 +1,56 @@
 #pragma once
 
-#include "Core/GameCore/ITickable.h"
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
+#include "Core/GameCore/ITickable.h"
+
+#include <glm/vec2.hpp>
 
 #include <memory>
-#include <glm/vec2.hpp>
 
 using namespace EngineCore;
 using namespace Event;
 
-namespace EngineCore
-{
-    class UiInputComponent;
+namespace EngineCore {
+class UiInputComponent;
 
-    namespace GUI
-    {
-        class UiCanvas;
+namespace GUI {
+class UiCanvas;
 
-        class UiInputSystem
-            : public ITickable
-            , public WindowSizeChangedGameThreadEvent
-            , public std::enable_shared_from_this<UiInputSystem>
-        {
-        private:
-            static size_t s_id;
+class UiInputSystem : public ITickable,
+                      public WindowSizeChangedGameThreadEvent,
+                      public std::enable_shared_from_this<UiInputSystem> {
+private:
+    static size_t s_id;
 
-            size_t mScreenHeight;
+    size_t mScreenHeight;
 
-            std::weak_ptr<UiCanvas> mOwnerWp;
+    std::weak_ptr<UiCanvas> mOwnerWp;
 
-            std::unique_ptr<::EngineCore::UiInputComponent> mInputComponent;
+    std::unique_ptr<::EngineCore::UiInputComponent> mInputComponent;
 
-            GameThreadTimer mMousePressedTimer;
+    GameThreadTimer mMousePressedTimer;
 
-            glm::ivec2 mMouseKeyPressedPosition;
+    glm::ivec2 mMouseKeyPressedPosition;
 
-            bool mIsMouseKeyPressed{false};
+    bool mIsMouseKeyPressed{false};
 
-        public:
-            UiInputSystem(const std::weak_ptr<UiCanvas> &owner);
+public:
+    UiInputSystem(const std::weak_ptr<UiCanvas>& owner);
 
-            ~UiInputSystem();
+    ~UiInputSystem();
 
-            void Initialize();
+    void Initialize();
 
-            void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-            void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTime) override;
 
-            void ProcessEvent(const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
+    void ProcessEvent(
+        const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t& data) override;
 
-        private:
-            void OnMousePressedTimerTimeout();
-        };
-    }
-}
+private:
+    void OnMousePressedTimerTimeout();
+};
+} // namespace GUI
+} // namespace EngineCore

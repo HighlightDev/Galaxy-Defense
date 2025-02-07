@@ -2,21 +2,19 @@
 
 #include "CollisionShapeBase.h"
 
-namespace EnginePhysics
-{
+namespace EnginePhysics {
 
-   struct CollisionSphereShape
-      : public CollisionShapeBase
-   {
+struct CollisionSphereShape : public CollisionShapeBase {
 
-      CollisionSphereShape(const double radius)
-         : CollisionShapeBase(new btSphereShape(radius))
-      {
-      }
+    CollisionSphereShape(const double radius)
+        : CollisionShapeBase(new btSphereShape(radius))
+    {
+    }
 
-      double GetRadius() const {
-         return static_cast<btSphereShape*>(mCollisionShape)->getRadius();
-      }
-   };
+    double GetRadius() const
+    {
+        return static_cast<btSphereShape*>(mCollisionShape)->getRadius();
+    }
+};
 
-}
+} // namespace EnginePhysics

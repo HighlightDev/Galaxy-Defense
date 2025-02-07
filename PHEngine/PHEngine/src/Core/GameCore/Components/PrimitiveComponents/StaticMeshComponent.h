@@ -1,46 +1,45 @@
 #pragma once
-#include "PrimitiveComponent.h"
-#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
+#include "PrimitiveComponent.h"
+
 #include <glm/mat4x4.hpp>
 
 using namespace Graphics::Data;
 using namespace Graphics;
 
-namespace EngineCore
-{
-	struct MeshComponentData;
+namespace EngineCore {
+struct MeshComponentData;
 
-	class StaticMeshComponent : public PrimitiveComponent
-	{
-	protected:
-		using Base = PrimitiveComponent;
+class StaticMeshComponent : public PrimitiveComponent {
+protected:
+    using Base = PrimitiveComponent;
 
-		MeshRenderData m_renderData;
+    MeshRenderData m_renderData;
 
-	public:
-		StaticMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const MeshRenderData renderData);
+public:
+    StaticMeshComponent(const std::shared_ptr<MeshComponentData>& meshComponentData, const MeshRenderData renderData);
 
-		~StaticMeshComponent() override;
+    ~StaticMeshComponent() override;
 
-		eComponentType GetComponentType() const override;
+    eComponentType GetComponentType() const override;
 
-		void SetIsEnabled(const bool bEnabled) override;
+    void SetIsEnabled(const bool bEnabled) override;
 
-		void SetIsVisible(bool isVisible) override;
+    void SetIsVisible(bool isVisible) override;
 
-		void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-		void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-		std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
+    std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-		inline const MeshRenderData &GetRenderData() const
-		{
-			return m_renderData;
-		}
+    inline const MeshRenderData& GetRenderData() const
+    {
+        return m_renderData;
+    }
 
-		std::shared_ptr<IMaterial> GetMaterial() const;
-	};
+    std::shared_ptr<IMaterial> GetMaterial() const;
+};
 
-}
+} // namespace EngineCore

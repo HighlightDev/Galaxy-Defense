@@ -1,37 +1,35 @@
 #pragma once
 
-#include <string>
-#include <stdint.h>
-#include <cstdint>
-
 #include "UiAnchorType.h"
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class UiAnchorData
-        {
-            eUiAnchor mDstAnchor;
-            std::string mDstUiItemName;
-            int32_t mSrcAnchorMargin;
+#include <stdint.h>
 
-        public:
-            explicit UiAnchorData();
+#include <cstdint>
+#include <string>
 
-            UiAnchorData(const eUiAnchor dstAnchor, const std::string& dstUiItemName, const int32_t srcAnchorMargin);
+namespace EngineCore {
+namespace GUI {
+class UiAnchorData {
+    eUiAnchor mDstAnchor;
+    std::string mDstUiItemName;
+    int32_t mSrcAnchorMargin;
 
-            eUiAnchor GetDstAnchor() const;
+public:
+    explicit UiAnchorData();
 
-            std::string GetDstUiItemName() const;
+    UiAnchorData(const eUiAnchor dstAnchor, const std::string& dstUiItemName, const int32_t srcAnchorMargin);
 
-            int32_t GetSrcAnchorMargin() const;
+    eUiAnchor GetDstAnchor() const;
 
-            void SetDstAnchor(const eUiAnchor dstAnchor);
+    std::string GetDstUiItemName() const;
 
-            void SetDstUiItemName(const std::string &name);
+    int32_t GetSrcAnchorMargin() const;
 
-            void SetSrcAnchorMargin(const int32_t srcMargin);
-        };
-    }
-}
+    void SetDstAnchor(const eUiAnchor dstAnchor);
+
+    void SetDstUiItemName(const std::string& name);
+
+    void SetSrcAnchorMargin(const int32_t srcMargin);
+};
+} // namespace GUI
+} // namespace EngineCore

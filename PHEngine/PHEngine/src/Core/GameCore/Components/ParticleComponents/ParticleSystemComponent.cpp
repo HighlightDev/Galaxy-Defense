@@ -1,17 +1,19 @@
 #include "ParticleSystemComponent.h"
-#include "Core/GameCore/BoundingBox3D.h"
-#include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
+
+#include "Core/CommonCore/Random.h"
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GameCore/BoundingBox3D.h"
+#include "Core/GameCore/Particles/Emitters/IEmitter.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
-#include "Core/CommonCore/Random.h"
+#include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/Particles/Emitters/IEmitter.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-#include <cmath>
+
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 
 using namespace Graphics::Proxy;
@@ -20,217 +22,190 @@ using namespace Graphics;
 using namespace EngineMath;
 using namespace TinyLogger;
 
-namespace EngineCore
+namespace EngineCore {
+ParticleSystemComponent::ParticleSystemComponent(
+    const std::shared_ptr<ParticleSystemComponentData>& meshComponentData, const ParticleSystemRenderData& renderData)
+    : PrimitiveComponent(meshComponentData->EngineObjectName, meshComponentData->m_translation, glm::vec3(), glm::vec3(1.0f))
+    , mParticlesPool()
+    , mParticlesRawDataHandler(meshComponentData->m_particlesCount)
+    , mRenderData(renderData)
 {
-    ParticleSystemComponent::ParticleSystemComponent(const std::shared_ptr<ParticleSystemComponentData> &meshComponentData,
-                                                     const ParticleSystemRenderData &renderData)
-        : PrimitiveComponent(meshComponentData->EngineObjectName,
-                             meshComponentData->m_translation,
-                             glm::vec3(),
-                             glm::vec3(1.0f)),
-          mParticlesPool(),
-          mParticlesRawDataHandler(meshComponentData->m_particlesCount),
-          mRenderData(renderData)
-    {
-        mParticlesPool.resize(meshComponentData->m_particlesCount);
-        mSortOrderValue = std::numeric_limits<int32_t>::max(); // draw this primitive the last one
-        mCanBloomBeApplied = true;
-    }
+    mParticlesPool.resize(meshComponentData->m_particlesCount);
+    mSortOrderValue = std::numeric_limits<int32_t>::max(); // draw this primitive the last one
+    mCanBloomBeApplied = true;
+}
 
-    ParticleSystemComponent::~ParticleSystemComponent()
-    {
-    }
+ParticleSystemComponent::~ParticleSystemComponent()
+{
+}
 
-    eComponentType ParticleSystemComponent::GetComponentType() const
-    {
-        return PRIMITIVE_COMPONENT;
-    }
+eComponentType ParticleSystemComponent::GetComponentType() const
+{
+    return PRIMITIVE_COMPONENT;
+}
 
-    void ParticleSystemComponent::Tick(const float deltaTime)
-    {
-        static constexpr float particleMoveSpeed = 15.0f;
+void ParticleSystemComponent::Tick(const float deltaTime)
+{
+    static constexpr float particleMoveSpeed = 15.0f;
 
-        for (auto &particle : mParticlesPool)
-        {
-            if (!particle.isActive)
-                continue;
+    for (auto& particle : mParticlesPool) {
+        if (!particle.isActive)
+            continue;
 
-            for (const auto &module : mParticleModules)
-            {
-                module->Update(particle, deltaTime);
-            }
-        }
-
-        size_t activeParticlesCount = 0;
-        size_t particleTranslationByteOffset = 0;
-        size_t particleRotationSizeByteOffset = 0;
-        size_t particleColorByteOffset = 0;
-
-        for (auto particleIt = mParticlesPool.begin(); particleIt != mParticlesPool.end(); ++particleIt)
-        {
-            if (!particleIt->isActive)
-                continue;
-
-            if ((particleIt->LifeRemaining - deltaTime) > 0.0f)
-            {
-                particleIt->Position += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * deltaTime * particleMoveSpeed;
-                particleIt->LifeRemaining -= deltaTime;
-
-                mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particleIt->Position);
-                particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
-
-                mParticlesRawDataHandler.SubRotationSizeData(particleRotationSizeByteOffset,
-                                                             particleIt->Rotation,
-                                                             particleIt->Size);
-                particleRotationSizeByteOffset += mParticlesRawDataHandler.GetRotationSizeByteDataOffset();
-
-                mParticlesRawDataHandler.SubColorData(particleColorByteOffset, particleIt->Color);
-                particleColorByteOffset += mParticlesRawDataHandler.GetColorByteDataOffset();
-                ++activeParticlesCount;
-            }
-            else
-            {
-                particleIt->isActive = false;
-            }
-        }
-
-        mParticlesRawDataHandler.SetTranslationActiveDataChunkSize(particleTranslationByteOffset);
-        mParticlesRawDataHandler.SetRotationSizeActiveDataChunkSize(particleRotationSizeByteOffset);
-        mParticlesRawDataHandler.SetColorActiveDataChunkSize(particleColorByteOffset);
-
-        if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst) && (activeParticlesCount || mPrevActiveParticles > 0))
-        {
-            SyncDataWithRenderThread(activeParticlesCount);
-            mPrevActiveParticles = activeParticlesCount;
+        for (const auto& module : mParticleModules) {
+            module->Update(particle, deltaTime);
         }
     }
 
-    void ParticleSystemComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
-    {
-    }
+    size_t activeParticlesCount = 0;
+    size_t particleTranslationByteOffset = 0;
+    size_t particleRotationSizeByteOffset = 0;
+    size_t particleColorByteOffset = 0;
 
-    std::shared_ptr<PrimitiveSceneProxy> ParticleSystemComponent::CreateSceneProxy() const
-    {
-        return std::make_shared<ParticleSystemSceneProxy>(this);
-    }
+    for (auto particleIt = mParticlesPool.begin(); particleIt != mParticlesPool.end(); ++particleIt) {
+        if (!particleIt->isActive)
+            continue;
 
-    void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<IParticleModule> &particleModule)
-    {
-        const auto &newModuleType = particleModule->GetParticleModuleType();
-        auto foundSameModuleIt = std::find_if(mParticleModules.begin(), mParticleModules.end(),
-                                              [=](const auto &particleModule)
-                                              { return particleModule->GetParticleModuleType() == newModuleType; });
-        assert(foundSameModuleIt == mParticleModules.end());
-        mParticleModules.emplace_back(particleModule);
-        std::sort(mParticleModules.begin(), mParticleModules.end(), [](const auto &leftModule, const auto &rightModule)
-                  { return (uint8_t)leftModule->GetParticleModuleType() < (uint8_t)rightModule->GetParticleModuleType(); });
-    }
+        if ((particleIt->LifeRemaining - deltaTime) > 0.0f) {
+            particleIt->Position
+                += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * deltaTime * particleMoveSpeed;
+            particleIt->LifeRemaining -= deltaTime;
 
-    void ParticleSystemComponent::EmitParticles(const size_t particlesCount)
-    {
-        mParticleEmitter->EmitParticles(particlesCount);
+            mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particleIt->Position);
+            particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
 
-        for (const auto &particleModule : mParticleModules)
-        {
-            particleModule->OnEmitParticles();
+            mParticlesRawDataHandler.SubRotationSizeData(particleRotationSizeByteOffset, particleIt->Rotation, particleIt->Size);
+            particleRotationSizeByteOffset += mParticlesRawDataHandler.GetRotationSizeByteDataOffset();
+
+            mParticlesRawDataHandler.SubColorData(particleColorByteOffset, particleIt->Color);
+            particleColorByteOffset += mParticlesRawDataHandler.GetColorByteDataOffset();
+            ++activeParticlesCount;
+        } else {
+            particleIt->isActive = false;
         }
     }
 
-    void ParticleSystemComponent::ResetParticles()
-    {
-        for (auto particleIt = mParticlesPool.begin(); particleIt != mParticlesPool.end(); ++particleIt)
-        {
-            particleIt->Reset();
-        }
+    mParticlesRawDataHandler.SetTranslationActiveDataChunkSize(particleTranslationByteOffset);
+    mParticlesRawDataHandler.SetRotationSizeActiveDataChunkSize(particleRotationSizeByteOffset);
+    mParticlesRawDataHandler.SetColorActiveDataChunkSize(particleColorByteOffset);
 
-        mParticlesRawDataHandler.ResetTranslationData();
-        mParticlesRawDataHandler.ResetRotationSizeData();
-        mParticlesRawDataHandler.ResetColorData();
+    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst) && (activeParticlesCount || mPrevActiveParticles > 0)) {
+        SyncDataWithRenderThread(activeParticlesCount);
+        mPrevActiveParticles = activeParticlesCount;
+    }
+}
 
-        if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
-        {
-            SyncDataWithRenderThread(0, true);
-            mPrevActiveParticles = 0;
-        }
+void ParticleSystemComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+{
+}
+
+std::shared_ptr<PrimitiveSceneProxy> ParticleSystemComponent::CreateSceneProxy() const
+{
+    return std::make_shared<ParticleSystemSceneProxy>(this);
+}
+
+void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<IParticleModule>& particleModule)
+{
+    const auto& newModuleType = particleModule->GetParticleModuleType();
+    auto foundSameModuleIt = std::find_if(mParticleModules.begin(), mParticleModules.end(), [=](const auto& particleModule) {
+        return particleModule->GetParticleModuleType() == newModuleType;
+    });
+    assert(foundSameModuleIt == mParticleModules.end());
+    mParticleModules.emplace_back(particleModule);
+    std::sort(mParticleModules.begin(), mParticleModules.end(), [](const auto& leftModule, const auto& rightModule) {
+        return (uint8_t)leftModule->GetParticleModuleType() < (uint8_t)rightModule->GetParticleModuleType();
+    });
+}
+
+void ParticleSystemComponent::EmitParticles(const size_t particlesCount)
+{
+    mParticleEmitter->EmitParticles(particlesCount);
+
+    for (const auto& particleModule : mParticleModules) {
+        particleModule->OnEmitParticles();
+    }
+}
+
+void ParticleSystemComponent::ResetParticles()
+{
+    for (auto particleIt = mParticlesPool.begin(); particleIt != mParticlesPool.end(); ++particleIt) {
+        particleIt->Reset();
     }
 
-    void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
-    {
-        if (!mIsEnabled)
-            return;
+    mParticlesRawDataHandler.ResetTranslationData();
+    mParticlesRawDataHandler.ResetRotationSizeData();
+    mParticlesRawDataHandler.ResetColorData();
 
-        if (const auto &ownerSp = GetOwner().lock())
-        {
-            const auto &ownerTranslation = ownerSp->GetRootComponent()->GetTranslation();
-            const auto &ownerScale = ownerSp->GetRootComponent()->GetScale();
+    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+        SyncDataWithRenderThread(0, true);
+        mPrevActiveParticles = 0;
+    }
+}
 
-            // Update current relative matrix
-            const glm::mat4 identityMatrix(1);
-            m_relativeMatrix = glm::mat4(1);
-            m_relativeMatrix *= glm::translate(glm::mat4(1), mTransform->Translation + ownerTranslation);
-            m_relativeMatrix *= glm::scale(glm::mat4(1), mTransform->Scale + ownerScale);
+void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
+{
+    if (!mIsEnabled)
+        return;
 
-            if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
-            {
-                // Update primitives proxy transform
-                static const uint64_t functionId = Hash("ParticleSystemComponent:UpdatePrimitiveComponentTransform_GameThread");
-                if (const auto &sceneSP = m_sceneWP.lock())
-                {
-                    if (const auto &sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
-                    {
-                        sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(mSceneProxyId,
-                                                                                          GetObjectId(),
-                                                                                          functionId,
-                                                                                          m_relativeMatrix,
-                                                                                          GetTransformedBoundingBox());
-                    }
+    if (const auto& ownerSp = GetOwner().lock()) {
+        const auto& ownerTranslation = ownerSp->GetRootComponent()->GetTranslation();
+        const auto& ownerScale = ownerSp->GetRootComponent()->GetScale();
+
+        // Update current relative matrix
+        const glm::mat4 identityMatrix(1);
+        m_relativeMatrix = glm::mat4(1);
+        m_relativeMatrix *= glm::translate(glm::mat4(1), mTransform->Translation + ownerTranslation);
+        m_relativeMatrix *= glm::scale(glm::mat4(1), mTransform->Scale + ownerScale);
+
+        if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+            // Update primitives proxy transform
+            static const uint64_t functionId = Hash("ParticleSystemComponent:UpdatePrimitiveComponentTransform_GameThread");
+            if (const auto& sceneSP = m_sceneWP.lock()) {
+                if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
+                    sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(
+                        mSceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
                 }
             }
-            SetIsTransformationDirty(bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst));
         }
+        SetIsTransformationDirty(bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst));
     }
+}
 
-    size_t ParticleSystemComponent::GetParticlesCount() const
-    {
-        return mParticlesPool.size();
-    }
+size_t ParticleSystemComponent::GetParticlesCount() const
+{
+    return mParticlesPool.size();
+}
 
-    void ParticleSystemComponent::SetParticleEmitter(const std::shared_ptr<IEmitter> &emitter)
-    {
-        assert(!mParticleEmitter);
-        mParticleEmitter = emitter;
-    }
+void ParticleSystemComponent::SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter)
+{
+    assert(!mParticleEmitter);
+    mParticleEmitter = emitter;
+}
 
-    void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData)
-    {
-        static const uint64_t functionId = Hash("ParticleSystemComponent: SyncDataWithRenderThread");
-        if (const auto &sceneSp = m_sceneWP.lock())
-        {
-            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
-            {
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                                                    GetObjectId(),
-                                                                                    functionId,
-                                                                                    [=]() mutable
-                                                                                    {
-                                                                                        const auto &proxyPtr =
-                                                                                            std::static_pointer_cast<ParticleSystemSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(mSceneProxyId));
-                                                                                        if (proxyPtr)
-                                                                                        {
-                                                                                            if (activeParticlesCount > 0)
-                                                                                            {
-                                                                                                proxyPtr->CopyParticlesRawData(mParticlesRawDataHandler.GetTranslationData(),
-                                                                                                                               mParticlesRawDataHandler.GetTranslationActiveDataChunkSize(),
-                                                                                                                               mParticlesRawDataHandler.GetRotationSizeData(),
-                                                                                                                               mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize(),
-                                                                                                                               mParticlesRawDataHandler.GetColorData(),
-                                                                                                                               mParticlesRawDataHandler.GetColorActiveDataChunkSize());
-                                                                                            }
+void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData)
+{
+    static const uint64_t functionId = Hash("ParticleSystemComponent: SyncDataWithRenderThread");
+    if (const auto& sceneSp = m_sceneWP.lock()) {
+        if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]() mutable {
+                    const auto& proxyPtr = std::static_pointer_cast<ParticleSystemSceneProxy>(
+                        sceneRenderer->GetPrimitiveProxyByProxyId(mSceneProxyId));
+                    if (proxyPtr) {
+                        if (activeParticlesCount > 0) {
+                            proxyPtr->CopyParticlesRawData(
+                                mParticlesRawDataHandler.GetTranslationData(),
+                                mParticlesRawDataHandler.GetTranslationActiveDataChunkSize(),
+                                mParticlesRawDataHandler.GetRotationSizeData(),
+                                mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize(),
+                                mParticlesRawDataHandler.GetColorData(),
+                                mParticlesRawDataHandler.GetColorActiveDataChunkSize());
+                        }
 
-                                                                                            proxyPtr->SetActiveParticlesCount(activeParticlesCount);
-                                                                                        }
-                                                                                    });
-            }
+                        proxyPtr->SetActiveParticlesCount(activeParticlesCount);
+                    }
+                });
         }
     }
 }
+} // namespace EngineCore

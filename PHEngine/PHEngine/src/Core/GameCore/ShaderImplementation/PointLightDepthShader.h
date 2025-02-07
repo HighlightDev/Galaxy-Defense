@@ -6,40 +6,30 @@
 
 using namespace Graphics::OpenGL;
 
-namespace EngineCore
-{
-   namespace ShaderImpl
-   {
+namespace EngineCore {
+namespace ShaderImpl {
 
-      class PointLightDepthCollectShader :
-         public Shader
-      {
-      public:
+class PointLightDepthCollectShader : public Shader {
+public:
+    using six_mat4x4 = std::array<glm::mat4x4, 6>;
 
-         using six_mat4x4 = std::array<glm::mat4x4, 6>;
+protected:
+    UniformArray u_shadowViewMatrices, u_shadowProjectionMatrices;
+    Uniform u_pointLightPos, u_farPlane;
 
-      protected:
+protected:
+    void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
-         UniformArray u_shadowViewMatrices, u_shadowProjectionMatrices;
-         Uniform u_pointLightPos, u_farPlane;
+public:
+    PointLightDepthCollectShader(const ShaderParams& params);
 
-      protected:
+    void SetTransformationMatrices(const six_mat4x4& viewMatrices, const six_mat4x4& projectionMatrices);
 
-         void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+    void SetPointLightPosition(const glm::vec3& position);
 
-      public:
+    void SetFarPlane(const float distance);
 
-         PointLightDepthCollectShader(const ShaderParams& params);
-
-         void SetTransformationMatrices(const six_mat4x4& viewMatrices, const six_mat4x4& projectionMatrices);
-
-         void SetPointLightPosition(const glm::vec3& position);
-
-         void SetFarPlane(const float distance);
-
-         void SetShaderPredefine() override;
-
-      };
-   }
-}
-
+    void SetShaderPredefine() override;
+};
+} // namespace ShaderImpl
+} // namespace EngineCore

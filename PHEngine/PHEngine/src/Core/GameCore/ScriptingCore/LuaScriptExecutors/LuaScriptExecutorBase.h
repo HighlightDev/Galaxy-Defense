@@ -1,80 +1,77 @@
 #pragma once
 
-#include "ILuaScriptExecutable.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaWrapper.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/GameCore/ScriptingCore/LuaWrapper.h"
+#include "ILuaScriptExecutable.h"
 
-#include <unordered_map>
 #include <any>
 #include <tuple>
+#include <unordered_map>
 
 using namespace EngineCore;
 
-namespace EngineCore
-{
-    namespace Scripts
-    {
-        class LuaScriptExecutorBase : public ILuaScriptExecutable
-        {
-            static size_t sUid;
+namespace EngineCore {
+namespace Scripts {
+class LuaScriptExecutorBase : public ILuaScriptExecutable {
+    static size_t sUid;
 
-            size_t mUId;
+    size_t mUId;
 
-            std::unordered_map<uint64_t, std::any> mFunctors;
+    std::unordered_map<uint64_t, std::any> mFunctors;
 
-            bool mIsEnabled{true};
+    bool mIsEnabled{true};
 
-        protected:
-            std::string mScriptName;
+protected:
+    std::string mScriptName;
 
-            bool mHasOnStart{false};
+    bool mHasOnStart{false};
 
-            bool mHasOnUpdate{false};
+    bool mHasOnUpdate{false};
 
-            std::weak_ptr<Scene> mSceneWP;
+    std::weak_ptr<Scene> mSceneWP;
 
-            std::weak_ptr<LuaScriptProcessor> mLuaScriptProcessor;
+    std::weak_ptr<LuaScriptProcessor> mLuaScriptProcessor;
 
-            LuaWrapper mLuaInstance;
+    LuaWrapper mLuaInstance;
 
-        public:
-            LuaScriptExecutorBase(const std::string &scriptName);
+public:
+    LuaScriptExecutorBase(const std::string& scriptName);
 
-            std::string GetScriptName() const;
+    std::string GetScriptName() const;
 
-            size_t GetUId() const;
+    size_t GetUId() const;
 
-            const std::any &GetFunctorAny(const uint64_t functionHash) const;
+    const std::any& GetFunctorAny(const uint64_t functionHash) const;
 
-            const LuaWrapper &GetLuaInstance() const;
+    const LuaWrapper& GetLuaInstance() const;
 
-            void SetScene(const std::weak_ptr<Scene> &scene);
+    void SetScene(const std::weak_ptr<Scene>& scene);
 
-            void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor);
+    void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor);
 
-            std::weak_ptr<Scene> GetScene() const;
+    std::weak_ptr<Scene> GetScene() const;
 
-            std::weak_ptr<LuaScriptProcessor> GetLuaScriptProcessor() const;
+    std::weak_ptr<LuaScriptProcessor> GetLuaScriptProcessor() const;
 
-            void AddFunctor(const uint64_t functorNameHash, const std::any &functor);
+    void AddFunctor(const uint64_t functorNameHash, const std::any& functor);
 
-            void RunScript() override;
+    void RunScript() override;
 
-            void StopScript() override;
+    void StopScript() override;
 
-            void OnUpdate(const float deltaTime) override;
+    void OnUpdate(const float deltaTime) override;
 
-            void RestartScript() override;
+    void RestartScript() override;
 
-            void CleanUp() override;
+    void CleanUp() override;
 
-            bool IsEnabled() const;
+    bool IsEnabled() const;
 
-            void SetIsEnabled(const bool isEnabled);
+    void SetIsEnabled(const bool isEnabled);
 
-        protected:
-            void SetScript(const std::string &scriptName);
-        };
-    }
-}
+protected:
+    void SetScript(const std::string& scriptName);
+};
+} // namespace Scripts
+} // namespace EngineCore

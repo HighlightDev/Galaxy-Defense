@@ -1,67 +1,66 @@
 #pragma once
 #include "Core/GameCore/Components/SceneComponent.h"
+#include "Core/GraphicsCore/RenderData/LightRenderData.h"
 #include "Core/GraphicsCore/SceneProxy/LightSceneProxy.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
-#include "Core/GraphicsCore/RenderData/LightRenderData.h"
 
 #include <glm/vec3.hpp>
-#include <memory>
+
 #include <atomic>
+#include <memory>
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Data;
 
-namespace EngineCore
-{
-   struct LightComponentData;
+namespace EngineCore {
+struct LightComponentData;
 
-   class LightComponent : public SceneComponent
-   {
-   protected:
-      using Base = SceneComponent;
+class LightComponent : public SceneComponent {
+protected:
+    using Base = SceneComponent;
 
-      std::shared_ptr<LightRenderData> mLightRenderData;
+    std::shared_ptr<LightRenderData> mLightRenderData;
 
-      bool mIsVisible{false};
+    bool mIsVisible{false};
 
-      std::atomic<bool> bIsSceneProxyReady{false};
+    std::atomic<bool> bIsSceneProxyReady{false};
 
-      bool bIsEnabledStateDirty{false};
+    bool bIsEnabledStateDirty{false};
 
-      bool bIsVisibleStateDirty{false};
+    bool bIsVisibleStateDirty{false};
 
-      int32_t mLightSceneProxyId{-1};
+    int32_t mLightSceneProxyId{-1};
 
-   public:
-      LightComponent(const std::shared_ptr<LightComponentData> &data);
+public:
+    LightComponent(const std::shared_ptr<LightComponentData>& data);
 
-      virtual ~LightComponent();
+    virtual ~LightComponent();
 
-      void SetIsSceneProxyReady(const bool isSceneProxyReady);
+    void SetIsSceneProxyReady(const bool isSceneProxyReady);
 
-      bool IsSceneProxyReady() const;
+    bool IsSceneProxyReady() const;
 
-      void SetLightSceneProxyId(const int32_t lightSceneProxyId);
+    void SetLightSceneProxyId(const int32_t lightSceneProxyId);
 
-      int32_t GetLightSceneProxyId() const;
+    int32_t GetLightSceneProxyId() const;
 
-      void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTime) override;
 
-      void SetIsEnabled(const bool value) override;
+    void SetIsEnabled(const bool value) override;
 
-      void SetIsVisible(const bool value);
+    void SetIsVisible(const bool value);
 
-      bool IsVisible() const;
+    bool IsVisible() const;
 
-      eComponentType GetComponentType() const override;
+    eComponentType GetComponentType() const override;
 
-      void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
+    void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
 
-      virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const = 0;
+    virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const = 0;
 
-      LightRenderData &GetLightRenderData();
+    LightRenderData& GetLightRenderData();
 
-      void SyncRenderData();
-   };
+    void SyncRenderData();
+};
 
-}
+} // namespace EngineCore

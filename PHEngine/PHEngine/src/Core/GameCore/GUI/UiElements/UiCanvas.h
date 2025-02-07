@@ -1,224 +1,223 @@
 #pragma once
 
-#include "UiItemBase.h"
-#include "IUiTransformable.h"
-#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
-#include "Core/GameCore/ITickable.h"
-#include "Core/GameCore/GUI/UiInputSystem/UiInputSystem.h"
-#include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
-#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
+#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationSequence.h"
-#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiInputSystem.h"
+#include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "IUiTransformable.h"
+#include "UiItemBase.h"
 
-#include <unordered_set>
-#include <memory>
-#include <atomic>
 #include <glm/vec2.hpp>
+
+#include <atomic>
+#include <memory>
+#include <unordered_set>
 
 using namespace Graphics;
 using namespace EngineCore::Scripts;
 using namespace Event;
 
-namespace Graphics::Proxy
-{
-    class UiCanvasSceneProxy;
+namespace Graphics::Proxy {
+class UiCanvasSceneProxy;
 }
 
-namespace EngineCore::Scripts
-{
-    class LuaProxy;
+namespace EngineCore::Scripts {
+class LuaProxy;
 }
 
 struct EngineObjectPropertyBase;
 
-namespace EngineCore
-{
-    class Scene;
+namespace EngineCore {
+class Scene;
 
-    namespace GUI
-    {
-        class UiCanvas : public EngineToLuaReplicatorBase,
-                         public IUiTransformable,
-                         public ITickable,
-                         public IAnimatable,
-                         public WindowSizeChangedGameThreadEvent
-        {
-        private:
-            static size_t s_UId;
+namespace GUI {
+class UiCanvas : public EngineToLuaReplicatorBase,
+                 public IUiTransformable,
+                 public ITickable,
+                 public IAnimatable,
+                 public WindowSizeChangedGameThreadEvent {
+private:
+    static size_t s_UId;
 
-            size_t mUId;
+    size_t mUId;
 
-            std::string mName;
+    std::string mName;
 
-            std::weak_ptr<::EngineCore::Scene> mScene;
+    std::weak_ptr<::EngineCore::Scene> mScene;
 
-            glm::ivec2 mAbsoluteOrigin;
+    glm::ivec2 mAbsoluteOrigin;
 
-            glm::ivec2 mWidthHeight;
+    glm::ivec2 mWidthHeight;
 
-            bool mIsVisible;
+    bool mIsVisible;
 
-            bool mCanInterceptMouseInputEvents;
+    bool mCanInterceptMouseInputEvents;
 
-            bool mIsTransformDirty;
+    bool mIsTransformDirty;
 
-            bool mIsPropertiesShouldBeUpdatedOnRenderThread{false};
+    bool mIsPropertiesShouldBeUpdatedOnRenderThread{false};
 
-            bool mIsPropertiesShouldBeUpdatedOnLuaThread{false};
+    bool mIsPropertiesShouldBeUpdatedOnLuaThread{false};
 
-            std::atomic<bool> mIsSceneProxyReady{false}; // only when this value is true - data could be updated on render thread
+    std::atomic<bool> mIsSceneProxyReady{false}; // only when this value is true - data could be updated on render thread
 
-            std::atomic<bool> mIsLuaProxyReady{false};
+    std::atomic<bool> mIsLuaProxyReady{false};
 
-            std::shared_ptr<UiInputSystem> mInputSystem;
+    std::shared_ptr<UiInputSystem> mInputSystem;
 
-            bool mWasHoveredLastFrame{false};
+    bool mWasHoveredLastFrame{false};
 
-            bool mMouseButtonWasPressedLastFrame{false};
+    bool mMouseButtonWasPressedLastFrame{false};
 
-            std::vector<std::weak_ptr<UiItemBase>> mDescendingByZOrderHierarchyChildren;
+    std::vector<std::weak_ptr<UiItemBase>> mDescendingByZOrderHierarchyChildren;
 
-            bool mIsCreatedFromLua{false};
+    bool mIsCreatedFromLua{false};
 
-            std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
+    std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
 
-            std::unordered_map<std::string, std::shared_ptr<::EngineObjectPropertyBase>> mProperties;
+    std::unordered_map<std::string, std::shared_ptr<::EngineObjectPropertyBase>> mProperties;
 
-            std::shared_ptr<Animator> mAnimator;
+    std::shared_ptr<Animator> mAnimator;
 
-            std::shared_ptr<SequenceAnimator> mSequenceAnimator;
+    std::shared_ptr<SequenceAnimator> mSequenceAnimator;
 
-            size_t mCanvasZOrder{0}; // order of rendering canvases
+    size_t mCanvasZOrder{0}; // order of rendering canvases
 
-        protected:
-            std::vector<std::shared_ptr<UiItemBase>> mChildren;
+protected:
+    std::vector<std::shared_ptr<UiItemBase>> mChildren;
 
-            std::unordered_set<size_t> mRegisteredUIds;
-            std::unordered_set<std::string> mRegisteredNames;
+    std::unordered_set<size_t> mRegisteredUIds;
+    std::unordered_set<std::string> mRegisteredNames;
 
-        public:
-            UiCanvas(const ViewPortInfo &canvasScreenProperties, const std::string &name);
+public:
+    UiCanvas(const ViewPortInfo& canvasScreenProperties, const std::string& name);
 
-            ~UiCanvas() override;
+    ~UiCanvas() override;
 
-            void Initialize();
+    void Initialize();
 
-            void SetIsSceneProxyReady(const bool isReady);
+    void SetIsSceneProxyReady(const bool isReady);
 
-            bool GetIsSceneProxyReady() const;
+    bool GetIsSceneProxyReady() const;
 
-            void SetIsLuaProxyReady(const bool isReady);
+    void SetIsLuaProxyReady(const bool isReady);
 
-            bool GetIsLuaProxyReady() const;
+    bool GetIsLuaProxyReady() const;
 
-            void InitLuaProxy(const std::shared_ptr<::EngineCore::Scene> &sceneSp) override;
+    void InitLuaProxy(const std::shared_ptr<::EngineCore::Scene>& sceneSp) override;
 
-            void InitializeInputSystem();
+    void InitializeInputSystem();
 
-            void DeinitializeInputSystem();
+    void DeinitializeInputSystem();
 
-            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
+    std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
-            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+    void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
-            size_t GetUId() const override;
-            const glm::ivec2 &GetAbsoluteOrigin() const override;
-            size_t GetZOrder() const override;
-            size_t GetWidth() const override;
-            size_t GetHeight() const override;
-            glm::vec2 GetNormalizedTranslation() const override;
-            glm::vec2 GetNormalizedScale() const override;
-            std::weak_ptr<IUiTransformable> GetRootParent() const override;
-            std::weak_ptr<IUiTransformable> GetParent() const override;
-            std::string GetName() const override;
-            std::weak_ptr<::EngineCore::Scene> GetScene() const override;
-            BoundingBox2D<glm::ivec2> GetBoundingArea() const override;
-            bool IsVisible() const override;
-            bool GetIfCanInterceptMouseInputEvents() const override;
-            bool IsTransformDirty() const override;
-            bool IsInputSystemInitialized() const;
-            std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
-            std::shared_ptr<IUiTransformable> TryFindHierarchyChildByName(const std::string &name) const;
-            std::shared_ptr<IUiTransformable> TryFindHierarchyChildByUId(const uint32_t uid) const;
+    size_t GetUId() const override;
+    const glm::ivec2& GetAbsoluteOrigin() const override;
+    size_t GetZOrder() const override;
+    size_t GetWidth() const override;
+    size_t GetHeight() const override;
+    glm::vec2 GetNormalizedTranslation() const override;
+    glm::vec2 GetNormalizedScale() const override;
+    std::weak_ptr<IUiTransformable> GetRootParent() const override;
+    std::weak_ptr<IUiTransformable> GetParent() const override;
+    std::string GetName() const override;
+    std::weak_ptr<::EngineCore::Scene> GetScene() const override;
+    BoundingBox2D<glm::ivec2> GetBoundingArea() const override;
+    bool IsVisible() const override;
+    bool GetIfCanInterceptMouseInputEvents() const override;
+    bool IsTransformDirty() const override;
+    bool IsInputSystemInitialized() const;
+    std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string& name) const override;
+    std::shared_ptr<IUiTransformable> TryFindHierarchyChildByName(const std::string& name) const;
+    std::shared_ptr<IUiTransformable> TryFindHierarchyChildByUId(const uint32_t uid) const;
 
-            void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
-            void SetZOrder(const size_t z_order) override;
-            void SetWidth(const size_t width) override;
-            void SetHeight(const size_t height) override;
-            void SetIsVisible(const bool isVisible) override;
-            void SetIfCanInterceptMouseInputEvents(const bool intercepts) override;
-            void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
+    void SetAbsoluteOrigin(const glm::ivec2& transform) override;
+    void SetZOrder(const size_t z_order) override;
+    void SetWidth(const size_t width) override;
+    void SetHeight(const size_t height) override;
+    void SetIsVisible(const bool isVisible) override;
+    void SetIfCanInterceptMouseInputEvents(const bool intercepts) override;
+    void SetScene(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
-            void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem) override;
-            void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
+    void AddUiItem(const std::shared_ptr<UiItemBase>& uiItem) override;
+    void RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem);
 
-            void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-            void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTime) override;
 
-            std::shared_ptr<::Graphics::Proxy::UiCanvasSceneProxy> CreateUiCanvasSceneProxy() const;
+    std::shared_ptr<::Graphics::Proxy::UiCanvasSceneProxy> CreateUiCanvasSceneProxy() const;
 
-            std::vector<std::shared_ptr<UiItemBase>> GetDependentByTransformChildren(const std::string &nameOfChangedTransformUiItem) const;
-            void CollectChildrenWithDescendingZOrder();
+    std::vector<std::shared_ptr<UiItemBase>>
+    GetDependentByTransformChildren(const std::string& nameOfChangedTransformUiItem) const;
+    void CollectChildrenWithDescendingZOrder();
 
-            // Input events
-            void OnMousePositionChanged(const glm::ivec2 &mouseCursorPosition);
-            void OnMouseReleased(const glm::ivec2 &mouseCursorPosition);
-            void OnMousePressed(const glm::ivec2 &mouseCursorPosition);
-            void OnMouseClicked(const glm::ivec2 &mouseCursorPosition);
+    // Input events
+    void OnMousePositionChanged(const glm::ivec2& mouseCursorPosition);
+    void OnMouseReleased(const glm::ivec2& mouseCursorPosition);
+    void OnMousePressed(const glm::ivec2& mouseCursorPosition);
+    void OnMouseClicked(const glm::ivec2& mouseCursorPosition);
 
-            std::shared_ptr<::EngineObjectPropertyBase> GetPropertyByName(const std::string &propName) const override;
+    std::shared_ptr<::EngineObjectPropertyBase> GetPropertyByName(const std::string& propName) const override;
 
-            std::shared_ptr<Animator> GetAnimator() const override;
+    std::shared_ptr<Animator> GetAnimator() const override;
 
-            std::shared_ptr<::EngineCore::GUI::SequenceAnimator> GetSequenceAnimator() const override;
+    std::shared_ptr<::EngineCore::GUI::SequenceAnimator> GetSequenceAnimator() const override;
 
-            void CreateAnimator() override;
+    void CreateAnimator() override;
 
-            void CreateSequenceAnimator() override;
+    void CreateSequenceAnimator() override;
 
-            void AddAnimation(const std::string &animationName, const AnimationData &animationData) override;
+    void AddAnimation(const std::string& animationName, const AnimationData& animationData) override;
 
-            void AddSequenceAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationSequence &animationSequence) override;
+    void AddSequenceAnimation(
+        const std::string& animationName, const ::EngineCore::GUI::AnimationSequence& animationSequence) override;
 
-            bool CheckIfInterceptsMouseEvent(const glm::ivec2 &currentMousePosition) const;
+    bool CheckIfInterceptsMouseEvent(const glm::ivec2& currentMousePosition) const;
 
-            void CleanUp() override;
+    void CleanUp() override;
 
-        protected:
-            void ProcessEvent(const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
+protected:
+    void ProcessEvent(
+        const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t& data) override;
 
-            void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
+    void RegisterUiItem(const size_t uiId, const std::string& uiItemName);
 
-            void UnregisterUiItem(const size_t uiId, const std::string &uiItemName);
+    void UnregisterUiItem(const size_t uiId, const std::string& uiItemName);
 
-        private:
-            void SyncDataOnRenderThread();
+private:
+    void SyncDataOnRenderThread();
 
-            void SyncDataOnLuaThread();
+    void SyncDataOnLuaThread();
 
-            void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
+    void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string& dstUiItemName) override;
 
-            void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
+    void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
 
-            void SetHorizontalCenterOffset(const int32_t offset) override;
+    void SetHorizontalCenterOffset(const int32_t offset) override;
 
-            void SetVerticalCenterOffset(const int32_t offset) override;
+    void SetVerticalCenterOffset(const int32_t offset) override;
 
-            void SetIsTransformDirty(const bool isDirty);
+    void SetIsTransformDirty(const bool isDirty);
 
-            void UpdateAnchorTransform();
+    void UpdateAnchorTransform();
 
-            void UpdateDependentChildrenAnchorTransform();
+    void UpdateDependentChildrenAnchorTransform();
 
-            void UpdateOpacityProperty();
+    void UpdateOpacityProperty();
 
-            void RemoveSceneProxy();
+    void RemoveSceneProxy();
 
-            void RemoveFromReplicators();
+    void RemoveFromReplicators();
 
-            void RemoveLuaProxy();
-        };
-    }
-}
+    void RemoveLuaProxy();
+};
+} // namespace GUI
+} // namespace EngineCore

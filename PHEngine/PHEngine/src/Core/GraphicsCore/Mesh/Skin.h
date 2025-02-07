@@ -1,44 +1,39 @@
 #pragma once
 
+#include "Core/GameCore/BoundingBox3D.h"
+#include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
+
 #include <memory>
 #include <utility>
-
-#include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
-#include "Core/GameCore/BoundingBox3D.h"
 
 using namespace Graphics::OpenGL;
 using namespace EngineCore;
 
-namespace Graphics
-{
-   namespace Mesh
-   {
-      class Skin
-      {
+namespace Graphics {
+namespace Mesh {
+class Skin {
 
-         std::shared_ptr<VertexArrayObject> m_buffer;
+    std::shared_ptr<VertexArrayObject> m_buffer;
 
-         BoundingBox3D mBoundingBox;
+    BoundingBox3D mBoundingBox;
 
-         std::string mMeshName;
+    std::string mMeshName;
 
-      public:
+public:
+    Skin(const std::shared_ptr<VertexArrayObject>& vao, const BoundingBox3D& boundingBox, const std::string& meshName);
 
-         Skin(const std::shared_ptr<VertexArrayObject>& vao, const BoundingBox3D& boundingBox, const std::string& meshName);
+    virtual ~Skin();
 
-         virtual ~Skin();
+    bool operator==(const Skin& right) const;
 
-         bool operator==(const Skin& right) const;
+    const std::shared_ptr<VertexArrayObject>& GetBuffer() const;
 
-         const std::shared_ptr<VertexArrayObject>& GetBuffer() const;
+    BoundingBox3D GetBoundingBox() const;
 
-         BoundingBox3D GetBoundingBox() const;
+    std::string GetMeshName() const;
 
-         std::string GetMeshName() const;
+    virtual void CleanUp();
+};
 
-         virtual void CleanUp();
-      };
-
-   }
-}
-
+} // namespace Mesh
+} // namespace Graphics

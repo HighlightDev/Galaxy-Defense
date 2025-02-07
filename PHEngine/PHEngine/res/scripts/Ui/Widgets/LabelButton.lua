@@ -87,7 +87,6 @@ function LabelButton:onPreCompoundWidgetInitialize()
 end
 
 function LabelButton:onCompoundWidgetInitialize()
-
     self.backgroundTile:setParent(self.host, self.overlayCanvasName, self.parentName)
     self.backgroundTile:setZOrder(3);
     self.backgroundTile:setHeight(self.buttonHeight);

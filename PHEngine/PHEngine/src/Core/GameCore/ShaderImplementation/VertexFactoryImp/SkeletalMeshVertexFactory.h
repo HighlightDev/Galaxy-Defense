@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
@@ -8,67 +9,65 @@ using namespace Graphics::OpenGL;
 using namespace IO;
 using namespace EngineUtility;
 
-namespace EngineCore
-{
-   template <int32_t InfluenceWeightsCount>
-   class SkeletalMeshVertexFactory
-       : public VertexFactoryShader
-   {
+namespace EngineCore {
+template<int32_t InfluenceWeightsCount>
+class SkeletalMeshVertexFactory : public VertexFactoryShader {
 
-      Uniform u_worldMatrix;
-      Uniform u_viewMatrix;
-      Uniform u_projectionMatrix;
-      UniformArray u_boneMatrices;
+    Uniform u_worldMatrix;
+    Uniform u_viewMatrix;
+    Uniform u_projectionMatrix;
+    UniformArray u_boneMatrices;
 
-      const int32_t MaxBones;
-      static constexpr int32_t MaxWeightsIndices = InfluenceWeightsCount;
+    const int32_t MaxBones;
+    static constexpr int32_t MaxWeightsIndices = InfluenceWeightsCount;
 
-   public:
-      SkeletalMeshVertexFactory()
-          : VertexFactoryShader("SkeletalMeshVertexFactory"), MaxBones(EngineConfigHolder::GetInstance()->GetEngineConfig().MaxSkeletBones)
-      {
-         InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "SkeletalMeshVertexFactory.glsl");
-      }
+public:
+    SkeletalMeshVertexFactory()
+        : VertexFactoryShader("SkeletalMeshVertexFactory")
+        , MaxBones(EngineConfigHolder::GetInstance()->GetEngineConfig().MaxSkeletBones)
+    {
+        InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "SkeletalMeshVertexFactory.glsl");
+    }
 
-      void AccessAllUniformLocations(uint32_t shaderProgramID) override
-      {
-         u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
-         u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
-         u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
-         u_boneMatrices = GetUniformArray("bonesMatrices", MaxBones, shaderProgramID, eShaderType::VertexShader);
-      }
+    void AccessAllUniformLocations(uint32_t shaderProgramID) override
+    {
+        u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
+        u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
+        u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
+        u_boneMatrices = GetUniformArray("bonesMatrices", MaxBones, shaderProgramID, eShaderType::VertexShader);
+    }
 
-      void SetMatrices(const glm::mat4 &worldMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
-      {
-         u_worldMatrix.LoadUniform(worldMatrix);
-         u_viewMatrix.LoadUniform(viewMatrix);
-         u_projectionMatrix.LoadUniform(projectionMatrix);
-      }
+    void SetMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    {
+        u_worldMatrix.LoadUniform(worldMatrix);
+        u_viewMatrix.LoadUniform(viewMatrix);
+        u_projectionMatrix.LoadUniform(projectionMatrix);
+    }
 
-      void SetSkinningMatrices(const std::vector<glm::mat4> &skinningMatrices)
-      {
-         for (size_t index = 0; index < skinningMatrices.size(); index++)
+    void SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices)
+    {
+        for (size_t index = 0; index < skinningMatrices.size(); index++)
             u_boneMatrices.LoadUniform(index, skinningMatrices[index]);
-      }
+    }
 
-      void SetShaderPredefine() override
-      {
-         DefineConstant<int32_t>("MaxBones", (int32_t)MaxBones);
-         DefineConstant<int32_t>("MaxWeights", (int32_t)MaxWeightsIndices);
-      }
+    void SetShaderPredefine() override
+    {
+        DefineConstant<int32_t>("MaxBones", (int32_t)MaxBones);
+        DefineConstant<int32_t>("MaxWeights", (int32_t)MaxWeightsIndices);
+    }
 
-      std::vector<std::shared_ptr<AttributeDataBase>> GetVertexAttributes(const int32_t shaderProgramId) override
-      {
-         std::vector<std::shared_ptr<AttributeDataBase>> result;
-         result.reserve(7);
-         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexPosition>>(0));
-         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexNormal>>(1));
-         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexTexCoords>>(2));
-         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexTangent>>(3));
-         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexBitangent>>(4));
-         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexBlendWeights>>(5));
-         result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexBlendIndex>>(6));
-         return result;
-      }
-   };
-}
+    std::vector<std::shared_ptr<AttributeDataBase>> GetVertexAttributes(const int32_t shaderProgramId) override
+    {
+        std::vector<std::shared_ptr<AttributeDataBase>> result;
+        result.reserve(7);
+        result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexPosition>>(0));
+        result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexNormal>>(1));
+        result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexTexCoords>>(2));
+        result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexTangent>>(3));
+        result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexBitangent>>(4));
+        result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexBlendWeights>>(5));
+        result.emplace_back(std::make_shared<StandartAttributeData<eAttribArrayIndex::VertexBlendIndex>>(6));
+        return result;
+    }
+};
+} // namespace EngineCore

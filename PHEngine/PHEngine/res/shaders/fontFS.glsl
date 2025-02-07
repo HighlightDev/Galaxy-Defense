@@ -1,6 +1,6 @@
 #version 400
 
-layout (location = 0) out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
 
 in vec2 texCoords;
 
@@ -19,9 +19,9 @@ void main(void)
 {
     float alpha = 1.0 - texture(fontAtlas, texCoords).a;
     float shadowAlpha = 1.0 - texture(fontAtlas, texCoords + shadowOffset).a;
-    
+
     float fontSmoothEdgeAlpha = 1.0 - smoothstep(boldWidth, softWidth + boldWidth, alpha);
-    float shadowSmoothEdgeAlpha = 1.0 - smoothstep(shadowStartFrom, shadowStartFrom +  shadowWidth, shadowAlpha);
+    float shadowSmoothEdgeAlpha = 1.0 - smoothstep(shadowStartFrom, shadowStartFrom + shadowWidth, shadowAlpha);
 
     float overallAlpha = fontSmoothEdgeAlpha + (1.0 - fontSmoothEdgeAlpha) * shadowSmoothEdgeAlpha;
     vec3 resultColor = mix((color * 0.5), color, fontSmoothEdgeAlpha / overallAlpha);

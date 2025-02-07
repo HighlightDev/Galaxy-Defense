@@ -5,25 +5,22 @@
 
 using namespace EngineCore::Scripts;
 
-namespace Game
-{
-    class LevelProgressController;
+namespace Game {
+class LevelProgressController;
 
-    class LuaCombatLevelExecutor
-        : public LuaScriptExecutorBase
-    {
-        std::vector<std::shared_ptr<ILuaFunctionable>> mLuaFunctions;
+class LuaCombatLevelExecutor : public LuaScriptExecutorBase {
+    std::vector<std::shared_ptr<ILuaFunctionable>> mLuaFunctions;
 
-        std::shared_ptr<::Game::LevelProgressController> mLvlProgressController;
+    std::shared_ptr<::Game::LevelProgressController> mLvlProgressController;
 
-    public:
-        explicit LuaCombatLevelExecutor(const std::string &scriptName,
-                                        const std::shared_ptr<::Game::LevelProgressController> &lvlProgressController);
+public:
+    explicit LuaCombatLevelExecutor(
+        const std::string& scriptName, const std::shared_ptr<::Game::LevelProgressController>& lvlProgressController);
 
-        void RunScript() override;
+    void RunScript() override;
 
-        void StopScript() override;
+    void StopScript() override;
 
-        void RegisterCallbacks() override;
-    };
-}
+    void RegisterCallbacks() override;
+};
+} // namespace Game

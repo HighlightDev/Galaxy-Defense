@@ -1,29 +1,28 @@
 #pragma once
 
-#include <BulletPhys/btBulletDynamicsCommon.h>
-#include <BulletPhys/btBulletCollisionCommon.h>
 #include <BulletPhys/BulletCollision/CollisionDispatch/btCollisionObject.h>
+#include <BulletPhys/btBulletCollisionCommon.h>
+#include <BulletPhys/btBulletDynamicsCommon.h>
+
 #include <vector>
 
-namespace EnginePhysics
-{
-    class BulletRayCastWithFilter : public btCollisionWorld::ClosestRayResultCallback
-    {
-    protected:
-        std::vector<btCollisionObject *> mExcludeFilterBodies;
+namespace EnginePhysics {
+class BulletRayCastWithFilter : public btCollisionWorld::ClosestRayResultCallback {
+protected:
+    std::vector<btCollisionObject*> mExcludeFilterBodies;
 
-    public:
-        BulletRayCastWithFilter();
+public:
+    BulletRayCastWithFilter();
 
-        explicit BulletRayCastWithFilter(std::vector<btCollisionObject *> excludeCollisionObjects);
+    explicit BulletRayCastWithFilter(std::vector<btCollisionObject*> excludeCollisionObjects);
 
-        void RayTest(const btDiscreteDynamicsWorld *physWorld, const btVector3 &rayFromPosition, const btVector3 &rayToPosition);
+    void RayTest(const btDiscreteDynamicsWorld* physWorld, const btVector3& rayFromPosition, const btVector3& rayToPosition);
 
-        bool IsRayHitCollision() const;
+    bool IsRayHitCollision() const;
 
-        const btCollisionObject *GetCollisionHitObject() const;
+    const btCollisionObject* GetCollisionHitObject() const;
 
-    private:
-        btScalar addSingleResult(btCollisionWorld::LocalRayResult &rayResult, bool normalInWorldSpace) override;
-    };
-}
+private:
+    btScalar addSingleResult(btCollisionWorld::LocalRayResult& rayResult, bool normalInWorldSpace) override;
+};
+} // namespace EnginePhysics

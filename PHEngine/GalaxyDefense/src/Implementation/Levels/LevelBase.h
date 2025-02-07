@@ -7,18 +7,16 @@
 
 using namespace EngineCore;
 
-namespace Game
-{
+namespace Game {
 
-   class LevelBase : public Level
-   {
-   protected:
-      std::shared_ptr<LevelProgressController> mLvlProgressController;
+class LevelBase : public Level {
+protected:
+    std::shared_ptr<LevelProgressController> mLvlProgressController;
 
-   public:
-      explicit LevelBase(const std::string &levelName);
+public:
+    explicit LevelBase(const std::string& levelName);
 
-      ~LevelBase() = default;
-   };
+    ~LevelBase() = default;
+};
 
-}
+} // namespace Game

@@ -2,27 +2,23 @@
 
 #include "Core/GameCore/Particles/Modules/Velocity/IVelocityModule.h"
 
-namespace EngineCore
-{
-    class SimpleVelocityModule
-        : public IVelocityModule
-    {
-       
-       glm::vec3 mVelocityDirection;
-       glm::vec3 mVelocityDeviation;
+namespace EngineCore {
+class SimpleVelocityModule : public IVelocityModule {
 
-       glm::vec3 mCurrentSpawnVelocityDeviation;
+    glm::vec3 mVelocityDirection;
+    glm::vec3 mVelocityDeviation;
 
-    public:
-       SimpleVelocityModule();
+    glm::vec3 mCurrentSpawnVelocityDeviation;
 
-       void Update(Particle& particle, const float deltaTime) override;
+public:
+    SimpleVelocityModule();
 
-       void SetVelocityDirection(const glm::vec3& velocityDirection);
+    void Update(Particle& particle, const float deltaTime) override;
 
-       void SetVelocityDeviation(const glm::vec3& velocityDeviation);
+    void SetVelocityDirection(const glm::vec3& velocityDirection);
 
-       void OnEmitParticles() override;
+    void SetVelocityDeviation(const glm::vec3& velocityDeviation);
 
-    };
-}
+    void OnEmitParticles() override;
+};
+} // namespace EngineCore

@@ -1,43 +1,36 @@
 #pragma once
 
-#include <string>
 #include <stdint.h>
+
 #include <cstdint>
+#include <string>
 
-namespace EngineCore
-{
-    struct FontParams
+namespace EngineCore {
+struct FontParams {
+    std::string FontName;
+    std::string FontDescriptorFile;
+    std::string FontTextureAtlas;
+
+    explicit FontParams(const std::string& fontName, const std::string& fontDescriptorFile, const std::string& fontTextureAtlas);
+
+    friend struct std::hash<FontParams>;
+
+    bool operator==(const FontParams& other) const
     {
-        std::string FontName;
-        std::string FontDescriptorFile;
-        std::string FontTextureAtlas;
+        return this->FontName == other.FontName && this->FontDescriptorFile == other.FontDescriptorFile
+            && this->FontTextureAtlas == other.FontTextureAtlas;
+    }
+};
+} // namespace EngineCore
 
-        explicit FontParams(const std::string &fontName,
-                            const std::string &fontDescriptorFile,
-                            const std::string &fontTextureAtlas);
-
-        friend struct std::hash<FontParams>;
-
-        bool operator==(const FontParams &other) const
-        {
-            return this->FontName == other.FontName &&
-                   this->FontDescriptorFile == other.FontDescriptorFile &&
-                   this->FontTextureAtlas == other.FontTextureAtlas;
-        }
-    };
-}
-
-namespace std
-{
-    using namespace EngineCore;
-    template <>
-    struct hash<FontParams>
+namespace std {
+using namespace EngineCore;
+template<>
+struct hash<FontParams> {
+    std::size_t operator()(const FontParams& k) const
     {
-        std::size_t operator()(const FontParams &k) const
-        {
-            return hash<std::string>()(k.FontName) ^
-                   hash<std::string>()(k.FontDescriptorFile) ^
-                   hash<std::string>()(k.FontTextureAtlas);
-        }
-    };
-}
+        return hash<std::string>()(k.FontName) ^ hash<std::string>()(k.FontDescriptorFile)
+            ^ hash<std::string>()(k.FontTextureAtlas);
+    }
+};
+} // namespace std

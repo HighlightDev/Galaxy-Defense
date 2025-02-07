@@ -1,75 +1,71 @@
 #pragma once
 
-#include "MaterialProperty.h"
-#include "Core/ResourceManagerCore/DeferredResources/DeferredResource.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/ResourceManagerCore/DeferredResources/DeferredResource.h"
+#include "MaterialProperty.h"
 
 using namespace Resources;
 using namespace EngineCore;
 
 namespace Graphics {
 
-   struct DeferredTextureMaterialProperty
-      : public MaterialProperty
-   {
-      using MaterialPropertyValueType = DeferredResource<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>;
+struct DeferredTextureMaterialProperty : public MaterialProperty {
+    using MaterialPropertyValueType = DeferredResource<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>;
 
-   private:
+private:
+    std::shared_ptr<MaterialPropertyValueType> m_value;
 
-      std::shared_ptr<MaterialPropertyValueType> m_value;
+public:
+    DeferredTextureMaterialProperty(std::shared_ptr<MaterialPropertyValueType> propertyValue, const std::string& propertyName)
+        : MaterialProperty(propertyName)
+        , m_value(propertyValue)
+    {
+    }
 
-   public:
+    DeferredTextureMaterialProperty(const std::string& propertyName)
+        : MaterialProperty(propertyName)
+    {
+    }
 
-      DeferredTextureMaterialProperty(std::shared_ptr<MaterialPropertyValueType> propertyValue, const std::string& propertyName)
-         : MaterialProperty(propertyName)
-         , m_value(propertyValue)
-      {
-      }
+    eMaterialPropertyType GetPropertyType() const override
+    {
+        return MaterialProperty::eMaterialPropertyType::DEFERRED_TEXTURE_PROPERTY;
+    }
 
-      DeferredTextureMaterialProperty(const std::string& propertyName)
-         : MaterialProperty(propertyName)
-      {
-      }
+    void SetValueToUniformArray(const UniformArray& uniformArray) const override
+    {
+    }
 
-      eMaterialPropertyType GetPropertyType() const override
-      {
-         return MaterialProperty::eMaterialPropertyType::DEFERRED_TEXTURE_PROPERTY;
-      }
-
-      void SetValueToUniformArray(const UniformArray& uniformArray) const override
-      {
-      }
-
-      void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
-      {
-         if (m_value)
-         {
+    void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+    {
+        if (m_value) {
             std::shared_ptr<ITexture> outResource = nullptr;
             const bool bHasResource = m_value->TryGetResource(outResource);
-            if (bHasResource)
-            {
-               int32_t slot = 10 + propertyIndex;
-               outResource->BindTexture(slot);
-               uniform.LoadUniform(slot);
+            if (bHasResource) {
+                int32_t slot = 10 + propertyIndex;
+                outResource->BindTexture(slot);
+                uniform.LoadUniform(slot);
+            } else {
+                LogInfo(
+                    "DeferredTextureMaterialProperty::SetValueToUniform => property { ",
+                    GetPropertyName(),
+                    " } is not ready yet.");
             }
-            else 
-            {
-               LogInfo("DeferredTextureMaterialProperty::SetValueToUniform => property { ", GetPropertyName()," } is not ready yet.");
-            }
-         }
-      }
+        }
+    }
 
-      void SetValue(std::shared_ptr<MaterialPropertyValueType> value) {
-         m_value = value;
-      }
+    void SetValue(std::shared_ptr<MaterialPropertyValueType> value)
+    {
+        m_value = value;
+    }
 
-      typename MaterialPropertyValueType::arg_t GetValue() const {
-         std::shared_ptr<ITexture> outResource = nullptr;
-         if (m_value)
-         {
+    typename MaterialPropertyValueType::arg_t GetValue() const
+    {
+        std::shared_ptr<ITexture> outResource = nullptr;
+        if (m_value) {
             const bool bHasResource = m_value->TryGetResource(outResource);
-         }
-         return outResource;
-      }
-   };
-}
+        }
+        return outResource;
+    }
+};
+} // namespace Graphics

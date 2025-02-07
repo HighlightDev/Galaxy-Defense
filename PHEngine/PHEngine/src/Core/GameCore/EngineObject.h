@@ -1,34 +1,32 @@
 #pragma once
-#include <cstddef>
-#include <unordered_map>
-#include <string>
-#include <memory>
-
 #include "EngineObjectProperty.h"
 
-namespace EngineCore
-{
-   class EngineObject
-   {
-      static int32_t mTotalObjectIdCounter;
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
-   protected:
-      int32_t mObjectId;
+namespace EngineCore {
+class EngineObject {
+    static int32_t mTotalObjectIdCounter;
 
-      std::unordered_map<std::string, std::weak_ptr<EngineObjectPropertyBase>> mEngineProperties;
+protected:
+    int32_t mObjectId;
 
-      std::string EngineObjectName;
+    std::unordered_map<std::string, std::weak_ptr<EngineObjectPropertyBase>> mEngineProperties;
 
-   public:
-      EngineObject(const std::string &gameObjectName);
+    std::string EngineObjectName;
 
-      int32_t GetObjectId() const;
+public:
+    EngineObject(const std::string& gameObjectName);
 
-      const std::weak_ptr<EngineObjectPropertyBase> &GetEnginePropertyByName(const std::string &key) const;
+    int32_t GetObjectId() const;
 
-      void AddEngineProperty(const std::shared_ptr<EngineObjectPropertyBase> &goPtr);
+    const std::weak_ptr<EngineObjectPropertyBase>& GetEnginePropertyByName(const std::string& key) const;
 
-      std::string GetEngineObjectName() const;
-   };
+    void AddEngineProperty(const std::shared_ptr<EngineObjectPropertyBase>& goPtr);
 
-}
+    std::string GetEngineObjectName() const;
+};
+
+} // namespace EngineCore

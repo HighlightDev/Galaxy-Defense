@@ -1,51 +1,44 @@
 #pragma once
-#include "ProjectedShadowInfo.h"
 #include "Core/GameCore/Event/TextureAtlasGeneratedEvent.h"
+#include "ProjectedShadowInfo.h"
 
 #include <array>
 
-namespace Graphics
-{
+namespace Graphics {
 
-   class ProjectedPointLightShadowInfo
-      : public ProjectedShadowInfo
-      , public Event::TextureAtlasGeneratedGameThreadEvent
-   {
-   public:
+class ProjectedPointLightShadowInfo : public ProjectedShadowInfo, public Event::TextureAtlasGeneratedGameThreadEvent {
+public:
+    using six_mat4x4 = std::array<glm::mat4x4, 6>;
 
-      using six_mat4x4 = std::array<glm::mat4x4, 6>;
+private:
+    six_mat4x4 m_shadowViewMatrix;
 
-   private:
+    six_mat4x4 m_shadowProjectionMatrix;
 
-      six_mat4x4 m_shadowViewMatrix;
+private:
+    std::shared_ptr<TextureCubeAtlasHandler> GetTextureCubeHandler() const;
 
-      six_mat4x4 m_shadowProjectionMatrix;
+public:
+    ProjectedPointLightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource);
 
-   private:
+    ~ProjectedPointLightShadowInfo() override;
 
-      std::shared_ptr<TextureCubeAtlasHandler> GetTextureCubeHandler() const;
+    void Initialize() override;
 
-   public:
+    void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
 
-      ProjectedPointLightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource);
+    void ProcessEvent(
+        const TextureAtlasGeneratedGameThreadEvent* sender,
+        const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t& data) override;
 
-      ~ProjectedPointLightShadowInfo() override;
+    six_mat4x4 GetShadowViewMatrices() const;
 
-      void Initialize() override;
+    six_mat4x4 GetShadowProjectionMatrices() const;
 
-      void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
+    void SetShadowViewMatrices(const six_mat4x4& shadowViewMatrices);
 
-      void ProcessEvent(const TextureAtlasGeneratedGameThreadEvent* sender, const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t& data) override;
+    void SetShadowProjectionMatrix(const six_mat4x4& shadowProjectionMatrices);
 
-      six_mat4x4 GetShadowViewMatrices() const;
-
-      six_mat4x4 GetShadowProjectionMatrices() const;
-
-      void SetShadowViewMatrices(const six_mat4x4& shadowViewMatrices);
-
-      void SetShadowProjectionMatrix(const six_mat4x4& shadowProjectionMatrices);
-
-      six_mat4x4 GetShadowMatrix() const;
-
-   };
-}
+    six_mat4x4 GetShadowMatrix() const;
+};
+} // namespace Graphics

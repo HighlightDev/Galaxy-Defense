@@ -1,68 +1,67 @@
 #include "SoundComponent.h"
-#include "Core/CommonCore/Assertion.h"
+
 #include "Core/AudioCore/SoundBuffer.h"
 #include "Core/AudioCore/SoundSource.h"
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
 
 using namespace Resources;
 
-namespace EngineCore
+namespace EngineCore {
+SoundComponent::SoundComponent(const std::shared_ptr<ComponentData>& data)
+    : Component(data->EngineObjectName)
+    , mSoundBuffersMap()
+    , mSoundSource(std::make_shared<SoundSource>())
 {
-    SoundComponent::SoundComponent(const std::shared_ptr<ComponentData> &data)
-        : Component(data->EngineObjectName),
-          mSoundBuffersMap(),
-          mSoundSource(std::make_shared<SoundSource>())
-    {
-    }
-
-    SoundComponent::~SoundComponent()
-    {
-    }
-
-    void SoundComponent::CleanUp()
-    {
-        for (const auto &[key, bufferValue] : mSoundBuffersMap)
-        {
-            SoundBufferPool::GetInstance()->TryToFreeMemory(bufferValue);
-        }
-        mSoundBuffersMap.clear();
-        mSoundSource = nullptr;
-    }
-
-    void SoundComponent::Tick(const float deltaTime)
-    {
-    }
-
-    void SoundComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
-    {
-    }
-
-    eComponentType SoundComponent::GetComponentType() const
-    {
-        return AUDIO_COMPONENT;
-    }
-
-    void SoundComponent::CreateSoundBuffer(const std::string &soundFileName, const std::string &bufferName)
-    {
-        assert(!mSoundBuffersMap.count(bufferName));
-        const auto &buffer = SoundBufferPool::GetInstance()->GetOrAllocateResource(soundFileName);
-        mSoundBuffersMap.emplace(bufferName, buffer);
-    }
-
-    std::shared_ptr<SoundBuffer> SoundComponent::GetSoundBufferByName(const std::string &soundName) const
-    {
-        return mSoundBuffersMap.count(soundName) ? mSoundBuffersMap.at(soundName) : nullptr;
-    }
-
-    std::shared_ptr<SoundSource> SoundComponent::GetSoundSource() const
-    {
-        return mSoundSource;
-    }
-
-    void SoundComponent::PlayBuffer(const std::string &soundName)
-    {
-        assert(mSoundBuffersMap.count(soundName));
-        mSoundSource->Play(mSoundBuffersMap.at(soundName));
-    }
 }
+
+SoundComponent::~SoundComponent()
+{
+}
+
+void SoundComponent::CleanUp()
+{
+    for (const auto& [key, bufferValue] : mSoundBuffersMap) {
+        SoundBufferPool::GetInstance()->TryToFreeMemory(bufferValue);
+    }
+    mSoundBuffersMap.clear();
+    mSoundSource = nullptr;
+}
+
+void SoundComponent::Tick(const float deltaTime)
+{
+}
+
+void SoundComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+{
+}
+
+eComponentType SoundComponent::GetComponentType() const
+{
+    return AUDIO_COMPONENT;
+}
+
+void SoundComponent::CreateSoundBuffer(const std::string& soundFileName, const std::string& bufferName)
+{
+    assert(!mSoundBuffersMap.count(bufferName));
+    const auto& buffer = SoundBufferPool::GetInstance()->GetOrAllocateResource(soundFileName);
+    mSoundBuffersMap.emplace(bufferName, buffer);
+}
+
+std::shared_ptr<SoundBuffer> SoundComponent::GetSoundBufferByName(const std::string& soundName) const
+{
+    return mSoundBuffersMap.count(soundName) ? mSoundBuffersMap.at(soundName) : nullptr;
+}
+
+std::shared_ptr<SoundSource> SoundComponent::GetSoundSource() const
+{
+    return mSoundSource;
+}
+
+void SoundComponent::PlayBuffer(const std::string& soundName)
+{
+    assert(mSoundBuffersMap.count(soundName));
+    mSoundSource->Play(mSoundBuffersMap.at(soundName));
+}
+} // namespace EngineCore

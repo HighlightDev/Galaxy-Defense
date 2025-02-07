@@ -3,12 +3,12 @@
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialNode.h"
 
 #include <glm/vec2.hpp>
+
 #include <memory>
 
 using namespace Common;
 
-namespace Graphics
-{
+namespace Graphics {
 
 #define UNARY_INCR_OP_START "<increment>"
 #define UNARY_INCR_OP_END "</increment>"
@@ -28,42 +28,41 @@ namespace Graphics
 #define FLOAT_CONSTANT_START "<float_constant>"
 #define FLOAT_CONSTANT_END "</float_constant>"
 
-   struct MaterialNode;
+struct MaterialNode;
 
-   class MaterialNodeDecorator
-   {
-   public:
-      MaterialNodeDecorator();
-      ~MaterialNodeDecorator();
+class MaterialNodeDecorator {
+public:
+    MaterialNodeDecorator();
+    ~MaterialNodeDecorator();
 
-      glm::vec2 GetValueRange(const std::string &nodeStr) const;
+    glm::vec2 GetValueRange(const std::string& nodeStr) const;
 
-      std::shared_ptr<MaterialNode> CreateMaterialOperationNode(std::string const &nodeName,
-                                                                const MaterialNode::eMaterialPropertyType materialPropertyType) const;
+    std::shared_ptr<MaterialNode> CreateMaterialOperationNode(
+        std::string const& nodeName, const MaterialNode::eMaterialPropertyType materialPropertyType) const;
 
-      std::shared_ptr<MaterialNode> CreateValueNode(const std::string &propertyName,
-                                                    const std::string &propertyValue) const;
+    std::shared_ptr<MaterialNode> CreateValueNode(const std::string& propertyName, const std::string& propertyValue) const;
 
-      XMLParserHelper::iterator_t GetTagWithName(const std::string &operationName, XMLParserHelper::iterator_t &propertiesBeginIt,
-                                                 const XMLParserHelper::iterator_t &propertiesEndIt);
+    XMLParserHelper::iterator_t GetTagWithName(
+        const std::string& operationName,
+        XMLParserHelper::iterator_t& propertiesBeginIt,
+        const XMLParserHelper::iterator_t& propertiesEndIt);
 
-      template <typename... NamesT>
-      XMLParserHelper::iterator_t GetOneOfTagWithNames(XMLParserHelper::iterator_t &propertiesBeginIt,
-                                                       const XMLParserHelper::iterator_t &propertiesEndIt,
-                                                       NamesT &&...operationNames)
-      {
-         std::vector<std::string> operationTags = {std::forward<NamesT>(operationNames)...};
-         for (auto tag : operationTags)
-         {
+    template<typename... NamesT>
+    XMLParserHelper::iterator_t GetOneOfTagWithNames(
+        XMLParserHelper::iterator_t& propertiesBeginIt,
+        const XMLParserHelper::iterator_t& propertiesEndIt,
+        NamesT&&... operationNames)
+    {
+        std::vector<std::string> operationTags = {std::forward<NamesT>(operationNames)...};
+        for (auto tag : operationTags) {
             auto it = GetTagWithName(tag, propertiesBeginIt, propertiesEndIt);
-            if (it != propertiesEndIt)
-            {
-               return it;
+            if (it != propertiesEndIt) {
+                return it;
             }
-         }
+        }
 
-         return propertiesEndIt;
-      }
-   };
+        return propertiesEndIt;
+    }
+};
 
-}
+} // namespace Graphics

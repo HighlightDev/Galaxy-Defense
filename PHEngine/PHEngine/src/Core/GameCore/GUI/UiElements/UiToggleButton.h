@@ -5,83 +5,76 @@
 #include <glm/vec3.hpp>
 #include <json/json.hpp>
 
-namespace Graphics
-{
-    namespace Proxy
-    {
-        class UiSceneProxyBase;
-    }
+namespace Graphics {
+namespace Proxy {
+class UiSceneProxyBase;
 }
+} // namespace Graphics
 
-namespace EngineCore
-{
-    namespace Scripts
-    {
-        class LuaProxy;
-    }
+namespace EngineCore {
+namespace Scripts {
+class LuaProxy;
 }
+} // namespace EngineCore
 
-namespace EngineCore
-{
-    class UiCanvas;
-    namespace GUI
-    {
-        class UiToggleButton : public UiItemBase
-        {
-            glm::vec3 mToggleOffColor;
+namespace EngineCore {
+class UiCanvas;
+namespace GUI {
+class UiToggleButton : public UiItemBase {
+    glm::vec3 mToggleOffColor;
 
-            glm::vec3 mToggleOnColor;
+    glm::vec3 mToggleOnColor;
 
-            float mOpacity;
+    float mOpacity;
 
-            bool mIsStateOn;
+    bool mIsStateOn;
 
-        public:
-            explicit UiToggleButton(const bool isInitialStateOn, const std::string& name = std::string(""));
+public:
+    explicit UiToggleButton(const bool isInitialStateOn, const std::string& name = std::string(""));
 
-            ~UiToggleButton() override;
+    ~UiToggleButton() override;
 
-            bool IsButtonStateOn() const;
+    bool IsButtonStateOn() const;
 
-            void ToggleButton();
+    void ToggleButton();
 
-            void SetToggleOnColor(const glm::vec3 &color);
+    void SetToggleOnColor(const glm::vec3& color);
 
-            void SetToggleOffColor(const glm::vec3 &color);
+    void SetToggleOffColor(const glm::vec3& color);
 
-            void SetToggleOnColor(const uint32_t hexColor);
+    void SetToggleOnColor(const uint32_t hexColor);
 
-            void SetToggleOffColor(const uint32_t hexColor);
+    void SetToggleOffColor(const uint32_t hexColor);
 
-            glm::vec3 GetToggleOnColor() const;
+    glm::vec3 GetToggleOnColor() const;
 
-            glm::vec3 GetToggleOffColor() const;
+    glm::vec3 GetToggleOffColor() const;
 
-            void SetOpacity(const float opacity);
+    void SetOpacity(const float opacity);
 
-            float GetOpacity() const;
+    float GetOpacity() const;
 
-            std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
+    std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
-            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
+    std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
-            void OnPropertiesShouldBeUpdatedOnRenderThread() override;
+    void OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
-            void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+    void OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
-            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+    void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
-            std::string GetUiTypeString() const override;
+    std::string GetUiTypeString() const override;
 
-        protected:
-            void OnRegistered() override;
+protected:
+    void OnRegistered() override;
 
-            void OnUnregistered() override;
+    void OnUnregistered() override;
 
-        private:
-            void SyncDataOnRenderThread();
+private:
+    void SyncDataOnRenderThread();
 
-            void SyncDataOnLuaThread();
-        };
-    }
-}
+    void SyncDataOnLuaThread();
+};
+} // namespace GUI
+} // namespace EngineCore

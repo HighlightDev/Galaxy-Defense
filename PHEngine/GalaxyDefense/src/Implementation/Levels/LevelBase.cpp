@@ -1,10 +1,9 @@
 #include "LevelBase.h"
 
-namespace Game
+namespace Game {
+LevelBase::LevelBase(const std::string& levelName)
+    : Level(levelName)
+    , mLvlProgressController(std::make_shared<LevelProgressController>())
 {
-   LevelBase::LevelBase(const std::string &levelName)
-       : Level(levelName),
-         mLvlProgressController(std::make_shared<LevelProgressController>())
-   {
-   }
 }
+} // namespace Game

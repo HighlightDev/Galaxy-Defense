@@ -2,41 +2,40 @@
 
 #include "ILevelRequirementTracker.h"
 
-namespace Game
-{
-    class MissedSpaceshipsTracker
-        : public ILevelRequirementTracker
+namespace Game {
+class MissedSpaceshipsTracker : public ILevelRequirementTracker {
+    const int32_t mMissSpaceshipsCountToFailTracker{0};
+
+    int32_t mInitialMissedSpaceshipsCount{0};
+
+    int32_t mMissedSpaceshipsCount{0};
+
+    int32_t mLastMissedSpaceshipsCount{0};
+
+public:
+    explicit MissedSpaceshipsTracker(const int32_t missSpaceshipsCountToFailTracker);
+
+    void Tick(const float deltaTime) override;
+
+    void UnpausableTick(const float deltaTime) override
     {
-        const int32_t mMissSpaceshipsCountToFailTracker{0};
+    }
 
-        int32_t mInitialMissedSpaceshipsCount{0};
+    void Init() override;
 
-        int32_t mMissedSpaceshipsCount{0};
+    bool IsRequirementAchived() const override;
 
-        int32_t mLastMissedSpaceshipsCount{0};
+    bool IsRequirementFailed() const override;
 
-    public:
-        explicit MissedSpaceshipsTracker(const int32_t missSpaceshipsCountToFailTracker);
+    std::string GetName() const override;
 
-        void Tick(const float deltaTime) override;
+    std::unordered_map<std::string, std::string> SerializeParameters() const override;
 
-        void UnpausableTick(const float deltaTime) override {}
+    bool CheckIfRequirementIsDirty(const bool unsetDirtyFlag) override;
 
-        void Init() override;
+    eLevelRequirementTrackerType GetType() const override;
 
-        bool IsRequirementAchived() const override;
-
-        bool IsRequirementFailed() const override;
-
-        std::string GetName() const override;
-
-        std::unordered_map<std::string, std::string> SerializeParameters() const override;
-
-        bool CheckIfRequirementIsDirty(const bool unsetDirtyFlag) override;
-
-        eLevelRequirementTrackerType GetType() const override;
-
-    private:
-        void SetMissedSpaceshipsCount(const int32_t value);
-    };
-}
+private:
+    void SetMissedSpaceshipsCount(const int32_t value);
+};
+} // namespace Game

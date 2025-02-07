@@ -1,92 +1,94 @@
 #pragma once
 
-#include <BulletPhys/btBulletDynamicsCommon.h>
-#include <BulletPhys/btBulletCollisionCommon.h>
+#include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
+#include "PhysicsDescriptor.h"
+
 #include <BulletPhys/BulletCollision/CollisionDispatch/btGhostObject.h>
+#include <BulletPhys/btBulletCollisionCommon.h>
+#include <BulletPhys/btBulletDynamicsCommon.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+
 #include <vector>
 
-#include "PhysicsDescriptor.h"
-#include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
+namespace EnginePhysics {
+class PhysicsWorld;
 
-namespace EnginePhysics
-{
-   class PhysicsWorld;
+class DynamicCharacterController : public PhysicsDescriptor, public Event::KinematicBodyMovedGameThreadEvent {
+private:
+    // Physics
+    btPairCachingGhostObject* mGhostObject;
 
-   class DynamicCharacterController
-      : public PhysicsDescriptor
-      , public Event::KinematicBodyMovedGameThreadEvent
-   {
-   private:
-      // Physics
-      btPairCachingGhostObject* mGhostObject;
+    bool mOnGround;
+    bool mHittingWall;
 
-      bool mOnGround;
-      bool mHittingWall;
+    float mDeceleration;
+    float mMaxSpeed;
+    float mJumpImpulse;
+    float mJumpRechargeTime;
+    float mJumpRechargeTimer;
+    float mBottomYOffset;
+    float mBottomRoundedRegionYOffset;
+    float mStepHeight;
+    float mTimerMultiplier;
 
-      float mDeceleration;
-      float mMaxSpeed;
-      float mJumpImpulse;
-      float mJumpRechargeTime;
-      float mJumpRechargeTimer;
-      float mBottomYOffset;
-      float mBottomRoundedRegionYOffset;
-      float mStepHeight;
-      float mTimerMultiplier;
+    btTransform mMotionTransform;
+    btVector3 mPreviousPosition;
 
-      btTransform mMotionTransform;
-      btVector3 mPreviousPosition;
+    btVector3 mManualVelocity;
+    std::vector<btVector3> mSurfaceHitNormals;
 
-      btVector3 mManualVelocity;
-      std::vector<btVector3> mSurfaceHitNormals;
+    PhysicsDescriptor* mLastRayCastObjectResult;
 
-      PhysicsDescriptor* mLastRayCastObjectResult;
+public:
+    DynamicCharacterController(
+        const std::shared_ptr<PhysicsWorld>& pPhysicsWorld,
+        float capsuleRadius,
+        float capsuleHeight,
+        float mass,
+        float stepHeight);
 
-   public:
+    ~DynamicCharacterController() override;
 
-      DynamicCharacterController(const std::shared_ptr<PhysicsWorld>& pPhysicsWorld, float capsuleRadius, float capsuleHeight, float mass, float stepHeight);
+    void Initialize() override;
 
-      ~DynamicCharacterController() override;
+    void CleanUp() override;
 
-      void Initialize() override;
+    void CompletePhysicsDescriptorConstruction() override;
 
-      void CleanUp() override;
+    void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
 
-      void CompletePhysicsDescriptorConstruction() override;
+    void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
 
-      void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
+    void ProcessEvent(
+        const KinematicBodyMovedGameThreadEvent* sender,
+        const typename Event::KinematicBodyMovedGameThreadEvent::EventData_t& data) override;
 
-      void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
+    ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 
-      void ProcessEvent(const KinematicBodyMovedGameThreadEvent* sender, const typename Event::KinematicBodyMovedGameThreadEvent::EventData_t& data) override;
+    std::vector<btCollisionObject*> GetCollisionObjects() const override;
 
-      ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
+    // Acceleration vector in XZ plane
+    void Walk(const glm::vec2& dir);
 
-      std::vector<btCollisionObject*> GetCollisionObjects() const override;
+    // Ignores y
+    void Walk(const glm::vec3& dir);
 
-      // Acceleration vector in XZ plane
-      void Walk(const glm::vec2& dir);
+    void Jump();
 
-      // Ignores y
-      void Walk(const glm::vec3& dir);
+    bool IsOnGround() const;
 
-      void Jump();
+    float GetStepHeight() const;
 
-      bool IsOnGround() const;
+    float GetCapsuleHeight() const;
 
-      float GetStepHeight() const;
+    float GetCapsuleRadius() const;
 
-      float GetCapsuleHeight() const;
+private:
+    void ParseGhostContacts();
 
-      float GetCapsuleRadius() const;
+    void UpdatePosition();
 
-   private:
-
-      void ParseGhostContacts();
-
-      void UpdatePosition();
-
-      void UpdateVelocity();
-   };
-}
+    void UpdateVelocity();
+};
+} // namespace EnginePhysics

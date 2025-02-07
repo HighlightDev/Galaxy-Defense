@@ -1,58 +1,52 @@
 #pragma once
 
-#include "SceneProxyBase.h"
-#include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
 #include "Core/GameCore/FramebufferImplementation/PlanarReflectionFramebuffer.h"
+#include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
+#include "SceneProxyBase.h"
 
 namespace EngineCore {
-   class PlanarReflectionComponent;
+class PlanarReflectionComponent;
 }
 
 using namespace EngineCore::FramebufferImpl;
 
-namespace Graphics
-{
-   using EngineCore::PlanarReflectionComponent;
+namespace Graphics {
+using EngineCore::PlanarReflectionComponent;
 
-   class PlanarReflectionProxy
-      : public SceneProxyBase
-   {
-      std::weak_ptr<SceneView> mCaptureSceneView;
+class PlanarReflectionProxy : public SceneProxyBase {
+    std::weak_ptr<SceneView> mCaptureSceneView;
 
-      ViewPortInfo mRenderTargetViewPortInfo;
+    ViewPortInfo mRenderTargetViewPortInfo;
 
-      glm::vec4 mReflectionPlane;
+    glm::vec4 mReflectionPlane;
 
-      std::unique_ptr<PlanarReflectionFramebuffer> mPlanarReflectionFBO;
-      
-      glm::mat4 mMirrorMatrix;
+    std::unique_ptr<PlanarReflectionFramebuffer> mPlanarReflectionFBO;
 
-   public:
+    glm::mat4 mMirrorMatrix;
 
-      PlanarReflectionProxy(PlanarReflectionComponent const* planarReflectionComponent);
+public:
+    PlanarReflectionProxy(PlanarReflectionComponent const* planarReflectionComponent);
 
-      ~PlanarReflectionProxy();
+    ~PlanarReflectionProxy();
 
-      void CleanUp() override;
+    void CleanUp() override;
 
-      void SetSceneViewWeakPtr(std::weak_ptr<SceneView> captureSceneView);
+    void SetSceneViewWeakPtr(std::weak_ptr<SceneView> captureSceneView);
 
-      std::weak_ptr<SceneView> GetSceneViewWeakPtr() const;
+    std::weak_ptr<SceneView> GetSceneViewWeakPtr() const;
 
-      void RenderToPlanarReflectionFBO();
+    void RenderToPlanarReflectionFBO();
 
-      void StopRenderingToPlanarReflectionFBO();
+    void StopRenderingToPlanarReflectionFBO();
 
-      void ResolveReflectionRenderTargetSurfaceData();
+    void ResolveReflectionRenderTargetSurfaceData();
 
-      void SetReflectionPlane(const glm::vec4& reflectionPlane);
+    void SetReflectionPlane(const glm::vec4& reflectionPlane);
 
-      glm::vec4 GetReflectionPlane() const;
+    glm::vec4 GetReflectionPlane() const;
 
-      glm::mat4 GetMirrorMatrix() const;
+    glm::mat4 GetMirrorMatrix() const;
 
-      std::shared_ptr<ITexture> GetPlanarReflectionTexture() const;
-
-   };
-}
-
+    std::shared_ptr<ITexture> GetPlanarReflectionTexture() const;
+};
+} // namespace Graphics

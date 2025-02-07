@@ -1,14 +1,14 @@
 #pragma once
 
-#include <random>
-#include <limits>
 #include <stdint.h>
+
 #include <cstdint>
+#include <limits>
+#include <random>
 
 #undef max
 
-class Random
-{
+class Random {
 public:
     static float Float()
     {

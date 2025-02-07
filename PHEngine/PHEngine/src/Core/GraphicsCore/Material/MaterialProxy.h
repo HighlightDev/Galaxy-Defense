@@ -3,45 +3,38 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialProperty.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 using namespace Graphics::Texture;
 
-namespace Graphics
-{
-   class MaterialProxy
-      : public SceneProxyBase
-   {
-   public:
+namespace Graphics {
+class MaterialProxy : public SceneProxyBase {
+public:
+    const std::string MaterialName;
+    const std::string MaterialShaderName;
+    const std::string MaterialShaderRelativePath;
 
-      const std::string MaterialName;
-      const std::string MaterialShaderName;
-      const std::string MaterialShaderRelativePath;
+protected:
+    std::vector<std::shared_ptr<MaterialProperty>> mProperties;
 
-   protected:
+public:
+    MaterialProxy(const class IMaterial* material);
 
-      std::vector<std::shared_ptr<MaterialProperty>> mProperties;
+    ~MaterialProxy();
 
-   public:
+    void CleanUp() override;
 
-      MaterialProxy(const class IMaterial* material);
+    const std::vector<std::shared_ptr<MaterialProperty>>& GetProperties() const;
 
-      ~MaterialProxy();
+    std::vector<std::string> GetUniformNames() const;
 
-      void CleanUp() override;
+    std::vector<std::string> GetUniformArrayNames() const;
 
-      const std::vector<std::shared_ptr<MaterialProperty>>& GetProperties() const;
+    void UpdateProperty(std::shared_ptr<MaterialProperty> property);
 
-      std::vector<std::string> GetUniformNames() const;
+    void UpdateProperties(std::vector<std::shared_ptr<MaterialProperty>>&& updatedProperties);
+};
 
-      std::vector<std::string> GetUniformArrayNames() const;
-
-      void UpdateProperty(std::shared_ptr<MaterialProperty> property);
-
-      void UpdateProperties(std::vector<std::shared_ptr<MaterialProperty>>&& updatedProperties);
-   };
-
-}
-
+} // namespace Graphics

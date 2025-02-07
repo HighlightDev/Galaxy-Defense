@@ -1,69 +1,72 @@
 #pragma once
 
-#include "LuaProxy.h"
-#include "Core/GameCore/Input/Keys.h"
 #include "Core/GameCore/Event/KeyboardInputEvent.h"
+#include "Core/GameCore/Event/MouseButtonDownEvent.h"
 #include "Core/GameCore/Event/MouseMovedEvent.h"
 #include "Core/GameCore/Event/MouseScrollEvent.h"
-#include "Core/GameCore/Event/MouseButtonDownEvent.h"
+#include "Core/GameCore/Input/Keys.h"
+#include "LuaProxy.h"
 
 #include <string>
 #include <vector>
 
 using namespace Event;
 
-namespace EngineCore
+namespace EngineCore {
+namespace Scripts {
+class EngineInputLuaProxy : public LuaProxy,
+                            public KeyboardButtonDownLuaThreadEvent,
+                            public MouseMovedLuaThreadEvent,
+                            public MouseScrollLuaThreadEvent,
+                            public MouseButtonDownLuaThreadEvent,
+                            public std::enable_shared_from_this<EngineInputLuaProxy>
+
 {
-    namespace Scripts
-    {
-        class EngineInputLuaProxy : public LuaProxy,
-                                    public KeyboardButtonDownLuaThreadEvent,
-                                    public MouseMovedLuaThreadEvent,
-                                    public MouseScrollLuaThreadEvent,
-                                    public MouseButtonDownLuaThreadEvent,
-                                    public std::enable_shared_from_this<EngineInputLuaProxy>
+    // keyboard event data
+    std::vector<eKeyboardKeys> mReleasedKeysOnCurrentTick;
+    std::vector<eKeyboardKeys> mPressedKeysOnCurrentTick;
 
-        {
-            // keyboard event data
-            std::vector<eKeyboardKeys> mReleasedKeysOnCurrentTick;
-            std::vector<eKeyboardKeys> mPressedKeysOnCurrentTick;
+    bool mIsPressedKeyboardKeys;
+    bool mIsReleasedKeyboardKeys;
 
-            bool mIsPressedKeyboardKeys;
-            bool mIsReleasedKeyboardKeys;
+    std::string mKeyboardJsonData;
 
-            std::string mKeyboardJsonData;
+    // mouse event data
 
-            // mouse event data
+public:
+    EngineInputLuaProxy();
 
-        public:
-            EngineInputLuaProxy();
+    ~EngineInputLuaProxy() override;
 
-            ~EngineInputLuaProxy() override;
+    void Initialize();
 
-            void Initialize();
+    void CleanUp();
 
-            void CleanUp();
+    void ProcessEvent(
+        const KeyboardButtonDownLuaThreadEvent* sender,
+        const typename KeyboardButtonDownLuaThreadEvent::EventData_t& data) override;
 
-            void ProcessEvent(const KeyboardButtonDownLuaThreadEvent *sender, const typename KeyboardButtonDownLuaThreadEvent::EventData_t &data) override;
+    void
+    ProcessEvent(const MouseMovedLuaThreadEvent* sender, const typename MouseMovedLuaThreadEvent::EventData_t& data) override;
 
-            void ProcessEvent(const MouseMovedLuaThreadEvent *sender, const typename MouseMovedLuaThreadEvent::EventData_t &data) override;
+    void
+    ProcessEvent(const MouseScrollLuaThreadEvent* sender, const typename MouseScrollLuaThreadEvent::EventData_t& data) override;
 
-            void ProcessEvent(const MouseScrollLuaThreadEvent *sender, const typename MouseScrollLuaThreadEvent::EventData_t &data) override;
+    void ProcessEvent(
+        const MouseButtonDownLuaThreadEvent* sender, const typename MouseButtonDownLuaThreadEvent::EventData_t& data) override;
 
-            void ProcessEvent(const MouseButtonDownLuaThreadEvent *sender, const typename MouseButtonDownLuaThreadEvent::EventData_t &data) override;
+    void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
 
-            void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
+    std::string GetGameThreadData() override;
 
-            std::string GetGameThreadData() override;
+    bool GetIsPressedKeyboardKeys() const;
 
-            bool GetIsPressedKeyboardKeys() const;
+    bool GetIsReleasedKeyboardKeys() const;
 
-            bool GetIsReleasedKeyboardKeys() const;
+    std::string GetKeyboardJsonData() const;
 
-            std::string GetKeyboardJsonData() const;
-
-        private:
-            void PrepareKeyboardJsonData();
-        };
-    }
-}
+private:
+    void PrepareKeyboardJsonData();
+};
+} // namespace Scripts
+} // namespace EngineCore

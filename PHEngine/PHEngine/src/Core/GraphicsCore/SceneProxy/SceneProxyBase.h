@@ -1,40 +1,36 @@
 #pragma once
 
-#include <cstddef>
 #include <stdint.h>
+
+#include <cstddef>
 
 namespace Graphics {
 
-   class SceneProxyBase
-   {
-      static int32_t SceneProxyIdCounter;
+class SceneProxyBase {
+    static int32_t SceneProxyIdCounter;
 
-   protected:
+protected:
+    int32_t mSceneProxyId;
 
-      int32_t mSceneProxyId;
+    int32_t mGameObjectId;
 
-      int32_t mGameObjectId;
+    bool mIsEnabled;
 
-      bool mIsEnabled;
+public:
+    SceneProxyBase(const bool isEnabled);
 
-   public:
+    virtual ~SceneProxyBase() = default;
 
-      SceneProxyBase(const bool isEnabled);
+    int32_t GetSceneProxyId() const;
 
-      virtual ~SceneProxyBase() = default;
+    void SetEnabled(const bool bEnabled);
 
-      int32_t GetSceneProxyId() const;
+    bool IsEnabled() const;
 
-      void SetEnabled(const bool bEnabled);
+    void SetBindedGameObjectId(const int32_t gameObjectId);
 
-      bool IsEnabled() const;
+    int32_t GetGameObjectId() const;
 
-      void SetBindedGameObjectId(const int32_t gameObjectId);
-
-      int32_t GetGameObjectId() const;
-
-      virtual void CleanUp();
-
-   };
-}
-
+    virtual void CleanUp();
+};
+} // namespace Graphics

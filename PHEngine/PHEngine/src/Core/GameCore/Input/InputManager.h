@@ -1,47 +1,46 @@
 #pragma once
 
-#include "Core/GameCore/Input/Keys.h"
 #include "Core/GameCore/Input/InputDeviceKeyData.h"
+#include "Core/GameCore/Input/Keys.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
 
-#include <vector>
-#include <cstddef>
 #include <stdint.h>
 
-namespace EngineCore
-{
-   class InputManager
-   {
+#include <cstddef>
+#include <vector>
 
-      int32_t mPrevMouseX;
-      int32_t mPrevMouseY;
+namespace EngineCore {
+class InputManager {
 
-      std::vector<KeyboardKeysData> mKeyboardMaskVec;
-      std::vector<MouseKeysData> mMouseButtonMaskVec;
+    int32_t mPrevMouseX;
+    int32_t mPrevMouseY;
 
-   public:
-      InputManager();
+    std::vector<KeyboardKeysData> mKeyboardMaskVec;
+    std::vector<MouseKeysData> mMouseButtonMaskVec;
 
-      ~InputManager() = default;
+public:
+    InputManager();
 
-      // KEYBOARD
-      void TriggerOnKeyboardKeyDown(eKeyboardKeys key);
+    ~InputManager() = default;
 
-      void TriggerOnKeyboardKeyUp(eKeyboardKeys key);
+    // KEYBOARD
+    void TriggerOnKeyboardKeyDown(eKeyboardKeys key);
 
-      // MOUSE
-      void TriggerOnMouseMove(const int32_t x, const int32_t y);
+    void TriggerOnKeyboardKeyUp(eKeyboardKeys key);
 
-      void TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection);
+    // MOUSE
+    void TriggerOnMouseMove(const int32_t x, const int32_t y);
 
-      void TriggerOnMouseButtonKeyDown(const eMouseKeys key);
+    void TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection);
 
-      void TriggerOnMouseButtonKeyUp(const eMouseKeys key);
+    void TriggerOnMouseButtonKeyDown(const eMouseKeys key);
 
-   private:
-      void SetKeyboardKeyState(const KeyboardKeysData key);
+    void TriggerOnMouseButtonKeyUp(const eMouseKeys key);
 
-      void SetMouseButtonKeyState(const MouseKeysData key);
-   };
+private:
+    void SetKeyboardKeyState(const KeyboardKeysData key);
 
-}
+    void SetMouseButtonKeyState(const MouseKeysData key);
+};
+
+} // namespace EngineCore

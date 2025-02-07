@@ -15,7 +15,7 @@ local function setup()
 		local unixLikePath = pathToCurrentScript:gsub("\\", "/")
 		unixLikePath = unixLikePath:gsub("//", "/")
 		local _, endindex = string.find(unixLikePath, "scripts/")
-        unixLikePath = string.sub(unixLikePath, 1, endindex)
+		unixLikePath = string.sub(unixLikePath, 1, endindex)
 		package.path = package.path .. ";" .. unixLikePath .. "?.lua"
 	end
 end

@@ -1,77 +1,72 @@
 #pragma once
 
-#include "ILevelController.h"
-#include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/BoundingBox3D.h"
-#include "Implementation/Navigation/NavigationPathBuilder.h"
+#include "Core/GameCore/ITickable.h"
+#include "ILevelController.h"
 #include "Implementation/DamageDealerType.h"
+#include "Implementation/Navigation/NavigationPathBuilder.h"
 
 #include <memory>
 #include <vector>
 
-namespace EngineCore
-{
-    class Scene;
-    class Actor;
-}
+namespace EngineCore {
+class Scene;
+class Actor;
+} // namespace EngineCore
 
 using namespace EngineCore;
 
-namespace Game
-{
-    class SpaceshipActor;
-    class MissileActor;
+namespace Game {
+class SpaceshipActor;
+class MissileActor;
 
-    class NavigationController
-        : public ITickable,
-          public ILevelController
-    {
-        std::weak_ptr<::EngineCore::Scene> mSceneWp;
+class NavigationController : public ITickable, public ILevelController {
+    std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
-        NavigationPathBuilder mNavPathBuilder;
+    NavigationPathBuilder mNavPathBuilder;
 
-        std::vector<std::shared_ptr<SpaceshipActor>> mEnemies;
+    std::vector<std::shared_ptr<SpaceshipActor>> mEnemies;
 
-        std::vector<std::shared_ptr<MissileActor>> mMissiles;
+    std::vector<std::shared_ptr<MissileActor>> mMissiles;
 
-        std::shared_ptr<::EngineCore::Actor> mNavPathDummyActor;
+    std::shared_ptr<::EngineCore::Actor> mNavPathDummyActor;
 
-        BoundingBox3D mLevelBounds;
+    BoundingBox3D mLevelBounds;
 
-    public:
-        explicit NavigationController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
+public:
+    explicit NavigationController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
-        void SetPathRoutes(const std::unordered_map<std::string, Path> &paths);
+    void SetPathRoutes(const std::unordered_map<std::string, Path>& paths);
 
-        void OnPreLevelInit() override;
+    void OnPreLevelInit() override;
 
-        void OnLevelInit() override;
+    void OnLevelInit() override;
 
-        void OnPostLevelInit() override;
+    void OnPostLevelInit() override;
 
-        void PostPlayLevelFinished() override;
+    void PostPlayLevelFinished() override;
 
-        void CleanUp() override;
+    void CleanUp() override;
 
-        void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-        void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTime) override;
 
-        std::vector<std::string> GetPathNames() const;
+    std::vector<std::string> GetPathNames() const;
 
-        void SetLevelBounds(const BoundingBox3D &levelBounds);
+    void SetLevelBounds(const BoundingBox3D& levelBounds);
 
-        void PutSpaceshipOnRoute(const std::string &routeName, const std::shared_ptr<SpaceshipActor> &spaceship);
+    void PutSpaceshipOnRoute(const std::string& routeName, const std::shared_ptr<SpaceshipActor>& spaceship);
 
-        void PutMissileToNavigate(const std::shared_ptr<MissileActor> &missile);
+    void PutMissileToNavigate(const std::shared_ptr<MissileActor>& missile);
 
-        void RemoveSpaceshipFromRoute(const int32_t spaceshipActorId);
+    void RemoveSpaceshipFromRoute(const int32_t spaceshipActorId);
 
-        void RemoveMissileFromNavigation(const int32_t missileActorId);
+    void RemoveMissileFromNavigation(const int32_t missileActorId);
 
-    private:
-        void Initialize();
+private:
+    void Initialize();
 
-        void InitializePathDebugRendering();
-    };
-}
+    void InitializePathDebugRendering();
+};
+} // namespace Game

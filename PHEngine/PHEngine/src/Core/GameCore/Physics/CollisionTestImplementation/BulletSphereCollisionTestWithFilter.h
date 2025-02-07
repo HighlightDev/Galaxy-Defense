@@ -1,45 +1,47 @@
 #pragma once
 
-#include <BulletPhys/btBulletDynamicsCommon.h>
-#include <BulletPhys/btBulletCollisionCommon.h>
 #include <BulletPhys/BulletCollision/CollisionDispatch/btCollisionObject.h>
 #include <BulletPhys/BulletCollision/CollisionDispatch/btGhostObject.h>
-#include <vector>
-#include <memory>
+#include <BulletPhys/btBulletCollisionCommon.h>
+#include <BulletPhys/btBulletDynamicsCommon.h>
 #include <glm/vec3.hpp>
 
-namespace EnginePhysics
-{
-    class BulletSphereCollisionTestWithFilter : public btCollisionWorld::ContactResultCallback
-    {
-    protected:
-        std::unique_ptr<btSphereShape> mSphereShape;
+#include <memory>
+#include <vector>
 
-        std::unique_ptr<btPairCachingGhostObject> mGhostSphereObject;
+namespace EnginePhysics {
+class BulletSphereCollisionTestWithFilter : public btCollisionWorld::ContactResultCallback {
+protected:
+    std::unique_ptr<btSphereShape> mSphereShape;
 
-        std::vector<btCollisionObject *> mExcludeFilterBodies;
+    std::unique_ptr<btPairCachingGhostObject> mGhostSphereObject;
 
-        std::vector<const btCollisionObject*> mCollisionResult;
+    std::vector<btCollisionObject*> mExcludeFilterBodies;
 
-    public:
-        BulletSphereCollisionTestWithFilter(const float sphereRadius);
+    std::vector<const btCollisionObject*> mCollisionResult;
 
-        explicit BulletSphereCollisionTestWithFilter(const float sphereRadius, std::vector<btCollisionObject *> excludeCollisionObjects);
+public:
+    BulletSphereCollisionTestWithFilter(const float sphereRadius);
 
-        void SphereCollisionTest(btDiscreteDynamicsWorld *physWorld, const btVector3& translation);
+    explicit BulletSphereCollisionTestWithFilter(
+        const float sphereRadius, std::vector<btCollisionObject*> excludeCollisionObjects);
 
-        bool IsSphereHitCollision() const;
+    void SphereCollisionTest(btDiscreteDynamicsWorld* physWorld, const btVector3& translation);
 
-        std::vector<const btCollisionObject *> GetCollisionHitObjects() const;
+    bool IsSphereHitCollision() const;
 
-    private:
-        btScalar addSingleResult(btManifoldPoint &cp,
-                                 const btCollisionObjectWrapper *colObj0,
-                                 int partId0, int index0,
-                                 const btCollisionObjectWrapper *colObj1,
-                                 int partId1,
-                                 int index1) override;
+    std::vector<const btCollisionObject*> GetCollisionHitObjects() const;
 
-        void Initialize();
-    };
-}
+private:
+    btScalar addSingleResult(
+        btManifoldPoint& cp,
+        const btCollisionObjectWrapper* colObj0,
+        int partId0,
+        int index0,
+        const btCollisionObjectWrapper* colObj1,
+        int partId1,
+        int index1) override;
+
+    void Initialize();
+};
+} // namespace EnginePhysics

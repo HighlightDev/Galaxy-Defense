@@ -1,22 +1,21 @@
 #pragma once
 
-#include <cstdint>
 #include <stdint.h>
 
-namespace Game
-{
-    class LevelDataProvider
-    {
-        int32_t mCurrentStageSurvivedEnemySpaceshipsCount{0};
-        
-    private:
-        LevelDataProvider() = default;
+#include <cstdint>
 
-    public:
-        static LevelDataProvider *GetInstance();
+namespace Game {
+class LevelDataProvider {
+    int32_t mCurrentStageSurvivedEnemySpaceshipsCount{0};
 
-        int32_t GetCurrentStageSurvivedEnemySpaceshipsCount() const;
+private:
+    LevelDataProvider() = default;
 
-        void SetCurrentStageSurvivedEnemySpaceshipsCount(const int32_t count);
-    };
-}
+public:
+    static LevelDataProvider* GetInstance();
+
+    int32_t GetCurrentStageSurvivedEnemySpaceshipsCount() const;
+
+    void SetCurrentStageSurvivedEnemySpaceshipsCount(const int32_t count);
+};
+} // namespace Game

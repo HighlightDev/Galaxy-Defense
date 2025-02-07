@@ -1,8 +1,7 @@
 #include "StringStreamWrapper.h"
 
-namespace EngineUtility
-{
+namespace EngineUtility {
 
-	std::stringstream StringStreamWrapper::m_stringStream;
+std::stringstream StringStreamWrapper::m_stringStream;
 
 }

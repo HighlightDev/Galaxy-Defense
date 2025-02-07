@@ -1,44 +1,38 @@
 #pragma once
-#include "PrimitiveComponent.h"
 #include "Core/GameCore/ShaderImplementation/CubemapShader.h"
 #include "Core/GraphicsCore/RenderData/CubemapRenderData.h"
+#include "PrimitiveComponent.h"
 
 #include <glm/mat4x4.hpp>
 
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
 
-namespace EngineCore
-{
-   struct CubemapComponentData;
+namespace EngineCore {
+struct CubemapComponentData;
 
-   class CubemapComponent :
-      public PrimitiveComponent
-   {
-   protected:
+class CubemapComponent : public PrimitiveComponent {
+protected:
+    using Base = PrimitiveComponent;
 
-      using Base = PrimitiveComponent;
+private:
+    CubemapRenderData m_renderData;
 
-   private:
+public:
+    CubemapComponent(const std::shared_ptr<CubemapComponentData>& data, const CubemapRenderData& renderData);
 
-      CubemapRenderData m_renderData;
+    ~CubemapComponent() override;
 
-   public:
+    eComponentType GetComponentType() const override;
 
-      CubemapComponent(const std::shared_ptr<CubemapComponentData>& data, const CubemapRenderData& renderData);
+    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      ~CubemapComponent() override;
+    std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-      eComponentType GetComponentType() const override;
+    inline const CubemapRenderData& GetRenderData() const
+    {
+        return m_renderData;
+    }
+};
 
-      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
-      std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
-
-      inline const CubemapRenderData& GetRenderData() const {
-         return m_renderData;
-      }
-   };
-
-}
-
+} // namespace EngineCore

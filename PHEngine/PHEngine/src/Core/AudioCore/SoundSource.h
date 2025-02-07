@@ -1,64 +1,63 @@
 #pragma once
 
-#include <memory>
 #include <AL/al.h>
 #include <glm/vec3.hpp>
 
-namespace EngineCore
-{
-    class SoundBuffer;
+#include <memory>
 
-    class SoundSource
-    {
-        ALuint mSourceDesc;
+namespace EngineCore {
+class SoundBuffer;
 
-        float mPitch;
+class SoundSource {
+    ALuint mSourceDesc;
 
-        float mGain;
+    float mPitch;
 
-        glm::vec3 mPosition;
+    float mGain;
 
-        glm::vec3 mVelocity;
+    glm::vec3 mPosition;
 
-        bool mIsLoopSound;
+    glm::vec3 mVelocity;
 
-        std::shared_ptr<SoundBuffer> mActiveBuffer;
+    bool mIsLoopSound;
 
-    public:
-        SoundSource();
+    std::shared_ptr<SoundBuffer> mActiveBuffer;
 
-        ~SoundSource();
+public:
+    SoundSource();
 
-        void SetPitch(const float pitch);
+    ~SoundSource();
 
-        void SetGain(const float gain);
+    void SetPitch(const float pitch);
 
-        void SetPosition(const glm::vec3& position);
+    void SetGain(const float gain);
 
-        void SetVelocity(const glm::vec3& velocity);
+    void SetPosition(const glm::vec3& position);
 
-        void SetIsLoopSound(const bool isLoopSound);
+    void SetVelocity(const glm::vec3& velocity);
 
-        void Play(const std::shared_ptr<SoundBuffer> &soundBuffer);
+    void SetIsLoopSound(const bool isLoopSound);
 
-        void Stop();
+    void Play(const std::shared_ptr<SoundBuffer>& soundBuffer);
 
-        ALint GetCurrentSourceState() const;
+    void Stop();
 
-        float GetPitch() const;
+    ALint GetCurrentSourceState() const;
 
-        float GetGain() const;
-        
-        glm::vec3 GetPosition() const;
+    float GetPitch() const;
 
-        glm::vec3 GetVelocity() const;
+    float GetGain() const;
 
-        bool IsSoundLooped() const;
+    glm::vec3 GetPosition() const;
 
-        std::shared_ptr<SoundBuffer> GetActiveBuffer() const;
+    glm::vec3 GetVelocity() const;
 
-    private:
-        void Init();
-    };
+    bool IsSoundLooped() const;
 
-}
+    std::shared_ptr<SoundBuffer> GetActiveBuffer() const;
+
+private:
+    void Init();
+};
+
+} // namespace EngineCore

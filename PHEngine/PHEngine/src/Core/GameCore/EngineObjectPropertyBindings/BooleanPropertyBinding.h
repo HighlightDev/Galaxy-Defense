@@ -1,55 +1,51 @@
 #pragma once
 
-#include <string>
-
-#include "PropertyBinding.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/EngineObjectProperty.h"
+#include "PropertyBinding.h"
 
-namespace EngineCore
-{
+#include <string>
 
-   struct BooleanPropertyBinding
-       : public PropertyBinding
-   {
-   private:
-      std::weak_ptr<EngineObjectProperty<bool>> mGoPropertyWp;
+namespace EngineCore {
 
-   public:
-      BooleanPropertyBinding(const std::string &bindingName)
-          : PropertyBinding(bindingName), mGoPropertyWp()
-      {
-      }
+struct BooleanPropertyBinding : public PropertyBinding {
+private:
+    std::weak_ptr<EngineObjectProperty<bool>> mGoPropertyWp;
 
-      void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<bool>> &gameObjectProperty)
-      {
-         assert(gameObjectProperty);
-         mGoPropertyWp = gameObjectProperty;
-         bPropertyConnected = true;
-      }
+public:
+    BooleanPropertyBinding(const std::string& bindingName)
+        : PropertyBinding(bindingName)
+        , mGoPropertyWp()
+    {
+    }
 
-      void SetValue(const bool value)
-      {
-         assert(bPropertyConnected);
-         if (const auto &propertySp = mGoPropertyWp.lock())
-         {
+    void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<bool>>& gameObjectProperty)
+    {
+        assert(gameObjectProperty);
+        mGoPropertyWp = gameObjectProperty;
+        bPropertyConnected = true;
+    }
+
+    void SetValue(const bool value)
+    {
+        assert(bPropertyConnected);
+        if (const auto& propertySp = mGoPropertyWp.lock()) {
             propertySp->SetValue(value);
-         }
-      }
+        }
+    }
 
-      bool GetValue() const
-      {
-         assert(bPropertyConnected);
-         if (const auto &propertySp = mGoPropertyWp.lock())
-         {
+    bool GetValue() const
+    {
+        assert(bPropertyConnected);
+        if (const auto& propertySp = mGoPropertyWp.lock()) {
             return propertySp->GetValue();
-         }
-         return false;
-      }
+        }
+        return false;
+    }
 
-      eEnginePropertyBindingType GetBindingType() const override
-      {
-         return eEnginePropertyBindingType::Boolean;
-      }
-   };
-}
+    eEnginePropertyBindingType GetBindingType() const override
+    {
+        return eEnginePropertyBindingType::Boolean;
+    }
+};
+} // namespace EngineCore

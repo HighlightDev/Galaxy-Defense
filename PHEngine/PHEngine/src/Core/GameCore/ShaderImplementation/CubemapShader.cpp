@@ -1,47 +1,44 @@
 #include "CubemapShader.h"
 
+namespace EngineCore {
+namespace ShaderImpl {
 
-namespace EngineCore
+CubemapShader::CubemapShader(const ShaderParams& params)
+    : Shader(params)
 {
-   namespace ShaderImpl
-   {
-
-      CubemapShader::CubemapShader(const ShaderParams& params)
-         : Shader(params)
-      {
-         ShaderInit();
-      }
-
-
-      CubemapShader::~CubemapShader()
-      {
-      }
-
-      void CubemapShader::SetTransformMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
-      {
-         u_worldMatrix.LoadUniform(worldMatrix);
-         u_viewMatrix.LoadUniform(viewMatrix);
-         u_projectionMatrix.LoadUniform(projectionMatrix);
-      }
-
-      void CubemapShader::SetTexture(int32_t texSlot)
-      {
-         u_texture.LoadUniform(texSlot);
-      }
-
-      void CubemapShader::AccessAllUniformLocations(uint32_t shaderProgramId)
-      {
-         Shader::AccessAllUniformLocations(shaderProgramId);
-
-         u_worldMatrix = GetUniform("worldMatrix", shaderProgramId);
-         u_viewMatrix = GetUniform("viewMatrix", shaderProgramId);
-         u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramId);
-         u_texture = GetUniform("cubeTexture", shaderProgramId);
-      }
-
-      void CubemapShader::SetShaderPredefine()
-      {
-      }
-
-   }
+    ShaderInit();
 }
+
+CubemapShader::~CubemapShader()
+{
+}
+
+void CubemapShader::SetTransformMatrices(
+    const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+{
+    u_worldMatrix.LoadUniform(worldMatrix);
+    u_viewMatrix.LoadUniform(viewMatrix);
+    u_projectionMatrix.LoadUniform(projectionMatrix);
+}
+
+void CubemapShader::SetTexture(int32_t texSlot)
+{
+    u_texture.LoadUniform(texSlot);
+}
+
+void CubemapShader::AccessAllUniformLocations(uint32_t shaderProgramId)
+{
+    Shader::AccessAllUniformLocations(shaderProgramId);
+
+    u_worldMatrix = GetUniform("worldMatrix", shaderProgramId);
+    u_viewMatrix = GetUniform("viewMatrix", shaderProgramId);
+    u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramId);
+    u_texture = GetUniform("cubeTexture", shaderProgramId);
+}
+
+void CubemapShader::SetShaderPredefine()
+{
+}
+
+} // namespace ShaderImpl
+} // namespace EngineCore

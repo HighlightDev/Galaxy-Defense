@@ -6,43 +6,39 @@
 
 using namespace Graphics::OpenGL;
 
-namespace EngineCore
-{
-   namespace ShaderImpl
-   {
-      class BloomFxShader
-          : public Shader
-      {
-      private:
-         Uniform u_sceneColorTexture;
-         Uniform u_bluredColorTexture;
+namespace EngineCore {
+namespace ShaderImpl {
+class BloomFxShader : public Shader {
+private:
+    Uniform u_sceneColorTexture;
+    Uniform u_bluredColorTexture;
 
-         uint32_t mExtractBrightPartsSubroutineIndex;
-         uint32_t mVerticalBlurSubroutineIndex;
-         uint32_t mHorizontalBlurSubroutineIndex;
+    uint32_t mExtractBrightPartsSubroutineIndex;
+    uint32_t mVerticalBlurSubroutineIndex;
+    uint32_t mHorizontalBlurSubroutineIndex;
 
-      public:
-         BloomFxShader(const ShaderParams &params);
+public:
+    BloomFxShader(const ShaderParams& params);
 
-         ~BloomFxShader() override;
+    ~BloomFxShader() override;
 
-         void SetSceneColorTexture(const int32_t textureSlot);
+    void SetSceneColorTexture(const int32_t textureSlot);
 
-         void SetBluredColorTexture(const int32_t textureSlot);
+    void SetBluredColorTexture(const int32_t textureSlot);
 
-         void LoadExtractBrightPartsSubroutine();
+    void LoadExtractBrightPartsSubroutine();
 
-         void LoadRunVerticalBlurSubroutine();
+    void LoadRunVerticalBlurSubroutine();
 
-         void LoadRunHorizontalBlurSubroutine();
+    void LoadRunHorizontalBlurSubroutine();
 
-      protected:
-         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+protected:
+    void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         void AccessAllSubroutineIndices(uint32_t shaderProgramID) override;
+    void AccessAllSubroutineIndices(uint32_t shaderProgramID) override;
 
-         void SetShaderPredefine() override;
-      };
+    void SetShaderPredefine() override;
+};
 
-   }
-}
+} // namespace ShaderImpl
+} // namespace EngineCore

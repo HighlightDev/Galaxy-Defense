@@ -1,26 +1,25 @@
 #pragma once
 
 #include <AL/alc.h>
+
 #include <memory>
 
-namespace EngineCore
-{
-    class SoundDevice
-    {
-        static std::shared_ptr<SoundDevice> s_mePtr;
+namespace EngineCore {
+class SoundDevice {
+    static std::shared_ptr<SoundDevice> s_mePtr;
 
-        ALCdevice *m_alcDevice;
-        ALCcontext *m_alcContext;
+    ALCdevice* m_alcDevice;
+    ALCcontext* m_alcContext;
 
-        bool mIsCleanedUp;
+    bool mIsCleanedUp;
 
-    public:
-        SoundDevice();
+public:
+    SoundDevice();
 
-        ~SoundDevice();
+    ~SoundDevice();
 
-        void CleanUp();
+    void CleanUp();
 
-        static std::shared_ptr<SoundDevice> GetInstance();
-    };
-}
+    static std::shared_ptr<SoundDevice> GetInstance();
+};
+} // namespace EngineCore

@@ -1,29 +1,26 @@
 #pragma once
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-namespace EngineCore
-{
-    class Scene;
+namespace EngineCore {
+class Scene;
 }
 
-namespace Game
-{
-    class ElectroRayChainActor;
+namespace Game {
+class ElectroRayChainActor;
 
-    class ElectroRayChainActorPool
-    {
-        std::vector<std::shared_ptr<ElectroRayChainActor>> mPool;
+class ElectroRayChainActorPool {
+    std::vector<std::shared_ptr<ElectroRayChainActor>> mPool;
 
-        std::weak_ptr<::EngineCore::Scene> mSceneWp;
+    std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
-    public:
-        explicit ElectroRayChainActorPool(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
+public:
+    explicit ElectroRayChainActorPool(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
-        std::shared_ptr<ElectroRayChainActor> GetFreeActor();
+    std::shared_ptr<ElectroRayChainActor> GetFreeActor();
 
-    private:
-        std::shared_ptr<ElectroRayChainActor> Spawn();
-    };
-}
+private:
+    std::shared_ptr<ElectroRayChainActor> Spawn();
+};
+} // namespace Game

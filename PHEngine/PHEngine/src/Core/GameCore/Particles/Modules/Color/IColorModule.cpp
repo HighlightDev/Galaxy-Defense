@@ -1,13 +1,12 @@
 #include "IColorModule.h"
 
-namespace EngineCore
+namespace EngineCore {
+IColorModule::IColorModule()
 {
-    IColorModule::IColorModule()
-    {
-    }
-
-    eParticleModuleType IColorModule::GetParticleModuleType() const
-    {
-        return eParticleModuleType::COLOR;
-    }
 }
+
+eParticleModuleType IColorModule::GetParticleModuleType() const
+{
+    return eParticleModuleType::COLOR;
+}
+} // namespace EngineCore

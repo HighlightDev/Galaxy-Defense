@@ -1,34 +1,32 @@
 #pragma once
+#include "Core/GameCore/EngineObjectPropertyBindings/BooleanPropertyBinding.h"
 #include "ITweenController.h"
 #include "StateProperty.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/BooleanPropertyBinding.h"
 
-namespace EngineCore
-{
+namespace EngineCore {
 
-   class BooleanTweenController :
-      public ITweenController
-   {
-      using Base = ITweenController;
-      using TweenStateProperty_t = StateProperty<eEnginePropertyBindingType::Boolean>;
+class BooleanTweenController : public ITweenController {
+    using Base = ITweenController;
+    using TweenStateProperty_t = StateProperty<eEnginePropertyBindingType::Boolean>;
 
-   public:
-      BooleanTweenController();
-      
-      virtual ~BooleanTweenController();
+public:
+    BooleanTweenController();
 
-      void OnTransitionStarted(const std::shared_ptr<BaseStateProperty>& srcState, const std::shared_ptr<BaseStateProperty>& dstState, const float duration) override;
+    virtual ~BooleanTweenController();
 
-      void OnTransitionFinished() override;
+    void OnTransitionStarted(
+        const std::shared_ptr<BaseStateProperty>& srcState,
+        const std::shared_ptr<BaseStateProperty>& dstState,
+        const float duration) override;
 
-      void OnTransitionUpdate(const float deltaTime, const float transitionParameter) override;
+    void OnTransitionFinished() override;
 
-      void InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty) override;
+    void OnTransitionUpdate(const float deltaTime, const float transitionParameter) override;
 
-   private:
+    void InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty) override;
 
-      std::shared_ptr<BooleanPropertyBinding> GetBooleanPropertyBindingSP() const;
-   };
+private:
+    std::shared_ptr<BooleanPropertyBinding> GetBooleanPropertyBindingSP() const;
+};
 
-}
-
+} // namespace EngineCore

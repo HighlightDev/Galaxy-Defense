@@ -1,46 +1,43 @@
 #pragma once
-#include <string>
-#include <cstddef>
-#include <unordered_set>
-#include <list>
-#include <vector>
 #include <stdint.h>
-#include <cstdint>
 
-extern "C"
-{
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <string>
+#include <unordered_set>
+#include <vector>
+
+extern "C" {
+#include <lua/lauxlib.h>
 #include <lua/lua.h>
 #include <lua/lualib.h>
-#include <lua/lauxlib.h>
 }
 
-namespace EngineCore
-{
-   namespace Scripts
-   {
-      class LuaWrapper
-      {
-      private:
-         lua_State *mState;
+namespace EngineCore {
+namespace Scripts {
+class LuaWrapper {
+private:
+    lua_State* mState;
 
-         bool mIsLuaScriptOpened{false};
+    bool mIsLuaScriptOpened{false};
 
-      public:
-         LuaWrapper();
+public:
+    LuaWrapper();
 
-         ~LuaWrapper();
+    ~LuaWrapper();
 
-         lua_State *GetState() const;
+    lua_State* GetState() const;
 
-         bool ExecuteScript(const std::string &absPath);
+    bool ExecuteScript(const std::string& absPath);
 
-         void StopExecution();
+    void StopExecution();
 
-         std::string GetErrorMessageAt(int32_t stackIndex) const;
+    std::string GetErrorMessageAt(int32_t stackIndex) const;
 
-         bool IsLuaScriptOpened() const;
+    bool IsLuaScriptOpened() const;
 
-         void ReopenState();
-      };
-   }
-}
+    void ReopenState();
+};
+} // namespace Scripts
+} // namespace EngineCore

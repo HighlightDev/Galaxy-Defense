@@ -4,9 +4,10 @@
 
 out MATERIAL_VS_OUTPUT VsOutput;
 
-void main(){
+void main()
+{
 
-	VsOutput = VertexFactoryGetMaterialOutput();
+    VsOutput = VertexFactoryGetMaterialOutput();
 
-	gl_Position = VsOutput.ClippedCoordinates;
+    gl_Position = VsOutput.ClippedCoordinates;
 }

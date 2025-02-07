@@ -1,31 +1,29 @@
 #pragma once
 
-#include <stb/stb_image.h>
-#include <cstddef>
-#include <string>
 #include "Core/GraphicsCore/Texture/TexParams.h"
 #include "Core/IoCore/TextureLoaderCore/TextureResourceInfo.h"
 
-namespace IO
-{
-	namespace Images
-	{
-		namespace Stb
-		{
-			class StbLoader
-			{
+#include <stb/stb_image.h>
 
-				uint8_t *m_lastAllocatedMemory;
+#include <cstddef>
+#include <string>
 
-			public:
-				StbLoader();
+namespace IO {
+namespace Images {
+namespace Stb {
+class StbLoader {
 
-				~StbLoader();
+    uint8_t* m_lastAllocatedMemory;
 
-				uint8_t *AllocateTextureMemoryFromFile(const std::string &pathToFile, TextureResourceInfo &out_params);
+public:
+    StbLoader();
 
-				void ReleaseTextureMemory();
-			};
-		}
-	}
-}
+    ~StbLoader();
+
+    uint8_t* AllocateTextureMemoryFromFile(const std::string& pathToFile, TextureResourceInfo& out_params);
+
+    void ReleaseTextureMemory();
+};
+} // namespace Stb
+} // namespace Images
+} // namespace IO

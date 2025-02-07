@@ -1,16 +1,12 @@
 #pragma once
 #include "MaterialBinaryOperationNode.h"
 
-namespace Graphics
-{
-   struct MaterialBinaryDivOperationNode
-      : public MaterialBinaryOperationNode
-   {
-      MaterialBinaryDivOperationNode(const MaterialNode::eMaterialPropertyType materialPropertyType);
+namespace Graphics {
+struct MaterialBinaryDivOperationNode : public MaterialBinaryOperationNode {
+    MaterialBinaryDivOperationNode(const MaterialNode::eMaterialPropertyType materialPropertyType);
 
-      eMaterialOperationType GetMaterialOperationType() const override;
+    eMaterialOperationType GetMaterialOperationType() const override;
 
-      std::any DoOperation(const std::any& left, const std::any& right) override;
-   };
-}
-
+    std::any DoOperation(const std::any& left, const std::any& right) override;
+};
+} // namespace Graphics

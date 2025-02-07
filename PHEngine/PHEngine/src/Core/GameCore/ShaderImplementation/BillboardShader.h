@@ -4,30 +4,24 @@
 
 using namespace Graphics::OpenGL;
 
-namespace EngineCore
-{
-   namespace ShaderImpl
-   {
+namespace EngineCore {
+namespace ShaderImpl {
 
-      class BillboardShader 
-         : public Shader
-      {
+class BillboardShader : public Shader {
 
-      private:
-         Uniform u_billboardExtent;
+private:
+    Uniform u_billboardExtent;
 
-      public:
-         BillboardShader(const ShaderParams& params);
+public:
+    BillboardShader(const ShaderParams& params);
 
-         ~BillboardShader() override;
+    ~BillboardShader() override;
 
-         void SetExtent(const float extent);
+    void SetExtent(const float extent);
 
-      protected:
+protected:
+    void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+};
 
-         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
-      };
-
-   }
-}
-
+} // namespace ShaderImpl
+} // namespace EngineCore

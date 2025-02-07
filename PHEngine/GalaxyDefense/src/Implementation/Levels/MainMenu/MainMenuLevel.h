@@ -1,58 +1,54 @@
 #pragma once
 
+#include "Core/IoCore/FileWatcher.h"
 #include "Implementation/Levels/LevelBase.h"
 #include "Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h"
-
-#include "Core/IoCore/FileWatcher.h"
 
 #include <memory>
 
 using namespace EngineCore;
 using namespace IO;
 
-namespace EngineCore
-{
-   class Actor;
+namespace EngineCore {
+class Actor;
 }
 
-namespace Game
-{
+namespace Game {
 
-   class MainMenuLevel : public LevelBase
-   {
-      using Base = LevelBase;
+class MainMenuLevel : public LevelBase {
+    using Base = LevelBase;
 
-      std::unique_ptr<MainMenuLevelUiController> mUiController;
+    std::unique_ptr<MainMenuLevelUiController> mUiController;
 
-      std::shared_ptr<Actor> mAmbientMusicDummy;
-      
-      std::unique_ptr<FileWatcher> mFileWatcher;
+    std::shared_ptr<Actor> mAmbientMusicDummy;
 
-   public:
-      MainMenuLevel();
+    std::unique_ptr<FileWatcher> mFileWatcher;
 
-      ~MainMenuLevel() override;
+public:
+    MainMenuLevel();
 
-      void InitLevel() override;
+    ~MainMenuLevel() override;
 
-      void PreLevelInit() override;
+    void InitLevel() override;
 
-      void PostLevelInit() override;
+    void PreLevelInit() override;
 
-      void PostPlayLevelFinished() override;
+    void PostLevelInit() override;
 
-      void UnloadLevel() override;
+    void PostPlayLevelFinished() override;
 
-      void Tick(const float deltaTime) override;
+    void UnloadLevel() override;
 
-      void UnpausableTick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-      void RestartLuaScripts() override;
+    void UnpausableTick(const float deltaTime) override;
 
-   private:
-      void CreateScene();
+    void RestartLuaScripts() override;
 
-      void RunLuaBuildLevelScript();
-   };
+private:
+    void CreateScene();
 
-}
+    void RunLuaBuildLevelScript();
+};
+
+} // namespace Game

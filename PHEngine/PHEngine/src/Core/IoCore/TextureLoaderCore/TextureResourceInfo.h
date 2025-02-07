@@ -2,12 +2,10 @@
 
 #include <cstddef>
 
-namespace IO
-{
-   struct TextureResourceInfo
-   {
-      int32_t Width;
-      int32_t Height;
-      int32_t PixelComponents;
-   };
-}
+namespace IO {
+struct TextureResourceInfo {
+    int32_t Width;
+    int32_t Height;
+    int32_t PixelComponents;
+};
+} // namespace IO

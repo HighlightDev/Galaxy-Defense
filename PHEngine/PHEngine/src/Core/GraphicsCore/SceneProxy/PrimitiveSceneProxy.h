@@ -1,20 +1,20 @@
 #pragma once
 
-#include <memory>
-#include <type_traits>
-
-#include "Core/GraphicsCore/Mesh/Skin.h"
-#include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GameCore/EngineObject.h"
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
+#include "Core/GraphicsCore/Mesh/Skin.h"
+#include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
-#include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
-#include "Core/GraphicsCore/SceneViewInfo/AProxyVisibilityController.h"
-#include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
-#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
+#include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
+#include "Core/GraphicsCore/SceneViewInfo/AProxyVisibilityController.h"
+#include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
+
+#include <memory>
+#include <type_traits>
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
@@ -23,128 +23,114 @@ using namespace EngineCore;
 using namespace Resources;
 using namespace IO;
 
-namespace Graphics
-{
-   namespace Renderer
-   {
-      class SceneRenderer;
-   }
+namespace Graphics {
+namespace Renderer {
+class SceneRenderer;
+}
+} // namespace Graphics
+
+namespace EngineCore {
+class PrimitiveComponent;
 }
 
-namespace EngineCore
-{
-   class PrimitiveComponent;
-}
+namespace Graphics {
+namespace Proxy {
+enum class ePrimitiveProxyType { PRIMITIVE_PROXY, STATIC_MESH_PROXY, SKELETAL_MESH_PROXY, INDIRECT_RENDERED_PROXY };
 
-namespace Graphics
-{
-   namespace Proxy
-   {
-      enum class ePrimitiveProxyType
-      {
-         PRIMITIVE_PROXY,
-         STATIC_MESH_PROXY,
-         SKELETAL_MESH_PROXY,
-         INDIRECT_RENDERED_PROXY
-      };
+enum class eMeshFacing {
+    CLOCK_WISE,
+    COUNTER_CLOCK_WISE,
+};
 
-      enum class eMeshFacing
-      {
-         CLOCK_WISE,
-         COUNTER_CLOCK_WISE,
-      };
+class PrimitiveSceneProxy : public SceneProxyBase, public AProxyVisibilityController {
 
-      class PrimitiveSceneProxy
-          : public SceneProxyBase,
-            public AProxyVisibilityController
-      {
+    bool bTransformInitialized;
 
-         bool bTransformInitialized;
+    std::weak_ptr<::Graphics::Renderer::SceneRenderer> mDeferredShadingSceneRenderer;
 
-         std::weak_ptr<::Graphics::Renderer::SceneRenderer> mDeferredShadingSceneRenderer;
+    int32_t mSortOrderValue{0};
 
-         int32_t mSortOrderValue{0};
+protected:
+    glm::mat4 m_relativeMatrix;
 
-      protected:
-         glm::mat4 m_relativeMatrix;
+    std::shared_ptr<Skin> m_skin;
 
-         std::shared_ptr<Skin> m_skin;
+    std::shared_ptr<IShader> m_shader;
 
-         std::shared_ptr<IShader> m_shader;
+    std::shared_ptr<IShader> m_planarReflectionShader;
 
-         std::shared_ptr<IShader> m_planarReflectionShader;
+    std::shared_ptr<MaterialProxy> mMaterialProxy;
 
-         std::shared_ptr<MaterialProxy> mMaterialProxy;
+    bool mCanBloomBeApplied{false};
 
-         bool mCanBloomBeApplied{false};
+    bool mDepthWriteMaskEnabled{true};
 
-         bool mDepthWriteMaskEnabled{true};
+public:
+    PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent* component, const std::shared_ptr<MaterialProxy>& materialProxy);
 
-      public:
-         PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent *component,
-                             const std::shared_ptr<MaterialProxy> &materialProxy);
+    void CleanUp() override;
 
-         void CleanUp() override;
+    void SetTransformationMatrix(const glm::mat4& relativeMatrix);
 
-         void SetTransformationMatrix(const glm::mat4 &relativeMatrix);
+    void SetDeferredShadingSceneRenderer(const std::weak_ptr<::Graphics::Renderer::SceneRenderer>& deferredShadingSceneRenderer);
 
-         void SetDeferredShadingSceneRenderer(const std::weak_ptr<::Graphics::Renderer::SceneRenderer> &deferredShadingSceneRenderer);
+    const std::weak_ptr<::Graphics::Renderer::SceneRenderer>& GetDeferredShadingSceneRendererWp() const;
 
-         const std::weak_ptr<::Graphics::Renderer::SceneRenderer> &GetDeferredShadingSceneRendererWp() const;
+    virtual glm::mat4 GetMatrix() const;
 
-         virtual glm::mat4 GetMatrix() const;
+    virtual void PostConstructorInitialize();
 
-         virtual void PostConstructorInitialize();
+    virtual std::shared_ptr<Skin> GetSkin() const;
 
-         virtual std::shared_ptr<Skin> GetSkin() const;
+    virtual ePrimitiveProxyType GetPrimitiveProxyType() const;
 
-         virtual ePrimitiveProxyType GetPrimitiveProxyType() const;
+    bool IsFrustumCullTestNeeded() const override;
 
-         bool IsFrustumCullTestNeeded() const override;
+    virtual void Render(
+        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+        = 0;
 
-         virtual void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) = 0;
+    virtual void RenderPlanarReflection(
+        const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    {
+    }
 
-         virtual void RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) {}
+    virtual bool IsDeferred() const = 0;
 
-         virtual bool IsDeferred() const = 0;
+    virtual eMeshFacing GetMeshFrontFace() const;
 
-         virtual eMeshFacing GetMeshFrontFace() const;
+    virtual bool IsTransformIntialized() const;
 
-         virtual bool IsTransformIntialized() const;
+    // [primitive with sort order value < 0 are the most early drawn primitives]
+    int32_t GetPrimitiveSortOrder() const;
 
-         // [primitive with sort order value < 0 are the most early drawn primitives]
-         int32_t GetPrimitiveSortOrder() const;
+    void SetSortOrderValue(const int32_t sortOrderValue);
 
-         void SetSortOrderValue(const int32_t sortOrderValue);
+    int32_t GetSortOrderValue() const;
 
-         int32_t GetSortOrderValue() const;
+    void SetCanBloomBeApplied(const bool value);
 
-         void SetCanBloomBeApplied(const bool value);
+    bool CanBloomBeApplied() const;
 
-         bool CanBloomBeApplied() const;
+    bool IsDepthWriteMaskEnabled() const;
 
-         bool IsDepthWriteMaskEnabled() const;
+    void SetDepthWriteMaskEnabled(const bool isEnabled);
 
-         void SetDepthWriteMaskEnabled(const bool isEnabled);
+public:
+    template<typename VertexFactoryType, typename BaseShaderType>
+    static std::enable_if_t<
+        std::is_base_of_v<VertexFactoryShader, VertexFactoryType> && std::is_base_of_v<Shader, BaseShaderType>,
+        typename CompositeShaderPool::sharedValue_t>
+    CreateMaterialShader(
+        const std::string& compositeShaderName, const ShaderParams& shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
+    {
+        CompositeMaterialShaderParams compositeParams(compositeShaderName, shaderParams, materialProxy);
 
-      public:
-         template <typename VertexFactoryType, typename BaseShaderType>
-         static std::enable_if_t<std::is_base_of_v<VertexFactoryShader, VertexFactoryType> && std::is_base_of_v<Shader, BaseShaderType>,
-                                 typename CompositeShaderPool::sharedValue_t>
-         CreateMaterialShader(const std::string &compositeShaderName,
-                              const ShaderParams &shaderParams,
-                              std::shared_ptr<MaterialProxy> materialProxy)
-         {
-            CompositeMaterialShaderParams compositeParams(compositeShaderName,
-                                                          shaderParams,
-                                                          materialProxy);
+        return CompositeShaderPool::GetInstance()
+            ->template GetOrAllocateResource<VertexFactoryMaterialCompositeShader<VertexFactoryType, BaseShaderType>>(
+                compositeParams);
+    }
+};
 
-            return CompositeShaderPool::GetInstance()
-                ->template GetOrAllocateResource<VertexFactoryMaterialCompositeShader<
-                    VertexFactoryType,
-                    BaseShaderType>>(compositeParams);
-         }
-      };
-
-   }
-}
+} // namespace Proxy
+} // namespace Graphics

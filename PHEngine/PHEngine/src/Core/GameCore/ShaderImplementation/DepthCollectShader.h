@@ -4,34 +4,28 @@
 
 using namespace Graphics::OpenGL;
 
-namespace EngineCore
-{
-   namespace ShaderImpl
-   {
+namespace EngineCore {
+namespace ShaderImpl {
 
-      class DepthCollectShader
-         : public Shader
-      {
-         Uniform u_lightWorldPosition;
-         Uniform u_shadowDistance;
-         Uniform u_bWriteDepthLinearly;
+class DepthCollectShader : public Shader {
+    Uniform u_lightWorldPosition;
+    Uniform u_shadowDistance;
+    Uniform u_bWriteDepthLinearly;
 
-      protected:
+protected:
+    void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
-         void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+public:
+    DepthCollectShader(const ShaderParams& params);
 
-      public:
+    void SetLightWorldPosition(const glm::vec3& position);
 
-         DepthCollectShader(const ShaderParams& params);
+    void SetShadowDistance(const float shadowDistance);
 
-         void SetLightWorldPosition(const glm::vec3& position);
+    void SetWriteDepthLinearly(const bool value);
 
-         void SetShadowDistance(const float shadowDistance);
-         
-         void SetWriteDepthLinearly(const bool value);
+    void SetShaderPredefine() override;
+};
 
-         void SetShaderPredefine() override;
-      };
-
-   }
-}
+} // namespace ShaderImpl
+} // namespace EngineCore

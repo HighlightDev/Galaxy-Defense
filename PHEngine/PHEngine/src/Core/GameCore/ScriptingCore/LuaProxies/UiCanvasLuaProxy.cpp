@@ -1,7 +1,8 @@
 #include "UiCanvasLuaProxy.h"
-#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
-#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
+
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
+#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/Scene.h"
 
 #include <json/json.hpp>
@@ -9,155 +10,156 @@
 using namespace EngineCore;
 using namespace EngineCore::GUI;
 
-namespace EngineCore
+namespace EngineCore {
+namespace Scripts {
+UiCanvasLuaProxy::UiCanvasLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiCanvas>& ownerCanvas)
+    : LuaProxy()
+    , mCanvasName(ownerCanvas->GetName())
+    , mIsVisible(ownerCanvas->IsVisible())
+    , mCanInterceptMouseInputEvents(ownerCanvas->GetIfCanInterceptMouseInputEvents())
+    , mCanvasZOrder(ownerCanvas->GetZOrder())
 {
-    namespace Scripts
-    {
-        UiCanvasLuaProxy::UiCanvasLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiCanvas> &ownerCanvas)
-            : LuaProxy(),
-              mCanvasName(ownerCanvas->GetName()),
-              mIsVisible(ownerCanvas->IsVisible()),
-              mCanInterceptMouseInputEvents(ownerCanvas->GetIfCanInterceptMouseInputEvents()),
-              mCanvasZOrder(ownerCanvas->GetZOrder())
-        {
-            mLuaProxyId = ownerCanvas->GetLuaProxyId();
-            SetReplicatorId(ownerCanvas->GetReplicatorId());
-        }
+    mLuaProxyId = ownerCanvas->GetLuaProxyId();
+    SetReplicatorId(ownerCanvas->GetReplicatorId());
+}
 
-        void UiCanvasLuaProxy::CleanUp()
-        {
-        }
+void UiCanvasLuaProxy::CleanUp()
+{
+}
 
-        std::string UiCanvasLuaProxy::GetCanvasName() const
-        {
-            return mCanvasName;
-        }
+std::string UiCanvasLuaProxy::GetCanvasName() const
+{
+    return mCanvasName;
+}
 
-        void UiCanvasLuaProxy::SetIsVisible_FromGameThread(const bool isVisible)
-        {
-            if (mIsVisible != isVisible)
-            {
-                mIsVisible = isVisible;
-                mIsLuaDataDirty = true;
-            }
-        }
-
-        void UiCanvasLuaProxy::SetIfCanInterceptMouseInputEvents_FromGameThread(const bool intercepts)
-        {
-            if (mCanInterceptMouseInputEvents != intercepts)
-            {
-                mCanInterceptMouseInputEvents = intercepts;
-                mIsLuaDataDirty = true;
-            }
-        }
-
-        void UiCanvasLuaProxy::SetCanvasZOrder_FromGameThread(const size_t zOrder)
-        {
-            if (mCanvasZOrder != zOrder)
-            {
-                mCanvasZOrder = zOrder;
-                mIsLuaDataDirty = true;
-            }
-        }
-
-        size_t UiCanvasLuaProxy::GetCanvasZOrder() const
-        {
-            return mCanvasZOrder;
-        }
-
-        void UiCanvasLuaProxy::AddAnimation(const std::string &animationName, const AnimationData &animationData)
-        {
-            static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::AddAnimation");
-            if (const auto sceneSp = mSceneWp.lock())
-            {
-                const auto replicatorId = GetReplicatorId();
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::PUSH_ANYWAY, mLuaProxyId, functionId, [sceneSp, replicatorId, animationName, animationData]()
-                                                                                  {
-                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                    assert(replicator);
-                    const auto & canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
-                    assert(canvas);
-                    canvas->AddAnimation(animationName, animationData); });
-            }
-        }
-
-        void UiCanvasLuaProxy::AddSequenceAnimation(const std::string& sequenceAnimationName, const AnimationSequence& animationSequence)
-        {
-            static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::AddSequenceAnimation");
-            if (const auto sceneSp = mSceneWp.lock())
-            {
-                const auto replicatorId = GetReplicatorId();
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::PUSH_ANYWAY, mLuaProxyId, functionId, [sceneSp, replicatorId, sequenceAnimationName, animationSequence]()
-                                                                                  {
-                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                    assert(replicator);
-                    const auto & canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
-                    assert(canvas);
-                    canvas->AddSequenceAnimation(sequenceAnimationName, animationSequence); });
-            }
-        }
-
-        void UiCanvasLuaProxy::StartAnimation(const std::string &animationName)
-        {
-            // not implemented
-        }
-
-        void UiCanvasLuaProxy::StartSequenceAnimation(const std::string &animationName)
-        {
-            // not implemented
-        } 
-
-        void UiCanvasLuaProxy::OnLuaThreadDataUpdated(const std::string &jsonParameters)
-        {
-            static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::OnLuaThreadDataUpdated");
-            if (const auto sceneSp = mSceneWp.lock())
-            {
-                const auto replicatorId = GetReplicatorId();
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, jsonStr = jsonParameters]()
-                                                                                  {
-                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                    assert(replicator);
-                    const auto & canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
-                    assert(canvas);
-                    canvas->SyncFromLuaJsonProperties(jsonStr); });
-            }
-        }
-
-        std::string UiCanvasLuaProxy::GetGameThreadData()
-        {
-            nlohmann::json jsonObj;
-            jsonObj["visible"] = mIsVisible;
-            jsonObj["canvas_z_order"] = mCanvasZOrder;
-            jsonObj["intercept_mouse_input_event"] = mCanInterceptMouseInputEvents;
-
-            mIsLuaDataDirty = false;
-            return jsonObj.dump();
-        }
-
-        bool UiCanvasLuaProxy::IsVisible() const
-        {
-            return mIsVisible;
-        }
-
-        bool UiCanvasLuaProxy::GetIfCanInterceptMouseInputEvents() const
-        {
-            return mCanInterceptMouseInputEvents;
-        }
-
-        void UiCanvasLuaProxy::InitializeInputSystem()
-        {
-            static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::InitializeInputSystem");
-            if (const auto sceneSp = mSceneWp.lock())
-            {
-                const auto replicatorId = GetReplicatorId();
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]()
-                                                                                  {
-                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                    assert(replicator);
-                    const auto & canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
-                    assert(canvas);
-                    canvas->InitializeInputSystem(); });
-            }
-        }
+void UiCanvasLuaProxy::SetIsVisible_FromGameThread(const bool isVisible)
+{
+    if (mIsVisible != isVisible) {
+        mIsVisible = isVisible;
+        mIsLuaDataDirty = true;
     }
 }
+
+void UiCanvasLuaProxy::SetIfCanInterceptMouseInputEvents_FromGameThread(const bool intercepts)
+{
+    if (mCanInterceptMouseInputEvents != intercepts) {
+        mCanInterceptMouseInputEvents = intercepts;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiCanvasLuaProxy::SetCanvasZOrder_FromGameThread(const size_t zOrder)
+{
+    if (mCanvasZOrder != zOrder) {
+        mCanvasZOrder = zOrder;
+        mIsLuaDataDirty = true;
+    }
+}
+
+size_t UiCanvasLuaProxy::GetCanvasZOrder() const
+{
+    return mCanvasZOrder;
+}
+
+void UiCanvasLuaProxy::AddAnimation(const std::string& animationName, const AnimationData& animationData)
+{
+    static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::AddAnimation");
+    if (const auto sceneSp = mSceneWp.lock()) {
+        const auto replicatorId = GetReplicatorId();
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY, mLuaProxyId, functionId, [sceneSp, replicatorId, animationName, animationData]() {
+                const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                assert(replicator);
+                const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
+                assert(canvas);
+                canvas->AddAnimation(animationName, animationData);
+            });
+    }
+}
+
+void UiCanvasLuaProxy::AddSequenceAnimation(const std::string& sequenceAnimationName, const AnimationSequence& animationSequence)
+{
+    static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::AddSequenceAnimation");
+    if (const auto sceneSp = mSceneWp.lock()) {
+        const auto replicatorId = GetReplicatorId();
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, sequenceAnimationName, animationSequence]() {
+                const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                assert(replicator);
+                const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
+                assert(canvas);
+                canvas->AddSequenceAnimation(sequenceAnimationName, animationSequence);
+            });
+    }
+}
+
+void UiCanvasLuaProxy::StartAnimation(const std::string& animationName)
+{
+    // not implemented
+}
+
+void UiCanvasLuaProxy::StartSequenceAnimation(const std::string& animationName)
+{
+    // not implemented
+}
+
+void UiCanvasLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameters)
+{
+    static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::OnLuaThreadDataUpdated");
+    if (const auto sceneSp = mSceneWp.lock()) {
+        const auto replicatorId = GetReplicatorId();
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, jsonStr = jsonParameters]() {
+                const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                assert(replicator);
+                const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
+                assert(canvas);
+                canvas->SyncFromLuaJsonProperties(jsonStr);
+            });
+    }
+}
+
+std::string UiCanvasLuaProxy::GetGameThreadData()
+{
+    nlohmann::json jsonObj;
+    jsonObj["visible"] = mIsVisible;
+    jsonObj["canvas_z_order"] = mCanvasZOrder;
+    jsonObj["intercept_mouse_input_event"] = mCanInterceptMouseInputEvents;
+
+    mIsLuaDataDirty = false;
+    return jsonObj.dump();
+}
+
+bool UiCanvasLuaProxy::IsVisible() const
+{
+    return mIsVisible;
+}
+
+bool UiCanvasLuaProxy::GetIfCanInterceptMouseInputEvents() const
+{
+    return mCanInterceptMouseInputEvents;
+}
+
+void UiCanvasLuaProxy::InitializeInputSystem()
+{
+    static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::InitializeInputSystem");
+    if (const auto sceneSp = mSceneWp.lock()) {
+        const auto replicatorId = GetReplicatorId();
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
+                const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                assert(replicator);
+                const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
+                assert(canvas);
+                canvas->InitializeInputSystem();
+            });
+    }
+}
+} // namespace Scripts
+} // namespace EngineCore

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 #include <json/json.hpp>
 
-struct JsonVec3
-{
+struct JsonVec3 {
     float x;
     float y;
     float z;
@@ -17,12 +16,11 @@ struct JsonVec3
     JsonVec3(const glm::vec3& vec);
 };
 
-void to_json(nlohmann::json &j, const JsonVec3 &vec);
+void to_json(nlohmann::json& j, const JsonVec3& vec);
 
-void from_json(const nlohmann::json &j, JsonVec3 &resultVec);
+void from_json(const nlohmann::json& j, JsonVec3& resultVec);
 
-struct JsonVec2
-{
+struct JsonVec2 {
     float x;
     float y;
 
@@ -33,6 +31,6 @@ struct JsonVec2
     JsonVec2(const glm::vec2& vec);
 };
 
-void to_json(nlohmann::json &j, const JsonVec2 &vec);
+void to_json(nlohmann::json& j, const JsonVec2& vec);
 
-void from_json(const nlohmann::json &j, JsonVec2 &resultVec);
+void from_json(const nlohmann::json& j, JsonVec2& resultVec);

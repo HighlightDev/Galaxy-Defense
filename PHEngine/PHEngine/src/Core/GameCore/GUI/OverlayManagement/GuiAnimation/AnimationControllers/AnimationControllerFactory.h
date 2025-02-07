@@ -5,14 +5,11 @@
 
 #include <memory>
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class AnimationControllerFactory
-        {
-        public:
-            static std::unique_ptr<IAnimationController> CreateAnimationController(const eEnginePropertyType propertyType);
-        };
-    } // namespace GUI
-}
+namespace EngineCore {
+namespace GUI {
+class AnimationControllerFactory {
+public:
+    static std::unique_ptr<IAnimationController> CreateAnimationController(const eEnginePropertyType propertyType);
+};
+} // namespace GUI
+} // namespace EngineCore

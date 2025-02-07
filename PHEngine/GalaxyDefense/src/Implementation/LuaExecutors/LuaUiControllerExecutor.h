@@ -1,39 +1,35 @@
 #pragma once
 
 #include "Core/GameCore/Scene.h"
-#include "Core/IoCore/FolderManager.h"
-#include "Core/GameCore/ScriptingCore/LuaFunctions/LuaCommonUiFunctions.h"
 #include "Core/GameCore/ScriptingCore/LuaFunctions/LuaCommonEngineFunctions.h"
+#include "Core/GameCore/ScriptingCore/LuaFunctions/LuaCommonUiFunctions.h"
 #include "Core/GameCore/ScriptingCore/LuaFunctions/LuaEngineEventsFunctions.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
+#include "Core/IoCore/FolderManager.h"
 #include "Implementation/LuaFunctions/LuaGameEventsFunctions.h"
 
 using namespace EngineCore::Scripts;
 
-namespace EngineCore
-{
-   class InputComponent;
+namespace EngineCore {
+class InputComponent;
 }
 
-namespace Game
-{
-   class LuaUiControllerExecutor
-       : public LuaScriptExecutorBase
-   {
-   protected:
-      std::vector<std::shared_ptr<ILuaFunctionable>> mLuaFunctions;
+namespace Game {
+class LuaUiControllerExecutor : public LuaScriptExecutorBase {
+protected:
+    std::vector<std::shared_ptr<ILuaFunctionable>> mLuaFunctions;
 
-   public:
-      LuaUiControllerExecutor(const std::string &scriptName);
+public:
+    LuaUiControllerExecutor(const std::string& scriptName);
 
-      ~LuaUiControllerExecutor();
+    ~LuaUiControllerExecutor();
 
-      virtual void Initialize();
+    virtual void Initialize();
 
-      void RunScript() override;
+    void RunScript() override;
 
-      void StopScript() override;
+    void StopScript() override;
 
-      void RegisterCallbacks() override;
-   };
-}
+    void RegisterCallbacks() override;
+};
+} // namespace Game

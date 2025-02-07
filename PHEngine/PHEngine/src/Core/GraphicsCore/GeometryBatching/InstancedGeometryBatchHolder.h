@@ -1,38 +1,35 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-#include <string>
-
 #include "Core/GameCore/ITickable.h"
 
-namespace EngineCore
-{
-    class Scene;
-    class InstancedGeometryBatch;
+#include <memory>
+#include <string>
+#include <vector>
 
-    class InstancedGeometryBatchHolder
-        : public ITickable
-    {
-        std::weak_ptr<Scene> mSceneWp;
+namespace EngineCore {
+class Scene;
+class InstancedGeometryBatch;
 
-        std::vector<std::shared_ptr<InstancedGeometryBatch>> mInstancedGeometryBatches;
+class InstancedGeometryBatchHolder : public ITickable {
+    std::weak_ptr<Scene> mSceneWp;
 
-    public:
-        explicit InstancedGeometryBatchHolder();
+    std::vector<std::shared_ptr<InstancedGeometryBatch>> mInstancedGeometryBatches;
 
-        void SetScene(const std::weak_ptr<Scene> &sceneWp);
+public:
+    explicit InstancedGeometryBatchHolder();
 
-        void Tick(const float deltaTime) override;
+    void SetScene(const std::weak_ptr<Scene>& sceneWp);
 
-        void UnpausableTick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-        void AddInstancedGeometryBatch(const std::shared_ptr<InstancedGeometryBatch> &batch);
+    void UnpausableTick(const float deltaTime) override;
 
-        void CleanUp();
+    void AddInstancedGeometryBatch(const std::shared_ptr<InstancedGeometryBatch>& batch);
 
-        bool CheckIfBatchExists(const std::string &batchKey) const;
+    void CleanUp();
 
-        std::shared_ptr<InstancedGeometryBatch> GetBatch(const std::string &batchKey) const;
-    };
-}
+    bool CheckIfBatchExists(const std::string& batchKey) const;
+
+    std::shared_ptr<InstancedGeometryBatch> GetBatch(const std::string& batchKey) const;
+};
+} // namespace EngineCore

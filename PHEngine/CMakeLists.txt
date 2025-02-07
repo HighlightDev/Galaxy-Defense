@@ -12,7 +12,7 @@ if(WIN32)
     endif()
 endif(WIN32)
 
-if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(ARCH_x64 ON)
     message("Compile for x64 architecture.")
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)

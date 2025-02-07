@@ -6,50 +6,45 @@
 using namespace EnginePhysics;
 using namespace EngineCore::Scripts;
 
-namespace EngineCore
-{
-   struct PlatformTraverseComponentData;
+namespace EngineCore {
+struct PlatformTraverseComponentData;
 
-   class PlatformTraverseComponent
-      : public Component
-   {
+class PlatformTraverseComponent : public Component {
 
-      std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> mMovementPoints;
+    std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> mMovementPoints;
 
-      std::shared_ptr<LuaPlatformTraverseScriptExecutor> mScriptExecutor;
+    std::shared_ptr<LuaPlatformTraverseScriptExecutor> mScriptExecutor;
 
-      std::unique_ptr<PlatformTraverseComponentVisitorBase> mBehaviorVisitor;
+    std::unique_ptr<PlatformTraverseComponentVisitorBase> mBehaviorVisitor;
 
-      std::string mDestinationPoint;
-      std::string mLastDestinationPoint;
+    std::string mDestinationPoint;
+    std::string mLastDestinationPoint;
 
-      float mTime;
+    float mTime;
 
-   public:
+public:
+    PlatformTraverseComponent(const std::shared_ptr<PlatformTraverseComponentData>& data);
 
-      PlatformTraverseComponent(const std::shared_ptr<PlatformTraverseComponentData>& data);
+    ~PlatformTraverseComponent() override;
 
-      ~PlatformTraverseComponent() override;
+    eComponentType GetComponentType() const override;
 
-      eComponentType GetComponentType() const override;
+    void Tick(const float deltaTime) override;
 
-      void Tick(const float deltaTime) override;
+    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+    void OnSceneOwnerInitialized() override;
 
-      void OnSceneOwnerInitialized() override;
+    const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>>& GetMovementPoints() const;
 
-      const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>>& GetMovementPoints() const;
+    void AddMovementPoint(const std::string& pointName, const EulerAnglesTransform& t, const float transitionTime);
 
-      void AddMovementPoint(const std::string& pointName, const EulerAnglesTransform& t, const float transitionTime);
+    void SetDestinationPoint(const std::string& pointName);
 
-      void SetDestinationPoint(const std::string& pointName);
+    std::string GetDestinationPoint() const;
 
-      std::string GetDestinationPoint() const;
+private:
+    void Move(const float deltaTime);
+};
 
-   private:
-
-      void Move(const float deltaTime);
-   };
-
-}
+} // namespace EngineCore

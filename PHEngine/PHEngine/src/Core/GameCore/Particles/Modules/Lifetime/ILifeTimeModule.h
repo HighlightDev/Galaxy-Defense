@@ -2,14 +2,11 @@
 
 #include "Core/GameCore/Particles/Modules/IParticleModule.h"
 
-namespace EngineCore
-{
-    class ILifeTimeModule
-        : public IParticleModule
-    {
-    public:
-       ILifeTimeModule();
+namespace EngineCore {
+class ILifeTimeModule : public IParticleModule {
+public:
+    ILifeTimeModule();
 
-       eParticleModuleType GetParticleModuleType() const override;
-    };
-}
+    eParticleModuleType GetParticleModuleType() const override;
+};
+} // namespace EngineCore

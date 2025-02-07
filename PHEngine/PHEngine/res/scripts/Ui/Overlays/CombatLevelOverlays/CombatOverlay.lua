@@ -151,7 +151,7 @@ function CombatOverlay:new(host)
     combatOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, combatOverlayCanvas.luaProxyId)
     end)
-    local combatOverlay = UiOverlay:createBackgroundOverlay(host, "CombatOverlay", combatOverlayCanvas)
+    local combatOverlay = UiOverlay:createOverlay(host, "CombatOverlay", combatOverlayCanvas)
 
     local lifeRootContainerWidth = windowWidth / 3.0
     local lifeRootContainerHeight = windowHeight / 4.0

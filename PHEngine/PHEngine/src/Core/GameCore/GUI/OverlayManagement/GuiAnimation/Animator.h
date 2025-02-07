@@ -3,56 +3,53 @@
 #include "AnimationData.h"
 #include "Core/GameCore/ITickable.h"
 
-#include <unordered_map>
-#include <string>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class IAnimatable;
-        class IAnimationController;
+namespace EngineCore {
+namespace GUI {
+class IAnimatable;
+class IAnimationController;
 
-        class Animator : public ITickable
-        {
-            std::unordered_map<std::string, std::vector<AnimationData>> mAnimations;
+class Animator : public ITickable {
+    std::unordered_map<std::string, std::vector<AnimationData>> mAnimations;
 
-            std::string mActiveAnimationName;
+    std::string mActiveAnimationName;
 
-            std::shared_ptr<::EngineCore::GUI::IAnimatable> mAnimatable;
+    std::shared_ptr<::EngineCore::GUI::IAnimatable> mAnimatable;
 
-            bool mAnimationInProgress{false};
+    bool mAnimationInProgress{false};
 
-            float mAnimationTimePassed{0.0f};
+    float mAnimationTimePassed{0.0f};
 
-            std::vector<std::function<void(std::string)>> mOnAnimationFinishedCallbacks;
+    std::vector<std::function<void(std::string)>> mOnAnimationFinishedCallbacks;
 
-            std::unordered_map<std::string, std::shared_ptr<::EngineCore::GUI::IAnimationController>> mAnimationControllers;
+    std::unordered_map<std::string, std::shared_ptr<::EngineCore::GUI::IAnimationController>> mAnimationControllers;
 
-        public:
-            explicit Animator(const std::shared_ptr<::EngineCore::GUI::IAnimatable> &animatable);
+public:
+    explicit Animator(const std::shared_ptr<::EngineCore::GUI::IAnimatable>& animatable);
 
-            ~Animator() = default;
+    ~Animator() = default;
 
-            void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-            void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTime) override;
 
-            void AddAnimation(const std::string &animationName, const AnimationData &animationData);
+    void AddAnimation(const std::string& animationName, const AnimationData& animationData);
 
-            void RemoveAnimation(const std::string &animationName);
+    void RemoveAnimation(const std::string& animationName);
 
-            void SubscribeOnAnimationFinished(const std::function<void(std::string)> &callback);
+    void SubscribeOnAnimationFinished(const std::function<void(std::string)>& callback);
 
-            void StartAnimation(const std::string &newAnimationName);
+    void StartAnimation(const std::string& newAnimationName);
 
-            bool HasAnimation(const std::string &animationName) const;
+    bool HasAnimation(const std::string& animationName) const;
 
-        private:
-            void CreateAnimationControllersForAnimation(const std::string &animationName);
-        };
-    }
-}
+private:
+    void CreateAnimationControllersForAnimation(const std::string& animationName);
+};
+} // namespace GUI
+} // namespace EngineCore

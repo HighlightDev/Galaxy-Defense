@@ -1,25 +1,20 @@
 #pragma once
 #include "CameraSceneProxy.h"
 
-namespace EngineCore
-{
-   class ACamera;
+namespace EngineCore {
+class ACamera;
 }
 
-namespace Graphics
-{
+namespace Graphics {
 
-   using EngineCore::ACamera;
+using EngineCore::ACamera;
 
-   class MainCameraSceneProxy :
-      public CameraSceneProxy
-   {
-   public:
+class MainCameraSceneProxy : public CameraSceneProxy {
+public:
+    MainCameraSceneProxy(const class ACamera* camera);
 
-      MainCameraSceneProxy(const class ACamera* camera);
+    ~MainCameraSceneProxy() override;
 
-      ~MainCameraSceneProxy() override;
-
-      eCameraSceneProxyType GetCameraSceneType() const override;
-   };
-}
+    eCameraSceneProxyType GetCameraSceneType() const override;
+};
+} // namespace Graphics

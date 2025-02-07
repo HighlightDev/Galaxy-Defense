@@ -1,51 +1,51 @@
 #pragma once
-#include "PrimitiveSceneProxy.h"
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
-#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/BillboardShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
+#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GraphicsCore/RenderData/BillboardRenderData.h"
+#include "PrimitiveSceneProxy.h"
 
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
 using namespace Graphics::OpenGL;
 
-namespace Graphics
-{
-   namespace Proxy
-   {
-      class BillboardSceneProxy : public PrimitiveSceneProxy
-      {
-         using Base = PrimitiveSceneProxy;
+namespace Graphics {
+namespace Proxy {
+class BillboardSceneProxy : public PrimitiveSceneProxy {
+    using Base = PrimitiveSceneProxy;
 
-      protected:
-         using Shader_t = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, BillboardShader>;
+protected:
+    using Shader_t = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, BillboardShader>;
 
-         BillboardRenderData mRenderData;
+    BillboardRenderData mRenderData;
 
-         float mBillboardExtent;
+    float mBillboardExtent;
 
-      public:
-         BillboardSceneProxy(const BillboardComponent *component);
+public:
+    BillboardSceneProxy(const BillboardComponent* component);
 
-         ~BillboardSceneProxy() override;
+    ~BillboardSceneProxy() override;
 
-         void PostConstructorInitialize() override;
+    void PostConstructorInitialize() override;
 
-         void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
+    void Render(
+        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix) override;
 
-         bool IsDeferred() const override;
+    bool IsDeferred() const override;
 
-         bool IsFrustumCullTestNeeded() const override;
+    bool IsFrustumCullTestNeeded() const override;
 
-         eMeshFacing GetMeshFrontFace() const override;
+    eMeshFacing GetMeshFrontFace() const override;
 
-         void SetBillboardExtent(const float extent);
+    void SetBillboardExtent(const float extent);
 
-      protected:
-         std::shared_ptr<Shader_t> GetShader() const;
-      };
+protected:
+    std::shared_ptr<Shader_t> GetShader() const;
+};
 
-   }
-}
+} // namespace Proxy
+} // namespace Graphics

@@ -1,24 +1,29 @@
 #pragma once
 
-#include "Core/GameCore/Event/TEvent.h"
 #include "Core/GameCore/Event/Policy/Policies.h"
+#include "Core/GameCore/Event/TEvent.h"
 
-#include <vector>
 #include <stdint.h>
+
 #include <cstdint>
+#include <vector>
 
-namespace Event
-{
-   class ElectroRaySphereContactCollisionEvent
-       : public TEvent<ElectroRaySphereContactCollisionEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<int32_t/*srcCollisionObject*/, std::vector<int32_t>>/*dstCollisionObjects*/>
-   {
-   public:
-      using Event_t = TEvent<ElectroRaySphereContactCollisionEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<int32_t, std::vector<int32_t>>>::Event_t;
+namespace Event {
+class ElectroRaySphereContactCollisionEvent
+    : public TEvent<
+          ElectroRaySphereContactCollisionEvent,
+          eEventThreadType::GAME_THREAD,
+          MultipleDataEventPolicy<int32_t /*srcCollisionObject*/, std::vector<int32_t>> /*dstCollisionObjects*/> {
+public:
+    using Event_t = TEvent<
+        ElectroRaySphereContactCollisionEvent,
+        eEventThreadType::GAME_THREAD,
+        MultipleDataEventPolicy<int32_t, std::vector<int32_t>>>::Event_t;
 
-      std::string ToString() const override
-      {
-         return "GameThreadElectroRaySphereContactCollisionEvent";
-      }
-   };
+    std::string ToString() const override
+    {
+        return "GameThreadElectroRaySphereContactCollisionEvent";
+    }
+};
 
-}
+} // namespace Event

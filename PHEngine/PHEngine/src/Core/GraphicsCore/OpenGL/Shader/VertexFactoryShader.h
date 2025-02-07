@@ -1,63 +1,61 @@
 #pragma once
 
-#include "IShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderUtilityFunctions.h"
+#include "IShader.h"
 
 #include <memory>
 
-namespace Graphics
-{
-   namespace OpenGL
-   {
-      class AttributeDataBase;
+namespace Graphics {
+namespace OpenGL {
+class AttributeDataBase;
 
-      class VertexFactoryShader : public IShader
-      {
-         using Base = IShader;
+class VertexFactoryShader : public IShader {
+    using Base = IShader;
 
-         std::string mShaderSource;
+    std::string mShaderSource;
 
-         std::vector<ShaderGenericDefineConstant> mConstantDefines;
-         std::vector<ShaderGenericConstantArray> mDefineConstantArrays;
-         std::vector<ShaderGenericDefine> mDefines;
+    std::vector<ShaderGenericDefineConstant> mConstantDefines;
+    std::vector<ShaderGenericConstantArray> mDefineConstantArrays;
+    std::vector<ShaderGenericDefine> mDefines;
 
-      public:
-         VertexFactoryShader(const std::string &vertexFactoryName);
+public:
+    VertexFactoryShader(const std::string& vertexFactoryName);
 
-         virtual ~VertexFactoryShader();
+    virtual ~VertexFactoryShader();
 
-         virtual std::vector<std::shared_ptr<AttributeDataBase>> GetVertexAttributes(const int32_t shaderProgramId) = 0;
+    virtual std::vector<std::shared_ptr<AttributeDataBase>> GetVertexAttributes(const int32_t shaderProgramId) = 0;
 
-         void ProcessAllPredefines() override;
-         
-         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+    void ProcessAllPredefines() override;
 
-         void BindAttributeLocations(const int32_t shaderProgramId) override;
+    void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         std::string GetShaderSource() const;
+    void BindAttributeLocations(const int32_t shaderProgramId) override;
 
-         template <typename ValueType>
-         void DefineConstant(const std::string &name, ValueType value)
-         {
-            std::string formatedValue = MacroConverter<ValueType>::GetValue(std::forward<ValueType>(value));
-            mConstantDefines.emplace_back(name, formatedValue);
-         }
+    std::string GetShaderSource() const;
 
-         template <typename ArrayInternalType>
-         void DefineConstantArray(const eShaderType shaderType, const std::string &varName, const std::vector<ArrayInternalType> &vectorValue)
-         {
-            const auto formatedValue = MacroConverter<ArrayInternalType>::GetArrayValue(varName, vectorValue);
-            const auto innerTypeName = TypeToString<ArrayInternalType>::value;
-            mDefineConstantArrays.emplace_back(varName, innerTypeName, formatedValue, shaderType);
-         }
+    template<typename ValueType>
+    void DefineConstant(const std::string& name, ValueType value)
+    {
+        std::string formatedValue = MacroConverter<ValueType>::GetValue(std::forward<ValueType>(value));
+        mConstantDefines.emplace_back(name, formatedValue);
+    }
 
-         void Define(const std::string &name);
+    template<typename ArrayInternalType>
+    void DefineConstantArray(
+        const eShaderType shaderType, const std::string& varName, const std::vector<ArrayInternalType>& vectorValue)
+    {
+        const auto formatedValue = MacroConverter<ArrayInternalType>::GetArrayValue(varName, vectorValue);
+        const auto innerTypeName = TypeToString<ArrayInternalType>::value;
+        mDefineConstantArrays.emplace_back(varName, innerTypeName, formatedValue, shaderType);
+    }
 
-         void Undefine(const std::string &name);
+    void Define(const std::string& name);
 
-      protected:
-         void InitShader(const std::string &pathToShaderSource);
-      };
+    void Undefine(const std::string& name);
 
-   }
-}
+protected:
+    void InitShader(const std::string& pathToShaderSource);
+};
+
+} // namespace OpenGL
+} // namespace Graphics

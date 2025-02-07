@@ -1,11 +1,13 @@
 #include "DisplayDeviceDataProvider.h"
 
-namespace IO
+namespace IO {
+DisplayDeviceDataProvider::DisplayDeviceDataProvider()
 {
-   DisplayDeviceDataProvider::DisplayDeviceDataProvider() { }
-
-   DisplayDeviceDataProvider* DisplayDeviceDataProvider::GetInstance() {
-      static DisplayDeviceDataProvider deviceSettings;
-      return &deviceSettings;
-   }
 }
+
+DisplayDeviceDataProvider* DisplayDeviceDataProvider::GetInstance()
+{
+    static DisplayDeviceDataProvider deviceSettings;
+    return &deviceSettings;
+}
+} // namespace IO

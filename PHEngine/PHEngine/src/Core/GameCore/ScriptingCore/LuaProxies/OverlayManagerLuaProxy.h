@@ -6,50 +6,44 @@
 #include <string>
 #include <unordered_set>
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class OverlayManager;
-    }
+namespace EngineCore {
+namespace GUI {
+class OverlayManager;
 }
+} // namespace EngineCore
 
-namespace EngineCore
-{
-    namespace Scripts
-    {
-        class OverlayManagerLuaProxy
-            : public LuaProxy
-        {
+namespace EngineCore {
+namespace Scripts {
+class OverlayManagerLuaProxy : public LuaProxy {
 
-            std::string mCurrentOverlayName;
+    std::string mCurrentOverlayName;
 
-            std::unordered_set<std::string> mActiveBackgroundOverlays;
+    std::unordered_set<std::string> mActiveBackgroundOverlays;
 
-        public:
-            explicit OverlayManagerLuaProxy(const std::shared_ptr<::EngineCore::GUI::OverlayManager> &owner);
+public:
+    explicit OverlayManagerLuaProxy(const std::shared_ptr<::EngineCore::GUI::OverlayManager>& owner);
 
-            void CleanUp() override;
+    void CleanUp() override;
 
-            void SetCurrentOverlay(const std::string &currentOverlayName);
+    void SetCurrentOverlay(const std::string& currentOverlayName);
 
-            void SetActiveBackgroundOverlays(const std::unordered_set<std::string> &backgroundOverlays);
+    void SetActiveBackgroundOverlays(const std::unordered_set<std::string>& backgroundOverlays);
 
-            std::string GetCurrentOverlayName() const;
+    std::string GetCurrentOverlayName() const;
 
-            void OpenOverlay(const std::string &overlayName);
+    void OpenOverlay(const std::string& overlayName);
 
-            void OpenBackgroundOverlay(const std::string &overlayName);
+    void OpenBackgroundOverlay(const std::string& overlayName);
 
-            void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
+    void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
 
-            std::string GetGameThreadData() override;
+    std::string GetGameThreadData() override;
 
-            void CloseCurrentOverlay();
+    void CloseCurrentOverlay();
 
-            void CloseOverlayAndClearHistory();
+    void CloseOverlayAndClearHistory();
 
-            void CloseBackgroundOverlay(const std::string& overlayName);
-        };
-    }
-}
+    void CloseBackgroundOverlay(const std::string& overlayName);
+};
+} // namespace Scripts
+} // namespace EngineCore

@@ -2,37 +2,33 @@
 
 #include "UiItemBase.h"
 
-#include <memory>
-#include <vector>
-#include <unordered_map>
 #include <glm/mat4x4.hpp>
 
-namespace EngineCore
-{
-    namespace Scripts
-    {
-        class LuaProxy;
-    }
+#include <memory>
+#include <unordered_map>
+#include <vector>
+
+namespace EngineCore {
+namespace Scripts {
+class LuaProxy;
 }
+} // namespace EngineCore
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class UiCanvas;
+namespace EngineCore {
+namespace GUI {
+class UiCanvas;
 
-        class UiItem : public UiItemBase
-        {
-        public:
-            UiItem(const std::string& name = std::string(""));
+class UiItem : public UiItemBase {
+public:
+    UiItem(const std::string& name = std::string(""));
 
-            void OnRegistered() override;
-            
-            void OnUnregistered() override;
+    void OnRegistered() override;
 
-            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
+    void OnUnregistered() override;
 
-            std::string GetUiTypeString() const override;
-        };
-    }
-}
+    std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
+
+    std::string GetUiTypeString() const override;
+};
+} // namespace GUI
+} // namespace EngineCore

@@ -1,31 +1,38 @@
 #pragma once
 
-#include "TEvent.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "TEvent.h"
 
-namespace Event
-{
-    class WindowSizeChangedGameThreadEvent
-        : public TEvent<WindowSizeChangedGameThreadEvent, Event::eEventThreadType::GAME_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>
+namespace Event {
+class WindowSizeChangedGameThreadEvent : public TEvent<
+                                             WindowSizeChangedGameThreadEvent,
+                                             Event::eEventThreadType::GAME_THREAD,
+                                             SingleDataEventPolicy<::Graphics::ViewPortInfo>> {
+public:
+    using Event_t = TEvent<
+        WindowSizeChangedGameThreadEvent,
+        eEventThreadType::GAME_THREAD,
+        MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
+
+    std::string ToString() const override
     {
-    public:
-        using Event_t = TEvent<WindowSizeChangedGameThreadEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
+        return "WindowSizeChangedGameThreadEvent";
+    }
+};
 
-        std::string ToString() const override
-        {
-            return "WindowSizeChangedGameThreadEvent";
-        }
-    };
+class WindowSizeChangedLuaThreadEvent : public TEvent<
+                                            WindowSizeChangedLuaThreadEvent,
+                                            Event::eEventThreadType::LUA_THREAD,
+                                            SingleDataEventPolicy<::Graphics::ViewPortInfo>> {
+public:
+    using Event_t = TEvent<
+        WindowSizeChangedLuaThreadEvent,
+        eEventThreadType::LUA_THREAD,
+        MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
 
-    class WindowSizeChangedLuaThreadEvent
-        : public TEvent<WindowSizeChangedLuaThreadEvent, Event::eEventThreadType::LUA_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>
+    std::string ToString() const override
     {
-    public:
-        using Event_t = TEvent<WindowSizeChangedLuaThreadEvent, eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
-
-        std::string ToString() const override
-        {
-            return "WindowSizeChangedLuaThreadEvent";
-        }
-    };
-}
+        return "WindowSizeChangedLuaThreadEvent";
+    }
+};
+} // namespace Event

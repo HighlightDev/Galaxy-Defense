@@ -1,53 +1,50 @@
 #pragma once
-#include "DeferredResource.h"
 #include "Core/CommonCore/Assertion.h"
+#include "DeferredResource.h"
 
-namespace Resources
-{
-   template <typename TResource, eDeferredResourceType resourceType>
-   struct DeferredResourceController
-   {
-      using DeferredResource_t = DeferredResource<TResource, resourceType>;
+namespace Resources {
+template<typename TResource, eDeferredResourceType resourceType>
+struct DeferredResourceController {
+    using DeferredResource_t = DeferredResource<TResource, resourceType>;
 
-   private:
+private:
+    std::promise<TResource> mPromise;
 
-      std::promise<TResource> mPromise;
+    std::shared_ptr<DeferredResource_t> mDeferredResource;
 
-      std::shared_ptr<DeferredResource_t> mDeferredResource;
+    bool bValueSet;
 
-      bool bValueSet;
+public:
+    DeferredResourceController()
+        : mDeferredResource(std::make_shared<DeferredResource_t>())
+        , bValueSet(false)
+    {
+    }
 
-   public:
+    virtual ~DeferredResourceController()
+    {
+    }
 
-      DeferredResourceController()
-         : mDeferredResource(std::make_shared<DeferredResource_t>())
-         , bValueSet(false)
-      {
-      }
-
-      virtual ~DeferredResourceController()
-      {
-      }
-
-      std::shared_ptr<DeferredResource_t> GetDeferredResource()
-      {
-         if (!mDeferredResource->GetIsFutureInitialized())
-         {
+    std::shared_ptr<DeferredResource_t> GetDeferredResource()
+    {
+        if (!mDeferredResource->GetIsFutureInitialized()) {
             mDeferredResource->Initialize(mPromise.get_future());
-         }
+        }
 
-         return mDeferredResource;
-      }
+        return mDeferredResource;
+    }
 
-      bool IsValueSet() const {
-         return bValueSet;
-      }
+    bool IsValueSet() const
+    {
+        return bValueSet;
+    }
 
-      void SetResource(TResource const& resource) {
-         assert(mDeferredResource);
-         assert(mDeferredResource->GetIsFutureInitialized());
-         mPromise.set_value(resource);
-         bValueSet = true;
-      }
-   };
-}
+    void SetResource(TResource const& resource)
+    {
+        assert(mDeferredResource);
+        assert(mDeferredResource->GetIsFutureInitialized());
+        mPromise.set_value(resource);
+        bValueSet = true;
+    }
+};
+} // namespace Resources

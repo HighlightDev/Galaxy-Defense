@@ -1,13 +1,12 @@
 #include "RenderTargetStorage.h"
 
-namespace Resources
+namespace Resources {
+
+RenderTargetStorage::RenderTargetStorage()
 {
-
-   RenderTargetStorage::RenderTargetStorage()
-   {
-   }
-
-   RenderTargetStorage::~RenderTargetStorage()
-   {
-   }
 }
+
+RenderTargetStorage::~RenderTargetStorage()
+{
+}
+} // namespace Resources

@@ -1,59 +1,55 @@
 #pragma once
 
-#include "LightComponent.h"
-#include "Core/GraphicsCore/RenderData/DirectionalLightRenderData.h"
-#include "Core/GameCore/Event/PlayerMovedEvent.h"
 #include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
+#include "Core/GameCore/Event/PlayerMovedEvent.h"
+#include "Core/GraphicsCore/RenderData/DirectionalLightRenderData.h"
+#include "LightComponent.h"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Data;
 using namespace Event;
 
-namespace EngineCore
-{
-   struct LightComponentData;
+namespace EngineCore {
+struct LightComponentData;
 
-   class DirectionalLightComponent 
-      : public LightComponent
-      , public PlayerMovedGameThreadEvent
-      , public PhysicsComponentUpdatedGameThreadEvent
-   {
+class DirectionalLightComponent : public LightComponent,
+                                  public PlayerMovedGameThreadEvent,
+                                  public PhysicsComponentUpdatedGameThreadEvent {
 
-      using Base = LightComponent;
+    using Base = LightComponent;
 
-      glm::vec3 mPlayerTranslationOffset{};
+    glm::vec3 mPlayerTranslationOffset{};
 
-      bool bIsRenderDataDirty{false};
+    bool bIsRenderDataDirty{false};
 
-   public:
+public:
+    DirectionalLightComponent(const std::shared_ptr<LightComponentData>& lightComponentData);
 
-      DirectionalLightComponent(const std::shared_ptr<LightComponentData>& lightComponentData);
+    ~DirectionalLightComponent() override;
 
-      ~DirectionalLightComponent() override;
+    void Initialize() override;
 
-      void Initialize() override;
+    void Tick(const float deltaTime) override;
 
-      void Tick(const float deltaTime) override;
+    eComponentType GetComponentType() const override;
 
-      eComponentType GetComponentType() const override;
+    std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
 
-      std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
+    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+    std::shared_ptr<DirectionalLightRenderData> GetRenderData() const;
 
-      std::shared_ptr<DirectionalLightRenderData> GetRenderData() const;
+    void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
 
-      void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
+protected:
+    void
+    ProcessEvent(const PlayerMovedGameThreadEvent* sender, const typename PlayerMovedGameThreadEvent::EventData_t& data) override;
+    void ProcessEvent(
+        const PhysicsComponentUpdatedGameThreadEvent* sender,
+        const typename PhysicsComponentUpdatedGameThreadEvent::EventData_t& data) override;
 
-   protected:
+private:
+    void SyncRenderData();
+};
 
-      void ProcessEvent(const PlayerMovedGameThreadEvent* sender, const typename PlayerMovedGameThreadEvent::EventData_t& data) override;
-      void ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent* sender, const typename PhysicsComponentUpdatedGameThreadEvent::EventData_t& data) override;
-
-   private:
-
-      void SyncRenderData();
-   };
-
-}
-
+} // namespace EngineCore

@@ -117,21 +117,21 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
         }
         a_barrier->SetIsEnabled(true);
     }
+
+    const int32_t c_bombMissilesCount = 10 * levelData.TowersData.size();
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, c_bombMissilesCount);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING, 3);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1);
 }
 
 void CombatController::OnLevelInit()
 {
-    const int32_t c_bombMissilesCount = 10 * mCombatActorsPoolHandler->GetSpaceStationsCount();
-    mCombatActorsPoolHandler->SpawnEnemySpaceships(10);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, c_bombMissilesCount);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING, 3);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 2);
-
     const std::unordered_map<eMissileType, size_t> availabeMissileTypes
         = {{eMissileType::BOMB, 10}, {eMissileType::FREEZING, 3}, {eMissileType::ELECTRO_RAY, 1}, {eMissileType::BLACK_HOLE, 2}};
     PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 
+    mCombatActorsPoolHandler->SpawnEnemySpaceships(10);
     mCombatActorsPoolHandler->SpawnAsteroids(20);
     mCombatActorsPoolHandler->SpawnBarriers(1, 5);
     const auto& lvlBoundaryMin = mLevelBounds.GetMin();
@@ -402,18 +402,25 @@ void CombatController::ProcessEvent(const ChangeGameModeEvent* sender, const typ
 {
     const auto newValue = std::get<0>(data);
     if (newValue != mGameModeType) {
-        if (eGameModeType::SPACE_STATION_PLACEMENT == mGameModeType && eGameModeType::COMBAT == newValue) {
-            OnCombatPreparationCompleted();
-        }
-
+        static constexpr auto functionId = Hash64_CT("CombatController::LuaChangeGameModeEvent");
         if (eGameModeType::INIT == mGameModeType && eGameModeType::SPACE_STATION_PLACEMENT == newValue) {
             if (const auto& sceneSp = mScene.lock()) {
-                static constexpr auto functionId = Hash64_CT("CombatController::LuaChangeGameModeEvent");
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-                    eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, []() {
+                    eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+                    static_cast<int32_t>(eGameModeType::SPACE_STATION_PLACEMENT),
+                    functionId,
+                    []() {
                         LuaChangeGameModeEvent::GetInstance()->SendEvent(
                             eExecutionOrder::POST_EXECUTION, eGameModeType::SPACE_STATION_PLACEMENT);
                     });
+            }
+        } else if (eGameModeType::SPACE_STATION_PLACEMENT == mGameModeType && eGameModeType::COMBAT == newValue) {
+            if (const auto& sceneSp = mScene.lock()) {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+                    eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, static_cast<int32_t>(eGameModeType::COMBAT), functionId, []() {
+                        LuaChangeGameModeEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eGameModeType::COMBAT);
+                    });
+                OnCombatPreparationCompleted();
             }
         }
 
@@ -566,11 +573,11 @@ void CombatController::ProcessAiAction()
                         const auto missileType = static_cast<eMissileType>(missileValue);
                         return mCombatActorsPoolHandler->GetFreeMissile(missileType) ? missileType : eMissileType::NONE;
                     };
-                    eMissileType missileType = eMissileType::NONE;
-                    while (eMissileType::NONE == missileType) {
-                        missileType = getRandomMissileType();
+                    eMissileType missileType = getRandomMissileType();
+                    if (eMissileType::NONE == missileType) {
+                        // No available missiles at the moment, wait until one will be free
+                        return;
                     }
-
                     LaunchMisile(spaceStation, spaceStationTranslation, projectileShootDirection, missileType);
                     spaceStation->RestartTimerSinceLastShoot();
                 }

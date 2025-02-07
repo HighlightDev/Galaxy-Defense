@@ -2,8 +2,8 @@
 
 #include "materialCommon.incl.glsl"
 
-layout (points) in;
-layout (triangle_strip, max_vertices = 4) out;
+layout(points) in;
+layout(triangle_strip, max_vertices = 4) out;
 
 uniform mat4 projectionMatrix;
 
@@ -19,11 +19,8 @@ mat4 rollMatrix(float angle)
 {
     float s = sin(angle);
     float c = cos(angle);
-    
-    return mat4(c, -s, 0.0, 0.0,
-                s, c, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0);
+
+    return mat4(c, -s, 0.0, 0.0, s, c, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
 }
 
 void main()
@@ -31,7 +28,7 @@ void main()
     vec2 rotation_size = vs_out_rotation_size[0];
 
     out_color = vs_out_particle_color[0];
-    
+
     mat4 rotationMatrix = rollMatrix(rotation_size.x);
 
     vec4 rotatedVertex1 = rotationMatrix * vec4(-rotation_size.y, rotation_size.y, 0.0, 1.0);
@@ -43,7 +40,7 @@ void main()
     vec3 texCoordsVertex2 = vec3(0.0, 0.0, 0.0);
     vec3 texCoordsVertex3 = vec3(1.0, 1.0, 0.0);
     vec3 texCoordsVertex4 = vec3(1.0, 0.0, 0.0);
-    
+
     gl_Position = projectionMatrix * (rotatedVertex1 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];
     GsOutput.TextureCoordinates = texCoordsVertex1;

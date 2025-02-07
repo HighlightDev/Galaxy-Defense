@@ -1,86 +1,81 @@
 #pragma once
 
-#include <vector>
-#include <memory>
-
 #include <glm/vec2.hpp>
 
-namespace EngineCore
-{
-    class FontHandler;
+#include <memory>
+#include <vector>
 
-    namespace GUI
-    {
-        class UiCanvas;
-    }
+namespace EngineCore {
+class FontHandler;
+
+namespace GUI {
+class UiCanvas;
 }
+} // namespace EngineCore
 
-namespace Graphics
-{
-    namespace Proxy
-    {
-        class UiSceneProxyBase;
+namespace Graphics {
+namespace Proxy {
+class UiSceneProxyBase;
 
-        class UiCanvasSceneProxy
-        {
-            size_t mUiItemUId;
+class UiCanvasSceneProxy {
+    size_t mUiItemUId;
 
-            bool mIsVisible;
+    bool mIsVisible;
 
-            glm::ivec2 mAbsoluteOrigin;
+    glm::ivec2 mAbsoluteOrigin;
 
-            glm::ivec2 mWidthHeight;
+    glm::ivec2 mWidthHeight;
 
-            std::vector<std::shared_ptr<UiSceneProxyBase>> mUiProxies;
+    std::vector<std::shared_ptr<UiSceneProxyBase>> mUiProxies;
 
-            std::weak_ptr<::EngineCore::FontHandler> mFontHandlerWp;
+    std::weak_ptr<::EngineCore::FontHandler> mFontHandlerWp;
 
-            float mOverlayOpacity;
+    float mOverlayOpacity;
 
-            size_t mCanvasZOrder;
+    size_t mCanvasZOrder;
 
-        public:
-            UiCanvasSceneProxy(const ::EngineCore::GUI::UiCanvas *canvas);
+public:
+    UiCanvasSceneProxy(const ::EngineCore::GUI::UiCanvas* canvas);
 
-            void CleanUp();
+    void CleanUp();
 
-            void AddUiSceneProxy(std::shared_ptr<UiSceneProxyBase> uiProxy);
+    void AddUiSceneProxy(std::shared_ptr<UiSceneProxyBase> uiProxy);
 
-            void RemoveUiSceneProxy(const size_t uiItemUId);
+    void RemoveUiSceneProxy(const size_t uiItemUId);
 
-            void SortProxiesByZOrder();
+    void SortProxiesByZOrder();
 
-            void Render();
+    void Render();
 
-            void SetUiItemUid(const size_t UId);
+    void SetUiItemUid(const size_t UId);
 
-            size_t GetUiItemUId() const;
+    size_t GetUiItemUId() const;
 
-            void SetIsVisible(const bool isVisible);
+    void SetIsVisible(const bool isVisible);
 
-            bool IsVisible() const;
+    bool IsVisible() const;
 
-            void SetAbsoluteOrigin(const glm::ivec2 &position);
+    void SetAbsoluteOrigin(const glm::ivec2& position);
 
-            void SetWidthHeight(const glm::ivec2 &widthHeight);
+    void SetWidthHeight(const glm::ivec2& widthHeight);
 
-            void SetOverlayOpacity(const float opacity);
+    void SetOverlayOpacity(const float opacity);
 
-            float GetOverlayOpacity() const;
+    float GetOverlayOpacity() const;
 
-            void SetCanvasZOrder(const size_t zOrder);
+    void SetCanvasZOrder(const size_t zOrder);
 
-            size_t GetCanvasZOrder() const;
+    size_t GetCanvasZOrder() const;
 
-            glm::ivec2 GetAbsoluteOrigin() const;
+    glm::ivec2 GetAbsoluteOrigin() const;
 
-            glm::ivec2 GetWidthHeight() const;
+    glm::ivec2 GetWidthHeight() const;
 
-            std::shared_ptr<UiSceneProxyBase> GetSceneProxyById(const size_t uid) const;
+    std::shared_ptr<UiSceneProxyBase> GetSceneProxyById(const size_t uid) const;
 
-            void SetFontHandler(const std::weak_ptr<::EngineCore::FontHandler> &fontHandlerWp);
+    void SetFontHandler(const std::weak_ptr<::EngineCore::FontHandler>& fontHandlerWp);
 
-            std::weak_ptr<::EngineCore::FontHandler> GetFontHandler() const;
-        };
-    }
-}
+    std::weak_ptr<::EngineCore::FontHandler> GetFontHandler() const;
+};
+} // namespace Proxy
+} // namespace Graphics

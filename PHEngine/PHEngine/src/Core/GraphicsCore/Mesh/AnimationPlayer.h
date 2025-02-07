@@ -1,82 +1,79 @@
 #pragma once
 
-#include <memory>
-#include <string.h>
-#include <vector>
-#include <cstddef>
-#include <glm/mat4x4.hpp>
-
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
 
-namespace EngineCore
-{
-   class AnimationTweenController;
+#include <glm/mat4x4.hpp>
+#include <string.h>
+
+#include <cstddef>
+#include <memory>
+#include <vector>
+
+namespace EngineCore {
+class AnimationTweenController;
 }
 
-namespace Graphics
-{
-   namespace Mesh
-   {
+namespace Graphics {
+namespace Mesh {
 
-      class AnimationPlayer
-      {
-         friend class EngineCore::AnimationTweenController;
+class AnimationPlayer {
+    friend class EngineCore::AnimationTweenController;
 
-         std::shared_ptr<AnimatedSkin> m_animatedSkin;
+    std::shared_ptr<AnimatedSkin> m_animatedSkin;
 
-         /* this is the main animation time counter*/
-         float mSrcAnimationTime;
+    /* this is the main animation time counter*/
+    float mSrcAnimationTime;
 
-         /* this time is used when blending of animations is being calculated*/
-         float mDstAnimationTime;
+    /* this time is used when blending of animations is being calculated*/
+    float mDstAnimationTime;
 
-         /* this is the main animation name*/
-         std::string mSrcAnimationName;
+    /* this is the main animation name*/
+    std::string mSrcAnimationName;
 
-         /* this animation name is used when blending of animations is being occurred*/
-         std::string mDstAnimationName;
+    /* this animation name is used when blending of animations is being occurred*/
+    std::string mDstAnimationName;
 
-         float mTransitionParameter = 0.0f;
+    float mTransitionParameter = 0.0f;
 
-         bool bTransitionEnabled = false;
+    bool bTransitionEnabled = false;
 
-         std::vector<glm::mat4> mCachedAnimatedMatrices;
+    std::vector<glm::mat4> mCachedAnimatedMatrices;
 
-      public:
-         AnimationPlayer(const std::shared_ptr<AnimatedSkin>& animatedSkin);
+public:
+    AnimationPlayer(const std::shared_ptr<AnimatedSkin>& animatedSkin);
 
-         AnimationPlayer() = default;
+    AnimationPlayer() = default;
 
-         /* updates matrices with current animation*/
-         void UpdateAnimationMatrices();
+    /* updates matrices with current animation*/
+    void UpdateAnimationMatrices();
 
-         const std::vector<glm::mat4> &GetAnimatedMatrices() const;
+    const std::vector<glm::mat4>& GetAnimatedMatrices() const;
 
-         bool SetSrcAnimationByIndex(const size_t index);
+    bool SetSrcAnimationByIndex(const size_t index);
 
-         bool SetDstAnimationByIndex(const size_t index);
+    bool SetDstAnimationByIndex(const size_t index);
 
-         bool SetSrcAnimationName(const std::string &srcAnimationName);
+    bool SetSrcAnimationName(const std::string& srcAnimationName);
 
-         bool SetDstAnimationName(const std::string &dstAnimationName);
+    bool SetDstAnimationName(const std::string& dstAnimationName);
 
-         void SetSrcAnimationTime(const float srcAnimationTime);
+    void SetSrcAnimationTime(const float srcAnimationTime);
 
-         void SetDstAnimationTime(const float dstAnimationTime);
+    void SetDstAnimationTime(const float dstAnimationTime);
 
-         void SetTransitionParameter(const bool isTransitionEnabled, const float transitionParam);
+    void SetTransitionParameter(const bool isTransitionEnabled, const float transitionParam);
 
-         std::string GetSrcAnimationName() const;
+    std::string GetSrcAnimationName() const;
 
-         std::string GetDstAnimationName() const;
+    std::string GetDstAnimationName() const;
 
-         float GetSrcAnimationTime() const;
+    float GetSrcAnimationTime() const;
 
-         float GetDstAnimationTime() const;
+    float GetDstAnimationTime() const;
 
-      private:
-         void UpdateAnimationMatrices_Inner();
-      };
+private:
+    void UpdateAnimationMatrices_Inner();
+};
 
-   }
-}
+} // namespace Mesh
+} // namespace Graphics

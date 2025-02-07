@@ -29,6 +29,7 @@ local UiOverlay = require("Ui/Core/uiOverlay")
 local ImageButton = require("Ui/Widgets/ImageButton")
 local LabelButton = require("Ui/Widgets/LabelButton")
 local EventsHelper = require("Ui/Core/eventsHelper")
+local Styles = require("Ui/Common/styles")
 
 EditModeType = {
     IDLE = 0,
@@ -211,7 +212,6 @@ function LevelEditorOverlay:new(host)
         editorContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, canvas.widgetName, 0)
         editorContainer:setHeight(windowHeight * 0.15)
         editorContainer:setZOrder(1)
-        editorContainer:setColorHexValue(0xffffff)
         editorContainer:setOpacity(0.0)
         editorContainer:setIfCanInterceptMouseInputEvent(false)
 
@@ -227,7 +227,7 @@ function LevelEditorOverlay:new(host)
         changeContainerStateButton:setHeight(buttonHeight)
         changeContainerStateButton:setImageTextureSource("arrow_left.png")
         changeContainerStateButton:setButtonBorderRadius(8)
-        changeContainerStateButton:setButtonColorHexValue(0xdb9427)
+        changeContainerStateButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         changeContainerStateButton:setUseImageCustomColor(true)
         changeContainerStateButton:setImageColorHexValue(0x000000)
         changeContainerStateButton:setZOrder(2)
@@ -242,7 +242,7 @@ function LevelEditorOverlay:new(host)
         undoLastActionButton:setButtonBorderRadius(8)
         undoLastActionButton:setImageTextureSource("arrow_counter_clockwise.png")
         undoLastActionButton:setZOrder(2)
-        undoLastActionButton:setButtonColorHexValue(0xdb9427)
+        undoLastActionButton:setButtonColorHexValue(Styles.Colors.buttonColor)
 
         editStationSocketsButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editStationSocketsButton:setAnchor(UiItemBase.UiAnchorType.TOP,
@@ -256,7 +256,7 @@ function LevelEditorOverlay:new(host)
         editStationSocketsButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
         editStationSocketsButton:setLabelTextColorHexValue(0x000000)
         editStationSocketsButton:setZOrder(2)
-        editStationSocketsButton:setButtonColorHexValue(0xdb9427)
+        editStationSocketsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
 
         editRoutesButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editRoutesButton:setAnchor(UiItemBase.UiAnchorType.TOP,
@@ -270,7 +270,7 @@ function LevelEditorOverlay:new(host)
         editRoutesButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
         editRoutesButton:setLabelTextColorHexValue(0x000000)
         editRoutesButton:setZOrder(2)
-        editRoutesButton:setButtonColorHexValue(0xdb9427)
+        editRoutesButton:setButtonColorHexValue(Styles.Colors.buttonColor)
 
         editBarriersButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editBarriersButton:setAnchor(UiItemBase.UiAnchorType.TOP,
@@ -284,7 +284,7 @@ function LevelEditorOverlay:new(host)
         editBarriersButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
         editBarriersButton:setLabelTextColorHexValue(0x000000)
         editBarriersButton:setZOrder(2)
-        editBarriersButton:setButtonColorHexValue(0xdb9427)
+        editBarriersButton:setButtonColorHexValue(Styles.Colors.buttonColor)
 
         newRouteButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         newRouteButton:setAnchor(UiItemBase.UiAnchorType.TOP,
@@ -296,7 +296,7 @@ function LevelEditorOverlay:new(host)
         newRouteButton:setButtonBorderRadius(8)
         newRouteButton:setImageTextureSource("route.png")
         newRouteButton:setZOrder(2)
-        newRouteButton:setButtonColorHexValue(0xdb9427)
+        newRouteButton:setButtonColorHexValue(Styles.Colors.buttonColor)
 
         newBarrierButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         newBarrierButton:setAnchor(UiItemBase.UiAnchorType.TOP,
@@ -308,7 +308,7 @@ function LevelEditorOverlay:new(host)
         newBarrierButton:setButtonBorderRadius(8)
         newBarrierButton:setImageTextureSource("wall.png")
         newBarrierButton:setZOrder(2)
-        newBarrierButton:setButtonColorHexValue(0xdb9427)
+        newBarrierButton:setButtonColorHexValue(Styles.Colors.buttonColor)
 
         saveLevelButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         saveLevelButton:setAnchor(UiItemBase.UiAnchorType.TOP,
@@ -320,7 +320,7 @@ function LevelEditorOverlay:new(host)
         saveLevelButton:setButtonBorderRadius(8)
         saveLevelButton:setImageTextureSource("floppy-disk.png")
         saveLevelButton:setZOrder(2)
-        saveLevelButton:setButtonColorHexValue(0xdb9427)
+        saveLevelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
     end)
 
     overlay.onGameEventTriggered = function(eventName, jsonArgs)

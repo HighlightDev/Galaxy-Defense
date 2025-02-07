@@ -4,50 +4,47 @@
 
 namespace Graphics {
 
-   struct FloatMaterialProperty
-      : public MaterialProperty
-   {
-      using MaterialPropertyValueType = float;
+struct FloatMaterialProperty : public MaterialProperty {
+    using MaterialPropertyValueType = float;
 
-   private:
+private:
+    MaterialPropertyValueType m_value;
 
-      MaterialPropertyValueType m_value;
+public:
+    FloatMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
+        : MaterialProperty(propertyName)
+        , m_value(propertyValue)
+    {
+    }
 
-   public:
+    FloatMaterialProperty(const std::string& propertyName)
+        : MaterialProperty(propertyName)
+        , m_value(0.0f)
+    {
+    }
 
-      FloatMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
-         : MaterialProperty(propertyName)
-         , m_value(propertyValue)
-      {
-      }
+    eMaterialPropertyType GetPropertyType() const override
+    {
+        return MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY;
+    }
 
-      FloatMaterialProperty(const std::string& propertyName)
-         : MaterialProperty(propertyName)
-         , m_value(0.0f)
-      {
-      }
+    void SetValueToUniformArray(const UniformArray& uniformArray) const override
+    {
+    }
 
-      eMaterialPropertyType GetPropertyType() const override
-      {
-         return MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY;
-      }
+    void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+    {
+        uniform.LoadUniform(m_value);
+    }
 
-      void SetValueToUniformArray(const UniformArray& uniformArray) const override
-      {
-      }
+    inline void SetValue(MaterialPropertyValueType value)
+    {
+        m_value = value;
+    }
 
-      void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
-      {
-         uniform.LoadUniform(m_value);
-      }
-
-      inline void SetValue(MaterialPropertyValueType value) {
-         m_value = value;
-      }
-
-      inline float GetValue() const {
-         return m_value;
-      }
-
-   };
-}
+    inline float GetValue() const
+    {
+        return m_value;
+    }
+};
+} // namespace Graphics

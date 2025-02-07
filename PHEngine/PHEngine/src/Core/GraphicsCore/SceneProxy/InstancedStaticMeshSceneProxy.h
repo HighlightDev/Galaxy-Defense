@@ -1,53 +1,52 @@
 #pragma once
-#include "PrimitiveSceneProxy.h"
 #include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 #include "Core/GraphicsCore/RenderData/MeshRenderData.h"
+#include "PrimitiveSceneProxy.h"
 
 using namespace Graphics;
 using namespace Graphics::Data;
 using namespace EngineCore;
 
-namespace Graphics
+namespace Graphics {
+namespace Proxy {
+
+class InstancedStaticMeshSceneProxy : public PrimitiveSceneProxy,
+                                      public std::enable_shared_from_this<InstancedStaticMeshSceneProxy>
+
 {
-   namespace Proxy
-   {
+    using Base = PrimitiveSceneProxy;
 
-      class InstancedStaticMeshSceneProxy
-          : public PrimitiveSceneProxy,
-            public std::enable_shared_from_this<InstancedStaticMeshSceneProxy>
+protected:
+    MeshRenderData m_renderData;
 
-      {
-         using Base = PrimitiveSceneProxy;
+public:
+    InstancedStaticMeshSceneProxy(const InstancedStaticMeshComponent* component);
 
-      protected:
-         MeshRenderData m_renderData;
+    ~InstancedStaticMeshSceneProxy() override;
 
-      public:
-         InstancedStaticMeshSceneProxy(const InstancedStaticMeshComponent *component);
+    void PostConstructorInitialize() override;
 
-         ~InstancedStaticMeshSceneProxy() override;
+    void Render(
+        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix) override;
 
-         void PostConstructorInitialize() override;
+    void RenderPlanarReflection(
+        const glm::vec4& plane,
+        const glm::mat4& mirrorMatrix,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix) override;
 
-         void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy,
-                     const glm::mat4 &viewMatrix,
-                     const glm::mat4 &projectionMatrix) override;
+    bool IsDeferred() const override;
 
-         void RenderPlanarReflection(const glm::vec4 &plane,
-                                     const glm::mat4 &mirrorMatrix,
-                                     const glm::mat4 &viewMatrix,
-                                     const glm::mat4 &projectionMatrix) override;
+    bool IsFrustumCullTestNeeded() const override;
 
-         bool IsDeferred() const override;
+    ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
-         bool IsFrustumCullTestNeeded() const override;
+    MeshRenderData GetRenderData() const;
 
-         ePrimitiveProxyType GetPrimitiveProxyType() const override;
+    std::string GetBatchKey() const;
+};
 
-         MeshRenderData GetRenderData() const;
-
-         std::string GetBatchKey() const;
-      };
-
-   }
-}
+} // namespace Proxy
+} // namespace Graphics

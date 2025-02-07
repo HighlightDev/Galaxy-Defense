@@ -1,52 +1,49 @@
 #pragma once
-#include "ProjectedShadowInfo.h"
 #include "Core/GameCore/Event/TextureAtlasGeneratedEvent.h"
+#include "ProjectedShadowInfo.h"
 
-namespace Graphics
-{
+namespace Graphics {
 
-   class ProjectedDirectionalLightShadowInfo 
-      : public ProjectedShadowInfo
-      , public Event::TextureAtlasGeneratedGameThreadEvent
-   {
-      glm::mat4x4 m_shadowViewMatrix;
+class ProjectedDirectionalLightShadowInfo : public ProjectedShadowInfo, public Event::TextureAtlasGeneratedGameThreadEvent {
+    glm::mat4x4 m_shadowViewMatrix;
 
-      glm::mat4x4 m_shadowProjectionMatrix;
+    glm::mat4x4 m_shadowProjectionMatrix;
 
-      const float mShadowOrthoHalfExtent;
+    const float mShadowOrthoHalfExtent;
 
-   private:
+private:
+    std::shared_ptr<Texture2dAtlasHandler> GetTexture2dHandler() const;
 
-      std::shared_ptr<Texture2dAtlasHandler> GetTexture2dHandler() const;
+public:
+    ProjectedDirectionalLightShadowInfo(
+        const TextureAtlasSpaceRequest& shadowAtlasCellResource, const float shadowOrthoHalfExtent);
 
-   public:      
+    ~ProjectedDirectionalLightShadowInfo() override;
 
-      ProjectedDirectionalLightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource, const float shadowOrthoHalfExtent);
+    void Initialize() override;
 
-      ~ProjectedDirectionalLightShadowInfo() override;
+    void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
 
-      void Initialize() override;
+    void ProcessEvent(
+        const TextureAtlasGeneratedGameThreadEvent* sender,
+        const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t& data) override;
 
-      void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
+    glm::mat4 GetShadowViewMatrix() const;
 
-      void ProcessEvent(const TextureAtlasGeneratedGameThreadEvent* sender, const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t& data) override;
+    glm::mat4 GetShadowProjectionMatrix() const;
 
-      glm::mat4 GetShadowViewMatrix() const;
+    void SetShadowViewMatrix(const glm::mat4& shadowViewMatrix);
 
-      glm::mat4 GetShadowProjectionMatrix() const;
+    void SetShadowProjectionMatrix(const glm::mat4& shadowProjectionMatrix);
 
-      void SetShadowViewMatrix(const glm::mat4& shadowViewMatrix);
+    glm::mat4 GetShadowMatrix() const;
 
-      void SetShadowProjectionMatrix(const glm::mat4& shadowProjectionMatrix);
+    glm::vec4 GetTextureAtlasOffset() const;
 
-      glm::mat4 GetShadowMatrix() const;
+    float GetShadowOrthoHalfExtent() const
+    {
+        return mShadowOrthoHalfExtent;
+    }
+};
 
-      glm::vec4 GetTextureAtlasOffset() const;
-
-      float GetShadowOrthoHalfExtent() const {
-         return mShadowOrthoHalfExtent;
-      }
-   };
-
-}
-
+} // namespace Graphics

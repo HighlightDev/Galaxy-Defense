@@ -1,29 +1,25 @@
 #pragma once
 
-#include "Core/ResourceManagerCore/Pool/PoolBase.h"
 #include "Core/AudioCore/SoundStream.h"
 #include "Core/ResourceManagerCore/Policy/SoundStreamAllocationPolicy.h"
+#include "Core/ResourceManagerCore/Pool/PoolBase.h"
 
 #include <string>
 
 using namespace EngineCore;
 
-namespace Resources
-{
-	class SoundStreamPool : public PoolBase<SoundStream, std::string, SoundStreamAllocationPolicy>
-	{
-		static std::unique_ptr<SoundStreamPool> m_instance;
+namespace Resources {
+class SoundStreamPool : public PoolBase<SoundStream, std::string, SoundStreamAllocationPolicy> {
+    static std::unique_ptr<SoundStreamPool> m_instance;
 
-	public:
+public:
+    using poolType_t = PoolBase<SoundStream, std::string, SoundStreamAllocationPolicy>;
 
-		using poolType_t = PoolBase<SoundStream, std::string, SoundStreamAllocationPolicy>;
+    std::string ToString() const override;
 
-		std::string ToString() const override;
+    static std::unique_ptr<SoundStreamPool>& GetInstance();
 
-		static std::unique_ptr<SoundStreamPool>& GetInstance();
+    static void ReloadInstance();
+};
 
-		static void ReloadInstance();
-	};
-
-}
-
+} // namespace Resources

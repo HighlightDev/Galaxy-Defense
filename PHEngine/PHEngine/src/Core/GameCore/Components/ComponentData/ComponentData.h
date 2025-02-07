@@ -4,21 +4,19 @@
 
 #include <string>
 
-namespace EngineCore
-{
-   struct ComponentData
-   {
-      std::string EngineObjectName;
+namespace EngineCore {
+struct ComponentData {
+    std::string EngineObjectName;
 
-      ComponentData(const std::string &gameObjectName)
-          : EngineObjectName(gameObjectName)
-      {
-         assert(EngineObjectName != "");
-      }
+    ComponentData(const std::string& gameObjectName)
+        : EngineObjectName(gameObjectName)
+    {
+        assert(EngineObjectName != "");
+    }
 
-      virtual ~ComponentData()
-      {
-      }
-   };
+    virtual ~ComponentData()
+    {
+    }
+};
 
-}
+} // namespace EngineCore

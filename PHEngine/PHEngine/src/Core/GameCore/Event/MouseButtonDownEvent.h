@@ -5,44 +5,55 @@
 #include "Core/GameCore/Input/MouseEventEnums.h"
 
 #include <glm/vec2.hpp>
+
 #include <vector>
 
 using namespace EngineCore;
 
-namespace Event
-{
-   struct MouseButtonDownRootEvent
-       : public TEvent<MouseButtonDownRootEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>
-   {
-      using Event_t = TEvent<MouseButtonDownRootEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>::Event_t;
+namespace Event {
+struct MouseButtonDownRootEvent : public TEvent<
+                                      MouseButtonDownRootEvent,
+                                      eEventThreadType::GAME_THREAD,
+                                      SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>> {
+    using Event_t = TEvent<
+        MouseButtonDownRootEvent,
+        eEventThreadType::GAME_THREAD,
+        SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>::Event_t;
 
-      std::string ToString() const override
-      {
-         return "MouseButtonDownRootEvent";
-      }
-   };
+    std::string ToString() const override
+    {
+        return "MouseButtonDownRootEvent";
+    }
+};
 
-   struct MouseButtonDownGameThreadEvent
-       : public TEvent<MouseButtonDownGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>
-   {
-   public:
-      using Event_t = TEvent<MouseButtonDownRootEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>::Event_t;
+struct MouseButtonDownGameThreadEvent : public TEvent<
+                                            MouseButtonDownGameThreadEvent,
+                                            eEventThreadType::GAME_THREAD,
+                                            SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>> {
+public:
+    using Event_t = TEvent<
+        MouseButtonDownRootEvent,
+        eEventThreadType::GAME_THREAD,
+        SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>::Event_t;
 
-      std::string ToString() const override
-      {
-         return "MouseButtonDownGameThreadEvent";
-      }
-   };
+    std::string ToString() const override
+    {
+        return "MouseButtonDownGameThreadEvent";
+    }
+};
 
-   struct MouseButtonDownLuaThreadEvent
-       : public TEvent<MouseButtonDownLuaThreadEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>
-   {
-   public:
-      using Event_t = TEvent<MouseButtonDownLuaThreadEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>::Event_t;
+struct MouseButtonDownLuaThreadEvent : public TEvent<
+                                           MouseButtonDownLuaThreadEvent,
+                                           eEventThreadType::LUA_THREAD,
+                                           SingleDataEventPolicy<std::vector<MouseKeysData>>> {
+public:
+    using Event_t
+        = TEvent<MouseButtonDownLuaThreadEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>::
+            Event_t;
 
-      std::string ToString() const override
-      {
-         return "MouseButtonDownLuaThreadEvent";
-      }
-   };
-}
+    std::string ToString() const override
+    {
+        return "MouseButtonDownLuaThreadEvent";
+    }
+};
+} // namespace Event

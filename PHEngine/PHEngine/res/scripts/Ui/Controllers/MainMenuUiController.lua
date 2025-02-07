@@ -51,7 +51,6 @@ function System_OnStart(host)
 end
 
 function System_OnUpdate(host, deltaTimeSec)
-
     for _, value in pairs(UiOverlays) do
         value:updateFromReplicatorData(host)
     end

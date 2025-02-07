@@ -22,6 +22,7 @@
 #include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
+#include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Implementation/Levels/CombatLevel/SmartPicker.h"
 
@@ -247,6 +248,10 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                                 = std::make_pair(cellPositionVec3, std::static_pointer_cast<Actor>(towerActorSp));
                         });
 
+                    nlohmann::json root;
+                    root["towers_count"] = std::to_string(
+                        mPlacedTowers.size() + 1); // add one because tower will be created later on render thread
+                    TriggerPlayerStatusChangedEvent(eMainPlayerStatusType::TOWERS_COUNT_CHANGED, root.dump());
                     mReloadPlacementTower.StartTimer();
                     SetGhostTowerVisibility(false);
                 }
@@ -320,6 +325,9 @@ void UserInteractionController::ProcessEvent(
             SetTowerGridVisibility(jsonRoot.at("visible").get<bool>());
         } else if (jsonRoot.at("action").get<std::string>() == "ghost_tower_visibility") {
             SetGhostTowerVisibility(jsonRoot.at("visible").get<bool>());
+        } else if (jsonRoot.at("remove_tower_marker_visibility").get<std::string>() == "remove_tower_marker_visibility") {
+            const bool isTowerEraserMarkerVisible = jsonRoot.at("visible").get<bool>();
+            SetGhostTowerVisibility(!isTowerEraserMarkerVisible);
         }
     }
 }
@@ -510,5 +518,19 @@ void UserInteractionController::InitializeGhostTower()
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     mGhostTowerActor->AddComponent(c_mesh);
+}
+
+void UserInteractionController::TriggerPlayerStatusChangedEvent(
+    const eMainPlayerStatusType statusChanged, const std::string& jsonArgs)
+{
+    MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, statusChanged, jsonArgs);
+
+    const auto& sceneSp = mSceneWp.lock();
+    assert(sceneSp);
+    static constexpr auto functionId = Hash64_CT("UserInteractionController::TriggerPlayerStatusChangedEvent");
+    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, static_cast<int32_t>(statusChanged), functionId, [statusChanged, jsonArgs]() {
+            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, statusChanged, jsonArgs);
+        });
 }
 } // namespace Game

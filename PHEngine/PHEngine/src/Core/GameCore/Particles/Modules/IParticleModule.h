@@ -2,40 +2,32 @@
 
 #include "Core/GameCore/Particles/Particle.h"
 
-#include <vector>
-#include <memory>
 #include <glm/vec4.hpp>
 
-namespace EngineCore
-{
-    enum class eParticleModuleType : uint8_t
-    {
-        LIFETIME,
-        INITIAL_VELOCITY,
-        VELOCITY,
-        COLOR,
-        SIZE
-    };
+#include <memory>
+#include <vector>
 
-    class ParticleSystemComponent;
+namespace EngineCore {
+enum class eParticleModuleType : uint8_t { LIFETIME, INITIAL_VELOCITY, VELOCITY, COLOR, SIZE };
 
-    class IParticleModule
-    {
-    protected:
-        std::weak_ptr<ParticleSystemComponent> mOwner;
+class ParticleSystemComponent;
 
-    public:
-        IParticleModule();
+class IParticleModule {
+protected:
+    std::weak_ptr<ParticleSystemComponent> mOwner;
 
-        virtual eParticleModuleType GetParticleModuleType() const = 0;
+public:
+    IParticleModule();
 
-        virtual void Update(Particle &particle, const float deltaTime) = 0;
+    virtual eParticleModuleType GetParticleModuleType() const = 0;
 
-        virtual void OnEmitParticles() = 0;
+    virtual void Update(Particle& particle, const float deltaTime) = 0;
 
-        void SetOwner(const std::weak_ptr<ParticleSystemComponent> &owner);
+    virtual void OnEmitParticles() = 0;
 
-    protected:
-        std::vector<Particle> &GetParticlesPool();
-    };
-}
+    void SetOwner(const std::weak_ptr<ParticleSystemComponent>& owner);
+
+protected:
+    std::vector<Particle>& GetParticlesPool();
+};
+} // namespace EngineCore

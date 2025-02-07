@@ -1,40 +1,40 @@
 #pragma once
 
-#include "Core/GraphicsCore/PostFX/IPostFxPass.h"
-#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/FramebufferImplementation/BloomFramebuffer.h"
 #include "Core/GameCore/ShaderImplementation/BloomFxShader.h"
+#include "Core/GraphicsCore/PostFX/IPostFxPass.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
 using namespace EngineCore::FramebufferImpl;
 using namespace EngineCore::ShaderImpl;
 
-namespace Graphics
-{
-   class BloomPostFxPass : public IPostFxPass
-   {
-   private:
-      std::unique_ptr<BloomFramebuffer> mBloomFramebuffer;
-      std::shared_ptr<BloomFxShader> mBloomFxShader;
-      uint32_t mBlurPassCount;
+namespace Graphics {
+class BloomPostFxPass : public IPostFxPass {
+private:
+    std::unique_ptr<BloomFramebuffer> mBloomFramebuffer;
+    std::shared_ptr<BloomFxShader> mBloomFxShader;
+    uint32_t mBlurPassCount;
 
-      std::shared_ptr<ITexture> mBloomFxResult;
+    std::shared_ptr<ITexture> mBloomFxResult;
 
-      ViewPortInfo mViewPortInfo;
+    ViewPortInfo mViewPortInfo;
 
-   public:
-      BloomPostFxPass(const ViewPortInfo &viewPortInfo);
+public:
+    BloomPostFxPass(const ViewPortInfo& viewPortInfo);
 
-      virtual ~BloomPostFxPass();
+    virtual ~BloomPostFxPass();
 
-      void ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture, const std::shared_ptr<FramebufferBundle>& previousStepFramebuffer) override;
+    void ExecutePostFx(
+        const std::shared_ptr<ITexture>& sceneColorTexture,
+        const std::shared_ptr<FramebufferBundle>& previousStepFramebuffer) override;
 
-      virtual std::shared_ptr<ITexture> GetPostFxResult() const;
+    virtual std::shared_ptr<ITexture> GetPostFxResult() const;
 
-      void CleanUp() override;
+    void CleanUp() override;
 
-      void ResizeRenderTargets(const ViewPortInfo &viewPortInfo) override;
+    void ResizeRenderTargets(const ViewPortInfo& viewPortInfo) override;
 
-   private:
-      void Init();
-   };
-}
+private:
+    void Init();
+};
+} // namespace Graphics

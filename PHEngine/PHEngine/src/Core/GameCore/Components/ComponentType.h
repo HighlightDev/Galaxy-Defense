@@ -1,24 +1,23 @@
 #pragma once
 
-#include <string>
-#include <cstddef>
 #include "Core/CommonCore/Assertion.h"
 
-namespace EngineCore
-{
-   enum eComponentType
-   {
-      COMPONENT = 0x1,
-      SCENE_COMPONENT =                COMPONENT            | (COMPONENT << 1),
-      PHYSICS_COMPONENT =              COMPONENT            | (COMPONENT << 2),
-      INPUT_COMPONENT =                COMPONENT            | (COMPONENT << 5),
-      MOVEMENT_COMPONENT =             COMPONENT            | (COMPONENT << 6),
-      LIGHT_COMPONENT =                SCENE_COMPONENT      | (COMPONENT << 3),
-      PRIMITIVE_COMPONENT =            SCENE_COMPONENT      | (COMPONENT << 4),
-      CHARACTER_MOVEMENT_COMPONENT =   MOVEMENT_COMPONENT   | (COMPONENT << 7),
-      PLATFORM_MOVEMENT_COMPONENT =    COMPONENT            | (COMPONENT << 8),
-      PLANAR_REFLECTION_COMPONENT =    SCENE_COMPONENT      | (COMPONENT << 9),
-      UI_COMPONENT =                   COMPONENT            | (COMPONENT << 10),
-      AUDIO_COMPONENT =                COMPONENT            | (COMPONENT << 11)
-   };
+#include <cstddef>
+#include <string>
+
+namespace EngineCore {
+enum eComponentType {
+    COMPONENT = 0x1,
+    SCENE_COMPONENT = COMPONENT | (COMPONENT << 1),
+    PHYSICS_COMPONENT = COMPONENT | (COMPONENT << 2),
+    INPUT_COMPONENT = COMPONENT | (COMPONENT << 5),
+    MOVEMENT_COMPONENT = COMPONENT | (COMPONENT << 6),
+    LIGHT_COMPONENT = SCENE_COMPONENT | (COMPONENT << 3),
+    PRIMITIVE_COMPONENT = SCENE_COMPONENT | (COMPONENT << 4),
+    CHARACTER_MOVEMENT_COMPONENT = MOVEMENT_COMPONENT | (COMPONENT << 7),
+    PLATFORM_MOVEMENT_COMPONENT = COMPONENT | (COMPONENT << 8),
+    PLANAR_REFLECTION_COMPONENT = SCENE_COMPONENT | (COMPONENT << 9),
+    UI_COMPONENT = COMPONENT | (COMPONENT << 10),
+    AUDIO_COMPONENT = COMPONENT | (COMPONENT << 11)
+};
 }

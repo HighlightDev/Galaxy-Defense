@@ -1,66 +1,66 @@
 #pragma once
 
+#include <glm/vec3.hpp>
 #include <stdint.h>
+
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <utility>
 #include <unordered_map>
+#include <utility>
 #include <vector>
-#include <glm/vec3.hpp>
 
-namespace EngineCore
-{
-    class Scene;
+namespace EngineCore {
+class Scene;
 }
 
-namespace Graphics
-{
-    class IMaterial;
-    namespace Texture
-    {
-        class ITexture;
-    }
+namespace Graphics {
+class IMaterial;
+namespace Texture {
+class ITexture;
 }
+} // namespace Graphics
 
-namespace Game
-{
-    class BarrierActor;
+namespace Game {
+class BarrierActor;
 
-    class BarriersHandler
-    {
-        int32_t mBarrierActorsCount{0};
+class BarriersHandler {
+    int32_t mBarrierActorsCount{0};
 
-        int32_t mCurrentBarrierPillarsCount{0};
+    int32_t mCurrentBarrierPillarsCount{0};
 
-        std::weak_ptr<::EngineCore::Scene> mSceneWp;
+    std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
-        std::unordered_map<std::string, std::shared_ptr<::Game::BarrierActor>> mBarrierActors;
+    std::unordered_map<std::string, std::shared_ptr<::Game::BarrierActor>> mBarrierActors;
 
-        std::unordered_map<std::string, std::pair<std::shared_ptr<::Graphics::IMaterial> /*pillar material*/, std::shared_ptr<::Graphics::IMaterial /*ray material*/>>> mBarrierMaterials;
+    std::unordered_map<
+        std::string,
+        std::pair<
+            std::shared_ptr<::Graphics::IMaterial> /*pillar material*/,
+            std::shared_ptr<::Graphics::IMaterial /*ray material*/>>>
+        mBarrierMaterials;
 
-        int32_t mBarrierActorCounter{0};
+    int32_t mBarrierActorCounter{0};
 
-        std::string mCurrentActiveBarrierName;
+    std::string mCurrentActiveBarrierName;
 
-        std::shared_ptr<::Graphics::Texture::ITexture> mNoiseTex;
+    std::shared_ptr<::Graphics::Texture::ITexture> mNoiseTex;
 
-    public:
-        explicit BarriersHandler(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
+public:
+    explicit BarriersHandler(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
-        void OnPostLevelInit();
+    void OnPostLevelInit();
 
-        void SelectNewBarrier(const std::string &barrierName);
+    void SelectNewBarrier(const std::string& barrierName);
 
-        void CreateNewBarrierPillar(const glm::vec3 &position,
-                                    const glm::vec3 &scale);
+    void CreateNewBarrierPillar(const glm::vec3& position, const glm::vec3& scale);
 
-        void SetBarrierColor(const glm::vec3 &currentBarrierColor);
+    void SetBarrierColor(const glm::vec3& currentBarrierColor);
 
-        void SetRayColor(const glm::vec3 &currentRayColor);
+    void SetRayColor(const glm::vec3& currentRayColor);
 
-        void UndoLastBarrier();
+    void UndoLastBarrier();
 
-        std::unordered_map<std::string /*barrier name*/, std::vector<glm::vec3>/*pillar positions*/> CollectBarrierPoints() const;
-    };
-}
+    std::unordered_map<std::string /*barrier name*/, std::vector<glm::vec3> /*pillar positions*/> CollectBarrierPoints() const;
+};
+} // namespace Game

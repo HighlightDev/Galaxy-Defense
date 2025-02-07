@@ -1,20 +1,19 @@
 #include "LevelDataProvider.h"
 
-namespace Game
+namespace Game {
+LevelDataProvider* LevelDataProvider::GetInstance()
 {
-    LevelDataProvider *LevelDataProvider::GetInstance()
-    {
-        static LevelDataProvider levelDataProvider;
-        return &levelDataProvider;
-    }
-
-    int32_t LevelDataProvider::GetCurrentStageAliveEnemySpaceshipsCount() const
-    {
-        return mCurrentStageAliveEnemySpaceshipsCount;
-    }
-
-    void LevelDataProvider::SetCurrentStageAliveEnemySpaceshipsCount(const int32_t currentStageAliveEnemySpaceshipsCount)
-    {
-        mCurrentStageAliveEnemySpaceshipsCount = currentStageAliveEnemySpaceshipsCount;
-    }
+    static LevelDataProvider levelDataProvider;
+    return &levelDataProvider;
 }
+
+int32_t LevelDataProvider::GetCurrentStageAliveEnemySpaceshipsCount() const
+{
+    return mCurrentStageAliveEnemySpaceshipsCount;
+}
+
+void LevelDataProvider::SetCurrentStageAliveEnemySpaceshipsCount(const int32_t currentStageAliveEnemySpaceshipsCount)
+{
+    mCurrentStageAliveEnemySpaceshipsCount = currentStageAliveEnemySpaceshipsCount;
+}
+} // namespace Game

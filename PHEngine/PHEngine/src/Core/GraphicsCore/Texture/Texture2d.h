@@ -3,62 +3,60 @@
 #include "ITexture.h"
 #include "TextureMipMapState.h"
 
-#include <string>
 #include <gl/glew.h>
 
-namespace Graphics
-{
-	namespace Texture
-	{
+#include <string>
 
-		class Texture2d : public ITexture
-		{
-		private:
-			TexParams m_textureParams;
+namespace Graphics {
+namespace Texture {
 
-			ITextureMipMapState *m_mipmapState;
+class Texture2d : public ITexture {
+private:
+    TexParams m_textureParams;
 
-		public:
-			Texture2d(const std::string &pathToTex, ITextureMipMapState *mipmapState);
+    ITextureMipMapState* m_mipmapState;
 
-			Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH);
+public:
+    Texture2d(const std::string& pathToTex, ITextureMipMapState* mipmapState);
 
-			Texture2d(const TexParams &textureParameters);
+    Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH);
 
-			virtual ~Texture2d();
+    Texture2d(const TexParams& textureParameters);
 
-			void BindTexture(uint32_t textureSlot) const override;
+    virtual ~Texture2d();
 
-			void UnbindTexture(uint32_t textureSlot) const override;
+    void BindTexture(uint32_t textureSlot) const override;
 
-			void CleanUp();
+    void UnbindTexture(uint32_t textureSlot) const override;
 
-			inline uint32_t GetTextureDescriptor() const
-			{
-				return m_texDescriptor;
-			}
+    void CleanUp();
 
-			inline glm::ivec2 GetTextureRezolution() const
-			{
-				return glm::ivec2(m_textureParams.TexBufferWidth, m_textureParams.TexBufferHeight);
-			}
+    inline uint32_t GetTextureDescriptor() const
+    {
+        return m_texDescriptor;
+    }
 
-			inline TexParams GetTextureParameters() const
-			{
-				return m_textureParams;
-			}
+    inline glm::ivec2 GetTextureRezolution() const
+    {
+        return glm::ivec2(m_textureParams.TexBufferWidth, m_textureParams.TexBufferHeight);
+    }
 
-			float GetTextureAspectRatio() const override;
+    inline TexParams GetTextureParameters() const
+    {
+        return m_textureParams;
+    }
 
-			eTextureType GetTextureType() const override;
+    float GetTextureAspectRatio() const override;
 
-		private:
-			void InitEmptyTexture();
+    eTextureType GetTextureType() const override;
 
-			uint32_t GetTextureResource(const std::string &pathToTex, int32_t texWrapMode = GL_REPEAT);
+private:
+    void InitEmptyTexture();
 
-			uint32_t CreateTexture(const void *pixelsData);
-		};
+    uint32_t GetTextureResource(const std::string& pathToTex, int32_t texWrapMode = GL_REPEAT);
 
-	}
-}
+    uint32_t CreateTexture(const void* pixelsData);
+};
+
+} // namespace Texture
+} // namespace Graphics

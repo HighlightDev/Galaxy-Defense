@@ -1,11 +1,5 @@
 #pragma once
 
-namespace EngineCore
-{
-    enum class eTextHorizontalAlignmentType
-    {
-        LEFT,
-        CENTER,
-        RIGHT
-    };
+namespace EngineCore {
+enum class eTextHorizontalAlignmentType { LEFT, CENTER, RIGHT };
 }

@@ -26,6 +26,7 @@ setup()
 
 local UiRectangle = require("Ui/Core/uiRectangle")
 local UiImage = require("Ui/Core/uiImage")
+local Styles = require("Ui/Common/styles")
 
 ImageButton = {
 }
@@ -44,12 +45,16 @@ function ImageButton:new(host, overlay, name)
         buttonHeight = 0,
         containerColor = 0xffffff,
         widgetName = "",
-        luaProxiesReadyCallback = nil
+        luaProxiesReadyCallback = nil,
+        buttonActiveState = {
+            isButtonActive = true,
+            prevContainerColorHexValue = 0xffffff
+        }
     }
 
     local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
-    local containerName = debugName ~= nil and "ImageButton_" .. debugName or nil
-    local imageName = debugName ~= nil and "ImageButton_" .. debugName or nil
+    local containerName = debugName ~= nil and "ImageButtonContainer_" .. debugName or nil
+    local imageName = debugName ~= nil and "ImageButtonImage_" .. debugName or nil
     newObj.backgroundTile = UiRectangle:new(host, containerName)
     newObj.image = UiImage:new(host, imageName)
     newObj.pressButtonStateContainer = UiRectangle:new(host)
@@ -275,6 +280,24 @@ function ImageButton:setIsVisible(isVisible)
     assert(isVisible ~= nil and type(isVisible) == "boolean")
     self.backgroundTile:setIsVisible(isVisible)
     self.image:setIsVisible(isVisible)
+end
+
+function ImageButton:setIsButtonActive(isButtonActive)
+    assert(isButtonActive ~= nil and type(isButtonActive) == "boolean")
+    if self.buttonActiveState.isButtonActive ~= isButtonActive then
+        self.buttonActiveState.isButtonActive = isButtonActive
+        if isButtonActive then
+            self.backgroundTile:setIsUiInputEnabled(true)
+            self.pressButtonStateContainer:setIsUiInputEnabled(true)
+            self:setButtonColorHexValue(self.buttonActiveState.prevContainerColorHexValue)
+            self.buttonActiveState.prevContainerColorHexValue = 0xffffff
+        else
+            self.backgroundTile:setIsUiInputEnabled(false)
+            self.pressButtonStateContainer:setIsUiInputEnabled(false)
+            self.buttonActiveState.prevContainerColorHexValue = self.containerColor
+            self:setButtonColorHexValue(Styles.Colors.notActiveButtonColor)
+        end
+    end
 end
 
 return ImageButton

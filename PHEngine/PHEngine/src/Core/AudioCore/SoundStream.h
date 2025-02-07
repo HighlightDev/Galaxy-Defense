@@ -1,39 +1,36 @@
 #pragma once
 
-#include <memory>
-
 #include "Core/IoCore/AudioLoaderCore/AudioResourceInfo.h"
+
+#include <memory>
 
 using namespace IO::Audio;
 
-namespace IO::Audio
-{
-    class StbSoundStream;
+namespace IO::Audio {
+class StbSoundStream;
 }
 
-namespace EngineCore
-{
-    class SoundStream
-    {
-        std::shared_ptr<StbSoundStream> mStream;
+namespace EngineCore {
+class SoundStream {
+    std::shared_ptr<StbSoundStream> mStream;
 
-        AudioResourceInfo mAudioInfo;
+    AudioResourceInfo mAudioInfo;
 
-    public:
-        SoundStream(const std::shared_ptr<StbSoundStream> &stream, const AudioResourceInfo &audioInfo);
+public:
+    SoundStream(const std::shared_ptr<StbSoundStream>& stream, const AudioResourceInfo& audioInfo);
 
-        bool operator==(const SoundStream &right) const;
+    bool operator==(const SoundStream& right) const;
 
-        short *GetCurrentDataChunk() const;
+    short* GetCurrentDataChunk() const;
 
-        int32_t ReadNewDataPortionIntoChunk();
+    int32_t ReadNewDataPortionIntoChunk();
 
-        int32_t GetLastReadDataSamplesCount() const;
+    int32_t GetLastReadDataSamplesCount() const;
 
-        void ReadStreamFromStart() const;
+    void ReadStreamFromStart() const;
 
-        const AudioResourceInfo &GetAudioInfo() const;
+    const AudioResourceInfo& GetAudioInfo() const;
 
-        void CleanUp();
-    };
-}
+    void CleanUp();
+};
+} // namespace EngineCore

@@ -1,36 +1,33 @@
 #pragma once
 
-#include <string>
-#include <memory>
-
 #include "Core/GameCore/EnginePropertyType.h"
+
+#include <memory>
+#include <string>
 
 namespace EngineCore {
 
-   struct PropertyBinding
-   {
-   protected:
+struct PropertyBinding {
+protected:
+    bool bPropertyConnected = false;
 
-      bool bPropertyConnected = false;
+public:
+    std::string BindingName;
+    std::string EngineObjectName;
+    std::string EngineObjectPropertyName;
 
-   public:
+    PropertyBinding(const std::string& bindingName)
+        : BindingName(bindingName)
+        , EngineObjectName("")
+        , EngineObjectPropertyName("")
+    {
+    }
 
-      std::string BindingName;
-      std::string EngineObjectName;
-      std::string EngineObjectPropertyName;
+    virtual eEnginePropertyBindingType GetBindingType() const = 0;
 
-      PropertyBinding(const std::string& bindingName)
-         : BindingName(bindingName)
-         , EngineObjectName("")
-         , EngineObjectPropertyName("")
-      {
-      }
-
-      virtual eEnginePropertyBindingType GetBindingType() const = 0;
-
-      bool IsPropertyConnected() const
-      {
-         return bPropertyConnected;
-      }
-   };
-}
+    bool IsPropertyConnected() const
+    {
+        return bPropertyConnected;
+    }
+};
+} // namespace EngineCore

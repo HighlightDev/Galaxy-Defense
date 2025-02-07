@@ -1,21 +1,19 @@
 #include "LuaHelper.h"
+
 #include "Core/GameCore/LoggerExtension.h"
 
 using namespace EngineCore;
 
-namespace EngineCore
+namespace EngineCore {
+namespace Scripts {
+bool HasLuaError(const LuaWrapper& instanceWrapper, int32_t luaCallResult)
 {
-   namespace Scripts
-   {
-      bool HasLuaError(const LuaWrapper &instanceWrapper, int32_t luaCallResult)
-      {
-         if (LUA_OK != luaCallResult)
-         {
-            LogInfo(instanceWrapper.GetErrorMessageAt(-1));
-            return true;
-         }
+    if (LUA_OK != luaCallResult) {
+        LogInfo(instanceWrapper.GetErrorMessageAt(-1));
+        return true;
+    }
 
-         return false;
-      }
-   }
+    return false;
 }
+} // namespace Scripts
+} // namespace EngineCore

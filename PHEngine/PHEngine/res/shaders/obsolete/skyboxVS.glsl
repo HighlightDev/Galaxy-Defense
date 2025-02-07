@@ -1,6 +1,6 @@
 ﻿#version 400
 
-layout (location = 0) in vec3 Position;
+layout(location = 0) in vec3 Position;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
@@ -17,5 +17,5 @@ void main(void)
 
     gl_ClipDistance[0] = dot(worldSpaceVertex, clipPlane);
 
-	gl_Position = projectionMatrix * viewMatrix * worldSpaceVertex;
+    gl_Position = projectionMatrix * viewMatrix * worldSpaceVertex;
 }

@@ -4,32 +4,27 @@
 
 using namespace EngineCore;
 
-namespace Graphics
-{
+namespace Graphics {
 
-   class AProxyVisibilityController
-   {
-   protected:
+class AProxyVisibilityController {
+protected:
+    BoundingBox3D mBoundingBox;
 
-      BoundingBox3D mBoundingBox;
+    bool mIsVisible;
 
-      bool mIsVisible;
+public:
+    AProxyVisibilityController(const bool bVisible);
 
-   public:
+    BoundingBox3D GetTransformedBoundingBox() const;
 
-      AProxyVisibilityController(const bool bVisible);
+    void SetTransformedBoundingBox(const BoundingBox3D& boundingBox);
 
-      BoundingBox3D GetTransformedBoundingBox() const;
+    // Method returns false when no frustum call is needed for primitive
+    virtual bool IsFrustumCullTestNeeded() const = 0;
 
-      void SetTransformedBoundingBox(const BoundingBox3D& boundingBox);
+    void SetVisibility(const bool visibility);
 
-      // Method returns false when no frustum call is needed for primitive
-      virtual bool IsFrustumCullTestNeeded() const = 0;
+    bool IsVisible() const;
+};
 
-      void SetVisibility(const bool visibility);
-
-      bool IsVisible() const;
-
-   };
-
-}
+} // namespace Graphics

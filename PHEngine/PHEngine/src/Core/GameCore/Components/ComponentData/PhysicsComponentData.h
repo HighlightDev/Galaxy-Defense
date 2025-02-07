@@ -7,18 +7,15 @@
 
 using namespace EnginePhysics;
 
-namespace EngineCore
-{
-   struct PhysicsComponentData : public ComponentData
-   {
-      PhysicsComponentData(const std::string &gameObjectName,
-                           const std::shared_ptr<PhysicsDescriptor> &descriptor)
-          : ComponentData(gameObjectName),
-            mPhysicsDescriptor(descriptor)
-      {
-      }
+namespace EngineCore {
+struct PhysicsComponentData : public ComponentData {
+    PhysicsComponentData(const std::string& gameObjectName, const std::shared_ptr<PhysicsDescriptor>& descriptor)
+        : ComponentData(gameObjectName)
+        , mPhysicsDescriptor(descriptor)
+    {
+    }
 
-      std::shared_ptr<PhysicsDescriptor> mPhysicsDescriptor;
-   };
+    std::shared_ptr<PhysicsDescriptor> mPhysicsDescriptor;
+};
 
-}
+} // namespace EngineCore

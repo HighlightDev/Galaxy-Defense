@@ -6,54 +6,64 @@
 
 #include <memory>
 
-namespace EngineCore
-{
-    class Scene;
-    namespace GUI
-    {
-        class OverlayManager;
-    }
+namespace EngineCore {
+class Scene;
+namespace GUI {
+class OverlayManager;
 }
+} // namespace EngineCore
 
 using namespace EngineCore::GUI;
 
-namespace Game
-{
-    class PlayerCombatUi : public IUiOverlay
+namespace Game {
+class PlayerCombatUi : public IUiOverlay {
+    std::weak_ptr<::EngineCore::Scene> mSceneWp;
+
+    std::weak_ptr<::EngineCore::GUI::OverlayManager> mOverlayManagerWp;
+
+    std::shared_ptr<::EngineCore::GUI::UiCanvas> mCanvas;
+
+    std::string mOverlayName;
+
+public:
+    PlayerCombatUi(
+        const std::string& overlayName,
+        const std::weak_ptr<::EngineCore::Scene>& sceneWp,
+        const std::weak_ptr<::EngineCore::GUI::OverlayManager>& overlayManagerWp);
+
+    void Initialize() override;
+
+    void OpenOverlay() override;
+
+    void CloseOverlay() override;
+
+    std::string GetOverlayName() const override;
+
+    void Tick(const float deltaTime) override;
+
+    void UnpausableTick(const float deltaTime) override;
+
+    std::shared_ptr<::EngineCore::GUI::UiCanvas> GetCanvas() const override
     {
-        std::weak_ptr<::EngineCore::Scene> mSceneWp;
+        return mCanvas;
+    }
 
-        std::weak_ptr<::EngineCore::GUI::OverlayManager> mOverlayManagerWp;
+    bool IsVisible() const;
 
-        std::shared_ptr<::EngineCore::GUI::UiCanvas> mCanvas;
+    void SubscribeOnAnimationFinished(const std::function<void(std::string)>& callback) override
+    {
+    }
 
-        std::string mOverlayName;
+    bool HasFadeInAnimation() const override
+    {
+        return false;
+    }
 
-    public:
-        PlayerCombatUi(const std::string &overlayName, const std::weak_ptr<::EngineCore::Scene> &sceneWp, const std::weak_ptr<::EngineCore::GUI::OverlayManager> &overlayManagerWp);
+    bool HasFadeOutAnimation() const override
+    {
+        return false;
+    }
 
-        void Initialize() override;
-
-        void OpenOverlay() override;
-
-        void CloseOverlay() override;
-
-        std::string GetOverlayName() const override;
-
-        void Tick(const float deltaTime) override;
-
-        void UnpausableTick(const float deltaTime) override;
-
-        std::shared_ptr<::EngineCore::GUI::UiCanvas> GetCanvas() const override { return mCanvas; }
-
-        bool IsVisible() const;
-
-        void SubscribeOnAnimationFinished(const std::function<void(std::string)> &callback) override {}
-
-        bool HasFadeInAnimation() const override { return false; }
-
-        bool HasFadeOutAnimation() const override { return false; }
-
-        void CleanUp() override;
-    };
-}
+    void CleanUp() override;
+};
+} // namespace Game

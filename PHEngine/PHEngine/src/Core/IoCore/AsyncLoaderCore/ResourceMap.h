@@ -5,47 +5,45 @@
 #include <map>
 #include <memory>
 
-namespace IO
-{
-   class AsyncDataProxy;
+namespace IO {
+class AsyncDataProxy;
 
-   struct ResourceMap
-   {
+struct ResourceMap {
 
-   private:
-      TextureResourceLoader mTextureLoader;
+private:
+    TextureResourceLoader mTextureLoader;
 
-      MeshResourceLoader mMeshLoader;
+    MeshResourceLoader mMeshLoader;
 
-      AudioResourceLoader mAudioLoader;
+    AudioResourceLoader mAudioLoader;
 
-      std::map<std::string, Resource *> ReadyToReadResources;
+    std::map<std::string, Resource*> ReadyToReadResources;
 
-      std::map<std::string, AudioStreamResource*> AudioStreamResources;
+    std::map<std::string, AudioStreamResource*> AudioStreamResources;
 
-   public:
-      std::unique_ptr<AsyncDataProxy> mAsyncDataProxy;
+public:
+    std::unique_ptr<AsyncDataProxy> mAsyncDataProxy;
 
-      ~ResourceMap();
+    ~ResourceMap();
 
-      void AllocateAsync(const std::string &key);
+    void AllocateAsync(const std::string& key);
 
-      void AllocateSync(const std::string &key);
+    void AllocateSync(const std::string& key);
 
-      void OpenAudioStream(const std::string &key);
+    void OpenAudioStream(const std::string& key);
 
-      void WaitUntilResourcesLoad();
+    void WaitUntilResourcesLoad();
 
-      bool TryGetResource(Resource *&outResource, const std::string &key);
+    bool TryGetResource(Resource*& outResource, const std::string& key);
 
-      void UnloadResource(const std::string &key);
+    void UnloadResource(const std::string& key);
 
-      static ResourceMap *GetInstance();
+    static ResourceMap* GetInstance();
 
-      void CleanUp();
+    void CleanUp();
 
-   private:
-      ResourceMap();
-   };
+private:
+    ResourceMap();
+};
 
-}
+} // namespace IO

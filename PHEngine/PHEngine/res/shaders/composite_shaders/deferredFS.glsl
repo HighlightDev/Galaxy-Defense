@@ -8,15 +8,16 @@ layout(location = 4) out vec4 gBuffer_Emission;
 
 in MATERIAL_VS_OUTPUT VsOutput;
 
-void main() {
-  vec3 albedoColor = GetMaterialAlbedo(VsOutput);
-  vec2 metallicRoughnessFactor = GetMaterialMetallicRoughness(VsOutput);
-  vec3 worldNormal = GetMaterialWorldNormal(VsOutput);
-  vec4 emissionColor = GetMaterialEmission(VsOutput);
+void main()
+{
+    vec3 albedoColor = GetMaterialAlbedo(VsOutput);
+    vec2 metallicRoughnessFactor = GetMaterialMetallicRoughness(VsOutput);
+    vec3 worldNormal = GetMaterialWorldNormal(VsOutput);
+    vec4 emissionColor = GetMaterialEmission(VsOutput);
 
-  gBuffer_Position = VsOutput.WorldCoordinates.xyz;
-  gBuffer_Normal = worldNormal;
-  gBuffer_Albedo = albedoColor;
-  gBuffer_MetallicRoughness = metallicRoughnessFactor;
-  gBuffer_Emission = emissionColor;
+    gBuffer_Position = VsOutput.WorldCoordinates.xyz;
+    gBuffer_Normal = worldNormal;
+    gBuffer_Albedo = albedoColor;
+    gBuffer_MetallicRoughness = metallicRoughnessFactor;
+    gBuffer_Emission = emissionColor;
 }

@@ -3,74 +3,73 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 
-#include <string>
 #include <glm/vec3.hpp>
 
-namespace EngineCore
-{
-   enum class eMeshComponentDataType
-   {
-      STATIC_OR_SKELETAL_MESH,
-      RUNTIME_GENERATED_MESH
-   };
+#include <string>
 
-   struct MeshComponentData : public ComponentData
-   {
-      MeshComponentData(const std::string &gameObjectName,
-                        const std::string &pathToMesh,
-                        const glm::vec3 &translation,
-                        const glm::vec3 &rotation,
-                        const glm::vec3 &scale,
-                        const std::string &mLuaScriptRelPath,
-                        const std::shared_ptr<Graphics::IMaterial> &material)
-          : ComponentData(gameObjectName),
-            m_pathToMesh(pathToMesh),
-            m_translation(translation),
-            m_eulerRotationDegrees(rotation),
-            m_scale(scale),
-            m_luaScriptPath(mLuaScriptRelPath),
-            m_material(material)
-      {
-      }
+namespace EngineCore {
+enum class eMeshComponentDataType { STATIC_OR_SKELETAL_MESH, RUNTIME_GENERATED_MESH };
 
-      std::string m_pathToMesh;
-      glm::vec3 m_translation;
-      glm::vec3 m_eulerRotationDegrees;
-      glm::vec3 m_scale;
-      std::string m_luaScriptPath;
+struct MeshComponentData : public ComponentData {
+    MeshComponentData(
+        const std::string& gameObjectName,
+        const std::string& pathToMesh,
+        const glm::vec3& translation,
+        const glm::vec3& rotation,
+        const glm::vec3& scale,
+        const std::string& mLuaScriptRelPath,
+        const std::shared_ptr<Graphics::IMaterial>& material)
+        : ComponentData(gameObjectName)
+        , m_pathToMesh(pathToMesh)
+        , m_translation(translation)
+        , m_eulerRotationDegrees(rotation)
+        , m_scale(scale)
+        , m_luaScriptPath(mLuaScriptRelPath)
+        , m_material(material)
+    {
+    }
 
-      std::shared_ptr<Graphics::IMaterial> m_material;
+    std::string m_pathToMesh;
+    glm::vec3 m_translation;
+    glm::vec3 m_eulerRotationDegrees;
+    glm::vec3 m_scale;
+    std::string m_luaScriptPath;
 
-      virtual ~MeshComponentData() {}
+    std::shared_ptr<Graphics::IMaterial> m_material;
 
-      virtual eMeshComponentDataType GetMeshComponentDataType() const { return eMeshComponentDataType::STATIC_OR_SKELETAL_MESH; }
-   };
+    virtual ~MeshComponentData()
+    {
+    }
 
-   struct RuntimeGeneratedMeshComponentData
-       : public MeshComponentData
-   {
-      RuntimeGeneratedMeshComponentData(const std::string &gameObjectName,
-                                        const size_t maxVerticesCount,
-                                        const glm::vec3 &translation,
-                                        const glm::vec3 &rotation,
-                                        const glm::vec3 &scale,
-                                        const std::string &mLuaScriptRelPath,
-                                        const std::shared_ptr<Graphics::IMaterial> &material)
-          : MeshComponentData(gameObjectName,
-                              "",
-                              translation,
-                              rotation,
-                              scale,
-                              mLuaScriptRelPath,
-                              material),
-            mMaxVerticesCount(maxVerticesCount)
-      {
-      }
+    virtual eMeshComponentDataType GetMeshComponentDataType() const
+    {
+        return eMeshComponentDataType::STATIC_OR_SKELETAL_MESH;
+    }
+};
 
-      size_t mMaxVerticesCount;
+struct RuntimeGeneratedMeshComponentData : public MeshComponentData {
+    RuntimeGeneratedMeshComponentData(
+        const std::string& gameObjectName,
+        const size_t maxVerticesCount,
+        const glm::vec3& translation,
+        const glm::vec3& rotation,
+        const glm::vec3& scale,
+        const std::string& mLuaScriptRelPath,
+        const std::shared_ptr<Graphics::IMaterial>& material)
+        : MeshComponentData(gameObjectName, "", translation, rotation, scale, mLuaScriptRelPath, material)
+        , mMaxVerticesCount(maxVerticesCount)
+    {
+    }
 
-      virtual ~RuntimeGeneratedMeshComponentData() {}
+    size_t mMaxVerticesCount;
 
-      eMeshComponentDataType GetMeshComponentDataType() const override { return eMeshComponentDataType::RUNTIME_GENERATED_MESH; }
-   };
-}
+    virtual ~RuntimeGeneratedMeshComponentData()
+    {
+    }
+
+    eMeshComponentDataType GetMeshComponentDataType() const override
+    {
+        return eMeshComponentDataType::RUNTIME_GENERATED_MESH;
+    }
+};
+} // namespace EngineCore

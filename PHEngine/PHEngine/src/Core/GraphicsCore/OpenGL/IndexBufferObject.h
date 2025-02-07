@@ -1,53 +1,47 @@
 #pragma once
-#include "VertexBufferObjectBase.h"
 #include "DataCarryFlag.h"
+#include "VertexBufferObjectBase.h"
 
+#include <stdint.h>
+
+#include <cstddef>
 #include <memory>
 #include <vector>
-#include <stdint.h>
-#include <cstddef>
 
-namespace Graphics
-{
-	namespace OpenGL
-	{
-		class IndexBufferObject :
-			public VertexBufferObjectBase
-		{
-		private:
+namespace Graphics {
+namespace OpenGL {
+class IndexBufferObject : public VertexBufferObjectBase {
+private:
+    std::vector<uint32_t> m_data;
+    eDataCarryFlag m_dataCarryFlag;
 
-			std::vector<uint32_t> m_data;
-			eDataCarryFlag m_dataCarryFlag;
+    size_t m_countOfIndices;
+    size_t m_countOfTotalLengthOfData;
 
-			size_t m_countOfIndices;
-			size_t m_countOfTotalLengthOfData;
+public:
+    IndexBufferObject(const std::vector<uint32_t>& indicesData, eDataCarryFlag dataCarryFlag = eDataCarryFlag::INVALIDATE);
 
-		public:
+    ~IndexBufferObject() override;
 
-			IndexBufferObject(const std::vector<uint32_t>& indicesData, eDataCarryFlag dataCarryFlag = eDataCarryFlag::INVALIDATE);
+    void GenIndexBuffer();
 
-			~IndexBufferObject() override;
+    void BindIndexBuffer();
 
-			void GenIndexBuffer();
+    void SendDataToGPU() override;
 
-			void BindIndexBuffer();
+    static void UnbindIndexBuffer();
 
-			void SendDataToGPU() override;
+    void CleanUp() override;
 
-			static void UnbindIndexBuffer();
+    size_t GetCountOfIndices() const override;
 
-			void CleanUp() override;
+    size_t GetElementByteSize() const override;
 
-			size_t GetCountOfIndices() const override;
+    size_t GetTotalLengthOfData() const override;
 
-			size_t GetElementByteSize() const override;
+    size_t GetVectorSize() const override;
 
-			size_t GetTotalLengthOfData() const override;
-
-			size_t GetVectorSize() const override;
-
-			size_t GetVertexAttribIndex() const override;
-		};
-	}
-}
-
+    size_t GetVertexAttribIndex() const override;
+};
+} // namespace OpenGL
+} // namespace Graphics

@@ -2,14 +2,11 @@
 
 #include "Core/GameCore/Particles/Modules/IParticleModule.h"
 
-namespace EngineCore
-{
-    class ISizeModule
-        : public IParticleModule
-    {
-    public:
-       ISizeModule();
+namespace EngineCore {
+class ISizeModule : public IParticleModule {
+public:
+    ISizeModule();
 
-       eParticleModuleType GetParticleModuleType() const override;
-    };
-}
+    eParticleModuleType GetParticleModuleType() const override;
+};
+} // namespace EngineCore

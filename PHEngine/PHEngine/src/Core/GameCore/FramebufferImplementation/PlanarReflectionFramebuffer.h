@@ -4,40 +4,37 @@
 
 using namespace Graphics;
 
-namespace EngineCore
-{
+namespace EngineCore {
 
-   namespace FramebufferImpl
-   {
-      class PlanarReflectionFramebuffer : public FramebufferBundle
-      {
-         ViewPortInfo mReflectionViewPortInfo;
+namespace FramebufferImpl {
+class PlanarReflectionFramebuffer : public FramebufferBundle {
+    ViewPortInfo mReflectionViewPortInfo;
 
-         std::shared_ptr<ITexture> mReflectionSurfaceTarget;
-         std::shared_ptr<ITexture> mReflectionTexture;
+    std::shared_ptr<ITexture> mReflectionSurfaceTarget;
+    std::shared_ptr<ITexture> mReflectionTexture;
 
-         FramebufferObject mReflectionRenderTargetSurface;
-         FramebufferObject mReflectionTextureSurface;
+    FramebufferObject mReflectionRenderTargetSurface;
+    FramebufferObject mReflectionTextureSurface;
 
-      public:
-         PlanarReflectionFramebuffer(const ViewPortInfo &reflectionViewPortInfo);
+public:
+    PlanarReflectionFramebuffer(const ViewPortInfo& reflectionViewPortInfo);
 
-         ~PlanarReflectionFramebuffer() override;
+    ~PlanarReflectionFramebuffer() override;
 
-         void RenderToTexture();
+    void RenderToTexture();
 
-         void ResolveReflectionRenderTargetSurfaceData();
+    void ResolveReflectionRenderTargetSurfaceData();
 
-         std::shared_ptr<ITexture> GetReflectionTexture() const;
+    std::shared_ptr<ITexture> GetReflectionTexture() const;
 
-         void CleanUp() override;
+    void CleanUp() override;
 
-      protected:
-         void SetTextures() override;
+protected:
+    void SetTextures() override;
 
-         void SetFramebuffers() override;
+    void SetFramebuffers() override;
 
-         void SetRenderbuffers() override;
-      };
-   }
-}
+    void SetRenderbuffers() override;
+};
+} // namespace FramebufferImpl
+} // namespace EngineCore

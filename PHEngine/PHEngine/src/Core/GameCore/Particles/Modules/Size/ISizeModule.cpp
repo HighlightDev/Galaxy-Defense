@@ -1,13 +1,12 @@
 #include "ISizeModule.h"
 
-namespace EngineCore
+namespace EngineCore {
+ISizeModule::ISizeModule()
 {
-   ISizeModule::ISizeModule()
-   {
-   }
-
-   eParticleModuleType ISizeModule::GetParticleModuleType() const
-   {
-      return eParticleModuleType::SIZE;
-   }
 }
+
+eParticleModuleType ISizeModule::GetParticleModuleType() const
+{
+    return eParticleModuleType::SIZE;
+}
+} // namespace EngineCore

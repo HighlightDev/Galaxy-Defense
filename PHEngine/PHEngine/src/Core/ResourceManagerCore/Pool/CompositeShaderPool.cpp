@@ -1,27 +1,25 @@
 #include "CompositeShaderPool.h"
 
-namespace Resources
+namespace Resources {
+std::string CompositeShaderPool::ToString() const
 {
-    std::string CompositeShaderPool::ToString() const
-    {
-        return "CompositeShaderPool";
-    }
+    return "CompositeShaderPool";
+}
 
-    CompositeShaderPool *CompositeShaderPool::GetInstance()
-    {
-        static CompositeShaderPool instance;
-        return &instance;
-    }
+CompositeShaderPool* CompositeShaderPool::GetInstance()
+{
+    static CompositeShaderPool instance;
+    return &instance;
+}
 
 #if DEBUG
 
-    void CompositeShaderPool::RecompileShaders()
-    {
-        for (const auto &shader_pair : resourceMap)
-        {
-            shader_pair.second->RecompileShader();
-        }
+void CompositeShaderPool::RecompileShaders()
+{
+    for (const auto& shader_pair : resourceMap) {
+        shader_pair.second->RecompileShader();
     }
-    
-#endif
 }
+
+#endif
+} // namespace Resources

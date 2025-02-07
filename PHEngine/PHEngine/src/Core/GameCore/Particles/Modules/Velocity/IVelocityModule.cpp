@@ -1,13 +1,12 @@
 #include "IVelocityModule.h"
 
-namespace EngineCore
+namespace EngineCore {
+IVelocityModule::IVelocityModule()
 {
-   IVelocityModule::IVelocityModule()
-    {
-    }
-
-   eParticleModuleType IVelocityModule::GetParticleModuleType() const 
-   {
-      return eParticleModuleType::VELOCITY;
-   }
 }
+
+eParticleModuleType IVelocityModule::GetParticleModuleType() const
+{
+    return eParticleModuleType::VELOCITY;
+}
+} // namespace EngineCore

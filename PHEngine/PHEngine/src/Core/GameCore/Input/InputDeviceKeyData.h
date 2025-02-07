@@ -4,25 +4,24 @@
 
 namespace EngineCore {
 
-   template <typename KeysType>
-   struct InputDeviceKeyData
-   {
-      KeysType Key;
-      KeyState State;
+template<typename KeysType>
+struct InputDeviceKeyData {
+    KeysType Key;
+    KeyState State;
 
-      InputDeviceKeyData(KeysType key, KeyState state)
-         : Key(key)
-         , State(state)
-      {
-      }
+    InputDeviceKeyData(KeysType key, KeyState state)
+        : Key(key)
+        , State(state)
+    {
+    }
 
-      InputDeviceKeyData()
-         : Key(eKeyboardKeys::None)
-         , State(KeyState::RELEASED)
-      {
-      }
-   };
+    InputDeviceKeyData()
+        : Key(eKeyboardKeys::None)
+        , State(KeyState::RELEASED)
+    {
+    }
+};
 
-   using KeyboardKeysData = InputDeviceKeyData<eKeyboardKeys>;
-   using MouseKeysData = InputDeviceKeyData<eMouseKeys>;
-}
+using KeyboardKeysData = InputDeviceKeyData<eKeyboardKeys>;
+using MouseKeysData = InputDeviceKeyData<eMouseKeys>;
+} // namespace EngineCore

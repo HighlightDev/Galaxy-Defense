@@ -6,50 +6,47 @@
 
 namespace Graphics {
 
-   struct Vec3MaterialProperty
-      : public MaterialProperty
-   {
-      using MaterialPropertyValueType = glm::vec3;
+struct Vec3MaterialProperty : public MaterialProperty {
+    using MaterialPropertyValueType = glm::vec3;
 
-   private:
+private:
+    MaterialPropertyValueType m_value;
 
-      MaterialPropertyValueType m_value;
+public:
+    Vec3MaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
+        : MaterialProperty(propertyName)
+        , m_value(propertyValue)
+    {
+    }
 
-   public:
+    Vec3MaterialProperty(const std::string& propertyName)
+        : MaterialProperty(propertyName)
+        , m_value()
+    {
+    }
 
-      Vec3MaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
-         : MaterialProperty(propertyName)
-         , m_value(propertyValue)
-      {
-      }
+    eMaterialPropertyType GetPropertyType() const override
+    {
+        return MaterialProperty::eMaterialPropertyType::VEC3_PROPERTY;
+    }
 
-      Vec3MaterialProperty(const std::string& propertyName)
-         : MaterialProperty(propertyName)
-         , m_value()
-      {
-      }
+    void SetValueToUniformArray(const UniformArray& uniformArray) const override
+    {
+    }
 
-      eMaterialPropertyType GetPropertyType() const override
-      {
-         return MaterialProperty::eMaterialPropertyType::VEC3_PROPERTY;
-      }
+    void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+    {
+        uniform.LoadUniform(m_value);
+    }
 
-      void SetValueToUniformArray(const UniformArray& uniformArray) const override
-      {
-      }
+    inline void SetValue(const MaterialPropertyValueType& value)
+    {
+        m_value = value;
+    }
 
-      void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
-      {
-         uniform.LoadUniform(m_value);
-      }
-
-      inline void SetValue(const MaterialPropertyValueType& value) {
-         m_value = value;
-      }
-
-      inline const MaterialPropertyValueType& GetValue() const {
-         return m_value;
-      }
-
-   };
-}
+    inline const MaterialPropertyValueType& GetValue() const
+    {
+        return m_value;
+    }
+};
+} // namespace Graphics

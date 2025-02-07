@@ -1,94 +1,92 @@
 #pragma once
-#include <string>
-#include <memory>
-#include <cstddef>
-#include <unordered_map>
-
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
-namespace IO
-{
-	class FolderManager
-	{
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
-	private:
-		std::unordered_map<std::string /*file name*/, std::string /*relative path to file from exe file*/> mFilesPathMap;
+namespace IO {
+class FolderManager {
 
-		std::string m_pathToExe;
+private:
+    std::unordered_map<std::string /*file name*/, std::string /*relative path to file from exe file*/> mFilesPathMap;
 
-		static std::shared_ptr<FolderManager> m_instance;
+    std::string m_pathToExe;
 
-	public:
-		FolderManager();
+    static std::shared_ptr<FolderManager> m_instance;
 
-		~FolderManager();
+public:
+    FolderManager();
 
-		static std::shared_ptr<FolderManager> GetInstance()
-		{
-			if (m_instance == nullptr)
-				m_instance = std::make_shared<FolderManager>();
+    ~FolderManager();
 
-			return m_instance;
-		}
+    static std::shared_ptr<FolderManager> GetInstance()
+    {
+        if (m_instance == nullptr)
+            m_instance = std::make_shared<FolderManager>();
 
-		void BuildSystemPathToFolders();
-		
-		std::string GetRelativePathToFile(const std::string& fileName) const;
-		std::string GetPathToExeFile() const;
-		std::string GetResPath() const;
-		std::string GetShortResPath() const;
+        return m_instance;
+    }
 
-		std::string GetModelPath() const;
-		std::string GetShadersPath() const;
-		std::string GetShaderCommonPath() const;
-		std::string GetCollisionPath() const;
-		std::string GetTexturesPath() const;
-		std::string GetConfigPath() const;
-		std::string GetFontsPath() const;
-		std::string GetAudioPath() const;
+    void BuildSystemPathToFolders();
 
-		std::string GetMaterialTexturesPath() const;
-		std::string GetGrassTexturePath() const;
-		std::string GetLandscapeTexturePath() const;
-		std::string GetCubemapTexturePath() const;
-		std::string GetNormalMapPath() const;
-		std::string GetSpecularMapPath() const;
-		std::string GetAlbedoTexturePath() const;
-		std::string GetDistortionTexturePath() const;
-		std::string GetPostprocessTexturePath() const;
-		std::string GetEditorTexturePath() const;
-		std::string GetMaskTexturePath() const;
-		std::string GetUiTexturePath() const;
-		std::string GetScriptPath() const;
-		std::string GetMaterialPath() const;
-		std::string GetTweenerPath() const;
+    std::string GetRelativePathToFile(const std::string& fileName) const;
+    std::string GetPathToExeFile() const;
+    std::string GetResPath() const;
+    std::string GetShortResPath() const;
 
-		std::string GetShortModelPath() const;
-		std::string GetShortShadersPath() const;
-		std::string GetShortShaderCommonPath() const;
-		std::string GetShortCollisionPath() const;
-		std::string GetShortTexturesPath() const;
-		std::string GetShortFontsPath() const;
-		std::string GetShortAudioPath() const;
-		std::string GetShortIniPath() const;
-		std::string GetShortMaterialTexturesPath() const;
-		std::string GetShortGrassTexturePath() const;
-		std::string GetShortLandscapeTexturePath() const;
-		std::string GetShortCubemapTexturePath() const;
-		std::string GetShortNormalMapPath() const;
-		std::string GetShortSpecularMapPath() const;
-		std::string GetShortAlbedoTexturePath() const;
-		std::string GetShortDistortionTexturePath() const;
-		std::string GetShortPostprocessTexturePath() const;
-		std::string GetShortEditorTexturePath() const;
-		std::string GetShortMaskTexturePath() const;
-		std::string GetShortUiTexturePath() const;
-		std::string GetShortScriptPath() const;
-		std::string GetShortMaterialPath() const;
-		std::string GetShortTweenerPath() const;
+    std::string GetModelPath() const;
+    std::string GetShadersPath() const;
+    std::string GetShaderCommonPath() const;
+    std::string GetCollisionPath() const;
+    std::string GetTexturesPath() const;
+    std::string GetConfigPath() const;
+    std::string GetFontsPath() const;
+    std::string GetAudioPath() const;
 
-		void CreateFilePathMap(const std::string &absolutePathToDirectory, const std::string &relativePathToDirectory);
-		std::string GetDirectoryRelativePathByFileName(const std::string &fileName) const;
-	};
-}
+    std::string GetMaterialTexturesPath() const;
+    std::string GetGrassTexturePath() const;
+    std::string GetLandscapeTexturePath() const;
+    std::string GetCubemapTexturePath() const;
+    std::string GetNormalMapPath() const;
+    std::string GetSpecularMapPath() const;
+    std::string GetAlbedoTexturePath() const;
+    std::string GetDistortionTexturePath() const;
+    std::string GetPostprocessTexturePath() const;
+    std::string GetEditorTexturePath() const;
+    std::string GetMaskTexturePath() const;
+    std::string GetUiTexturePath() const;
+    std::string GetScriptPath() const;
+    std::string GetMaterialPath() const;
+    std::string GetTweenerPath() const;
+
+    std::string GetShortModelPath() const;
+    std::string GetShortShadersPath() const;
+    std::string GetShortShaderCommonPath() const;
+    std::string GetShortCollisionPath() const;
+    std::string GetShortTexturesPath() const;
+    std::string GetShortFontsPath() const;
+    std::string GetShortAudioPath() const;
+    std::string GetShortIniPath() const;
+    std::string GetShortMaterialTexturesPath() const;
+    std::string GetShortGrassTexturePath() const;
+    std::string GetShortLandscapeTexturePath() const;
+    std::string GetShortCubemapTexturePath() const;
+    std::string GetShortNormalMapPath() const;
+    std::string GetShortSpecularMapPath() const;
+    std::string GetShortAlbedoTexturePath() const;
+    std::string GetShortDistortionTexturePath() const;
+    std::string GetShortPostprocessTexturePath() const;
+    std::string GetShortEditorTexturePath() const;
+    std::string GetShortMaskTexturePath() const;
+    std::string GetShortUiTexturePath() const;
+    std::string GetShortScriptPath() const;
+    std::string GetShortMaterialPath() const;
+    std::string GetShortTweenerPath() const;
+
+    void CreateFilePathMap(const std::string& absolutePathToDirectory, const std::string& relativePathToDirectory);
+    std::string GetDirectoryRelativePathByFileName(const std::string& fileName) const;
+};
+} // namespace IO

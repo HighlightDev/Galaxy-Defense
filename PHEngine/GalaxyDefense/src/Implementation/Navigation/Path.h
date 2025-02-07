@@ -4,21 +4,19 @@
 
 #include <vector>
 
-namespace Game
-{
-    class Path
-    {
-        std::vector<PathSegment> mPathSegments;
+namespace Game {
+class Path {
+    std::vector<PathSegment> mPathSegments;
 
-        mutable std::vector<glm::vec3> mCachedRoutePoints;
+    mutable std::vector<glm::vec3> mCachedRoutePoints;
 
-    public:
-        void AppendPathSegmentToTheEnd(const PathSegment &pathSegment);
+public:
+    void AppendPathSegmentToTheEnd(const PathSegment& pathSegment);
 
-        const std::vector<PathSegment> &GetPathSegments() const;
+    const std::vector<PathSegment>& GetPathSegments() const;
 
-        const std::vector<glm::vec3> &GetRoutePoints() const;
+    const std::vector<glm::vec3>& GetRoutePoints() const;
 
-        glm::vec3 GetRouteFirstPoint() const;
-    };
-}
+    glm::vec3 GetRouteFirstPoint() const;
+};
+} // namespace Game

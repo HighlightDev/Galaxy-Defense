@@ -2,41 +2,41 @@
 
 #include "IModifiable.h"
 
-#include <memory>
 #include <glm/vec3.hpp>
 
-namespace Game
-{
-    class SpaceshipActor;
-    class MissileActor;
+#include <memory>
 
-    class GravityModifier : public IModifiable
-    {
-        std::weak_ptr<SpaceshipActor> mOwnerWp;
+namespace Game {
+class SpaceshipActor;
+class MissileActor;
 
-        std::weak_ptr<MissileActor> mMissileWp;
+class GravityModifier : public IModifiable {
+    std::weak_ptr<SpaceshipActor> mOwnerWp;
 
-        glm::vec3 mGravityCenterPosition;
+    std::weak_ptr<MissileActor> mMissileWp;
 
-        float mGravityPower;
+    glm::vec3 mGravityCenterPosition;
 
-    public:
-        GravityModifier(const std::weak_ptr<SpaceshipActor> &owner,
-                        const std::weak_ptr<MissileActor> &missile,
-                        const glm::vec3 &gravityCenterPosition);
+    float mGravityPower;
 
-        eModifierType GetModifierType() const override;
+public:
+    GravityModifier(
+        const std::weak_ptr<SpaceshipActor>& owner,
+        const std::weak_ptr<MissileActor>& missile,
+        const glm::vec3& gravityCenterPosition);
 
-        int32_t CreatorObjectId() const override;
+    eModifierType GetModifierType() const override;
 
-        void Tick(const float deltaTime) override;
+    int32_t CreatorObjectId() const override;
 
-        void UnpausableTick(const float deltaTime) override{};
+    void Tick(const float deltaTime) override;
 
-        bool IsExpired() const override;
+    void UnpausableTick(const float deltaTime) override { };
 
-        void OnPreRemoved() override;
+    bool IsExpired() const override;
 
-        void SetGravityPower(const float power);
-    };
-}
+    void OnPreRemoved() override;
+
+    void SetGravityPower(const float power);
+};
+} // namespace Game

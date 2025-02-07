@@ -1,51 +1,49 @@
 #pragma once
 
+#include "Implementation/MissileType.h"
+
 #include <atomic>
 #include <unordered_map>
 #include <vector>
 
-#include "Implementation/MissileType.h"
+namespace Game {
+class PlayerDataProvider {
+    std::unordered_map<eMissileType, size_t> mAvailableMissiles;
 
-namespace Game
-{
-    class PlayerDataProvider
-    {
-        std::unordered_map<eMissileType, size_t> mAvailableMissiles;
+    std::atomic<eMissileType> mSelectedMissileType{eMissileType::BOMB};
 
-        std::atomic<eMissileType> mSelectedMissileType{eMissileType::BOMB};
+    int32_t mDestroyedEnemySpaceshipsCount{0};
 
-        int32_t mDestroyedEnemySpaceshipsCount{0};
+    int32_t mSelectedTowerId{-1};
 
-        int32_t mSelectedTowerId{-1};
+private:
+    PlayerDataProvider() = default;
 
-    private:
-        PlayerDataProvider() = default;
+public:
+    static PlayerDataProvider* GetInstance();
 
-    public:
-        static PlayerDataProvider *GetInstance();
+    eMissileType GetSelectedMissileType() const;
 
-        eMissileType GetSelectedMissileType() const;
+    void SetSelectedMissileType(const eMissileType missileType);
 
-        void SetSelectedMissileType(const eMissileType missileType);
+    void SetMissilesCountForType(const eMissileType missileType, const size_t missilesCount);
 
-        void SetMissilesCountForType(const eMissileType missileType, const size_t missilesCount);
+    void SetMissilesCount(const std::unordered_map<eMissileType, size_t>& missilesMap);
 
-        void SetMissilesCount(const std::unordered_map<eMissileType, size_t> &missilesMap);
+    size_t GetMissilesCount(const eMissileType missileType) const;
 
-        size_t GetMissilesCount(const eMissileType missileType) const;
+    bool IsMissileAvailable(const eMissileType missileType) const;
 
-        bool IsMissileAvailable(const eMissileType missileType) const;
+    void SetAvailableMissileTypes(const std::unordered_map<eMissileType, size_t>& availableMissileTypes);
 
-        void SetAvailableMissileTypes(const std::unordered_map<eMissileType, size_t> &availableMissileTypes);
+    std::vector<eMissileType> GetAvailableMissileTypes() const;
 
-        std::vector<eMissileType> GetAvailableMissileTypes() const;
+    void SetDestroyedEnemySpaceshipsCount(const int32_t enemySpaceshipsCount);
 
-        void SetDestroyedEnemySpaceshipsCount(const int32_t enemySpaceshipsCount);
+    int32_t GetDestroyedEnemySpaceshipsCount() const;
 
-        int32_t GetDestroyedEnemySpaceshipsCount() const;
+    void SetSelectedTowerId(const int32_t towerId);
 
-        void SetSelectedTowerId(const int32_t towerId);
-
-        int32_t GetSelectedTowerId() const;
-    };
-}
+    int32_t GetSelectedTowerId() const;
+};
+} // namespace Game

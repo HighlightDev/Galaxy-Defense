@@ -35,10 +35,9 @@ local ImageAndLabelTile = require("Ui/Widgets/ImageAndLabelTile")
 local LabelButton = require("Ui/Widgets/LabelButton")
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EventsHelper = require("Ui/Core/eventsHelper")
+local Styles = require("Ui/Common/styles")
 
 LevelFailedOverlay = {
-    buttonColor = 0x403649,
-    hoveredButtonColor = 0x201b24,
     buttonRadius = 6
 }
 
@@ -76,9 +75,9 @@ function LevelFailedOverlay:new(host)
     end)
     restartButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            restartButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
+            restartButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
-            restartButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
+            restartButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
@@ -90,9 +89,9 @@ function LevelFailedOverlay:new(host)
     end)
     exitToMainMenuButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            exitToMainMenuButton:setButtonColorHexValue(SettingsOverlay.hoveredButtonColor)
+            exitToMainMenuButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
-            exitToMainMenuButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
+            exitToMainMenuButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
@@ -108,7 +107,7 @@ function LevelFailedOverlay:new(host)
             levelFailedOverlayCanvas.widgetName, menuVerticalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             levelFailedOverlayCanvas.widgetName, menuVerticalMargin)
-        backgroundRect:setColorHexValue(0x6C5B7B)
+        backgroundRect:setColorHexValue(Styles.Colors.panelColor)
         backgroundRect:setZOrder(1)
         backgroundRect:setBorderRadius(SettingsOverlay.buttonRadius)
 
@@ -134,9 +133,9 @@ function LevelFailedOverlay:new(host)
             backgroundRect.widgetName)
         restartButton:setWidth(buttonWidth)
         restartButton:setHeight(100)
-        restartButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
+        restartButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         restartButton:setZOrder(2)
-        restartButton:setButtonBorderRadius(SettingsOverlay.buttonRadius)
+        restartButton:setButtonBorderRadius(LevelFailedOverlay.buttonRadius)
         restartButton:setLabelText("Restart Level")
         restartButton:setLabelTextColorHexValue(0xFFFFFF)
         restartButton:setLabelFontSize(10.0)
@@ -151,9 +150,9 @@ function LevelFailedOverlay:new(host)
             UiItemBase.UiAnchorType.HORIZONTAL_CENTER, backgroundRect.widgetName)
         exitToMainMenuButton:setWidth(buttonWidth)
         exitToMainMenuButton:setHeight(100)
-        exitToMainMenuButton:setButtonColorHexValue(SettingsOverlay.buttonColor)
+        exitToMainMenuButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         exitToMainMenuButton:setZOrder(2)
-        exitToMainMenuButton:setButtonBorderRadius(SettingsOverlay.buttonRadius)
+        exitToMainMenuButton:setButtonBorderRadius(LevelFailedOverlay.buttonRadius)
         exitToMainMenuButton:setLabelText("Exit to main menu")
         exitToMainMenuButton:setLabelTextColorHexValue(0xFFFFFF)
         exitToMainMenuButton:setLabelFontSize(10.0)

@@ -1,78 +1,79 @@
 #pragma once
 
+#include "Core/GameCore/Event/MouseButtonDownEvent.h"
 #include "Core/GameCore/Event/MouseMovedEvent.h"
 #include "Core/GameCore/Event/MouseScrollEvent.h"
-#include "Core/GameCore/Event/MouseButtonDownEvent.h"
 #include "Core/GameCore/Input/InputDeviceKeyData.h"
 
-#include <vector>
 #include <glm/vec4.hpp>
+
 #include <memory>
+#include <vector>
 
 using namespace Event;
 
-namespace EngineCore
-{
-   class UiMouseBindings
-       : public MouseMovedGameThreadEvent,
-         public MouseScrollGameThreadEvent,
-         public MouseButtonDownGameThreadEvent,
-         public std::enable_shared_from_this<UiMouseBindings>
-   {
-      glm::ivec4 mLastMouseMoveEvent;
+namespace EngineCore {
+class UiMouseBindings : public MouseMovedGameThreadEvent,
+                        public MouseScrollGameThreadEvent,
+                        public MouseButtonDownGameThreadEvent,
+                        public std::enable_shared_from_this<UiMouseBindings> {
+    glm::ivec4 mLastMouseMoveEvent;
 
-      bool bMouseMoveEventDirty;
+    bool bMouseMoveEventDirty;
 
-      eMouseScrollDirection mLastMouseScrollDirectionEvent;
+    eMouseScrollDirection mLastMouseScrollDirectionEvent;
 
-      bool bMouseScrollEventDirty;
+    bool bMouseScrollEventDirty;
 
-      std::vector<MouseKeysData> mMouseKeysMaskVec;
+    std::vector<MouseKeysData> mMouseKeysMaskVec;
 
-      size_t mPressedMouseKeysCount;
+    size_t mPressedMouseKeysCount;
 
-      bool bReceiveMouseEvents{true};
+    bool bReceiveMouseEvents{true};
 
-   public:
-      UiMouseBindings();
+public:
+    UiMouseBindings();
 
-      virtual ~UiMouseBindings();
+    virtual ~UiMouseBindings();
 
-      void Initialize();
+    void Initialize();
 
-      void ProcessEvent(const MouseMovedGameThreadEvent *sender, const typename MouseMovedGameThreadEvent::EventData_t &data) override;
+    void
+    ProcessEvent(const MouseMovedGameThreadEvent* sender, const typename MouseMovedGameThreadEvent::EventData_t& data) override;
 
-      void ProcessEvent(const MouseScrollGameThreadEvent *sender, const typename MouseScrollGameThreadEvent::EventData_t &data) override;
+    void
+    ProcessEvent(const MouseScrollGameThreadEvent* sender, const typename MouseScrollGameThreadEvent::EventData_t& data) override;
 
-      void ProcessEvent(const MouseButtonDownGameThreadEvent *sender, const typename MouseButtonDownGameThreadEvent::EventData_t &data) override;
+    void ProcessEvent(
+        const MouseButtonDownGameThreadEvent* sender, const typename MouseButtonDownGameThreadEvent::EventData_t& data) override;
 
-      bool IsMouseMoveEventDirty() const;
+    bool IsMouseMoveEventDirty() const;
 
-      bool IsMouseScrollEventDirty() const;
+    bool IsMouseScrollEventDirty() const;
 
-      eMouseScrollDirection FlushMouseScrollEvent();
+    eMouseScrollDirection FlushMouseScrollEvent();
 
-      glm::ivec4 FlushMouseMoveEvent();
+    glm::ivec4 FlushMouseMoveEvent();
 
-      glm::ivec4 GetLastMouseCursorPosition() const;
+    glm::ivec4 GetLastMouseCursorPosition() const;
 
-      void ClearMouseScrollCache();
+    void ClearMouseScrollCache();
 
-      void ClearMouseMoveCache();
+    void ClearMouseMoveCache();
 
-      KeyState GetKeyState(const eMouseKeys mouseButtonKey) const;
+    KeyState GetKeyState(const eMouseKeys mouseButtonKey) const;
 
-      void SetIsReceivingMouseEvents(const bool receiveMouseEvents);
+    void SetIsReceivingMouseEvents(const bool receiveMouseEvents);
 
-   protected:
-      void PushMouseMoveEvent(const glm::ivec4 &moveEvent);
+protected:
+    void PushMouseMoveEvent(const glm::ivec4& moveEvent);
 
-      void PushMouseScrollEvent(const eMouseScrollDirection mouseScrollEvent);
+    void PushMouseScrollEvent(const eMouseScrollDirection mouseScrollEvent);
 
-   private:
-      void UnsubscribeFromEvents();
+private:
+    void UnsubscribeFromEvents();
 
-      void SubscribeOnEvents();
-   };
-
+    void SubscribeOnEvents();
 };
+
+}; // namespace EngineCore

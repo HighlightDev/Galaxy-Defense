@@ -2,17 +2,15 @@
 
 #include <memory>
 
-namespace EngineCore
-{
-   class State;
+namespace EngineCore {
+class State;
 
-   struct StateTransition
-   {
-      std::weak_ptr<State> StateFrom;
-      std::weak_ptr<State> StateDestination;
-      
-      float TransitionDuration;
+struct StateTransition {
+    std::weak_ptr<State> StateFrom;
+    std::weak_ptr<State> StateDestination;
 
-      StateTransition(std::shared_ptr<State> stateFrom, std::shared_ptr<State>stateDestination, float transitionDuration);
-   };
-}
+    float TransitionDuration;
+
+    StateTransition(std::shared_ptr<State> stateFrom, std::shared_ptr<State> stateDestination, float transitionDuration);
+};
+} // namespace EngineCore

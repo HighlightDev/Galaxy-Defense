@@ -1,73 +1,71 @@
 #include "LightSceneProxy.h"
 
-namespace Graphics
+namespace Graphics {
+namespace Proxy {
+
+LightSceneProxy::LightSceneProxy(
+    const bool isEnabled,
+    const bool isVisible,
+    const glm::mat4& relativeMatrix,
+    const glm::vec3& ambientColor,
+    const glm::vec3& diffuseColor,
+    const glm::vec3& specularColor,
+    const std::shared_ptr<ProjectedShadowInfo>& shadowInfo)
+    : SceneProxyBase(isEnabled)
+    , m_relativeMatrix(relativeMatrix)
+    , m_shadowInfo(shadowInfo)
+    , mIsVisible(isVisible)
+    , AmbientColor(ambientColor)
+    , DiffuseColor(diffuseColor)
+    , SpecularColor(specularColor)
 {
-   namespace Proxy
-   {
-
-      LightSceneProxy::LightSceneProxy(const bool isEnabled,
-                                       const bool isVisible,
-                                       const glm::mat4 &relativeMatrix,
-                                       const glm::vec3 &ambientColor,
-                                       const glm::vec3 &diffuseColor,
-                                       const glm::vec3 &specularColor,
-                                       const std::shared_ptr<ProjectedShadowInfo> &shadowInfo)
-          : SceneProxyBase(isEnabled),
-            m_relativeMatrix(relativeMatrix),
-            m_shadowInfo(shadowInfo),
-            mIsVisible(isVisible),
-            AmbientColor(ambientColor),
-            DiffuseColor(diffuseColor),
-            SpecularColor(specularColor)
-      {
-      }
-
-      LightSceneProxy::~LightSceneProxy()
-      {
-      }
-
-      void LightSceneProxy::CleanUp()
-      {
-         if (m_shadowInfo)
-         {
-            m_shadowInfo->CleanUp();
-         }
-      }
-
-      void LightSceneProxy::PostInitialize()
-      {
-      }
-
-      void LightSceneProxy::SetTransformationMatrix(const glm::mat4 &relativeMatrix)
-      {
-         m_relativeMatrix = relativeMatrix;
-         SetIsTransformationDirty(true);
-      }
-
-      bool LightSceneProxy::IsTransformationDirty() const
-      {
-         return bTransformationDirty;
-      }
-
-      void LightSceneProxy::SetIsTransformationDirty(bool value)
-      {
-         bTransformationDirty = value;
-      }
-
-      void LightSceneProxy::SetIsVisible(const bool visible)
-      {
-         mIsVisible = visible;
-      }
-
-      bool LightSceneProxy::IsVisible() const
-      {
-         return mIsVisible;
-      }
-
-      std::shared_ptr<ProjectedShadowInfo> LightSceneProxy::GetShadowInfo()
-      {
-         return m_shadowInfo;
-      }
-
-   }
 }
+
+LightSceneProxy::~LightSceneProxy()
+{
+}
+
+void LightSceneProxy::CleanUp()
+{
+    if (m_shadowInfo) {
+        m_shadowInfo->CleanUp();
+    }
+}
+
+void LightSceneProxy::PostInitialize()
+{
+}
+
+void LightSceneProxy::SetTransformationMatrix(const glm::mat4& relativeMatrix)
+{
+    m_relativeMatrix = relativeMatrix;
+    SetIsTransformationDirty(true);
+}
+
+bool LightSceneProxy::IsTransformationDirty() const
+{
+    return bTransformationDirty;
+}
+
+void LightSceneProxy::SetIsTransformationDirty(bool value)
+{
+    bTransformationDirty = value;
+}
+
+void LightSceneProxy::SetIsVisible(const bool visible)
+{
+    mIsVisible = visible;
+}
+
+bool LightSceneProxy::IsVisible() const
+{
+    return mIsVisible;
+}
+
+std::shared_ptr<ProjectedShadowInfo> LightSceneProxy::GetShadowInfo()
+{
+    return m_shadowInfo;
+}
+
+} // namespace Proxy
+} // namespace Graphics

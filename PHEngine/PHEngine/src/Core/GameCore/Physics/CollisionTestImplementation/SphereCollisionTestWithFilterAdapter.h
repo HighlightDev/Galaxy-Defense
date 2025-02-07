@@ -2,28 +2,28 @@
 
 #include "BulletSphereCollisionTestWithFilter.h"
 
-#include <vector>
-#include <memory>
 #include <glm/vec3.hpp>
 
-namespace EnginePhysics
-{
-    class PhysicsDescriptor;
-    class PhysicsWorld;
-    class PhysicsComponent;
+#include <memory>
+#include <vector>
 
-    class SphereCollisionTestWithFilterAdapter : public BulletSphereCollisionTestWithFilter
-    {
-    public:
-        SphereCollisionTestWithFilterAdapter(const float sphereRadius);
+namespace EnginePhysics {
+class PhysicsDescriptor;
+class PhysicsWorld;
+class PhysicsComponent;
 
-        explicit SphereCollisionTestWithFilterAdapter(const float sphereRadius, std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
+class SphereCollisionTestWithFilterAdapter : public BulletSphereCollisionTestWithFilter {
+public:
+    SphereCollisionTestWithFilterAdapter(const float sphereRadius);
 
-        void SphereCollisionTest(const std::shared_ptr<PhysicsWorld> &physWorld, const glm::vec3 &translation);
+    explicit SphereCollisionTestWithFilterAdapter(
+        const float sphereRadius, std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
 
-        std::vector<const PhysicsDescriptor *> GetCollisionHitPhysicsDescriptors() const;
+    void SphereCollisionTest(const std::shared_ptr<PhysicsWorld>& physWorld, const glm::vec3& translation);
 
-    private:
-        void Initialize(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
-    };
-}
+    std::vector<const PhysicsDescriptor*> GetCollisionHitPhysicsDescriptors() const;
+
+private:
+    void Initialize(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
+};
+} // namespace EnginePhysics

@@ -1,79 +1,90 @@
 #pragma once
-#include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
 #include "Core/GraphicsCore/OpenGL/Framebuffer/FramebufferBundle.h"
-#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GraphicsCore/OpenGL/Framebuffer/FramebufferObject.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
 
 using namespace Graphics::Texture;
 using namespace Resources;
 
-namespace Graphics
-{
+namespace Graphics {
 
-   class DeferredShadingGBuffer
-       : public FramebufferBundle
-   {
-      using RenderTarget = std::shared_ptr<ITexture>;
+class DeferredShadingGBuffer : public FramebufferBundle {
+    using RenderTarget = std::shared_ptr<ITexture>;
 
-      ViewPortInfo mViewPortInfo;
+    ViewPortInfo mViewPortInfo;
 
-      RenderTarget m_depthBuffer;
-      RenderTarget m_positionBuffer;
-      RenderTarget m_normalBuffer;
-      RenderTarget m_albedoBuffer;
-      RenderTarget m_metallicRoughnessBuffer;
-      RenderTarget m_emissionBuffer;
+    RenderTarget m_depthBuffer;
+    RenderTarget m_positionBuffer;
+    RenderTarget m_normalBuffer;
+    RenderTarget m_albedoBuffer;
+    RenderTarget m_metallicRoughnessBuffer;
+    RenderTarget m_emissionBuffer;
 
-      std::shared_ptr<FramebufferObject> mFramebuffer;
+    std::shared_ptr<FramebufferObject> mFramebuffer;
 
-   public:
-      // Buffer should be recreated when window size was changed
-      DeferredShadingGBuffer(const ViewPortInfo &viewPortInfo);
+public:
+    // Buffer should be recreated when window size was changed
+    DeferredShadingGBuffer(const ViewPortInfo& viewPortInfo);
 
-      ~DeferredShadingGBuffer() override;
+    ~DeferredShadingGBuffer() override;
 
-      void SetTextures() override;
+    void SetTextures() override;
 
-      void SetFramebuffers() override;
+    void SetFramebuffers() override;
 
-      void SetRenderbuffers() override;
+    void SetRenderbuffers() override;
 
-      void CleanUp() override;
+    void CleanUp() override;
 
-      void BindDeferredGBuffer();
+    void BindDeferredGBuffer();
 
-      void UnbindDeferredGBuffer();
+    void UnbindDeferredGBuffer();
 
-      void BindDepthTexture(int32_t slot);
+    void BindDepthTexture(int32_t slot);
 
-      void BindPositionTexture(int32_t slot);
+    void BindPositionTexture(int32_t slot);
 
-      void BindNormalTexture(int32_t slot);
+    void BindNormalTexture(int32_t slot);
 
-      void BindAlbedoTexture(int32_t slot);
+    void BindAlbedoTexture(int32_t slot);
 
-      void BindMetallicRoughnessTexture(int32_t slot);
+    void BindMetallicRoughnessTexture(int32_t slot);
 
-      void BindEmissionTexture(const int32_t slot);
+    void BindEmissionTexture(const int32_t slot);
 
-      std::shared_ptr<IFramebufferObject> GetFramebufferObjectInstance() const;
+    std::shared_ptr<IFramebufferObject> GetFramebufferObjectInstance() const;
 
-      void CopyFramebufferDataToDefaultFramebuffer(const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
-                                                   const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY,
-                                                   const int32_t bufferBit) override;
+    void CopyFramebufferDataToDefaultFramebuffer(
+        const size_t srcX,
+        const size_t srcY,
+        const size_t srcResolutionX,
+        const size_t srcResolutionY,
+        const size_t dstX,
+        const size_t dstY,
+        const size_t dstResolutionX,
+        const size_t dstResolutionY,
+        const int32_t bufferBit) override;
 
-      void CopyFramebufferDataToDstFramebuffer(const std::shared_ptr<IFramebufferObject> &framebufferObjectInstance,
-                                               const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
-                                               const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY,
-                                               const int32_t bufferBit) override;
+    void CopyFramebufferDataToDstFramebuffer(
+        const std::shared_ptr<IFramebufferObject>& framebufferObjectInstance,
+        const size_t srcX,
+        const size_t srcY,
+        const size_t srcResolutionX,
+        const size_t srcResolutionY,
+        const size_t dstX,
+        const size_t dstY,
+        const size_t dstResolutionX,
+        const size_t dstResolutionY,
+        const int32_t bufferBit) override;
 
-      void ResizeRenderTargets(const ViewPortInfo& viewPortInfo);                                               
+    void ResizeRenderTargets(const ViewPortInfo& viewPortInfo);
 
-   private:
-      void DestroyGBuffer();
+private:
+    void DestroyGBuffer();
 
-      void TryToFreeRenderTargetTextures();
+    void TryToFreeRenderTargetTextures();
 
-      void AllocateTextures();
-   };
-}
+    void AllocateTextures();
+};
+} // namespace Graphics

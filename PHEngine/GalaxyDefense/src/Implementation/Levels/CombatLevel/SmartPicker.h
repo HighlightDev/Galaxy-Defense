@@ -1,32 +1,30 @@
 #pragma once
 
-#include <memory>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-namespace EngineCore
-{
-    class Scene;
-    class ACamera;
-}
+#include <memory>
 
-namespace Game
-{
-    class CombatActorsPoolHandler;
+namespace EngineCore {
+class Scene;
+class ACamera;
+} // namespace EngineCore
 
-    class SmartPicker
-    {
-        std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
+namespace Game {
+class CombatActorsPoolHandler;
 
-    public:
-        explicit SmartPicker(const std::shared_ptr<CombatActorsPoolHandler> &combatActorsPoolHandler);
+class SmartPicker {
+    std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
 
-        glm::vec3 CreateWorldSpaceRayFromScreenSpacePosition(const std::shared_ptr<::EngineCore::ACamera> &camera,
-                                                             const glm::ivec2 &screenSpacePosition) const;
+public:
+    explicit SmartPicker(const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler);
 
-        int32_t CastScreenSpaceRayIntoScene(
-            const std::shared_ptr<::EngineCore::Scene> &sceneSp,
-            const std::shared_ptr<::EngineCore::ACamera> &camera,
-            const glm::ivec2 &screenSpacePosition);
-    };
-}
+    glm::vec3 CreateWorldSpaceRayFromScreenSpacePosition(
+        const std::shared_ptr<::EngineCore::ACamera>& camera, const glm::ivec2& screenSpacePosition) const;
+
+    int32_t CastScreenSpaceRayIntoScene(
+        const std::shared_ptr<::EngineCore::Scene>& sceneSp,
+        const std::shared_ptr<::EngineCore::ACamera>& camera,
+        const glm::ivec2& screenSpacePosition);
+};
+} // namespace Game

@@ -1,39 +1,36 @@
 #pragma once
 
-#include <vector>
-#include <string>
-#include <memory>
-
 #include "Core/GameCore/ITickable.h"
 
-namespace EngineCore
-{
-    class InstancedStaticMeshComponent;
+#include <memory>
+#include <string>
+#include <vector>
 
-    class InstancedGeometryBatch
-        : public ITickable
-    {
-        std::vector<std::weak_ptr<InstancedStaticMeshComponent>> mInstancedStaticMeshComponents;
+namespace EngineCore {
+class InstancedStaticMeshComponent;
 
-        std::string mBatchKey;
+class InstancedGeometryBatch : public ITickable {
+    std::vector<std::weak_ptr<InstancedStaticMeshComponent>> mInstancedStaticMeshComponents;
 
-        std::vector<int32_t /*proxy id*/> mCachedValidInstances;
+    std::string mBatchKey;
 
-    public:
-        explicit InstancedGeometryBatch(const std::string &batchKey);
+    std::vector<int32_t /*proxy id*/> mCachedValidInstances;
 
-        void AddInstancedMeshComponent(const std::shared_ptr<InstancedStaticMeshComponent> &componentSp);
+public:
+    explicit InstancedGeometryBatch(const std::string& batchKey);
 
-        void Tick(const float deltaTime) override;
+    void AddInstancedMeshComponent(const std::shared_ptr<InstancedStaticMeshComponent>& componentSp);
 
-        void UnpausableTick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-        std::vector<int32_t> GetValidInstances() const;
+    void UnpausableTick(const float deltaTime) override;
 
-        std::string GetBatchKey() const;
+    std::vector<int32_t> GetValidInstances() const;
 
-        bool IsValidInstance(const int32_t proxyId) const;
+    std::string GetBatchKey() const;
 
-        int32_t GetRenderInstanceId(const int32_t proxyId) const;
-    };
-}
+    bool IsValidInstance(const int32_t proxyId) const;
+
+    int32_t GetRenderInstanceId(const int32_t proxyId) const;
+};
+} // namespace EngineCore

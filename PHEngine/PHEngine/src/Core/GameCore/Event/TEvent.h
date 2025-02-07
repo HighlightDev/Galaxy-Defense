@@ -1,106 +1,106 @@
 #pragma once
 
-#include <vector>
-#include <tuple>
+#include "Core/CommonCore/ThreadHelper.h"
+#include "Core/GameCore/LoggerExtension.h"
+#include "IEvent.h"
+#include "Policy/Policies.h"
+
 #include <algorithm>
 #include <memory>
 #include <mutex>
 #include <thread>
-
-#include "IEvent.h"
-#include "Policy/Policies.h"
-#include "Core/GameCore/LoggerExtension.h"
-#include "Core/CommonCore/ThreadHelper.h"
+#include <tuple>
+#include <vector>
 
 using namespace EngineCore;
 
-namespace Event
-{
-   template <typename DerivedEventType, eEventThreadType threadType, typename EventHandlePolicy>
-   class TEvent : public IEvent
-   {
-   public:
-      using EventHandlePolicy_t = EventHandlePolicy;
-      using Event_t = TEvent<DerivedEventType, threadType, EventHandlePolicy>;
-      using EventData_t = typename EventHandlePolicy_t::TupleData_t;
-      using DerivedEventType_t = DerivedEventType;
+namespace Event {
+template<typename DerivedEventType, eEventThreadType threadType, typename EventHandlePolicy>
+class TEvent : public IEvent {
+public:
+    using EventHandlePolicy_t = EventHandlePolicy;
+    using Event_t = TEvent<DerivedEventType, threadType, EventHandlePolicy>;
+    using EventData_t = typename EventHandlePolicy_t::TupleData_t;
+    using DerivedEventType_t = DerivedEventType;
 
-   private:
-      static constexpr eEventThreadType mThreadType = threadType;
+private:
+    static constexpr eEventThreadType mThreadType = threadType;
 
-      std::mutex mListenersMutex;
+    std::mutex mListenersMutex;
 
-      EventHandlePolicy mPolicy[2];
+    EventHandlePolicy mPolicy[2];
 
-      std::vector<std::weak_ptr<Event_t>> m_listeners;
+    std::vector<std::weak_ptr<Event_t>> m_listeners;
 
-   protected:
-      TEvent()
-          : IEvent()
-      {
-      }
+protected:
+    TEvent()
+        : IEvent()
+    {
+    }
 
-   public:
-      virtual ~TEvent()
-      {
-      }
+public:
+    virtual ~TEvent()
+    {
+    }
 
-      static Event_t *GetInstance()
-      {
-         static Event_t m_instance;
-         return &m_instance;
-      }
+    static Event_t* GetInstance()
+    {
+        static Event_t m_instance;
+        return &m_instance;
+    }
 
-      std::string ToString() const override
-      {
-         return "TEvent";
-      }
+    std::string ToString() const override
+    {
+        return "TEvent";
+    }
 
-      template <typename... DataTypesT>
-      void SendEvent(const eExecutionOrder order, DataTypesT &&...data)
-      {
-         mPolicy[(int32_t)order].EmplaceData(std::forward<DataTypesT>(data)...);
-      }
+    template<typename... DataTypesT>
+    void SendEvent(const eExecutionOrder order, DataTypesT&&... data)
+    {
+        mPolicy[(int32_t)order].EmplaceData(std::forward<DataTypesT>(data)...);
+    }
 
-      void ProcessCachedEvents(const eExecutionOrder currentOrder) override
-      {
-         while (mPolicy[currentOrder].HasData())
-         {
-            const EventData_t &packedData = mPolicy[currentOrder].PopData();
+    void ProcessCachedEvents(const eExecutionOrder currentOrder) override
+    {
+        while (mPolicy[currentOrder].HasData()) {
+            const EventData_t& packedData = mPolicy[currentOrder].PopData();
 
-            for (const auto &listenerWp : m_listeners)
-            {
-               if (const auto &listenerSp = listenerWp.lock())
-               {
-                  listenerSp->ProcessEvent(static_cast<DerivedEventType_t*>(this), packedData);
-               }
+            for (const auto& listenerWp : m_listeners) {
+                if (const auto& listenerSp = listenerWp.lock()) {
+                    listenerSp->ProcessEvent(static_cast<DerivedEventType_t*>(this), packedData);
+                }
             }
-         }
-      }
+        }
+    }
 
-      void AddListener(const std::shared_ptr<Event_t> &eventListener)
-      {
-         std::lock_guard<std::mutex> lockEmplace(mListenersMutex);
-         m_listeners.emplace_back(eventListener);
-      }
+    void AddListener(const std::shared_ptr<Event_t>& eventListener)
+    {
+        std::lock_guard<std::mutex> lockEmplace(mListenersMutex);
+        m_listeners.emplace_back(eventListener);
+    }
 
-      void RemoveListener(const size_t instanceId)
-      {
-         std::lock_guard<std::mutex> lockRemove(mListenersMutex);
-         if (m_listeners.size())
-         {
-            m_listeners.erase(std::remove_if(m_listeners.begin(), m_listeners.end(), [instanceId](const auto &listenerWp) {
-               if (const auto& listenerSp = listenerWp.lock())
-               {
-                  return listenerSp->GetInstanceId() == instanceId;
-               }
+    void RemoveListener(const size_t instanceId)
+    {
+        std::lock_guard<std::mutex> lockRemove(mListenersMutex);
+        if (m_listeners.size()) {
+            m_listeners.erase(
+                std::remove_if(
+                    m_listeners.begin(),
+                    m_listeners.end(),
+                    [instanceId](const auto& listenerWp) {
+                        if (const auto& listenerSp = listenerWp.lock()) {
+                            return listenerSp->GetInstanceId() == instanceId;
+                        }
 
-               return true;
-            }), m_listeners.end());
-         }
-      }
+                        return true;
+                    }),
+                m_listeners.end());
+        }
+    }
 
-   protected:
-      virtual void ProcessEvent(const DerivedEventType_t* senderPtr, const EventData_t &data) {}
-   };
-}
+protected:
+    virtual void ProcessEvent(const DerivedEventType_t* senderPtr, const EventData_t& data)
+    {
+    }
+};
+} // namespace Event

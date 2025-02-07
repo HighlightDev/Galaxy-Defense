@@ -1,14 +1,13 @@
 #include "MaterialInstanceDataProvider.h"
 
-namespace Resources
+namespace Resources {
+int32_t MaterialInstanceDataProvider::GetRenderInstanceId() const
 {
-    int32_t MaterialInstanceDataProvider::GetRenderInstanceId() const
-    {
-        return mRenderInstanceId;
-    }
-
-    bool MaterialInstanceDataProvider::IsInstanceActive() const
-    {
-        return mIsInstanceActive;
-    }
+    return mRenderInstanceId;
 }
+
+bool MaterialInstanceDataProvider::IsInstanceActive() const
+{
+    return mIsInstanceActive;
+}
+} // namespace Resources

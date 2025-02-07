@@ -2,44 +2,35 @@
 
 #include "Core/GameCore/BoundingBox3D.h"
 
-#include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
+
 #include <array>
 
 using namespace EngineCore;
 
-namespace Graphics
-{
-   enum class eFrustumPlaneName
-   {
-      Left,
-      Right,
-      Bottom,
-      Top,
-      Near,
-      Far
-   };
+namespace Graphics {
+enum class eFrustumPlaneName { Left, Right, Bottom, Top, Near, Far };
 
-   class CameraFrustum
-   {
-      std::array<glm::vec4, 6> mPlanes;
+class CameraFrustum {
+    std::array<glm::vec4, 6> mPlanes;
 
-   public:
-      explicit CameraFrustum();
+public:
+    explicit CameraFrustum();
 
-      ~CameraFrustum() = default;
+    ~CameraFrustum() = default;
 
-      void ConstructFromViewProjectionMatrix(const glm::mat4 &viewMatrix, const glm::mat4 &projectioMatrix);
+    void ConstructFromViewProjectionMatrix(const glm::mat4& viewMatrix, const glm::mat4& projectioMatrix);
 
-      bool IsIntersectionWithPointVec3(const glm::vec3 &point) const;
+    bool IsIntersectionWithPointVec3(const glm::vec3& point) const;
 
-      bool IsIntersectionWithBox(const glm::vec3 &origin, const glm::vec3 &extent) const;
+    bool IsIntersectionWithBox(const glm::vec3& origin, const glm::vec3& extent) const;
 
-      bool CollidesWithBoundingBox(const BoundingBox3D &boundingBox) const;
+    bool CollidesWithBoundingBox(const BoundingBox3D& boundingBox) const;
 
-      static CameraFrustum GetConstructedFromViewProjectionMatrices(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
+    static CameraFrustum GetConstructedFromViewProjectionMatrices(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 
-      glm::vec4 GetPlaneByName(const eFrustumPlaneName planeName) const;
-   };
+    glm::vec4 GetPlaneByName(const eFrustumPlaneName planeName) const;
+};
 
-}
+} // namespace Graphics

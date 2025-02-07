@@ -1,38 +1,33 @@
 #pragma once
 
-#include "MeshDataCollector.h"
-#include "Core/GraphicsCore/Mesh/MeshAttributes.h"
 #include "Core/GraphicsCore/Mesh/AnimatedMeshData.h"
+#include "Core/GraphicsCore/Mesh/MeshAttributes.h"
+#include "MeshDataCollector.h"
 
 #include <assimp/Importer.hpp>
 
 using namespace Graphics::Mesh;
 
-namespace MeshLoader
-{
-   namespace Assimp
-   {
-      class AssimpLoader
-      {
-         using importer_t = ::Assimp::Importer;
+namespace MeshLoader {
+namespace Assimp {
+class AssimpLoader {
+    using importer_t = ::Assimp::Importer;
 
-         AnimatedMeshData* m_animatedMeshData;
+    AnimatedMeshData* m_animatedMeshData;
 
-         MeshAttributes* m_meshAttributes;
+    MeshAttributes* m_meshAttributes;
 
-      public:
+public:
+    AssimpLoader(const std::string& modelFilePath);
 
-         AssimpLoader(const std::string& modelFilePath);
+    ~AssimpLoader();
 
-         ~AssimpLoader();
+    AnimatedMeshData* GetAnimatedMeshData() const;
 
-         AnimatedMeshData* GetAnimatedMeshData() const;
+    MeshAttributes* GetMeshAttributes() const;
 
-         MeshAttributes* GetMeshAttributes() const;
-
-      private:
-
-         void LoadMeshAndAnimations(const struct aiScene* scene);
-      };
-   }
-}
+private:
+    void LoadMeshAndAnimations(const struct aiScene* scene);
+};
+} // namespace Assimp
+} // namespace MeshLoader

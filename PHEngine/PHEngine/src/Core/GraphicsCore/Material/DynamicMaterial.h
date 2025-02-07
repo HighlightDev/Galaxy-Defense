@@ -1,54 +1,49 @@
 #pragma once
-#include "IMaterial.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicFloatMaterialProperty.h"
+#include "IMaterial.h"
 
-namespace EngineCore
-{
-   class Scene;
+namespace EngineCore {
+class Scene;
 }
 
-namespace Graphics
-{
-   class DynamicMaterial
-       : public IMaterial,
-         public ITickable
-   {
-      std::vector<std::shared_ptr<MaterialProperty>> mDirtyProperties;
+namespace Graphics {
+class DynamicMaterial : public IMaterial, public ITickable {
+    std::vector<std::shared_ptr<MaterialProperty>> mDirtyProperties;
 
-      bool mIsEnabled;
+    bool mIsEnabled;
 
-   protected:
-      std::vector<std::shared_ptr<DynamicMaterialProperty>> mDynamicProperties;
+protected:
+    std::vector<std::shared_ptr<DynamicMaterialProperty>> mDynamicProperties;
 
-      std::weak_ptr<EngineCore::Scene> mScene;
+    std::weak_ptr<EngineCore::Scene> mScene;
 
-   public:
-      DynamicMaterial(const std::string &materialName, const std::string &materialShaderName);
+public:
+    DynamicMaterial(const std::string& materialName, const std::string& materialShaderName);
 
-      ~DynamicMaterial() override;
+    ~DynamicMaterial() override;
 
-      void CleanUp() override;
+    void CleanUp() override;
 
-      eMaterialType GetMaterialType() const override;
+    eMaterialType GetMaterialType() const override;
 
-      void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-      void UnpausableTick(const float deltaTime) override {};
+    void UnpausableTick(const float deltaTime) override { };
 
-      void SetIsEnabled(const bool bIsEnabled) override;
+    void SetIsEnabled(const bool bIsEnabled) override;
 
-      bool IsEnabled() const override;
+    bool IsEnabled() const override;
 
-      void SetScene(std::weak_ptr<EngineCore::Scene> scene);
+    void SetScene(std::weak_ptr<EngineCore::Scene> scene);
 
-      void SyncDataWithRenderThread();
+    void SyncDataWithRenderThread();
 
-      void PushDynamicProperty(const std::shared_ptr<DynamicMaterialProperty>& dynamicProperty);
+    void PushDynamicProperty(const std::shared_ptr<DynamicMaterialProperty>& dynamicProperty);
 
-      std::shared_ptr<DynamicMaterialProperty> TryGetDynamicPropertyByName(const std::string &propertyName) const;
+    std::shared_ptr<DynamicMaterialProperty> TryGetDynamicPropertyByName(const std::string& propertyName) const;
 
-      std::shared_ptr<MaterialProperty> TryGetAnyMaterialPropertyByName(const std::string &propertyName) const;
-   };
+    std::shared_ptr<MaterialProperty> TryGetAnyMaterialPropertyByName(const std::string& propertyName) const;
+};
 
-}
+} // namespace Graphics

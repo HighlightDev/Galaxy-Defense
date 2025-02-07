@@ -1,43 +1,41 @@
 #pragma once
 
-#include <memory>
+#include "Core/GameCore/Components/Component.h"
+
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#include "Core/GameCore/Components/Component.h"
+#include <memory>
 
-namespace EngineCore
-{
-    struct ComponentData;
-    class StreamingSoundSource;
+namespace EngineCore {
+struct ComponentData;
+class StreamingSoundSource;
 
-    class StreamingSoundComponent
-        : public Component
-    {
-    protected:
-        std::shared_ptr<StreamingSoundSource> mStreamingSoundSource;
+class StreamingSoundComponent : public Component {
+protected:
+    std::shared_ptr<StreamingSoundSource> mStreamingSoundSource;
 
-    public:
-        StreamingSoundComponent(const std::shared_ptr<ComponentData> &data);
+public:
+    StreamingSoundComponent(const std::shared_ptr<ComponentData>& data);
 
-        ~StreamingSoundComponent() override;
+    ~StreamingSoundComponent() override;
 
-        void CleanUp() override;
+    void CleanUp() override;
 
-        void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-        void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-        eComponentType GetComponentType() const override;
+    eComponentType GetComponentType() const override;
 
-        void CreateStreamingSoundSource(const std::string &soundFileName);
+    void CreateStreamingSoundSource(const std::string& soundFileName);
 
-        std::shared_ptr<StreamingSoundSource> GetStreamingSoundSource() const;
+    std::shared_ptr<StreamingSoundSource> GetStreamingSoundSource() const;
 
-        virtual void PlayStream();
+    virtual void PlayStream();
 
-        void SetIsLoopSound(const bool isLoopSound);
+    void SetIsLoopSound(const bool isLoopSound);
 
-        void SetGain(const float gain);
-    };
-}
+    void SetGain(const float gain);
+};
+} // namespace EngineCore

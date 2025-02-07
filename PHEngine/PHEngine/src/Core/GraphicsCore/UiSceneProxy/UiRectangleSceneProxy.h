@@ -1,50 +1,45 @@
 #pragma once
 
-#include "UiSceneProxyBase.h"
 #include "Core/GameCore/ShaderImplementation/UiRectangleShader.h"
+#include "UiSceneProxyBase.h"
 
 #include <glm/vec3.hpp>
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class UiRectangle;
-    }
+namespace EngineCore {
+namespace GUI {
+class UiRectangle;
 }
+} // namespace EngineCore
 
 using namespace EngineCore::ShaderImpl;
 
-namespace Graphics
-{
-    namespace Proxy
-    {
-        class UiRectangleSceneProxy : public UiSceneProxyBase
-        {
-            std::shared_ptr<UiRectangleShader> mUiRectangleShader;
+namespace Graphics {
+namespace Proxy {
+class UiRectangleSceneProxy : public UiSceneProxyBase {
+    std::shared_ptr<UiRectangleShader> mUiRectangleShader;
 
-            glm::vec3 mColor;
+    glm::vec3 mColor;
 
-            float mOpacity;
+    float mOpacity;
 
-            float mBorderRadius;
+    float mBorderRadius;
 
-        public:
-            UiRectangleSceneProxy(const ::EngineCore::GUI::UiRectangle* uiRectangle);
+public:
+    UiRectangleSceneProxy(const ::EngineCore::GUI::UiRectangle* uiRectangle);
 
-            ~UiRectangleSceneProxy() override;
+    ~UiRectangleSceneProxy() override;
 
-            void Render() override;
+    void Render() override;
 
-            void SetColor(const glm::vec3& color);
+    void SetColor(const glm::vec3& color);
 
-            void SetOpacity(const float opacity);
+    void SetOpacity(const float opacity);
 
-            void SetBorderRadius(const float borderRadiusPx);
+    void SetBorderRadius(const float borderRadiusPx);
 
-            void CleanUp() override;
+    void CleanUp() override;
 
-            void OnSceneProxyRegistered() override;
-        };
-    }
-}
+    void OnSceneProxyRegistered() override;
+};
+} // namespace Proxy
+} // namespace Graphics

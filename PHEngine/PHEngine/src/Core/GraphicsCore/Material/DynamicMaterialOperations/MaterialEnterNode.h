@@ -3,31 +3,26 @@
 
 namespace Graphics {
 
-   struct MaterialEnterNode :
-      public MaterialNode
-   {
-   private:
+struct MaterialEnterNode : public MaterialNode {
+private:
+    std::shared_ptr<MaterialNode> mInputOperation;
 
-      std::shared_ptr<MaterialNode> mInputOperation;
+public:
+    MaterialEnterNode();
 
-   public:
+    ~MaterialEnterNode() override;
 
-      MaterialEnterNode();
+    virtual eMaterialNodeType GetMaterialNodeType() const;
 
-      ~MaterialEnterNode() override;
+    eMaterialOperationType GetMaterialOperationType() const override;
 
-      virtual eMaterialNodeType GetMaterialNodeType() const;
+    void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
 
-      eMaterialOperationType GetMaterialOperationType() const override;
+    std::any GetValue();
 
-      void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
+    void SetPropertyType(const MaterialNode::eMaterialPropertyType propertyType);
 
-      std::any GetValue();
-
-      void SetPropertyType(const MaterialNode::eMaterialPropertyType propertyType);
-
-   protected:
-
-      std::any TraverseGraph() override;
-   };
-}
+protected:
+    std::any TraverseGraph() override;
+};
+} // namespace Graphics

@@ -1,59 +1,55 @@
 #pragma once
 
-#include <cstddef>
-#include <string>
-#include <memory>
-
 #include "Core/IoCore/AudioLoaderCore/AudioResourceInfo.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
 
 struct stb_vorbis;
 
-namespace IO
-{
-	namespace Audio
-	{
-		class StbSoundStream;
+namespace IO {
+namespace Audio {
+class StbSoundStream;
 
-		class StbFileLoader
-		{
-			void *m_lastAllocatedMemory;
+class StbFileLoader {
+    void* m_lastAllocatedMemory;
 
-		public:
-			StbFileLoader();
+public:
+    StbFileLoader();
 
-			~StbFileLoader();
+    ~StbFileLoader();
 
-			void *AllocateMemoryForAudioSource(const std::string &pathToFile, AudioResourceInfo &outAudioInfo);
+    void* AllocateMemoryForAudioSource(const std::string& pathToFile, AudioResourceInfo& outAudioInfo);
 
-			std::shared_ptr<StbSoundStream> OpenStream(const std::string &pathToFile, AudioResourceInfo &outAudioInfo);
+    std::shared_ptr<StbSoundStream> OpenStream(const std::string& pathToFile, AudioResourceInfo& outAudioInfo);
 
-			void ReleaseAudioMemory();
-		};
+    void ReleaseAudioMemory();
+};
 
-		class StbSoundStream
-		{
-			::stb_vorbis *mStream;
+class StbSoundStream {
+    ::stb_vorbis* mStream;
 
-			AudioResourceInfo mAudioInfo;
+    AudioResourceInfo mAudioInfo;
 
-			short *mDataChunk{nullptr};
+    short* mDataChunk{nullptr};
 
-			int32_t mLastReadSamplesCount{0};
+    int32_t mLastReadSamplesCount{0};
 
-		public:
-			explicit StbSoundStream(::stb_vorbis *stream, const AudioResourceInfo &audioInfo);
+public:
+    explicit StbSoundStream(::stb_vorbis* stream, const AudioResourceInfo& audioInfo);
 
-			~StbSoundStream();
+    ~StbSoundStream();
 
-			short *GetDataChunk() const;
+    short* GetDataChunk() const;
 
-			int32_t ReadNewDataPortionIntoChunk();
+    int32_t ReadNewDataPortionIntoChunk();
 
-			int32_t GetLastReadDataSamplesCount() const;
+    int32_t GetLastReadDataSamplesCount() const;
 
-			void ReadStreamFromStart();
+    void ReadStreamFromStart();
 
-			void CleanUp();
-		};
-	}
-}
+    void CleanUp();
+};
+} // namespace Audio
+} // namespace IO

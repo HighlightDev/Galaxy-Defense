@@ -1,153 +1,148 @@
 #pragma once
 
-#include "Core/GameCore/Scene.h"
-#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
-#include "Core/GameCore/Level.h"
-#include "Core/GameCore/ILevelFactory.h"
-#include "Core/GameCore/Input/InputManager.h"
 #include "Core/CommonCore/TimeHelper.h"
-#include "Core/GameCore/Event/PauseGameEvent.h"
+#include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Event/ExitGameEvent.h"
 #include "Core/GameCore/Event/LoadLevelEvent.h"
+#include "Core/GameCore/Event/PauseGameEvent.h"
 #include "Core/GameCore/Event/RestartLevelEvent.h"
-#include "Core/CommonCore/Timer.h"
+#include "Core/GameCore/ILevelFactory.h"
+#include "Core/GameCore/Input/InputManager.h"
+#include "Core/GameCore/Level.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 
-#include <thread>
-#include <chrono>
 #include <atomic>
+#include <chrono>
 #include <string>
+#include <thread>
 
 using namespace EngineCore;
 using namespace Graphics::Renderer;
 using namespace Event;
 
-namespace EngineCore
-{
-    namespace Scripts
-    {
-        class LuaScriptProcessor;
-    }
+namespace EngineCore {
+namespace Scripts {
+class LuaScriptProcessor;
 }
+} // namespace EngineCore
 
-namespace EngineCore
-{
-    class SoundDevice;
+namespace EngineCore {
+class SoundDevice;
 
-    class Engine
-        : public PauseGameThreadEvent,
-          public ExitGameThreadEvent,
-          public LoadLevelGameThreadEvent,
-          public RestartLevelGameThreadEvent,
-          public std::enable_shared_from_this<Engine>
-    {
-        InterThreadCommunicationMgr m_interThreadMgr;
+class Engine : public PauseGameThreadEvent,
+               public ExitGameThreadEvent,
+               public LoadLevelGameThreadEvent,
+               public RestartLevelGameThreadEvent,
+               public std::enable_shared_from_this<Engine> {
+    InterThreadCommunicationMgr m_interThreadMgr;
 
-        std::shared_ptr<InputManager> mInputManager;
+    std::shared_ptr<InputManager> mInputManager;
 
-        std::shared_ptr<ILevelFactory> m_levelFactory;
+    std::shared_ptr<ILevelFactory> m_levelFactory;
 
-        std::shared_ptr<Level> m_level;
+    std::shared_ptr<Level> m_level;
 
-        std::shared_ptr<Scene> m_scene;
-        std::shared_ptr<SceneRenderer> m_sceneRenderer;
-        std::shared_ptr<::EngineCore::Scripts::LuaScriptProcessor> m_luaScriptProcessor;
+    std::shared_ptr<Scene> m_scene;
+    std::shared_ptr<SceneRenderer> m_sceneRenderer;
+    std::shared_ptr<::EngineCore::Scripts::LuaScriptProcessor> m_luaScriptProcessor;
 
-        std::atomic_bool bGameThreadExecution{true};
-        std::atomic_bool bLuaThreadExecution{true};
+    std::atomic_bool bGameThreadExecution{true};
+    std::atomic_bool bLuaThreadExecution{true};
 
-        std::shared_ptr<SoundDevice> mActiveAudioOutputDevice;
+    std::shared_ptr<SoundDevice> mActiveAudioOutputDevice;
 
-        std::thread m_gameThread;
+    std::thread m_gameThread;
 
-        std::thread m_luaThread;
+    std::thread m_luaThread;
 
-        float mRenderThreadDeltaTimeSeconds;
+    float mRenderThreadDeltaTimeSeconds;
 
-        float mGameThreadDeltaTimeSeconds;
+    float mGameThreadDeltaTimeSeconds;
 
-        float mLuaThreadDeltaTimeSeconds;
+    float mLuaThreadDeltaTimeSeconds;
 
-        std::atomic_bool bPauseGameThreadExecution{false};
+    std::atomic_bool bPauseGameThreadExecution{false};
 
-        std::atomic_bool bLevelIsLoading{true};
+    std::atomic_bool bLevelIsLoading{true};
 
-        bool bExitGame{false};
+    bool bExitGame{false};
 
 #if DEBUG
-        GameThreadTimer m_resourceConsumptionLogTimer;
+    GameThreadTimer m_resourceConsumptionLogTimer;
 #endif
 
-    public:
-        Engine();
+public:
+    Engine();
 
-        ~Engine();
+    ~Engine();
 
-        void Initialize();
+    void Initialize();
 
-        void SetLevelFactory(const std::shared_ptr<ILevelFactory> &lvlFactory);
+    void SetLevelFactory(const std::shared_ptr<ILevelFactory>& lvlFactory);
 
-        void PreLevelInit();
+    void PreLevelInit();
 
-        void OnLevelInit();
+    void OnLevelInit();
 
-        void PlayLevel(const std::string &levelName);
+    void PlayLevel(const std::string& levelName);
 
-        void RestartLevel();
+    void RestartLevel();
 
-        void PostLevelInit();
+    void PostLevelInit();
 
-        void PostPhysicsInitialize();
+    void PostPhysicsInitialize();
 
-        void PostPlayLevelFinished();
+    void PostPlayLevelFinished();
 
-        void ProcessGameThreadEvents(const eExecutionOrder order);
+    void ProcessGameThreadEvents(const eExecutionOrder order);
 
-        void ProcessLuaThreadEvents(const eExecutionOrder order);
+    void ProcessLuaThreadEvents(const eExecutionOrder order);
 
-        void ProcessEvent(const PauseGameThreadEvent* sender, const PauseGameThreadEvent::EventData_t &data) override;
+    void ProcessEvent(const PauseGameThreadEvent* sender, const PauseGameThreadEvent::EventData_t& data) override;
 
-        void ProcessEvent(const ExitGameThreadEvent* sender, const ExitGameThreadEvent::EventData_t &data) override;
+    void ProcessEvent(const ExitGameThreadEvent* sender, const ExitGameThreadEvent::EventData_t& data) override;
 
-        void ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLevelGameThreadEvent::EventData_t &data) override;
+    void ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLevelGameThreadEvent::EventData_t& data) override;
 
-        void ProcessEvent(const RestartLevelGameThreadEvent* sender, const RestartLevelGameThreadEvent::EventData_t& data) override;
+    void ProcessEvent(const RestartLevelGameThreadEvent* sender, const RestartLevelGameThreadEvent::EventData_t& data) override;
 
-        void GameThreadPulse();
+    void GameThreadPulse();
 
-        void RenderThreadPulse();
+    void RenderThreadPulse();
 
-        void LuaThreadPulse();
+    void LuaThreadPulse();
 
-        void TickWindow();
+    void TickWindow();
 
-        std::shared_ptr<InputManager> GetInputManager() const;
+    std::shared_ptr<InputManager> GetInputManager() const;
 
-        float GetRenderThreadDeltaTime() const;
+    float GetRenderThreadDeltaTime() const;
 
-        float GetGameThreadDeltaTime() const;
+    float GetGameThreadDeltaTime() const;
 
-        float GetLuaThreadDeltaTime() const;
+    float GetLuaThreadDeltaTime() const;
 
-        InterThreadCommunicationMgr &GetThreadCommunicationManager();
+    InterThreadCommunicationMgr& GetThreadCommunicationManager();
 
-        bool IsExitGameState() const;
+    bool IsExitGameState() const;
 
-        std::shared_ptr<Scene> GetSceneSp() const;
+    std::shared_ptr<Scene> GetSceneSp() const;
 
 #if DEBUG
 
-        void RecompileAllShaders();
+    void RecompileAllShaders();
 
-        void RestartLuaScripts();
+    void RestartLuaScripts();
 
 #endif
-        void CleanUp();
+    void CleanUp();
 
-    private:
-        void StopGameThreadExecution();
+private:
+    void StopGameThreadExecution();
 
-        void StopLuaThreadExecution();
+    void StopLuaThreadExecution();
 
-        void UnloadCurrentLevel();
-    };
-}
+    void UnloadCurrentLevel();
+};
+} // namespace EngineCore

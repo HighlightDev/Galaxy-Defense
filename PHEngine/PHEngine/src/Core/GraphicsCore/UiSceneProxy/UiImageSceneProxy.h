@@ -1,64 +1,59 @@
 #pragma once
 
-#include "UiSceneProxyBase.h"
 #include "Core/GameCore/ShaderImplementation/UiImageShader.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
+#include "UiSceneProxyBase.h"
 
 #include <glm/vec3.hpp>
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class UiImage;
-    }
+namespace EngineCore {
+namespace GUI {
+class UiImage;
 }
+} // namespace EngineCore
 
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Texture;
 
-namespace Graphics
-{
-    namespace Proxy
-    {
-        class UiImageSceneProxy : public UiSceneProxyBase
-        {
-            std::shared_ptr<UiImageShader> mUiImageShader;
+namespace Graphics {
+namespace Proxy {
+class UiImageSceneProxy : public UiSceneProxyBase {
+    std::shared_ptr<UiImageShader> mUiImageShader;
 
-            std::shared_ptr<ITexture> mTexture;
+    std::shared_ptr<ITexture> mTexture;
 
-            float mOpacity;
+    float mOpacity;
 
-            bool mIsCustomColor;
+    bool mIsCustomColor;
 
-            glm::vec3 mColor;
+    glm::vec3 mColor;
 
-            float mRotationDegrees;
+    float mRotationDegrees;
 
-            bool mIsFlipped;
+    bool mIsFlipped;
 
-        public:
-            UiImageSceneProxy(const ::EngineCore::GUI::UiImage* uiImage);
+public:
+    UiImageSceneProxy(const ::EngineCore::GUI::UiImage* uiImage);
 
-            ~UiImageSceneProxy() override;
+    ~UiImageSceneProxy() override;
 
-            void Render() override;
+    void Render() override;
 
-            void SetTexture(const std::shared_ptr<ITexture>& texture);
+    void SetTexture(const std::shared_ptr<ITexture>& texture);
 
-            void SetUseCustomColor(const bool isCustomColorEnabled);
+    void SetUseCustomColor(const bool isCustomColorEnabled);
 
-            void SetColor(const glm::vec3& color);
+    void SetColor(const glm::vec3& color);
 
-            void SetOpacity(const float opacity);
+    void SetOpacity(const float opacity);
 
-            void SetRotationDegrees(const float rotationDegrees);
+    void SetRotationDegrees(const float rotationDegrees);
 
-            void SetIsFlipped(const bool isFlipped);
+    void SetIsFlipped(const bool isFlipped);
 
-            void CleanUp() override;
+    void CleanUp() override;
 
-            void OnSceneProxyRegistered() override;
-        };
-    }
-}
+    void OnSceneProxyRegistered() override;
+};
+} // namespace Proxy
+} // namespace Graphics

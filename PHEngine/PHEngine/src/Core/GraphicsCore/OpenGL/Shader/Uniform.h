@@ -1,106 +1,99 @@
 #pragma once
-#include <cstddef>
-#include <string>
-#include <glm/vec2.hpp> 
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 #include <glm/mat2x2.hpp>
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+
+#include <cstddef>
+#include <string>
 #include <vector>
 
-namespace Graphics
-{
-	namespace OpenGL
-	{
-      
-      struct UniformArray
-      {
-      private:
+namespace Graphics {
+namespace OpenGL {
 
-         std::string m_uniformName;
+struct UniformArray {
+private:
+    std::string m_uniformName;
 
-         std::vector<int32_t> m_uniformLocations;
+    std::vector<int32_t> m_uniformLocations;
 
-      public:
+public:
+    UniformArray() = default;
 
-         UniformArray() = default;
+    explicit UniformArray(int32_t programDescriptor, size_t uniformsCount, const std::string& uniformName);
 
-         explicit UniformArray(int32_t programDescriptor, size_t uniformsCount, const std::string& uniformName);
+    ~UniformArray();
 
-         ~UniformArray();
+    std::string GetUniformName() const;
 
-         std::string GetUniformName() const;
+    void LoadUniform(size_t uniformIndex, bool arg) const;
 
-         void LoadUniform(size_t uniformIndex, bool arg) const;
+    void LoadUniform(size_t uniformIndex, float arg) const;
 
-         void LoadUniform(size_t uniformIndex, float arg) const;
+    void LoadUniform(size_t uniformIndex, int32_t arg) const;
 
-         void LoadUniform(size_t uniformIndex, int32_t arg) const;
+    void LoadUniform(size_t uniformIndex, const glm::vec2& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::vec2& arg) const;
+    void LoadUniform(size_t uniformIndex, glm::vec2&& arg) const;
 
-         void LoadUniform(size_t uniformIndex, glm::vec2&& arg) const;
+    void LoadUniform(size_t uniformIndex, const glm::vec3& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::vec3& arg) const;
+    void LoadUniform(size_t uniformIndex, glm::vec3&& arg) const;
 
-         void LoadUniform(size_t uniformIndex, glm::vec3&& arg) const;
+    void LoadUniform(size_t uniformIndex, const glm::vec4& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::vec4& arg) const;
+    void LoadUniform(size_t uniformIndex, glm::vec4&& arg) const;
 
-         void LoadUniform(size_t uniformIndex, glm::vec4&& arg) const;
+    void LoadUniform(size_t uniformIndex, const glm::mat2& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::mat2& arg) const;
+    void LoadUniform(size_t uniformIndex, const glm::mat3& arg) const;
 
-         void LoadUniform(size_t uniformIndex, const glm::mat3& arg) const;
+    void LoadUniform(size_t uniformIndex, const glm::mat4& arg) const;
+};
 
-         void LoadUniform(size_t uniformIndex, const glm::mat4& arg) const;
-      };
+struct Uniform {
+private:
+    int32_t uniformLocation = -1;
+    ;
 
-		struct Uniform
-		{
-		private:
+    std::string mUniformName = "";
 
-         int32_t uniformLocation = -1;;
+public:
+    Uniform() = default;
 
-         std::string mUniformName = "";
+    Uniform(int32_t programDescriptor, const std::string& uniformName);
 
-		public:
+    ~Uniform();
 
-			Uniform() = default;
+    std::string GetUniformName() const;
 
-			Uniform(int32_t programDescriptor, const std::string& uniformName);
+    void LoadUniform(bool arg);
 
-			~Uniform();
+    void LoadUniform(float arg);
 
-         std::string GetUniformName() const;
+    void LoadUniform(int32_t arg);
 
-			void LoadUniform(bool arg);
+    void LoadUniform(size_t arg);
 
-			void LoadUniform(float arg);
+    void LoadUniform(const glm::vec2& arg);
 
-			void LoadUniform(int32_t arg);
+    void LoadUniform(glm::vec2&& arg);
 
-         void LoadUniform(size_t arg);
+    void LoadUniform(const glm::vec3& arg);
 
-			void LoadUniform(const glm::vec2& arg);
+    void LoadUniform(glm::vec3&& arg);
 
-			void LoadUniform(glm::vec2&& arg);
+    void LoadUniform(const glm::vec4& arg);
 
-			void LoadUniform(const glm::vec3& arg);
+    void LoadUniform(glm::vec4&& arg);
 
-			void LoadUniform(glm::vec3&& arg);
+    void LoadUniform(const glm::mat2& arg);
 
-			void LoadUniform(const glm::vec4& arg);
+    void LoadUniform(const glm::mat3& arg);
 
-			void LoadUniform(glm::vec4&& arg);
-
-			void LoadUniform(const glm::mat2& arg);
-
-			void LoadUniform(const glm::mat3& arg);
-
-			void LoadUniform(const glm::mat4& arg);
-
-		};
-	}
-}
+    void LoadUniform(const glm::mat4& arg);
+};
+} // namespace OpenGL
+} // namespace Graphics

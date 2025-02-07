@@ -4,21 +4,17 @@
 
 #include <vector>
 
-namespace EngineCore
-{
+namespace EngineCore {
 
-   class BoundingBoxBuilder
-   {
-   public:
+class BoundingBoxBuilder {
+public:
+    BoundingBoxBuilder();
 
-      BoundingBoxBuilder();
+    ~BoundingBoxBuilder();
 
-      ~BoundingBoxBuilder();
+    BoundingBox3D Build(const std::vector<float>& meshPositions);
 
-      BoundingBox3D Build(const std::vector<float>& meshPositions);
+    static BoundingBox3D GetTransformedBoundingBox(const BoundingBox3D& localSpaceBb, const glm::mat4& transformMatrix);
+};
 
-      static BoundingBox3D GetTransformedBoundingBox(const BoundingBox3D& localSpaceBb, const glm::mat4& transformMatrix);
-   };
-
-}
-
+} // namespace EngineCore

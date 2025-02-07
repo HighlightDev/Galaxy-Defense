@@ -4,33 +4,28 @@
 
 using namespace Graphics::OpenGL;
 
-namespace EngineCore
-{
-   namespace ShaderImpl
-   {
+namespace EngineCore {
+namespace ShaderImpl {
 
-      class CubemapShader : public Shader
-      {
+class CubemapShader : public Shader {
 
-      private:
-         Uniform u_worldMatrix, u_viewMatrix, u_projectionMatrix, u_texture;
+private:
+    Uniform u_worldMatrix, u_viewMatrix, u_projectionMatrix, u_texture;
 
-      public:
-         CubemapShader(const ShaderParams& params);
+public:
+    CubemapShader(const ShaderParams& params);
 
-         ~CubemapShader() override;
+    ~CubemapShader() override;
 
-         void SetTransformMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+    void SetTransformMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 
-         void SetTexture(int32_t texSlot);
+    void SetTexture(int32_t texSlot);
 
-      protected:
+protected:
+    void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
-         void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+    void SetShaderPredefine() override;
+};
 
-         void SetShaderPredefine() override;
-      };
-
-   }
-}
-
+} // namespace ShaderImpl
+} // namespace EngineCore

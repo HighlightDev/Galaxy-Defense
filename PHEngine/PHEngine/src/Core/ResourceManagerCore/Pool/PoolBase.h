@@ -4,109 +4,97 @@
 #include "Core/GameCore/LoggerExtension.h"
 
 #include <algorithm>
-#include <memory>
 #include <cstddef>
+#include <memory>
+#include <optional>
 #include <type_traits>
 #include <unordered_map>
-#include <optional>
-
-#include "Core/GameCore/LoggerExtension.h"
 
 using namespace EngineCore;
 
-namespace Resources
-{
+namespace Resources {
 
-  template <typename ValueType, typename KeyType, typename AllocationPolicyType>
-  class PoolBase
-  {
-  public:
+template<typename ValueType, typename KeyType, typename AllocationPolicyType>
+class PoolBase {
+public:
     using value_t = ValueType;
     using key_t = KeyType;
     using policy_t = AllocationPolicyType;
     using sharedValue_t = std::shared_ptr<ValueType>;
     using resourceMap_t = std::unordered_map<key_t, sharedValue_t>;
 
-  protected:
+protected:
     std::unordered_map<key_t, sharedValue_t> resourceMap;
     std::unordered_map<key_t, int32_t> referenceMap;
 
-  private:
-    void IncreaseRefCounter(const key_t &key)
+private:
+    void IncreaseRefCounter(const key_t& key)
     {
-      if (referenceMap.count(key))
-      {
-        ++referenceMap[key];
-      }
-      else
-      {
-        referenceMap[key] = 1;
-      }
-    }
-
-    sharedValue_t GetResource(const key_t &key) const
-    {
-      sharedValue_t value;
-      if (resourceMap.count(key))
-      {
-        value = resourceMap.at(key);
-      }
-
-      return value;
-    }
-
-    void FreeResource(const key_t &key)
-    {
-      if (referenceMap.count(key))
-      {
-        auto& referenceCount = referenceMap[key];
-        --referenceCount;
-        if (referenceCount == 0)
-        {
-          policy_t::DeallocateMemory(resourceMap[key]);
-          resourceMap.erase(key);
-          referenceMap.erase(key);
+        if (referenceMap.count(key)) {
+            ++referenceMap[key];
+        } else {
+            referenceMap[key] = 1;
         }
-      }
     }
 
-    template <typename InnerAllocationType, typename Key_t>
-    typename std::enable_if<!std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type GetOrAllocateResourceBridge(const Key_t &key)
+    sharedValue_t GetResource(const key_t& key) const
     {
-      sharedValue_t resource = GetResource(key);
-      if (!resource)
-      {
-        resource = policy_t::template AllocateMemory<InnerAllocationType>(key);
-        resourceMap.emplace(key, resource);
-      }
+        sharedValue_t value;
+        if (resourceMap.count(key)) {
+            value = resourceMap.at(key);
+        }
 
-      if (resource)
-      {
-        IncreaseRefCounter(key);
-      }
-
-      return resource;
+        return value;
     }
 
-    template <typename InnerAllocationType, typename Key_t>
-    typename std::enable_if<std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type GetOrAllocateResourceBridge(const Key_t &key)
+    void FreeResource(const key_t& key)
     {
-      sharedValue_t resource = GetResource(key);
-      if (!resource)
-      {
-        resource = policy_t::AllocateMemory(key);
-        resourceMap.emplace(key, resource);
-      }
-
-      if (resource)
-      {
-        IncreaseRefCounter(key);
-      }
-
-      return resource;
+        if (referenceMap.count(key)) {
+            auto& referenceCount = referenceMap[key];
+            --referenceCount;
+            if (referenceCount == 0) {
+                policy_t::DeallocateMemory(resourceMap[key]);
+                resourceMap.erase(key);
+                referenceMap.erase(key);
+            }
+        }
     }
 
-  public:
+    template<typename InnerAllocationType, typename Key_t>
+    typename std::enable_if<!std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type
+    GetOrAllocateResourceBridge(const Key_t& key)
+    {
+        sharedValue_t resource = GetResource(key);
+        if (!resource) {
+            resource = policy_t::template AllocateMemory<InnerAllocationType>(key);
+            resourceMap.emplace(key, resource);
+        }
+
+        if (resource) {
+            IncreaseRefCounter(key);
+        }
+
+        return resource;
+    }
+
+    template<typename InnerAllocationType, typename Key_t>
+    typename std::enable_if<std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type
+    GetOrAllocateResourceBridge(const Key_t& key)
+    {
+        sharedValue_t resource = GetResource(key);
+        if (!resource) {
+            resource = policy_t::AllocateMemory(key);
+            resourceMap.emplace(key, resource);
+        }
+
+        if (resource) {
+            IncreaseRefCounter(key);
+        }
+
+        return resource;
+    }
+
+public:
     PoolBase() = default;
 
     virtual ~PoolBase() = default;
@@ -115,106 +103,97 @@ namespace Resources
 
     void CleanUp()
     {
-      LogInfo(ToString(), "::CleanUp");
-      for (auto it = resourceMap.begin(); it != resourceMap.end(); ++it)
-      {
-        auto key = it->first;
-        policy_t::DeallocateMemory(resourceMap[key]);
-      }
+        LogInfo(ToString(), "::CleanUp");
+        for (auto it = resourceMap.begin(); it != resourceMap.end(); ++it) {
+            auto key = it->first;
+            policy_t::DeallocateMemory(resourceMap[key]);
+        }
 
-      resourceMap.clear();
-      referenceMap.clear();
+        resourceMap.clear();
+        referenceMap.clear();
     }
 
-    template <typename InnerAllocationType = Common::NullType, typename Key_t>
-    typename std::enable_if<
-        !std::is_same<InnerAllocationType, Common::NullType>::value,
-        std::shared_ptr<InnerAllocationType>>::type
-    GetOrAllocateResource(const Key_t &key)
+    template<typename InnerAllocationType = Common::NullType, typename Key_t>
+    typename std::enable_if<!std::is_same<InnerAllocationType, Common::NullType>::value, std::shared_ptr<InnerAllocationType>>::
+        type
+        GetOrAllocateResource(const Key_t& key)
     {
-      return std::static_pointer_cast<InnerAllocationType>(
-          GetOrAllocateResourceBridge<InnerAllocationType>(key));
+        return std::static_pointer_cast<InnerAllocationType>(GetOrAllocateResourceBridge<InnerAllocationType>(key));
     }
 
-    template <typename InnerAllocationType = Common::NullType, typename Key_t>
-    typename std::enable_if<
-        std::is_same<InnerAllocationType, Common::NullType>::value,
-        sharedValue_t>::type
-    GetOrAllocateResource(const Key_t &key)
+    template<typename InnerAllocationType = Common::NullType, typename Key_t>
+    typename std::enable_if<std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type
+    GetOrAllocateResource(const Key_t& key)
     {
-      return GetOrAllocateResourceBridge<InnerAllocationType>(key);
+        return GetOrAllocateResourceBridge<InnerAllocationType>(key);
     }
 
-    std::optional<key_t> GetKeyOptional(const sharedValue_t &value) const
+    std::optional<key_t> GetKeyOptional(const sharedValue_t& value) const
     {
-      auto predicate = [&value](auto &keyvalue)
-      {
-        if (keyvalue.second == value)
-          return true;
-        if (keyvalue.second && value)
-          return (*keyvalue.second) == (*value);
-        return false;
-      };
-      auto it = std::find_if(resourceMap.begin(), resourceMap.end(), predicate);
+        auto predicate = [&value](auto& keyvalue) {
+            if (keyvalue.second == value)
+                return true;
+            if (keyvalue.second && value)
+                return (*keyvalue.second) == (*value);
+            return false;
+        };
+        auto it = std::find_if(resourceMap.begin(), resourceMap.end(), predicate);
 
-      if (it != resourceMap.end())
-        return it->first;
+        if (it != resourceMap.end())
+            return it->first;
 
-      return std::nullopt;
+        return std::nullopt;
     }
 
-    int32_t GetReferenceCount(const key_t &key) const
+    int32_t GetReferenceCount(const key_t& key) const
     {
-      if (referenceMap.count(key))
-        return referenceMap.at(key);
+        if (referenceMap.count(key))
+            return referenceMap.at(key);
 
-      return 0;
+        return 0;
     }
 
     size_t GetResourcesCount() const
     {
-      size_t resourceCount = resourceMap.size();
+        size_t resourceCount = resourceMap.size();
 
-      return resourceCount;
+        return resourceCount;
     }
 
-    bool TryToFreeMemory(const key_t &key)
+    bool TryToFreeMemory(const key_t& key)
     {
-      bool bMemoryFreed = false;
-      sharedValue_t resource = GetResource(key);
+        bool bMemoryFreed = false;
+        sharedValue_t resource = GetResource(key);
 
-      if (resource)
-      {
-        bMemoryFreed = true;
-        FreeResource(key);
-      }
+        if (resource) {
+            bMemoryFreed = true;
+            FreeResource(key);
+        }
 
-      return bMemoryFreed;
+        return bMemoryFreed;
     }
 
     bool TryToFreeMemory(sharedValue_t value)
     {
-      bool bMemoryFreed = false;
-      const std::optional<key_t> &optionalKey = GetKeyOptional(value);
+        bool bMemoryFreed = false;
+        const std::optional<key_t>& optionalKey = GetKeyOptional(value);
 
-      if (optionalKey.has_value())
-      {
-        bMemoryFreed = true;
-        FreeResource(*optionalKey);
-      }
+        if (optionalKey.has_value()) {
+            bMemoryFreed = true;
+            FreeResource(*optionalKey);
+        }
 
-      return bMemoryFreed;
+        return bMemoryFreed;
     }
 
     std::vector<key_t> GetAllKeys() const
     {
-      std::vector<key_t> keys;
-      for (const auto &resourcePair : resourceMap)
-      {
-        keys.push_back(resourcePair.first);
-      }
-      return keys;
+        std::vector<key_t> keys;
+        for (const auto& resourcePair : resourceMap) {
+            keys.push_back(resourcePair.first);
+        }
+        return keys;
     }
-  };
+};
 
 } // namespace Resources

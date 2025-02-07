@@ -1,30 +1,28 @@
 #pragma once
 
+#include "Core/IoCore/AudioLoaderCore/AudioResourceInfo.h"
+
 #include <AL/al.h>
 #include <AL/alext.h>
 
-#include "Core/IoCore/AudioLoaderCore/AudioResourceInfo.h"
-
 using namespace IO::Audio;
 
-namespace EngineCore
-{
-    class SoundBuffer
-    {
-        ALuint mBufferDesc;
+namespace EngineCore {
+class SoundBuffer {
+    ALuint mBufferDesc;
 
-    public:
-        SoundBuffer(const ALvoid *soundData, const AudioResourceInfo &audioInfo);
+public:
+    SoundBuffer(const ALvoid* soundData, const AudioResourceInfo& audioInfo);
 
-        ~SoundBuffer();
+    ~SoundBuffer();
 
-        bool operator==(const SoundBuffer& right) const;
+    bool operator==(const SoundBuffer& right) const;
 
-        void CleanUp();
+    void CleanUp();
 
-        ALuint GetBufferDesc() const;
+    ALuint GetBufferDesc() const;
 
-    private:
-        void Init(const ALvoid *soundData, const AudioResourceInfo &audioInfo);
-    };
-}
+private:
+    void Init(const ALvoid* soundData, const AudioResourceInfo& audioInfo);
+};
+} // namespace EngineCore

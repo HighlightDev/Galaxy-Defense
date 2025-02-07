@@ -2,20 +2,17 @@
 
 #include "Core/GameCore/Particles/Modules/Lifetime/ILifeTimeModule.h"
 
-namespace EngineCore
-{
-    class SimpleLifeTimeModule
-        : public ILifeTimeModule
-    {
-        float mLifeTime;
+namespace EngineCore {
+class SimpleLifeTimeModule : public ILifeTimeModule {
+    float mLifeTime;
 
-    public:
-        SimpleLifeTimeModule();
+public:
+    SimpleLifeTimeModule();
 
-        void Update(Particle &particle, const float deltaTime) override;
+    void Update(Particle& particle, const float deltaTime) override;
 
-        void SetLifeTime(const float lifeTime);
+    void SetLifeTime(const float lifeTime);
 
-        void OnEmitParticles() override;
-    };
-}
+    void OnEmitParticles() override;
+};
+} // namespace EngineCore

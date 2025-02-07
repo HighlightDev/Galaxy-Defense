@@ -4,46 +4,44 @@
 
 #include <vector>
 
-namespace EngineCore
-{
+namespace EngineCore {
+/**
+ * During the loading of a text this represents one word in the text.
+ */
+class Word {
+    std::vector<TextCharacter> mCharacters;
+
+    float mWidth;
+
+    float mFontSize;
+
+public:
     /**
-     * During the loading of a text this represents one word in the text.
+     * Create a new empty word.
+     * @param fontSize - the font size of the text which this word is in.
      */
-    class Word
-    {
-        std::vector<TextCharacter> mCharacters;
+    Word(const float fontSize);
 
-        float mWidth;
+    Word(const Word& word) = default;
 
-        float mFontSize;
+    Word(Word&& word);
 
-    public:
-        /**
-         * Create a new empty word.
-         * @param fontSize - the font size of the text which this word is in.
-         */
-        Word(const float fontSize);
+    Word& operator=(Word&& word);
 
-        Word(const Word &word) = default;
+    /**
+     * Adds a character to the end of the current word and increases the screen-space width of the word.
+     * @param character - the character to be added.
+     */
+    void AddCharacter(const TextCharacter& character);
 
-        Word(Word &&word);
+    /**
+     * @return The list of characters in the word.
+     */
+    const std::vector<TextCharacter>& GetCharacters() const;
 
-        Word &operator=(Word &&word);
-
-        /**
-         * Adds a character to the end of the current word and increases the screen-space width of the word.
-         * @param character - the character to be added.
-         */
-        void AddCharacter(const TextCharacter &character);
-
-        /**
-         * @return The list of characters in the word.
-         */
-        const std::vector<TextCharacter> &GetCharacters() const;
-
-        /**
-         * @return The width of the word in terms of screen size.
-         */
-        float GetWordWidth() const;
-    };
-}
+    /**
+     * @return The width of the word in terms of screen size.
+     */
+    float GetWordWidth() const;
+};
+} // namespace EngineCore

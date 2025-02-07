@@ -1,15 +1,12 @@
 #pragma once
 #include "MaterialUnaryOperationNode.h"
 
-namespace Graphics
-{
-   struct MaterialUnaryIncrementNode
-       : public MaterialUnaryOperationNode
-   {
-      explicit MaterialUnaryIncrementNode(const MaterialNode::eMaterialPropertyType materialPropertyType);
+namespace Graphics {
+struct MaterialUnaryIncrementNode : public MaterialUnaryOperationNode {
+    explicit MaterialUnaryIncrementNode(const MaterialNode::eMaterialPropertyType materialPropertyType);
 
-      virtual eMaterialOperationType GetMaterialOperationType() const;
+    virtual eMaterialOperationType GetMaterialOperationType() const;
 
-      std::any DoOperation(const std::any &value) override;
-   };
-}
+    std::any DoOperation(const std::any& value) override;
+};
+} // namespace Graphics

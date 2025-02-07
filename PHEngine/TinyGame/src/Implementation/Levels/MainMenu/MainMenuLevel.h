@@ -7,45 +7,42 @@
 
 using namespace EngineCore;
 
-namespace EngineCore
-{
-   class Actor;
+namespace EngineCore {
+class Actor;
 }
 
-namespace Game
-{
+namespace Game {
 
-   class MainMenuLevel : public LevelBase
-   {
-      using Base = LevelBase;
+class MainMenuLevel : public LevelBase {
+    using Base = LevelBase;
 
-      std::unique_ptr<MainMenuLevelUiController> mUiController;
+    std::unique_ptr<MainMenuLevelUiController> mUiController;
 
-      std::shared_ptr<Actor> mAmbientMusicDummy;
+    std::shared_ptr<Actor> mAmbientMusicDummy;
 
-   public:
-      MainMenuLevel();
+public:
+    MainMenuLevel();
 
-      ~MainMenuLevel() override;
+    ~MainMenuLevel() override;
 
-      void InitLevel() override;
+    void InitLevel() override;
 
-      void PreLevelInit() override;
+    void PreLevelInit() override;
 
-      void PostLevelInit() override;
+    void PostLevelInit() override;
 
-      void PostPlayLevelFinished() override;
+    void PostPlayLevelFinished() override;
 
-      void UnloadLevel() override;
+    void UnloadLevel() override;
 
-      void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-      void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTime) override;
 
-   private:
-      void CreateScene();
+private:
+    void CreateScene();
 
-      void RunLuaBuildLevelScript();
-   };
+    void RunLuaBuildLevelScript();
+};
 
-}
+} // namespace Game

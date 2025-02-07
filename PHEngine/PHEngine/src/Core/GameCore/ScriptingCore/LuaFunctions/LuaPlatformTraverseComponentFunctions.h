@@ -6,50 +6,45 @@
 
 using namespace EngineCore;
 
-namespace EngineCore
-{
-   class Scene;
+namespace EngineCore {
+class Scene;
 }
 
-namespace EngineCore
-{
-   class LuaScriptExecutorBase;
-   class PlatformTraverseComponent;
+namespace EngineCore {
+class LuaScriptExecutorBase;
+class PlatformTraverseComponent;
 
-   namespace Scripts
-   {
-      class LuaScriptProcessor;
+namespace Scripts {
+class LuaScriptProcessor;
 
-      class LuaPlatformTraverseComponentFunctions
-          : public ILuaFunctionable
-      {
-      protected:
-         LuaScriptExecutorBase *mOwnerPtr;
+class LuaPlatformTraverseComponentFunctions : public ILuaFunctionable {
+protected:
+    LuaScriptExecutorBase* mOwnerPtr;
 
-         PlatformTraverseComponent *mOwnerComponent;
+    PlatformTraverseComponent* mOwnerComponent;
 
-         std::weak_ptr<::EngineCore::Scene> mSceneWp;
+    std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
-         std::weak_ptr<LuaScriptProcessor> mLuaScriptProcessor;
+    std::weak_ptr<LuaScriptProcessor> mLuaScriptProcessor;
 
-      public:
-         LuaPlatformTraverseComponentFunctions(::EngineCore::PlatformTraverseComponent *owner, LuaScriptExecutorBase *ownerPtr);
+public:
+    LuaPlatformTraverseComponentFunctions(::EngineCore::PlatformTraverseComponent* owner, LuaScriptExecutorBase* ownerPtr);
 
-         void Initialize() override;
+    void Initialize() override;
 
-         void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp) override;
+    void SetScene(const std::weak_ptr<::EngineCore::Scene>& sceneWp) override;
 
-         void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor) override;
+    void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor) override;
 
-         void OnScriptStarted(const LuaWrapper &luaWrapper) override;
+    void OnScriptStarted(const LuaWrapper& luaWrapper) override;
 
-         void OnScriptStopped(const LuaWrapper &luaWrapper) override;
+    void OnScriptStopped(const LuaWrapper& luaWrapper) override;
 
-         void RegisterCallbacks(const LuaWrapper &luaWrapper) override;
+    void RegisterCallbacks(const LuaWrapper& luaWrapper) override;
 
-      private:
-         // Add route point
-         void AddRoutePoint(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, float> &data);
-      };
-   }
-}
+private:
+    // Add route point
+    void AddRoutePoint(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, float>& data);
+};
+} // namespace Scripts
+} // namespace EngineCore

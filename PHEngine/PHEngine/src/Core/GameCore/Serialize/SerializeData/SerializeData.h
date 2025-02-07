@@ -1,617 +1,576 @@
 #pragma once
-#include <string>
+#include "Core/GameCore/Components/Transform.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/GraphicsCore/Material/IMaterial.h"
+
+#include <cereal/types/memory.hpp>
+#include <cereal/types/string.hpp>
+#include <glm/ext/quaternion_float.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-#include <glm/ext/quaternion_float.hpp>
-#include <vector>
-#include <memory>
+
 #include <map>
-
-#include <cereal/types/string.hpp>
-#include <cereal/types/memory.hpp>
-
-#include "Core/GraphicsCore/Material/IMaterial.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
-#include "Core/GameCore/Components/Transform.h"
+#include <memory>
+#include <string>
+#include <vector>
 
 using namespace EnginePhysics;
 
-namespace glm
+namespace glm {
+template<class Archive>
+void serialize(Archive& archive, glm::vec3& v)
 {
-   template<class Archive> void serialize(Archive& archive, glm::vec3& v) { archive(v.x, v.y, v.z); }
-   template<class Archive> void serialize(Archive& archive, glm::vec4& v) { archive(v.x, v.y, v.z, v.w); }
-   template<class Archive> void serialize(Archive& archive, glm::ivec4& v) { archive(v.x, v.y, v.z, v.w); }
-   template<class Archive> void serialize(Archive& archive, glm::quat& v) { archive(v.x, v.y, v.z, v.w); }
+    archive(v.x, v.y, v.z);
 }
-
-struct SerializeAllocatedResources
+template<class Archive>
+void serialize(Archive& archive, glm::vec4& v)
 {
-   std::vector<std::string> ResourceNames;
+    archive(v.x, v.y, v.z, v.w);
+}
+template<class Archive>
+void serialize(Archive& archive, glm::ivec4& v)
+{
+    archive(v.x, v.y, v.z, v.w);
+}
+template<class Archive>
+void serialize(Archive& archive, glm::quat& v)
+{
+    archive(v.x, v.y, v.z, v.w);
+}
+} // namespace glm
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(ResourceNames);
-   }
+struct SerializeAllocatedResources {
+    std::vector<std::string> ResourceNames;
+
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(ResourceNames);
+    }
 };
 
-struct SerializeDataBase
-{
-   enum class SerializeDataType
-   {
-      Actor,
-      StaticMesh,
-      SkeletalMesh,
-      Skybox,
-      Material,
-      DirectionalLight,
-      PointLight,
-      Spotlight,
-      Movement,
-      PlatformTraverse,
-      Input,
-      Physics,
-      CharacterPhysics,
-      Tweener,
-      HumanoidPlayerController,
-      PlanarReflection,
-      Camera,
-   };
+struct SerializeDataBase {
+    enum class SerializeDataType {
+        Actor,
+        StaticMesh,
+        SkeletalMesh,
+        Skybox,
+        Material,
+        DirectionalLight,
+        PointLight,
+        Spotlight,
+        Movement,
+        PlatformTraverse,
+        Input,
+        Physics,
+        CharacterPhysics,
+        Tweener,
+        HumanoidPlayerController,
+        PlanarReflection,
+        Camera,
+    };
 
-   virtual SerializeDataType GetSerializeDataType() const = 0;
+    virtual SerializeDataType GetSerializeDataType() const = 0;
 };
 
-struct SerializeDataComponent
-   : SerializeDataBase
-{
-   std::string ComponentName;
+struct SerializeDataComponent : SerializeDataBase {
+    std::string ComponentName;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(ComponentName);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(ComponentName);
+    }
 };
 
-struct SerializeDataMaterial
-   : public SerializeDataBase
-{
-   struct SerializeDataMaterialProperty
-   {
-      std::string PropertyType;
-      std::string UniformName;
-      std::string Value;
+struct SerializeDataMaterial : public SerializeDataBase {
+    struct SerializeDataMaterialProperty {
+        std::string PropertyType;
+        std::string UniformName;
+        std::string Value;
 
-      template <typename Archive>
-      void serialize(Archive& archive)
-      {
-         archive(PropertyType, UniformName, Value);
-      }
-   };
+        template<typename Archive>
+        void serialize(Archive& archive)
+        {
+            archive(PropertyType, UniformName, Value);
+        }
+    };
 
-   std::string MaterialName;
-   std::string MaterialShaderName;
+    std::string MaterialName;
+    std::string MaterialShaderName;
 
-   std::vector<SerializeDataMaterialProperty> Properties;
+    std::vector<SerializeDataMaterialProperty> Properties;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(MaterialName, MaterialShaderName, Properties);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(MaterialName, MaterialShaderName, Properties);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::Material;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::Material;
+    }
 };
 
-struct SerializeDataStaticMesh
-   : public SerializeDataComponent
-{
-   std::string ModelName;
-   glm::vec3 Translation;
+struct SerializeDataStaticMesh : public SerializeDataComponent {
+    std::string ModelName;
+    glm::vec3 Translation;
 
-   glm::vec3 Rotation;
-   glm::vec3 Scale;
-   std::string LuaScriptName;
-   SerializeDataMaterial MeshMaterial;
+    glm::vec3 Rotation;
+    glm::vec3 Scale;
+    std::string LuaScriptName;
+    SerializeDataMaterial MeshMaterial;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-      archive(ModelName, Translation, Rotation, Scale, LuaScriptName, MeshMaterial);
-   }
+        archive(ModelName, Translation, Rotation, Scale, LuaScriptName, MeshMaterial);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::StaticMesh;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::StaticMesh;
+    }
 };
 
+struct SerializeDataSkeletalMesh : public SerializeDataComponent {
+    std::string ModelName;
+    glm::vec3 Translation;
 
-struct SerializeDataSkeletalMesh
-   : public SerializeDataComponent
-{
-   std::string ModelName;
-   glm::vec3 Translation;
+    glm::vec3 Rotation;
+    glm::vec3 Scale;
+    std::string LuaScriptName;
+    SerializeDataMaterial MeshMaterial;
 
-   glm::vec3 Rotation;
-   glm::vec3 Scale;
-   std::string LuaScriptName;
-   SerializeDataMaterial MeshMaterial;
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+        archive(ModelName, Translation, Rotation, Scale, LuaScriptName, MeshMaterial);
+    }
 
-      archive(ModelName, Translation, Rotation, Scale, LuaScriptName, MeshMaterial);
-   }
-
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::SkeletalMesh;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::SkeletalMesh;
+    }
 };
 
-struct SerializeDataDirLightComponent
-   : public SerializeDataComponent
-{
-   glm::vec3 Direction;
-   glm::vec3 Rotation;
+struct SerializeDataDirLightComponent : public SerializeDataComponent {
+    glm::vec3 Direction;
+    glm::vec3 Rotation;
 
-   glm::vec3 AmbientLight;
-   glm::vec3 DiffuseLight;
-   glm::vec3 SpecularLight;
+    glm::vec3 AmbientLight;
+    glm::vec3 DiffuseLight;
+    glm::vec3 SpecularLight;
 
-   bool bHasShadowMap;
-   float ShadowMapSize;
+    bool bHasShadowMap;
+    float ShadowMapSize;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-      archive(Direction, Rotation, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
-   }
+        archive(Direction, Rotation, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::DirectionalLight;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::DirectionalLight;
+    }
 };
 
-struct SerializeDataPointLightComponent
-   : public SerializeDataComponent
-{
-   glm::vec3 Translation;
+struct SerializeDataPointLightComponent : public SerializeDataComponent {
+    glm::vec3 Translation;
 
-   glm::vec3 Attenuation;
-   float RadianceRadius;
+    glm::vec3 Attenuation;
+    float RadianceRadius;
 
-   glm::vec3 AmbientLight;
-   glm::vec3 DiffuseLight;
-   glm::vec3 SpecularLight;
+    glm::vec3 AmbientLight;
+    glm::vec3 DiffuseLight;
+    glm::vec3 SpecularLight;
 
-   bool bHasShadowMap;
-   float ShadowMapSize;
+    bool bHasShadowMap;
+    float ShadowMapSize;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-      archive(Translation, Attenuation, RadianceRadius, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
-   }
+        archive(
+            Translation, Attenuation, RadianceRadius, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::PointLight;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::PointLight;
+    }
 };
 
-struct SerializeDataSpotlightComponent
-   : public SerializeDataPointLightComponent
-{
-   glm::vec3 Rotation;
+struct SerializeDataSpotlightComponent : public SerializeDataPointLightComponent {
+    glm::vec3 Rotation;
 
-   float Cutoff;
+    float Cutoff;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataPointLightComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataPointLightComponent::serialize(archive);
 
-      archive(Rotation, Cutoff);
-   }
+        archive(Rotation, Cutoff);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::Spotlight;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::Spotlight;
+    }
 };
 
-struct SerializeDataCharacterMovementComponent
-   : public SerializeDataComponent
-{
-   glm::vec3 LaunchDirection;
-   std::string CameraName;
+struct SerializeDataCharacterMovementComponent : public SerializeDataComponent {
+    glm::vec3 LaunchDirection;
+    std::string CameraName;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-      archive(LaunchDirection, CameraName);
-   }
+        archive(LaunchDirection, CameraName);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::Movement;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::Movement;
+    }
 };
 
-struct SerializeDataPlatformTraverseComponent
-   : public SerializeDataComponent
-{
-   std::string ScriptName;
+struct SerializeDataPlatformTraverseComponent : public SerializeDataComponent {
+    std::string ScriptName;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-      archive(ScriptName);
-   }
+        archive(ScriptName);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::PlatformTraverse;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::PlatformTraverse;
+    }
 };
 
-struct SerializeDataInputComponent
-   : public SerializeDataComponent
-{
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
-   }
+struct SerializeDataInputComponent : public SerializeDataComponent {
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::Input;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::Input;
+    }
 };
 
-struct SerializeDataPhysicsShape
-{
-   virtual int32_t GetShapeProxyType() = 0;
+struct SerializeDataPhysicsShape {
+    virtual int32_t GetShapeProxyType() = 0;
 };
 
-struct SerializeDataBoxPhysicsShape
-   : public SerializeDataPhysicsShape
-{
-   glm::vec3 HalfExtent;
+struct SerializeDataBoxPhysicsShape : public SerializeDataPhysicsShape {
+    glm::vec3 HalfExtent;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(HalfExtent);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(HalfExtent);
+    }
 
-   int32_t GetShapeProxyType() override
-   {
-      return BOX_SHAPE_PROXYTYPE;
-   }
+    int32_t GetShapeProxyType() override
+    {
+        return BOX_SHAPE_PROXYTYPE;
+    }
 };
 
-struct SerializeDataCapsulePhysicsShape
-   : public SerializeDataPhysicsShape
-{
-   float Radius;
-   float Height;
+struct SerializeDataCapsulePhysicsShape : public SerializeDataPhysicsShape {
+    float Radius;
+    float Height;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(Radius, Height);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(Radius, Height);
+    }
 
-   int32_t GetShapeProxyType() override
-   {
-      return CAPSULE_SHAPE_PROXYTYPE;
-   }
+    int32_t GetShapeProxyType() override
+    {
+        return CAPSULE_SHAPE_PROXYTYPE;
+    }
 };
 
-struct SerializeDataSpherePhysicsShape
-   : public SerializeDataPhysicsShape
-{
-   float Radius;
+struct SerializeDataSpherePhysicsShape : public SerializeDataPhysicsShape {
+    float Radius;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(Radius);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(Radius);
+    }
 
-   int32_t GetShapeProxyType() override
-   {
-      return SPHERE_SHAPE_PROXYTYPE;
-   }
+    int32_t GetShapeProxyType() override
+    {
+        return SPHERE_SHAPE_PROXYTYPE;
+    }
 };
 
-struct SerializeDataTranslationEulerRotation
-{
-   glm::vec3 Translation;
-   glm::vec3 Rotation;
+struct SerializeDataTranslationEulerRotation {
+    glm::vec3 Translation;
+    glm::vec3 Rotation;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(Translation, Rotation);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(Translation, Rotation);
+    }
 };
 
-struct SerializeDataCompoundChildShape
-{
-   std::shared_ptr<SerializeDataPhysicsShape> Child;
+struct SerializeDataCompoundChildShape {
+    std::shared_ptr<SerializeDataPhysicsShape> Child;
 
-   SerializeDataTranslationEulerRotation ChildTransform;
+    SerializeDataTranslationEulerRotation ChildTransform;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(Child, ChildTransform);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(Child, ChildTransform);
+    }
 };
 
-struct SerializeDataCompoundPhysicsShape
-   : public SerializeDataPhysicsShape
-{
-   std::vector<SerializeDataCompoundChildShape> ChildrenWithRotation;
+struct SerializeDataCompoundPhysicsShape : public SerializeDataPhysicsShape {
+    std::vector<SerializeDataCompoundChildShape> ChildrenWithRotation;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(ChildrenWithRotation);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(ChildrenWithRotation);
+    }
 
-   int32_t GetShapeProxyType() override
-   {
-      return COMPOUND_SHAPE_PROXYTYPE;
-   }
+    int32_t GetShapeProxyType() override
+    {
+        return COMPOUND_SHAPE_PROXYTYPE;
+    }
 };
 
-struct SerializeDataPhysicsComponent
-   : public SerializeDataComponent
-{
-   std::shared_ptr<SerializeDataPhysicsShape> PhysicsShape;
+struct SerializeDataPhysicsComponent : public SerializeDataComponent {
+    std::shared_ptr<SerializeDataPhysicsShape> PhysicsShape;
 
-   ePhysicsBodyType BodyType;
-   /*Motion modifiers*/
-   glm::vec3 LinearFactor;
-   glm::vec3 AngularFactor;
-   /*Motion modifiers*/
-   float Mass;
+    ePhysicsBodyType BodyType;
+    /*Motion modifiers*/
+    glm::vec3 LinearFactor;
+    glm::vec3 AngularFactor;
+    /*Motion modifiers*/
+    float Mass;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-      archive(PhysicsShape, BodyType, LinearFactor, AngularFactor, Mass);
-   }
+        archive(PhysicsShape, BodyType, LinearFactor, AngularFactor, Mass);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::Physics;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::Physics;
+    }
 };
 
-struct SerializeDataTweener
-   : public SerializeDataBase
-{
-   struct SerializeTweenerBinding
-   {
-      std::string EngineObjectName;
-      std::string BindingName;
-      std::string EngineObjectPropertyName;
+struct SerializeDataTweener : public SerializeDataBase {
+    struct SerializeTweenerBinding {
+        std::string EngineObjectName;
+        std::string BindingName;
+        std::string EngineObjectPropertyName;
 
-      template <typename Archive>
-      void serialize(Archive& archive)
-      {
-         archive(EngineObjectName, BindingName, EngineObjectPropertyName);
-      }
-   };
+        template<typename Archive>
+        void serialize(Archive& archive)
+        {
+            archive(EngineObjectName, BindingName, EngineObjectPropertyName);
+        }
+    };
 
-   std::string TweenerRelPath;
+    std::string TweenerRelPath;
 
-   std::vector<SerializeTweenerBinding> Bindings;
+    std::vector<SerializeTweenerBinding> Bindings;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(TweenerRelPath, Bindings);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(TweenerRelPath, Bindings);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::Tweener;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::Tweener;
+    }
 };
 
-struct SerializeDataActor
-   : public SerializeDataBase
-{
-   std::string ActorName;
-   glm::vec3 RootCompTranslation;
-   glm::vec3 RootCompRotation;
-   glm::vec3 RootCompScale;
-   std::shared_ptr<SerializeDataTweener> TweenerData;
-   std::vector<std::shared_ptr<SerializeDataBase>> ComponentsData;
+struct SerializeDataActor : public SerializeDataBase {
+    std::string ActorName;
+    glm::vec3 RootCompTranslation;
+    glm::vec3 RootCompRotation;
+    glm::vec3 RootCompScale;
+    std::shared_ptr<SerializeDataTweener> TweenerData;
+    std::vector<std::shared_ptr<SerializeDataBase>> ComponentsData;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(ActorName, RootCompTranslation, RootCompRotation, RootCompScale, TweenerData, ComponentsData);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(ActorName, RootCompTranslation, RootCompRotation, RootCompScale, TweenerData, ComponentsData);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::Actor;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::Actor;
+    }
 };
 
 struct SerializeDataPlanarReflectionComponent;
 
-struct SerializeDataCamera
-   : public SerializeDataBase
-{
-   std::string CameraName;
-   std::string CameraType;
-   glm::ivec4 ViewPortInfo;
-   float InitPitchDeg;
-   float InitYawDeg;
+struct SerializeDataCamera : public SerializeDataBase {
+    std::string CameraName;
+    std::string CameraType;
+    glm::ivec4 ViewPortInfo;
+    float InitPitchDeg;
+    float InitYawDeg;
 
-   std::shared_ptr<SerializeDataPlanarReflectionComponent> mPlanarReflectionComponentData;
+    std::shared_ptr<SerializeDataPlanarReflectionComponent> mPlanarReflectionComponentData;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(CameraName, CameraType, ViewPortInfo, InitPitchDeg, InitYawDeg, mPlanarReflectionComponentData);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(CameraName, CameraType, ViewPortInfo, InitPitchDeg, InitYawDeg, mPlanarReflectionComponentData);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::Camera;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::Camera;
+    }
 };
 
-struct SerializeDataThirdPersonCamera
-   : public SerializeDataCamera
-{
-   float CameraDistanceToThirdPersonTarget;
+struct SerializeDataThirdPersonCamera : public SerializeDataCamera {
+    float CameraDistanceToThirdPersonTarget;
 
-   glm::vec3 ThirdPersonTargetOffset;
+    glm::vec3 ThirdPersonTargetOffset;
 
-   std::string ThirdPersonTargetActorName;
+    std::string ThirdPersonTargetActorName;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataCamera::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataCamera::serialize(archive);
 
-      archive(CameraDistanceToThirdPersonTarget, ThirdPersonTargetOffset, ThirdPersonTargetActorName);
-   }
+        archive(CameraDistanceToThirdPersonTarget, ThirdPersonTargetOffset, ThirdPersonTargetActorName);
+    }
 };
 
-struct SerializeDataFirstPersonCamera
-   : public SerializeDataCamera
-{
-   glm::vec3 CameraPosition;
+struct SerializeDataFirstPersonCamera : public SerializeDataCamera {
+    glm::vec3 CameraPosition;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataCamera::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataCamera::serialize(archive);
 
-      archive(CameraPosition);
-   }
+        archive(CameraPosition);
+    }
 };
 
-struct SerializeDataCharacterPhysicsComponent
-   : public SerializeDataComponent
-{
-   float CapsuleRadius;
-   float CapsuleHeight;
-   float Mass;
-   float StepHeight;
+struct SerializeDataCharacterPhysicsComponent : public SerializeDataComponent {
+    float CapsuleRadius;
+    float CapsuleHeight;
+    float Mass;
+    float StepHeight;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-      archive(CapsuleRadius, CapsuleHeight, Mass, StepHeight);
-   }
+        archive(CapsuleRadius, CapsuleHeight, Mass, StepHeight);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::CharacterPhysics;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::CharacterPhysics;
+    }
 };
 
-struct SerializeDataSkyboxComponent
-   : public SerializeDataComponent
-{
-   glm::vec3 Scale;
+struct SerializeDataSkyboxComponent : public SerializeDataComponent {
+    glm::vec3 Scale;
 
-   SerializeDataMaterial Material;
+    SerializeDataMaterial Material;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-      archive(Scale, Material);
-   }
+        archive(Scale, Material);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::Skybox;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::Skybox;
+    }
 };
 
-struct SerializeDataPlanarReflectionComponent
-   : public SerializeDataComponent
-{
-   glm::vec3 Translation;
-   glm::vec3 EulerAnglesRotation;
-   glm::vec3 Scale;
-   std::string OwnerCameraName;
-   glm::vec4 ViewPortInfo;
+struct SerializeDataPlanarReflectionComponent : public SerializeDataComponent {
+    glm::vec3 Translation;
+    glm::vec3 EulerAnglesRotation;
+    glm::vec3 Scale;
+    std::string OwnerCameraName;
+    glm::vec4 ViewPortInfo;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      SerializeDataComponent::serialize(archive);
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        SerializeDataComponent::serialize(archive);
 
-      archive(Translation, EulerAnglesRotation, Scale, OwnerCameraName, ViewPortInfo);
-   }
+        archive(Translation, EulerAnglesRotation, Scale, OwnerCameraName, ViewPortInfo);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::PlanarReflection;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::PlanarReflection;
+    }
 };
 
-struct SerializeDataPlayerController
-   : public SerializeDataBase
-{
-   std::string BindedActorName;
+struct SerializeDataPlayerController : public SerializeDataBase {
+    std::string BindedActorName;
 
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(BindedActorName);
-   }
+    template<typename Archive>
+    void serialize(Archive& archive)
+    {
+        archive(BindedActorName);
+    }
 
-   SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::HumanoidPlayerController;
-   }
+    SerializeDataType GetSerializeDataType() const override
+    {
+        return SerializeDataBase::SerializeDataType::HumanoidPlayerController;
+    }
 
-   SerializeDataPlayerController(const std::string& actorName)
-      : BindedActorName(actorName)
-   {
-   }
+    SerializeDataPlayerController(const std::string& actorName)
+        : BindedActorName(actorName)
+    {
+    }
 
-   SerializeDataPlayerController() = default;
+    SerializeDataPlayerController() = default;
 };
 
 CEREAL_REGISTER_TYPE(SerializeDataActor);

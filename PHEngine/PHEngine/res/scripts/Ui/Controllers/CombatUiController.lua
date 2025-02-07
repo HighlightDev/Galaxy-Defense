@@ -68,7 +68,6 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
                             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
                         print("UiOverlayManager:openOverlay(host, PauseMenuOverlay)")
                         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
-                        UiOverlayManager:closeBackgroundOverlay(host, "CombatOverlay")
                     end
                 end
             end
@@ -104,9 +103,9 @@ local function initialize(host)
     UiOverlays["PauseSettingsOverlay"] = createPauseSettingsOverlay(host)
     UiOverlays["PauseMenuOverlay"] = createPauseOverlay(host)
     UiOverlays["LevelFailedOverlay"] = createLevelFailedOverlay(host)
+    UiOverlays["CombatOverlay"] = createCombatOverlay(host)
+    UiOverlays["CombatPreparationOverlay"] = createCombatPreparationOverlay(host)
     UiBackgroundOverlays["PlayerHUDOverlay"] = createPlayerHUDOverlay(host)
-    UiBackgroundOverlays["CombatOverlay"] = createCombatOverlay(host)
-    UiBackgroundOverlays["CombatPreparationOverlay"] = createCombatPreparationOverlay(host)
 end
 
 function System_OnStart(host)
@@ -193,7 +192,8 @@ function System_OnGameEventTriggered(host, eventName, jsonArgs)
                 if GameModeType.SPACE_STATION_PLACEMENT == newGameModeType then
                     UiOverlayManager:openOverlay(host, "CombatPreparationOverlay")
                 elseif GameModeType.COMBAT == newGameModeType then
-                    UiOverlayManager:openBackgroundOverlay(host, "CombatOverlay")
+                    UiOverlayManager:closeCurrentOverlay(host)
+                    UiOverlayManager:openOverlay(host, "CombatOverlay")
                 end
             end
         end

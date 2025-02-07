@@ -1,50 +1,48 @@
 #pragma once
 
-#include "Implementation/Levels/LevelBase.h"
 #include "Implementation/Levels/CombatLevel/Controllers/CombatLevelUiController.h"
+#include "Implementation/Levels/LevelBase.h"
 #include "Implementation/Levels/LevelData.h"
 
 using namespace EngineCore;
 
-namespace Game
-{
-   class CombatController;
+namespace Game {
+class CombatController;
 
-   class CombatLevel : public LevelBase
-   {
-      using Base = LevelBase;
+class CombatLevel : public LevelBase {
+    using Base = LevelBase;
 
-      std::shared_ptr<CombatController> mCombatController;
+    std::shared_ptr<CombatController> mCombatController;
 
-      std::unique_ptr<CombatLevelUiController> mUiController;
+    std::unique_ptr<CombatLevelUiController> mUiController;
 
-   public:
-      CombatLevel();
+public:
+    CombatLevel();
 
-      ~CombatLevel() override;
+    ~CombatLevel() override;
 
-      void InitLevel() override;
+    void InitLevel() override;
 
-      void PreLevelInit() override;
+    void PreLevelInit() override;
 
-      void PostLevelInit() override;
+    void PostLevelInit() override;
 
-      void PostPlayLevelFinished() override;
+    void PostPlayLevelFinished() override;
 
-      void RunLuaBuildLevelScript();
+    void RunLuaBuildLevelScript();
 
-      void UnloadLevel() override;
+    void UnloadLevel() override;
 
-      void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-      void UnpausableTick(const float deltaTime) override;
-      
-      void RestartLuaScripts() override;
+    void UnpausableTick(const float deltaTime) override;
 
-   private:
-      void CreateScene();
+    void RestartLuaScripts() override;
 
-      LevelData LoadLevelDataFromFile(const std::string& levelName) const;
-   };
+private:
+    void CreateScene();
 
-}
+    LevelData LoadLevelDataFromFile(const std::string& levelName) const;
+};
+
+} // namespace Game

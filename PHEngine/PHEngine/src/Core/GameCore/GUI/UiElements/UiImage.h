@@ -1,108 +1,101 @@
 #pragma once
 
-#include "UiItemBase.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
+#include "UiItemBase.h"
 
 #include <glm/vec3.hpp>
 
-namespace Graphics
-{
-    namespace Proxy
-    {
-        class UiSceneProxyBase;
-    }
+namespace Graphics {
+namespace Proxy {
+class UiSceneProxyBase;
 }
+} // namespace Graphics
 
-namespace EngineCore
-{
-    namespace Scripts
-    {
-        class LuaProxy;
-    }
+namespace EngineCore {
+namespace Scripts {
+class LuaProxy;
 }
+} // namespace EngineCore
 
 using namespace Graphics::Texture;
 
-namespace EngineCore
-{
-    namespace GUI
-    {
-        class UiCanvas;
+namespace EngineCore {
+namespace GUI {
+class UiCanvas;
 
-        class UiImage : public UiItemBase
-        {
-            std::string mTextureSrc;
+class UiImage : public UiItemBase {
+    std::string mTextureSrc;
 
-            std::shared_ptr<ITexture> mTexture;
+    std::shared_ptr<ITexture> mTexture;
 
-            glm::vec3 mColor;
+    glm::vec3 mColor;
 
-            bool mIsCustomColor;
+    bool mIsCustomColor;
 
-            float mOpacity;
+    float mOpacity;
 
-            float mRotationDegrees;
+    float mRotationDegrees;
 
-            bool mIsFlipped;
+    bool mIsFlipped;
 
-        public:
-            explicit UiImage(const std::string& name = std::string(""));
+public:
+    explicit UiImage(const std::string& name = std::string(""));
 
-            ~UiImage() override;
+    ~UiImage() override;
 
-            void SetTextureSrc(const std::string &textureSrc);
+    void SetTextureSrc(const std::string& textureSrc);
 
-            void SetTexture(const std::shared_ptr<ITexture> &texture);
+    void SetTexture(const std::shared_ptr<ITexture>& texture);
 
-            std::string GetTextureSrc() const;
+    std::string GetTextureSrc() const;
 
-            std::shared_ptr<ITexture> GetTexture() const;
+    std::shared_ptr<ITexture> GetTexture() const;
 
-            void SetTextureColor(const glm::vec3 &color);
+    void SetTextureColor(const glm::vec3& color);
 
-            void SetTextureColor(const uint8_t r, const uint8_t g, const uint8_t b);
+    void SetTextureColor(const uint8_t r, const uint8_t g, const uint8_t b);
 
-            glm::vec3 GetTextureColor() const;
+    glm::vec3 GetTextureColor() const;
 
-            void SetIsCustomColorEnabled(const bool isCustomColorEnabled);
+    void SetIsCustomColorEnabled(const bool isCustomColorEnabled);
 
-            bool IsCustomColorEnabled() const;
+    bool IsCustomColorEnabled() const;
 
-            void SetOpacity(const float opacity);
+    void SetOpacity(const float opacity);
 
-            float GetOpacity() const;
+    float GetOpacity() const;
 
-            void SetRotationDegrees(const float rotationDegrees);
+    void SetRotationDegrees(const float rotationDegrees);
 
-            float GetRotationDegrees() const;
+    float GetRotationDegrees() const;
 
-            void SetIsFlipped(const bool isFlipped);
+    void SetIsFlipped(const bool isFlipped);
 
-            bool GetIsFlipped() const;
+    bool GetIsFlipped() const;
 
-            std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
+    std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
-            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
+    std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
-            void OnPropertiesShouldBeUpdatedOnRenderThread() override;
+    void OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
-            void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+    void OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
-            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+    void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
-            std::string GetUiTypeString() const override;
+    std::string GetUiTypeString() const override;
 
-        protected:
-            void OnRegistered() override;
+protected:
+    void OnRegistered() override;
 
-            void OnUnregistered() override;
+    void OnUnregistered() override;
 
-        private:
-            void SyncDataOnRenderThread();
+private:
+    void SyncDataOnRenderThread();
 
-            void SyncDataOnLuaThread();
+    void SyncDataOnLuaThread();
 
-            void ReallocateTexture(const bool updateRenderThreadData, const bool updateLuaThreadData);
-        };
-    }
-}
+    void ReallocateTexture(const bool updateRenderThreadData, const bool updateLuaThreadData);
+};
+} // namespace GUI
+} // namespace EngineCore

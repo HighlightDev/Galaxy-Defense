@@ -7,13 +7,11 @@
 
 using namespace EngineCore;
 
-namespace Game
-{
-    class AiActorController : public ActorController
-    {
-    public:
-        AiActorController(const std::shared_ptr<Actor>& actor);
+namespace Game {
+class AiActorController : public ActorController {
+public:
+    AiActorController(const std::shared_ptr<Actor>& actor);
 
-        void Tick(const float deltaTime) override;
-    };
-}
+    void Tick(const float deltaTime) override;
+};
+} // namespace Game

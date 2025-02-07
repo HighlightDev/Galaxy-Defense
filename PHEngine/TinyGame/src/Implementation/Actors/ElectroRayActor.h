@@ -1,80 +1,75 @@
 #pragma once
 
-#include "Core/GameCore/BoundingBox3D.h"
 #include "Core/CommonCore/Timer.h"
-
+#include "Core/GameCore/BoundingBox3D.h"
 #include "Implementation/Actors/MissileActor.h"
 
-#include <functional>
-#include <unordered_map>
-#include <memory>
 #include <glm/vec3.hpp>
+
+#include <functional>
+#include <memory>
+#include <unordered_map>
 
 using namespace EngineCore;
 
-namespace EngineCore
-{
-    class RuntimeGeneratedLineComponent;
-    class Actor;
-}
+namespace EngineCore {
+class RuntimeGeneratedLineComponent;
+class Actor;
+} // namespace EngineCore
 
-namespace Game
-{
-    class MissileExplosionVisitorBase;
+namespace Game {
+class MissileExplosionVisitorBase;
 
-    class ElectroRayActor
-        : public MissileActor
-    {
-        std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> mLineComponent;
-        std::weak_ptr<::EngineCore::Actor> mSpaceshipWhoSpawnedMeWp;
+class ElectroRayActor : public MissileActor {
+    std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> mLineComponent;
+    std::weak_ptr<::EngineCore::Actor> mSpaceshipWhoSpawnedMeWp;
 
-        glm::vec3 mElectroLineBegin;
-        glm::vec3 mElectroLineEnd;
+    glm::vec3 mElectroLineBegin;
+    glm::vec3 mElectroLineEnd;
 
-        float mElectroLineOriginSpeed;
-        float mElectroLineDestinationSpeed;
+    float mElectroLineOriginSpeed;
+    float mElectroLineDestinationSpeed;
 
-        GameThreadTimer mElectroLineOriginStartMovementDelayTimer;
-        bool bLineOriginStartMovement;
+    GameThreadTimer mElectroLineOriginStartMovementDelayTimer;
+    bool bLineOriginStartMovement;
 
-        std::weak_ptr<::EngineCore::Actor> mCollidedSpaceship;
-        bool bElectroLineCollided;
-        
-        std::shared_ptr<EngineObjectProperty<float>> mOpacity;
-        
-    public:
-        ElectroRayActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
+    std::weak_ptr<::EngineCore::Actor> mCollidedSpaceship;
+    bool bElectroLineCollided;
 
-        bool IsInsideLevel(const BoundingBox3D &boundingBox) const override;
+    std::shared_ptr<EngineObjectProperty<float>> mOpacity;
 
-        void Tick(const float deltaTime) override;
+public:
+    ElectroRayActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
-        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType) override;
+    bool IsInsideLevel(const BoundingBox3D& boundingBox) const override;
 
-        void TriggerExplosion() override;
+    void Tick(const float deltaTime) override;
 
-        void TriggerExplosionFinished() override;
+    void TriggerSpawn(const glm::vec3& position, const eDamageDealerType ownerType) override;
 
-        void TriggerDisabled() override;
+    void TriggerExplosion() override;
 
-        void SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> &lineComponent);
+    void TriggerExplosionFinished() override;
 
-        void SetSpawnerSpaceship(const std::weak_ptr<::EngineCore::Actor> &spawnerSpaceship);
+    void TriggerDisabled() override;
 
-        void SetElectroLineOriginSpeed(const float speed);
+    void SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>& lineComponent);
 
-        void SetElectroLineDestinationSpeed(const float speed);
+    void SetSpawnerSpaceship(const std::weak_ptr<::EngineCore::Actor>& spawnerSpaceship);
 
-        std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
+    void SetElectroLineOriginSpeed(const float speed);
 
-    private:
+    void SetElectroLineDestinationSpeed(const float speed);
 
-        void Initialize();
+    std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
 
-        void OnElectroLineOriginStartMovementDelayTimerTimeout();
+private:
+    void Initialize();
 
-        void OnElectroLineFadeoutTimerTimeout();
+    void OnElectroLineOriginStartMovementDelayTimerTimeout();
 
-        void DropState();
-    };
-}
+    void OnElectroLineFadeoutTimerTimeout();
+
+    void DropState();
+};
+} // namespace Game

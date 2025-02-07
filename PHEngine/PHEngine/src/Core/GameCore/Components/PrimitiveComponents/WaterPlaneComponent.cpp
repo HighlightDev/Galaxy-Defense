@@ -1,124 +1,126 @@
 #include "WaterPlaneComponent.h"
-#include "Core/GameCore/Scene.h"
-#include "Core/GraphicsCore/SceneProxy/WaterPlaneSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
+
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
+#include "Core/GraphicsCore/SceneProxy/WaterPlaneSceneProxy.h"
 
 #include <glm/vec3.hpp>
 
 using namespace Graphics::Renderer;
 
-namespace EngineCore
+namespace EngineCore {
+
+WaterPlaneComponent::WaterPlaneComponent(
+    const std::shared_ptr<MeshComponentData>& data, const MeshRenderData& renderData, WaterQualityFlag waterQuality)
+    : PrimitiveComponent(data->EngineObjectName, data->m_translation, data->m_eulerRotationDegrees, data->m_scale)
+    , m_waveSpeed(0.4f)
+    , m_renderData(renderData)
+    , m_waterQuality(waterQuality)
 {
+}
 
-   WaterPlaneComponent::WaterPlaneComponent(const std::shared_ptr<MeshComponentData> &data, const MeshRenderData &renderData,
-                                            WaterQualityFlag waterQuality)
-       : PrimitiveComponent(data->EngineObjectName, data->m_translation, data->m_eulerRotationDegrees, data->m_scale),
-         m_waveSpeed(0.4f),
-         m_renderData(renderData),
-         m_waterQuality(waterQuality)
-   {
-   }
+WaterPlaneComponent::~WaterPlaneComponent()
+{
+}
 
-   WaterPlaneComponent::~WaterPlaneComponent()
-   {
-   }
+eComponentType WaterPlaneComponent::GetComponentType() const
+{
+    return PRIMITIVE_COMPONENT;
+}
 
-   eComponentType WaterPlaneComponent::GetComponentType() const
-   {
-      return PRIMITIVE_COMPONENT;
-   }
+void WaterPlaneComponent::Tick(const float deltaTime)
+{
+    PrimitiveComponent::Tick(deltaTime);
 
-   void WaterPlaneComponent::Tick(const float deltaTime)
-   {
-      PrimitiveComponent::Tick(deltaTime);
+    if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+        SyncRenderData();
+        bIsRenderDataDirty = false;
+    }
+}
 
-      if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
-      {
-         SyncRenderData();
-         bIsRenderDataDirty = false;
-      }
-   }
+float WaterPlaneComponent::GetWaveStrength() const
+{
+    return m_waveStrength;
+}
 
-   float WaterPlaneComponent::GetWaveStrength() const
-   {
-      return m_waveStrength;
-   }
+float WaterPlaneComponent::GetTransparencyDepth() const
+{
+    return m_transparencyDepth;
+}
 
-   float WaterPlaneComponent::GetTransparencyDepth() const
-   {
-      return m_transparencyDepth;
-   }
+void WaterPlaneComponent::SetWaveStrength(float waveStr)
+{
+    if (!EngineMath::FloatsNearEqual(m_waveStrength, waveStr)) {
+        m_waveStrength = waveStr;
+    }
+}
 
-   void WaterPlaneComponent::SetWaveStrength(float waveStr)
-   {
-      if (!EngineMath::FloatsNearEqual(m_waveStrength, waveStr))
-      {
-         m_waveStrength = waveStr;
-      }
-   }
+void WaterPlaneComponent::SetTransparencyDepth(float transparencyDepth)
+{
+    if (!EngineMath::FloatsNearEqual(m_transparencyDepth, transparencyDepth)) {
+        m_transparencyDepth = transparencyDepth;
+        bIsRenderDataDirty = true;
+    }
+}
 
-   void WaterPlaneComponent::SetTransparencyDepth(float transparencyDepth)
-   {
-      if (!EngineMath::FloatsNearEqual(m_transparencyDepth, transparencyDepth))
-      {
-         m_transparencyDepth = transparencyDepth;
-         bIsRenderDataDirty = true;
-      }
-   }
+std::shared_ptr<PrimitiveSceneProxy> WaterPlaneComponent::CreateSceneProxy() const
+{
+    return std::make_shared<WaterPlaneSceneProxy>(this);
+}
 
-   std::shared_ptr<PrimitiveSceneProxy> WaterPlaneComponent::CreateSceneProxy() const
-   {
-      return std::make_shared<WaterPlaneSceneProxy>(this);
-   }
+float WaterPlaneComponent::GetNearClipPlane() const
+{
+    return m_nearClipPlane;
+}
 
-   float WaterPlaneComponent::GetNearClipPlane() const
-   {
-      return m_nearClipPlane;
-   }
+float WaterPlaneComponent::GetFarClipPlane() const
+{
+    return m_farClipPlane;
+}
 
-   float WaterPlaneComponent::GetFarClipPlane() const
-   {
-      return m_farClipPlane;
-   }
+void WaterPlaneComponent::SetNearClipPlane(float nearClipPlane)
+{
+    if (!EngineMath::FloatsNearEqual(nearClipPlane, m_nearClipPlane)) {
+        m_nearClipPlane = nearClipPlane;
+        bIsRenderDataDirty = true;
+    }
+}
 
-   void WaterPlaneComponent::SetNearClipPlane(float nearClipPlane)
-   {
-      if (!EngineMath::FloatsNearEqual(nearClipPlane, m_nearClipPlane))
-      {
-         m_nearClipPlane = nearClipPlane;
-         bIsRenderDataDirty = true;
-      }
-   }
+void WaterPlaneComponent::SetFarClipPlane(float farClipPlane)
+{
+    if (!EngineMath::FloatsNearEqual(farClipPlane, m_farClipPlane)) {
+        m_farClipPlane = farClipPlane;
+        bIsRenderDataDirty = true;
+    }
+}
 
-   void WaterPlaneComponent::SetFarClipPlane(float farClipPlane)
-   {
-      if (!EngineMath::FloatsNearEqual(farClipPlane, m_farClipPlane))
-      {
-         m_farClipPlane = farClipPlane;
-         bIsRenderDataDirty = true;
-      }
-   }
-
-   void WaterPlaneComponent::SyncRenderData()
-   {
-      if (const auto &sceneSp = m_sceneWP.lock())
-      {
-         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
-         {
+void WaterPlaneComponent::SyncRenderData()
+{
+    if (const auto& sceneSp = m_sceneWP.lock()) {
+        if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
             static const uint64_t functionId = Hash("WaterPlaneComponent::SyncRenderData");
 
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, functionId, GetObjectId(), [sceneRenderer, sceneProxyId = mSceneProxyId, farClipPlane = m_farClipPlane, nearClipPlane = m_nearClipPlane, transparencyDepth = m_transparencyDepth, waveStrength = m_waveStrength]()
-                                                                                {
-            if (const auto &primitiveProxySp = std::static_pointer_cast<WaterPlaneSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId)))
-            {
-               primitiveProxySp->SetFarClipPlane(farClipPlane); 
-               primitiveProxySp->SetNearClipPlane(nearClipPlane);
-               primitiveProxySp->SetTransparencyDepth(transparencyDepth);
-               primitiveProxySp->SetWaveStrength(waveStrength);
-            } });
-         }
-      }
-   }
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                functionId,
+                GetObjectId(),
+                [sceneRenderer,
+                 sceneProxyId = mSceneProxyId,
+                 farClipPlane = m_farClipPlane,
+                 nearClipPlane = m_nearClipPlane,
+                 transparencyDepth = m_transparencyDepth,
+                 waveStrength = m_waveStrength]() {
+                    if (const auto& primitiveProxySp = std::static_pointer_cast<WaterPlaneSceneProxy>(
+                            sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
+                        primitiveProxySp->SetFarClipPlane(farClipPlane);
+                        primitiveProxySp->SetNearClipPlane(nearClipPlane);
+                        primitiveProxySp->SetTransparencyDepth(transparencyDepth);
+                        primitiveProxySp->SetWaveStrength(waveStrength);
+                    }
+                });
+        }
+    }
 }
+} // namespace EngineCore

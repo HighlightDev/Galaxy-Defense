@@ -1,14 +1,11 @@
 #pragma once
 
-namespace EngineCore
-{
-    class ACamera;
+namespace EngineCore {
+class ACamera;
 }
 
-namespace Game
-{
-    struct ICameraTransformChangeNotifyable
-    {
-        virtual void OnCameraTransformChanged(::EngineCore::ACamera* eventSrc) = 0;
-    };
-}
+namespace Game {
+struct ICameraTransformChangeNotifyable {
+    virtual void OnCameraTransformChanged(::EngineCore::ACamera* eventSrc) = 0;
+};
+} // namespace Game

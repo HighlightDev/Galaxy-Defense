@@ -1,27 +1,17 @@
 #pragma once
 
-#include <string>
 #include <map>
+#include <string>
 
-namespace IO
-{
-   enum class eResourceType 
-   {
-      UNDEFINED_TYPE,
-      TEXTURE,
-      MESH,
-      AUDIO,
-      AUDIO_STREAM
-   };
+namespace IO {
+enum class eResourceType { UNDEFINED_TYPE, TEXTURE, MESH, AUDIO, AUDIO_STREAM };
 
-   struct ResourceExtensionsInfo
-   {
-      static eResourceType GetResourceTypeByFileExtension(const std::string& filePath);
+struct ResourceExtensionsInfo {
+    static eResourceType GetResourceTypeByFileExtension(const std::string& filePath);
 
-   private:
+private:
+    static std::map<std::string, eResourceType> Extensions;
 
-      static std::map<std::string, eResourceType> Extensions;
-
-      static eResourceType GetResourceType(const std::string& extensionName);
-   };
-}
+    static eResourceType GetResourceType(const std::string& extensionName);
+};
+} // namespace IO

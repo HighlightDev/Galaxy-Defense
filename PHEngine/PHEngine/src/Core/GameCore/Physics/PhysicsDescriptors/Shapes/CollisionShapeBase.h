@@ -2,30 +2,27 @@
 
 #include <BulletPhys/btBulletDynamicsCommon.h>
 
-namespace EnginePhysics
-{
+namespace EnginePhysics {
 
-   struct CollisionShapeBase
-   {
-   protected:
+struct CollisionShapeBase {
+protected:
+    btCollisionShape* mCollisionShape = nullptr;
 
-      btCollisionShape* mCollisionShape = nullptr;
+public:
+    CollisionShapeBase(btCollisionShape* shape)
+        : mCollisionShape(shape)
+    {
+    }
 
-   public:
+    virtual ~CollisionShapeBase()
+    {
+        delete mCollisionShape;
+    }
 
-      CollisionShapeBase(btCollisionShape* shape)
-         : mCollisionShape(shape)
-      {
-      }
+    inline btCollisionShape* GetCollisionShape() const
+    {
 
-      virtual ~CollisionShapeBase()
-      {
-         delete mCollisionShape;
-      }
-
-      inline btCollisionShape* GetCollisionShape() const {
-
-         return mCollisionShape;
-      }
-   };
-}
+        return mCollisionShape;
+    }
+};
+} // namespace EnginePhysics

@@ -1,39 +1,36 @@
 #pragma once
 
-#include "PointLightSceneProxy.h"
 #include "Core/GameCore/Components/SpotlightComponent.h"
 #include "Core/GraphicsCore/Shadow/ProjectedSpotlightShadowInfo.h"
+#include "PointLightSceneProxy.h"
 
 using namespace EngineCore;
 
-namespace Graphics
-{
-   namespace Proxy
-   {
+namespace Graphics {
+namespace Proxy {
 
-      class SpotlightSceneProxy : public PointLightSceneProxy
-      {
-         float mCutoff;
+class SpotlightSceneProxy : public PointLightSceneProxy {
+    float mCutoff;
 
-      public:
-         SpotlightSceneProxy(const SpotlightComponent *component);
+public:
+    SpotlightSceneProxy(const SpotlightComponent* component);
 
-         ~SpotlightSceneProxy() override;
+    ~SpotlightSceneProxy() override;
 
-         void PostInitialize() override;
+    void PostInitialize() override;
 
-         glm::vec3 GetDirection() const;
+    glm::vec3 GetDirection() const;
 
-         glm::vec3 GetTransformedDirectionVector(const glm::vec4 &initialDirection) const;
+    glm::vec3 GetTransformedDirectionVector(const glm::vec4& initialDirection) const;
 
-         float GetCutoff() const;
+    float GetCutoff() const;
 
-         LightSceneProxyType GetLightProxyType() const override;
+    LightSceneProxyType GetLightProxyType() const override;
 
-         std::shared_ptr<ProjectedSpotlightShadowInfo> GetProjectedSpotLightShadowInfo();
+    std::shared_ptr<ProjectedSpotlightShadowInfo> GetProjectedSpotLightShadowInfo();
 
-         std::shared_ptr<ProjectedShadowInfo> GetShadowInfo() override;
-      };
+    std::shared_ptr<ProjectedShadowInfo> GetShadowInfo() override;
+};
 
-   }
-}
+} // namespace Proxy
+} // namespace Graphics

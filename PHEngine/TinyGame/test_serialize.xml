@@ -10,7 +10,8 @@
 				<value4>dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg</value4>
 				<value5>Brick_Medieval_albedo.jpg</value5>
 				<value6>Brick_Medieval_normal.jpg</value6>
-				<value7>nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg</value7>
+				<value7>
+					nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg</value7>
 				<value8>brick_nm_mid.jpg</value8>
 				<value9>Brick_Medieval_roughness.jpg</value9>
 				<value10>dummy_metallic_roughness.png</value10>
@@ -674,7 +675,8 @@
 												<value0>
 													<value0>
 														<polymorphic_id>2147483655</polymorphic_id>
-														<polymorphic_name>SerializeDataSpherePhysicsShape</polymorphic_name>
+														<polymorphic_name>
+															SerializeDataSpherePhysicsShape</polymorphic_name>
 														<ptr_wrapper>
 															<id>2147483666</id>
 															<data>
@@ -779,12 +781,14 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>dayTexture</value1>
-											<value2>dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg</value2>
+											<value2>
+												dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>nightTexture</value1>
-											<value2>nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg</value2>
+											<value2>
+												nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg</value2>
 										</value1>
 										<value2>
 											<value0>float</value0>
@@ -957,7 +961,7 @@
 				<value4>
 					<polymorphic_id>0</polymorphic_id>
 				</value4>
-				<value5 size="dynamic"/>
+				<value5 size="dynamic" />
 			</value8>
 		</value1>
 		<value2>
@@ -1030,4 +1034,3 @@
 		</value3>
 	</value0>
 </cereal>
-

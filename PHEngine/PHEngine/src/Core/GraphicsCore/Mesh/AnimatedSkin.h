@@ -1,32 +1,30 @@
 #pragma once
 
-#include "Skin.h"
 #include "AnimatedMeshData.h"
+#include "Skin.h"
 
-namespace Graphics
-{
-	namespace Mesh
-	{
+namespace Graphics {
+namespace Mesh {
 
-		class AnimatedSkin : public Skin
-		{
-			std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
+class AnimatedSkin : public Skin {
+    std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
 
-		public:
-			AnimatedSkin(const std::shared_ptr<VertexArrayObject> &vao,
-						 std::shared_ptr<AnimatedMeshData> animatedMeshData,
-						 const BoundingBox3D &boundingBox,
-						 const std::string &meshName);
+public:
+    AnimatedSkin(
+        const std::shared_ptr<VertexArrayObject>& vao,
+        std::shared_ptr<AnimatedMeshData> animatedMeshData,
+        const BoundingBox3D& boundingBox,
+        const std::string& meshName);
 
-			~AnimatedSkin();
+    ~AnimatedSkin();
 
-			std::shared_ptr<AnimatedMeshData> GetAnimatedMeshData()
-			{
-				return m_animatedMeshData;
-			}
+    std::shared_ptr<AnimatedMeshData> GetAnimatedMeshData()
+    {
+        return m_animatedMeshData;
+    }
 
-			void CleanUp() override;
-		};
+    void CleanUp() override;
+};
 
-	}
-}
+} // namespace Mesh
+} // namespace Graphics

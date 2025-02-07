@@ -1,102 +1,101 @@
 #pragma once
 
-#include "State.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Tweener/ITweenController.h"
 #include "Core/GameCore/Tweener/ITweenStateChangeNotifyable.h"
+#include "State.h"
 
-#include <unordered_map>
 #include <optional>
+#include <unordered_map>
 
-namespace EngineCore
-{
-   class Actor;
+namespace EngineCore {
+class Actor;
 
-   class Tweener 
-      : public ITickable
-      , public ISerializable
-   {
-      static int32_t s_id;
+class Tweener : public ITickable, public ISerializable {
+    static int32_t s_id;
 
-      int32_t m_id;
+    int32_t m_id;
 
-      std::vector<std::shared_ptr<State>> mMyAllStates;
+    std::vector<std::shared_ptr<State>> mMyAllStates;
 
-      std::weak_ptr<Actor> mParentWp;
+    std::weak_ptr<Actor> mParentWp;
 
-      std::string mTweenerName;
-      
-      std::string mRelPathTweener;
+    std::string mTweenerName;
 
-      /* At beginning we are here */
-      std::shared_ptr<State> mStateNodeInitRoot;
+    std::string mRelPathTweener;
 
-      std::shared_ptr<State> mCurrentStateNode;
+    /* At beginning we are here */
+    std::shared_ptr<State> mStateNodeInitRoot;
 
-      std::optional<StateTransition> mCurrentActiveStateTransition{std::nullopt};
+    std::shared_ptr<State> mCurrentStateNode;
 
-      std::unordered_map<std::string/*name of binding property*/, std::shared_ptr<PropertyBinding>> mPropertyBindings;
+    std::optional<StateTransition> mCurrentActiveStateTransition{std::nullopt};
 
-      std::vector<std::shared_ptr<ITweenController>> CurrentActiveTransitionControllers;
+    std::unordered_map<std::string /*name of binding property*/, std::shared_ptr<PropertyBinding>> mPropertyBindings;
 
-      bool bTransitionEnabled = false;
-      /* this parameter is mapped from 0.0 (start of transition) to 1.0 (end of transition) */
-      float mTransitionParameter = 0.0f;
-      float mTransitionTime = 0.0f;
-      float mTransitionDuration = 0.0f;
+    std::vector<std::shared_ptr<ITweenController>> CurrentActiveTransitionControllers;
 
-      bool bIsStateChangedDirty;
-      std::string mChangedStateName;
-      std::vector<std::weak_ptr<ITweenStateChangeNotifyable>> mStateChangedObservers; 
-   public:
+    bool bTransitionEnabled = false;
+    /* this parameter is mapped from 0.0 (start of transition) to 1.0 (end of transition) */
+    float mTransitionParameter = 0.0f;
+    float mTransitionTime = 0.0f;
+    float mTransitionDuration = 0.0f;
 
-      Tweener(const std::string& relPathFSM, const std::string& tweenerInnerName, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates);
+    bool bIsStateChangedDirty;
+    std::string mChangedStateName;
+    std::vector<std::weak_ptr<ITweenStateChangeNotifyable>> mStateChangedObservers;
 
-      int32_t GetId() const;      
+public:
+    Tweener(
+        const std::string& relPathFSM,
+        const std::string& tweenerInnerName,
+        std::shared_ptr<State> rootNode,
+        std::vector<std::shared_ptr<State>>&& allStates);
 
-      void ChangeState(const std::string& dstStateName);
+    int32_t GetId() const;
 
-      void Tick(const float deltaTime) override;
+    void ChangeState(const std::string& dstStateName);
 
-      void UnpausableTick(const float deltaTime) override {};
+    void Tick(const float deltaTime) override;
 
-      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+    void UnpausableTick(const float deltaTime) override { };
 
-      void SubscribeOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer);
+    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      std::shared_ptr<State> GetCurrentState() const;
+    void SubscribeOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer);
 
-      bool IsTransitionActive() const;
+    std::shared_ptr<State> GetCurrentState() const;
 
-      float GetTransitionParameter() const;
+    bool IsTransitionActive() const;
 
-      std::string GetRelPathTweener() const;
+    float GetTransitionParameter() const;
 
-      const std::string& GetTweenerName() const;
+    std::string GetRelPathTweener() const;
 
-      void AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<PropertyBinding> binding);
+    const std::string& GetTweenerName() const;
 
-      std::shared_ptr<PropertyBinding> GetPropertyBindingByName(const std::string& name) const;
+    void AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<PropertyBinding> binding);
 
-      void InitRootState();
+    std::shared_ptr<PropertyBinding> GetPropertyBindingByName(const std::string& name) const;
 
-      void SetParentActor(const std::shared_ptr<Actor>& parent);
+    void InitRootState();
 
-      std::weak_ptr<Actor> GetParentActorWp() const;
+    void SetParentActor(const std::shared_ptr<Actor>& parent);
 
-      void NotifyStateChangedObservers();
+    std::weak_ptr<Actor> GetParentActorWp() const;
 
-      void CleanUp();
+    void NotifyStateChangedObservers();
 
-   private:
+    void CleanUp();
 
-      void DoTransition(const std::string& dstStateName);
-      
-      void DoTranstionInstantly(const std::string& dstStateName);
+private:
+    void DoTransition(const std::string& dstStateName);
 
-      void SetTransitionValuesFinished(std::shared_ptr<State> newCurrentState);
-   };
+    void DoTranstionInstantly(const std::string& dstStateName);
 
-}
+    void SetTransitionValuesFinished(std::shared_ptr<State> newCurrentState);
+};
+
+} // namespace EngineCore

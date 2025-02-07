@@ -1,61 +1,52 @@
 #pragma once
 
-namespace Graphics
-{
-	namespace Texture
-	{
-		/************************************************************************/
-		/*								ITextureMipMapState                     */
-		/************************************************************************/
-		class ITextureMipMapState
-		{
+namespace Graphics {
+namespace Texture {
+/************************************************************************/
+/*								ITextureMipMapState                     */
+/************************************************************************/
+class ITextureMipMapState {
 
-		public:
-			ITextureMipMapState();
+public:
+    ITextureMipMapState();
 
-			virtual ~ITextureMipMapState();
+    virtual ~ITextureMipMapState();
 
-			virtual void ExecuteTextureSampleFilteringInstructions() = 0;
-		};
+    virtual void ExecuteTextureSampleFilteringInstructions() = 0;
+};
 
-		/************************************************************************/
-		/*								TextureMipMap                           */
-		/************************************************************************/
-		class TextureMipMap : public ITextureMipMapState
-		{
+/************************************************************************/
+/*								TextureMipMap                           */
+/************************************************************************/
+class TextureMipMap : public ITextureMipMapState {
 
-		public:
+public:
+    TextureMipMap();
 
-			TextureMipMap();
+    ~TextureMipMap();
 
-			~TextureMipMap();
+    void ExecuteTextureSampleFilteringInstructions() override;
+};
 
-			void ExecuteTextureSampleFilteringInstructions() override;
-		};
+/************************************************************************/
+/*								TextureAnisotropy                       */
+/************************************************************************/
+class TextureAnisotropy : public ITextureMipMapState {
+    float m_anisitropyLvl;
+    float m_preferableAnisotropyLvl;
 
-		/************************************************************************/
-		/*								TextureAnisotropy                       */
-		/************************************************************************/
-		class TextureAnisotropy : public ITextureMipMapState
-		{
-			float m_anisitropyLvl;
-			float m_preferableAnisotropyLvl;
+    bool bAnisotropyLvlChecked;
 
-			bool bAnisotropyLvlChecked;
+public:
+    TextureAnisotropy(float preferableAnisotropyLvl);
 
-		public :
+    ~TextureAnisotropy();
 
-			TextureAnisotropy(float preferableAnisotropyLvl);
+    void ExecuteTextureSampleFilteringInstructions() override;
 
-			~TextureAnisotropy();
+private:
+    float GetSupportedAnisotropyLvl();
+};
 
-			void ExecuteTextureSampleFilteringInstructions() override;
-
-		private:
-
-			float GetSupportedAnisotropyLvl();
-		};
-
-	}
-}
-
+} // namespace Texture
+} // namespace Graphics

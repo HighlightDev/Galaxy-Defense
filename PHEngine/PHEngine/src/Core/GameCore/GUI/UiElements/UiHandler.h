@@ -1,49 +1,47 @@
 #pragma once
 
-#include "UiCanvas.h"
 #include "Core/GameCore/ITickable.h"
+#include "UiCanvas.h"
 
-#include <vector>
-#include <memory>
 #include <glm/vec2.hpp>
 
-namespace EngineCore
-{
-    class Scene;
+#include <memory>
+#include <vector>
 
-    namespace GUI
-    {
-        class UiHandler : public ITickable
-        {
-            std::weak_ptr<Scene> mOwner;
+namespace EngineCore {
+class Scene;
 
-            std::vector<std::shared_ptr<UiCanvas>> mUiCanvases;
+namespace GUI {
+class UiHandler : public ITickable {
+    std::weak_ptr<Scene> mOwner;
+
+    std::vector<std::shared_ptr<UiCanvas>> mUiCanvases;
 
 #ifdef DEBUG
-            std::shared_ptr<UiCanvas> mDebugUiCanvas;
+    std::shared_ptr<UiCanvas> mDebugUiCanvas;
 #endif
 
-        public:
-            UiHandler();
+public:
+    UiHandler();
 
-            void SetScene(const std::weak_ptr<::EngineCore::Scene> &owner);
+    void SetScene(const std::weak_ptr<::EngineCore::Scene>& owner);
 
-            std::shared_ptr<UiCanvas> CreateCanvas(const ViewPortInfo &canvasScreenSize, const std::string& name = std::string(""));
+    std::shared_ptr<UiCanvas> CreateCanvas(const ViewPortInfo& canvasScreenSize, const std::string& name = std::string(""));
 #ifdef DEBUG
-            std::shared_ptr<UiCanvas> CreateDebugCanvas(const ViewPortInfo &canvasScreenSize);
+    std::shared_ptr<UiCanvas> CreateDebugCanvas(const ViewPortInfo& canvasScreenSize);
 #endif
 
-            void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-            void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTime) override;
 
-            std::shared_ptr<UiCanvas> GetCanvasByName(const std::string &canvasName) const;
+    std::shared_ptr<UiCanvas> GetCanvasByName(const std::string& canvasName) const;
 
-            std::shared_ptr<UiCanvas> GetCanvasByUId(const uint32_t canvasId) const;
+    std::shared_ptr<UiCanvas> GetCanvasByUId(const uint32_t canvasId) const;
 
-            bool CheckIfUiInterceptsMouseEvent(const glm::ivec2& currentMousePosition) const;
+    bool CheckIfUiInterceptsMouseEvent(const glm::ivec2& currentMousePosition) const;
 
-            void CleanUp();
-        };
-    }
-}
+    void CleanUp();
+};
+} // namespace GUI
+} // namespace EngineCore

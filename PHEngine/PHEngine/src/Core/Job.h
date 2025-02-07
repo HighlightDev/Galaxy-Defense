@@ -1,32 +1,29 @@
 #pragma once
 
-#include <functional>
-#include <cstddef>
 #include <stdint.h>
 
-namespace Thread
-{
+#include <cstddef>
+#include <functional>
 
-   class Job
-   {
-      using callback_t = std::function<void(void)>;
+namespace Thread {
 
-      int32_t mCreatorObjectId;
-      uint64_t mFunctionId;
-      callback_t mCallback;
+class Job {
+    using callback_t = std::function<void(void)>;
 
-   public:
+    int32_t mCreatorObjectId;
+    uint64_t mFunctionId;
+    callback_t mCallback;
 
-      Job(const int32_t creatorObjectId, const uint64_t functionId, callback_t callback);
+public:
+    Job(const int32_t creatorObjectId, const uint64_t functionId, callback_t callback);
 
-      ~Job();
+    ~Job();
 
-      int32_t GetCreatorObjectId() const;
-      uint64_t GetFunctionId() const;
-      callback_t GetCallback() const;
+    int32_t GetCreatorObjectId() const;
+    uint64_t GetFunctionId() const;
+    callback_t GetCallback() const;
 
-      void operator()() const;
-   };
+    void operator()() const;
+};
 
-}
-
+} // namespace Thread

@@ -1,30 +1,27 @@
 #include "InstancedStaticMeshMaterialDataProvider.h"
-#include "Core/GameCore/Scene.h"
-#include "Core/GameCore/EngineObject.h"
-#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchHolder.h"
-#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatch.h"
+
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/EngineObject.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatch.h"
+#include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchHolder.h"
 
 using namespace EngineCore;
 
-namespace Resources
+namespace Resources {
+void InstancedStaticMeshMaterialDataProvider::UpdateInstancedDataProvider()
 {
-    void InstancedStaticMeshMaterialDataProvider::UpdateInstancedDataProvider()
-    {
-        if (const auto &sceneSp = GetSceneWp().lock())
-        {
-            const auto &batchKey = GetBatchKey();
-            const auto &batchHolder = sceneSp->GetInstancedGeometryBatchHolder();
-            const auto &batchSp = batchHolder->GetBatch(batchKey);
-            assert(batchSp);
+    if (const auto& sceneSp = GetSceneWp().lock()) {
+        const auto& batchKey = GetBatchKey();
+        const auto& batchHolder = sceneSp->GetInstancedGeometryBatchHolder();
+        const auto& batchSp = batchHolder->GetBatch(batchKey);
+        assert(batchSp);
 
-            mRenderInstanceId = batchSp->GetRenderInstanceId(GetInstanceProxyId());
-            mIsInstanceActive = mRenderInstanceId != -1;
-        }
-        else
-        {
-            mRenderInstanceId = -1;
-            mIsInstanceActive = false;
-        }
+        mRenderInstanceId = batchSp->GetRenderInstanceId(GetInstanceProxyId());
+        mIsInstanceActive = mRenderInstanceId != -1;
+    } else {
+        mRenderInstanceId = -1;
+        mIsInstanceActive = false;
     }
 }
+} // namespace Resources

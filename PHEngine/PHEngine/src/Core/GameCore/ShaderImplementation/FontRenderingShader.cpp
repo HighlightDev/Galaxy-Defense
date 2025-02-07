@@ -1,63 +1,61 @@
 #include "FontRenderingShader.h"
 
-namespace EngineCore
+namespace EngineCore {
+namespace ShaderImpl {
+FontRenderingShader::FontRenderingShader(const ShaderParams& params)
+    : Shader(params)
 {
-    namespace ShaderImpl
-    {
-        FontRenderingShader::FontRenderingShader(const ShaderParams &params)
-            : Shader(params)
-        {
-            ShaderInit();
-        }
+    ShaderInit();
+}
 
-        FontRenderingShader::~FontRenderingShader()
-        {
-        }
+FontRenderingShader::~FontRenderingShader()
+{
+}
 
-        void FontRenderingShader::AccessAllUniformLocations(uint32_t shaderProgramID)
-        {
-            Shader::AccessAllUniformLocations(shaderProgramID);
+void FontRenderingShader::AccessAllUniformLocations(uint32_t shaderProgramID)
+{
+    Shader::AccessAllUniformLocations(shaderProgramID);
 
-            u_fontAtlas = GetUniform("fontAtlas", shaderProgramID);
-            u_position = GetUniform("position", shaderProgramID);
-            u_color = GetUniform("color", shaderProgramID);
-            u_shadowWidth = GetUniform("shadowWidth", shaderProgramID);
-            u_shadowOffset = GetUniform("shadowOffset", shaderProgramID);
-            u_opacity = GetUniform("opacity", shaderProgramID);
-        }
+    u_fontAtlas = GetUniform("fontAtlas", shaderProgramID);
+    u_position = GetUniform("position", shaderProgramID);
+    u_color = GetUniform("color", shaderProgramID);
+    u_shadowWidth = GetUniform("shadowWidth", shaderProgramID);
+    u_shadowOffset = GetUniform("shadowOffset", shaderProgramID);
+    u_opacity = GetUniform("opacity", shaderProgramID);
+}
 
-        void FontRenderingShader::SetFontAtlasSlot(const int32_t slot)
-        {
-            u_fontAtlas.LoadUniform(slot);
-        }
+void FontRenderingShader::SetFontAtlasSlot(const int32_t slot)
+{
+    u_fontAtlas.LoadUniform(slot);
+}
 
-        void FontRenderingShader::SetPosition(const glm::vec2 &position)
-        {
-            u_position.LoadUniform(position);
-        }
+void FontRenderingShader::SetPosition(const glm::vec2& position)
+{
+    u_position.LoadUniform(position);
+}
 
-        void FontRenderingShader::SetColor(const glm::vec3 &color)
-        {
-            u_color.LoadUniform(color);
-        }
+void FontRenderingShader::SetColor(const glm::vec3& color)
+{
+    u_color.LoadUniform(color);
+}
 
-        void FontRenderingShader::SetShadowWidth(const float shadowWidth)
-        {
-            u_shadowWidth.LoadUniform(shadowWidth);
-        }
+void FontRenderingShader::SetShadowWidth(const float shadowWidth)
+{
+    u_shadowWidth.LoadUniform(shadowWidth);
+}
 
-        void FontRenderingShader::SetShadowOffset(const glm::vec2 &shadowOffset)
-        {
-            u_shadowOffset.LoadUniform(shadowOffset);
-        }
+void FontRenderingShader::SetShadowOffset(const glm::vec2& shadowOffset)
+{
+    u_shadowOffset.LoadUniform(shadowOffset);
+}
 
-        void FontRenderingShader::SetOpacity(const float opacity)
-        {
-            u_opacity.LoadUniform(opacity);
-        }
+void FontRenderingShader::SetOpacity(const float opacity)
+{
+    u_opacity.LoadUniform(opacity);
+}
 
-        void FontRenderingShader::SetShaderPredefine()
-        {
-        }
-    }
-} // namespace EngireCore
+void FontRenderingShader::SetShaderPredefine()
+{
+}
+} // namespace ShaderImpl
+} // namespace EngineCore

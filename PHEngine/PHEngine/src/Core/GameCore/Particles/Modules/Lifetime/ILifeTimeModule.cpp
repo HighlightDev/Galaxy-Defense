@@ -1,13 +1,12 @@
 #include "ILifeTimeModule.h"
 
-namespace EngineCore
+namespace EngineCore {
+ILifeTimeModule::ILifeTimeModule()
 {
-   ILifeTimeModule::ILifeTimeModule()
-   {
-   }
-
-   eParticleModuleType ILifeTimeModule::GetParticleModuleType() const
-   {
-      return eParticleModuleType::LIFETIME;
-   }
 }
+
+eParticleModuleType ILifeTimeModule::GetParticleModuleType() const
+{
+    return eParticleModuleType::LIFETIME;
+}
+} // namespace EngineCore

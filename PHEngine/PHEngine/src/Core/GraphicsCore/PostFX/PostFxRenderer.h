@@ -1,43 +1,38 @@
 #pragma once
 
-#include "IPostFxPass.h"
-#include "FxColorResolver/FxColorResolver.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "FxColorResolver/FxColorResolver.h"
+#include "IPostFxPass.h"
 
-#include <unordered_map>
-#include <memory>
 #include <bitset>
+#include <memory>
+#include <unordered_map>
 
-namespace Graphics
-{
-   enum class ePostFxStageType
-   {
-      BLOOM_STAGE
-   };
+namespace Graphics {
+enum class ePostFxStageType { BLOOM_STAGE };
 
-   class ResolvedSceneFramebuffer;
+class ResolvedSceneFramebuffer;
 
-   class PostFxRenderer
-   {
-   private:
-      std::bitset<4> mEnabledFxBits;
+class PostFxRenderer {
+private:
+    std::bitset<4> mEnabledFxBits;
 
-      ViewPortInfo mViewPortInfo;
+    ViewPortInfo mViewPortInfo;
 
-      std::unordered_map<ePostFxStageType, std::shared_ptr<IPostFxPass>> mPostFxStages;
+    std::unordered_map<ePostFxStageType, std::shared_ptr<IPostFxPass>> mPostFxStages;
 
-      std::unique_ptr<FxColorResolver> mFxColorResolver;
+    std::unique_ptr<FxColorResolver> mFxColorResolver;
 
-   public:
-      PostFxRenderer(const ViewPortInfo &viewPortInfo);
-      ~PostFxRenderer();
+public:
+    PostFxRenderer(const ViewPortInfo& viewPortInfo);
+    ~PostFxRenderer();
 
-      void Execute(const std::shared_ptr<ResolvedSceneFramebuffer> &resolveSceneColorFramebuffer);
+    void Execute(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveSceneColorFramebuffer);
 
-      void ResizeRenderTargets(const ViewPortInfo &viewPortInfo);
+    void ResizeRenderTargets(const ViewPortInfo& viewPortInfo);
 
-   private:
-      void Init();
-   };
+private:
+    void Init();
+};
 
-}
+} // namespace Graphics

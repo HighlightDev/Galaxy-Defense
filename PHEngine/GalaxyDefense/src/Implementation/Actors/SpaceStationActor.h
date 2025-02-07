@@ -4,20 +4,17 @@
 
 using namespace EngineCore;
 
-namespace Game
-{
-    class SpaceStationActor
-        : public Actor
-    {
-        float mTimeSinceLastShoot{0.0f};
+namespace Game {
+class SpaceStationActor : public Actor {
+    float mTimeSinceLastShoot{0.0f};
 
-    public:
-        SpaceStationActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
+public:
+    SpaceStationActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
-        void Tick(const float deltaTime) override;
+    void Tick(const float deltaTime) override;
 
-        bool CanShoot() const;
+    bool CanShoot() const;
 
-        void RestartTimerSinceLastShoot();
-    };
-}
+    void RestartTimerSinceLastShoot();
+};
+} // namespace Game
