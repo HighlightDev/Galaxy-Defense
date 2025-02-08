@@ -46,6 +46,9 @@ void BloomFxShader::AccessAllSubroutineIndices(uint32_t shaderProgramId)
         = GetSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), "runVerticalBlur");
     mHorizontalBlurSubroutineIndex
         = GetSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), "runHorizontalBlur");
+
+    mResolveBloomColorSubroutineIndex
+        = GetSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), "runResolveBloomColor");
 }
 
 void BloomFxShader::LoadExtractBrightPartsSubroutine()
@@ -61,6 +64,11 @@ void BloomFxShader::LoadRunVerticalBlurSubroutine()
 void BloomFxShader::LoadRunHorizontalBlurSubroutine()
 {
     LoadSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), 1, &mHorizontalBlurSubroutineIndex);
+}
+
+void BloomFxShader::LoadRunResolveBloomColorSubroutine()
+{
+    LoadSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), 1, &mResolveBloomColorSubroutineIndex);
 }
 
 void BloomFxShader::SetShaderPredefine()

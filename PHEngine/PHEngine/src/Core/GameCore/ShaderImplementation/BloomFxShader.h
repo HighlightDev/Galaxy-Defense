@@ -16,6 +16,7 @@ private:
     uint32_t mExtractBrightPartsSubroutineIndex;
     uint32_t mVerticalBlurSubroutineIndex;
     uint32_t mHorizontalBlurSubroutineIndex;
+    uint32_t mResolveBloomColorSubroutineIndex;
 
 public:
     BloomFxShader(const ShaderParams& params);
@@ -31,6 +32,8 @@ public:
     void LoadRunVerticalBlurSubroutine();
 
     void LoadRunHorizontalBlurSubroutine();
+
+    void LoadRunResolveBloomColorSubroutine();
 
 protected:
     void AccessAllUniformLocations(uint32_t shaderProgramID) override;

@@ -43,6 +43,11 @@ subroutine(executePostFx) vec4 runHorizontalBlur()
     return sum;
 }
 
+subroutine(executePostFx) vec4 runResolveBloomColor()
+{
+    return texture(bluredColorTexture, vs_out_texCoords);
+}
+
 void main()
 {
     FragColor = execBloomFx();

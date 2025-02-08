@@ -1,0 +1,124 @@
+ 0 | Timestamp: 0.392915 | Thread: Render|  main => glfwWindow create with size: width =  1920  height =  1080
+ 1 | Timestamp: 0.397451 | Thread: Render|  InterThreadCommunicationMgr::ctor
+ 2 | Timestamp: 0.397502 | Thread: Render|  PhysicsWorld::ctor
+ 3 | Timestamp: 0.397577 | Thread: Render|  UiHandler::ctor
+ 4 | Timestamp: 0.397583 | Thread: Render|  Scene::ctor
+ 5 | Timestamp: 0.466172 | Thread: Render|  SoundDevice::ctor => Opened device  Built-in Audio Analog Stereo
+ 6 | Timestamp: 0.466195 | Thread: Render|  GameThreadTimersHolder::RegisterTimerInstance => Current Thread:  Render
+ 7 | Timestamp: 0.466244 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 8 | Timestamp: 0.468926 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  1
+ 9 | Timestamp: 0.468959 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 10 | Timestamp: 0.472507 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  2
+ 11 | Timestamp: 0.472543 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 12 | Timestamp: 0.476936 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  3
+ 13 | Timestamp: 0.476973 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 14 | Timestamp: 0.479589 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  4
+ 15 | Timestamp: 0.479830 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 16 | Timestamp: 0.482169 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  5
+ 17 | Timestamp: 0.482316 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 18 | Timestamp: 0.485026 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  6
+ 19 | Timestamp: 0.485107 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 20 | Timestamp: 0.487443 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  7
+ 21 | Timestamp: 0.490504 | Thread: Render|  ShaderAllocationPolicy::AllocateMemory:  ResolveFxColorShader
+ 22 | Timestamp: 0.490526 | Thread: Render|  IShader::ctor => shaderName =  ResolveFxColorShader
+ 23 | Timestamp: 0.491237 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  1
+ 24 | Timestamp: 0.491261 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  2
+ 25 | Timestamp: 0.495942 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  3
+ 26 | Timestamp: 0.495986 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  576 , height  312
+ 27 | Timestamp: 0.496229 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  8
+ 28 | Timestamp: 0.496244 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  576 , height  312
+ 29 | Timestamp: 0.496477 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  9
+ 30 | Timestamp: 0.496805 | Thread: Render|  ShaderAllocationPolicy::AllocateMemory:  BloomFxShader
+ 31 | Timestamp: 0.496814 | Thread: Render|  IShader::ctor => shaderName =  BloomFxShader
+ 32 | Timestamp: 0.497169 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  4
+ 33 | Timestamp: 0.497183 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  5
+ 34 | Timestamp: 0.497982 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  6
+ 35 | Timestamp: 0.498018 | Thread: Render|  SceneRenderer::ctor
+ 36 | Timestamp: 0.498040 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
+ 37 | Timestamp: 0.498074 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
+ 38 | Timestamp: 0.498079 | Thread: Render|  IShader::ctor => shaderName =  DepthCollectShader
+ 39 | Timestamp: 0.498084 | Thread: Render|  AVertexFactoryShaderModul::Init
+ 40 | Timestamp: 0.498086 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
+ 41 | Timestamp: 0.498091 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
+ 42 | Timestamp: 0.498234 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  7
+ 43 | Timestamp: 0.498248 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  8
+ 44 | Timestamp: 0.498981 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  9
+ 45 | Timestamp: 0.499001 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  9
+ 46 | Timestamp: 0.499011 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory
+ 47 | Timestamp: 0.499067 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory<4>
+ 48 | Timestamp: 0.499076 | Thread: Render|  IShader::ctor => shaderName =  DepthCollectShader
+ 49 | Timestamp: 0.499082 | Thread: Render|  AVertexFactoryShaderModul::Init
+ 50 | Timestamp: 0.499087 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
+ 51 | Timestamp: 0.499193 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
+ 52 | Timestamp: 0.499406 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  10
+ 53 | Timestamp: 0.499428 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  11
+ 54 | Timestamp: 0.501678 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  12
+ 55 | Timestamp: 0.501783 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  12
+ 56 | Timestamp: 0.501793 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory
+ 57 | Timestamp: 0.501841 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory<4>
+ 58 | Timestamp: 0.501847 | Thread: Render|  IShader::ctor => shaderName =  PointLightDepthCollectShader
+ 59 | Timestamp: 0.501852 | Thread: Render|  AVertexFactoryShaderModul::Init
+ 60 | Timestamp: 0.501856 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
+ 61 | Timestamp: 0.501934 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
+ 62 | Timestamp: 0.502074 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  13
+ 63 | Timestamp: 0.502090 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  14
+ 64 | Timestamp: 0.502095 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  15
+ 65 | Timestamp: 0.505445 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  16
+ 66 | Timestamp: 0.505573 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  16
+ 67 | Timestamp: 0.505609 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
+ 68 | Timestamp: 0.505668 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
+ 69 | Timestamp: 0.505678 | Thread: Render|  IShader::ctor => shaderName =  PointLightDepthCollectShader
+ 70 | Timestamp: 0.505683 | Thread: Render|  AVertexFactoryShaderModul::Init
+ 71 | Timestamp: 0.505687 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
+ 72 | Timestamp: 0.505692 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
+ 73 | Timestamp: 0.505827 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  17
+ 74 | Timestamp: 0.505842 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  18
+ 75 | Timestamp: 0.505846 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  19
+ 76 | Timestamp: 0.508269 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  20
+ 77 | Timestamp: 0.508297 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  20
+ 78 | Timestamp: 0.508339 | Thread: Render|  IShader::ctor => shaderName =  DeferredLight Shader
+ 79 | Timestamp: 0.509889 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  21
+ 80 | Timestamp: 0.509913 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  22
+ 81 | Timestamp: 0.512621 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  23
+ 82 | Timestamp: 0.512841 | Thread: Render|  IShader::ctor => shaderName =  FontRendering Shader
+ 83 | Timestamp: 0.512981 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  24
+ 84 | Timestamp: 0.512995 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  25
+ 85 | Timestamp: 0.513512 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  26
+ 86 | Timestamp: 0.514122 | Thread: Render|  Level::PreLevelInit
+ 87 | Timestamp: 0.514136 | Thread: Render|  Scene::OnLevelInit
+ 88 | Timestamp: 0.514146 | Thread: Render|  Level::InitLevel
+ 89 | Timestamp: 0.515141 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  arrow_right_1.png
+ 90 | Timestamp: 0.515331 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/ui/arrow_right_1.png
+ 91 | Timestamp: 0.515349 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nimbus_mono.png
+ 92 | Timestamp: 0.515505 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/fonts/nimbus_mono.png
+ 93 | Timestamp: 0.515521 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightRight.jpg
+ 94 | Timestamp: 0.515683 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightRight.jpg
+ 95 | Timestamp: 0.515698 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightLeft.jpg
+ 96 | Timestamp: 0.516215 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightLeft.jpg
+ 97 | Timestamp: 0.516235 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightTop.jpg
+ 98 | Timestamp: 0.545964 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightTop.jpg
+ 99 | Timestamp: 0.546007 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightBottom.jpg
+ 100 | Timestamp: 0.553848 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBottom.jpg
+ 101 | Timestamp: 0.553890 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightBack.jpg
+ 102 | Timestamp: 0.554090 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightLeft.jpg , memAfterAllocation:  103.425781
+ 103 | Timestamp: 0.554522 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBack.jpg
+ 104 | Timestamp: 0.554544 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightFront.jpg
+ 105 | Timestamp: 0.558565 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightFront.jpg
+ 106 | Timestamp: 0.607163 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightRight.jpg , memAfterAllocation:  112.062500
+ 107 | Timestamp: 0.621862 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/fonts/nimbus_mono.png , memAfterAllocation:  113.351562
+ 108 | Timestamp: 0.635333 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBottom.jpg , memAfterAllocation:  114.906250
+ 109 | Timestamp: 0.653832 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightTop.jpg , memAfterAllocation:  117.691406
+ 110 | Timestamp: 0.667625 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightFront.jpg , memAfterAllocation:  122.023438
+ 111 | Timestamp: 0.676623 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBack.jpg , memAfterAllocation:  123.261719
+ 112 | Timestamp: 0.733654 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/ui/arrow_right_1.png , memAfterAllocation:  121.445312
+ 113 | Timestamp: 0.733875 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  piano-loop2.ogg
+ 114 | Timestamp: 0.737119 | Thread: Render|  AudioResourceLoader::GetStreamResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/audio/piano-loop2.ogg , memAfterAllocation:  121.574219
+ 115 | Timestamp: 0.737335 | Thread: Render|  Scene::RegisterMainCamera => name =  MainCamera
+ 116 | Timestamp: 0.737360 | Thread: Render|  Scene::RegisterCamera => id =  4 , cameraSceneProxyId:  0
+ 117 | Timestamp: 0.737369 | Thread: Render|  SceneRenderer::CameraSceneProxyAdded_OnRenderThread => camera proxyId:  0
+ 118 | Timestamp: 0.737498 | Thread: Render|  Scene::RegisterMaterialInstance => name =  SpaceSkyboxMaterial.m
+ 119 | Timestamp: 0.737529 | Thread: Render|  TextureAllocationPolicy::AllocateMemory:  nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg
+ 120 | Timestamp: 0.750942 | Thread: Render|  CubemapTexture::ctor(const std::vector<std::string> &) => m_texDescriptor =  10
+ 121 | Timestamp: 0.751177 | Thread: Render|  Scene::RegisterComponentSceneProxy => componentName =  SpaceSkyboxComponent
+ 122 | Timestamp: 0.751196 | Thread: Render|  Scene::RegisterComponentSceneProxy => primitive proxy added, sceneProxyId = 2
+ 123 | Timestamp: 0.751306 | Thread: Render|  FileWatcher::ctor

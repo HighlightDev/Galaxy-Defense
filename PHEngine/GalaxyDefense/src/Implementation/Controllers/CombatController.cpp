@@ -134,9 +134,10 @@ void CombatController::OnLevelInit()
     mCombatActorsPoolHandler->SpawnEnemySpaceships(10);
     mCombatActorsPoolHandler->SpawnAsteroids(20);
     mCombatActorsPoolHandler->SpawnBarriers(1, 5);
-    const auto& lvlBoundaryMin = mLevelBounds.GetMin();
-    const auto& lvlBoundaryMax = mLevelBounds.GetMax();
-    const auto& lvlBoundaryOrigin = mLevelBounds.GetOrigin();
+    const auto& extendedLevelBoundaries = BoundingBox3D(mLevelBounds.GetOrigin(), mLevelBounds.GetHalfExtent() * 1.25f);
+    const auto& lvlBoundaryMin = extendedLevelBoundaries.GetMin();
+    const auto& lvlBoundaryMax = extendedLevelBoundaries.GetMax();
+    const auto& lvlBoundaryOrigin = extendedLevelBoundaries.GetOrigin();
     if (const auto& a_barrierSp = mCombatActorsPoolHandler->GetFreeBarrierActor()) {
         a_barrierSp->SetIsEnabled(true);
         a_barrierSp->GetRootComponent()->SetTranslation(glm::vec3(0, lvlBoundaryOrigin.y, 0));

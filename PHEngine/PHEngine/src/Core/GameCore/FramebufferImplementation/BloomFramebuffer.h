@@ -19,9 +19,11 @@ private:
 
     RenderTarget m_color1;
     RenderTarget m_color2;
+    RenderTarget m_resolvedBloomColor;
 
     std::shared_ptr<FramebufferObject> mColor1Framebuffer;
     std::shared_ptr<FramebufferObject> mColor2Framebuffer;
+    std::shared_ptr<FramebufferObject> mResolvedBloomColorFramebuffer;
 
     float mQualityBloomResolutionMultiplier{1.0f};
 
@@ -42,17 +44,21 @@ public:
     void CleanUp() override;
 
     void CleanColor1Framebuffer(const GLint clearBit);
+    void CleanResolvedBloomColorFramebuffer(const GLint clearBit);
 
     void BindColor1Framebuffer(const GLint clearBitFlag);
     void BindColor2Framebuffer();
+    void BindResolvedBloomColorFramebuffer();
 
     void BindColor1Texture(int32_t slot);
     void BindColor2Texture(int32_t slot);
 
     std::shared_ptr<ITexture> GetColor1Texture() const;
     std::shared_ptr<ITexture> GetColor2Texture() const;
+    std::shared_ptr<ITexture> GetResolvedBloomTexture() const;
 
     std::shared_ptr<IFramebufferObject> GetColor1FramebufferObjectInstance() const;
+    std::shared_ptr<IFramebufferObject> GetResolvedBloomColorFramebufferObjectInstance() const;
 
     ViewPortInfo GetFullScreenResolutionViewPortInfo() const;
     ViewPortInfo GetShrinkedResolutionViewPortInfo() const;

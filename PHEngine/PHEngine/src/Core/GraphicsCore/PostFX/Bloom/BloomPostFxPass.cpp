@@ -53,6 +53,7 @@ void BloomPostFxPass::ExecutePostFx(
     const auto& shrinkedViewPort = mBloomFramebuffer->GetShrinkedResolutionViewPortInfo();
 
     mBloomFramebuffer->CleanColor1Framebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    mBloomFramebuffer->CleanResolvedBloomColorFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     previousStepFramebuffer->CopyFramebufferDataToDstFramebuffer(
         mBloomFramebuffer->GetColor1FramebufferObjectInstance(),
@@ -64,6 +65,18 @@ void BloomPostFxPass::ExecutePostFx(
         shrinkedViewPort.OriginY,
         shrinkedViewPort.Width,
         shrinkedViewPort.Height,
+        GL_STENCIL_BUFFER_BIT);
+
+    previousStepFramebuffer->CopyFramebufferDataToDstFramebuffer(
+        mBloomFramebuffer->GetResolvedBloomColorFramebufferObjectInstance(),
+        fullscreenViewPort.OriginX,
+        fullscreenViewPort.OriginY,
+        fullscreenViewPort.Width,
+        fullscreenViewPort.Height,
+        fullscreenViewPort.OriginX,
+        fullscreenViewPort.OriginY,
+        fullscreenViewPort.Width,
+        fullscreenViewPort.Height,
         GL_STENCIL_BUFFER_BIT);
 
     RenderState renderState;
@@ -89,7 +102,8 @@ void BloomPostFxPass::ExecutePostFx(
         ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     }
 
-    glDisable(GL_STENCIL_TEST);
+    renderState.GetStencilState().SetIsStencilTestEnabled(false);
+    renderState.BindRenderState();
 
     // blur
     {
@@ -109,14 +123,25 @@ void BloomPostFxPass::ExecutePostFx(
         }
     }
 
+    // Get rid of bloom effect for neighbour pixels
+    renderState.GetStencilState().SetIsStencilTestEnabled(true);
+    renderState.BindRenderState();
+
+    mBloomFramebuffer->BindResolvedBloomColorFramebuffer();
+    mBloomFramebuffer->BindColor1Texture(0);
+    mBloomFxShader->SetBluredColorTexture(0);
+    mBloomFxShader->LoadRunResolveBloomColorSubroutine();
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+
     mBloomFxShader->StopShader();
+    renderState.GetStencilState().SetIsStencilTestEnabled(false);
     renderState.GetDepthState().SetDepthTestWriteMask(true);
     renderState.BindRenderState();
 }
 
 std::shared_ptr<ITexture> BloomPostFxPass::GetPostFxResult() const
 {
-    return mBloomFramebuffer->GetColor1Texture();
+    return mBloomFramebuffer->GetResolvedBloomTexture();
 }
 
 void BloomPostFxPass::CleanUp()
