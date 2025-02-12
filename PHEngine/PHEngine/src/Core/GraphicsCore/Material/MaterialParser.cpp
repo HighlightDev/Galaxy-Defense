@@ -12,6 +12,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicVec3MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/IntegerMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2BindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2MaterialProperty.h"
@@ -54,6 +55,8 @@ std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& proper
 
     if ("texture" == propertyType) {
         resultProperty = std::make_shared<TextureMaterialProperty>(propertyName);
+    } else if ("integer" == propertyType) {
+        resultProperty = std::make_shared<IntegerMaterialProperty>(propertyName);
     } else if ("float" == propertyType) {
         resultProperty = std::make_shared<FloatMaterialProperty>(propertyName);
     } else if ("deferred_texture" == propertyType) {

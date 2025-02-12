@@ -62,9 +62,9 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
     scene->RegisterMaterialInstance(electroRay_material);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "noise", noiseTex);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "rayColor", glm::vec3(1.0, 0.5, 1.0));
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "rayWidthCoef", 2.0);
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "rayWidthCoef", 2.0f);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, scene, "GT_DeltaSec", "gt_timeSec");
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "opacity", 1.0);
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "opacity", 1.0f);
 
     int32_t rayIndex = 0;
     const auto currentBarrierIndex = s_barrierCounter - 1;

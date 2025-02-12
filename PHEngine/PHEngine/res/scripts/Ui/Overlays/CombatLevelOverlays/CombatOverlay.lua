@@ -27,10 +27,7 @@ local json = require("Ui/Core/3rdparty/json")
 local UiCanvas = require("Ui/Core/uiCanvas")
 local UiOverlay = require("Ui/Core/uiOverlay")
 local UiItem = require("Ui/Core/uiItem")
-local UiRectangle = require("Ui/Core/uiRectangle")
-local UiImage = require("Ui/Core/uiImage")
 local UiRowLayout = require("Ui/Core/uiRowLayout")
-local WeaponTile = require("Ui/Widgets/WeaponTile")
 local ImageAndLabelTile = require("Ui/Widgets/ImageAndLabelTile")
 
 LevelProgressStatusType = {
@@ -153,12 +150,6 @@ function CombatOverlay:new(host)
     end)
     local combatOverlay = UiOverlay:createOverlay(host, "CombatOverlay", combatOverlayCanvas)
 
-    local lifeRootContainerWidth = windowWidth / 3.0
-    local lifeRootContainerHeight = windowHeight / 4.0
-    local weaponRootContainerWidth = windowWidth / 5.0
-    local heartWidth = lifeRootContainerWidth / 10.0
-    local heartInterval = heartWidth * 0.5
-
     local levelProgressContainer = UiItem:new(host, "LvlProgressContainer")
     combatOverlay:addWidget(levelProgressContainer)
     combatOverlay.levelProgressContainer = levelProgressContainer
@@ -227,10 +218,8 @@ function CombatOverlay:new(host)
             if parsedJson["level_progress_status_type"] ~= nil then
                 local lvlProgressStatusType = tonumber(parsedJson["level_progress_status_type"])
                 if lvlProgressStatusType == LevelProgressStatusType.CURRENT_STAGE_CHANGED then
-                    print("CURRENT_STAGE_CHANGED")
                     combatOverlay.onCurrentLevelProgressStageChanged()
                 elseif lvlProgressStatusType == LevelProgressStatusType.REQUIREMENT_TRACKERS_STATUS_CHANGED then
-                    print("REQUIREMENT_TRACKERS_STATUS_CHANGED")
                     combatOverlay.onRequirementTrackersStatusChanged()
                 end
             end

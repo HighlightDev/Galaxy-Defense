@@ -1,3 +1,4 @@
+
 #include "MaterialPropertySetter.h"
 
 #include "BindingMaterialProperty.h"
@@ -12,6 +13,7 @@
 #include "Core/ResourceManagerCore/MaterialInstanceDataProviders/MaterialInstanceDataProvider.h"
 #include "DeferredTextureMaterialProperty.h"
 #include "FloatMaterialProperty.h"
+#include "IntegerMaterialProperty.h"
 #include "TextureMaterialProperty.h"
 #include "Vec2MaterialProperty.h"
 #include "Vec3MaterialProperty.h"
@@ -47,6 +49,31 @@ void MaterialPropertySetter::SetFloatValue(const std::shared_ptr<MaterialPropert
     const auto& floatProperty = std::static_pointer_cast<FloatMaterialProperty>(materialProperty);
     assert(floatProperty);
     floatProperty->SetValue(value);
+}
+
+void MaterialPropertySetter::SetMaterialPropertyValue(
+    const std::shared_ptr<IMaterial>& materialInstance, const std::string& propertyName, const int32_t value)
+{
+    assert(materialInstance);
+
+    // first try to find material property among related to dynamic property
+    if (const auto& dynamicMaterial = TryCastToDynamicMaterial(materialInstance)) {
+        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
+            SetIntegerValue(property, value);
+        else
+            assert(false);
+    } else {
+        SetIntegerValue(materialInstance->GetMaterialPropertyByName(propertyName), value);
+    }
+}
+
+void MaterialPropertySetter::SetIntegerValue(const std::shared_ptr<MaterialProperty>& materialProperty, const int32_t value)
+{
+    const auto propertyType = materialProperty->GetPropertyType();
+    assert(propertyType == MaterialProperty::eMaterialPropertyType::INTEGER_PROPERTY);
+    const auto& intProperty = std::static_pointer_cast<IntegerMaterialProperty>(materialProperty);
+    assert(intProperty);
+    intProperty->SetValue(value);
 }
 
 void MaterialPropertySetter::SetIVec2Value(const std::shared_ptr<MaterialProperty>& materialProperty, const glm::ivec2& value)

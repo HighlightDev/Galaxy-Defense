@@ -123,6 +123,12 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING, 3);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1);
+
+    for (const auto& [stationName, spaceStationData] : levelData.TowersData) {
+        const auto& spaceStationSp = mCombatActorsPoolHandler->CreateSpaceStationActor(
+            stationName, glm::vec3(), glm::vec3(), std::get<1>(spaceStationData));
+        spaceStationSp->SetIsEnabled(false);
+    }
 }
 
 void CombatController::OnLevelInit()

@@ -15,7 +15,7 @@
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
 #include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
@@ -161,12 +161,17 @@ void CombatLevel::CreateScene()
     sceneSp->RegisterMaterialInstance(spaceStars_material);
 
     MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
-    MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "ScreenResolution", "screenResolution");
 
-    auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<FullscreenBillboardComponent>>();
+    auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
     const auto backgroundBillboardComponentData = std::make_shared<BillboardComponentData>(
-        "c_spaceBackgroundBillboard", 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), spaceStars_material);
-    const auto& billboardComponent = std::static_pointer_cast<FullscreenBillboardComponent>(
+        "c_spaceBackgroundBillboard",
+        1.0f,
+        glm::vec3(0.0f, 0.0f, 1.0f),
+        glm::vec3(1.0f),
+        spaceStars_material,
+        [](const glm::mat4& viewMatrix) { return glm::mat4(1); },
+        [](const glm::mat4& projectionMatrix) { return glm::mat4(1); });
+    const auto& billboardComponent = std::static_pointer_cast<BillboardComponent>(
         sceneSp->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
     billboardComponent->SetSortOrderValue(-100000);
     a_skybox->AddComponent(billboardComponent);

@@ -27,7 +27,7 @@ void EngineObject::AddEngineProperty(const std::shared_ptr<EngineObjectPropertyB
 
 const std::weak_ptr<EngineObjectPropertyBase>& EngineObject::GetEnginePropertyByName(const std::string& key) const
 {
-    assert((mEngineProperties.count(key)));
+    ext_assert((mEngineProperties.count(key)), "Missing property with key " + key);
     return mEngineProperties.at(key);
 }
 

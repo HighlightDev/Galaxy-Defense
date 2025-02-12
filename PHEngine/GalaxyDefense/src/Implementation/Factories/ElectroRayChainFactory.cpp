@@ -45,7 +45,7 @@ std::shared_ptr<MissileActor> ElectroRayChainFactory::CreateMissile(
 
     MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "noise", noiseTex);
     MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "rayColor", glm::vec3(1.0, 1.0, 0.0));
-    MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "rayWidthCoef", 1.0);
+    MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "rayWidthCoef", 1.0f);
     MaterialPropertySetter::SetMaterialPropertyValue(electro_material, scene, "GT_DeltaSec", "gt_timeSec");
     MaterialPropertySetter::SetMaterialPropertyValue(electro_material, a_electroRayChain, "p_opacity", "b_opacity");
 

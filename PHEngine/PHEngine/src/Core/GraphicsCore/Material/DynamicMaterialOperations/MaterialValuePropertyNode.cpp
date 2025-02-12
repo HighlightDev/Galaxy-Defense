@@ -2,6 +2,7 @@
 
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/IntegerMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2BindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2MaterialProperty.h"
@@ -34,7 +35,9 @@ std::shared_ptr<MaterialProperty> MaterialValuePropertyNode::GetValueProperty() 
 
 std::any MaterialValuePropertyNode::TraverseGraph()
 {
-    if (mValueProperty->GetPropertyType() == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY) {
+    if (mValueProperty->GetPropertyType() == MaterialProperty::eMaterialPropertyType::INTEGER_PROPERTY) {
+        return std::static_pointer_cast<IntegerMaterialProperty>(mValueProperty)->GetValue();
+    } else if (mValueProperty->GetPropertyType() == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY) {
         return std::static_pointer_cast<FloatMaterialProperty>(mValueProperty)->GetValue();
     } else if (mValueProperty->GetPropertyType() == MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY) {
         return std::static_pointer_cast<FloatBindingMaterialProperty>(mValueProperty)->GetValue();

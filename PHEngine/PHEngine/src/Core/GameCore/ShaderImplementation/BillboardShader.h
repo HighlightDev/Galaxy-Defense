@@ -10,7 +10,7 @@ namespace ShaderImpl {
 class BillboardShader : public Shader {
 
 private:
-    Uniform u_billboardExtent;
+    Uniform u_billboardExtent, u_screenResolution;
 
 public:
     BillboardShader(const ShaderParams& params);
@@ -18,6 +18,8 @@ public:
     ~BillboardShader() override;
 
     void SetExtent(const float extent);
+
+    void SetScreenResolution(const glm::vec2& screenResolution);
 
 protected:
     void AccessAllUniformLocations(uint32_t shaderProgramID) override;

@@ -291,13 +291,35 @@ std::shared_ptr<PlanarReflectionComponent> ACamera::GetPlanarReflectionComponent
 
 glm::vec4 ACamera::GetConvertedToClippedSpacePosition(const glm::vec4& worldPosition)
 {
-    glm::vec4 clippedSpacePosition = worldPosition;
+    glm::vec4 result;
 
-    if (auto sceneSp = mScene.lock()) {
-        clippedSpacePosition = sceneSp->GetConvertedToClippedSpacePosition(mCameraProxyId, worldPosition);
+    if (const auto& sceneSp = mScene.lock()) {
+        result = sceneSp->GetConvertedToClippedSpacePosition(mCameraProxyId, worldPosition);
     }
 
-    return clippedSpacePosition;
+    return result;
+}
+
+glm::vec3 ACamera::GetConvertedToNDCSpacePosition(const glm::vec4& worldPosition)
+{
+    glm::vec3 result;
+
+    if (const auto& sceneSp = mScene.lock()) {
+        result = sceneSp->GetConvertedToNDCSpacePosition(mCameraProxyId, worldPosition);
+    }
+
+    return result;
+}
+
+glm::vec2 ACamera::GetConvertedToTextureSpacePosition(const glm::vec4& worldPosition)
+{
+    glm::vec2 result;
+
+    if (const auto& sceneSp = mScene.lock()) {
+        result = sceneSp->GetConvertedToTextureSpacePosition(mCameraProxyId, worldPosition);
+    }
+
+    return result;
 }
 
 std::optional<CameraFrustum> ACamera::GetCameraFrustum() const

@@ -7,6 +7,7 @@ layout(triangle_strip, max_vertices = 4) out;
 
 uniform mat4 projectionMatrix;
 uniform float extent;
+uniform vec2 screenResolution;
 
 in MATERIAL_VS_OUTPUT VsOutput[];
 
@@ -14,10 +15,11 @@ out MATERIAL_VS_OUTPUT GsOutput;
 
 void main()
 {
-    vec4 vertex1 = vec4(-extent, extent, 0.0, 0.0);
-    vec4 vertex2 = vec4(-extent, -extent, 0.0, 0.0);
-    vec4 vertex3 = vec4(extent, extent, 0.0, 0.0);
-    vec4 vertex4 = vec4(extent, -extent, 0.0, 0.0);
+    float aspectRatio = screenResolution.x / screenResolution.y;
+    vec4 vertex1 = vec4(-extent, extent * aspectRatio, 0.0, 0.0);
+    vec4 vertex2 = vec4(-extent, -extent * aspectRatio, 0.0, 0.0);
+    vec4 vertex3 = vec4(extent, extent * aspectRatio, 0.0, 0.0);
+    vec4 vertex4 = vec4(extent, -extent * aspectRatio, 0.0, 0.0);
 
     vec3 texCoordsVertex1 = vec3(0.0, 1.0, 0.0);
     vec3 texCoordsVertex2 = vec3(0.0, 0.0, 0.0);

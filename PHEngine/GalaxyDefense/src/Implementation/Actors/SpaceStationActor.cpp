@@ -26,4 +26,17 @@ void SpaceStationActor::RestartTimerSinceLastShoot()
 {
     mTimeSinceLastShoot = 0.0f;
 }
+
+void SpaceStationActor::SetState(const eSpaceStationActivityState spacestationState)
+{
+    if (mSpacestationState != spacestationState) {
+        mSpacestationState = spacestationState;
+        SetIsEnabled(!(spacestationState == eSpaceStationActivityState::IDLE));
+    }
+}
+
+eSpaceStationActivityState SpaceStationActor::GetState() const
+{
+    return mSpacestationState;
+}
 } // namespace Game

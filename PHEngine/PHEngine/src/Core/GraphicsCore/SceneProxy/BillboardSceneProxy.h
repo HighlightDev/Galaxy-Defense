@@ -6,6 +6,8 @@
 #include "Core/GraphicsCore/RenderData/BillboardRenderData.h"
 #include "PrimitiveSceneProxy.h"
 
+#include <functional>
+
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
@@ -22,6 +24,10 @@ protected:
     BillboardRenderData mRenderData;
 
     float mBillboardExtent;
+
+    std::function<glm::mat4(const glm::mat4&)> mViewMatrixTransformer;
+
+    std::function<glm::mat4(const glm::mat4&)> mProjectionMatrixTransformer;
 
 public:
     BillboardSceneProxy(const BillboardComponent* component);

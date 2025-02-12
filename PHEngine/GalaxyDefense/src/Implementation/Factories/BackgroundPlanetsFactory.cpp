@@ -55,11 +55,12 @@ std::shared_ptr<BackgroundSpaceObjectActor> BackgroundPlanetsFactory::CreateSpac
     scene->AddActor(a_backgroundPlanet);
 
     MaterialParser materialParser;
-    const std::shared_ptr<IMaterial>& billboard_material = materialParser.ParseMaterialDescriptor("PlanetsMaterial.m");
+    const std::shared_ptr<IMaterial>& billboard_material = materialParser.ParseMaterialDescriptor("BillboardMaterial.m");
     scene->RegisterMaterialInstance(billboard_material);
     const auto albedo_texture = TexturePool::GetInstance()->GetOrAllocateResource(imageName);
 
     MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "albedo", albedo_texture);
+    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "inverse_y", (int32_t)false);
 
     auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
     const auto data = std::make_shared<BillboardComponentData>(

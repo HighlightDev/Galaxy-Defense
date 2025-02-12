@@ -3,6 +3,7 @@
 #include "materialCommon.incl.glsl"
 
 uniform float timeSec;
+uniform vec2 resolution;
 
 vec2 hash(vec2 p)
 {
@@ -15,18 +16,18 @@ float voronoi(vec2 p)
     vec2 g = floor(p);
     vec2 f = fract(p);
 
-    float distanceFromPointToCloestFeaturePoint = 1.0;
+    float distanceFromPointToClosestFeaturePoint = 1.0;
 
     for (int y = -1; y <= 1; ++y) {
         for (int x = -1; x <= 1; ++x) {
             vec2 latticePoint = vec2(x, y);
             float h = distance(latticePoint + hash(g + latticePoint), f);
 
-            distanceFromPointToCloestFeaturePoint = min(distanceFromPointToCloestFeaturePoint, h);
+            distanceFromPointToClosestFeaturePoint = min(distanceFromPointToClosestFeaturePoint, h);
         }
     }
 
-    return 1.0 - sin(distanceFromPointToCloestFeaturePoint);
+    return 1.0 - sin(distanceFromPointToClosestFeaturePoint);
 }
 
 float voronoi_texture(in vec2 uv)
@@ -57,6 +58,7 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
 
     vec2 uv = (materialIn.TextureCoordinates.xy * 2.0) - 1.0;
+    uv.y *= resolution.x / resolution.y;
     float t = pow(fbm(uv * 0.3), 2.0);
     alpha = 1.0 - smoothstep(0.5, 1.0, length(uv));
     return vec3(t * 2.0, t * 4.0, t * 8.0);

@@ -198,6 +198,10 @@ public:
 
     glm::vec4 GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4& worldPosition);
 
+    glm::vec3 GetConvertedToNDCSpacePosition(const size_t cameraProxyId, const glm::vec4& worldPosition);
+
+    glm::vec2 GetConvertedToTextureSpacePosition(const size_t cameraProxyId, const glm::vec4& worldPosition);
+
     std::optional<CameraFrustum> GetCameraFrustum(const size_t cameraProxyId);
 
     void UnloadScene();

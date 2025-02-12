@@ -10,7 +10,6 @@
 #include "Implementation/Actors/ElectroRayChainActor.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
-#include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/Factories/BarrierFactory.h"
@@ -195,6 +194,15 @@ std::shared_ptr<MissileActor> CombatActorsPoolHandler::GetFreeMissile(const eMis
     return idleBulletIt == mMissilesPool.cend() ? nullptr : *idleBulletIt;
 }
 
+std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::GetFreeSpaceStationActor() const
+{
+    const auto idleSpaceStationIt = std::find_if(mSpaceStations.cbegin(), mSpaceStations.cend(), [](const auto& spaceStationSp) {
+        return eSpaceStationActivityState::IDLE == spaceStationSp->GetState();
+    });
+
+    return idleSpaceStationIt == mSpaceStations.cend() ? nullptr : *idleSpaceStationIt;
+}
+
 std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByType(const eMissileType missileType) const
 {
     switch (missileType) {
@@ -318,5 +326,12 @@ CombatActorsPoolHandler::GetMissilePhysicsComponents(const eMissileType missileT
         }
     }
     return physicsComponents;
+}
+
+int32_t CombatActorsPoolHandler::GetSpaceStationsCountWithState(const eSpaceStationActivityState state) const
+{
+    return std::count_if(mSpaceStations.cbegin(), mSpaceStations.cend(), [seekState = state](const auto& spaceStationSp) {
+        return seekState == spaceStationSp->GetState();
+    });
 }
 } // namespace Game

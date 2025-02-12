@@ -29,6 +29,8 @@ struct MaterialPropertySetter {
     static void SetMaterialPropertyValue(
         const std::shared_ptr<IMaterial>& materialInstance, const std::string& propertyName, const float value);
     static void SetMaterialPropertyValue(
+        const std::shared_ptr<IMaterial>& materialInstance, const std::string& propertyName, const int32_t value);
+    static void SetMaterialPropertyValue(
         const std::shared_ptr<IMaterial>& materialInstance,
         const std::string& propertyName,
         const std::shared_ptr<::Resources::IDeferredResourceCreator>& deferredResourceCreator);
@@ -62,6 +64,7 @@ private:
     static void SetTextureValue(
         const std::shared_ptr<MaterialProperty>& materialProperty, const std::shared_ptr<::Graphics::Texture::ITexture>& texture);
     static void SetFloatValue(const std::shared_ptr<MaterialProperty>& materialProperty, const float value);
+    static void SetIntegerValue(const std::shared_ptr<MaterialProperty>& materialProperty, const int32_t value);
     static void SetIVec2Value(const std::shared_ptr<MaterialProperty>& materialProperty, const glm::ivec2& value);
     static void SetVec2Value(const std::shared_ptr<MaterialProperty>& materialProperty, const glm::vec2& value);
     static void SetVec3Value(const std::shared_ptr<MaterialProperty>& materialProperty, const glm::vec3& value);

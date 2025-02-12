@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/GameObjectsCollisionType.h"
 #include "Implementation/GameObjectsType.h"
 #include "Implementation/MissileType.h"
@@ -24,7 +25,6 @@ class IMissileFactory;
 class ElectroRayChainActor;
 class MissileActor;
 class SpaceObjectActor;
-class SpaceStationActor;
 class SpaceshipActor;
 class BarrierActor;
 
@@ -65,6 +65,8 @@ public:
 
     std::shared_ptr<::EngineCore::Actor> GetFreePortalActor() const;
 
+    std::shared_ptr<SpaceStationActor> GetFreeSpaceStationActor() const;
+
     std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const int32_t actorId) const;
 
     std::shared_ptr<SpaceObjectActor> GetSpaceObjectOwnerActorById(const int32_t actorId) const;
@@ -100,6 +102,8 @@ public:
 
     std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>>
     GetMissilePhysicsComponents(const eMissileType missileType) const;
+
+    int32_t GetSpaceStationsCountWithState(const eSpaceStationActivityState state) const;
 
 private:
     std::unique_ptr<IMissileFactory> GetMissileFactoryByType(const eMissileType missileType) const;

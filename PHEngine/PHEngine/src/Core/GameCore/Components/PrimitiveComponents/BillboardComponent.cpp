@@ -12,6 +12,8 @@ BillboardComponent::BillboardComponent(const std::shared_ptr<BillboardComponentD
     : PrimitiveComponent(data->EngineObjectName, data->m_translation, glm::vec3(), data->m_scale)
     , mBillboardExtent(data->m_billboardExtent)
     , m_renderData(renderData)
+    , mViewMatrixTransformer(data->mViewMatrixTransformer)
+    , mProjectionMatrixTransformer(data->mProjectionMatrixTransformer)
 {
 }
 
@@ -104,5 +106,15 @@ void BillboardComponent::SyncRenderData()
                 });
         }
     }
+}
+
+std::function<glm::mat4(const glm::mat4&)> BillboardComponent::GetViewMatrixTransformer() const
+{
+    return mViewMatrixTransformer;
+}
+
+std::function<glm::mat4(const glm::mat4&)> BillboardComponent::GetProjectionMatrixTransformer() const
+{
+    return mProjectionMatrixTransformer;
 }
 } // namespace EngineCore

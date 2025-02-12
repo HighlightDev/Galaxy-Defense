@@ -58,9 +58,9 @@ void BarriersHandler::SelectNewBarrier(const std::string& barrierName)
     sceneSp->RegisterMaterialInstance(electroRay_material);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "noise", mNoiseTex);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "rayColor", glm::vec3(1.0, 0.5, 1.0));
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "rayWidthCoef", 1.2);
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "rayWidthCoef", 1.2f);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "opacity", 1.0);
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "opacity", 1.0f);
 
     mBarrierMaterials.emplace(mCurrentActiveBarrierName, std::make_pair(barrierPbs_mat, electroRay_material));
 }

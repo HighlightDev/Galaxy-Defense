@@ -16,6 +16,8 @@ BillboardSceneProxy::BillboardSceneProxy(const BillboardComponent* component)
     : PrimitiveSceneProxy(component, component->GetRenderData().mMaterialProxy)
     , mRenderData(component->GetRenderData())
     , mBillboardExtent(component->GetBillboardExtent())
+    , mViewMatrixTransformer(component->GetViewMatrixTransformer())
+    , mProjectionMatrixTransformer(component->GetProjectionMatrixTransformer())
 {
 }
 
@@ -66,10 +68,14 @@ void BillboardSceneProxy::Render(
 {
     const auto& billboardShader = GetShader();
 
+    const auto& viewPortInfo = cameraSceneProxy->GetViewPort();
+    const auto screenResolution = glm::vec2(viewPortInfo.Width, viewPortInfo.Height);
     billboardShader->ExecuteShader();
     billboardShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
-    billboardShader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+    billboardShader->GetVertexFactoryShader()->SetMatrices(
+        m_relativeMatrix, mViewMatrixTransformer(viewMatrix), mProjectionMatrixTransformer(projectionMatrix));
     billboardShader->GetShader()->SetExtent(mBillboardExtent);
+    billboardShader->GetShader()->SetScreenResolution(screenResolution);
     m_skin->GetBuffer()->RenderVAO(GL_POINTS);
     billboardShader->StopShader();
 }

@@ -31,12 +31,16 @@ class Actor;
 namespace Game {
 class CombatActorsPoolHandler;
 class SmartPicker;
+class SpaceStationActor;
 
 class UserInteractionController : public ILevelController,
                                   public ITickable,
                                   public ChangeGameModeEvent,
                                   public BroadcastGameThreadEvent,
                                   public std::enable_shared_from_this<UserInteractionController> {
+
+    enum class eUserInteractionType { IDLE, TOWER_PLACE_SELECTION, TOWER_REMOVEMENT_SELECTION };
+
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
     BoundingBox3D mLevelBounds;
@@ -63,6 +67,8 @@ class UserInteractionController : public ILevelController,
 
     std::shared_ptr<Actor> mGhostTowerActor;
 
+    std::shared_ptr<Actor> mRemoveTowerMarkerActor;
+
     GameThreadTimer mReadyToShootTimer;
 
     GameThreadTimer mReloadPlacementTower;
@@ -73,11 +79,11 @@ class UserInteractionController : public ILevelController,
 
     std::vector<glm::vec3> mTowerPlacementCells;
 
-    std::unordered_map<std::string, std::pair<glm::vec3, std::shared_ptr<Actor>>> mPlacedTowers;
-
-    bool mGhostTowerEnabled{false};
-
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostTowerBlendColorProperty;
+
+    std::shared_ptr<EngineObjectProperty<glm::vec3>> mRemoveTowerMarkerBlendColorProperty;
+
+    eUserInteractionType mInteractionType{eUserInteractionType::IDLE};
 
 public:
     UserInteractionController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
@@ -123,9 +129,9 @@ public:
 
     glm::vec3 GetProjectileMarkerPosition() const;
 
-    void SetTowerGridVisibility(const bool isVisible);
+    std::shared_ptr<SpaceStationActor> GetSpaceStationAtPosition(const glm::vec3& position) const;
 
-    void SetGhostTowerVisibility(const bool isVisible);
+    void SetUserInteractionType(const eUserInteractionType interactionType);
 
 private:
     void InitializeTowerGrid();
@@ -133,6 +139,8 @@ private:
     void InitializePlacementAllowedArea();
 
     void InitializeGhostTower();
+
+    void InitializeRemoveTowerMarker();
 
     bool IsTowerPositionValid(const glm::vec3 position) const;
 

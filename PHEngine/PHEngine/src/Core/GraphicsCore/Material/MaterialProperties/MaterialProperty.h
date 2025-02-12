@@ -10,6 +10,7 @@ namespace Graphics {
 
 struct MaterialProperty {
     enum class eMaterialPropertyType {
+        INTEGER_PROPERTY,
         FLOAT_PROPERTY,
         TEXTURE_PROPERTY,
         DEFERRED_TEXTURE_PROPERTY,

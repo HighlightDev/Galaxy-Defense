@@ -3,7 +3,6 @@
 #include "materialCommon.incl.glsl"
 
 uniform float timeSec;
-uniform vec2 resolution;
 
 #define iterations 15
 #define formuparam 0.53
@@ -29,7 +28,6 @@ vec3 getSpaceStarsColor(in MATERIAL_VS_OUTPUT materialIn)
     // get coords and direction
     vec2 texCoords = materialIn.TextureCoordinates.xy;
     vec2 uv = texCoords - 0.5;
-    uv.y *= resolution.y / resolution.x;
     vec3 dir = vec3(uv * zoom, 1.0);
     float time = timeSec * speed + 0.25;
 

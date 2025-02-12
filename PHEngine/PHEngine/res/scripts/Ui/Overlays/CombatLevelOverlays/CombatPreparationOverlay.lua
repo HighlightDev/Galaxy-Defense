@@ -97,31 +97,19 @@ function CombatPreparationOverlay:new(host)
     local completeStageButton = ImageButton:new(host, combatPreparationOverlay, "CompleteStageButton")
     combatPreparationOverlay:addCompoundWidget(completeStageButton)
 
-    local timerRunning = false
-    local timeoutAction = function()
-        timerRunning = false
+    local hideCreatePanel = function()
         discardCreateTowerButton:setIsVisible(false)
         createDropDownPanel:setIsVisible(false)
-        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
-            "CombatLevelEvents", json.encode({
-                action = "tower_grid_visibility",
-                visible = false
-            }))
     end
-
-    local hidePopupTimerId = combatPreparationOverlay.localTimerManager:createTimer(timeoutAction, false, 20.0)
 
     createObjectButton:subscribeOnMouseInputClickedCallback(function()
         createDropDownPanel:setIsVisible(true)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
             "CombatLevelEvents", json.encode({
-                action = "tower_grid_visibility",
-                visible = true
+                action = "remove_tower_marker_visibility",
+                visible = false
             }))
-        combatPreparationOverlay.localTimerManager:restartTimer(hidePopupTimerId)
-        timerRunning = true
     end)
-
 
     createObjectButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -134,14 +122,8 @@ function CombatPreparationOverlay:new(host)
     createTowerButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             createTowerButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-            if timerRunning then
-                combatPreparationOverlay.localTimerManager:stopTimer(hidePopupTimerId)
-            end
         else
             createTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-            if timerRunning then
-                combatPreparationOverlay.localTimerManager:restartTimer(hidePopupTimerId)
-            end
         end
     end)
 
@@ -151,13 +133,11 @@ function CombatPreparationOverlay:new(host)
                 action = "ghost_tower_visibility",
                 visible = true
             }))
-        combatPreparationOverlay.localTimerManager:stopTimer(hidePopupTimerId)
-        timerRunning = false
-        discardCreateTowerButton:setIsVisible(true)
     end)
 
     discardCreateTowerButton:subscribeOnMouseInputClickedCallback(function()
-        timeoutAction()
+        hideCreatePanel()
+        discardCreateTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
             "CombatLevelEvents", json.encode({
                 action = "ghost_tower_visibility",
@@ -174,7 +154,7 @@ function CombatPreparationOverlay:new(host)
     end)
 
     removeObjectButton:subscribeOnMouseInputClickedCallback(function()
-        timeoutAction()
+        hideCreatePanel()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
             "CombatLevelEvents", json.encode({
                 action = "remove_tower_marker_visibility",
@@ -193,7 +173,7 @@ function CombatPreparationOverlay:new(host)
     local canCompletePreparationStage = false
 
     completeStageButton:subscribeOnMouseInputClickedCallback(function()
-        timeoutAction()
+        hideCreatePanel()
         EventsHelper:sendChangeGameModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             GameModeType.COMBAT)
     end)
@@ -280,7 +260,6 @@ function CombatPreparationOverlay:new(host)
         discardCreateTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         discardCreateTowerButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
         discardCreateTowerButton:setImageTextureSource("cancel.png")
-        discardCreateTowerButton:setIsVisible(false)
 
         completeStageButton:setParent(host, combatPreparationOverlayCanvas.widgetName,
             combatPreparationOverlayCanvas.widgetName)

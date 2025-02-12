@@ -671,6 +671,26 @@ glm::vec4 Scene::GetConvertedToClippedSpacePosition(const size_t cameraProxyId, 
     return result;
 }
 
+glm::vec3 Scene::GetConvertedToNDCSpacePosition(const size_t cameraProxyId, const glm::vec4& worldPosition)
+{
+    const glm::vec4 clippedSpacePosition = GetConvertedToClippedSpacePosition(cameraProxyId, worldPosition);
+    if (EngineMath::FloatsNearEqual(clippedSpacePosition.w, 0.0f)) {
+        LogInfo(
+            "Scene::GetConvertedToNDCSpacePosition => "
+            "Error! W is equal to zero. Potential zero division!",
+            cameraProxyId);
+        return glm::vec3();
+    }
+    const glm::vec3 ndcPosition = glm::vec3(clippedSpacePosition) / glm::vec3(clippedSpacePosition.w);
+    return ndcPosition;
+}
+
+glm::vec2 Scene::GetConvertedToTextureSpacePosition(const size_t cameraProxyId, const glm::vec4& worldPosition)
+{
+    const glm::vec3 ndc = GetConvertedToNDCSpacePosition(cameraProxyId, worldPosition);
+    return (glm::vec2(ndc) * glm::vec2(0.5)) + glm::vec2(0.5);
+}
+
 std::optional<CameraFrustum> Scene::GetCameraFrustum(const size_t cameraProxyId)
 {
     std::optional<CameraFrustum> result(std::nullopt);
