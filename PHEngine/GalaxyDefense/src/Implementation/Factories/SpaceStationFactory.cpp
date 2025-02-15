@@ -27,8 +27,12 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     const glm::vec3& rotation,
     const glm::vec3& scale) const
 {
+    static constexpr float s_shootRadius = 30.0f;
+    static int32_t index = 0;
     const auto& towerActor = std::make_shared<SpaceStationActor>(
-        towerName, std::make_shared<SceneComponent>("c_root_" + towerName, translation, glm::vec3(), glm::vec3(1)));
+        towerName,
+        std::make_shared<SceneComponent>("c_root_" + towerName, translation, glm::vec3(), glm::vec3(1)),
+        s_shootRadius);
     MaterialParser materialParser;
     const auto& towerMaterialPrefab = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
     const auto& albedoName = "Space_Station_COLOR.png";
@@ -61,9 +65,32 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     const auto& c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
     towerActor->AddComponent(c_ghostPhysics);
 
+    const auto& radiusMeshMaterial = materialParser.ParseMaterialDescriptor("SpaceStationRadiusMarkerMaterial.m");
+    MaterialPropertySetter::SetMaterialPropertyValue(radiusMeshMaterial, "color", glm::vec3(0.0, 0.2, 1.0));
+    MaterialPropertySetter::SetMaterialPropertyValue(radiusMeshMaterial, "radius", s_shootRadius);
+    MaterialPropertySetter::SetMaterialPropertyValue(
+        radiusMeshMaterial, towerActor->GetRootComponent(), "p_translation", "p_spacestation_translation");
+    scene->RegisterMaterialInstance(radiusMeshMaterial);
+
+    const auto& d_radiusMesh = std::make_shared<MeshComponentData>(
+        "c_radiusMesh_" + towerName,
+        "plane.obj",
+        glm::vec3(0, -2 - (index * 0.01f), 0),
+        glm::vec3(),
+        glm::vec3(s_shootRadius * 2.0, 1.0f, s_shootRadius * 2.0),
+        "",
+        radiusMeshMaterial);
+    meshComponentCreator->SetIsDeferredShaderUsed(false);
+    const auto& c_radiusMesh
+        = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_radiusMesh));
+    c_radiusMesh->SetSortOrderValue(-100 - index);
+    towerActor->SetRadiusMarkerComponent(c_radiusMesh);
+
     scene->AddActor(towerActor);
 
     towerActor->SetScene(scene);
+    ++index;
+
     return towerActor;
 }
 } // namespace Game

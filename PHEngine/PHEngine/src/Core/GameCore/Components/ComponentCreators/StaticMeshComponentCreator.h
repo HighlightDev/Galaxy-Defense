@@ -16,12 +16,17 @@ class Scene;
 
 template<typename ComponentInstantiationType>
 class StaticMeshComponentCreator : public IComponentCreatable {
-    const bool mIsDeferredShaderUsed;
+    bool mIsDeferredShaderUsed;
 
 public:
     StaticMeshComponentCreator(const bool useDeferredShader)
         : mIsDeferredShaderUsed(useDeferredShader)
     {
+    }
+
+    void SetIsDeferredShaderUsed(const bool useDeferredShader)
+    {
+        mIsDeferredShaderUsed = useDeferredShader;
     }
 
     virtual

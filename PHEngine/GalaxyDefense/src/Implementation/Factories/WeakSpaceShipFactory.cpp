@@ -181,7 +181,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     auto tweenerParser = std::make_unique<TweenerParser>();
     const auto movementTweener = tweenerParser->ParseTweenerDescriptor("spaceshipMove.tween");
     const auto& rotator_binding = movementTweener->GetPropertyBindingByName("b_rotator");
-    BindingAttachmentBuilder::SetAttachment(rootComponent, rotator_binding, "b_rotator");
+    BindingAttachmentBuilder::SetAttachment(rootComponent, rotator_binding, "p_rotator");
     a_enemySpaceship->AttachTweener(movementTweener);
 
     tweenerParser = std::make_unique<TweenerParser>();

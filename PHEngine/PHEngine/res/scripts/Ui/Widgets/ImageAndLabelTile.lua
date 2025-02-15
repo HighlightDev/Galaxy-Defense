@@ -29,8 +29,6 @@ local UiImage = require("Ui/Core/uiImage")
 local UiLabel = require("Ui/Core/uiLabel")
 
 ImageAndLabelTile = {
-    backgroundTileColor = 0xdb9427,
-    missilesCountLabelColor = 0xFFFFFF,
 }
 
 function ImageAndLabelTile:new(host, overlay)
@@ -46,6 +44,7 @@ function ImageAndLabelTile:new(host, overlay)
         tileWidth = 0,
         tileHeight = 0,
         widgetName = "",
+        containerColor = 0xffffff,
         anchorMargins = {
             left = 0,
             right = 0,
@@ -172,6 +171,7 @@ function ImageAndLabelTile:setTextureSource(texSource)
 end
 
 function ImageAndLabelTile:setBackgroundTileColorHexValue(colorHex)
+    self.containerColor = colorHex
     self.backgroundTile:setColorHexValue(colorHex)
 end
 
@@ -226,13 +226,12 @@ function ImageAndLabelTile:onCompoundWidgetInitialize()
     self.backgroundTile:setHeight(self.tileHeight);
     self.backgroundTile:setWidth(self.tileWidth);
 
-    self.backgroundTile:setColorHexValue(ImageAndLabelTile.backgroundTileColor)
+    self.backgroundTile:setColorHexValue(self.containerColor)
     self.backgroundTile:setBorderRadius(8)
     self.backgroundTile:enableMouseInputReceiverBase(self.host)
 
     self.image:setParent(self.host, self.overlayCanvasName,
         self.backgroundTile.widgetName)
-    self.image:setTextureSource("weapon_missile.png");
     self.image:setZOrder(4);
     self.image:setRotationDegrees(180)
     self.image:setHeight(imageSize);
@@ -252,10 +251,10 @@ function ImageAndLabelTile:onCompoundWidgetInitialize()
         self.backgroundTile.widgetName, 6)
     self.label:setVerticalCenterOffset(-8)
     self.label:setHeight(imageSize / 15)
-    self.label:setTextColorHexValue(ImageAndLabelTile.missilesCountLabelColor)
+    self.label:setTextColorHexValue(0xFFFFFF)
     self.label:setFontSize(10.0)
     self.label:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
-    self.label:setZOrder(4)
+    self.label:setZOrder(5)
 end
 
 function ImageAndLabelTile:subscribeOnMouseInputClickedCallback(callback)

@@ -82,11 +82,20 @@ function CombatPreparationOverlay:new(host)
     local removeObjectButton = ImageButton:new(host, combatPreparationOverlay, "RemoveObjectButton")
     combatPreparationOverlay:addCompoundWidget(removeObjectButton)
 
-    local createDropDownPanel = UiRectangle:new(host)
+    local createDropDownPanel = UiItem:new(host)
     combatPreparationOverlay:addWidget(createDropDownPanel)
 
     local createMenuDropDownRowLayout = UiRowLayout:new(host, "CreateMenuDropDownRowLayout")
     combatPreparationOverlay:addWidget(createMenuDropDownRowLayout)
+
+    local removeDropDownPanel = UiItem:new(host, "RemoveDropDownPanel")
+    combatPreparationOverlay:addWidget(removeDropDownPanel)
+
+    local removeMenuDropDownRowLayout = UiRowLayout:new(host, "RemoveMenuDropDownRowLayout")
+    combatPreparationOverlay:addWidget(removeMenuDropDownRowLayout)
+
+    local discardRemoveTowerButton = ImageButton:new(host, combatPreparationOverlay, "DiscardRemoveTowerButton")
+    combatPreparationOverlay:addCompoundWidget(discardRemoveTowerButton)
 
     local createTowerButton = ImageButton:new(host, combatPreparationOverlay, "CreateTowerButton")
     combatPreparationOverlay:addCompoundWidget(createTowerButton)
@@ -102,7 +111,13 @@ function CombatPreparationOverlay:new(host)
         createDropDownPanel:setIsVisible(false)
     end
 
+    local hideRemovePanel = function()
+        discardRemoveTowerButton:setIsVisible(false)
+        removeDropDownPanel:setIsVisible(false)
+    end
+
     createObjectButton:subscribeOnMouseInputClickedCallback(function()
+        hideRemovePanel()
         createDropDownPanel:setIsVisible(true)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
             "CombatLevelEvents", json.encode({
@@ -155,6 +170,7 @@ function CombatPreparationOverlay:new(host)
 
     removeObjectButton:subscribeOnMouseInputClickedCallback(function()
         hideCreatePanel()
+        removeDropDownPanel:setIsVisible(true);
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
             "CombatLevelEvents", json.encode({
                 action = "remove_tower_marker_visibility",
@@ -188,6 +204,24 @@ function CombatPreparationOverlay:new(host)
         end
     end)
 
+    discardRemoveTowerButton:subscribeOnMouseInputClickedCallback(function()
+        hideRemovePanel()
+        discardRemoveTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
+            "CombatLevelEvents", json.encode({
+                action = "remove_tower_marker_visibility",
+                visible = false
+            }))
+    end)
+
+    discardRemoveTowerButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            discardRemoveTowerButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            discardRemoveTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
+    end)
+
     combatPreparationOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
         print("combatPreparationOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
 
@@ -216,14 +250,6 @@ function CombatPreparationOverlay:new(host)
         createObjectButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
         createObjectButton:setImageTextureSource("plus.png")
 
-        removeObjectButton:setParent(host, combatPreparationOverlayCanvas.widgetName,
-            combatPreparationRowLayout.widgetName)
-        removeObjectButton:setWidth(mainButtonSize)
-        removeObjectButton:setHeight(mainButtonSize)
-        removeObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        removeObjectButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        removeObjectButton:setImageTextureSource("minus.png")
-
         createDropDownPanel:setParent(host, combatPreparationOverlayCanvas.widgetName,
             backgroundRect.widgetName)
         createDropDownPanel:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
@@ -232,17 +258,14 @@ function CombatPreparationOverlay:new(host)
             UiItemBase.UiAnchorType.VERTICAL_CENTER, backgroundRect.widgetName)
         createDropDownPanel:setWidth(smallButtonSize * 2 + 40)
         createDropDownPanel:setHeight(smallButtonSize)
-        createDropDownPanel:setIsVisible(false)
-        createDropDownPanel:setColorHexValue(Styles.Colors.panelColor)
         createDropDownPanel:setVerticalCenterOffset(panelHeight)
-        createDropDownPanel:setBorderRadius(CombatPreparationOverlay.buttonRadius)
-        createDropDownPanel:setOpacity(0.0)
+        createDropDownPanel:setIsVisible(false)
 
         createMenuDropDownRowLayout:setParent(host, combatPreparationOverlayCanvas.widgetName,
             createDropDownPanel.widgetName)
         createMenuDropDownRowLayout:fill(createDropDownPanel.widgetName)
         createMenuDropDownRowLayout:setSpacing(smallButtonSize * 0.5)
-        createMenuDropDownRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.LEFT)
+        createMenuDropDownRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
 
         createTowerButton:setParent(host, combatPreparationOverlayCanvas.widgetName,
             createMenuDropDownRowLayout.widgetName)
@@ -273,6 +296,39 @@ function CombatPreparationOverlay:new(host)
         completeStageButton:setImageTextureSource("flag-banner-fold.png")
         completeStageButton:setImageRotationDegrees(180)
         completeStageButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+
+        removeObjectButton:setParent(host, combatPreparationOverlayCanvas.widgetName,
+            combatPreparationRowLayout.widgetName)
+        removeObjectButton:setWidth(mainButtonSize)
+        removeObjectButton:setHeight(mainButtonSize)
+        removeObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        removeObjectButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
+        removeObjectButton:setImageTextureSource("minus.png")
+
+        removeDropDownPanel:setParent(host, combatPreparationOverlayCanvas.widgetName,
+            backgroundRect.widgetName)
+        removeDropDownPanel:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+            UiItemBase.UiAnchorType.HORIZONTAL_CENTER, backgroundRect.widgetName)
+        removeDropDownPanel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
+            UiItemBase.UiAnchorType.VERTICAL_CENTER, backgroundRect.widgetName)
+        removeDropDownPanel:setWidth(smallButtonSize * 2 + 40)
+        removeDropDownPanel:setHeight(smallButtonSize)
+        removeDropDownPanel:setVerticalCenterOffset(panelHeight)
+        removeDropDownPanel:setIsVisible(false)
+
+        removeMenuDropDownRowLayout:setParent(host, combatPreparationOverlayCanvas.widgetName,
+            removeDropDownPanel.widgetName)
+        removeMenuDropDownRowLayout:fill(removeDropDownPanel.widgetName)
+        removeMenuDropDownRowLayout:setSpacing(smallButtonSize * 0.5)
+        removeMenuDropDownRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
+
+        discardRemoveTowerButton:setParent(host, combatPreparationOverlayCanvas.widgetName,
+            removeMenuDropDownRowLayout.widgetName)
+        discardRemoveTowerButton:setWidth(smallButtonSize)
+        discardRemoveTowerButton:setHeight(smallButtonSize)
+        discardRemoveTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        discardRemoveTowerButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
+        discardRemoveTowerButton:setImageTextureSource("cancel.png")
     end)
 
     combatPreparationOverlay.onGameEventTriggered = function(eventName, jsonArgs)

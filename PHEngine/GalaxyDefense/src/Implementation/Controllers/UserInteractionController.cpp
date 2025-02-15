@@ -228,6 +228,7 @@ void UserInteractionController::Tick(const float deltaTime)
     if (eGameModeType::SPACE_STATION_PLACEMENT == mCurrentGameModeType) {
         ProcessSpaceStationPlacementStage();
     } else if (eGameModeType::COMBAT == mCurrentGameModeType) {
+        ProcessSpaceStationPlacementStage();
         ProcessCombatStage();
     }
 }
@@ -270,8 +271,8 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     const glm::vec3 removeTowerPositionValidationColor
                         = GetSpaceStationAtPosition(placementPosition) == nullptr ? glm::vec3(0.3) : glm::vec3(1);
                     mRemoveTowerMarkerBlendColorProperty->SetValue(removeTowerPositionValidationColor);
-                    const auto ndcSpacePosition
-                        = sceneCameraSp->GetConvertedToNDCSpacePosition(glm::vec4(placementPosition, 1.0f));
+                    const glm::vec3 movedUpPosition = placementPosition + EngineMath::AXIS_UP * 3.0f;
+                    const auto ndcSpacePosition = sceneCameraSp->GetConvertedToNDCSpacePosition(glm::vec4(movedUpPosition, 1.0f));
                     mRemoveTowerMarkerActor->GetRootComponent()->SetTranslation(
                         glm::vec3(ndcSpacePosition.x, ndcSpacePosition.y, 0.0f));
                 }
@@ -531,8 +532,7 @@ void UserInteractionController::InitializePlacementAllowedArea()
         const auto& d_mesh = std::make_shared<MeshComponentData>(
             "PlacementAllowedAreaMeshComponent",
             "plane.obj",
-            glm::vec3(realCellOriginPositionVec2.x, 0.0f, realCellOriginPositionVec2.y)
-                - glm::vec3(mTowerCellSize * 0.5, 0.0f, -mTowerCellSize * 0.5),
+            glm::vec3(realCellOriginPositionVec2.x, 0.0f, realCellOriginPositionVec2.y),
             glm::vec3(),
             glm::vec3(mTowerCellSize, 1.0f, mTowerCellSize),
             "",
@@ -601,7 +601,7 @@ void UserInteractionController::InitializeRemoveTowerMarker()
     auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
     const auto data = std::make_shared<BillboardComponentData>(
         "c_billboard_RemoveTowerMarkerActor",
-        0.025f,
+        0.015f,
         glm::vec3(0.0f),
         glm::vec3(1.0f),
         billboard_material,

@@ -101,7 +101,6 @@ void EditorLevel::CreateScene()
     sceneSp->RegisterMaterialInstance(spaceStars_material);
 
     MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
-    MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "ScreenResolution", "screenResolution");
 
     auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
     const auto backgroundBillboardComponentData = std::make_shared<BillboardComponentData>(

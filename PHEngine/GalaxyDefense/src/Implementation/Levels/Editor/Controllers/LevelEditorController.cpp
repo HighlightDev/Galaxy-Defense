@@ -138,8 +138,7 @@ void LevelEditorController::Tick(const float deltaTime)
                         glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                     const auto pickerCellHalfSize = mLevelPlacementGrid->GetGridCellSizeForTower() * 0.5f;
                     mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(
-                        glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y)
-                        - glm::vec3(pickerCellHalfSize, 0.0f, -pickerCellHalfSize));
+                        glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y));
                 } else {
                     const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                         glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));

@@ -542,8 +542,7 @@ void CombatController::ProcessAiAction()
 
     for (const auto& spaceStation : spaceStations) {
         if (spaceStation->CanShoot()) {
-            constexpr float c_collisionSphereRadius = 50.0f;
-            SphereCollisionTestWithFilterAdapter collisionTest(c_collisionSphereRadius, excludedPhysicsComponents);
+        SphereCollisionTestWithFilterAdapter collisionTest(spaceStation->GetShootRadius(), excludedPhysicsComponents);
             collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceStation->GetRootComponent()->GetTranslation());
             const auto& collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
             std::vector<int32_t> descriptorActorIds;

@@ -39,7 +39,7 @@ std::shared_ptr<Actor> SpawnPortalFactory::CreatePortal(
         "c_billboard_portal", billboardSize, glm::vec3(), glm::vec3(1.0f), billboard_material);
     const auto& portalComponent
         = std::static_pointer_cast<BillboardComponent>(scene->CreateComponent_GameThread(portalComponentCreator, data));
-    portalComponent->SetSortOrderValue(-100);
+    portalComponent->SetSortOrderValue(-1000);
     portalComponent->SetDepthWriteMaskEnabled(false);
     a_portal->AddComponent(portalComponent);
 

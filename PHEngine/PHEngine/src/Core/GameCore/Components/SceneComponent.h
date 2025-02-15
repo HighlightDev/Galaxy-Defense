@@ -14,6 +14,8 @@ class SceneComponent : public Component {
     std::shared_ptr<EngineObjectProperty<glm::vec3>>
         m_TransformScale; // This property is used only for bindings. For all other purposes use transform instead
 
+    std::shared_ptr<EngineObjectProperty<glm::vec3>> m_TransformTranslation;
+
 protected:
     bool bTransformationDirty;
 

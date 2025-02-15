@@ -73,6 +73,8 @@ function CreateLevel(host)
 		,minus.png
 		,flag-banner-fold.png
 		,default_circle_mask.png
+		,skull.png
+		,warning.png
 		]])
 
 	_CreateActor(host, "Actor",
