@@ -17,6 +17,10 @@ public:
         const std::string& componentType,
         const std::string& componentDataJsonStr) const
         = 0;
+
+    virtual void CreatePlanarReflectionComponent(
+        const std::weak_ptr<::EngineCore::Scene>& sceneWp, const std::string& componentDataJsonStr) const
+        = 0;
 };
 } // namespace Scripts
 } // namespace EngineCore

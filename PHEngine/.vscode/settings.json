@@ -158,12 +158,20 @@
         "_GetCurrentProgressRequirementsCount",
         "_GetCurrentProgressStageRequirementTrackers",
         "_DestroyCommonUiWidget",
-        "_SendRestartLevelGameThreadEvent"
+        "_SendRestartLevelGameThreadEvent",
+        "_CreateThirdPersonCamera",
+        "_SetCameraThirdPersonTarget",
+        "_CreatePlanarReflectionComponent"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"
     ],
     "lldb.displayFormat": "auto",
     "lldb.dereferencePointers": true,
-    "lldb.consoleMode": "commands"
+    "lldb.consoleMode": "commands",
+    "Lua.workspace.library": [
+        "${addons}/ao/module/library",
+        "${addons}/lualogging/module/library"
+    ],
+    "Lua.workspace.checkThirdParty": false
 }

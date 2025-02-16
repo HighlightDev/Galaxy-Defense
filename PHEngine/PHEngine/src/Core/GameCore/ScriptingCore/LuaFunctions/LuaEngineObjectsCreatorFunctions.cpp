@@ -100,6 +100,15 @@ void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper& luaWr
             "_CreateAndAttachComponentToActor");
 
     LuaCallbackBindingHelper<
+        Hash64_CT("LuaEngineObjectsCreatorFunctions::CreatePlanarReflectionComponent"),
+        void(std::string /*component data json*/)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaEngineObjectsCreatorFunctions::CreatePlanarReflectionComponent, this, std::placeholders::_1),
+            "_CreatePlanarReflectionComponent");
+
+    LuaCallbackBindingHelper<
         Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera"),
         void(std::string, glm::ivec4, std::string, float, float, float, glm::vec3, int32_t)>::
         Bind(
@@ -107,6 +116,16 @@ void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper& luaWr
             mOwnerPtr,
             std::bind(&LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera, this, std::placeholders::_1),
             "_CreateThirdPersonCamera");
+
+    LuaCallbackBindingHelper<
+        Hash64_CT("LuaEngineObjectsCreatorFunctions::SetCameraThirdPersonTarget"),
+        void(std::string, std::string)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaEngineObjectsCreatorFunctions::SetCameraThirdPersonTarget, this, std::placeholders::_1),
+            "_SetCameraThirdPersonTarget");
+
     LuaCallbackBindingHelper<
         Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateFirstPersonCamera"),
         void(std::string, glm::ivec4, std::string, float, float, glm::vec3, int32_t)>::
@@ -225,6 +244,12 @@ void LuaEngineObjectsCreatorFunctions::CreateAndAttachComponentToActor(
     mEngineObjectCreator->CreateComponent(std::get<0>(componentData), std::get<1>(componentData), std::get<2>(componentData));
 }
 
+void LuaEngineObjectsCreatorFunctions::CreatePlanarReflectionComponent(
+    const std::tuple<std::string /*component data json*/>& componentData)
+{
+    mEngineObjectCreator->CreatePlanarReflectionComponent(std::get<0>(componentData));
+}
+
 /* -------------------  Create first person camera ----------------------------*/
 void LuaEngineObjectsCreatorFunctions::CreateFirstPersonCamera(const std::tuple<
                                                                std::string /*cameraName*/,
@@ -275,6 +300,17 @@ void LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera(const std::tuple<
         std::get<5>(cameraData),
         std::get<6>(cameraData),
         bIsMainSceneCamera);
+}
+
+/* -------------------  Set third person target ----------------------------*/
+void LuaEngineObjectsCreatorFunctions::SetCameraThirdPersonTarget(
+    const std::tuple<std::string /*camera name*/, std::string /*third person actor name*/>& cameraData)
+{
+    const auto sceneSp = mSceneWp.lock();
+    assert(sceneSp);
+    const auto& cameraSp = std::dynamic_pointer_cast<ThirdPersonCamera>(sceneSp->GetCamera(std::get<0>(cameraData)));
+    assert(cameraSp);
+    cameraSp->SetThirdPersonTargetDeferred(std::get<1>(cameraData));
 }
 
 /* -------------------  Create material instance and register --------------------*/

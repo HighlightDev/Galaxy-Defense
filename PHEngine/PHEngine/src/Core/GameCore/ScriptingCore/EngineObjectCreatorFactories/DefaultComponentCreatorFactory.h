@@ -17,6 +17,9 @@ public:
         const std::string& componentType,
         const std::string& componentDataJsonStr) const override;
 
+    void CreatePlanarReflectionComponent(
+        const std::weak_ptr<::EngineCore::Scene>& sceneWp, const std::string& componentDataJsonStr) const override;
+
 private:
     std::shared_ptr<ComponentData> CreateComponentData(
         const std::shared_ptr<::EngineCore::Scene>& sceneSp,

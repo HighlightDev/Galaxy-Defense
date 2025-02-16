@@ -67,11 +67,18 @@ private:
         const std::tuple<int32_t /*actorObjectId*/, std::string /*componentType*/, std::string /*component data json*/>&
             componentData);
 
+    /* -------------------Create Planar Reflection Component ----------------------------*/
+    void CreatePlanarReflectionComponent(const std::tuple<std::string /*component data json*/>& componentData);
+
     /* -------------------  Create third person camera ----------------------------*/
     void CreateThirdPersonCamera(
         const std::
             tuple<std::string, glm::ivec4, std::string /*viewProjectionJsonArgs*/, float, float, float, glm::vec3, int32_t>&
                 cameraData);
+
+    /* -------------------  Set third person target ----------------------------*/
+    void SetCameraThirdPersonTarget(
+        const std::tuple<std::string /*camera name*/, std::string /*third person actor name*/>& cameraData);
 
     /* -------------------  Create first person camera ----------------------------*/
     void CreateFirstPersonCamera(

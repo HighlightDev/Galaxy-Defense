@@ -77,7 +77,6 @@ void DefaultComponentCreatorFactory::CreateComponent(
            {"PlatformTraverseComponent", std::make_shared<PlatformTraverseComponentCreator<PlatformTraverseComponent>>()},
            {"SkyboxComponent", std::make_shared<SkyboxComponentCreator<SkyboxComponent>>()},
            {"WaterPlaneComponent", std::make_shared<StaticMeshComponentCreator<WaterPlaneComponent>>(false)},
-           {"PlanarReflectionComponent", std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>()},
            {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()},
            {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()}};
 
@@ -85,6 +84,35 @@ void DefaultComponentCreatorFactory::CreateComponent(
 
     const auto componentDataSp = CreateComponentData(sceneSp, componentType, componentDataJsonStr);
     actor->AddComponent(sceneSp->CreateComponent_GameThread(creatorsMap.at(componentType), componentDataSp));
+}
+
+void DefaultComponentCreatorFactory::CreatePlanarReflectionComponent(
+    const std::weak_ptr<::EngineCore::Scene>& sceneWp, const std::string& componentDataJsonStr) const
+{
+    const auto& sceneSp = sceneWp.lock();
+    assert(sceneSp);
+    const auto& jsonObj = nlohmann::json::parse(componentDataJsonStr);
+    const std::string objectName = nlohmann_utilities::GetStringFromJson(jsonObj["gameObjectName"]);
+    const auto& componentCreatorSp = std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>();
+    const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
+    const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
+    const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
+    const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj["cameraName"]);
+    const auto ownerCameraSp = sceneSp->GetCamera(cameraName);
+    assert(ownerCameraSp);
+    const auto viewPortX = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortX"]);
+    const auto viewPortY = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortY"]);
+    const auto viewPortWidth = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortWidth"]);
+    const auto viewPortHeight = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortHeight"]);
+    const auto& componentData = std::make_shared<PlanarReflectionComponentData>(
+        objectName,
+        translation,
+        rotation,
+        scale,
+        ownerCameraSp,
+        ::Graphics::ViewPortInfo(viewPortX, viewPortY, viewPortWidth, viewPortHeight));
+
+    sceneSp->CreateComponent_GameThread(componentCreatorSp, componentData);
 }
 
 std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentData(
@@ -234,24 +262,6 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         assert(material);
         componentData = std::make_shared<MeshComponentData>("", objectName, translation, rotation, scale, "", material);
-    } else if ("PlanarReflectionComponent" == componentType) {
-        const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
-        const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
-        const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
-        const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj["cameraName"]);
-        const auto ownerCameraSp = sceneSp->GetCamera(cameraName);
-        assert(ownerCameraSp);
-        const auto viewPortX = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortX"]);
-        const auto viewPortY = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortY"]);
-        const auto viewPortWidth = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortWidth"]);
-        const auto viewPortHeight = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortHeight"]);
-        componentData = std::make_shared<PlanarReflectionComponentData>(
-            objectName,
-            translation,
-            rotation,
-            scale,
-            ownerCameraSp,
-            ::Graphics::ViewPortInfo(viewPortX, viewPortY, viewPortWidth, viewPortHeight));
     } else if ("InputComponent" == componentType || "UiInputComponent" == componentType) {
         componentData = std::make_shared<ComponentData>(objectName);
     }

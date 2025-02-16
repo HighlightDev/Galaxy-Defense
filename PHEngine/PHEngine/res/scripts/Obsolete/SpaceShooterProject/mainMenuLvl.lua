@@ -36,16 +36,26 @@ local function initialize(host)
 		,nightBottom.jpg
 		,nightBack.jpg
 		,nightFront.jpg
-        ,piano-loop2.ogg
 		]])
+
+    _OpenAudioStreams(host,
+        [[piano-loop2.ogg
+        ]])
 
     _CreateFirstPersonCamera(host,
         "MainCamera",                                        --cameraName
         0, 0, _GetWindowWidth(host), _GetWindowHeight(host), --viewPort
-        50.0,                                                --initPitchDeg
-        20.0,                                                --initYawDeg
-        0, 0, 0,                                             --init camera position
-        1                                                    -- is main camera on scene
+        Json.encode({
+            projectionType = "Perspective",
+            FoV = math.rad(60.0),
+            AspectRatio = 16.0 / 9.0,
+            NearPlane = 1.0,
+            FarPlane = 500.0
+        }),      --projectionInfo
+        50.0,    --initPitchDeg
+        20.0,    --initYawDeg
+        0, 0, 0, --init camera position
+        1        -- is main camera on scene
     )
 
     local a_spaceSkyboxId = _CreateActor(host, "Actor",
@@ -63,7 +73,7 @@ local function initialize(host)
         Json.encode(
             {
                 gameObjectName = "SpaceSkyboxComponent",
-                scale = { x = 500, y = 500, z = 500 },
+                scale = { x = 250, y = 250, z = 250 },
                 materialProxyId = skyboxMatProxyId
             }
         ))

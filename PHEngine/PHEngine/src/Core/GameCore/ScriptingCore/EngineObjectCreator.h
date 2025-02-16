@@ -49,6 +49,8 @@ public:
     void
     CreateComponent(const int32_t actorObjectId, const std::string& componentType, const std::string& componentDataJsonStr) const;
 
+    void CreatePlanarReflectionComponent(const std::string& componentDataJsonStr) const;
+
     void CreateThirdPersonCamera(
         const std::string& cameraName,
         const ViewPortInfo& viewPort,

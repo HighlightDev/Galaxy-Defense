@@ -77,6 +77,12 @@ void EngineObjectCreator::CreateComponent(
     mComponentCreatorFactoriesMap.at(factoryName)->CreateComponent(mSceneWp, actorObjectId, componentType, componentDataJsonStr);
 }
 
+void EngineObjectCreator::CreatePlanarReflectionComponent(const std::string& componentDataJsonStr) const
+{
+    mComponentCreatorFactoriesMap.at("DefaultComponentCreatorFactory")
+        ->CreatePlanarReflectionComponent(mSceneWp, componentDataJsonStr);
+}
+
 void EngineObjectCreator::CreateThirdPersonCamera(
     const std::string& cameraName,
     const ViewPortInfo& viewPort,

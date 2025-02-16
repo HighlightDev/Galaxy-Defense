@@ -4,6 +4,9 @@ set(PROJECT_NAME GalaxyDefenseProject)
 
 project(${PROJECT_NAME} VERSION 1.0 LANGUAGES CXX)
 
+option(BUILD_GALAXY_DEFENSE "Build GalaxyDefense game." OFF)
+option(BUILD_ENGINE_TEST "Build test scene." ON)
+
 if(WIN32)
     if(MSVC)
         add_compile_options(/bigobj)
@@ -62,8 +65,13 @@ add_compile_definitions(
 )
 
 add_subdirectory(PHEngine)
-add_subdirectory(GalaxyDefense)
 add_subdirectory(Logger/TinyLogger)
+if(BUILD_GALAXY_DEFENSE)
+    add_subdirectory(GalaxyDefense)
+endif(BUILD_GALAXY_DEFENSE)
 if(ENABLE_LIBUNWIND)
     add_subdirectory(UnwindTool)
 endif(ENABLE_LIBUNWIND)
+if(BUILD_ENGINE_TEST)
+    add_subdirectory(EngineTest)
+endif(BUILD_ENGINE_TEST)
