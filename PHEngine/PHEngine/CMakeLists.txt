@@ -70,11 +70,8 @@ if(WIN32)
 
   set(OPENAL_INCLUDE_DIR ${ENGINE_DEPENDENCIES_DIR}/OpenAL/include)
   target_include_directories(PHEngine PUBLIC ${OPENAL_INCLUDE_DIR})
-  find_library(OPENAL_LIBRARY OpenAL32 ${ENGINE_DEPENDENCIES_DIR}/OpenAL/lib/${LIB_LOCATION_PREFIX})
-  if(NOT OPENAL_LIBRARY)
-    message(FATAL_ERROR "OPENAL_LIBRARY wasn't found!")
-  endif()
 
+  findLibraryAndLinkToTarget(PHEngine PUBLIC OpenAL32 ${ENGINE_DEPENDENCIES_DIR}/OpenAL/lib/${LIB_LOCATION_PREFIX})
   findLibraryAndLinkToTarget(PHEngine PUBLIC glew32 ${ENGINE_DEPENDENCIES_DIR}/GLEW/lib/${LIB_LOCATION_PREFIX}/Release/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC lua54 ${ENGINE_DEPENDENCIES_DIR}/Lua54/lib/${LIB_LOCATION_PREFIX}/Debug/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC assimp-vc143-mtd ${ENGINE_DEPENDENCIES_DIR}/Assimp/lib/${LIB_LOCATION_PREFIX}/Debug/)
@@ -95,17 +92,19 @@ elseif(UNIX)
     )
   endif()
 
+  target_link_libraries(PHEngine
+    PUBLIC ${OPENAL_LIBRARY}
+  )
+
   findLibraryAndLinkToTarget(PHEngine PUBLIC assimp ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/lib/Unix/Release/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC lua ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/lib/Unix/Release/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC GLEW ${ENGINE_DEPENDENCIES_DIR}/GLEW/lib/Unix/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC sndfile ${ENGINE_DEPENDENCIES_DIR}/SndFile/lib/Unix/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC glfw3 ${ENGINE_DEPENDENCIES_DIR}/GLFW/lib/Unix/)
   findLibrariesAndLinkToTarget(PHEngine PUBLIC BULLET_LIBS ${ENGINE_DEPENDENCIES_DIR}/BulletPhysics/lib/Unix/Release/)
-
 endif()
 
 target_link_libraries(PHEngine
   PUBLIC ${OPENGL_LIBRARIES}
-  PUBLIC ${OPENAL_LIBRARY}
   PUBLIC TinyLogger
 )

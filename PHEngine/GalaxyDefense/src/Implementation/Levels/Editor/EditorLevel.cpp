@@ -44,7 +44,7 @@ void EditorLevel::RunLuaBuildLevelScript()
 {
     const auto sceneSp = mSceneWp.lock();
     assert(sceneSp);
-    LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("LevelCreators/EditorLvl.lua");
+    LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("EditorLvl.lua");
     mLuaLevelBuilder.SetScene(sceneSp);
     mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
     mLuaLevelBuilder.RegisterCallbacks();

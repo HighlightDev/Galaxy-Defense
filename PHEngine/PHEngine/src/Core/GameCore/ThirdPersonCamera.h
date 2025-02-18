@@ -36,7 +36,7 @@ protected:
     float m_minDistanceFromTargetToCamera;
 
     static constexpr float sCameraMinDistance = 5.0f;
-    static constexpr float sCameraMaxDistance = 35.0f;
+    static constexpr float sCameraMaxDistance = 135.0f;
 
 public:
     ThirdPersonCamera(

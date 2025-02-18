@@ -13,8 +13,11 @@ struct DirectionalLightComponentData : public LightComponentData {
         const glm::vec3& ambient,
         const glm::vec3& diffuse,
         const glm::vec3& specular,
-        const std::shared_ptr<ProjectedShadowInfo>& shadowInfo)
-        : LightComponentData(gameObjectName, ambient, diffuse, specular, shadowInfo, glm::vec3(), rotation, glm::vec3(1))
+        const std::shared_ptr<ProjectedShadowInfo>& shadowInfo,
+        const bool isEnabled = true,
+        const bool isVisible = false)
+        : LightComponentData(
+              gameObjectName, ambient, diffuse, specular, shadowInfo, glm::vec3(), rotation, glm::vec3(1), isEnabled, isVisible)
         , Direction(direction)
     {
     }

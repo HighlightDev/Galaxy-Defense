@@ -12,6 +12,7 @@ class FolderManager {
 
 private:
     std::unordered_map<std::string /*file name*/, std::string /*relative path to file from exe file*/> mFilesPathMap;
+    std::unordered_map<std::string /*file name*/, std::string /*abs path to file from exe file*/> mAbsFilesPathMap;
 
     std::string m_pathToExe;
 
@@ -88,5 +89,6 @@ public:
 
     void CreateFilePathMap(const std::string& absolutePathToDirectory, const std::string& relativePathToDirectory);
     std::string GetDirectoryRelativePathByFileName(const std::string& fileName) const;
+    std::string GetFileAbsPathByFileName(const std::string& fileName) const;
 };
 } // namespace IO

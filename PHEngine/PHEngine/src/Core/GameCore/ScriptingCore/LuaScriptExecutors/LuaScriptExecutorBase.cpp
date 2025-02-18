@@ -79,7 +79,7 @@ void LuaScriptExecutorBase::RunScript()
 {
     assert(mScriptName != "");
     const auto& folderManager = FolderManager::GetInstance();
-    const bool bScriptExecuted = mLuaInstance.ExecuteScript(folderManager->GetScriptPath() + mScriptName);
+    const bool bScriptExecuted = mLuaInstance.ExecuteScript(folderManager->GetFileAbsPathByFileName(mScriptName));
     assert(bScriptExecuted);
 
     mHasOnStart = GetLuaGlobalVariable<int64_t>::Value(mLuaInstance, "HasOnStart", -1);

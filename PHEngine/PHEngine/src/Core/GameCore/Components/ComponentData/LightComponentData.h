@@ -22,7 +22,9 @@ struct LightComponentData : public ComponentData {
         const std::shared_ptr<::Graphics::ProjectedShadowInfo>& shadowInfo,
         const glm::vec3& translation,
         const glm::vec3& rotateEuelerAngles,
-        const glm::vec3& scale)
+        const glm::vec3& scale,
+        const bool isEnabled,
+        const bool isVisible)
         : ComponentData(gameObjectName)
         , Ambient(ambient)
         , Diffuse(diffuse)
@@ -31,6 +33,8 @@ struct LightComponentData : public ComponentData {
         , Translation(translation)
         , Rotation(rotateEuelerAngles)
         , Scale(scale)
+        , mIsEnabled(mIsEnabled)
+        , mIsVisible(mIsVisible)
     {
     }
 
@@ -41,6 +45,8 @@ struct LightComponentData : public ComponentData {
     glm::vec3 Translation;
     glm::vec3 Rotation;
     glm::vec3 Scale;
+    bool mIsEnabled;
+    bool mIsVisible;
 };
 
 } // namespace EngineCore

@@ -18,6 +18,8 @@ protected:
     std::string EngineObjectName;
 
 public:
+    virtual ~EngineObject() = default;
+
     EngineObject(const std::string& gameObjectName);
 
     int32_t GetObjectId() const;

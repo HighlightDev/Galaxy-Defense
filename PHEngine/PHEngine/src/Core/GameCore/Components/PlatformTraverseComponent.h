@@ -1,23 +1,22 @@
 #pragma once
 #include "Component.h"
-#include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaPlatformTraverseScriptExecutor.h"
 #include "PlatformTraverseComponentVisitor.h"
 
+#include <optional>
+#include <vector>
+
 using namespace EnginePhysics;
-using namespace EngineCore::Scripts;
 
 namespace EngineCore {
 struct PlatformTraverseComponentData;
 
 class PlatformTraverseComponent : public Component {
 
-    std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> mMovementPoints;
-
-    std::shared_ptr<LuaPlatformTraverseScriptExecutor> mScriptExecutor;
+    std::vector<std::tuple<std::string, EulerAnglesTransform, float>> mMovementPoints;
 
     std::unique_ptr<PlatformTraverseComponentVisitorBase> mBehaviorVisitor;
 
-    std::string mDestinationPoint;
+    std::optional<std::tuple<std::string, EulerAnglesTransform, float>> mDestinationPoint;
     std::string mLastDestinationPoint;
 
     float mTime;
@@ -33,18 +32,14 @@ public:
 
     void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-    void OnSceneOwnerInitialized() override;
+    void PostLevelInit() override;
 
-    const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>>& GetMovementPoints() const;
-
-    void AddMovementPoint(const std::string& pointName, const EulerAnglesTransform& t, const float transitionTime);
-
-    void SetDestinationPoint(const std::string& pointName);
-
-    std::string GetDestinationPoint() const;
+    const std::vector<std::tuple<std::string, EulerAnglesTransform, float>>& GetMovementPoints() const;
 
 private:
     void Move(const float deltaTime);
+
+    void SetDestinationPoint(const std::string& pointName);
 };
 
 } // namespace EngineCore

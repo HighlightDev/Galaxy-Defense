@@ -49,8 +49,7 @@ void MainMenuLevel::RunLuaBuildLevelScript()
 {
     const auto sceneSp = mSceneWp.lock();
     assert(sceneSp);
-    const auto lvlName = std::string("/LevelCreators/MainMenuLvl.lua");
-    LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor(lvlName);
+    LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("MainMenuLvl.lua");
     mLuaLevelBuilder.SetScene(sceneSp);
     mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
     mLuaLevelBuilder.RegisterCallbacks();

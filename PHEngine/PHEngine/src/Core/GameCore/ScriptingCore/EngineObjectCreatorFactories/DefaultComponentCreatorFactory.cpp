@@ -132,6 +132,8 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
         const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenutation"]);
         const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["radianceRadius"]);
+        const bool isEnabled = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]));
+        const bool isVisible = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_visible"]));
         std::shared_ptr<ProjectedShadowInfo> shadowInfo;
         if (jsonObj.contains("shadowAtlasSize")) {
             const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
@@ -141,13 +143,15 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         }
 
         componentData = std::make_shared<PointLightComponentData>(
-            objectName, translation, attenutation, radianceRadius, ambient, diffuse, specular, shadowInfo);
+            objectName, translation, attenutation, radianceRadius, ambient, diffuse, specular, shadowInfo, isEnabled, isVisible);
     } else if ("DirectionalLightComponent" == componentType) {
         const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
         const auto direction = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["direction"]);
         const auto ambient = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["ambient"]);
         const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
         const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
+        const bool isEnabled = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]));
+        const bool isVisible = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_visible"]));
         std::shared_ptr<ProjectedShadowInfo> shadowInfo;
         if (jsonObj.contains("shadowAtlasSize")) {
             const auto& cfg = EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig();
@@ -159,7 +163,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         }
 
         componentData = std::make_shared<DirectionalLightComponentData>(
-            objectName, rotation, direction, ambient, diffuse, specular, shadowInfo);
+            objectName, rotation, direction, ambient, diffuse, specular, shadowInfo, isEnabled, isVisible);
     } else if ("SpotlightComponent" == componentType) {
         const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
         const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
@@ -169,6 +173,8 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenutation"]);
         const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["radianceRadius"]);
         const auto cutoff = nlohmann_utilities::GetFloatFromJson(jsonObj["cutoff"]);
+        const bool isEnabled = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]));
+        const bool isVisible = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_visible"]));
         std::shared_ptr<ProjectedShadowInfo> shadowInfo;
         if (jsonObj.contains("shadowAtlasSize")) {
             const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
@@ -177,7 +183,18 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         }
 
         componentData = std::make_shared<SpotlightComponentData>(
-            objectName, translation, rotation, attenutation, radianceRadius, cutoff, ambient, diffuse, specular, shadowInfo);
+            objectName,
+            translation,
+            rotation,
+            attenutation,
+            radianceRadius,
+            cutoff,
+            ambient,
+            diffuse,
+            specular,
+            shadowInfo,
+            isEnabled,
+            isVisible);
     } else if ("StaticMeshComponent" == componentType || "SkeletalMeshComponent" == componentType) {
         const auto pathToMesh = nlohmann_utilities::GetStringFromJson(jsonObj["meshName"]);
         const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
@@ -246,7 +263,18 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         componentData = std::make_shared<HumanoidMovementComponentData>(objectName, launchDirection, cameraName);
     } else if ("PlatformTraverseComponent" == componentType) {
         const auto scriptName = nlohmann_utilities::GetStringFromJson(jsonObj["scriptName"]);
-        componentData = std::make_shared<PlatformTraverseComponentData>(objectName, scriptName);
+        std::vector<std::tuple<std::string, EulerAnglesTransform, float>> routePoints;
+        const auto& routePointsRoot = jsonObj.at("routePoints");
+        for (auto it = routePointsRoot.cbegin(); it != routePointsRoot.cend(); ++it) {
+            const auto routeName = it.key();
+            const glm::vec3& translation = nlohmann_utilities::GetXyzFromJsonMap(it->at("translation"));
+            const glm::vec3& rotation = nlohmann_utilities::GetXyzFromJsonMap(it->at("rotation"));
+            const glm::vec3& scale = nlohmann_utilities::GetXyzFromJsonMap(it->at("scale"));
+            const float transitionTime = nlohmann_utilities::GetFloatFromJson(it->at("transitionTime"));
+            routePoints.emplace_back(
+                std::make_tuple(routeName, EulerAnglesTransform(translation, rotation, scale), transitionTime));
+        }
+        componentData = std::make_shared<PlatformTraverseComponentData>(objectName, routePoints);
     } else if ("SkyboxComponent" == componentType) {
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj["materialProxyId"]);

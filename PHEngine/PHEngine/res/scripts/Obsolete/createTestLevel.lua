@@ -26,6 +26,13 @@ setup()
 
 local Json = require("Ui/Core/3rdparty/json")
 
+local PhysicsBodyType = {
+	STATIC = 0,
+	DYNAMIC = 1,
+	KINEMATIC = 2,
+	GHOST = 3
+}
+
 function CreateTestLevel(host)
 	_LazyLoadResourcesAsync(host,
 		[[brick_mid.jpg
@@ -86,7 +93,7 @@ function CreateTestLevel(host)
 		}), --projectionInfo
 		50.0,
 		20.0,
-		20.0,
+		220.0,
 		0, 0, 0,
 		1) -- is main camera on scene
 
@@ -99,6 +106,7 @@ function CreateTestLevel(host)
 
 	_SetCameraThirdPersonTarget(host, "MainCamera", "SceneCenterActorDummy")
 
+	-- ****************************SKYBOX***************************** --
 	local a_spaceSkyboxId = _CreateActor(host, "Actor",
 		"SkyboxActor",
 		0, 0, 0,
@@ -125,11 +133,6 @@ function CreateTestLevel(host)
 
 	-- ****************************PLANAR REFLECTION***************************** --
 
-	-- const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
-	-- const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
-	-- const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
-	-- const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj["cameraName"]);
-
 	_CreatePlanarReflectionComponent(host,
 		Json.encode(
 			{
@@ -147,46 +150,29 @@ function CreateTestLevel(host)
 
 	-- -- ****************************LIGHT***************************** --
 
-	-- -- OBSOLETE
-	-- local lightActor = _CreateActor(host, "MainLightActor", aTra.x, aTra.y, aTra.z, aRot.x, aRot.y, aRot.z, aSca.x,
-	-- 	aSca.y, aSca.z)
+	local a_dirLightId = _CreateActor(host, "Actor",
+		"DirectionalLightActor",
+		0, 0, 0,
+		0, 0, 0,
+		1, 1, 1,
+		"")
+
+	_CreateAndAttachComponentToActor(host, a_dirLightId, "DirectionalLightComponent",
+		Json.encode(
+			{
+				gameObjectName = "MainLightComp",
+				rotation = { x = 0, y = 0, z = 0 },
+				direction = { x = -0.5, y = -0.5, z = 0 },
+				ambient = { r = 0.2, g = 0.2, b = 0.2 },
+				diffuse = { r = 1.68, g = 1.5, b = 1.5 },
+				specular = { r = 0.4, g = 0.4, b = 0.4 },
+				is_enabled = true,
+				is_visible = true,
+				shadowAtlasSize = 256
+			}
+		))
 
 	-- if lightActor ~= nil then
-	-- 	local rotation = { x = 0, y = 0, z = 0 }
-	-- 	local direction = { x = -0.5, y = -0.5, z = 0 }
-	-- 	local ambient = { x = 0.2, y = 0.2, z = 0.2 }
-	-- 	local diffuse = { x = 1.68, y = 1.5, z = 1.5 }
-	-- 	local specular = { x = 0.7, y = 0.7, z = 0.7 }
-
-	-- 	local attenuation = { x = 0, y = 0, z = 0 }
-	-- 	local pointLTranslation = { x = 15, y = 15, z = 0 }
-
-	-- 	local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
-	-- 	local dirShadowInfo1 = _CreateLightProjectionShadowInfo(host, 256, "direct_light")
-
-	-- 	local dirLightComponentData = _CreateDirLightComponentData(host, "MainLightComp",
-	-- 		rotation.x, rotation.y, rotation.z,
-	-- 		direction.x, direction.y, direction.z,
-	-- 		ambient.x, ambient.y, ambient.z,
-	-- 		diffuse.x, diffuse.y, diffuse.z,
-	-- 		specular.x, specular.y, specular.z,
-	-- 		dirShadowInfo
-	-- 	)
-	-- 	local dirLightComponent = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData)
-	-- 	_AttachComponentToActor(host, "MainLightActor", dirLightComponent)
-
-	--	local dirLightComponentData1 = _CreateDirLightComponentData(host, "MainLightComp1",
-	--	rotation.x, rotation.y, rotation.z,
-	--	-direction.x, direction.y, direction.z,
-	--	ambient.x, ambient.y, ambient.z,
-	--	diffuse.x, diffuse.y, diffuse.z,
-	--	specular.x, specular.y, specular.z,
-	--	dirShadowInfo1
-	--	)
-	-- local dirLightComponent1 = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData1)
-	--_AttachComponentToActor(host, "MainLightActor", dirLightComponent1)
-
-
 	--local pointShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "point_light")
 	--local pointLightComponentData = _CreatePointLightComponentData(host, "SecondaryLightComp",
 	--	pointLTranslation.x, pointLTranslation.y, pointLTranslation.z,
@@ -216,34 +202,111 @@ function CreateTestLevel(host)
 	--_AttachComponentToActor(host, "MainLightActor", spotlightComponent)
 	--end
 
-	-- ****************************BIG GROUND***************************** --
-	-- OBSOLETE
-	-- local groundActor = _CreateActor(host, "Ground",
-	-- 	0, 0, 0,
-	-- 	0, 0, 0,
-	-- 	1, 1, 1)
+	-- **************************** GROUND ***************************** --
+	local a_ground = _CreateActor(host, "Actor",
+		"Ground",
+		0, 0, 0,
+		0, 0, 0,
+		1, 1, 1,
+		"")
 
-	-- if groundActor ~= nil then
-	-- 	local material = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-	-- 	_SetTextureToMaterial(host, material, "brick_mid.jpg", "albedo")
-	-- 	_SetTextureToMaterial(host, material, "brick_nm_mid.jpg", "normalMap")
-	-- 	_SetTextureToMaterial(host, material, "dummy_metallic_roughness.png", "roughnessMap")
-	-- 	_SetTextureToMaterial(host, material, "dummy_metallic_roughness.png", "metallicMap")
-	-- 	_SetFloatToMaterial(host, material, 10.0, "uvScale")
+	local groundMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+	_SetTextureToMaterial(host, groundMat, "brick_mid.jpg", "albedo")
+	_SetTextureToMaterial(host, groundMat, "brick_nm_mid.jpg", "normalMap")
+	_SetTextureToMaterial(host, groundMat, "dummy_metallic_roughness.png", "roughnessMap")
+	_SetTextureToMaterial(host, groundMat, "dummy_metallic_roughness.png", "metallicMap")
+	_SetFloatToMaterial(host, groundMat, 1.0, "uvScale")
 
-	-- 	local meshData = _CreateMeshComponentData(host, "floor1Comp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 50, 1, 50, "",
-	-- 		material)
-	-- 	local floorComponent = _CreateComponent(host, "StaticMeshComponent", meshData)
-	-- 	_AttachComponentToActor(host, "Ground", floorComponent)
+	_CreateAndAttachComponentToActor(host, a_ground, "StaticMeshComponent",
+		Json.encode(
+			{
+				gameObjectName = "GroundMeshComponent",
+				meshName = "cube.obj",
+				translation = { x = 0, y = 0, z = 0 },
+				rotation = { x = 0, y = 0, z = 0 },
+				scale = { x = 50, y = 1, z = 50 },
+				luaScriptName = "",
+				materialProxyId = groundMat
+			}
+		))
 
-	-- 	local shape = _CreatePhysicsBoxShape(host, 50, 1, 50)
-	-- 	local floorPhysDesc = _CreateRigidBodyController(host, shape, "STATIC_BODY", 0.0)
-	-- 	local physData = _CreatePhysicsComponentData(host, "FloorPhysicsComp", floorPhysDesc)
-	-- 	local phyComponent = _CreateComponent(host, "RigidBodyPhysicsComponent", physData)
-	-- 	_AttachComponentToActor(host, "Ground", phyComponent)
-	-- end
+	_CreateAndAttachComponentToActor(host, a_ground, "RigidBodyPhysicsComponent",
+		Json.encode(
+			{
+				gameObjectName = "GroundPhysicsComponent",
+				collisionShape = "box",
+				halfExtent = { x = 50, y = 1, z = 50 },
+				physicsBodyType = PhysicsBodyType.STATIC,
+				mass = 0.0
+			}
+		))
 
-	-- -- ****************************SMALL GROUND***************************** --
+	-- **************************** Platform ***************************** --
+	local a_platform = _CreateActor(host, "Actor",
+		"Platform",
+		0, 10, 0,
+		0, 0, 0,
+		1, 1, 1,
+		"")
+
+	_CreateAndAttachComponentToActor(host, a_platform, "StaticMeshComponent",
+		Json.encode(
+			{
+				gameObjectName = "PlatformdMeshComponent",
+				meshName = "cube.obj",
+				translation = { x = 0, y = 0, z = 0 },
+				rotation = { x = 0, y = 0, z = 0 },
+				scale = { x = 8, y = 1, z = 8 },
+				luaScriptName = "",
+				materialProxyId = groundMat
+			}
+		))
+
+	_CreateAndAttachComponentToActor(host, a_platform, "PlatformTraverseComponent",
+		Json.encode(
+			{
+				gameObjectName = "PlatformTraverseComponent",
+				scriptName = "platformMovementComponentAction.lua",
+				routePoints = {
+					a1 = {
+						translation = { x = 0, y = 0, z = 0 },
+						rotation = { x = 0, y = 90, z = 0 },
+						scale = { x = 1, y = 1, z = 1 },
+						transitionTime = 1.8
+					},
+					a2 = {
+						translation = { x = 10, y = 0, z = 0 },
+						rotation = { x = 0, y = 90, z = 0 },
+						scale = { x = 1, y = 1, z = 1 },
+						transitionTime = 1.8
+					},
+					a3 = {
+						translation = { x = 0, y = 0, z = 10 },
+						rotation = { x = 0, y = 90, z = 0 },
+						scale = { x = 1, y = 1, z = 1 },
+						transitionTime = 1.8
+					},
+					a4 = {
+						translation = { x = -10, y = 0, z = -10 },
+						rotation = { x = 0, y = 90, z = 0 },
+						scale = { x = 1, y = 1, z = 1 },
+						transitionTime = 1.8
+					},
+				}
+			}
+		))
+
+	_CreateAndAttachComponentToActor(host, a_platform, "RigidBodyPhysicsComponent",
+		Json.encode(
+			{
+				gameObjectName = "PlatformPhysicsComponent",
+				collisionShape = "box",
+				halfExtent = { x = 8, y = 1, z = 8 },
+				physicsBodyType = PhysicsBodyType.STATIC,
+				mass = 0.0
+			}
+		))
+
 	-- -- OBSOLETE
 	-- local smallGroundActor = _CreateActor(host, "SmallGround",
 	-- 	0, 10, 0,

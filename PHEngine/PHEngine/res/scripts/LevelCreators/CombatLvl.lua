@@ -99,7 +99,9 @@ function CreateLevel(host)
 				direction = { x = -0.2, y = -0.5, z = 0 },
 				ambient = { r = 0.2, g = 0.2, b = 0.2 },
 				diffuse = { r = 0.68, g = 0.5, b = 0.5 },
-				specular = { r = 0.4, g = 0.4, b = 0.4 }
+				specular = { r = 0.4, g = 0.4, b = 0.4 },
+				is_enabled = true,
+				is_visible = true
 			}
 		))
 

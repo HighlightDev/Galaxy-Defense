@@ -17,15 +17,28 @@ struct SpotlightComponentData : public PointLightComponentData {
         const glm::vec3& ambient,
         const glm::vec3& diffuse,
         const glm::vec3& specular,
-        const std::shared_ptr<ProjectedShadowInfo>& shadowInfo)
+        const std::shared_ptr<ProjectedShadowInfo>& shadowInfo,
+        const bool isEnabled = true,
+        const bool isVisible = false)
         : PointLightComponentData(
-              gameObjectName, translation, attenuation, radianceRadius, ambient, diffuse, specular, shadowInfo)
+              gameObjectName,
+              translation,
+              attenuation,
+              radianceRadius,
+              ambient,
+              diffuse,
+              specular,
+              shadowInfo,
+              isEnabled,
+              isVisible)
         , Cutoff(cutoff)
     {
         Rotation = rotation;
     }
 
     float Cutoff;
+
+    ~SpotlightComponentData() override = default;
 };
 
 } // namespace EngineCore

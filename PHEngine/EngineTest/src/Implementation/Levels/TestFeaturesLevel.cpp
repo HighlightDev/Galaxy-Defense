@@ -38,7 +38,7 @@ void TestFeaturesLevel::PreLevelInit()
     Base::PreLevelInit();
     const auto sceneSp = mSceneWp.lock();
     assert(sceneSp);
-    //mUiController = std::make_unique<TestFeaturesLevelUiController>(sceneSp);
+    // mUiController = std::make_unique<TestFeaturesLevelUiController>(sceneSp);
     if (mUiController) {
         mUiController->OnPreLevelInit();
     }
@@ -53,8 +53,7 @@ void TestFeaturesLevel::RunLuaBuildLevelScript()
 {
     const auto sceneSp = mSceneWp.lock();
     assert(sceneSp);
-    static constexpr const char* lvlName = "Obsolete/createTestLevel.lua";
-    LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor(lvlName);
+    LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("createTestLevel.lua");
     mLuaLevelBuilder.SetScene(sceneSp);
     mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
     mLuaLevelBuilder.RegisterCallbacks();

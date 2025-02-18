@@ -158,15 +158,15 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
 
     a_enemySpaceship->AddComponent(c_particleSystemComponent);
 
-    const auto& lightData = std::make_shared<LightComponentData>(
+    const auto& lightData = std::make_shared<PointLightComponentData>(
         "c_light_" + enemyShipIndexStr,
+        glm::vec3(),
+        glm::vec3(),
+        100.0f,
         glm::vec3(0.0, 0.0, 0.0),
         glm::vec3(0.4, 0.1, 0.1),
         glm::vec3(0.4, 0.4, 0.4),
-        nullptr,
-        glm::vec3(),
-        glm::vec3(),
-        glm::vec3(1));
+        nullptr);
     const auto& lightComponentCreator = std::make_shared<LightComponentCreator<PointLightComponent>>();
     const auto& c_pointLight = scene->CreateComponent_GameThread(lightComponentCreator, lightData);
     a_enemySpaceship->AddComponent(c_pointLight);

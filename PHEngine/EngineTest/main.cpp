@@ -201,7 +201,7 @@ int32_t main(int32_t argc, char** argv)
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetWindowSizeCallback(window, window_size_changed_callback);
     glfwSetWindowPosCallback(window, window_position_changed_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
     GLenum initResult = glewInit();
 

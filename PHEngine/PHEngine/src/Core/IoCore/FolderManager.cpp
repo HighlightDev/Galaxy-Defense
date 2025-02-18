@@ -47,10 +47,15 @@ void FolderManager::CreateFilePathMap(const std::string& absolutePathToDirectory
 {
     using directory_iterator = std::filesystem::directory_iterator;
 
-    for (const auto& dirEntry : directory_iterator(absolutePathToDirectory)) {
-        const std::string& fileName = std::string(dirEntry.path().filename().string());
-        ext_assert(mFilesPathMap.count(fileName) == 0, "Such file name already exists: " + fileName);
-        mFilesPathMap[fileName] = relativePathToDirectory;
+    for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(absolutePathToDirectory)) {
+        if (!std::filesystem::is_directory(dirEntry)) {
+            const std::string& fileName = std::string(dirEntry.path().filename().string());
+            ext_assert(
+                mAbsFilesPathMap.count(fileName) == 0 && mFilesPathMap.count(fileName) == 0,
+                "Such file name already exists: " + fileName);
+            mFilesPathMap[fileName] = relativePathToDirectory;
+            mAbsFilesPathMap[fileName] = dirEntry.path();
+        }
     }
 }
 
@@ -59,6 +64,12 @@ std::string FolderManager::GetDirectoryRelativePathByFileName(const std::string&
     EngineCore::LogInfo("FolderManager::GetDirectoryRelativePathByFileName => file: ", fileName);
     ext_assert(mFilesPathMap.count(fileName), "Missing file: " + fileName);
     return mFilesPathMap.at(fileName) + fileName;
+}
+
+std::string FolderManager::GetFileAbsPathByFileName(const std::string& fileName) const
+{
+    ext_assert(mAbsFilesPathMap.count(fileName), "Missing file: " + fileName);
+    return mAbsFilesPathMap.at(fileName);
 }
 
 std::string FolderManager::GetPathToExeFile() const
