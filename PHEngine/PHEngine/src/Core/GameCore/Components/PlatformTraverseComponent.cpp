@@ -13,8 +13,8 @@ namespace EngineCore {
 PlatformTraverseComponent::PlatformTraverseComponent(const std::shared_ptr<PlatformTraverseComponentData>& data)
     : Component(data->EngineObjectName)
     , mDestinationPoint(std::nullopt)
-    , mTime(0.0f)
-    , mMovementPoints(data->mRoutePoints)
+    , mTransitionTime(0.0f)
+    , mMovementPoints(std::move(data->mRoutePoints))
 {
 }
 
@@ -52,32 +52,30 @@ const std::vector<std::tuple<std::string, EulerAnglesTransform, float>>& Platfor
     return mMovementPoints;
 }
 
-void PlatformTraverseComponent::SetDestinationPoint(const std::string& pointName)
+void PlatformTraverseComponent::SetDestinationPointByIndex(const int32_t index)
 {
-    mLastDestinationPoint = pointName;
-    const auto foundPointIt = std::find_if(mMovementPoints.cbegin(), mMovementPoints.cend(), [&pointName](const auto& pointData) {
-        return std::get<0>(pointData) == pointName;
-    });
-    assert(foundPointIt != mMovementPoints.cend());
-    mDestinationPoint = *(foundPointIt);
+    LogInfo("PlatformTraverseComponent::SetDestinationPoint: index: ", index);
+    mCurrentPointIndex = index;
+    assert(mCurrentPointIndex < mMovementPoints.size());
+    mDestinationPoint = mMovementPoints.at(mCurrentPointIndex);
     const EulerAnglesTransform& transform = std::get<1>(mDestinationPoint.value());
     mBehaviorVisitor->CommitMovementStarted(transform);
 }
 
 void PlatformTraverseComponent::Move(const float deltaTime)
 {
-    mTime += deltaTime;
+    mTransitionTime += deltaTime;
 
     const float transitionTime = std::get<2>(mDestinationPoint.value());
 
-    mBehaviorVisitor->LerpTransformation(mTime, transitionTime);
+    mBehaviorVisitor->LerpTransformation(mTransitionTime, transitionTime);
 
     // If component is at final time position
-    if (EngineMath::FloatsNearEqual(mTime, transitionTime)) {
-        mTime = 0.0f;
+    if (mTransitionTime > transitionTime || EngineMath::FloatsNearEqual(mTransitionTime, transitionTime)) {
+        mTransitionTime = 0.0f;
         mDestinationPoint = std::nullopt;
     }
-    mTime = fmod(mTime, transitionTime);
+    mTransitionTime = fmod(mTransitionTime, transitionTime);
 }
 
 void PlatformTraverseComponent::Tick(const float deltaTime)
@@ -89,11 +87,10 @@ void PlatformTraverseComponent::Tick(const float deltaTime)
 
         mBehaviorVisitor->CommitMove();
 
-        EulerAnglesTransform transform;
-        transform.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
-
         if (const auto& spOwner = GetOwner().lock()) {
             if (auto physCompSP = spOwner->GetPhysicsComponent()) {
+                EulerAnglesTransform transform;
+                transform.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
                 const auto physDescriptor = physCompSP->GetDescriptor();
                 KinematicBodyMovedGameThreadEvent::GetInstance()->SendEvent(
                     Event::eExecutionOrder::POST_EXECUTION, physDescriptor, transform);
@@ -101,20 +98,11 @@ void PlatformTraverseComponent::Tick(const float deltaTime)
         }
     } else {
         if (mMovementPoints.size()) {
-            auto foundPointIt = std::find_if(
-                mMovementPoints.begin(), mMovementPoints.end(), [pointName = mLastDestinationPoint](const auto& pointData) {
-                    return std::get<0>(pointData) == pointName;
-                });
-            auto itNext = mMovementPoints.begin();
-            if (foundPointIt != mMovementPoints.end()) {
-                const int32_t pointIndex = std::distance(mMovementPoints.begin(), foundPointIt);
-                if (pointIndex < mMovementPoints.size() - 1) {
-                    itNext = std::next(foundPointIt, 1);
-                }
-            }
+            const int32_t newIndex
+                = (-1 != mCurrentPointIndex && mCurrentPointIndex < mMovementPoints.size() - 1) ? mCurrentPointIndex + 1 : 0;
 
             mBehaviorVisitor->CommitMovementFinished();
-            SetDestinationPoint(std::get<0>(*(itNext)));
+            SetDestinationPointByIndex(newIndex);
         }
     }
 }

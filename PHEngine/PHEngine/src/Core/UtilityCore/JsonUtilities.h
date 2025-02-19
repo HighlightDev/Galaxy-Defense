@@ -13,4 +13,6 @@ int32_t GetIntFromJson(const nlohmann::json& root);
 std::string GetStringFromJson(const nlohmann::json& root);
 
 float GetFloatFromJson(const nlohmann::json& json);
+
+bool GetBoolFromJson(const nlohmann::json& json);
 } // namespace nlohmann_utilities

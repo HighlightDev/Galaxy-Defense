@@ -52,4 +52,9 @@ float GetFloatFromJson(const nlohmann::json& root)
 {
     return root.get<float>();
 }
+
+bool GetBoolFromJson(const nlohmann::json& root)
+{
+    return root.get<bool>();
+}
 } // namespace nlohmann_utilities

@@ -150,8 +150,8 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto ambient = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["ambient"]);
         const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
         const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
-        const bool isEnabled = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]));
-        const bool isVisible = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_visible"]));
+        const bool isEnabled = (bool)nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]);
+        const bool isVisible = (bool)nlohmann_utilities::GetIntFromJson(jsonObj["is_visible"]);
         std::shared_ptr<ProjectedShadowInfo> shadowInfo;
         if (jsonObj.contains("shadowAtlasSize")) {
             const auto& cfg = EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig();

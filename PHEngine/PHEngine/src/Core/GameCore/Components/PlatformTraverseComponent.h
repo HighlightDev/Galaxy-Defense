@@ -17,9 +17,10 @@ class PlatformTraverseComponent : public Component {
     std::unique_ptr<PlatformTraverseComponentVisitorBase> mBehaviorVisitor;
 
     std::optional<std::tuple<std::string, EulerAnglesTransform, float>> mDestinationPoint;
-    std::string mLastDestinationPoint;
 
-    float mTime;
+    std::int32_t mCurrentPointIndex{-1};
+
+    float mTransitionTime;
 
 public:
     PlatformTraverseComponent(const std::shared_ptr<PlatformTraverseComponentData>& data);
@@ -39,7 +40,7 @@ public:
 private:
     void Move(const float deltaTime);
 
-    void SetDestinationPoint(const std::string& pointName);
+    void SetDestinationPointByIndex(const int32_t index);
 };
 
 } // namespace EngineCore

@@ -166,8 +166,8 @@ function CreateTestLevel(host)
 				ambient = { r = 0.2, g = 0.2, b = 0.2 },
 				diffuse = { r = 1.68, g = 1.5, b = 1.5 },
 				specular = { r = 0.4, g = 0.4, b = 0.4 },
-				is_enabled = true,
-				is_visible = true,
+				is_enabled = 1,
+				is_visible = 1,
 				shadowAtlasSize = 256
 			}
 		))

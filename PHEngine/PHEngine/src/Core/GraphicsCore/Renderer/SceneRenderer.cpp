@@ -564,7 +564,7 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
 #ifndef NO_LIT
     // ************************** SHADOWS ************************** //
     size_t pointLightIndex = 0, dirLightIndex = 0, spotlightIndex = 0;
-    size_t shadowMapSlot = 4, dirShadowMapCount = 0, pointShadowMapCount = 0, spotlightShadowMapCount = 0;
+    size_t shadowMapSlot = 5, dirShadowMapCount = 0, pointShadowMapCount = 0, spotlightShadowMapCount = 0;
     for (auto& dirLightProxy : mDirLightProxiesVec) {
         if (dirLightProxy->IsEnabled()) {
             const auto shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
