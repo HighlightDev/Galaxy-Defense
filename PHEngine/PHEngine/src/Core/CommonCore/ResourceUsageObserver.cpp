@@ -1,9 +1,9 @@
 #include "ResourceUsageObserver.h"
 
 #ifdef _WIN32
+#include <windows.h>
 #include <psapi.h>
 #include <wchar.h>
-#include <windows.h>
 #pragma comment(lib, "Psapi.lib")
 #elif __linux__
 #include <sys/sysinfo.h>

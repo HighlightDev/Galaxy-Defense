@@ -67,7 +67,7 @@ public:
 
             for (const auto& listenerWp : m_listeners) {
                 if (const auto& listenerSp = listenerWp.lock()) {
-                    listenerSp->ProcessEvent(static_cast<DerivedEventType_t*>(this), packedData);
+                    listenerSp->ProcessEvent(reinterpret_cast<DerivedEventType_t*>(this), packedData);
                 }
             }
         }

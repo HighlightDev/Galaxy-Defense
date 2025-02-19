@@ -33,8 +33,8 @@ struct LightComponentData : public ComponentData {
         , Translation(translation)
         , Rotation(rotateEuelerAngles)
         , Scale(scale)
-        , mIsEnabled(mIsEnabled)
-        , mIsVisible(mIsVisible)
+        , mIsEnabled(isEnabled)
+        , mIsVisible(isVisible)
     {
     }
 
