@@ -207,9 +207,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
 
         componentData = std::make_shared<MeshComponentData>(
             objectName, pathToMesh, translation, rotation, scale, luaScriptRelPath, material);
-    } else if (
-        "RigidBodyPhysicsComponent" == componentType || "CharacterPhysicsComponent" == componentType
-        || "GhostPhysicsComponent" == componentType) {
+    } else if ("RigidBodyPhysicsComponent" == componentType || "GhostPhysicsComponent" == componentType) {
         std::shared_ptr<PhysicsDescriptor> descriptor;
         std::shared_ptr<CollisionShapeBase> collisionShape;
         const auto collisionShapeStr = nlohmann_utilities::GetStringFromJson(jsonObj["collisionShape"]);
@@ -245,17 +243,18 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             const auto physicsBodyType
                 = static_cast<ePhysicsBodyType>(nlohmann_utilities::GetIntFromJson(jsonObj["physicsBodyType"]));
             descriptor = std::make_shared<RigidBodyController>(sceneSp->GetPhysicsWorld(), collisionShape, physicsBodyType, mass);
-        } else if ("CharacterPhysicsComponent" == componentType) {
-            const auto capsuleRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["capsuleRadius"]);
-            const auto capsuleHeight = nlohmann_utilities::GetFloatFromJson(jsonObj["capsuleHeight"]);
-
-            const auto stepHeight = nlohmann_utilities::GetFloatFromJson(jsonObj["stepHeight"]);
-            descriptor = std::make_shared<DynamicCharacterController>(
-                sceneSp->GetPhysicsWorld(), capsuleRadius, capsuleHeight, mass, stepHeight);
         } else if ("GhostPhysicsComponent" == componentType) {
             descriptor = std::make_shared<GhostController>(sceneSp->GetPhysicsWorld(), collisionShape, mass);
         }
 
+        componentData = std::make_shared<PhysicsComponentData>(objectName, descriptor);
+    } else if ("CharacterPhysicsComponent" == componentType) {
+        const auto capsuleRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["capsuleRadius"]);
+        const auto capsuleHeight = nlohmann_utilities::GetFloatFromJson(jsonObj["capsuleHeight"]);
+        const auto mass = nlohmann_utilities::GetFloatFromJson(jsonObj["mass"]);
+        const auto stepHeight = nlohmann_utilities::GetFloatFromJson(jsonObj["stepHeight"]);
+        const auto& descriptor = std::make_shared<DynamicCharacterController>(
+            sceneSp->GetPhysicsWorld(), capsuleRadius, capsuleHeight, mass, stepHeight);
         componentData = std::make_shared<PhysicsComponentData>(objectName, descriptor);
     } else if ("HumanoidPhysicsMovementComponent" == componentType) {
         const auto launchDirection = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["launchDirection"]);
@@ -289,7 +288,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj["materialProxyId"]);
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         assert(material);
-        componentData = std::make_shared<MeshComponentData>("", objectName, translation, rotation, scale, "", material);
+        componentData = std::make_shared<MeshComponentData>(objectName, "", translation, rotation, scale, "", material);
     } else if ("InputComponent" == componentType || "UiInputComponent" == componentType) {
         componentData = std::make_shared<ComponentData>(objectName);
     }

@@ -16,7 +16,7 @@ DynamicCharacterController::DynamicCharacterController(
     , mGhostObject(nullptr)
     , mOnGround(false)
     , mHittingWall(false)
-    , mDeceleration(0.1f)
+    , mDeceleration(1.0f)
     , mMaxSpeed(15.0f)
     , mJumpImpulse(150)
     , mJumpRechargeTime(0.5f)
@@ -111,7 +111,7 @@ void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool& bIsW
     UpdateVelocity();
 
     // Update jump timer
-    if (mJumpRechargeTimer < mJumpRechargeTime)
+    if (mJumpRechargeTimer <= mJumpRechargeTime)
         mJumpRechargeTimer += mTimerMultiplier;
 
     if (bIsWorldTransformDiry = !(isEqual(mMotionTransform, mPrevTransform))) {

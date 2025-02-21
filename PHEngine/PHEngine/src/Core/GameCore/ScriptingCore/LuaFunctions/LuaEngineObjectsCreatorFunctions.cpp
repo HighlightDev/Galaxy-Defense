@@ -4,6 +4,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/HumanoidPlayerController.h"
+#include "Core/GameCore/ScriptingCore/EngineObjectCreatorFactories/ActorControllerCreatorFactory.h"
 #include "Core/GameCore/ScriptingCore/EngineObjectCreatorFactories/ActorCreatorFactory.h"
 #include "Core/GameCore/ScriptingCore/EngineObjectCreatorFactories/DefaultComponentCreatorFactory.h"
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
@@ -49,6 +50,8 @@ void LuaEngineObjectsCreatorFunctions::SetScene(const std::weak_ptr<Scene>& scen
     mEngineObjectCreator->RegisterActorCreatorFactory("Actor", std::make_shared<ActorCreatorFactory>());
     mEngineObjectCreator->RegisterComponentCreatorFactory(
         "DefaultComponentCreatorFactory", std::make_shared<DefaultComponentCreatorFactory>());
+    mEngineObjectCreator->RegisterActorControllerCreatorFactory(
+        "DefaultActorControllerCreatorFactory", std::make_shared<ActorControllerCreatorFactory>());
 }
 
 void LuaEngineObjectsCreatorFunctions::SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor)
@@ -186,6 +189,15 @@ void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper& luaWr
             mOwnerPtr,
             std::bind(&LuaEngineObjectsCreatorFunctions::SetTweenerBinding, this, std::placeholders::_1),
             "_SetTweenerBinding");
+
+    LuaCallbackBindingHelper<
+        Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateActorController"),
+        void(std::string, std::string, std::string, std::string)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaEngineObjectsCreatorFunctions::CreateActorController, this, std::placeholders::_1),
+            "_CreateActorController");
 }
 
 /* -------------------  Load asynchronously resources by names ----------------------------*/
@@ -431,6 +443,20 @@ void LuaEngineObjectsCreatorFunctions::SetTweenerBinding(const std::tuple<
         const auto& bindingSp = tweenerSp->GetPropertyBindingByName(std::get<3>(tweenerData));
         BindingAttachmentBuilder::SetAttachment(gameObjectSp, bindingSp, std::get<4>(tweenerData));
     }
+}
+
+/* -------------------  Create Actor Controller----------------------------*/
+void LuaEngineObjectsCreatorFunctions::CreateActorController(const std::tuple<
+                                                             std::string /*Factory type name*/,
+                                                             std::string /*Actor name*/,
+                                                             std::string /*Actor controller type name*/,
+                                                             std::string /*json params string*/>& data)
+{
+    const std::string& factoryTypeName = std::get<0>(data);
+    const auto& actorName = std::get<1>(data);
+    const auto& actorControllerTypeName = std::get<2>(data);
+    const auto& jsonParams = std::get<3>(data);
+    mEngineObjectCreator->CreateActorController(factoryTypeName, actorName, actorControllerTypeName, jsonParams);
 }
 } // namespace Scripts
 } // namespace EngineCore

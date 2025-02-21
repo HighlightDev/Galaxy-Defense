@@ -119,6 +119,13 @@ private:
                            std::string /*game object name*/,
                            std::string /*binding name*/,
                            std::string /*property name*/>& tweenerData);
+
+    /* -------------------  Create Actor Controller----------------------------*/
+    void CreateActorController(const std::tuple<
+                               std::string /*Factory type name*/,
+                               std::string /*Actor name*/,
+                               std::string /*Actor controller type name*/,
+                               std::string /*json params string*/>& data);
 };
 } // namespace Scripts
 } // namespace EngineCore

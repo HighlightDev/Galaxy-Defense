@@ -1,124 +1,201 @@
- 0 | Timestamp: 0.392915 | Thread: Render|  main => glfwWindow create with size: width =  1920  height =  1080
- 1 | Timestamp: 0.397451 | Thread: Render|  InterThreadCommunicationMgr::ctor
- 2 | Timestamp: 0.397502 | Thread: Render|  PhysicsWorld::ctor
- 3 | Timestamp: 0.397577 | Thread: Render|  UiHandler::ctor
- 4 | Timestamp: 0.397583 | Thread: Render|  Scene::ctor
- 5 | Timestamp: 0.466172 | Thread: Render|  SoundDevice::ctor => Opened device  Built-in Audio Analog Stereo
- 6 | Timestamp: 0.466195 | Thread: Render|  GameThreadTimersHolder::RegisterTimerInstance => Current Thread:  Render
- 7 | Timestamp: 0.466244 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
- 8 | Timestamp: 0.468926 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  1
- 9 | Timestamp: 0.468959 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
- 10 | Timestamp: 0.472507 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  2
- 11 | Timestamp: 0.472543 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
- 12 | Timestamp: 0.476936 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  3
- 13 | Timestamp: 0.476973 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
- 14 | Timestamp: 0.479589 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  4
- 15 | Timestamp: 0.479830 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
- 16 | Timestamp: 0.482169 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  5
- 17 | Timestamp: 0.482316 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
- 18 | Timestamp: 0.485026 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  6
- 19 | Timestamp: 0.485107 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
- 20 | Timestamp: 0.487443 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  7
- 21 | Timestamp: 0.490504 | Thread: Render|  ShaderAllocationPolicy::AllocateMemory:  ResolveFxColorShader
- 22 | Timestamp: 0.490526 | Thread: Render|  IShader::ctor => shaderName =  ResolveFxColorShader
- 23 | Timestamp: 0.491237 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  1
- 24 | Timestamp: 0.491261 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  2
- 25 | Timestamp: 0.495942 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  3
- 26 | Timestamp: 0.495986 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  576 , height  312
- 27 | Timestamp: 0.496229 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  8
- 28 | Timestamp: 0.496244 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  576 , height  312
- 29 | Timestamp: 0.496477 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  9
- 30 | Timestamp: 0.496805 | Thread: Render|  ShaderAllocationPolicy::AllocateMemory:  BloomFxShader
- 31 | Timestamp: 0.496814 | Thread: Render|  IShader::ctor => shaderName =  BloomFxShader
- 32 | Timestamp: 0.497169 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  4
- 33 | Timestamp: 0.497183 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  5
- 34 | Timestamp: 0.497982 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  6
- 35 | Timestamp: 0.498018 | Thread: Render|  SceneRenderer::ctor
- 36 | Timestamp: 0.498040 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
- 37 | Timestamp: 0.498074 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
- 38 | Timestamp: 0.498079 | Thread: Render|  IShader::ctor => shaderName =  DepthCollectShader
- 39 | Timestamp: 0.498084 | Thread: Render|  AVertexFactoryShaderModul::Init
- 40 | Timestamp: 0.498086 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
- 41 | Timestamp: 0.498091 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
- 42 | Timestamp: 0.498234 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  7
- 43 | Timestamp: 0.498248 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  8
- 44 | Timestamp: 0.498981 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  9
- 45 | Timestamp: 0.499001 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  9
- 46 | Timestamp: 0.499011 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory
- 47 | Timestamp: 0.499067 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory<4>
- 48 | Timestamp: 0.499076 | Thread: Render|  IShader::ctor => shaderName =  DepthCollectShader
- 49 | Timestamp: 0.499082 | Thread: Render|  AVertexFactoryShaderModul::Init
- 50 | Timestamp: 0.499087 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
- 51 | Timestamp: 0.499193 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
- 52 | Timestamp: 0.499406 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  10
- 53 | Timestamp: 0.499428 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  11
- 54 | Timestamp: 0.501678 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  12
- 55 | Timestamp: 0.501783 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  12
- 56 | Timestamp: 0.501793 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory
- 57 | Timestamp: 0.501841 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory<4>
- 58 | Timestamp: 0.501847 | Thread: Render|  IShader::ctor => shaderName =  PointLightDepthCollectShader
- 59 | Timestamp: 0.501852 | Thread: Render|  AVertexFactoryShaderModul::Init
- 60 | Timestamp: 0.501856 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
- 61 | Timestamp: 0.501934 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
- 62 | Timestamp: 0.502074 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  13
- 63 | Timestamp: 0.502090 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  14
- 64 | Timestamp: 0.502095 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  15
- 65 | Timestamp: 0.505445 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  16
- 66 | Timestamp: 0.505573 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  16
- 67 | Timestamp: 0.505609 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
- 68 | Timestamp: 0.505668 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
- 69 | Timestamp: 0.505678 | Thread: Render|  IShader::ctor => shaderName =  PointLightDepthCollectShader
- 70 | Timestamp: 0.505683 | Thread: Render|  AVertexFactoryShaderModul::Init
- 71 | Timestamp: 0.505687 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
- 72 | Timestamp: 0.505692 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
- 73 | Timestamp: 0.505827 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  17
- 74 | Timestamp: 0.505842 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  18
- 75 | Timestamp: 0.505846 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  19
- 76 | Timestamp: 0.508269 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  20
- 77 | Timestamp: 0.508297 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  20
- 78 | Timestamp: 0.508339 | Thread: Render|  IShader::ctor => shaderName =  DeferredLight Shader
- 79 | Timestamp: 0.509889 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  21
- 80 | Timestamp: 0.509913 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  22
- 81 | Timestamp: 0.512621 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  23
- 82 | Timestamp: 0.512841 | Thread: Render|  IShader::ctor => shaderName =  FontRendering Shader
- 83 | Timestamp: 0.512981 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  24
- 84 | Timestamp: 0.512995 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  25
- 85 | Timestamp: 0.513512 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  26
- 86 | Timestamp: 0.514122 | Thread: Render|  Level::PreLevelInit
- 87 | Timestamp: 0.514136 | Thread: Render|  Scene::OnLevelInit
- 88 | Timestamp: 0.514146 | Thread: Render|  Level::InitLevel
- 89 | Timestamp: 0.515141 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  arrow_right_1.png
- 90 | Timestamp: 0.515331 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/ui/arrow_right_1.png
- 91 | Timestamp: 0.515349 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nimbus_mono.png
- 92 | Timestamp: 0.515505 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/fonts/nimbus_mono.png
- 93 | Timestamp: 0.515521 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightRight.jpg
- 94 | Timestamp: 0.515683 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightRight.jpg
- 95 | Timestamp: 0.515698 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightLeft.jpg
- 96 | Timestamp: 0.516215 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightLeft.jpg
- 97 | Timestamp: 0.516235 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightTop.jpg
- 98 | Timestamp: 0.545964 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightTop.jpg
- 99 | Timestamp: 0.546007 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightBottom.jpg
- 100 | Timestamp: 0.553848 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBottom.jpg
- 101 | Timestamp: 0.553890 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightBack.jpg
- 102 | Timestamp: 0.554090 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightLeft.jpg , memAfterAllocation:  103.425781
- 103 | Timestamp: 0.554522 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBack.jpg
- 104 | Timestamp: 0.554544 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightFront.jpg
- 105 | Timestamp: 0.558565 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightFront.jpg
- 106 | Timestamp: 0.607163 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightRight.jpg , memAfterAllocation:  112.062500
- 107 | Timestamp: 0.621862 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/fonts/nimbus_mono.png , memAfterAllocation:  113.351562
- 108 | Timestamp: 0.635333 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBottom.jpg , memAfterAllocation:  114.906250
- 109 | Timestamp: 0.653832 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightTop.jpg , memAfterAllocation:  117.691406
- 110 | Timestamp: 0.667625 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightFront.jpg , memAfterAllocation:  122.023438
- 111 | Timestamp: 0.676623 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/cubemap/nightBack.jpg , memAfterAllocation:  123.261719
- 112 | Timestamp: 0.733654 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/texture/ui/arrow_right_1.png , memAfterAllocation:  121.445312
- 113 | Timestamp: 0.733875 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  piano-loop2.ogg
- 114 | Timestamp: 0.737119 | Thread: Render|  AudioResourceLoader::GetStreamResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/GalaxyDefense/res/audio/piano-loop2.ogg , memAfterAllocation:  121.574219
- 115 | Timestamp: 0.737335 | Thread: Render|  Scene::RegisterMainCamera => name =  MainCamera
- 116 | Timestamp: 0.737360 | Thread: Render|  Scene::RegisterCamera => id =  4 , cameraSceneProxyId:  0
- 117 | Timestamp: 0.737369 | Thread: Render|  SceneRenderer::CameraSceneProxyAdded_OnRenderThread => camera proxyId:  0
- 118 | Timestamp: 0.737498 | Thread: Render|  Scene::RegisterMaterialInstance => name =  SpaceSkyboxMaterial.m
- 119 | Timestamp: 0.737529 | Thread: Render|  TextureAllocationPolicy::AllocateMemory:  nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg
- 120 | Timestamp: 0.750942 | Thread: Render|  CubemapTexture::ctor(const std::vector<std::string> &) => m_texDescriptor =  10
- 121 | Timestamp: 0.751177 | Thread: Render|  Scene::RegisterComponentSceneProxy => componentName =  SpaceSkyboxComponent
- 122 | Timestamp: 0.751196 | Thread: Render|  Scene::RegisterComponentSceneProxy => primitive proxy added, sceneProxyId = 2
- 123 | Timestamp: 0.751306 | Thread: Render|  FileWatcher::ctor
+ 0 | Timestamp: 0.211250 | Thread: Render|  main => glfwWindow create with size: width =  1920  height =  1080
+ 1 | Timestamp: 0.237908 | Thread: Render|  InterThreadCommunicationMgr::ctor
+ 2 | Timestamp: 0.237943 | Thread: Render|  PhysicsWorld::ctor
+ 3 | Timestamp: 0.238007 | Thread: Render|  UiHandler::ctor
+ 4 | Timestamp: 0.238012 | Thread: Render|  Scene::ctor
+ 5 | Timestamp: 0.258732 | Thread: Render|  SoundDevice::ctor => Opened device  Built-in Audio Analog Stereo
+ 6 | Timestamp: 0.258765 | Thread: Render|  GameThreadTimersHolder::RegisterTimerInstance => Current Thread:  Render
+ 7 | Timestamp: 0.259057 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 8 | Timestamp: 0.262764 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  1
+ 9 | Timestamp: 0.263000 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 10 | Timestamp: 0.266465 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  2
+ 11 | Timestamp: 0.266495 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 12 | Timestamp: 0.269817 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  3
+ 13 | Timestamp: 0.269853 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 14 | Timestamp: 0.271657 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  4
+ 15 | Timestamp: 0.271684 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 16 | Timestamp: 0.273091 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  5
+ 17 | Timestamp: 0.273136 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 18 | Timestamp: 0.275343 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  6
+ 19 | Timestamp: 0.275428 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 20 | Timestamp: 0.277806 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  7
+ 21 | Timestamp: 0.281101 | Thread: Render|  ShaderAllocationPolicy::AllocateMemory:  ResolveFxColorShader
+ 22 | Timestamp: 0.281136 | Thread: Render|  IShader::ctor => shaderName =  ResolveFxColorShader
+ 23 | Timestamp: 0.281855 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  1
+ 24 | Timestamp: 0.281872 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  2
+ 25 | Timestamp: 0.287660 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  3
+ 26 | Timestamp: 0.287709 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  576 , height  312
+ 27 | Timestamp: 0.287964 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  8
+ 28 | Timestamp: 0.287977 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  576 , height  312
+ 29 | Timestamp: 0.288206 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  9
+ 30 | Timestamp: 0.288224 | Thread: Render|  RenderTargetAllocationPolicy::AllocateMemory: width  1920 , height  1043
+ 31 | Timestamp: 0.290660 | Thread: Render|  Texture2d::ctor(const TexParams &) => texDescriptor =  10
+ 32 | Timestamp: 0.294068 | Thread: Render|  ShaderAllocationPolicy::AllocateMemory:  BloomFxShader
+ 33 | Timestamp: 0.294096 | Thread: Render|  IShader::ctor => shaderName =  BloomFxShader
+ 34 | Timestamp: 0.294576 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  4
+ 35 | Timestamp: 0.294592 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  5
+ 36 | Timestamp: 0.295620 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  6
+ 37 | Timestamp: 0.295657 | Thread: Render|  SceneRenderer::ctor
+ 38 | Timestamp: 0.295683 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
+ 39 | Timestamp: 0.295826 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
+ 40 | Timestamp: 0.295832 | Thread: Render|  IShader::ctor => shaderName =  DepthCollectShader
+ 41 | Timestamp: 0.295837 | Thread: Render|  AVertexFactoryShaderModul::Init
+ 42 | Timestamp: 0.295841 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
+ 43 | Timestamp: 0.295845 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
+ 44 | Timestamp: 0.296266 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  7
+ 45 | Timestamp: 0.296279 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  8
+ 46 | Timestamp: 0.297177 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  9
+ 47 | Timestamp: 0.297189 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  9
+ 48 | Timestamp: 0.297196 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory
+ 49 | Timestamp: 0.297294 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory<4>
+ 50 | Timestamp: 0.297302 | Thread: Render|  IShader::ctor => shaderName =  DepthCollectShader
+ 51 | Timestamp: 0.297306 | Thread: Render|  AVertexFactoryShaderModul::Init
+ 52 | Timestamp: 0.297309 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
+ 53 | Timestamp: 0.297381 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
+ 54 | Timestamp: 0.297508 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  10
+ 55 | Timestamp: 0.297521 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  11
+ 56 | Timestamp: 0.299289 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  12
+ 57 | Timestamp: 0.299403 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  12
+ 58 | Timestamp: 0.299415 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory
+ 59 | Timestamp: 0.299488 | Thread: Render|  IShader::ctor => shaderName =  SkeletalMeshVertexFactory<4>
+ 60 | Timestamp: 0.299496 | Thread: Render|  IShader::ctor => shaderName =  PointLightDepthCollectShader
+ 61 | Timestamp: 0.299503 | Thread: Render|  AVertexFactoryShaderModul::Init
+ 62 | Timestamp: 0.299506 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
+ 63 | Timestamp: 0.299598 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
+ 64 | Timestamp: 0.300030 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  13
+ 65 | Timestamp: 0.300049 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  14
+ 66 | Timestamp: 0.300054 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  15
+ 67 | Timestamp: 0.302944 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  16
+ 68 | Timestamp: 0.303064 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  16
+ 69 | Timestamp: 0.303099 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
+ 70 | Timestamp: 0.303172 | Thread: Render|  IShader::ctor => shaderName =  StaticMeshVertexFactory
+ 71 | Timestamp: 0.303180 | Thread: Render|  IShader::ctor => shaderName =  PointLightDepthCollectShader
+ 72 | Timestamp: 0.303186 | Thread: Render|  AVertexFactoryShaderModul::Init
+ 73 | Timestamp: 0.303190 | Thread: Render|  AVertexFactoryShaderModule::ProcessAllPredefines
+ 74 | Timestamp: 0.303196 | Thread: Render|  AVertexFactoryShaderModule::AssembleShaderSource
+ 75 | Timestamp: 0.303363 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  17
+ 76 | Timestamp: 0.303384 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  18
+ 77 | Timestamp: 0.303391 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  19
+ 78 | Timestamp: 0.305376 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  20
+ 79 | Timestamp: 0.305399 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  20
+ 80 | Timestamp: 0.305425 | Thread: Render|  IShader::ctor => shaderName =  DeferredLight Shader
+ 81 | Timestamp: 0.307152 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  21
+ 82 | Timestamp: 0.307176 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  22
+ 83 | Timestamp: 0.310685 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  23
+ 84 | Timestamp: 0.310942 | Thread: Render|  IShader::ctor => shaderName =  FontRendering Shader
+ 85 | Timestamp: 0.311256 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  24
+ 86 | Timestamp: 0.311270 | Thread: Render|  IShader::SendToGpuSingleShaderSource => shaderId =  25
+ 87 | Timestamp: 0.312447 | Thread: Render|  IShader::AccessAllUniformLocations => shaderProgramId =  26
+ 88 | Timestamp: 0.312651 | Thread: Render|  Level::PreLevelInit
+ 89 | Timestamp: 0.312662 | Thread: Render|  Scene::OnLevelInit
+ 90 | Timestamp: 0.312671 | Thread: Render|  Level::InitLevel
+ 91 | Timestamp: 0.314303 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  brick_mid.jpg
+ 92 | Timestamp: 0.314387 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/albedo/brick_mid.jpg
+ 93 | Timestamp: 0.314406 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  brick_nm_mid.jpg
+ 94 | Timestamp: 0.314457 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/normalmap/brick_nm_mid.jpg
+ 95 | Timestamp: 0.314472 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  city_house_2_Col.jpg
+ 96 | Timestamp: 0.314527 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/albedo/city_house_2_Col.jpg
+ 97 | Timestamp: 0.314541 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  city_house_2_Nor.jpg
+ 98 | Timestamp: 0.314581 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/normalmap/city_house_2_Nor.jpg
+ 99 | Timestamp: 0.314595 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  city_house_2_Spec.png
+ 100 | Timestamp: 0.314636 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/specularmap/city_house_2_Spec.png
+ 101 | Timestamp: 0.314661 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  diffuse.png
+ 102 | Timestamp: 0.314703 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/albedo/diffuse.png
+ 103 | Timestamp: 0.314716 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  dummy_nm.png
+ 104 | Timestamp: 0.314758 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/normalmap/dummy_nm.png
+ 105 | Timestamp: 0.314804 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  dayRight.jpg
+ 106 | Timestamp: 0.314853 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayRight.jpg
+ 107 | Timestamp: 0.314866 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  dayLeft.jpg
+ 108 | Timestamp: 0.314914 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayLeft.jpg
+ 109 | Timestamp: 0.314936 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  dayTop.jpg
+ 110 | Timestamp: 0.315000 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayTop.jpg
+ 111 | Timestamp: 0.315013 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  dayBottom.jpg
+ 112 | Timestamp: 0.315059 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/normalmap/dummy_nm.png , memAfterAllocation:  92.144531
+ 113 | Timestamp: 0.315134 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayBottom.jpg
+ 114 | Timestamp: 0.315150 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  dayBack.jpg
+ 115 | Timestamp: 0.315327 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayBack.jpg
+ 116 | Timestamp: 0.315345 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  dayFront.jpg
+ 117 | Timestamp: 0.315624 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayFront.jpg
+ 118 | Timestamp: 0.315659 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightRight.jpg
+ 119 | Timestamp: 0.315868 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightRight.jpg
+ 120 | Timestamp: 0.315882 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightLeft.jpg
+ 121 | Timestamp: 0.316815 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightLeft.jpg
+ 122 | Timestamp: 0.316848 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightTop.jpg
+ 123 | Timestamp: 0.319811 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightTop.jpg
+ 124 | Timestamp: 0.319840 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightBottom.jpg
+ 125 | Timestamp: 0.320039 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightBottom.jpg
+ 126 | Timestamp: 0.320059 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightBack.jpg
+ 127 | Timestamp: 0.320247 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightBack.jpg
+ 128 | Timestamp: 0.320261 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nightFront.jpg
+ 129 | Timestamp: 0.320484 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightFront.jpg
+ 130 | Timestamp: 0.320502 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  water_dudv.jpg
+ 131 | Timestamp: 0.320729 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/distortion/water_dudv.jpg
+ 132 | Timestamp: 0.320743 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  Brick_Medieval_albedo.jpg
+ 133 | Timestamp: 0.321172 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/Brick_Medieval_albedo.jpg
+ 134 | Timestamp: 0.321188 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  Brick_Medieval_normal.jpg
+ 135 | Timestamp: 0.321465 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/Brick_Medieval_normal.jpg
+ 136 | Timestamp: 0.321478 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  Brick_Medieval_roughness.jpg
+ 137 | Timestamp: 0.322397 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/Brick_Medieval_roughness.jpg
+ 138 | Timestamp: 0.322420 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  Brick_Medieval_metallic.jpg
+ 139 | Timestamp: 0.323231 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/Brick_Medieval_metallic.jpg
+ 140 | Timestamp: 0.323253 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  dummy_metallic_roughness.png
+ 141 | Timestamp: 0.323887 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/dummy_metallic_roughness.png
+ 142 | Timestamp: 0.323905 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  witcher.obj
+ 143 | Timestamp: 0.324272 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  2 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/model/witcher.obj
+ 144 | Timestamp: 0.324287 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  italian_house_1.obj
+ 145 | Timestamp: 0.324469 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/dummy_metallic_roughness.png , memAfterAllocation:  98.906250
+ 146 | Timestamp: 0.326361 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  2 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/model/italian_house_1.obj
+ 147 | Timestamp: 0.326391 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  spaceship.obj
+ 148 | Timestamp: 0.338274 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  2 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/model/spaceship.obj
+ 149 | Timestamp: 0.338306 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  spaceship_albedo.jpg
+ 150 | Timestamp: 0.352928 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/normalmap/brick_nm_mid.jpg , memAfterAllocation:  133.972656
+ 151 | Timestamp: 0.354411 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/spaceship_albedo.jpg
+ 152 | Timestamp: 0.354439 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  spaceship_normal.jpg
+ 153 | Timestamp: 0.364102 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/spaceship_normal.jpg
+ 154 | Timestamp: 0.364131 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  spaceship_roughness.jpg
+ 155 | Timestamp: 0.366344 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/spaceship_roughness.jpg
+ 156 | Timestamp: 0.366374 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  spaceship_metallic.jpg
+ 157 | Timestamp: 0.370891 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/spaceship_metallic.jpg
+ 158 | Timestamp: 0.370911 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  solar_cells_albedo_512.jpg
+ 159 | Timestamp: 0.371954 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/solar_cells_albedo_512.jpg
+ 160 | Timestamp: 0.371984 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  solar_cells_normal_512.jpg
+ 161 | Timestamp: 0.373228 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/albedo/brick_mid.jpg , memAfterAllocation:  147.132812
+ 162 | Timestamp: 0.373690 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/solar_cells_normal_512.jpg
+ 163 | Timestamp: 0.373713 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  solar_cells_roughness_512.jpg
+ 164 | Timestamp: 0.374114 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/solar_cells_roughness_512.jpg
+ 165 | Timestamp: 0.374128 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  solar_cells_metallic_512.jpg
+ 166 | Timestamp: 0.374442 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/solar_cells_metallic_512.jpg
+ 167 | Timestamp: 0.374455 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  cube.obj
+ 168 | Timestamp: 0.375883 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  2 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/model/cube.obj
+ 169 | Timestamp: 0.376029 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  nimbus_mono.png
+ 170 | Timestamp: 0.376373 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/fonts/nimbus_mono.png
+ 171 | Timestamp: 0.376389 | Thread: Render|  FolderManager::GetDirectoryRelativePathByFileName => file:  arrow_right_1.png
+ 172 | Timestamp: 0.377805 | Thread: Render|  ResourceMap::AllocateAsync => resource type:  1 , file:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/ui/arrow_right_1.png
+ 173 | Timestamp: 0.426223 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightLeft.jpg , memAfterAllocation:  191.992188
+ 174 | Timestamp: 0.508020 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightBottom.jpg , memAfterAllocation:  271.082031
+ 175 | Timestamp: 0.579831 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightRight.jpg , memAfterAllocation:  292.683594
+ 176 | Timestamp: 0.591757 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/Brick_Medieval_normal.jpg , memAfterAllocation:  294.484375
+ 177 | Timestamp: 0.602726 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/solar_cells_normal_512.jpg , memAfterAllocation:  298.347656
+ 178 | Timestamp: 0.609878 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightBack.jpg , memAfterAllocation:  303.757812
+ 179 | Timestamp: 0.626154 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightTop.jpg , memAfterAllocation:  306.332031
+ 180 | Timestamp: 0.633306 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/Brick_Medieval_roughness.jpg , memAfterAllocation:  307.101562
+ 181 | Timestamp: 0.645152 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/solar_cells_albedo_512.jpg , memAfterAllocation:  307.871094
+ 182 | Timestamp: 0.653144 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/Brick_Medieval_metallic.jpg , memAfterAllocation:  293.546875
+ 183 | Timestamp: 0.653379 | Thread: Unknown thread.|  MeshResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/model/cube.obj , memAfterAllocation:  293.546875
+ 184 | Timestamp: 0.666299 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/distortion/water_dudv.jpg , memAfterAllocation:  294.906250
+ 185 | Timestamp: 0.685850 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/nightFront.jpg , memAfterAllocation:  283.042969
+ 186 | Timestamp: 0.688403 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/solar_cells_metallic_512.jpg , memAfterAllocation:  282.035156
+ 187 | Timestamp: 0.716079 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/Brick_Medieval_albedo.jpg , memAfterAllocation:  286.152344
+ 188 | Timestamp: 0.731863 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/materials/solar_cells_roughness_512.jpg , memAfterAllocation:  288.453125
+ 189 | Timestamp: 0.759044 | Thread: Unknown thread.|  MeshResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/model/spaceship.obj , memAfterAllocation:  294.125000
+ 190 | Timestamp: 0.805477 | Thread: Unknown thread.|  MeshResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/model/witcher.obj , memAfterAllocation:  291.269531
+ 191 | Timestamp: 0.832293 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/fonts/nimbus_mono.png , memAfterAllocation:  277.082031
+ 192 | Timestamp: 0.832875 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayBack.jpg , memAfterAllocation:  278.507812
+ 193 | Timestamp: 0.843089 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/albedo/diffuse.png , memAfterAllocation:  276.652344
+ 194 | Timestamp: 0.856424 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayRight.jpg , memAfterAllocation:  270.570312
+ 195 | Timestamp: 0.856704 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayBottom.jpg , memAfterAllocation:  271.511719
+ 196 | Timestamp: 0.878864 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayFront.jpg , memAfterAllocation:  267.707031
+ 197 | Timestamp: 0.880075 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayLeft.jpg , memAfterAllocation:  270.453125
+ 198 | Timestamp: 0.893027 | Thread: Unknown thread.|  MeshResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/model/italian_house_1.obj , memAfterAllocation:  275.777344
+ 199 | Timestamp: 0.913440 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/cubemap/dayTop.jpg , memAfterAllocation:  281.156250
+ 200 | Timestamp: 0.932088 | Thread: Unknown thread.|  TextureResourceLoader::LoadResource:  /home/dzinoviev/MyProjects/phengine/PHEngine/build/EngineTest/res/texture/ui/arrow_right_1.png , memAfterAllocation:  287.308594

@@ -27,6 +27,15 @@ void WaterPlaneSceneProxy::PostConstructorInitialize()
 {
     static constexpr uint64_t functionId = Hash64_CT("WaterPlaneSceneProxy::PostConstructorInitialize");
 
+    const auto shaderIdName = "ForwardNonSkeletalBase Shader";
+    const ShaderParams shaderParams(
+        shaderIdName,
+        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
+        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardFS.glsl");
+
+    m_shader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
+        "StaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
+
     SimplePrimitivePoolParameters poolParams;
     poolParams.mSimplePrimitiveType = SimplePrimitiveType::PLANE_WITH_ATTRIBUTES;
     poolParams.mVertexAttributes = GetShader()->GetVertexAttributes();

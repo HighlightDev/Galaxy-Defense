@@ -61,7 +61,7 @@ function CreateTestLevel(host)
 	,Brick_Medieval_metallic.jpg
 	,dummy_metallic_roughness.png
 	,witcher.obj
-	,City_House_2_BI.obj
+	,italian_house_1.obj
 	,spaceship.obj
 	,spaceship_albedo.jpg
 	,spaceship_normal.jpg
@@ -74,6 +74,7 @@ function CreateTestLevel(host)
 	,cube.obj
 	,nimbus_mono.png
 	,arrow_right_1.png
+	,tina.fbx
 	]])
 
 
@@ -97,14 +98,7 @@ function CreateTestLevel(host)
 		0, 0, 0,
 		1) -- is main camera on scene
 
-	_CreateActor(host, "Actor",
-		"SceneCenterActorDummy",
-		0, 0, 0,
-		0, 0, 0,
-		1, 1, 1,
-		"")
-
-	_SetCameraThirdPersonTarget(host, "MainCamera", "SceneCenterActorDummy")
+	_SetCameraThirdPersonTarget(host, "MainCamera", "SkeletActor")
 
 	-- ****************************SKYBOX***************************** --
 	local a_spaceSkyboxId = _CreateActor(host, "Actor",
@@ -215,7 +209,7 @@ function CreateTestLevel(host)
 	_SetTextureToMaterial(host, groundMat, "brick_nm_mid.jpg", "normalMap")
 	_SetTextureToMaterial(host, groundMat, "dummy_metallic_roughness.png", "roughnessMap")
 	_SetTextureToMaterial(host, groundMat, "dummy_metallic_roughness.png", "metallicMap")
-	_SetFloatToMaterial(host, groundMat, 1.0, "uvScale")
+	_SetFloatToMaterial(host, groundMat, 5.0, "uvScale")
 
 	_CreateAndAttachComponentToActor(host, a_ground, "StaticMeshComponent",
 		Json.encode(
@@ -249,6 +243,13 @@ function CreateTestLevel(host)
 		1, 1, 1,
 		"")
 
+	local platformMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+	_SetTextureToMaterial(host, platformMat, "brick_mid.jpg", "albedo")
+	_SetTextureToMaterial(host, platformMat, "brick_nm_mid.jpg", "normalMap")
+	_SetTextureToMaterial(host, platformMat, "dummy_metallic_roughness.png", "roughnessMap")
+	_SetTextureToMaterial(host, platformMat, "dummy_metallic_roughness.png", "metallicMap")
+	_SetFloatToMaterial(host, platformMat, 1.0, "uvScale")
+
 	_CreateAndAttachComponentToActor(host, a_platform, "StaticMeshComponent",
 		Json.encode(
 			{
@@ -258,7 +259,7 @@ function CreateTestLevel(host)
 				rotation = { x = 0, y = 0, z = 0 },
 				scale = { x = 8, y = 1, z = 8 },
 				luaScriptName = "",
-				materialProxyId = groundMat
+				materialProxyId = platformMat
 			}
 		))
 
@@ -307,97 +308,84 @@ function CreateTestLevel(host)
 			}
 		))
 
-	-- -- OBSOLETE
-	-- local smallGroundActor = _CreateActor(host, "SmallGround",
-	-- 	0, 10, 0,
-	-- 	0, 0, 0,
-	-- 	1, 1, 1)
+	local a_wall = _CreateActor(host, "Actor",
+		"WallActor",
+		55, 8, 0,
+		0, 0, 90,
+		1, 1, 1,
+		"")
 
-	-- if smallGroundActor ~= nil then
-	-- 	local material1 = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-	-- 	_SetTextureToMaterial(host, material1, "brick_mid.jpg", "albedo")
-	-- 	_SetTextureToMaterial(host, material1, "brick_nm_mid.jpg", "normalMap")
-	-- 	_SetTextureToMaterial(host, material1, "dummy_metallic_roughness.png", "roughnessMap")
-	-- 	_SetTextureToMaterial(host, material1, "dummy_metallic_roughness.png", "metallicMap")
-	-- 	_SetFloatToMaterial(host, material1, 1, "uvScale")
+	local wallMaterial = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+	_SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_albedo.jpg", "albedo")
+	_SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_normal.jpg", "normalMap")
+	_SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_roughness.jpg", "roughnessMap")
+	_SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_metallic.jpg", "metallicMap")
+	_SetFloatToMaterial(host, wallMaterial, 1, "uvScale")
 
-	-- 	local smallMeshData = _CreateMeshComponentData(host, "playerCubeMeshComp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8,
-	-- 		1, 8, "", material1)
-	-- 	local moveCompData = _CreatePlatformTraverseComponentData(host, "moveCompData",
-	-- 		"platformMovementComponentAction.lua")
-	-- 	local floorComponent = _CreateComponent(host, "StaticMeshComponent", smallMeshData)
-	-- 	local moveComponent = _CreateComponent(host, "PlatformTraverseComponent", moveCompData)
-	-- 	_AttachComponentToActor(host, "SmallGround", floorComponent)
-	-- 	_AttachComponentToActor(host, "SmallGround", moveComponent)
+	_CreateAndAttachComponentToActor(host, a_wall, "StaticMeshComponent",
+		Json.encode(
+			{
+				gameObjectName = "WallMeshComponent",
+				meshName = "cube.obj",
+				translation = { x = 0, y = 0, z = 0 },
+				rotation = { x = 0, y = 0, z = 0 },
+				scale = { x = 8, y = 1, z = 8 },
+				luaScriptName = "",
+				materialProxyId = wallMaterial
+			}
+		))
 
-	-- 	local shape1 = _CreatePhysicsBoxShape(host, 8, 1, 8)
-	-- 	local floorPhysDesc1 = _CreateRigidBodyController(host, shape1, "KINEMATIC_BODY", 0.0)
-	-- 	local physData1 = _CreatePhysicsComponentData(host, "smallFloorPhysComp", floorPhysDesc1)
-	-- 	local phyComponent1 = _CreateComponent(host, "RigidBodyPhysicsComponent", physData1)
-	-- 	_AttachComponentToActor(host, "SmallGround", phyComponent1)
-	-- end
-
-	-- -- THIS IS A CODE SNIPPET FOR SPOTLIGHT TEST
-	-- -- OBSOLETE
-	-- local smallGroundActor1 = _CreateActor(host, "SmallGround1",
-	-- 	5, 8, 0,
-	-- 	0, 0, 90,
-	-- 	1, 1, 1)
-
-	-- if smallGroundActor1 ~= nil then
-	-- 	local material2 = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-	-- 	_SetTextureToMaterial(host, material2, "Brick_Medieval_albedo.jpg", "albedo")
-	-- 	_SetTextureToMaterial(host, material2, "Brick_Medieval_normal.jpg", "normalMap")
-	-- 	_SetTextureToMaterial(host, material2, "Brick_Medieval_roughness.jpg", "roughnessMap")
-	-- 	_SetTextureToMaterial(host, material2, "Brick_Medieval_metallic.jpg", "metallicMap")
-	-- 	_SetFloatToMaterial(host, material2, 1, "uvScale")
-
-	-- 	local smallMeshData1 = _CreateMeshComponentData(host, "playerCubeMeshComp1", "playerCube.obj", 0, 0, 0, 0, 0, 0,
-	-- 		8, 1, 8, "", material2)
-	-- 	local floorComponent1 = _CreateComponent(host, "StaticMeshComponent", smallMeshData1)
-	-- 	_AttachComponentToActor(host, "SmallGround1", floorComponent1)
-
-	-- 	local shape2 = _CreatePhysicsBoxShape(host, 8, 1, 8)
-	-- 	local floorPhysDesc2 = _CreateRigidBodyController(host, shape2, "STATIC_BODY", 0.0)
-	-- 	local physData2 = _CreatePhysicsComponentData(host, "smallFloorPhysComp1", floorPhysDesc2)
-	-- 	local phyComponent2 = _CreateComponent(host, "RigidBodyPhysicsComponent", physData2)
-	-- 	_AttachComponentToActor(host, "SmallGround1", phyComponent2)
-	-- end
+	_CreateAndAttachComponentToActor(host, a_wall, "RigidBodyPhysicsComponent",
+		Json.encode(
+			{
+				gameObjectName = "WallPhysicsComponent",
+				collisionShape = "box",
+				halfExtent = { x = 8, y = 1, z = 8 },
+				physicsBodyType = PhysicsBodyType.STATIC,
+				mass = 0.0
+			}
+		))
 
 	-- -- ***************************HOUSE******************** --
-	-- -- OBSOLETE
-	-- local house = _CreateActor(host, "House",
-	-- 	5, 15, 0,
-	-- 	0, 0, 0,
-	-- 	1, 1, 1)
+	local a_house = _CreateActor(host, "Actor", "House",
+		0, 10, 0,
+		0, 0, 0,
+		1, 1, 1,
+		"")
 
-	-- if house ~= nil then
-	-- 	local houseMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-	-- 	_SetTextureToMaterial(host, houseMat, "spaceship_albedo.jpg", "albedo")
-	-- 	_SetTextureToMaterial(host, houseMat, "spaceship_normal.jpg", "normalMap")
-	-- 	_SetTextureToMaterial(host, houseMat, "spaceship_roughness.jpg", "roughnessMap")
-	-- 	_SetTextureToMaterial(host, houseMat, "spaceship_metallic.jpg", "metallicMap")
-	-- 	_SetFloatToMaterial(host, houseMat, 1.0, "uvScale")
 
-	-- 	local houseData = _CreateMeshComponentData(host, "houseMeshComp", "spaceship.obj",
-	-- 		0, 0, 0,
-	-- 		0, 0, 0,
-	-- 		4.5, 4.5, 4.5,
-	-- 		"",
-	-- 		houseMat)
+	local houseMaterial = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+	_SetTextureToMaterial(host, houseMaterial, "city_house_2_Col.jpg", "albedo")
+	_SetTextureToMaterial(host, houseMaterial, "city_house_2_Nor.jpg", "normalMap")
+	_SetTextureToMaterial(host, houseMaterial, "city_house_2_Spec.png", "roughnessMap")
+	_SetTextureToMaterial(host, houseMaterial, "dummy_metallic_roughness.png", "metallicMap")
+	_SetFloatToMaterial(host, houseMaterial, 1, "uvScale")
 
-	-- 	local meshComponent = _CreateComponent(host, "StaticMeshComponent", houseData)
-	-- 	_AttachComponentToActor(host, "House", meshComponent)
+	_CreateAndAttachComponentToActor(host, a_house, "StaticMeshComponent",
+		Json.encode(
+			{
+				gameObjectName = "HosueMeshComponent",
+				meshName = "italian_house_1.obj",
+				translation = { x = 0, y = 0, z = 0 },
+				rotation = { x = 0, y = 0, z = 0 },
+				scale = { x = 15, y = 15, z = 15 },
+				luaScriptName = "",
+				materialProxyId = houseMaterial
+			}
+		))
 
-	-- 	local houseShape = _CreatePhysicsBoxShape(host, 3, 4.5, 3)
-	-- 	local houseDesc = _CreateRigidBodyController(host, houseShape, "DYNAMIC_BODY", 525.0)
-	-- 	local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
-	-- 	local housePhysComp = _CreateComponent(host, "RigidBodyPhysicsComponent", housePhysCompData)
-	-- 	_AttachComponentToActor(host, "House", housePhysComp)
-	-- end
+	_CreateAndAttachComponentToActor(host, a_house, "RigidBodyPhysicsComponent",
+		Json.encode(
+			{
+				gameObjectName = "HousePhysicsComponent",
+				collisionShape = "box",
+				halfExtent = { x = 7.5, y = 7.5, z = 7.5 },
+				physicsBodyType = PhysicsBodyType.DYNAMIC,
+				mass = 500.0
+			}
+		))
 
 	-- -- ***************************TEST******************** --
-	-- -- OBSOLETE
 	-- local test = _CreateActor(host, "test",
 	-- 	15, 5, 0,
 	-- 	0, 0, 0,
@@ -429,85 +417,100 @@ function CreateTestLevel(host)
 	-- 	_AttachComponentToActor(host, "test", _CreateComponent(host, "RigidBodyPhysicsComponent", testCompData))
 	-- end
 
-	-- -- ***************************SKYBOX******************** --
-	-- -- OBSOLETE
-	-- local skyboxActor = _CreateActor(host, "Skybox actor",
-	-- 	0, 0, 0,
-	-- 	0, 0, 0,
-	-- 	1, 1, 1)
-
-	-- local skyboxMat = _CreateMaterial(host, "SkyboxMaterial.m")
-	-- _SetTextureToMaterial(host, skyboxMat, "dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg",
-	-- 	"dayTexture")
-
-	-- _SetTextureToMaterial(host, skyboxMat,
-	-- 	"nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg", "nightTexture")
-
-	-- _SetBindingToMaterial(host, skyboxMat, "EngineScene", "GT_DeltaSec", "deltaTime")
-	-- _SetFloatToMaterial(host, skyboxMat, 0.1, "mul_coef")
-
-	-- local skyboxData = _CreateSkyboxComponentData(host, "SkyboxComp",
-	-- 	140, 140, 140,
-	-- 	skyboxMat)
-
-	-- local skyboxComponent = _CreateComponent(host, "SkyboxComponent", skyboxData)
-	-- _AttachComponentToActor(host, "Skybox actor", skyboxComponent)
-
 	-- -- ***************************SKELET******************** --
-	-- -- OBSOLETE
-	-- local buddy = _CreateActor(host, "SkeletBuddy",
-	-- 	10, 50, 10,
-	-- 	0, 0, 0,
-	-- 	1, 1, 1)
 
-	-- local buddyMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-	-- _SetTextureToMaterial(host, buddyMat, "dummy_nm.png", "albedo")
-	-- _SetTextureToMaterial(host, buddyMat, "dummy_nm.png", "normalMap")
-	-- _SetTextureToMaterial(host, buddyMat, "dummy_metallic_roughness.png", "roughnessMap")
-	-- _SetTextureToMaterial(host, buddyMat, "dummy_metallic_roughness.png", "metallicMap")
-	-- _SetFloatToMaterial(host, buddyMat, 1.0, "uvScale")
+	local a_skelet = _CreateActor(host, "Actor",
+		"SkeletActor",
+		10, 50, 10,
+		0, 0, 0,
+		1, 1, 1,
+		"")
 
-	-- local skeletDesc = _CreateDynamicCharacterController(host, 1, 2.5, 10, 1.0)
-	-- local skeletPhysCompData = _CreatePhysicsComponentData(host, "buddyPhyComp", skeletDesc)
-	-- local skeletInputCompData = _CreateInputComponentData(host, "skeletInputComp")
-	-- local skeletMovementCompData = _CreateCharacterMovementComponentData(host, "charMovementCompData", 0, 0, 0,
-	-- 	"MainCamera")
-	-- local buddyData = _CreateMeshComponentData(host, "buddyMeshComp", "player_walk.fbx",
-	-- 	0, -0.6, 0,
-	-- 	0, 0, 0,
-	-- 	3, 3, 3,
-	-- 	"skeletComponentAction.lua",
-	-- 	buddyMat)
+	local skeletMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+	_SetTextureToMaterial(host, skeletMat, "dummy_nm.png", "albedo")
+	_SetTextureToMaterial(host, skeletMat, "dummy_nm.png", "normalMap")
+	_SetTextureToMaterial(host, skeletMat, "dummy_metallic_roughness.png", "roughnessMap")
+	_SetTextureToMaterial(host, skeletMat, "dummy_metallic_roughness.png", "metallicMap")
+	_SetFloatToMaterial(host, skeletMat, 1.0, "uvScale")
 
-	-- local skeletPhysComp = _CreateComponent(host, "CharacterPhysicsComponent", skeletPhysCompData)
-	-- local skeletInputComponent = _CreateComponent(host, "InputComponent", skeletInputCompData)
-	-- local skeletMovementComponent = _CreateComponent(host, "HumanoidPhysicsMovementComponent", skeletMovementCompData)
-	-- local skeletComponent = _CreateComponent(host, "SkeletalMeshComponent", buddyData)
+	_CreateAndAttachComponentToActor(host, a_skelet, "CharacterPhysicsComponent",
+		Json.encode(
+			{
+				gameObjectName = "HousePhysicsComponent",
+				capsuleRadius = 2.5,
+				capsuleHeight = 10,
+				stepHeight = 1.0,
+				mass = 500
+			}
+		))
 
-	-- _AttachComponentToActor(host, "SkeletBuddy", skeletComponent)
-	-- _AttachComponentToActor(host, "SkeletBuddy", skeletPhysComp)
-	-- _AttachComponentToActor(host, "SkeletBuddy", skeletInputComponent)
-	-- _AttachComponentToActor(host, "SkeletBuddy", skeletMovementComponent)
+	_CreateAndAttachComponentToActor(host, a_skelet, "HumanoidPhysicsMovementComponent",
+		Json.encode(
+			{
+				gameObjectName = "SkeletMovementComponent",
+				launchDirection = { x = 0, y = 0, z = 0 },
+				cameraName = "MainCamera"
+			}
+		))
 
-	-- local buddyAnimationTweener = _CreateTweener(host, buddy, "playerAnimation.tween")
-	-- _SetTweenerBinding(host, buddyAnimationTweener, "buddyMeshComp", "animationBinding", "")
+	_CreateAndAttachComponentToActor(host, a_skelet, "SkeletalMeshComponent",
+		Json.encode(
+			{
+				gameObjectName = "SkeletMeshComponent",
+				meshName = "tina.fbx",
+				translation = { x = 0, y = -8, z = 0 },
+				rotation = { x = 0, y = 0, z = 0 },
+				scale = { x = 8, y = 8, z = 8 },
+				luaScriptName = "",
+				materialProxyId = skeletMat
+			}
+		))
 
-	-- _AttachPlayerControllerToActor(host, buddy)
+	_CreateAndAttachComponentToActor(host, a_skelet, "InputComponent",
+		Json.encode(
+			{
+				gameObjectName = "SkeletInputComponent"
+			}
+		))
+
+	_CreateActorController(host, "DefaultActorControllerCreatorFactory", "SkeletActor",
+		"HumanoidPlayerController", Json.encode(
+			{
+				cameraName = "MainCamera"
+			}
+		))
+
+
+	local skeletAnimationTweener = _CreateTweener(host, a_skelet, "playerAnimation.tween")
+	_SetTweenerBinding(host, a_skelet, skeletAnimationTweener, "SkeletMeshComponent", "animationBinding", "")
 
 	-- -- ****************************WATER***************************** --
-	-- -- OBSOLETE
-	-- local waterActor = _CreateActor(host, "WaterActor",
-	-- 	20, 2, 0,
-	-- 	0, 0, 0,
-	-- 	1, 1, 1)
+	local a_water = _CreateActor(host, "Actor",
+		"WaterActor",
+		20, 2, 0,
+		0, 0, 0,
+		1, 1, 1,
+		"")
 
-	-- if waterActor ~= nil then
-	-- 	local waterMat = _CreateMaterial(host, "WaterMaterial.m")
-	-- 	_SetDeferredTextureToMaterial(host, waterMat, "planarReflectionComponent", "reflectionTexture")
-	-- 	_SetTextureToMaterial(host, waterMat, "water_dudv.jpg", "dudv")
-	-- 	_SetTextureToMaterial(host, waterMat, "brick_mid.jpg", "ground")
-	-- 	_SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTime")
-	-- 	_SetFloatToMaterial(host, waterMat, 0.5, "mul_coef")
+
+	local waterMat = _CreateMaterial(host, "WaterMaterial.m")
+	_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComponent", "reflectionTexture")
+	_SetTextureToMaterial(host, waterMat, "water_dudv.jpg", "dudv")
+	_SetTextureToMaterial(host, waterMat, "brick_mid.jpg", "ground")
+	_SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTime")
+	_SetFloatToMaterial(host, waterMat, 0.5, "mul_coef")
+
+	_CreateAndAttachComponentToActor(host, a_water, "WaterPlaneComponent",
+		Json.encode(
+			{
+				gameObjectName = "WaterMeshComponent",
+				translation = { x = 0, y = 0, z = 0 },
+				rotation = { x = 0, y = 0, z = 0 },
+				scale = { x = 20, y = 1, z = 20 },
+				materialProxyId = waterMat
+			}
+		))
+
 
 	-- 	local waterMeshData = _CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 20, 1, 20,
 	-- 		waterMat)

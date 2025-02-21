@@ -50,6 +50,13 @@ void EngineObjectCreator::RegisterComponentCreatorFactory(
     mComponentCreatorFactoriesMap[factoryKey] = creatorFactoryInstance;
 }
 
+void EngineObjectCreator::RegisterActorControllerCreatorFactory(
+    const std::string& factoryKey, const std::shared_ptr<IEngineActorControllerCreatorFactory>& creatorFactoryInstance)
+{
+    assert(!mActorControllerCreatorFactoriesMap.count(factoryKey));
+    mActorControllerCreatorFactoriesMap[factoryKey] = creatorFactoryInstance;
+}
+
 // Actor will be created and added to the scene
 int32_t EngineObjectCreator::CreateActor(
     const std::string& actorType,
@@ -161,5 +168,16 @@ std::shared_ptr<ViewProjectionInfo> EngineObjectCreator::CreateViewProjectionInf
 
     assert(false);
     return nullptr;
+}
+
+void EngineObjectCreator::CreateActorController(
+    const std::string& factoryType,
+    const std::string& actorName,
+    const std::string& actorControllerTypeName,
+    const std::string& jsonArgs)
+{
+    assert(mActorControllerCreatorFactoriesMap.count(factoryType) > 0);
+    mActorControllerCreatorFactoriesMap.at(factoryType)
+        ->CreateActorController(mSceneWp, actorName, actorControllerTypeName, jsonArgs);
 }
 } // namespace EngineCore

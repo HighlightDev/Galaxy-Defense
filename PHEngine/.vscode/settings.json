@@ -100,7 +100,8 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xtree": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "actorcontrollercreatorfactorycpp": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "Lua.diagnostics.globals": [
@@ -161,7 +162,11 @@
         "_SendRestartLevelGameThreadEvent",
         "_CreateThirdPersonCamera",
         "_SetCameraThirdPersonTarget",
-        "_CreatePlanarReflectionComponent"
+        "_CreatePlanarReflectionComponent",
+        "_CreateActorController",
+        "_CreateTweener",
+        "_SetTweenerBinding",
+        "_SetDeferredTextureToMaterial"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

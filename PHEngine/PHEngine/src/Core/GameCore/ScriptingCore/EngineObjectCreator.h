@@ -5,6 +5,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewProjectionInfo.h"
+#include "EngineObjectCreatorFactories/IEngineActorControllerCreatorFactory.h"
 #include "EngineObjectCreatorFactories/IEngineActorCreatorFactory.h"
 #include "EngineObjectCreatorFactories/IEngineComponentCreatorFactory.h"
 
@@ -25,6 +26,8 @@ class EngineObjectCreator {
 
     std::unordered_map<std::string, std::shared_ptr<IEngineComponentCreatorFactory>> mComponentCreatorFactoriesMap;
 
+    std::unordered_map<std::string, std::shared_ptr<IEngineActorControllerCreatorFactory>> mActorControllerCreatorFactoriesMap;
+
 public:
     EngineObjectCreator();
 
@@ -35,6 +38,9 @@ public:
 
     void RegisterComponentCreatorFactory(
         const std::string& factoryKey, const std::shared_ptr<IEngineComponentCreatorFactory>& creatorFactoryInstance);
+
+    void RegisterActorControllerCreatorFactory(
+        const std::string& factoryKey, const std::shared_ptr<IEngineActorControllerCreatorFactory>& creatorFactoryInstance);
 
 public:
     // Actor will be created and added to the scene
@@ -71,6 +77,12 @@ public:
         const bool bIsMainSceneCamera);
 
     std::shared_ptr<ViewProjectionInfo> CreateViewProjectionInfo(const std::string& jsonArgs) const;
+
+    void CreateActorController(
+        const std::string& factoryType,
+        const std::string& actorName,
+        const std::string& actorControllerTypeName,
+        const std::string& jsonArgs);
 };
 
 } // namespace EngineCore
