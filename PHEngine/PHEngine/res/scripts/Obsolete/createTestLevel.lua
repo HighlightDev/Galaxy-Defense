@@ -346,7 +346,7 @@ function CreateTestLevel(host)
 			}
 		))
 
-	-- -- ***************************HOUSE******************** --
+	-- ***************************HOUSE******************** --
 	local a_house = _CreateActor(host, "Actor", "House",
 		0, 10, 0,
 		0, 0, 0,
@@ -385,39 +385,57 @@ function CreateTestLevel(host)
 			}
 		))
 
-	-- -- ***************************TEST******************** --
-	-- local test = _CreateActor(host, "test",
-	-- 	15, 5, 0,
-	-- 	0, 0, 0,
-	-- 	1, 1, 1)
+	local a_grave = _CreateActor(host, "Actor", "Grave",
+		15, 5, 0,
+		0, 0, 0,
+		1, 1, 1,
+		"")
 
-	-- if test ~= nil then
-	-- 	local testMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-	-- 	_SetTextureToMaterial(host, testMat, "Brick_Medieval_albedo.jpg", "albedo")
-	-- 	_SetTextureToMaterial(host, testMat, "Brick_Medieval_normal.jpg", "normalMap")
-	-- 	_SetTextureToMaterial(host, testMat, "Brick_Medieval_roughness.jpg", "roughnessMap")
-	-- 	_SetTextureToMaterial(host, testMat, "Brick_Medieval_metallic.jpg", "metallicMap")
-	-- 	_SetFloatToMaterial(host, testMat, 5.0, "uvScale")
+	local graveMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+	_SetTextureToMaterial(host, graveMat, "Brick_Medieval_albedo.jpg", "albedo")
+	_SetTextureToMaterial(host, graveMat, "Brick_Medieval_normal.jpg", "normalMap")
+	_SetTextureToMaterial(host, graveMat, "Brick_Medieval_roughness.jpg", "roughnessMap")
+	_SetTextureToMaterial(host, graveMat, "Brick_Medieval_metallic.jpg", "metallicMap")
+	_SetFloatToMaterial(host, graveMat, 5.0, "uvScale")
 
-	-- 	local testData = _CreateMeshComponentData(host, "testMeshComponent", "witcher.obj",
-	-- 		0, 0, 0,
-	-- 		0, 0, 0,
-	-- 		1.5, 1.5, 1.5,
-	-- 		"",
-	-- 		testMat)
+	_CreateAndAttachComponentToActor(host, a_grave, "StaticMeshComponent",
+		Json.encode(
+			{
+				gameObjectName = "GraveMeshComponent",
+				meshName = "witcher.obj",
+				translation = { x = 0, y = 0, z = 0 },
+				rotation = { x = 0, y = 0, z = 0 },
+				scale = { x = 1.5, y = 1.5, z = 1.5 },
+				luaScriptName = "",
+				materialProxyId = graveMat
+			}
+		))
 
-	-- 	local testMeshComponent = _CreateComponent(host, "StaticMeshComponent", testData)
-	-- 	_AttachComponentToActor(host, "test", testMeshComponent)
+	_CreateAndAttachComponentToActor(host, a_grave, "RigidBodyPhysicsComponent",
+		Json.encode(
+			{
+				gameObjectName = "HousePhysicsComponent",
+				physicsBodyType = PhysicsBodyType.DYNAMIC,
+				mass = 1000.0,
+				collisionShape = "compoundShape",
+				subshapes = {
+					leftSphere = {
+						collisionShape = "sphere",
+						radius = 5,
+						translation = { x = -4, y = 0, z = 0 },
+						rotation = { x = 0, y = 0, z = 0 }
+					},
+					rightSphere = {
+						collisionShape = "sphere",
+						radius = 5,
+						translation = { x = 4, y = 0, z = 0 },
+						rotation = { x = 0, y = 0, z = 0 }
+					}
+				}
+			}
+		))
 
-	-- 	local compoundShape = _CreatePhysicsCompoundShape(host)
-	-- 	_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), -4, 0, 0, 0, 0, 0)
-	-- 	_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), 4, 0, 0, 0, 0, 0)
-	-- 	local testDesc = _CreateRigidBodyController(host, compoundShape, "DYNAMIC_BODY", 1000.0)
-	-- 	local testCompData = _CreatePhysicsComponentData(host, "testPhyComp", testDesc)
-	-- 	_AttachComponentToActor(host, "test", _CreateComponent(host, "RigidBodyPhysicsComponent", testCompData))
-	-- end
-
-	-- -- ***************************SKELET******************** --
+	-- ***************************SKELET******************** --
 
 	local a_skelet = _CreateActor(host, "Actor",
 		"SkeletActor",
@@ -510,13 +528,6 @@ function CreateTestLevel(host)
 				materialProxyId = waterMat
 			}
 		))
-
-
-	-- 	local waterMeshData = _CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 20, 1, 20,
-	-- 		waterMat)
-	-- 	local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
-	-- 	_AttachComponentToActor(host, "WaterActor", waterComponent)
-	-- end
 end
 
 function System_OnStart(host)

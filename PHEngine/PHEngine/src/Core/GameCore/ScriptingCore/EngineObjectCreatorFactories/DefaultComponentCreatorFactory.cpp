@@ -45,8 +45,6 @@
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/UtilityCore/JsonUtilities.h"
 
-#include <json/json.hpp>
-
 #include <unordered_map>
 
 using namespace EngineCore;
@@ -211,31 +209,21 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         std::shared_ptr<PhysicsDescriptor> descriptor;
         std::shared_ptr<CollisionShapeBase> collisionShape;
         const auto collisionShapeStr = nlohmann_utilities::GetStringFromJson(jsonObj["collisionShape"]);
-        if ("box" == collisionShapeStr) {
-            const auto halfExtent = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["halfExtent"]);
-            collisionShape = std::make_shared<CollisionBoxShape>(halfExtent);
-        } else if ("capsule" == collisionShapeStr) {
-            const auto radius = nlohmann_utilities::GetFloatFromJson(jsonObj["radius"]);
-            const auto height = nlohmann_utilities::GetFloatFromJson(jsonObj["height"]);
-            collisionShape = std::make_shared<CollisionCapsuleShape>(radius, height);
-        } else if ("plane" == collisionShapeStr) {
-            const auto normal = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["normal"]);
-            const auto d = nlohmann_utilities::GetFloatFromJson(jsonObj["d"]);
-            collisionShape = std::make_shared<CollisionPlaneShape>(normal, d);
-        } else if ("sphere" == collisionShapeStr) {
-            const auto radius = nlohmann_utilities::GetFloatFromJson(jsonObj["radius"]);
-            collisionShape = std::make_shared<CollisionSphereShape>(radius);
-        } else if ("compoundShape" == collisionShapeStr) {
-            collisionShape = std::make_shared<CollisionCompoundShape>();
-            // todo:
-            /*void EngineObjectCreator::AddChildShapeToCompoundShape(CollisionShapeBase * compoundShape, CollisionShapeBase *
-            childShape, const glm::vec3 &translation, const glm::vec3 &rotation)
-            {
-                CollisionCompoundShape *mCompoundShape = static_cast<CollisionCompoundShape *>(compoundShape);
-                assert(mCompoundShape);
-                NoScaleEulerRotationTransform childTransform = NoScaleEulerRotationTransform(translation, rotation);
-                mCompoundShape->AddChildShape(childTransform, childShape);
-            }*/
+        if ("compoundShape" == collisionShapeStr) {
+            const auto& compoundCollisionShape = std::make_shared<CollisionCompoundShape>();
+
+            const auto& compoundShapeRoot = jsonObj["subshapes"];
+            for (auto it = compoundShapeRoot.cbegin(); it != compoundShapeRoot.cend(); ++it) {
+                const auto& subShapeRootName = nlohmann_utilities::GetStringFromJson(it->at("collisionShape"));
+                const auto& collisionSubShape = collisionShape = CreateCollisionShapeFromJson(*it, subShapeRootName);
+                const auto& subShapeTranslation = nlohmann_utilities::GetXyzFromJsonMap(it->at("translation"));
+                const auto& subShapeRotation = nlohmann_utilities::GetXyzFromJsonMap(it->at("rotation"));
+                compoundCollisionShape->AddChildShape(
+                    NoScaleEulerRotationTransform(subShapeTranslation, subShapeRotation), collisionSubShape);
+            }
+            collisionShape = compoundCollisionShape;
+        } else {
+            collisionShape = CreateCollisionShapeFromJson(jsonObj, collisionShapeStr);
         }
 
         const auto mass = nlohmann_utilities::GetFloatFromJson(jsonObj["mass"]);
@@ -296,6 +284,28 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
     assert(componentData);
 
     return componentData;
+}
+
+std::shared_ptr<CollisionShapeBase> DefaultComponentCreatorFactory::CreateCollisionShapeFromJson(
+    const nlohmann::json& shapeRoot, const std::string& collisionShapeName) const
+{
+    std::shared_ptr<CollisionShapeBase> collisionShape;
+    if ("box" == collisionShapeName) {
+        const auto halfExtent = nlohmann_utilities::GetXyzFromJsonMap(shapeRoot["halfExtent"]);
+        collisionShape = std::make_shared<CollisionBoxShape>(halfExtent);
+    } else if ("capsule" == collisionShapeName) {
+        const auto radius = nlohmann_utilities::GetFloatFromJson(shapeRoot["radius"]);
+        const auto height = nlohmann_utilities::GetFloatFromJson(shapeRoot["height"]);
+        collisionShape = std::make_shared<CollisionCapsuleShape>(radius, height);
+    } else if ("plane" == collisionShapeName) {
+        const auto normal = nlohmann_utilities::GetXyzFromJsonMap(shapeRoot["normal"]);
+        const auto d = nlohmann_utilities::GetFloatFromJson(shapeRoot["d"]);
+        collisionShape = std::make_shared<CollisionPlaneShape>(normal, d);
+    } else if ("sphere" == collisionShapeName) {
+        const auto radius = nlohmann_utilities::GetFloatFromJson(shapeRoot["radius"]);
+        collisionShape = std::make_shared<CollisionSphereShape>(radius);
+    }
+    return collisionShape;
 }
 } // namespace Scripts
 } // namespace EngineCore

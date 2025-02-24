@@ -2,7 +2,13 @@
 
 #include "IEngineComponentCreatorFactory.h"
 
+#include <json/json.hpp>
+
 #include <memory>
+
+namespace EnginePhysics {
+struct CollisionShapeBase;
+}
 
 namespace EngineCore {
 class Scene;
@@ -25,6 +31,9 @@ private:
         const std::shared_ptr<::EngineCore::Scene>& sceneSp,
         const std::string& componentType,
         const std::string& componentDataJsonStr) const;
+
+    std::shared_ptr<::EnginePhysics::CollisionShapeBase>
+    CreateCollisionShapeFromJson(const nlohmann::json& shapeRoot, const std::string& collisionShapeName) const;
 };
 } // namespace Scripts
 } // namespace EngineCore
