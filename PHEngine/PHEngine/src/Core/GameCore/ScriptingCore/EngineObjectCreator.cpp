@@ -16,7 +16,7 @@ namespace EngineCore {
 EngineObjectCreator::EngineObjectCreator()
 {
     mDefaultComponentNames
-        = {"LightComponent",
+        = {"PointLightComponent",
            "DirectionalLightComponent",
            "SpotlightComponent",
            "StaticMeshComponent",

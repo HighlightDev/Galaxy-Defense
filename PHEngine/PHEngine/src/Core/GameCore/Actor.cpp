@@ -241,10 +241,13 @@ void Actor::ChangeTweenerState(const std::string& tweenerName, const std::string
     if (mIsEnabled->GetValue()) {
         auto it = std::find_if(
             mTweeners.begin(), mTweeners.end(), [&](const auto& tweener) { return tweener->GetTweenerName() == tweenerName; });
-        assert(it != mTweeners.end());
-        auto tweenerSp = *it;
-        tweenerSp->NotifyStateChangedObservers(); // if state was changed and is pending to notify - firstly do it
-        tweenerSp->ChangeState(stateName);
+        if (it != mTweeners.end()) {
+            auto tweenerSp = *it;
+            tweenerSp->NotifyStateChangedObservers(); // if state was changed and is pending to notify - firstly do it
+            tweenerSp->ChangeState(stateName);
+        } else {
+            LogInfo("Actor::ChangeTweenerState: missing tweener ", tweenerName);
+        }
     }
 }
 

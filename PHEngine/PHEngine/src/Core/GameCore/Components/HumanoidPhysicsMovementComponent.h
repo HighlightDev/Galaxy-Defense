@@ -14,8 +14,9 @@ struct MovementComponentData;
 
 class HumanoidPhysicsMovementComponent : public MovementComponent, public CameraTransformChangedGameThreadEvent {
 
-    float mCameraYaw;
-    float mCameraPitch;
+    float mCameraYaw{0.0f};
+
+    float mCameraPitch{0.0f};
 
     std::string mCameraName;
 

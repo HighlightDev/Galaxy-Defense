@@ -160,6 +160,29 @@ function CreateTestLevel(host)
 				ambient = { r = 0.2, g = 0.2, b = 0.2 },
 				diffuse = { r = 1.68, g = 1.5, b = 1.5 },
 				specular = { r = 0.4, g = 0.4, b = 0.4 },
+				is_enabled = 0,
+				is_visible = 0,
+				shadowAtlasSize = 256
+			}
+		))
+	
+	local a_pointLightId = _CreateActor(host, "Actor",
+		"PointlLightActor",
+		10, 10, 10,
+		0, 0, 0,
+		1, 1, 1,
+		"")
+	
+		_CreateAndAttachComponentToActor(host, a_pointLightId, "PointLightComponent",
+		Json.encode(
+			{
+				gameObjectName = "PointLightComp",
+				translation = {x = 0, y = 0, z = 0},
+				ambient = { r = 0.2, g = 0.2, b = 0.2 },
+				diffuse = { r = 0.68, g = 0.5, b = 0.2 },
+				specular = { r = 0.4, g = 0.4, b = 0.4 },
+				attenuation = {x = 1, y = 1, z = 1},
+				radianceRadius = 100.0,
 				is_enabled = 1,
 				is_visible = 1,
 				shadowAtlasSize = 256
@@ -471,13 +494,13 @@ function CreateTestLevel(host)
 			}
 		))
 
-	_CreateAndAttachComponentToActor(host, a_skelet, "SkeletalMeshComponent",
+	_CreateAndAttachComponentToActor(host, a_skelet, "StaticMeshComponent",
 		Json.encode(
 			{
 				gameObjectName = "SkeletMeshComponent",
 				meshName = "tina.fbx",
-				translation = { x = 0, y = -8, z = 0 },
-				rotation = { x = 0, y = 0, z = 0 },
+				translation = { x = 0, y = 0, z = 0 },
+				rotation = { x = 0, y = 0, z = 90 },
 				scale = { x = 8, y = 8, z = 8 },
 				luaScriptName = "",
 				materialProxyId = skeletMat
@@ -499,8 +522,8 @@ function CreateTestLevel(host)
 		))
 
 
-	local skeletAnimationTweener = _CreateTweener(host, a_skelet, "playerAnimation.tween")
-	_SetTweenerBinding(host, a_skelet, skeletAnimationTweener, "SkeletMeshComponent", "animationBinding", "")
+	-- local skeletAnimationTweener = _CreateTweener(host, a_skelet, "playerAnimation.tween")
+	-- _SetTweenerBinding(host, a_skelet, skeletAnimationTweener, "SkeletMeshComponent", "animationBinding", "")
 
 	-- -- ****************************WATER***************************** --
 	local a_water = _CreateActor(host, "Actor",

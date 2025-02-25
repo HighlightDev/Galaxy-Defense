@@ -81,7 +81,6 @@ void HumanoidPhysicsMovementComponent::ProcessEvent(
     if (cameraPtr->GetCameraName() == mCameraName) {
         mDirection = cameraPtr->GetEyeSpaceForwardVector();
         mCameraYaw = cameraPtr->GetRotationYaw();
-        //mCameraPitch = cameraPtr->GetRotationPitch();
 
         bIsCameraRotationDirty = true;
     }

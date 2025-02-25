@@ -124,11 +124,11 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
     std::shared_ptr<ComponentData> componentData;
 
     if ("PointLightComponent" == componentType) {
-        const auto translation = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["translation"]);
+        const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
         const auto ambient = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["ambient"]);
         const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
         const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
-        const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenutation"]);
+        const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenuation"]);
         const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["radianceRadius"]);
         const bool isEnabled = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]));
         const bool isVisible = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_visible"]));
