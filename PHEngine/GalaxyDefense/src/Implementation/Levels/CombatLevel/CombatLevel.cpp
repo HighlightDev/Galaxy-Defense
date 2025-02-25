@@ -81,7 +81,7 @@ void CombatLevel::RunLuaBuildLevelScript()
 {
     const auto sceneSp = mSceneWp.lock();
     assert(sceneSp);
-    LuaCombatLevelExecutor mLuaLevelBuilder = LuaCombatLevelExecutor("LevelCreators/CombatLvl.lua", mLvlProgressController);
+    LuaCombatLevelExecutor mLuaLevelBuilder = LuaCombatLevelExecutor("CombatLvl.lua", mLvlProgressController);
     mLuaLevelBuilder.SetScene(sceneSp);
     mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
     mLuaLevelBuilder.RegisterCallbacks();

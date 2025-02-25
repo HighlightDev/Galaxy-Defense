@@ -69,7 +69,7 @@ void LevelEditorUiController::Initialize()
     if (const auto& sceneSp = mSceneWp.lock()) {
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             static constexpr uint64_t functionId = Hash64_CT("LevelEditorUiController::Initialize");
-            const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/EditorUiController.lua");
+            const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("EditorUiController.lua");
             luaScriptExecutor->Initialize();
             mExecutorId = luaScriptExecutor->GetUId();
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(

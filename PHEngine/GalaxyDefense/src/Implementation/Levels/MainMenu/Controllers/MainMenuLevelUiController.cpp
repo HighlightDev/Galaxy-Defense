@@ -89,7 +89,7 @@ void MainMenuLevelUiController::Initialize()
     if (const auto& sceneSp = mSceneWp.lock()) {
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             static constexpr uint64_t functionId = Hash64_CT("MainMenuLevelUiController::Initialize");
-            const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/MainMenuUiController.lua");
+            const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("MainMenuUiController.lua");
             luaScriptExecutor->Initialize();
             mExecutorId = luaScriptExecutor->GetUId();
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(

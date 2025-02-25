@@ -93,8 +93,8 @@ void CombatLevelUiController::Initialize()
     if (const auto& sceneSp = mSceneWp.lock()) {
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             static constexpr uint64_t functionId = Hash64_CT("CombatLevelUiController::Initialize");
-            const auto& luaScriptExecutor = std::make_shared<LuaCombatLevelUiControllerExecutor>(
-                "Ui/Controllers/CombatUiController.lua", mLevelProgressController);
+            const auto& luaScriptExecutor
+                = std::make_shared<LuaCombatLevelUiControllerExecutor>("CombatUiController.lua", mLevelProgressController);
             luaScriptExecutor->Initialize();
             mExecutorId = luaScriptExecutor->GetUId();
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(

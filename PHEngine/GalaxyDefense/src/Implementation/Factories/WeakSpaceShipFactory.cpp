@@ -10,6 +10,7 @@
 #include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+#include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PointLightComponent.h"
@@ -166,7 +167,9 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         glm::vec3(0.0, 0.0, 0.0),
         glm::vec3(0.4, 0.1, 0.1),
         glm::vec3(0.4, 0.4, 0.4),
-        nullptr);
+        nullptr,
+        true,
+        true);
     const auto& lightComponentCreator = std::make_shared<LightComponentCreator<PointLightComponent>>();
     const auto& c_pointLight = scene->CreateComponent_GameThread(lightComponentCreator, lightData);
     a_enemySpaceship->AddComponent(c_pointLight);
