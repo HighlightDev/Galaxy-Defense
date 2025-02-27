@@ -175,6 +175,8 @@ int32_t main(int32_t argc, char** argv)
         } else {
             activeMonitor = glfwGetPrimaryMonitor();
         }
+    } else {
+        activeMonitor = glfwGetPrimaryMonitor();
     }
 
     get_screen_rezolution(activeMonitor);
@@ -182,9 +184,12 @@ int32_t main(int32_t argc, char** argv)
     if ("fullscreen" == windowMode) {
         width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
         height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
+    } else if ("windowed" == windowMode) {
+        DisplayDeviceDataProvider::GetInstance()->SetScreenWidth(width);
+        DisplayDeviceDataProvider::GetInstance()->SetScreenHeight(height);
     }
 
-    window = glfwCreateWindow(width, height, "PHEngine", activeMonitor, NULL);
+    window = glfwCreateWindow(width, height, "PHEngine", "windowed" == windowMode ? nullptr : activeMonitor, NULL);
     LogInfo("main => glfwWindow create with size: width = ", width, " height = ", height);
 
     if (!window) {

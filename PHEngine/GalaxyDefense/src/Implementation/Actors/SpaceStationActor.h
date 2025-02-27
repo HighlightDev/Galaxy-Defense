@@ -15,6 +15,8 @@ class SpaceStationActor : public Actor {
 
     float mTimeSinceLastShoot{0.0f};
 
+    bool mIsRayActive{false};
+
     eSpaceStationActivityState mSpacestationState{eSpaceStationActivityState::IDLE};
 
     float mShootRadius{0.0f};
@@ -40,6 +42,10 @@ public:
     void SetShootRadius(const float value);
 
     float GetShootRadius() const;
+
+    void SetIsRayActive(const bool value);
+
+    bool GetIsRayActive() const;
 
     void SetRadiusMarkerComponent(const std::shared_ptr<::EngineCore::StaticMeshComponent>& radiusMarkerComponent);
 };

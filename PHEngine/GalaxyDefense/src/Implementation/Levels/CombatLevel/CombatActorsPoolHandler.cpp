@@ -18,6 +18,7 @@
 #include "Implementation/Factories/ElectroRayChainFactory.h"
 #include "Implementation/Factories/ElectroRayFactory.h"
 #include "Implementation/Factories/FreezingMissileFactory.h"
+#include "Implementation/Factories/FreezingRayFactory.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Factories/SpawnPortalFactory.h"
 #include "Implementation/Factories/WeakSpaceShipFactory.h"
@@ -70,7 +71,7 @@ std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayCh
 
     ElectroRayChainFactory factory;
     const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(std::static_pointer_cast<ElectroRayChainActor>(
-        factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1))));
+        factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1), 0.0f)));
     spawnedActor->TriggerDisabled();
     return spawnedActor;
 }
@@ -116,7 +117,7 @@ const std::vector<std::shared_ptr<SpaceStationActor>>& CombatActorsPoolHandler::
     return mSpaceStations;
 }
 
-void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count)
+void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count, const float hitRadius)
 {
     const auto& sceneSp = mSceneWp.lock();
     assert(sceneSp);
@@ -125,7 +126,8 @@ void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, cons
 
     for (int32_t i = 0; i < count; ++i) {
         const auto& missile = mMissilesPool.emplace_back(
-            missileFactory->CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+            missileFactory->CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1.0f), hitRadius));
+        assert(missile);
         missile->SetIsEnabled(false);
     }
 }
@@ -214,6 +216,8 @@ std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByTyp
         return std::make_unique<ElectroRayFactory>();
     case eMissileType::BLACK_HOLE:
         return std::make_unique<BlackHoleMissileFactory>();
+    case eMissileType::FREEZING_RAY:
+        return std::make_unique<FreezingRayFactory>();
     default:
         return nullptr;
     }

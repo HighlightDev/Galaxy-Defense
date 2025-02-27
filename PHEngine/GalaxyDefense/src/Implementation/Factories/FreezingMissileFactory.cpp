@@ -46,7 +46,8 @@ std::shared_ptr<MissileActor> FreezingMissileFactory::CreateMissile(
     const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler,
     const glm::vec3& translation,
     const glm::vec3& rotation,
-    const glm::vec3& scale)
+    const glm::vec3& scale,
+    const float hitRadius)
 {
     const auto& shipBulletIndexStr = std::to_string(s_bulletCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(

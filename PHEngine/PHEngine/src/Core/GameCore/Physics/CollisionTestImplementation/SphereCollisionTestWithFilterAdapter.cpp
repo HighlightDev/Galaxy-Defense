@@ -55,4 +55,9 @@ void SphereCollisionTestWithFilterAdapter::Initialize(std::vector<std::shared_pt
         mExcludeFilterBodies = std::move(excludeCollisionObjects);
     }
 }
+
+bool SphereCollisionTestWithFilterAdapter::HasHit() const
+{
+    return !mCollisionResult.empty();
+}
 } // namespace EnginePhysics

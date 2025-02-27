@@ -149,6 +149,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     velocityModule->SetOwner(c_particleSystemComponent);
     velocityModule->SetVelocityDirection(glm::vec3(0, -25.0f, 0));
     velocityModule->SetVelocityDeviation(glm::vec3(2.0f, 0.0f, 2.0f));
+    velocityModule->SetExtraVelocityPower(1.0f);
     c_particleSystemComponent->AddParticleModule(velocityModule);
 
     auto colorModule = std::make_shared<SimpleColorModule>();

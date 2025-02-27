@@ -40,7 +40,7 @@ glm::vec4 ScreenRayCaster::GetViewSpaceRay(const glm::vec4& clippedSpacePosition
 glm::vec3 ScreenRayCaster::GetWorldSpaceRay(const glm::vec4& viewSpaceVec, const glm::mat4& viewMatrix) const
 {
     assert(!EngineMath::FloatsNearEqual(glm::determinant(viewMatrix), 0.0f));
-    const auto& invViewMatrix = glm::inverse(viewMatrix);
+    const auto& invViewMatrix = glm::transpose(viewMatrix); // instead of inverse do transpose because view matrix is orthogonal
     const auto& worldSpaceVec = invViewMatrix * viewSpaceVec;
     const auto& nWorldSpaceRay = glm::normalize(glm::vec3(worldSpaceVec.x, worldSpaceVec.y, worldSpaceVec.z));
     return nWorldSpaceRay;

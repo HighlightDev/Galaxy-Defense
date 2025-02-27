@@ -9,11 +9,20 @@
 
 using namespace EngineCore;
 
+namespace EngineCore {
+class Actor;
+}
+
 namespace Game {
 class MissileExplosionVisitorBase;
 class CombatActorsPoolHandler;
 
 class FreezingMissileActor : public MissileActor {
+
+    std::weak_ptr<::EngineCore::Actor> mSpaceshipWhoSpawnedMeWp;
+
+    float explosionTime{0.0f};
+
 public:
     FreezingMissileActor(
         const std::string& gameObjectName,

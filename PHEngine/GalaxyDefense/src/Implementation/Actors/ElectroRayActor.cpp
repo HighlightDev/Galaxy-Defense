@@ -8,7 +8,7 @@
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Implementation/Events/ElectroRayCollisionEvent.h"
+#include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h"
 
@@ -100,10 +100,12 @@ void ElectroRayActor::Tick(const float deltaTime)
                         mElectroLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                         mCollidedSpaceship = collidedActor;
                         bElectroLineCollided = true;
-                        ElectroRayCollisionEvent::GetInstance()->SendEvent(
+                        ShootRayCollisionEvent::GetInstance()->SendEvent(
                             eExecutionOrder::POST_EXECUTION,
                             std::static_pointer_cast<MissileActor>(shared_from_this()),
-                            collidedActor->shared_from_this());
+                            collidedActor->shared_from_this(),
+                            eRayType::ELECTRO_RAY,
+                            eCollisionActionType::COLLISION_STARTED);
                     }
                 }
             }

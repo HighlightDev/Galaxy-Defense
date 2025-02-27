@@ -35,7 +35,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Controllers/CombatController.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
-#include "Implementation/Events/ElectroRayCollisionEvent.h"
+#include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/Events/ElectroRaySphereContactCollisionEvent.h"
 #include "Implementation/Events/LevelProgressChangedEvent.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
@@ -61,7 +61,7 @@ CombatLevel::CombatLevel()
 {
     Event::GameThreadEventDispatcher::GetInstance()
         ->RegisterEventsByType<
-            Event::ElectroRayCollisionEvent,
+            Event::ShootRayCollisionEvent,
             Event::ElectroRaySphereContactCollisionEvent,
             Event::MainPlayerStatusChangedEvent,
             Event::ChangeGameModeEvent,

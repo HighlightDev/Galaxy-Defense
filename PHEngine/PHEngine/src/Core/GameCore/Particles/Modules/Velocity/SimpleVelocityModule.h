@@ -10,6 +10,8 @@ class SimpleVelocityModule : public IVelocityModule {
 
     glm::vec3 mCurrentSpawnVelocityDeviation;
 
+    float mExtraVelocityPower{1.0f};
+
 public:
     SimpleVelocityModule();
 
@@ -20,5 +22,7 @@ public:
     void SetVelocityDeviation(const glm::vec3& velocityDeviation);
 
     void OnEmitParticles() override;
+
+    void SetExtraVelocityPower(const float velocityPower);
 };
 } // namespace EngineCore

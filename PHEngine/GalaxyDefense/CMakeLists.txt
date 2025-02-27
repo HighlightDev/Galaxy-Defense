@@ -36,7 +36,7 @@ set(
     src/Implementation/Controllers/UserInteractionController.h
     src/Implementation/Controllers/NavigationController.h
     src/Implementation/Events/ElectroRaySphereContactCollisionEvent.h
-    src/Implementation/Events/ElectroRayCollisionEvent.h
+    src/Implementation/Events/ShootRayCollisionEvent.h
     src/Implementation/Events/MainPlayerStatusChangedEvent.h
     src/Implementation/Events/ChangeGameModeEvent.h
     src/Implementation/Events/ChangeEditModeEvent.h
@@ -53,6 +53,7 @@ set(
     src/Implementation/Factories/AsteroidFactory.h
     src/Implementation/Factories/BackgroundPlanetsFactory.h
     src/Implementation/Factories/ElectroRayFactory.h
+    src/Implementation/Factories/FreezingRayFactory.h
     src/Implementation/Factories/ElectroRayChainFactory.h
     src/Implementation/Factories/ISpaceStationFactory.h
     src/Implementation/Factories/SpaceStationFactory.h
@@ -61,6 +62,7 @@ set(
     src/Implementation/Modifiers/IModifiable.h
     src/Implementation/Modifiers/GravityModifier.h
     src/Implementation/Modifiers/FreezingModifier.h
+    src/Implementation/Modifiers/FreezingRayModifier.h
     src/Implementation/Modifiers/ElectroRayChainModifier.h
     src/Implementation/Modifiers/ModifiersHandler.h
     src/Implementation/Actors/ElectroRayChainActor.h
@@ -73,6 +75,7 @@ set(
     src/Implementation/Actors/SpaceObjectActor.h
     src/Implementation/Actors/AsteroidActor.h
     src/Implementation/Actors/ElectroRayActor.h
+    src/Implementation/Actors/FreezingRayActor.h
     src/Implementation/Actors/SpaceStationActor.h
     src/Implementation/Actors/BarrierActor.h
     src/Implementation/Actors/BackgroundSpaceObjectActor.h
@@ -81,6 +84,7 @@ set(
     src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
     src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h
+    src/Implementation/MissileExplosionVisitors/FreezingRayExplosionVisitor.h
     src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
     src/Implementation/LuaExecutors/LuaCombatLevelExecutor.h
     src/Implementation/LuaExecutors/LuaCombatLevelUiControllerExecutor.h
@@ -127,7 +131,7 @@ set(
     src/Implementation/Controllers/UserInteractionController.cpp
     src/Implementation/Controllers/NavigationController.cpp
     src/Implementation/Events/ElectroRaySphereContactCollisionEvent.cpp
-    src/Implementation/Events/ElectroRayCollisionEvent.cpp
+    src/Implementation/Events/ShootRayCollisionEvent.cpp
     src/Implementation/Events/MainPlayerStatusChangedEvent.cpp
     src/Implementation/Events/ChangeGameModeEvent.cpp
     src/Implementation/Events/ChangeEditModeEvent.cpp
@@ -139,12 +143,14 @@ set(
     src/Implementation/Factories/AsteroidFactory.cpp
     src/Implementation/Factories/BackgroundPlanetsFactory.cpp
     src/Implementation/Factories/ElectroRayFactory.cpp
+    src/Implementation/Factories/FreezingRayFactory.cpp
     src/Implementation/Factories/ElectroRayChainFactory.cpp
     src/Implementation/Factories/SpaceStationFactory.cpp
     src/Implementation/Factories/BarrierFactory.cpp
     src/Implementation/Factories/SpawnPortalFactory.cpp
     src/Implementation/Modifiers/GravityModifier.cpp
     src/Implementation/Modifiers/FreezingModifier.cpp
+    src/Implementation/Modifiers/FreezingRayModifier.cpp
     src/Implementation/Modifiers/ElectroRayChainModifier.cpp
     src/Implementation/Modifiers/ModifiersHandler.cpp
     src/Implementation/Actors/ElectroRayChainActor.cpp
@@ -157,6 +163,7 @@ set(
     src/Implementation/Actors/SpaceObjectActor.cpp
     src/Implementation/Actors/AsteroidActor.cpp
     src/Implementation/Actors/ElectroRayActor.cpp
+    src/Implementation/Actors/FreezingRayActor.cpp
     src/Implementation/Actors/SpaceStationActor.cpp
     src/Implementation/Actors/BarrierActor.cpp
     src/Implementation/Actors/BackgroundSpaceObjectActor.cpp
@@ -165,6 +172,7 @@ set(
     src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.cpp
+    src/Implementation/MissileExplosionVisitors/FreezingRayExplosionVisitor.cpp
     src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
     src/Implementation/LuaExecutors/LuaCombatLevelExecutor.cpp
     src/Implementation/LuaExecutors/LuaCombatLevelUiControllerExecutor.cpp

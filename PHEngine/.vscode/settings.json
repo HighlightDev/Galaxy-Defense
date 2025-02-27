@@ -101,7 +101,9 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp",
-        "actorcontrollercreatorfactorycpp": "cpp"
+        "actorcontrollercreatorfactorycpp": "cpp",
+        "coroutine": "cpp",
+        "resumable": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "Lua.diagnostics.globals": [

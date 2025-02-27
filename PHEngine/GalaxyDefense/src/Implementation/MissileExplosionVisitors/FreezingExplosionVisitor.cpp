@@ -102,7 +102,6 @@ void FreezingExplosionVisitor::AddOrResetFreezingModifier(const std::shared_ptr<
     if (!spaceship->HasModifier(eModifierType::Freezing)) {
         const auto freezingModifier = std::make_shared<FreezingModifier>(spaceship);
         freezingModifier->SetFreezingPower(5.0f);
-        freezingModifier->SetFreezingTimeout(3.5f);
         spaceship->AddModifier(freezingModifier);
     } else {
         const auto freezingModifier = std::static_pointer_cast<FreezingModifier>(spaceship->GetModifier(eModifierType::Freezing));

@@ -54,7 +54,7 @@ void FreezingMissileActor::TriggerExplosion()
     const auto& movement = GetMovementComponent();
     movement->SetIsEnabled(false);
 }
-float explosionTime = 0.0f;
+
 void FreezingMissileActor::Tick(const float deltaTime)
 {
     MissileActor::Tick(deltaTime);

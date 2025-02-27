@@ -22,7 +22,17 @@ void SpaceStationActor::Tick(const float deltaTime)
 bool SpaceStationActor::CanShoot() const
 {
     constexpr float c_shootTimeout = 1.0f;
-    return mTimeSinceLastShoot >= c_shootTimeout;
+    return !mIsRayActive && mTimeSinceLastShoot >= c_shootTimeout;
+}
+
+void SpaceStationActor::SetIsRayActive(const bool value)
+{
+    mIsRayActive = value;
+}
+
+bool SpaceStationActor::GetIsRayActive() const
+{
+    return mIsRayActive;
 }
 
 void SpaceStationActor::RestartTimerSinceLastShoot()

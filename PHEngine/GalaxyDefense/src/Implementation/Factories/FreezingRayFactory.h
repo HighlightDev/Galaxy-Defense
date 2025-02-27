@@ -4,18 +4,17 @@
 
 namespace EngineCore {
 class Scene;
-class Actor;
-} // namespace EngineCore
+}
 
 namespace Game {
 class MissileActor;
 class CombatActorsPoolHandler;
 
-class FreezingMissileFactory : public IMissileFactory {
-    static size_t s_bulletCounter;
+class FreezingRayFactory : public IMissileFactory {
+    static size_t s_rayCounter;
 
 public:
-    FreezingMissileFactory() = default;
+    FreezingRayFactory() = default;
 
     virtual std::shared_ptr<MissileActor> CreateMissile(
         const std::shared_ptr<::EngineCore::Scene>& scene,

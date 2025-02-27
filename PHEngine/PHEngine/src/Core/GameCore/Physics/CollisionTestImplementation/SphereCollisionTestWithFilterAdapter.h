@@ -23,6 +23,8 @@ public:
 
     std::vector<const PhysicsDescriptor*> GetCollisionHitPhysicsDescriptors() const;
 
+    bool HasHit() const;
+
 private:
     void Initialize(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
 };

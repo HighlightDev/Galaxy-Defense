@@ -118,11 +118,11 @@ function CreateLevelProgressStages(host)
 	local trackers = {}
 	trackers[1] = {
 		type = "MissedSpaceshipsTracker",
-		spaceships_count = 20
+		spaceships_count = 2000
 	}
 	trackers[2] = {
 		type = "DestroySpaceshipsTracker",
-		spaceships_count = 7
+		spaceships_count = 70
 	}
 	local stage = {
 		name = "weak_spaceships_attack",

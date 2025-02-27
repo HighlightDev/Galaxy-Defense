@@ -206,9 +206,12 @@ void NavigationController::RemoveSpaceshipFromRoute(const int32_t spaceshipActor
 void NavigationController::RemoveMissileFromNavigation(const int32_t missileActorId)
 {
     if (mMissiles.size()) {
-        mMissiles.erase(std::remove_if(mMissiles.begin(), mMissiles.end(), [missileActorId](const auto& missile) {
+        auto removeIt = std::remove_if(mMissiles.begin(), mMissiles.end(), [missileActorId](const auto& missile) {
             return !missile || (missile && missileActorId == missile->GetObjectId());
-        }));
+        });
+        if (removeIt != mMissiles.end()) {
+            mMissiles.erase(removeIt, mMissiles.end());
+        }
     }
 }
 } // namespace Game

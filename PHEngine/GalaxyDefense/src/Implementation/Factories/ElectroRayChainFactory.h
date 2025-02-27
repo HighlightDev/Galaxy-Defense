@@ -21,6 +21,7 @@ public:
         const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler,
         const glm::vec3& translation,
         const glm::vec3& rotation,
-        const glm::vec3& scale) override;
+        const glm::vec3& scale,
+        const float hitRadius) override;
 };
 } // namespace Game

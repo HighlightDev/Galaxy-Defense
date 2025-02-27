@@ -12,7 +12,7 @@ SimpleVelocityModule::SimpleVelocityModule()
 
 void SimpleVelocityModule::Update(Particle& particle, const float deltaTime)
 {
-    particle.Velocity = (mVelocityDirection * deltaTime) + (mCurrentSpawnVelocityDeviation * deltaTime);
+    particle.Velocity = (mVelocityDirection * deltaTime * mExtraVelocityPower) + (mCurrentSpawnVelocityDeviation * deltaTime);
 }
 
 void SimpleVelocityModule::SetVelocityDirection(const glm::vec3& velocityDirection)
@@ -31,5 +31,10 @@ void SimpleVelocityModule::OnEmitParticles()
     const float signY = (Random::Float() * 2.0f) - 1.0f;
     const float signZ = (Random::Float() * 2.0f) - 1.0f;
     mCurrentSpawnVelocityDeviation = glm::vec3(signX, signY, signZ) * mVelocityDeviation;
+}
+
+void SimpleVelocityModule::SetExtraVelocityPower(const float velocityPower)
+{
+    mExtraVelocityPower = velocityPower;
 }
 } // namespace EngineCore
