@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 #define MaxWeights 3
 #define MaxBones 55

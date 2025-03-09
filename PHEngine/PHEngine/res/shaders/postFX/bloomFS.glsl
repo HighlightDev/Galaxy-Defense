@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 const float weights[5] = float[](0.204164, 0.180174, 0.123832, 0.066282, 0.027631);
 #define BLUR_WIDTH 5

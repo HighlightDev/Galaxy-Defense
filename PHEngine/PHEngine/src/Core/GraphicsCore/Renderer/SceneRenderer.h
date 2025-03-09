@@ -7,7 +7,6 @@
 #include "Core/GameCore/ShaderImplementation/DepthCollectShader.h"
 #include "Core/GameCore/ShaderImplementation/FontRenderingShader.h"
 #include "Core/GameCore/ShaderImplementation/PointLightDepthShader.h"
-#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchRenderer.h"

@@ -75,3 +75,5 @@ endif(ENABLE_LIBUNWIND)
 if(BUILD_ENGINE_TEST)
     add_subdirectory(EngineTest)
 endif(BUILD_ENGINE_TEST)
+
+add_subdirectory(TestUBO)

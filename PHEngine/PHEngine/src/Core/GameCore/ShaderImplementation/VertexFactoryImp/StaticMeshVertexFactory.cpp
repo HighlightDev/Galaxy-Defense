@@ -2,8 +2,11 @@
 
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/ResourceManagerCore/Pool/UniformBufferPool.h"
 
 using namespace IO;
+using namespace Resources;
+using namespace Graphics::OpenGL;
 
 namespace EngineCore {
 StaticMeshVertexFactory::StaticMeshVertexFactory()
@@ -17,6 +20,8 @@ void StaticMeshVertexFactory::AccessAllUniformLocations(uint32_t shaderProgramID
     u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
     u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
     u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
+    u_transformMatricesBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(
+        UniformBufferParameters{"StaticMeshVertexFactory", "Matrices", 0, sizeof(glm::mat4) * 3, shaderProgramID});
 }
 
 void StaticMeshVertexFactory::SetMatrices(
@@ -25,6 +30,13 @@ void StaticMeshVertexFactory::SetMatrices(
     u_worldMatrix.LoadUniform(worldMatrix);
     u_viewMatrix.LoadUniform(viewMatrix);
     u_projectionMatrix.LoadUniform(projectionMatrix);
+    struct MatricesInternal {
+        glm::mat4 worldMatrix;
+        glm::mat4 viewMatrix;
+        glm::mat4 projectionMatrix;
+    };
+    MatricesInternal matrices{worldMatrix, viewMatrix, projectionMatrix};
+    u_transformMatricesBuffer->SetData(matrices);
 }
 
 std::vector<std::shared_ptr<AttributeDataBase>> StaticMeshVertexFactory::GetVertexAttributes(const int32_t shaderProgramId)

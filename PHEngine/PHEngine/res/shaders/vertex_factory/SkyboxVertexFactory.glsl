@@ -1,8 +1,14 @@
-#version 400
+#version 440
 
 in vec3 VertexPosition;
 
 #include "materialCommon.incl.glsl"
+
+// layout(std140, binding = 0) uniform Matrices {
+//     mat4 worldMatrix;
+//     mat4 viewMatrix;
+//     mat4 projectionMatrix;
+// };
 
 uniform mat4 worldMatrix;
 uniform mat4 viewMatrix;

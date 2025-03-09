@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 layout(location = 0) out vec3 gBuffer_Position;
 layout(location = 1) out vec3 gBuffer_Normal;

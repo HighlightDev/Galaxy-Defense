@@ -32,6 +32,7 @@
 #include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
 #include "Core/ResourceManagerCore/Pool/SoundStreamPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/ResourceManagerCore/Pool/UniformBufferPool.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
 #if DEBUG
@@ -141,6 +142,7 @@ void Engine::CleanUp()
     SoundBufferPool::GetInstance()->CleanUp();
     SoundStreamPool::GetInstance()->CleanUp();
     RuntimeGeneratedMeshPool::GetInstance()->CleanUp();
+    UniformBufferPool::GetInstance()->CleanUp();
     mActiveAudioOutputDevice->CleanUp();
 }
 

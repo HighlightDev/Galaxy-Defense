@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 #define CubemapFaces 6
 layout(triangles) in;
@@ -12,7 +12,7 @@ out vec3 FragPos;
 void main(void)
 {
     for (int face = 0; face < CubemapFaces; ++face) {
-        gl_Layer = face;
+        gl_Layer = face; // Specify the cubemap face to render to
         for (int i = 0; i < 3; ++i) {
             FragPos = gl_in[i].gl_Position.xyz;
             gl_Position = shadowProjectionMatrices[face] * shadowViewMatrices[face] * gl_in[i].gl_Position;

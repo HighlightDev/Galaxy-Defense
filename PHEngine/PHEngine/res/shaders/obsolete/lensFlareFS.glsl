@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 #define HAS_PREVIOUS_STAGE 1
 #define lum vec3(0.2126, 0.7152, 0.0722)

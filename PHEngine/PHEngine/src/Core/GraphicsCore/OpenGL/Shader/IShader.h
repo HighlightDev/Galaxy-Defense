@@ -38,6 +38,8 @@ public:
 
     std::string GetLinkLogInfo() const;
 
+    uint32_t GetShaderProgramID() const;
+
     bool IsShaderCompiled() const;
 
     void ExecuteShader() const;

@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 #define GAMMA_CORRECTION
 #define SHADING_MODEL_PBR

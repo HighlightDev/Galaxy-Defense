@@ -2,6 +2,7 @@
 
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/UniformBuffer.h"
 
 using namespace Graphics::OpenGL;
 
@@ -11,6 +12,8 @@ class StaticMeshVertexFactory : public VertexFactoryShader {
     Uniform u_worldMatrix;
     Uniform u_viewMatrix;
     Uniform u_projectionMatrix;
+
+    std::shared_ptr<UniformBuffer> u_transformMatricesBuffer;
 
 public:
     StaticMeshVertexFactory();

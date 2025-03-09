@@ -35,6 +35,11 @@ bool IShader::operator==(const IShader& right) const
         && this->m_fragmentShaderID == right.m_fragmentShaderID && this->m_shaderProgramID == right.m_shaderProgramID;
 }
 
+uint32_t IShader::GetShaderProgramID() const
+{
+    return m_shaderProgramID;
+}
+
 Uniform IShader::GetUniform(const std::string& uniformName, uint32_t shaderProgramID) const
 {
     try {
@@ -459,7 +464,7 @@ std::string IShader::GetLinkLogInfo() const
 
         std::vector<char> message(log_length);
         glGetProgramInfoLog(m_shaderProgramID, log_length, nullptr, message.data());
-        EngineUtility::StringStreamWrapper::ToString("Unsolved mistakes at :", mShaderName, "\n");
+        EngineUtility::StringStreamWrapper::ToString("Unsolved mistakes at :", mShaderName, "\n", message.data(), "\n");
     }
 
     linkLog = std::move(EngineUtility::StringStreamWrapper::FlushString());

@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 #define HAS_PREVIOUS_STAGE 1
 layout(location = 0) out vec4 FragColor;

@@ -16,7 +16,6 @@
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
-#include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"

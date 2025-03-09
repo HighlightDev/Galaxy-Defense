@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 #define MAX_LIGHT_COUNT 5
 #define materialReflectivity 0.7

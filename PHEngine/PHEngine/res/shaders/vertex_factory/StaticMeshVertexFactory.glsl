@@ -1,4 +1,10 @@
-#version 400
+#version 440
+
+layout(std140) uniform Matrices {
+    mat4 worldMatrix1;
+    mat4 viewMatrix1;
+    mat4 projectionMatrix1;
+};
 
 in vec3 VertexPosition;
 in vec3 VertexNormal;

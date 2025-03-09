@@ -35,10 +35,10 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Controllers/CombatController.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
-#include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/Events/ElectroRaySphereContactCollisionEvent.h"
 #include "Implementation/Events/LevelProgressChangedEvent.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
+#include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/GalaxySceneCamera.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
 #include "Implementation/LuaExecutors/LuaCombatLevelExecutor.h"
@@ -96,7 +96,9 @@ void CombatLevel::PreLevelInit()
     Base::PreLevelInit();
     mCombatController = std::make_shared<CombatController>(sceneSp);
     mUiController = std::make_unique<CombatLevelUiController>(sceneSp, mLvlProgressController);
-    mCombatController->OnPreLevelInit();
+    if (mCombatController) {
+        mCombatController->OnPreLevelInit();
+    }
     mUiController->OnPreLevelInit();
 }
 
@@ -176,8 +178,10 @@ void CombatLevel::CreateScene()
     billboardComponent->SetSortOrderValue(-100000);
     a_skybox->AddComponent(billboardComponent);
 
-    mCombatController->InitFromLevelData(levelData);
-    mCombatController->OnLevelInit();
+    if (mCombatController) {
+        mCombatController->InitFromLevelData(levelData);
+        mCombatController->OnLevelInit();
+    }
     mUiController->OnLevelInit();
 
     // todo: temprorary solution just to test InstancedStaticMeshComponent
@@ -228,14 +232,19 @@ void CombatLevel::CreateScene()
 
 void CombatLevel::PostLevelInit()
 {
-    mCombatController->OnPostLevelInit();
+    if (mCombatController) {
+        mCombatController->OnPostLevelInit();
+    }
     mUiController->OnPostLevelInit();
     Base::PostLevelInit();
 }
 
 void CombatLevel::PostPlayLevelFinished()
 {
-    mCombatController->PostPlayLevelFinished();
+    if (mCombatController) {
+
+        mCombatController->PostPlayLevelFinished();
+    }
     mUiController->PostPlayLevelFinished();
     Base::PostPlayLevelFinished();
 }

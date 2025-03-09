@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 #define rCoef 1.2
 #define gCoef 0.7692307

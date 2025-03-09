@@ -1,4 +1,4 @@
-#version 400
+#version 440
 
 out vec2 vs_out_rotation_size;
 out vec4 vs_out_particle_color;
