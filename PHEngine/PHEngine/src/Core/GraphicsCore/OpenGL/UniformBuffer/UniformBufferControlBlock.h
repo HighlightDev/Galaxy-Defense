@@ -35,8 +35,7 @@ public:
 
     void CleanUp();
 
-    UniformBufferControlBlock::UniformBufferUserInfo
-    AllocateMemoryInUniformBuffer(const uint32_t shaderProgramId, const uint32_t memorySize);
+    UniformBufferUserInfo AllocateMemoryInUniformBuffer(const uint32_t shaderProgramId, const uint32_t memorySize);
 
     uint32_t GetUniformBufferDescriptorId() const;
 

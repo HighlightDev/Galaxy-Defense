@@ -6,6 +6,7 @@ project(${PROJECT_NAME} VERSION 1.0 LANGUAGES CXX)
 
 option(BUILD_GALAXY_DEFENSE "Build GalaxyDefense game." OFF)
 option(BUILD_ENGINE_TEST "Build test scene." ON)
+option(BUILD_UBO_TEST "Build test UBO." OFF)
 
 if(WIN32)
     if(MSVC)
@@ -76,4 +77,6 @@ if(BUILD_ENGINE_TEST)
     add_subdirectory(EngineTest)
 endif(BUILD_ENGINE_TEST)
 
-add_subdirectory(TestUBO)
+if(BUILD_UBO_TEST)
+    add_subdirectory(TestUBO)
+endif(BUILD_UBO_TEST)

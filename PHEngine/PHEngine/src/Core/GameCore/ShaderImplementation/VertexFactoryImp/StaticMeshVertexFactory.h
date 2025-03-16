@@ -9,10 +9,6 @@ using namespace Graphics::OpenGL;
 namespace EngineCore {
 class StaticMeshVertexFactory : public VertexFactoryShader {
 
-    Uniform u_worldMatrix;
-    Uniform u_viewMatrix;
-    Uniform u_projectionMatrix;
-
     std::shared_ptr<UniformBuffer> u_transformMatricesBuffer;
 
 public:

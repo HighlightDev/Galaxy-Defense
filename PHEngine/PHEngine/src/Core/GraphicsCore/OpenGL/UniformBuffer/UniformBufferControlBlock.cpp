@@ -1,55 +1,14 @@
 #include "UniformBufferControlBlock.h"
 
+#include "Core/GameCore/LoggerExtension.h"
+
 #include <gl/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <iostream>
+using namespace EngineCore;
 
 namespace Graphics::OpenGL {
-
-void CheckGLError(const char* stmt, const char* fname, int line)
-{
-    GLenum err = glGetError();
-    while (err != GL_NO_ERROR) {
-        const char* error;
-        switch (err) {
-        case GL_INVALID_ENUM:
-            error = "GL_INVALID_ENUM";
-            break;
-        case GL_INVALID_VALUE:
-            error = "GL_INVALID_VALUE";
-            break;
-        case GL_INVALID_OPERATION:
-            error = "GL_INVALID_OPERATION";
-            break;
-        case GL_STACK_OVERFLOW:
-            error = "GL_STACK_OVERFLOW";
-            break;
-        case GL_STACK_UNDERFLOW:
-            error = "GL_STACK_UNDERFLOW";
-            break;
-        case GL_OUT_OF_MEMORY:
-            error = "GL_OUT_OF_MEMORY";
-            break;
-        case GL_INVALID_FRAMEBUFFER_OPERATION:
-            error = "GL_INVALID_FRAMEBUFFER_OPERATION";
-            break;
-        default:
-            error = "Unknown Error";
-            break;
-        }
-        std::cerr << "OpenGL error " << error << " (" << err << "), at " << fname << ":" << line << " - for " << stmt
-                  << std::endl;
-        err = glGetError();
-    }
-}
-
-#define GL_CHECK(stmt)                                                                                                           \
-    do {                                                                                                                         \
-        stmt;                                                                                                                    \
-        CheckGLError(#stmt, __FILE__, __LINE__);                                                                                 \
-    } while (0)
 
 UniformBufferControlBlock::UniformBufferControlBlock(
     const std::string& blockName, const uint32_t bindingPoint, const uint32_t initialBufferSize)
@@ -124,7 +83,7 @@ void UniformBufferControlBlock::BindUniformBlockToBindingPoint(const uint32_t sh
 {
     glUseProgram(shaderProgramId);
     const uint32_t blockIndex = glGetUniformBlockIndex(shaderProgramId, mBlockName.c_str());
-    assert(blockIndex != GL_INVALID_INDEX);
+    LogInfo("UniformBufferControlBlock::BindUniformBlockToBindingPoint: uniform block index wasn't found for ", mBlockName);
     glUniformBlockBinding(shaderProgramId, blockIndex, mBindingPoint);
     glUseProgram(0);
 }

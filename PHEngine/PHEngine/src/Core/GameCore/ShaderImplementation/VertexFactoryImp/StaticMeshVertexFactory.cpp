@@ -17,9 +17,6 @@ StaticMeshVertexFactory::StaticMeshVertexFactory()
 
 void StaticMeshVertexFactory::AccessAllUniformLocations(uint32_t shaderProgramID)
 {
-    u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
-    u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
-    u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
     u_transformMatricesBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(
         UniformBufferParameters{"StaticMeshVertexFactory", "Matrices", 0, sizeof(glm::mat4) * 3, shaderProgramID});
 }
@@ -27,9 +24,6 @@ void StaticMeshVertexFactory::AccessAllUniformLocations(uint32_t shaderProgramID
 void StaticMeshVertexFactory::SetMatrices(
     const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 {
-    u_worldMatrix.LoadUniform(worldMatrix);
-    u_viewMatrix.LoadUniform(viewMatrix);
-    u_projectionMatrix.LoadUniform(projectionMatrix);
     struct MatricesInternal {
         glm::mat4 worldMatrix;
         glm::mat4 viewMatrix;

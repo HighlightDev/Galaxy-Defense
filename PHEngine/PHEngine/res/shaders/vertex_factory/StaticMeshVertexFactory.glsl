@@ -1,9 +1,9 @@
 #version 440
 
 layout(std140) uniform Matrices {
-    mat4 worldMatrix1;
-    mat4 viewMatrix1;
-    mat4 projectionMatrix1;
+    mat4 worldMatrix;
+    mat4 viewMatrix;
+    mat4 projectionMatrix;
 };
 
 in vec3 VertexPosition;
@@ -13,10 +13,6 @@ in vec3 VertexTangent;
 in vec3 VertexBitangent;
 
 #include "materialCommon.incl.glsl"
-
-uniform mat4 worldMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
 
 vec4 GetLocalToWorldSpacePosition()
 {
