@@ -494,7 +494,7 @@ function CreateTestLevel(host)
 			}
 		))
 
-	_CreateAndAttachComponentToActor(host, a_skelet, "StaticMeshComponent",
+	_CreateAndAttachComponentToActor(host, a_skelet, "SkeletalMeshComponent",
 		Json.encode(
 			{
 				gameObjectName = "SkeletMeshComponent",

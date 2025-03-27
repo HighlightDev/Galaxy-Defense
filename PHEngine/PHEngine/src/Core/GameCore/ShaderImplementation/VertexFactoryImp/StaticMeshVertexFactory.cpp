@@ -9,6 +9,9 @@ using namespace Resources;
 using namespace Graphics::OpenGL;
 
 namespace EngineCore {
+
+int32_t StaticMeshVertexFactory::s_instanceId = 0;
+
 StaticMeshVertexFactory::StaticMeshVertexFactory()
     : VertexFactoryShader("StaticMeshVertexFactory")
 {
@@ -17,8 +20,8 @@ StaticMeshVertexFactory::StaticMeshVertexFactory()
 
 void StaticMeshVertexFactory::AccessAllUniformLocations(uint32_t shaderProgramID)
 {
-    u_transformMatricesBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(
-        UniformBufferParameters{"StaticMeshVertexFactory", "Matrices", 0, sizeof(glm::mat4) * 3, shaderProgramID});
+    u_transformMatricesBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(UniformBufferParameters{
+        "StaticMeshVertexFactory_" + std::to_string(s_instanceId++), "Matrices", 0, sizeof(glm::mat4) * 3, shaderProgramID});
 }
 
 void StaticMeshVertexFactory::SetMatrices(

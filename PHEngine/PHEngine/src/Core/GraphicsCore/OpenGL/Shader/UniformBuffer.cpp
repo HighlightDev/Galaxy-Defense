@@ -13,12 +13,19 @@ UniformBuffer::UniformBuffer(const std::shared_ptr<UniformBufferControlBlock>& c
 {
 }
 
-void UniformBuffer::SetData(const void* data, const size_t size)
+void UniformBuffer::SetDataExplicit(const void* data, const size_t size, const size_t offset)
 {
     assert(mControlBlock);
-    assert(size <= mUserInfo.mMemorySize);
+    assert(offset + size <= mUserInfo.mMemorySize);
     assert(mUserInfo.mUniformBufferUserId != std::numeric_limits<uint32_t>::max());
-    mControlBlock->SetDataInUniformBuffer(mUserInfo, data, size);
+    mControlBlock->SetDataInUniformBuffer(mUserInfo, data, offset, size);
+}
+
+void UniformBuffer::SetDataExplicit(const void* data)
+{
+    assert(mControlBlock);
+    assert(mUserInfo.mUniformBufferUserId != std::numeric_limits<uint32_t>::max());
+    mControlBlock->SetDataInUniformBuffer(mUserInfo, data);
 }
 
 void UniformBuffer::ResetBuffer()

@@ -11,6 +11,8 @@ class StaticMeshVertexFactory : public VertexFactoryShader {
 
     std::shared_ptr<UniformBuffer> u_transformMatricesBuffer;
 
+    static int32_t s_instanceId;
+
 public:
     StaticMeshVertexFactory();
 

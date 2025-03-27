@@ -125,12 +125,12 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     }
 
     const float shootRadius = mCombatActorsPoolHandler->GetSpaceStationActors().front()->GetShootRadius();
-    const int32_t c_bombMissilesCount = 0 * levelData.TowersData.size();
+    const int32_t c_bombMissilesCount = 5 * levelData.TowersData.size();
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, c_bombMissilesCount, shootRadius);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING, 0, shootRadius);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 0, shootRadius);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 0, shootRadius);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_RAY, 20, shootRadius);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING, 2, shootRadius);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1, shootRadius);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1, shootRadius);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_RAY, 1, shootRadius);
 }
 
 void CombatController::OnLevelInit()

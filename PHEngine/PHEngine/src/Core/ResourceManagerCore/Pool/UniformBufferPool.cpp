@@ -3,8 +3,6 @@
 namespace Resources {
 std::unique_ptr<UniformBufferPool> UniformBufferPool::m_instance;
 
-static const uint32_t bufferMultiplier = 50;
-
 std::string UniformBufferPool::ToString() const
 {
     return "UniformBufferPool";
@@ -29,7 +27,7 @@ std::shared_ptr<UniformBuffer> UniformBufferPool::GetOrAllocateResource(const Un
     std::shared_ptr<UniformBuffer> uniformBuffer;
     if (m_resourceMap.count(arg.mUserName) == 0) {
         auto controlBlock
-            = std::make_shared<UniformBufferControlBlock>(arg.mBlockName, arg.mBindingPoint, arg.mMemorySize * bufferMultiplier);
+            = std::make_shared<UniformBufferControlBlock>(arg.mBlockName, arg.mBindingPoint, arg.mMemorySize);
         uniformBuffer = std::make_shared<UniformBuffer>(
             UniformBuffer::CreateUniformBuffer(controlBlock, arg.mShaderProgramId, arg.mMemorySize, true));
 

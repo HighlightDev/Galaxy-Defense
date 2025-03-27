@@ -14,6 +14,8 @@ class SkyboxVertexFactory : public VertexFactoryShader {
 
     std::shared_ptr<UniformBuffer> u_transformMatricesBuffer;
 
+    static inline int32_t s_instanceId = 0;
+
 public:
     SkyboxVertexFactory()
         : VertexFactoryShader("SkyboxVertexFactory")
@@ -23,8 +25,8 @@ public:
 
     void AccessAllUniformLocations(uint32_t shaderProgramID) override
     {
-        u_transformMatricesBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(
-            UniformBufferParameters{"SkyboxVertexFactory", "Matrices", 0, sizeof(glm::mat4) * 3 * 2, shaderProgramID});
+        u_transformMatricesBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(UniformBufferParameters{
+            "SkyboxVertexFactory_" + std::to_string(s_instanceId++), "Matrices", 0, sizeof(glm::mat4) * 3, shaderProgramID});
     }
 
     void SetMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)

@@ -28,7 +28,8 @@ class UniformBuffer {
 public:
     UniformBuffer() = default;
 
-    void SetData(const void* data, const size_t size);
+    void SetDataExplicit(const void* data);
+    void SetDataExplicit(const void* data, const size_t offset, const size_t size);
 
     void ResetBuffer();
 
@@ -41,7 +42,13 @@ public:
     template<typename T>
     typename std::enable_if<std::is_trivial<T>::value, void>::type SetData(const T& data)
     {
-        SetData(&data, sizeof(T));
+        SetDataExplicit(&data);
+    }
+
+    template<typename T>
+    typename std::enable_if<std::is_trivial<T>::value, void>::type SetData(const T& data, const size_t offset)
+    {
+        SetDataExplicit(&data, offset, sizeof(T));
     }
 
     uint32_t GetUniformBufferUserId() const;

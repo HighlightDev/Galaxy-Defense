@@ -88,10 +88,17 @@ void UniformBufferControlBlock::BindUniformBlockToBindingPoint(const uint32_t sh
     glUseProgram(0);
 }
 
-void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data, const size_t size)
+void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data)
 {
     assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
     glBindBufferRange(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId, userInfo.mMemoryOffset, userInfo.mMemorySize);
     glNamedBufferSubData(mUniformBufferDescriptorId, userInfo.mMemoryOffset, userInfo.mMemorySize, data);
+}
+
+void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data, const size_t offset, const size_t size)
+{
+    assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
+    glBindBufferRange(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId, userInfo.mMemoryOffset + offset, size);
+    glNamedBufferSubData(mUniformBufferDescriptorId, userInfo.mMemoryOffset + offset, size, data);
 }
 } // namespace Graphics::OpenGL
