@@ -277,12 +277,11 @@ AnimatedMeshData::FindTranslationIndex(const float animationTime, const std::vec
 size_t AnimatedMeshData::FindRotationIndex(const float animationTime, const std::vector<FrameRotation>& rotationFrames) const
 {
     for (size_t i = 0; i < rotationFrames.size() - 1; ++i) {
-        if (animationTime < rotationFrames[i + 1].Time) {
+        if (animationTime <= rotationFrames[i + 1].Time) {
             return i;
         }
     }
 
-    assert(0);
     return 0;
 }
 } // namespace Mesh

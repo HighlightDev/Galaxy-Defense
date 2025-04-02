@@ -11,9 +11,11 @@ in vec4 ParticleColor;
 
 #include "materialCommon.incl.glsl"
 
-uniform mat4 worldMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
+layout (std140) uniform Matrices {
+    mat4 worldMatrix;
+    mat4 viewMatrix;
+    mat4 projectionMatrix;
+};
 
 vec4 GetLocalToWorldSpacePosition()
 {

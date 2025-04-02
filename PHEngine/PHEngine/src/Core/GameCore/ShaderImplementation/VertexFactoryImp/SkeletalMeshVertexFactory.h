@@ -19,8 +19,6 @@ namespace EngineCore {
 template<int32_t InfluenceWeightsCount>
 class SkeletalMeshVertexFactory : public VertexFactoryShader {
 
-    UniformArray u_boneMatrices;
-
     std::shared_ptr<UniformBuffer> m_transformMatricesUniformBuffer;
     std::shared_ptr<UniformBuffer> m_skinningMatricesUniformBuffer;
 
@@ -39,17 +37,21 @@ public:
 
     void AccessAllUniformLocations(uint32_t shaderProgramID) override
     {
-        // u_boneMatrices = GetUniformArray("bonesMatrices", MaxBones, shaderProgramID, eShaderType::VertexShader);
-
         m_transformMatricesUniformBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(UniformBufferParameters{
-            "SkeletalMeshVertexFactory_" + std::to_string(s_instanceId++),
+            "SkeletalMeshVertexFactory_" + std::to_string(s_instanceId),
             "Matrices",
             0,
-            static_cast<uint32_t>(3 + MaxBones) * static_cast<uint32_t>(sizeof(glm::mat4)),
+            3 * static_cast<uint32_t>(sizeof(glm::mat4)),
             shaderProgramID});
 
         m_skinningMatricesUniformBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(UniformBufferParameters{
-            "SkinningMatrices", "SkinningMatrices", 0, static_cast<uint32_t>(MaxBones) * sizeof(glm::mat4), shaderProgramID});
+            "SkinningMatrices_" + std::to_string(s_instanceId),
+            "SkinningMatrices",
+            1,
+            static_cast<uint32_t>(MaxBones) * sizeof(glm::mat4),
+            shaderProgramID});
+
+        ++s_instanceId;
     }
 
     void SetMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
@@ -64,19 +66,8 @@ public:
 
     void SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices)
     {
-        struct SkinningMatrices {
-            glm::mat4 matrices[MaxWeightsIndices];
-        };
-
-        SkinningMatrices matrices;
-
-        const auto matricesCount = std::min(skinningMatrices.size(), static_cast<size_t>(MaxWeightsIndices));
-        for (size_t index = 0; index < matricesCount; index++) {
-            matrices.matrices[index] = skinningMatrices[index];
-            // u_boneMatrices.LoadUniform(index, skinningMatrices[index]);
-        }
-
-        m_skinningMatricesUniformBuffer->SetData(&matrices);
+        std::vector<glm::mat4> skinningMatricesCopy(skinningMatrices.begin(), skinningMatrices.begin() + MaxBones);
+        m_skinningMatricesUniformBuffer->SetData(skinningMatricesCopy);
     }
 
     void SetShaderPredefine() override

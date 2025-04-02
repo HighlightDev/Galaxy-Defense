@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
+#include "Core/GraphicsCore/OpenGL/Shader/UniformBuffer.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/ResourceManagerCore/Pool/UniformBufferPool.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 
-using namespace EngineUtility;
 using namespace Graphics::OpenGL;
 using namespace IO;
+using namespace Resources;
+using namespace EngineUtility;
 
 namespace EngineCore {
 class InstancedStaticMeshVertexFactory : public VertexFactoryShader {
@@ -15,6 +18,10 @@ class InstancedStaticMeshVertexFactory : public VertexFactoryShader {
     UniformArray u_worldMatrices;
     Uniform u_viewMatrix;
     Uniform u_projectionMatrix;
+
+    static inline int32_t s_instanceId = 0;
+
+    std::shared_ptr<UniformBuffer> u_transformMatricesBuffer;
 
 public:
     explicit InstancedStaticMeshVertexFactory()
@@ -27,19 +34,22 @@ public:
     void AccessAllUniformLocations(uint32_t shaderProgramID) override
     {
         const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-        u_worldMatrices
-            = GetUniformArray("worldMatrices", cfg.MaxStaticMeshInstancesPerBatch, shaderProgramID, eShaderType::VertexShader);
-        u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
-        u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
+        u_transformMatricesBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(UniformBufferParameters{
+            "InstancedStaticMeshVertexFactory_" + std::to_string(s_instanceId++),
+            "Matrices",
+            0,
+            static_cast<uint32_t>(sizeof(glm::mat4)) * static_cast<uint32_t>((3 + cfg.MaxStaticMeshInstancesPerBatch)),
+            shaderProgramID});
     }
 
     void SetMatrices(const std::vector<glm::mat4>& worldMatrices, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
     {
-        for (int i = 0; i < worldMatrices.size(); ++i) {
-            u_worldMatrices.LoadUniform(i, worldMatrices[i]);
-        }
-        u_viewMatrix.LoadUniform(viewMatrix);
-        u_projectionMatrix.LoadUniform(projectionMatrix);
+        std::vector<glm::mat4> shaderMatrices;
+        shaderMatrices.reserve(worldMatrices.size() + 2);
+        shaderMatrices.emplace_back(viewMatrix); // view and projection matrices go first
+        shaderMatrices.emplace_back(projectionMatrix);
+        shaderMatrices.insert(shaderMatrices.end(), worldMatrices.begin(), worldMatrices.end());
+        u_transformMatricesBuffer->SetData(shaderMatrices);
     }
 
     void SetShaderPredefine() override

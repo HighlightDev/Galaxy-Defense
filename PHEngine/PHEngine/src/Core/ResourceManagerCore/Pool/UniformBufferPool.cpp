@@ -65,14 +65,4 @@ void UniformBufferPool::CleanUp()
     m_resourceMap.clear();
 }
 
-void UniformBufferPool::CleanUpNotPersistent()
-{
-    // for (const auto& resource : m_resourceMap) {
-    //     if (resource.second->first->GetUniformBufferUsersCount() == 0) {
-    //         resource.second->first->CleanUp();
-    //         m_resourceMap.erase(resource.first);
-    //     }
-    // }
-}
-
 } // namespace Resources

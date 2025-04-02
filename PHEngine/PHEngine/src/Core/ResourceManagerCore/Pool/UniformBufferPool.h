@@ -36,8 +36,6 @@ public:
     void FreeResource(const std::string& nameOfUser);
 
     void CleanUp();
-
-    void CleanUpNotPersistent();
 };
 
 } // namespace Resources

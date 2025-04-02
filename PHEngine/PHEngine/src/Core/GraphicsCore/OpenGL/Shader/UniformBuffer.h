@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 namespace Graphics::OpenGL {
 
@@ -25,11 +26,12 @@ class UniformBuffer {
 
     UniformBuffer(const std::shared_ptr<UniformBufferControlBlock>& controlBlock, const UniformBufferUserInfo& userInfo);
 
+    void SetDataExplicit(const void* data, const size_t size);
+
+    void SetDataExplicit(const void* data, const size_t offset, const size_t size);
+
 public:
     UniformBuffer() = default;
-
-    void SetDataExplicit(const void* data);
-    void SetDataExplicit(const void* data, const size_t offset, const size_t size);
 
     void ResetBuffer();
 
@@ -42,7 +44,13 @@ public:
     template<typename T>
     typename std::enable_if<std::is_trivial<T>::value, void>::type SetData(const T& data)
     {
-        SetDataExplicit(&data);
+        SetDataExplicit(&data, sizeof(T));
+    }
+
+    template<typename T>
+    typename std::enable_if<std::is_trivial<T>::value, void>::type SetData(const std::vector<T>& dataVector)
+    {
+        SetDataExplicit(dataVector.data(), dataVector.size() * sizeof(T));
     }
 
     template<typename T>

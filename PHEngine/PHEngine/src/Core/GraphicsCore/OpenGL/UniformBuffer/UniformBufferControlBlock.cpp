@@ -88,11 +88,11 @@ void UniformBufferControlBlock::BindUniformBlockToBindingPoint(const uint32_t sh
     glUseProgram(0);
 }
 
-void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data)
+void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data, const size_t size)
 {
     assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
     glBindBufferRange(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId, userInfo.mMemoryOffset, userInfo.mMemorySize);
-    glNamedBufferSubData(mUniformBufferDescriptorId, userInfo.mMemoryOffset, userInfo.mMemorySize, data);
+    glNamedBufferSubData(mUniformBufferDescriptorId, userInfo.mMemoryOffset, size, data);
 }
 
 void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data, const size_t offset, const size_t size)

@@ -98,6 +98,7 @@ void Engine::Initialize()
             BroadcastLuaThreadEvent>();
 
     m_sceneRenderer = std::make_shared<SceneRenderer>(m_interThreadMgr);
+    m_sceneRenderer->Initialize();
     m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
     m_interThreadMgr.SetSceneWP(m_scene);
     m_interThreadMgr.SetLuaScriptProcessorWP(m_luaScriptProcessor);
@@ -189,8 +190,10 @@ void Engine::UnloadCurrentLevel()
     m_luaScriptProcessor->CleanUp();
     m_sceneRenderer->CleanUp();
     ResourceMap::GetInstance()->CleanUp();
+    UniformBufferPool::GetInstance()->CleanUp();
     m_interThreadMgr.SetIsAllowedPushGameThreadJobs(true);
     m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(true);
+    m_sceneRenderer->Initialize();
 #ifdef DEBUG
     resObserver->CollectResourceConsumptionInfo();
     LogInfo("Engine::UnloadCurrentLevel: mem after lvl unload: ", resObserver->GetLastMemoryUsageMegabytes());

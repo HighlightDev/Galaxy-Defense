@@ -1,18 +1,21 @@
 #pragma once
 
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
+#include "Core/GraphicsCore/OpenGL/Shader/UniformBuffer.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/ResourceManagerCore/Pool/UniformBufferPool.h"
 
 using namespace Graphics::OpenGL;
 using namespace IO;
+using namespace Resources;
 
 namespace EngineCore {
 class ParticleVertexFactory : public VertexFactoryShader {
 
-    Uniform u_worldMatrix;
-    Uniform u_viewMatrix;
-    Uniform u_projectionMatrix;
+    std::shared_ptr<UniformBuffer> u_transformMatricesBuffer;
+
+    static inline int32_t s_instanceId = 0;
 
 public:
     explicit ParticleVertexFactory()
@@ -23,16 +26,20 @@ public:
 
     void AccessAllUniformLocations(uint32_t shaderProgramID) override
     {
-        u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
-        u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
-        u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
+        u_transformMatricesBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(UniformBufferParameters{
+            "ParticleVertexFactory_" + std::to_string(s_instanceId++), "Matrices", 0, sizeof(glm::mat4) * 3, shaderProgramID});
     }
 
     void SetMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
     {
-        u_worldMatrix.LoadUniform(worldMatrix);
-        u_viewMatrix.LoadUniform(viewMatrix);
-        u_projectionMatrix.LoadUniform(projectionMatrix);
+        struct InternalMatrices {
+            glm::mat4 worldMatrix;
+            glm::mat4 viewMatrix;
+            glm::mat4 projectionMatrix;
+        };
+
+        InternalMatrices matrices{worldMatrix, viewMatrix, projectionMatrix};
+        u_transformMatricesBuffer->SetData(matrices);
     }
 
     std::vector<std::shared_ptr<AttributeDataBase>> GetVertexAttributes(const int32_t shaderProgramId) override

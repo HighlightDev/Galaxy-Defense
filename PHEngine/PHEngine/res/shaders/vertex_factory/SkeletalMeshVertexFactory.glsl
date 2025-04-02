@@ -17,7 +17,7 @@ layout(std140) uniform Matrices {
 };
 
 layout(std140) uniform SkinningMatrices {
-    mat4 bonesMatrices[MaxBones]
+    mat4 bonesMatrices[MaxBones];
 };
 
 vec4 ApplySkinningToVec(vec4 vector)

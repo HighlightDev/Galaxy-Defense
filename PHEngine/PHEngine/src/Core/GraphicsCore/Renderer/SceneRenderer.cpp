@@ -94,8 +94,6 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , mInstancedGeometryBatchRenderer(std::make_shared<InstancedGeometryBatchRenderer>())
 {
     LogInfo("SceneRenderer::ctor");
-
-    Initialize();
 }
 
 void SceneRenderer::Initialize()
@@ -145,7 +143,6 @@ void SceneRenderer::InitializeCoreShaders()
 SceneRenderer::~SceneRenderer()
 {
     LogInfo("SceneRenderer::dctor");
-
     mDepthCollectShaderNonSkeletal->CleanUp(true);
     mDepthCollectShaderSkeletal->CleanUp(true);
     mDepthCollectPointLightShaderSkeletal->CleanUp(true);
@@ -218,6 +215,20 @@ void SceneRenderer::CleanUp()
     bProxiesDirty = false;
     bLightProxiesDirty = false;
     bPlanarReflectionProxiesDirty = false;
+
+    mDepthCollectShaderNonSkeletal->CleanUp(true);
+    mDepthCollectShaderSkeletal->CleanUp(true);
+    mDepthCollectPointLightShaderSkeletal->CleanUp(true);
+    mDepthCollectPointLightShaderNonSkeletal->CleanUp(true);
+    m_deferredLightShader->CleanUp(true);
+    m_fontShader->CleanUp(true);
+
+    mDepthCollectShaderNonSkeletal = nullptr;
+    mDepthCollectShaderSkeletal = nullptr;
+    mDepthCollectPointLightShaderSkeletal = nullptr;
+    mDepthCollectPointLightShaderNonSkeletal = nullptr;
+    m_deferredLightShader = nullptr;
+    m_fontShader = nullptr;
 }
 
 void SceneRenderer::PostLevelInit()

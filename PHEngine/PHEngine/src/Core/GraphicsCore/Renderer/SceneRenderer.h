@@ -241,6 +241,8 @@ public:
     std::shared_ptr<InstancedGeometryBatchRenderer> GetInstancedGeometryBatchRenderer() const;
 
     void OnWindowSizeChanged(const ViewPortInfo& viewPortInfo);
+    
+    void Initialize();
 
 #if DEBUG
 
@@ -250,12 +252,9 @@ public:
 
 private:
     void DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
-
 #endif
 
 private:
-    void Initialize();
-
     void InitializeCoreShaders();
 
     void RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy>& canvasSceneProxy);

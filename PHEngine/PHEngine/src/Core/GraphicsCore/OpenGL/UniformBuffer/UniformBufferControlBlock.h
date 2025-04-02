@@ -39,7 +39,7 @@ public:
 
     uint32_t GetUniformBufferDescriptorId() const;
 
-    void SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data);
+    void SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data, const size_t size);
 
     void SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data, const size_t offset, const size_t size);
 
