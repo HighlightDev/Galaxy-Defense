@@ -7,6 +7,10 @@ using namespace Graphics;
 using namespace Graphics::Data;
 using namespace EngineCore;
 
+namespace Graphics::GeometryBatching {
+class InstancedGeometryBatchProxy;
+}
+
 namespace Graphics {
 namespace Proxy {
 
@@ -15,6 +19,8 @@ class InstancedStaticMeshSceneProxy : public PrimitiveSceneProxy,
 
 {
     using Base = PrimitiveSceneProxy;
+
+    std::shared_ptr<Graphics::GeometryBatching::InstancedGeometryBatchProxy> mBatchProxy;
 
 protected:
     MeshRenderData m_renderData;
@@ -29,13 +35,15 @@ public:
     void Render(
         const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix) override;
+        const glm::mat4& projectionMatrix,
+        ::Graphics::ActiveBindedState& activeBindedState) override;
 
     void RenderPlanarReflection(
         const glm::vec4& plane,
         const glm::mat4& mirrorMatrix,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix) override;
+        const glm::mat4& projectionMatrix,
+        ::Graphics::ActiveBindedState& activeBindedState) override;
 
     bool IsDeferred() const override;
 
@@ -46,6 +54,8 @@ public:
     MeshRenderData GetRenderData() const;
 
     std::string GetBatchKey() const;
+
+    RenderInfo GetRenderInfo() const override;
 };
 
 } // namespace Proxy

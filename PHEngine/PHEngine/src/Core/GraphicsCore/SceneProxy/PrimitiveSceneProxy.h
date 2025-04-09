@@ -3,9 +3,11 @@
 #include "Core/GameCore/EngineObject.h"
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
 #include "Core/GraphicsCore/Mesh/Skin.h"
+#include "Core/GraphicsCore/OpenGL/RenderInfo.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
+#include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 #include "Core/GraphicsCore/SceneViewInfo/AProxyVisibilityController.h"
@@ -21,6 +23,7 @@ using namespace Graphics::Mesh;
 using namespace Graphics::Texture;
 using namespace EngineCore;
 using namespace Resources;
+using namespace Graphics;
 using namespace IO;
 
 namespace Graphics {
@@ -87,11 +90,18 @@ public:
     bool IsFrustumCullTestNeeded() const override;
 
     virtual void Render(
-        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState)
         = 0;
 
     virtual void RenderPlanarReflection(
-        const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+        const glm::vec4& plane,
+        const glm::mat4& mirrorMatrix,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState)
     {
     }
 
@@ -115,6 +125,8 @@ public:
     bool IsDepthWriteMaskEnabled() const;
 
     void SetDepthWriteMaskEnabled(const bool isEnabled);
+
+    virtual RenderInfo GetRenderInfo() const = 0;
 
 public:
     template<typename VertexFactoryType, typename BaseShaderType>

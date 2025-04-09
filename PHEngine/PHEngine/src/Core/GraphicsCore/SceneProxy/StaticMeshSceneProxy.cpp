@@ -82,28 +82,36 @@ std::shared_ptr<StaticMeshSceneProxy::PlanarReflectionShaderType> StaticMeshScen
 }
 
 void StaticMeshSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     const auto& shader = GetShader();
 
-    shader->ExecuteShader();
-    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
+    if (needToRebindShader) {
+        shader->ExecuteShader();
+    }
+    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    shader->StopShader();
+    //shader->StopShader();
 }
 
 void StaticMeshSceneProxy::RenderPlanarReflection(
-    const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     const auto& planarReflectionShader = GetPlanarReflectionShader();
 
-    planarReflectionShader->ExecuteShader();
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(planarReflectionShader->GetShaderName());
+    if (needToRebindShader) {
+        planarReflectionShader->ExecuteShader();
+    }
     planarReflectionShader->GetShader()->SetClipPlane(plane);
-    planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_relativeMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    planarReflectionShader->StopShader();
+    //planarReflectionShader->StopShader();
 }
 
 bool StaticMeshSceneProxy::IsDeferred() const
@@ -119,6 +127,11 @@ eMeshFacing StaticMeshSceneProxy::GetMeshFrontFace() const
 ePrimitiveProxyType StaticMeshSceneProxy::GetPrimitiveProxyType() const
 {
     return ePrimitiveProxyType::STATIC_MESH_PROXY;
+}
+
+RenderInfo StaticMeshSceneProxy::GetRenderInfo() const
+{
+    return RenderInfo{m_shader->GetShaderName()};
 }
 
 } // namespace Proxy

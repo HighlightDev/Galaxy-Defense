@@ -48,7 +48,7 @@ public:
             "SkinningMatrices_" + std::to_string(s_instanceId),
             "SkinningMatrices",
             1,
-            static_cast<uint32_t>(MaxBones) * sizeof(glm::mat4),
+            static_cast<uint32_t>(MaxBones) * static_cast<uint32_t>(sizeof(glm::mat4)),
             shaderProgramID});
 
         ++s_instanceId;

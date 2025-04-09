@@ -79,6 +79,11 @@ int32_t IShader::GetAttributeLocationByName(const std::string& attributeName) co
     return attribLocation;
 }
 
+std::string IShader::GetShaderName() const
+{
+    return mShaderName;
+}
+
 std::vector<std::string> IShader::LoadShaderSrcVector(const std::string& pathToShader) const
 {
     std::ifstream stream(pathToShader);

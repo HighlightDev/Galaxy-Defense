@@ -3,8 +3,11 @@
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/IShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderUtilityFunctions.h"
+#include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 
 #include <vector>
+
+using namespace Graphics;
 
 namespace Graphics {
 namespace OpenGL {
@@ -31,7 +34,7 @@ public:
 
     std::string GetShaderSource() const;
 
-    virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy);
+    virtual void LoadUniformValues(const std::shared_ptr<MaterialProxy>& materialProxy, ActiveBindedState& activeBindedState);
 
     void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 

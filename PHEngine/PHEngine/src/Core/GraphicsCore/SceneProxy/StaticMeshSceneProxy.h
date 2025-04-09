@@ -40,19 +40,23 @@ public:
     void Render(
         const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix) override;
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState) override;
 
     void RenderPlanarReflection(
         const glm::vec4& plane,
         const glm::mat4& mirrorMatrix,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix) override;
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState) override;
 
     bool IsDeferred() const override;
 
     eMeshFacing GetMeshFrontFace() const override;
 
     ePrimitiveProxyType GetPrimitiveProxyType() const override;
+
+    RenderInfo GetRenderInfo() const override;
 };
 
 } // namespace Proxy

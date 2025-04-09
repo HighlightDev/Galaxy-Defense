@@ -47,7 +47,8 @@ public:
     void Render(
         const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix) override;
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState) override;
 
     void PostConstructorInitialize() override;
 
@@ -66,6 +67,8 @@ public:
         const size_t rotationByteChunkSize,
         const void* colorBuffer,
         const size_t colorByteChunkSize);
+
+    RenderInfo GetRenderInfo() const override;
 
 private:
     void PrepareParticlesInstancedBuffer();

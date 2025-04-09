@@ -34,7 +34,7 @@ public:
     {
     }
 
-    void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+    void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const override
     {
         uniform.LoadUniform(m_value);
     }

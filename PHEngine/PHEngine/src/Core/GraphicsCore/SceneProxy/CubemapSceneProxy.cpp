@@ -73,7 +73,10 @@ std::shared_ptr<IShader> CubemapSceneProxy::GetShader() const
 }
 
 void CubemapSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     const std::shared_ptr<TextureAtlasHandler>& texHandler
         = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(m_textureObtainer.MyRequestId);
@@ -81,12 +84,15 @@ void CubemapSceneProxy::Render(
         const auto& texture = texHandler->GetAtlasResource();
         auto cubemapShader = std::static_pointer_cast<CubemapShader>(m_shaderCubemap);
 
-        cubemapShader->ExecuteShader();
+        const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(cubemapShader->GetShaderName());
+        if (needToRebindShader) {
+            cubemapShader->ExecuteShader();
+        }
         texture->BindTexture(0);
         cubemapShader->SetTexture(0);
         cubemapShader->SetTransformMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
         m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-        cubemapShader->StopShader();
+        // cubemapShader->StopShader();
     }
 }
 
@@ -98,6 +104,11 @@ bool CubemapSceneProxy::IsDeferred() const
 eMeshFacing CubemapSceneProxy::GetMeshFrontFace() const
 {
     return eMeshFacing::COUNTER_CLOCK_WISE;
+}
+
+RenderInfo CubemapSceneProxy::GetRenderInfo() const
+{
+    return RenderInfo{m_shaderCubemap->GetShaderName()};
 }
 
 } // namespace Proxy

@@ -35,19 +35,22 @@ void InstancedStaticMeshSceneProxy::PostConstructorInitialize()
             const bool bSuccess = batcherRendererSp->TryToAddBatchProxy(batchProxy);
             assert(bSuccess);
             batchProxy->Initialize();
+            mBatchProxy = batchProxy;
         }
     }
 }
 
 void InstancedStaticMeshSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     // this code should not be invoked
     assert(false);
 }
 
 void InstancedStaticMeshSceneProxy::RenderPlanarReflection(
-    const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     // this code should not be invoked
     assert(false);
@@ -76,6 +79,12 @@ MeshRenderData InstancedStaticMeshSceneProxy::GetRenderData() const
 std::string InstancedStaticMeshSceneProxy::GetBatchKey() const
 {
     return m_renderData.mModelPath + "_" + m_renderData.mMaterialProxy->MaterialName;
+}
+
+RenderInfo InstancedStaticMeshSceneProxy::GetRenderInfo() const
+{
+    assert(mBatchProxy);
+    return RenderInfo{mBatchProxy->GetBatchShader()->GetShaderName()};
 }
 
 } // namespace Proxy

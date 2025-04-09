@@ -31,7 +31,8 @@ public:
     void Render(
         const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix) override;
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState) override;
 
     virtual bool IsDeferred() const;
 
@@ -43,6 +44,8 @@ public:
     void SetTransparencyDepth(float transparencyDepth);
     void SetNearClipPlane(float nearClipPlane);
     void SetFarClipPlane(float farClipPlane);
+
+    RenderInfo GetRenderInfo() const override;
 
 private:
     void Init();

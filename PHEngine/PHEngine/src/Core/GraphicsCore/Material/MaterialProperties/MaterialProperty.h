@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
+#include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 
 using namespace Graphics::Texture;
@@ -35,7 +36,7 @@ public:
 
     virtual ~MaterialProperty() = default;
 
-    virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const = 0;
+    virtual void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const = 0;
 
     virtual void SetValueToUniformArray(const UniformArray& uniformArray) const = 0;
 

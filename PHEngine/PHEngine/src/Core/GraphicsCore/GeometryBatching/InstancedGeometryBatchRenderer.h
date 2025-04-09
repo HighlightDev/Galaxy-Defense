@@ -9,6 +9,7 @@
 
 namespace Graphics {
 class CameraSceneProxy;
+class ActiveBindedState;
 }
 
 namespace Graphics::GeometryBatching {
@@ -29,7 +30,8 @@ public:
     void RenderAllBatches(
         const std::shared_ptr<::Graphics::CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix);
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState);
 
     void UpdateBatchInstancesData(const std::unordered_map<std::string, std::vector<int32_t>>& data);
 

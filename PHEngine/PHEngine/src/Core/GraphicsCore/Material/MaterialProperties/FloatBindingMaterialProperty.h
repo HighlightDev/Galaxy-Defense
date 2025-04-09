@@ -28,7 +28,7 @@ public:
         return MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY;
     }
 
-    void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+    void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const override
     {
         assert(false);
     } // this code should not be called, use proxy on render thread part

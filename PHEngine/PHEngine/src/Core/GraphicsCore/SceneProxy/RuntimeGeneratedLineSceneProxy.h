@@ -42,7 +42,8 @@ public:
     void Render(
         const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix) override;
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState) override;
 
     void SetLineBeginWorldSpacePosition(const glm::vec3& position);
 
@@ -51,6 +52,8 @@ public:
     void SetLineWidth(const float lineWidth);
 
     bool IsFrustumCullTestNeeded() const override;
+
+    RenderInfo GetRenderInfo() const override;
 
 protected:
     virtual void UpdateGeometry(const glm::mat4& viewMatrix);

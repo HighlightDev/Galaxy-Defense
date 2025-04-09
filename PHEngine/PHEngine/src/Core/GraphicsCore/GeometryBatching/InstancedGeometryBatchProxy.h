@@ -23,6 +23,10 @@ namespace Graphics::Proxy {
 class InstancedStaticMeshSceneProxy;
 }
 
+namespace Graphics {
+class ActiveBindedState;
+}
+
 namespace Graphics::GeometryBatching {
 class InstancedGeometryBatchProxy {
     using ShaderType = VertexFactoryMaterialCompositeShader<InstancedStaticMeshVertexFactory, SimpleShader>;
@@ -48,7 +52,8 @@ public:
     void Render(
         const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix);
+        const glm::mat4& projectionMatrix,
+        ::Graphics::ActiveBindedState& activeBindedState);
 
     void AddInstancedStaticMeshSceneProxy(const std::shared_ptr<::Graphics::Proxy::InstancedStaticMeshSceneProxy>& sceneProxy);
 
@@ -59,6 +64,8 @@ public:
     std::string GetBatchKey() const;
 
     void UpdateValidInstances(const std::vector<int32_t>& data);
+
+    std::shared_ptr<IShader> GetBatchShader() const;
 
 private:
     std::shared_ptr<ShaderType> GetShader() const;

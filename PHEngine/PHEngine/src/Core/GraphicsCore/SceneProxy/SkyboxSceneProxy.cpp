@@ -74,35 +74,48 @@ ePrimitiveProxyType SkyboxSceneProxy::GetPrimitiveProxyType() const
 }
 
 void SkyboxSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     glm::mat4 viewMatrixNoTranslation = viewMatrix;
     viewMatrixNoTranslation[3] = glm::vec4(0.0f, 0.0f, 0.0f, viewMatrixNoTranslation[3].w);
 
     auto shaderPtr = GetShader();
 
-    shaderPtr->ExecuteShader();
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shaderPtr->GetShaderName());
+    if (needToRebindShader) {
+        shaderPtr->ExecuteShader();
+    }
     shaderPtr->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
-    shaderPtr->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    shaderPtr->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    shaderPtr->StopShader();
+    // shaderPtr->StopShader();
 }
 
 void SkyboxSceneProxy::RenderPlanarReflection(
-    const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const glm::vec4& plane,
+    const glm::mat4& mirrorMatrix,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     const auto& planarReflectionShader = GetPlanarReflectionShader();
 
     glm::mat4 viewMatrixNoTranslation = viewMatrix;
     viewMatrixNoTranslation[3] = glm::vec4(0.0f, 0.0f, 0.0f, viewMatrixNoTranslation[3].w);
 
-    planarReflectionShader->ExecuteShader();
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(planarReflectionShader->GetShaderName());
+    if (needToRebindShader) {
+        planarReflectionShader->ExecuteShader();
+    }
     planarReflectionShader->GetShader()->SetClipPlane(plane);
     planarReflectionShader->GetVertexFactoryShader()->SetMatrices(
         mirrorMatrix * m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
-    planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    planarReflectionShader->StopShader();
+    // planarReflectionShader->StopShader();
 }
 
 bool SkyboxSceneProxy::IsFrustumCullTestNeeded() const
@@ -118,6 +131,11 @@ bool SkyboxSceneProxy::IsDeferred() const
 eMeshFacing SkyboxSceneProxy::GetMeshFrontFace() const
 {
     return eMeshFacing::COUNTER_CLOCK_WISE;
+}
+
+RenderInfo SkyboxSceneProxy::GetRenderInfo() const
+{
+    return RenderInfo{m_shader->GetShaderName()};
 }
 } // namespace Proxy
 } // namespace Graphics

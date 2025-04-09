@@ -53,10 +53,9 @@ public:
     void LoadUniform(size_t uniformIndex, const glm::mat4& arg) const;
 };
 
-struct Uniform {
-private:
+class Uniform {
+
     int32_t uniformLocation = -1;
-    ;
 
     std::string mUniformName = "";
 

@@ -1,6 +1,7 @@
 #include "InstancedGeometryBatchProxy.h"
 
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderUtilityFunctions.h"
+#include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 #include "Core/GraphicsCore/SceneProxy/InstancedStaticMeshSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/ResourceManagerCore/Pool/InstancedMeshPool.h"
@@ -46,16 +47,24 @@ std::string InstancedGeometryBatchProxy::GetBatchKey() const
 }
 
 void InstancedGeometryBatchProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     PrepareRenderData();
     const auto& shader = GetShader();
 
-    shader->ExecuteShader();
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
+    if (needToRebindShader)
+    {
+        shader->ExecuteShader();
+    }
+
     shader->GetVertexFactoryShader()->SetMatrices(mCachedWorldMatrices, viewMatrix, projectionMatrix);
-    shader->GetMaterialShader()->LoadUniformValues(m_renderData.mMaterialProxy);
+    shader->GetMaterialShader()->LoadUniformValues(m_renderData.mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderInstanced(GL_TRIANGLES, mCachedWorldMatrices.size());
-    shader->StopShader();
+    //shader->StopShader();
 }
 
 void InstancedGeometryBatchProxy::AddInstancedStaticMeshSceneProxy(
@@ -88,6 +97,11 @@ void InstancedGeometryBatchProxy::RemoveInstancedStaticMeshSceneProxy(
 }
 
 std::shared_ptr<InstancedGeometryBatchProxy::ShaderType> InstancedGeometryBatchProxy::GetShader() const
+{
+    return mShader;
+}
+
+std::shared_ptr<IShader> InstancedGeometryBatchProxy::GetBatchShader() const
 {
     return mShader;
 }

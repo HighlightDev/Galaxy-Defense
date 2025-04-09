@@ -105,15 +105,24 @@ bool WaterPlaneSceneProxy::IsDeferred() const
 }
 
 void WaterPlaneSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     const auto& shader = GetShader();
 
-    shader->ExecuteShader();
-    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
+    if (needToRebindShader) {
+        shader->ExecuteShader();
+    }
+    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    shader->StopShader();
+    //shader->StopShader();
+}
+
+RenderInfo WaterPlaneSceneProxy::GetRenderInfo() const
+{
+    return RenderInfo{m_shader->GetShaderName()};
 }
 } // namespace Proxy
 } // namespace Graphics

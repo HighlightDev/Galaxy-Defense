@@ -67,7 +67,10 @@ void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
 }
 
 void RuntimeGeneratedLineSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     UpdateGeometry(viewMatrix);
 
@@ -77,11 +80,14 @@ void RuntimeGeneratedLineSceneProxy::Render(
     glGetBooleanv(GL_CULL_FACE, &isCullFaceEnabled);
 
     glDisable(GL_CULL_FACE);
-    shader->ExecuteShader();
-    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
+    if (needToRebindShader) {
+        shader->ExecuteShader();
+    }
+    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(0, mVerticesCountToRender, GL_TRIANGLE_STRIP);
-    shader->StopShader();
+    //shader->StopShader();
 
     if (isCullFaceEnabled) {
         glEnable(GL_CULL_FACE);
@@ -163,6 +169,11 @@ void RuntimeGeneratedLineSceneProxy::UpdateGeometry(const glm::mat4& viewMatrix)
 
         bUpdateLineGeometry = false;
     }
+}
+
+RenderInfo RuntimeGeneratedLineSceneProxy::GetRenderInfo() const
+{
+    return RenderInfo{m_shader->GetShaderName()};
 }
 } // namespace Proxy
 } // namespace Graphics

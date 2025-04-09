@@ -39,7 +39,8 @@ public:
     void Render(
         const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
-        const glm::mat4& projectionMatrix) override;
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState) override;
 
     bool IsDeferred() const override;
 
@@ -48,6 +49,8 @@ public:
     eMeshFacing GetMeshFrontFace() const override;
 
     void SetBillboardExtent(const float extent);
+
+    RenderInfo GetRenderInfo() const override;
 
 protected:
     std::shared_ptr<Shader_t> GetShader() const;

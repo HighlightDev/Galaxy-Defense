@@ -80,7 +80,10 @@ void ParticleSystemSceneProxy::CleanUp()
 }
 
 void ParticleSystemSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     if (!mActiveParticlesCount)
         return;
@@ -88,11 +91,14 @@ void ParticleSystemSceneProxy::Render(
     const auto& shader = GetShader();
 
     PrepareParticlesInstancedBuffer();
-    shader->ExecuteShader();
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
+    if (needToRebindShader) {
+        shader->ExecuteShader();
+    }
     shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
-    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderInstanced(GL_POINTS, mActiveParticlesCount);
-    shader->StopShader();
+    //shader->StopShader();
 }
 
 bool ParticleSystemSceneProxy::IsDeferred() const
@@ -166,6 +172,11 @@ void ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer()
     particlesTransformVBO->UnbindVBO();
 
     bIsParticlesTransformDirty = false;
+}
+
+RenderInfo ParticleSystemSceneProxy::GetRenderInfo() const
+{
+    return RenderInfo{m_shader->GetShaderName()};
 }
 } // namespace Proxy
 } // namespace Graphics

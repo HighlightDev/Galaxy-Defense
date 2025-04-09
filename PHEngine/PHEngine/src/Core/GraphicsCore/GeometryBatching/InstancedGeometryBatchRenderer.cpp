@@ -1,6 +1,7 @@
 #include "InstancedGeometryBatchRenderer.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "InstancedGeometryBatchProxy.h"
 
@@ -39,10 +40,13 @@ void InstancedGeometryBatchRenderer::RemoveBatchProxy(const std::string& batchKe
 }
 
 void InstancedGeometryBatchRenderer::RenderAllBatches(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     for (const auto& [key, batchProxySp] : mBatchProxies) {
-        batchProxySp->Render(cameraSceneProxy, viewMatrix, projectionMatrix);
+        batchProxySp->Render(cameraSceneProxy, viewMatrix, projectionMatrix, activeBindedState);
     }
 }
 

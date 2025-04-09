@@ -47,16 +47,18 @@ namespace Graphics {
 namespace Renderer {
 SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     : m_interThreadMgr(interThreadMgr)
-    , m_gbuffer(std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
-          0,
-          0,
-          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
-    , m_resolvedSceneFramebuffer(std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
-          0,
-          0,
-          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+    , m_gbuffer(
+          std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
+              0,
+              0,
+              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+    , m_resolvedSceneFramebuffer(
+          std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
+              0,
+              0,
+              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
     , m_deferredLightShader()
     , m_fontShader()
     , mDepthCollectShaderSkeletal()
@@ -66,11 +68,13 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , bProxiesDirty(false)
     , bLightProxiesDirty(false)
     , bPlanarReflectionProxiesDirty(false)
-    , mPostFxRenderer(std::make_unique<PostFxRenderer>(ViewPortInfo(
-          0,
-          0,
-          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+    , mActiveBindedState()
+    , mPostFxRenderer(
+          std::make_unique<PostFxRenderer>(ViewPortInfo(
+              0,
+              0,
+              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
     ,
 #if DEBUG
     mDebugPhysicsRenderData()
@@ -523,7 +527,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
     glStencilFunc(GL_ALWAYS, 1, 0xFF); // write 1 to stencil
-    mInstancedGeometryBatchRenderer->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix);
+    mInstancedGeometryBatchRenderer->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
 
     if (mSkeletalProxiesVec.size() > 0) {
         for (auto& proxy : mSkeletalProxiesVec) {
@@ -532,7 +536,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
             if (bShouldRender) {
                 const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
                 glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 or 1 depending on bloom value
-                proxy->Render(cameraProxy, viewMatrix, projectionMatrix);
+                proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
             }
         }
     }
@@ -544,7 +548,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
             if (bShouldRender) {
                 const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
                 glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 or 1 depending on bloom value
-                proxy->Render(cameraProxy, viewMatrix, projectionMatrix);
+                proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
             }
         }
     }
@@ -716,7 +720,10 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
             const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
             glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 or 1 depending on bloom value
             proxy->Render(
-                sceneView->GetCameraProxy(), sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+                sceneView->GetCameraProxy(),
+                sceneView->GetCameraProxy()->GetViewMatrix(),
+                cameraProxy->GetProjectionMatrix(),
+                mActiveBindedState);
         }
     }
 
@@ -771,7 +778,8 @@ void SceneRenderer::PlanarReflectionPass()
                             ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
                             : true;
                         if (bDraw)
-                            proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                            proxy->RenderPlanarReflection(
+                                mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
                     }
                 }
             }
@@ -783,7 +791,8 @@ void SceneRenderer::PlanarReflectionPass()
                             ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
                             : true;
                         if (bDraw)
-                            proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                            proxy->RenderPlanarReflection(
+                                mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
                     }
                 }
             }
@@ -795,7 +804,8 @@ void SceneRenderer::PlanarReflectionPass()
                             ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
                             : true;
                         if (bDraw)
-                            proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                            proxy->RenderPlanarReflection(
+                                mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
                     }
                 }
             }
@@ -899,6 +909,7 @@ void SceneRenderer::PrepareSceneProxiesForRender()
                 }
             }
         }
+        SortPrimitivesByMaterial();
         SetProxiesAreDirty(false);
     }
 
@@ -980,6 +991,9 @@ void SceneRenderer::RenderScene_RenderThread()
 
             // Deferred shading is done with main camera
             if (eCameraSceneProxyType::MAIN_SCENE_CAMERA == cameraProxy->GetCameraSceneType()) {
+
+                mActiveBindedState.Reset();
+
                 PlanarReflectionPass();
 
                 DepthPass(sceneView);
@@ -1138,10 +1152,11 @@ void SceneRenderer::RemoveLightProxyByProxyId(const int32_t proxyId)
 
 void SceneRenderer::RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId)
 {
-    PlanarReflectionProxiesVector.erase(std::remove_if(
-        PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [proxyId](const auto& planarReflectionProxy) {
-            return planarReflectionProxy->GetSceneProxyId() == proxyId;
-        }));
+    PlanarReflectionProxiesVector.erase(
+        std::remove_if(
+            PlanarReflectionProxiesVector.begin(),
+            PlanarReflectionProxiesVector.end(),
+            [proxyId](const auto& planarReflectionProxy) { return planarReflectionProxy->GetSceneProxyId() == proxyId; }));
 }
 
 void SceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy)
@@ -1630,6 +1645,17 @@ void SceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t 
     });
     assert(canvasIt != mUiCanvasProxies.end());
     (*canvasIt)->RemoveUiSceneProxy(uiItemUId);
+}
+
+void SceneRenderer::SortPrimitivesByMaterial()
+{
+    for (const std::shared_ptr<PrimitiveSceneProxy>& proxy : mForwardRenderingProxiesVec) {
+        const RenderInfo& proxyRenderInfo = proxy->GetRenderInfo();
+    }
+
+    for (const auto& proxy : mSkeletalProxiesVec) { }
+
+    for (const auto& proxy : mNonSkeletalProxiesVec) { }
 }
 
 #if DEBUG

@@ -16,6 +16,7 @@
 #include "Core/GraphicsCore/PostFX/PostFxRenderer.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"
 #include "Core/GraphicsCore/Renderer/RenderState.h"
+#include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 #include "Core/GraphicsCore/Renderer/ResolvedSceneFramebuffer.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
@@ -82,6 +83,8 @@ class SceneRenderer {
     bool bProxiesDirty;
     bool bLightProxiesDirty;
     bool bPlanarReflectionProxiesDirty;
+
+    ActiveBindedState mActiveBindedState;
 
 #if DEBUG
     int32_t mDebugUiCanvasId{-1};
@@ -284,6 +287,8 @@ private:
     void GuiPass(const std::shared_ptr<SceneView>& sceneView);
 
     void RegisterFonts();
+
+    void SortPrimitivesByMaterial();
 };
 
 } // namespace Renderer

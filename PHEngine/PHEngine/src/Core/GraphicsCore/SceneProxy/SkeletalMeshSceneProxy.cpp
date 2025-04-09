@@ -90,30 +90,43 @@ std::shared_ptr<SkeletalMeshSceneProxy::PlanarReflectionShaderType> SkeletalMesh
 }
 
 void SkeletalMeshSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     const auto& shader = GetShader();
 
-    shader->ExecuteShader();
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
+    if (needToRebindShader) {
+        shader->ExecuteShader();
+    }
     shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
     shader->GetVertexFactoryShader()->SetSkinningMatrices(GetSkinningMatrices());
-    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    shader->StopShader();
+    //shader->StopShader();
 }
 
 void SkeletalMeshSceneProxy::RenderPlanarReflection(
-    const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const glm::vec4& plane,
+    const glm::mat4& mirrorMatrix,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     const auto& planarReflectionShader = GetPlanarReflectionShader();
 
-    planarReflectionShader->ExecuteShader();
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(planarReflectionShader->GetShaderName());
+    if (needToRebindShader) {
+        planarReflectionShader->ExecuteShader();
+    }
     planarReflectionShader->GetShader()->SetClipPlane(plane);
     planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_relativeMatrix, viewMatrix, projectionMatrix);
     planarReflectionShader->GetVertexFactoryShader()->SetSkinningMatrices(GetSkinningMatrices());
-    planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    planarReflectionShader->StopShader();
+    //planarReflectionShader->StopShader();
 }
 
 void SkeletalMeshSceneProxy::UpdateAnimationData(
@@ -173,6 +186,11 @@ bool SkeletalMeshSceneProxy::IsDeferred() const
 eMeshFacing SkeletalMeshSceneProxy::GetMeshFrontFace() const
 {
     return eMeshFacing::COUNTER_CLOCK_WISE;
+}
+
+RenderInfo SkeletalMeshSceneProxy::GetRenderInfo() const
+{
+    return RenderInfo{m_shader->GetShaderName()};
 }
 } // namespace Proxy
 } // namespace Graphics

@@ -36,14 +36,18 @@ public:
     {
     }
 
-    void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+    void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const override
     {
         if (m_value) {
             std::shared_ptr<ITexture> outResource = nullptr;
             const bool bHasResource = m_value->TryGetResource(outResource);
             if (bHasResource) {
-                int32_t slot = 10 + propertyIndex;
-                outResource->BindTexture(slot);
+                int32_t slot = activeBindedState.GetBindedSlotIndexByTextureId(outResource->GetTextureDescriptor());
+                if (slot == -1)
+                {
+                    slot = activeBindedState.OccupyTextureSlot(outResource->GetTextureDescriptor());
+                    outResource->BindTexture(slot);
+                }
                 uniform.LoadUniform(slot);
             } else {
                 LogInfo(

@@ -61,7 +61,7 @@ void MaterialShader::AccessAllUniformLocations(uint32_t shaderProgramID)
     }
 }
 
-void MaterialShader::LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy)
+void MaterialShader::LoadUniformValues(const std::shared_ptr<MaterialProxy>& materialProxy, ActiveBindedState& activeBindedState)
 {
     int32_t uIndex = 0;
 
@@ -80,7 +80,7 @@ void MaterialShader::LoadUniformValues(std::shared_ptr<MaterialProxy> materialPr
                 return uniform.GetUniformName() == property->GetPropertyName();
             });
             assert(uniformIt != Uniforms.end());
-            property->SetValueToUniform(*uniformIt, uIndex++);
+            property->SetValueToUniform(activeBindedState, *uniformIt, uIndex++);
         }
     }
 }

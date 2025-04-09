@@ -64,20 +64,26 @@ std::shared_ptr<typename BillboardSceneProxy::Shader_t> BillboardSceneProxy::Get
 }
 
 void BillboardSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
 {
     const auto& billboardShader = GetShader();
 
     const auto& viewPortInfo = cameraSceneProxy->GetViewPort();
     const auto screenResolution = glm::vec2(viewPortInfo.Width, viewPortInfo.Height);
-    billboardShader->ExecuteShader();
-    billboardShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(billboardShader->GetShaderName());
+    if (needToRebindShader)
+    {
+        billboardShader->ExecuteShader();
+    }
+
+    billboardShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     billboardShader->GetVertexFactoryShader()->SetMatrices(
         m_relativeMatrix, mViewMatrixTransformer(viewMatrix), mProjectionMatrixTransformer(projectionMatrix));
     billboardShader->GetShader()->SetExtent(mBillboardExtent);
     billboardShader->GetShader()->SetScreenResolution(screenResolution);
     m_skin->GetBuffer()->RenderVAO(GL_POINTS);
-    billboardShader->StopShader();
+    //billboardShader->StopShader();
 }
 
 bool BillboardSceneProxy::IsDeferred() const
@@ -98,6 +104,11 @@ eMeshFacing BillboardSceneProxy::GetMeshFrontFace() const
 void BillboardSceneProxy::SetBillboardExtent(const float extent)
 {
     mBillboardExtent = extent;
+}
+
+RenderInfo BillboardSceneProxy::GetRenderInfo() const
+{
+    return RenderInfo{m_shader->GetShaderName()};
 }
 
 } // namespace Proxy
