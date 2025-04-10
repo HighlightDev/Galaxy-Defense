@@ -1649,13 +1649,13 @@ void SceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t 
 
 void SceneRenderer::SortPrimitivesByMaterial()
 {
-    for (const std::shared_ptr<PrimitiveSceneProxy>& proxy : mForwardRenderingProxiesVec) {
-        const RenderInfo& proxyRenderInfo = proxy->GetRenderInfo();
-    }
+    // for (const std::shared_ptr<PrimitiveSceneProxy>& proxy : mForwardRenderingProxiesVec) {
+    //     const RenderInfo& proxyRenderInfo = proxy->GetRenderInfo();
+    // }
 
-    for (const auto& proxy : mSkeletalProxiesVec) { }
-
-    for (const auto& proxy : mNonSkeletalProxiesVec) { }
+    PrimitiveSorter sorter;
+    mSkeletalProxiesVec = sorter.SortPrimitivesByShaderAndMaterial(mSkeletalProxiesVec);
+    mNonSkeletalProxiesVec = sorter.SortPrimitivesByShaderAndMaterial(mNonSkeletalProxiesVec);
 }
 
 #if DEBUG
