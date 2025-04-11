@@ -68,6 +68,8 @@ protected:
 
     bool mDepthWriteMaskEnabled{true};
 
+    glm::vec3 mOriginPosition;
+
 public:
     PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent* component, const std::shared_ptr<MaterialProxy>& materialProxy);
 
@@ -127,6 +129,10 @@ public:
     void SetDepthWriteMaskEnabled(const bool isEnabled);
 
     virtual RenderInfo GetRenderInfo() const = 0;
+
+    void SetOriginPosition(const glm::vec3& origin);
+
+    glm::vec3 GetOriginPosition() const;
 
 public:
     template<typename VertexFactoryType, typename BaseShaderType>

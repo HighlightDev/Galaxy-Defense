@@ -14,9 +14,9 @@
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryCompositeShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GraphicsCore/PostFX/PostFxRenderer.h"
+#include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"
 #include "Core/GraphicsCore/Renderer/RenderState.h"
-#include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 #include "Core/GraphicsCore/Renderer/ResolvedSceneFramebuffer.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
@@ -244,7 +244,7 @@ public:
     std::shared_ptr<InstancedGeometryBatchRenderer> GetInstancedGeometryBatchRenderer() const;
 
     void OnWindowSizeChanged(const ViewPortInfo& viewPortInfo);
-    
+
     void Initialize();
 
 #if DEBUG
@@ -288,7 +288,7 @@ private:
 
     void RegisterFonts();
 
-    void SortPrimitivesByMaterial();
+    void SortPrimitives(const std::shared_ptr<SceneView>& sceneView);
 };
 
 } // namespace Renderer

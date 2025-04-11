@@ -64,7 +64,6 @@ void InstancedGeometryBatchProxy::Render(
     shader->GetVertexFactoryShader()->SetMatrices(mCachedWorldMatrices, viewMatrix, projectionMatrix);
     shader->GetMaterialShader()->LoadUniformValues(m_renderData.mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderInstanced(GL_TRIANGLES, mCachedWorldMatrices.size());
-    //shader->StopShader();
 }
 
 void InstancedGeometryBatchProxy::AddInstancedStaticMeshSceneProxy(

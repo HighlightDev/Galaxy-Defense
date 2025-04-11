@@ -62,6 +62,10 @@ void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMat
             if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                 sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(
                     mSceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
+                const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
+                if (primitiveSp) {
+                    primitiveSp->SetOriginPosition(mBoundingBox.GetOrigin());
+                }
             }
         }
     }

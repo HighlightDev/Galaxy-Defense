@@ -79,7 +79,9 @@ void RuntimeGeneratedLineSceneProxy::Render(
     GLboolean isCullFaceEnabled;
     glGetBooleanv(GL_CULL_FACE, &isCullFaceEnabled);
 
-    glDisable(GL_CULL_FACE);
+    if (isCullFaceEnabled) {
+        glDisable(GL_CULL_FACE);
+    }
     const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
     if (needToRebindShader) {
         shader->ExecuteShader();
@@ -87,7 +89,6 @@ void RuntimeGeneratedLineSceneProxy::Render(
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(0, mVerticesCountToRender, GL_TRIANGLE_STRIP);
-    //shader->StopShader();
 
     if (isCullFaceEnabled) {
         glEnable(GL_CULL_FACE);

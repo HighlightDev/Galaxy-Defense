@@ -98,7 +98,6 @@ void ParticleSystemSceneProxy::Render(
     shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderInstanced(GL_POINTS, mActiveParticlesCount);
-    //shader->StopShader();
 }
 
 bool ParticleSystemSceneProxy::IsDeferred() const

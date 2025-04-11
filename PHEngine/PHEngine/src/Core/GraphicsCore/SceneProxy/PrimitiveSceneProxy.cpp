@@ -21,6 +21,7 @@ PrimitiveSceneProxy::PrimitiveSceneProxy(
     , mSortOrderValue(component->GetSortOrderValue())
     , mCanBloomBeApplied(component->CanBloomBeApplied())
     , mDepthWriteMaskEnabled(component->IsDepthWriteMaskEnabled())
+    , mOriginPosition(component->GetBoundingBox().GetOrigin())
 {
 }
 
@@ -127,6 +128,16 @@ bool PrimitiveSceneProxy::IsDepthWriteMaskEnabled() const
 void PrimitiveSceneProxy::SetDepthWriteMaskEnabled(const bool isEnabled)
 {
     mDepthWriteMaskEnabled = isEnabled;
+}
+
+void PrimitiveSceneProxy::SetOriginPosition(const glm::vec3& origin)
+{
+    mOriginPosition = origin;
+}
+
+glm::vec3 PrimitiveSceneProxy::GetOriginPosition() const
+{
+    return mOriginPosition;
 }
 
 } // namespace Proxy

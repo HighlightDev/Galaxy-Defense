@@ -91,7 +91,6 @@ void SkyboxSceneProxy::Render(
     shaderPtr->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
     shaderPtr->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    // shaderPtr->StopShader();
 }
 
 void SkyboxSceneProxy::RenderPlanarReflection(
@@ -115,7 +114,6 @@ void SkyboxSceneProxy::RenderPlanarReflection(
         mirrorMatrix * m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
     planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    // planarReflectionShader->StopShader();
 }
 
 bool SkyboxSceneProxy::IsFrustumCullTestNeeded() const

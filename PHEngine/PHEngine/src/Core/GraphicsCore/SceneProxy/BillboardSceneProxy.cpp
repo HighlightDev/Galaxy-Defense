@@ -83,7 +83,6 @@ void BillboardSceneProxy::Render(
     billboardShader->GetShader()->SetExtent(mBillboardExtent);
     billboardShader->GetShader()->SetScreenResolution(screenResolution);
     m_skin->GetBuffer()->RenderVAO(GL_POINTS);
-    //billboardShader->StopShader();
 }
 
 bool BillboardSceneProxy::IsDeferred() const

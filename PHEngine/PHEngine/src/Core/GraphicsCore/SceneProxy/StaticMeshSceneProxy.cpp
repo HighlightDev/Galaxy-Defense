@@ -94,7 +94,6 @@ void StaticMeshSceneProxy::Render(
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    //shader->StopShader();
 }
 
 void StaticMeshSceneProxy::RenderPlanarReflection(
@@ -111,7 +110,6 @@ void StaticMeshSceneProxy::RenderPlanarReflection(
     planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_relativeMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-    //planarReflectionShader->StopShader();
 }
 
 bool StaticMeshSceneProxy::IsDeferred() const

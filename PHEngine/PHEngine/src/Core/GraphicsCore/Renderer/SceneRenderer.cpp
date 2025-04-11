@@ -699,9 +699,6 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
         .SetStencilMask(0xFF);
     renderState.BindRenderState();
 
-    PrimitiveSorter sorter;
-    sorter.SortPrimitivesByOrder(mForwardRenderingProxiesVec);
-
     bool depthTestWriteMask = true;
     bool depthTestWriteMaskDirty = false;
     for (const auto& proxy : mForwardRenderingProxiesVec) {
@@ -909,7 +906,6 @@ void SceneRenderer::PrepareSceneProxiesForRender()
                 }
             }
         }
-        SortPrimitivesByMaterial();
         SetProxiesAreDirty(false);
     }
 
@@ -993,6 +989,8 @@ void SceneRenderer::RenderScene_RenderThread()
             if (eCameraSceneProxyType::MAIN_SCENE_CAMERA == cameraProxy->GetCameraSceneType()) {
 
                 mActiveBindedState.Reset();
+
+                SortPrimitives(sceneView);
 
                 PlanarReflectionPass();
 
@@ -1647,15 +1645,13 @@ void SceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t 
     (*canvasIt)->RemoveUiSceneProxy(uiItemUId);
 }
 
-void SceneRenderer::SortPrimitivesByMaterial()
+void SceneRenderer::SortPrimitives(const std::shared_ptr<SceneView>& sceneView)
 {
-    // for (const std::shared_ptr<PrimitiveSceneProxy>& proxy : mForwardRenderingProxiesVec) {
-    //     const RenderInfo& proxyRenderInfo = proxy->GetRenderInfo();
-    // }
-
     PrimitiveSorter sorter;
-    mSkeletalProxiesVec = sorter.SortPrimitivesByShaderAndMaterial(mSkeletalProxiesVec);
-    mNonSkeletalProxiesVec = sorter.SortPrimitivesByShaderAndMaterial(mNonSkeletalProxiesVec);
+    mSkeletalProxiesVec = sorter.SortPrimitivesByShaderAndDistanceToCamera(sceneView->GetCameraProxy(), mSkeletalProxiesVec);
+    mNonSkeletalProxiesVec
+        = sorter.SortPrimitivesByShaderAndDistanceToCamera(sceneView->GetCameraProxy(), mNonSkeletalProxiesVec);
+    mForwardRenderingProxiesVec = sorter.SortPrimitivesByOrderAndShader(mForwardRenderingProxiesVec);
 }
 
 #if DEBUG

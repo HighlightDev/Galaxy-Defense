@@ -8,6 +8,8 @@
 
 namespace Graphics {
 
+class CameraSceneProxy;
+
 using namespace Proxy;
 class PrimitiveSorter {
 public:
@@ -17,8 +19,17 @@ public:
 
     void SortPrimitivesByOrder(std::vector<std::shared_ptr<PrimitiveSceneProxy>>& primitiveProxies);
 
+    std::vector<std::shared_ptr<PrimitiveSceneProxy>>
+    SortPrimitivesByOrderAndShader(const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& primitiveProxies);
+
     template<typename T>
     typename std::enable_if<std::is_base_of<PrimitiveSceneProxy, T>::value, std::vector<std::shared_ptr<T>>>::type
-    SortPrimitivesByShaderAndMaterial(const std::vector<std::shared_ptr<T>>& primitiveProxies);
+    SortPrimitivesByShader(const std::vector<std::shared_ptr<T>>& primitiveProxies);
+
+    template<typename T>
+    typename std::enable_if<std::is_base_of<PrimitiveSceneProxy, T>::value, std::vector<std::shared_ptr<T>>>::type
+    SortPrimitivesByShaderAndDistanceToCamera(
+        const std::shared_ptr<::Graphics::CameraSceneProxy>& cameraProxy,
+        const std::vector<std::shared_ptr<T>>& primitiveProxies);
 };
 } // namespace Graphics
