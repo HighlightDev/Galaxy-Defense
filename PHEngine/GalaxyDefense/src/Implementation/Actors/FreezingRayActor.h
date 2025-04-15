@@ -26,14 +26,16 @@ class FreezingRayActor : public MissileActor {
 
     std::weak_ptr<::EngineCore::Actor> mActorWhoSpawnedMeWp;
 
-    glm::vec3 mElectroLineBegin;
-    glm::vec3 mElectroLineEnd;
+    glm::vec3 mFreezingLineBegin;
+    glm::vec3 mFreezingLineEnd;
 
     float mFreezingRayHitRadius{0.0f};
 
     int32_t mLastCollidedActorId{-1};
 
     std::shared_ptr<EngineObjectProperty<float>> mOpacity;
+
+    GameThreadTimer mSwitchTargetMinTimer;
 
 public:
     FreezingRayActor(
@@ -74,5 +76,7 @@ private:
     void OnElectroLineFadeoutTimerTimeout();
 
     void DropState();
+
+    void OnCanSwitchTargetTimeout();
 };
 } // namespace Game

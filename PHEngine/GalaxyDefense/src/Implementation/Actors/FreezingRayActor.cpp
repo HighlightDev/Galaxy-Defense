@@ -4,6 +4,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/SphereCollisionTestWithFilterAdapter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
@@ -26,8 +27,8 @@ FreezingRayActor::FreezingRayActor(
     : MissileActor(gameObjectName, rootComponent, combatActorsPoolHandler)
     , mLineComponent()
     , mActorWhoSpawnedMeWp()
-    , mElectroLineBegin()
-    , mElectroLineEnd()
+    , mFreezingLineBegin()
+    , mFreezingLineEnd()
     , mOpacity(std::make_shared<EngineObjectProperty<float>>(1.0f, "p_opacity"))
 {
     mMissileType = eMissileType::FREEZING_RAY;
@@ -37,12 +38,23 @@ FreezingRayActor::FreezingRayActor(
 
 void FreezingRayActor::Initialize()
 {
+    constexpr size_t s_switchTargetMinTimeout = 1500;
+
+    mSwitchTargetMinTimer.SetIsPausable(true);
+    mSwitchTargetMinTimer.SetIsRepeat(false);
+    mSwitchTargetMinTimer.SetIntervalMs(s_switchTargetMinTimeout);
+    mSwitchTargetMinTimer.SetCallback(std::bind(&FreezingRayActor::OnCanSwitchTargetTimeout, this));
+}
+
+void FreezingRayActor::OnCanSwitchTargetTimeout()
+{
+    LogInfo("FreezingRayActor::OnCanSwitchTargetTimeout");
 }
 
 bool FreezingRayActor::IsInsideLevel(const BoundingBox3D& boundingBox) const
 {
-    return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mElectroLineBegin)
-        || EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mElectroLineBegin);
+    return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mFreezingLineBegin)
+        || EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mFreezingLineBegin);
 }
 
 void FreezingRayActor::SetFreezingRayHitRadius(const float radius)
@@ -57,7 +69,7 @@ void FreezingRayActor::Tick(const float deltaTime)
 
     if (const auto& sceneSp = mSceneOwner.lock()) {
         if (const auto& actorWhoSpawnedMeSp = mActorWhoSpawnedMeWp.lock()) {
-            mElectroLineBegin = actorWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
+            mFreezingLineBegin = actorWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
             std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionPhysComponents;
             const auto& spaceStations = mCombatActorsPoolHandler->GetSpaceStationActors();
             excludeCollisionPhysComponents.reserve(
@@ -84,7 +96,7 @@ void FreezingRayActor::Tick(const float deltaTime)
 
             auto sphereCollisionTest
                 = SphereCollisionTestWithFilterAdapter(mFreezingRayHitRadius, excludeCollisionPhysComponents);
-            sphereCollisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), mElectroLineBegin);
+            sphereCollisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), mFreezingLineBegin);
 
             if (sphereCollisionTest.HasHit()) {
                 const auto& collidedPhysDescriptors = sphereCollisionTest.GetCollisionHitPhysicsDescriptors();
@@ -104,15 +116,28 @@ void FreezingRayActor::Tick(const float deltaTime)
                             const auto& rightShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(rightActorId);
                             assert(leftShipActor && rightShipActor);
                             const auto sqrDistanceToLeft
-                                = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), mElectroLineBegin);
+                                = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), mFreezingLineBegin);
                             const auto sqrDistanceToRight
-                                = glm::distance2(rightShipActor->GetRootComponent()->GetTranslation(), mElectroLineBegin);
+                                = glm::distance2(rightShipActor->GetRootComponent()->GetTranslation(), mFreezingLineBegin);
                             return sqrDistanceToLeft < sqrDistanceToRight;
                         });
                     if (foundNearestIt != descriptorActorIds.end()) {
                         const auto& collidedActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
                         assert(collidedActor);
-                        if (mLastCollidedActorId != collidedActor->GetObjectId()) {
+                        const bool mCollideWithOldActor
+                            = mLastCollidedActorId == collidedActor->GetObjectId() || mSwitchTargetMinTimer.IsRunning();
+                        if (mCollideWithOldActor) {
+                            const auto& previousCollidedActor
+                                = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
+                            assert(previousCollidedActor);
+                            Event::ShootRayCollisionEvent::GetInstance()->SendEvent(
+                                eExecutionOrder::POST_EXECUTION,
+                                std::static_pointer_cast<MissileActor>(shared_from_this()),
+                                previousCollidedActor->shared_from_this(),
+                                eRayType::FREEZING_RAY,
+                                eCollisionActionType::COLLISION_STARTED);
+                            mFreezingLineEnd = previousCollidedActor->GetRootComponent()->GetTranslation();
+                        } else {
                             if (mLastCollidedActorId != -1) {
                                 const auto& previousCollidedActor
                                     = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
@@ -124,6 +149,7 @@ void FreezingRayActor::Tick(const float deltaTime)
                                     eRayType::FREEZING_RAY,
                                     eCollisionActionType::COLLISION_FINISHED);
                             }
+
                             mLastCollidedActorId = collidedActor->GetObjectId();
                             Event::ShootRayCollisionEvent::GetInstance()->SendEvent(
                                 eExecutionOrder::POST_EXECUTION,
@@ -131,8 +157,9 @@ void FreezingRayActor::Tick(const float deltaTime)
                                 collidedActor->shared_from_this(),
                                 eRayType::FREEZING_RAY,
                                 eCollisionActionType::COLLISION_STARTED);
+                            mSwitchTargetMinTimer.StartTimer();
+                            mFreezingLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                         }
-                        mElectroLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                     }
                 } else {
                     TriggerDisabled();
@@ -153,8 +180,8 @@ void FreezingRayActor::Tick(const float deltaTime)
         }
     }
 
-    mLineComponent->SetLineBeginWorldSpacePosition(mElectroLineBegin);
-    mLineComponent->SetLineEndWorldSpacePosition(mElectroLineEnd);
+    mLineComponent->SetLineBeginWorldSpacePosition(mFreezingLineBegin);
+    mLineComponent->SetLineEndWorldSpacePosition(mFreezingLineEnd);
 }
 
 void FreezingRayActor::TriggerSpawn(
@@ -164,6 +191,7 @@ void FreezingRayActor::TriggerSpawn(
     const eDamageDealerType ownerType,
     const std::shared_ptr<Actor>& spawnerActor)
 {
+    LogInfo("FreezingRayActor::TriggerSpawn");
     mDamageDealerType = ownerType;
     mActorWhoSpawnedMeWp = spawnerActor;
     DropState();
@@ -174,17 +202,16 @@ void FreezingRayActor::TriggerSpawn(
 void FreezingRayActor::TriggerExplosion()
 {
     mActivityState = eMissileActivityState::EXPLOSION;
-    TriggerExplosionFinished();
 }
 
 void FreezingRayActor::TriggerExplosionFinished()
 {
     mActivityState = eMissileActivityState::EXPLOSION_FINISHED;
-    TriggerDisabled();
 }
 
 void FreezingRayActor::TriggerDisabled()
 {
+    LogInfo("FreezingRayActor::TriggerDisabled");
     mActivityState = eMissileActivityState::IDLE;
     DropState();
     SetIsEnabled(false);
