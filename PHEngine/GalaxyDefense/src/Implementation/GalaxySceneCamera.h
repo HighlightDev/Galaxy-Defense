@@ -46,6 +46,8 @@ public:
 protected:
     void OnTransformationUpdated() override;
 
+    glm::vec3 GetEyeVector() const override;
+
 private:
     void OnFallbackToStartPositionTimerTimeout();
 };

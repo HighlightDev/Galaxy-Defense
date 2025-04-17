@@ -18,15 +18,15 @@ GalaxySceneCamera::GalaxySceneCamera(
     const float camDistanceToThirdPersonTarget,
     const glm::vec3& thirdPersonTargetOffset)
     : ThirdPersonCamera(
-          cameraName,
-          cameraType,
-          scene,
-          viewPort,
-          viewProjectionInfo,
-          initPitchDeg,
-          initYawDeg,
-          camDistanceToThirdPersonTarget,
-          thirdPersonTargetOffset)
+        cameraName,
+        cameraType,
+        scene,
+        viewPort,
+        viewProjectionInfo,
+        initPitchDeg,
+        initYawDeg,
+        camDistanceToThirdPersonTarget,
+        thirdPersonTargetOffset)
     , mFallbackToStartPositionTimer()
 {
     mFallbackToStartPositionTimer.SetIsPausable(true);
@@ -43,6 +43,22 @@ void GalaxySceneCamera::OnFallbackToStartPositionTimerTimeout()
 void GalaxySceneCamera::OnTransformationUpdated()
 {
     mCameraFrustum.ConstructFromViewProjectionMatrix(GetViewMatrix(), GetViewProjectionInfo()->CreateProjectionMatrix());
+}
+
+glm::vec3 GalaxySceneCamera::GetEyeVector() const
+{
+    assert(m_thirdPersonTarget);
+    const float allowedDistance = m_maxDistanceFromTargetToCamera - m_minDistanceFromTargetToCamera;
+    const float currentZoomCoef
+        = m_minDistanceFromTargetToCamera + (m_maxDistanceFromTargetToCamera - m_distanceFromTargetToCamera) / allowedDistance;
+    const auto& directionVec = -GetEyeSpaceForwardVector();
+    const float max_offset_y = (directionVec * (allowedDistance + m_minDistanceFromTargetToCamera)).y;
+    const float min_offset_y = (directionVec * m_minDistanceFromTargetToCamera).y;
+    const float offset_y = min_offset_y + (max_offset_y * std::cos(EngineMath::PI_HALF * currentZoomCoef));
+    glm::vec3 offset = directionVec * m_distanceFromTargetToCamera;
+    offset.y = offset_y;
+
+    return GetTargetVector() + offset;
 }
 
 void GalaxySceneCamera::Tick(const float deltaTime)
@@ -90,6 +106,8 @@ void GalaxySceneCamera::Tick(const float deltaTime)
         const auto mouseZoomDirection = mouseBindings->FlushMouseScrollEvent();
         Zoom(mouseZoomDirection, 5.0f);
     }
+
+    ProcessZoom(deltaTime);
 
     if (bFallbackToStartPositionFlag) {
         const auto& finalTargetVector = glm::vec3(0.0f);

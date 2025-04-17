@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/EngineObjectProperty.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/ITickable.h"
@@ -62,6 +63,10 @@ class LevelEditorController : public std::enable_shared_from_this<LevelEditorCon
 
     std::shared_ptr<Actor> mTowersActor;
 
+    std::shared_ptr<Actor> mGhostTowerActor;
+
+    std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostTowerBlendColorProperty;
+
     std::shared_ptr<::Graphics::IMaterial> mSplineMaterialPrefab;
 
     RoutesHandler mRoutesHandler;
@@ -101,6 +106,10 @@ private:
     void InitializeRoutePlacementGrid();
 
     void InitializeTowerPlacementGrid();
+
+    void InitializeGhostTower();
+
+    bool IsTowerPositionValid(const glm::vec3 position) const;
 
     glm::vec3 RaycastLevelPlane(bool& raycastWasSuccessfull, const glm::ivec2& screenSpacePoint);
 };

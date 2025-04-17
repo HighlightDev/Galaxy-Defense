@@ -40,10 +40,8 @@ void get_window_pos(GLFWwindow* window)
 void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     if (std::abs(yoffset) > 0.0000001) {
-        engineInputManager->TriggeOnMouseScroll(
-            yoffset < -0.00001      ? eMouseScrollDirection::ZoomOut
-                : yoffset > 0.00001 ? eMouseScrollDirection::ZoomIn
-                                    : eMouseScrollDirection::Undefined);
+        const auto direction = yoffset < 0.0 ? eMouseScrollDirection::ZoomOut : eMouseScrollDirection::ZoomIn;
+        engineInputManager->TriggeOnMouseScroll(direction, static_cast<float>(yoffset));
     }
 }
 

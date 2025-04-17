@@ -16,6 +16,7 @@ namespace EngineMath {
 /************************************************************************/
 extern float G;
 extern float PI;
+extern float PI_HALF;
 extern float ENGINE_FLOAT_EPSILON;
 extern glm::vec3 AXIS_RIGHT;
 extern glm::vec3 AXIS_UP;

@@ -62,6 +62,43 @@ void FreezingRayActor::SetFreezingRayHitRadius(const float radius)
     mFreezingRayHitRadius = radius;
 }
 
+void FreezingRayActor::SendShootRayCollisionEvent(
+    const std::shared_ptr<Actor>& collidedActor, const eCollisionActionType collisionActionType)
+{
+    Event::ShootRayCollisionEvent::GetInstance()->SendEvent(
+        eExecutionOrder::POST_EXECUTION,
+        std::static_pointer_cast<MissileActor>(shared_from_this()),
+        collidedActor,
+        eRayType::FREEZING_RAY,
+        collisionActionType);
+}
+
+std::vector<std::shared_ptr<PhysicsComponent>> FreezingRayActor::CreateExcludedCollisionComponentsVector(
+    const std::shared_ptr<PhysicsComponent>& collisionComponentOfWhoSpawnedMe) const
+{
+    std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionPhysComponents;
+    const auto& spaceStations = mCombatActorsPoolHandler->GetSpaceStationActors();
+    excludeCollisionPhysComponents.reserve(spaceStations.size() + mCombatActorsPoolHandler->GetMissileActors().size() + 1);
+
+    if (collisionComponentOfWhoSpawnedMe) {
+        excludeCollisionPhysComponents.emplace_back(collisionComponentOfWhoSpawnedMe);
+    }
+    const auto& spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
+    const auto& bombMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BOMB);
+    const auto& freezeMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING);
+    const auto& blackHoleMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
+    excludeCollisionPhysComponents.insert(
+        excludeCollisionPhysComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
+    excludeCollisionPhysComponents.insert(
+        excludeCollisionPhysComponents.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
+    excludeCollisionPhysComponents.insert(
+        excludeCollisionPhysComponents.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
+    excludeCollisionPhysComponents.insert(
+        excludeCollisionPhysComponents.end(), blackHoleMissilePhysComponents.begin(), blackHoleMissilePhysComponents.end());
+
+    return excludeCollisionPhysComponents;
+}
+
 void FreezingRayActor::Tick(const float deltaTime)
 {
     MissileActor::Tick(deltaTime);
@@ -70,32 +107,9 @@ void FreezingRayActor::Tick(const float deltaTime)
     if (const auto& sceneSp = mSceneOwner.lock()) {
         if (const auto& actorWhoSpawnedMeSp = mActorWhoSpawnedMeWp.lock()) {
             mFreezingLineBegin = actorWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
-            std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionPhysComponents;
-            const auto& spaceStations = mCombatActorsPoolHandler->GetSpaceStationActors();
-            excludeCollisionPhysComponents.reserve(
-                spaceStations.size() + mCombatActorsPoolHandler->GetMissileActors().size() + 1);
-            if (const auto& ownerPhysComp = actorWhoSpawnedMeSp->GetPhysicsComponent()) {
-                excludeCollisionPhysComponents.emplace_back(ownerPhysComp);
-            }
-            const auto& spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
-            const auto& bombMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BOMB);
-            const auto& freezeMissilePhysComponents
-                = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING);
-            const auto& blackHoleMissilePhysComponents
-                = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
-            excludeCollisionPhysComponents.insert(
-                excludeCollisionPhysComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
-            excludeCollisionPhysComponents.insert(
-                excludeCollisionPhysComponents.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
-            excludeCollisionPhysComponents.insert(
-                excludeCollisionPhysComponents.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
-            excludeCollisionPhysComponents.insert(
-                excludeCollisionPhysComponents.end(),
-                blackHoleMissilePhysComponents.begin(),
-                blackHoleMissilePhysComponents.end());
-
-            auto sphereCollisionTest
-                = SphereCollisionTestWithFilterAdapter(mFreezingRayHitRadius, excludeCollisionPhysComponents);
+            const auto& ownerPhysComp = actorWhoSpawnedMeSp->GetPhysicsComponent();
+            auto sphereCollisionTest = SphereCollisionTestWithFilterAdapter(
+                mFreezingRayHitRadius, CreateExcludedCollisionComponentsVector(ownerPhysComp));
             sphereCollisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), mFreezingLineBegin);
 
             if (sphereCollisionTest.HasHit()) {
@@ -130,33 +144,21 @@ void FreezingRayActor::Tick(const float deltaTime)
                             const auto& previousCollidedActor
                                 = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
                             assert(previousCollidedActor);
-                            Event::ShootRayCollisionEvent::GetInstance()->SendEvent(
-                                eExecutionOrder::POST_EXECUTION,
-                                std::static_pointer_cast<MissileActor>(shared_from_this()),
-                                previousCollidedActor->shared_from_this(),
-                                eRayType::FREEZING_RAY,
-                                eCollisionActionType::COLLISION_STARTED);
+                            SendShootRayCollisionEvent(
+                                previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
                             mFreezingLineEnd = previousCollidedActor->GetRootComponent()->GetTranslation();
                         } else {
                             if (mLastCollidedActorId != -1) {
                                 const auto& previousCollidedActor
                                     = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
                                 assert(previousCollidedActor);
-                                Event::ShootRayCollisionEvent::GetInstance()->SendEvent(
-                                    eExecutionOrder::POST_EXECUTION,
-                                    std::static_pointer_cast<MissileActor>(shared_from_this()),
-                                    previousCollidedActor->shared_from_this(),
-                                    eRayType::FREEZING_RAY,
-                                    eCollisionActionType::COLLISION_FINISHED);
+                                SendShootRayCollisionEvent(
+                                    previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
                             }
 
                             mLastCollidedActorId = collidedActor->GetObjectId();
-                            Event::ShootRayCollisionEvent::GetInstance()->SendEvent(
-                                eExecutionOrder::POST_EXECUTION,
-                                std::static_pointer_cast<MissileActor>(shared_from_this()),
-                                collidedActor->shared_from_this(),
-                                eRayType::FREEZING_RAY,
-                                eCollisionActionType::COLLISION_STARTED);
+                            SendShootRayCollisionEvent(
+                                collidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
                             mSwitchTargetMinTimer.StartTimer();
                             mFreezingLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                         }
@@ -167,12 +169,8 @@ void FreezingRayActor::Tick(const float deltaTime)
                         const auto& previousCollidedActor
                             = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
                         assert(previousCollidedActor);
-                        Event::ShootRayCollisionEvent::GetInstance()->SendEvent(
-                            eExecutionOrder::POST_EXECUTION,
-                            std::static_pointer_cast<MissileActor>(shared_from_this()),
-                            previousCollidedActor->shared_from_this(),
-                            eRayType::FREEZING_RAY,
-                            eCollisionActionType::COLLISION_FINISHED);
+                        SendShootRayCollisionEvent(
+                            previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
                         mLastCollidedActorId = -1;
                     }
                 }

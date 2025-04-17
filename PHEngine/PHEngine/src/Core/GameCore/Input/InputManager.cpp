@@ -55,10 +55,10 @@ void InputManager::TriggerOnMouseMove(const int32_t x, const int32_t y)
         Event::eExecutionOrder::PRE_EXECUTION, glm::ivec4(x, y, deltaMouseX, deltaMouseY));
 }
 
-void InputManager::TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection)
+void InputManager::TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection, const float scrollOffset)
 {
-    MouseScrollGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, scrollDirection);
-    MouseScrollLuaThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, scrollDirection);
+    MouseScrollGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, scrollDirection, scrollOffset);
+    MouseScrollLuaThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, scrollDirection, scrollOffset);
 }
 
 void InputManager::TriggerOnMouseButtonKeyDown(const eMouseKeys key)

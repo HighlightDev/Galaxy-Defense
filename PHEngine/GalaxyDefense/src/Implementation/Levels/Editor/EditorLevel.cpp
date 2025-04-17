@@ -71,6 +71,7 @@ void EditorLevel::CreateScene()
 
     const auto& a_sceneCenterActorDummy = sceneSp->GetActorByName("SceneCenterActorDummy");
     assert(a_sceneCenterActorDummy);
+
     const auto& spaceCamera = std::make_shared<GalaxySceneCamera>(
         "LevelMainCamera",
         eCameraType::MAIN_THIRD_PERSON_CAMERA,
@@ -80,15 +81,15 @@ void EditorLevel::CreateScene()
             0,
             DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
             DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()),
-        std::make_shared<ViewPerspectiveInfo>(glm::radians<float>(60.0f), 1.0f, 0.1f, 500.0f),
-        60.0f,
+        std::make_shared<ViewPerspectiveInfo>(glm::radians<float>(60.0f), 16.0f / 9.0f, 0.1f, 500.0f),
+        38.88f,
         0.0f,
         200.0f);
 
     constexpr float c_levelExtent = 60.0f;
     spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(), glm::vec3(c_levelExtent, 5.0f, c_levelExtent)));
     spaceCamera->SetMaxDistanceFromTargetToCamera(200.0f);
-    spaceCamera->SetMinDistanceFromTargetToCamera(50.0f);
+    spaceCamera->SetMinDistanceFromTargetToCamera(20.0f);
     spaceCamera->SetDistanceFromTargetToCamera(200.0f);
     sceneSp->RegisterMainCamera(spaceCamera);
     spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);

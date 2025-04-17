@@ -37,10 +37,15 @@ LevelEditorController::LevelEditorController(const std::weak_ptr<Scene>& sceneWp
     , mTowersActor(std::make_shared<Actor>(
           "TowersActor",
           std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mGhostTowerActor(std::make_shared<Actor>(
+          "GhostTowerActor",
+          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mRoutesHandler(mSceneWp, mBezierCurvesActor)
     , mTowersHandler(mSceneWp, mTowersActor)
     , mBarriersHandler(mSceneWp)
 {
+    mGhostTowerActor->AddEngineProperty(mGhostTowerBlendColorProperty);
 }
 
 LevelEditorController::~LevelEditorController()
@@ -123,6 +128,25 @@ glm::vec3 LevelEditorController::RaycastLevelPlane(bool& raycastWasSuccessfull, 
     }
 }
 
+bool LevelEditorController::IsTowerPositionValid(const glm::vec3 position) const
+{
+    const glm::vec2& cellBoundingBoxOrigin
+        = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(glm::vec2(position.x, position.z)).GetOrigin();
+
+    const auto& allPlacedTowerPoints = mTowersHandler.CollectTowerPoints();
+    bool isPlaceOccupiedByTower = std::any_of(
+        allPlacedTowerPoints.cbegin(), allPlacedTowerPoints.cend(), [this, &cellBoundingBoxOrigin](const auto& pointsPair) {
+            const glm::vec3& occupiedPosition = std::get<0>(pointsPair.second);
+            const float halfScale = std::get<1>(pointsPair.second).x * 0.5f;
+            const auto& validCellMin = glm::vec2(occupiedPosition.x - halfScale, occupiedPosition.z - halfScale);
+            const auto& validCellMax = glm::vec2(occupiedPosition.x + halfScale, occupiedPosition.z + halfScale);
+
+            return EngineMath::TestPointInAABB(validCellMin, validCellMax, cellBoundingBoxOrigin);
+        });
+
+    return !isPlaceOccupiedByTower;
+}
+
 void LevelEditorController::Tick(const float deltaTime)
 {
     if (eEditModeType::IDLE != mCurrentEditModeType) {
@@ -137,8 +161,17 @@ void LevelEditorController::Tick(const float deltaTime)
                     const auto& nearestCellBoundingBox = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(
                         glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                     const auto pickerCellHalfSize = mLevelPlacementGrid->GetGridCellSizeForTower() * 0.5f;
-                    mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(
-                        glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y));
+
+                    const auto& cellOriginPosition = nearestCellBoundingBox.GetOrigin();
+                    const auto cellPositionVec3 = glm::vec3(cellOriginPosition.x, 0.0f, cellOriginPosition.y);
+
+                    const glm::vec3 ghostTowerPositionValidationColor
+                        = IsTowerPositionValid(cellPositionVec3) ? glm::vec3(0, 1, 0) : glm::vec3(1, 0, 0);
+                    mGhostTowerBlendColorProperty->SetValue(ghostTowerPositionValidationColor);
+                    const glm::vec3& markerPosition
+                        = glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y);
+                    mGhostTowerActor->GetRootComponent()->SetTranslation(markerPosition);
+                    mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(markerPosition);
                 } else {
                     const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                         glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
@@ -166,8 +199,11 @@ void LevelEditorController::Tick(const float deltaTime)
                             glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                         const auto pickerCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
                         const auto& tower2DPosition = nearestCellBoundingBox.GetOrigin();
-                        mTowersHandler.CreateNewTower(
-                            glm::vec3(tower2DPosition.x, 0.0f, tower2DPosition.y), glm::vec3(pickerCellSize * 0.5f));
+                        const auto cellPositionVec3 = glm::vec3(tower2DPosition.x, 0.0f, tower2DPosition.y);
+                        if (IsTowerPositionValid(cellPositionVec3)) {
+                            mTowersHandler.CreateNewTower(
+                                glm::vec3(tower2DPosition.x, 0.0f, tower2DPosition.y), glm::vec3(pickerCellSize * 0.5f));
+                        }
                     } else if (eEditModeType::EDIT_BARRIERS == mCurrentEditModeType) {
                         const auto& nearestBarrierNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                             glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
@@ -262,6 +298,7 @@ void LevelEditorController::ProcessEvent(const ChangeEditModeEvent* sender, cons
     const bool isVisibleRoutePlacementGridActor = eEditModeType::EDIT_ROUTES == mCurrentEditModeType;
     const bool isVisibleBarrierPlacementGridActor = eEditModeType::EDIT_BARRIERS == mCurrentEditModeType;
     mTowerPlacementGridActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
+    mGhostTowerActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
     mTowerPlacementPickerActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
     mRoutePlacementGridActor->SetIsEnabled(isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor);
     mRouteNodePickerActor->SetIsEnabled(isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor);
@@ -272,6 +309,7 @@ void LevelEditorController::Initialize()
     mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(mLevelAreaBoundingBox);
     InitializeRoutePlacementGrid();
     InitializeTowerPlacementGrid();
+    InitializeGhostTower();
     ProcessEvent(nullptr, std::make_tuple<eEditModeType>(eEditModeType::IDLE));
 }
 
@@ -319,10 +357,10 @@ void LevelEditorController::InitializeRoutePlacementGrid()
     const int32_t columnsLineCount = routeGridColumnsAndRowsCount.x + 1;
     const int32_t rowsLineCount = routeGridColumnsAndRowsCount.y + 1;
 
-    const std::shared_ptr<IMaterial>& lineMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
+    const std::shared_ptr<IMaterial>& lineMaterial = materialParser.ParseMaterialDescriptor("TowerPlacementGridMaterial.m");
     sceneSp->RegisterMaterialInstance(lineMaterial);
-    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 1.0f);
-    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(1.0f));
+    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 0.5f);
+    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(0.5f, 0.5f, 1.0f));
 
     const auto& rtMeshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
     const auto& levelAreaBoundingBox = mLevelPlacementGrid->GetRouteLevelAreaBoundingBox();
@@ -348,6 +386,7 @@ void LevelEditorController::InitializeRoutePlacementGrid()
         c_mesh->SetSortOrderValue(0);
         c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
         c_mesh->SetLineEndWorldSpacePosition(lineEnd);
+        c_mesh->SetLineWidth(0.3f);
         mRoutePlacementGridActor->AddComponent(c_mesh);
     }
 
@@ -374,32 +413,58 @@ void LevelEditorController::InitializeRoutePlacementGrid()
         c_mesh->SetSortOrderValue(0);
         c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
         c_mesh->SetLineEndWorldSpacePosition(lineEnd);
+        c_mesh->SetLineWidth(0.3f);
         mRoutePlacementGridActor->AddComponent(c_mesh);
     }
 }
 
-void LevelEditorController::InitializeTowerPlacementGrid()
+void LevelEditorController::InitializeGhostTower()
 {
     const auto& sceneSp = mSceneWp.lock();
     assert(sceneSp);
+    sceneSp->AddActor(mGhostTowerActor);
 
-    // Tower grid picker initialize
+    const auto& albedoName = "Space_Station_COLOR.png";
+    const auto& albedoTexture = TexturePool::GetInstance()->GetOrAllocateResource(albedoName);
 
+    const auto towerCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
+
+    MaterialParser materialParser;
+    const std::shared_ptr<IMaterial>& ghostTowerActorMaterial = materialParser.ParseMaterialDescriptor("GhostTowerMaterial.m");
+    sceneSp->RegisterMaterialInstance(ghostTowerActorMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostTowerActorMaterial, "opacity", 0.5f);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostTowerActorMaterial, "uvScale", 1.0f);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostTowerActorMaterial, "albedo", albedoTexture);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostTowerActorMaterial, "blendFactor", 0.5f);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostTowerActorMaterial, mGhostTowerActor, "p_blendColor", "b_blendColor");
+
+    const auto& d_mesh = std::make_shared<MeshComponentData>(
+        "PlacementAllowedAreaMeshComponent",
+        "space_station.obj",
+        glm::vec3(),
+        glm::vec3(),
+        glm::vec3(towerCellSize),
+        "",
+        ghostTowerActorMaterial);
+    const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
+    const auto& c_mesh
+        = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+    mGhostTowerActor->AddComponent(c_mesh);
+
+    // tower placement picker
     const auto pickerCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
     mTowerPlacementPickerActor = std::make_shared<Actor>(
         "TowerPlacementPickerActor",
         std::make_shared<SceneComponent>("TowerPlacementPickerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
     sceneSp->AddActor(mTowerPlacementPickerActor);
 
-    MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& editorPickerMaterial = materialParser.ParseMaterialDescriptor("EditorPickerMaterial.m");
     sceneSp->RegisterMaterialInstance(editorPickerMaterial);
     MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, "opacity", 1.0f);
     MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, "color", glm::vec3(0.4f, 0.8f, 0.2f));
     MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, sceneSp, "GT_DeltaSec", "gt_timeSec");
 
-    const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
-    const auto& d_mesh = std::make_shared<MeshComponentData>(
+    const auto& d_pickerMesh = std::make_shared<MeshComponentData>(
         "TowerPlacementMeshComponent",
         "plane.obj",
         glm::vec3(),
@@ -407,12 +472,16 @@ void LevelEditorController::InitializeTowerPlacementGrid()
         glm::vec3(pickerCellSize, 1.0f, pickerCellSize),
         "",
         editorPickerMaterial);
-    const auto& c_mesh
-        = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-    c_mesh->SetSortOrderValue(1);
-    mTowerPlacementPickerActor->AddComponent(c_mesh);
+    const auto& c_pickerMesh
+        = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_pickerMesh));
+    c_pickerMesh->SetSortOrderValue(1);
+    mTowerPlacementPickerActor->AddComponent(c_pickerMesh);
+}
 
-    // Tower grid initialize
+void LevelEditorController::InitializeTowerPlacementGrid()
+{
+    const auto& sceneSp = mSceneWp.lock();
+    assert(sceneSp);
 
     mTowerPlacementGridActor = std::make_shared<Actor>(
         "TowerPlacementGridActor",
@@ -422,10 +491,11 @@ void LevelEditorController::InitializeTowerPlacementGrid()
     const int32_t columnsLineCount = towerGridColumnsAndRowsCount.x + 1;
     const int32_t rowsLineCount = towerGridColumnsAndRowsCount.y + 1;
 
-    const std::shared_ptr<IMaterial>& lineMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
+    MaterialParser materialParser;
+    const std::shared_ptr<IMaterial>& lineMaterial = materialParser.ParseMaterialDescriptor("TowerPlacementGridMaterial.m");
     sceneSp->RegisterMaterialInstance(lineMaterial);
-    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 1.0f);
-    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(1.0f));
+    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 0.5f);
+    MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(0.5f, 0.5f, 1.0f));
 
     const auto& rtMeshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
     const auto& levelAreaBoundingBox = mLevelPlacementGrid->GetTowerLevelAreaBoundingBox();
@@ -453,6 +523,7 @@ void LevelEditorController::InitializeTowerPlacementGrid()
         c_mesh->SetSortOrderValue(0);
         c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
         c_mesh->SetLineEndWorldSpacePosition(lineEnd);
+        c_mesh->SetLineWidth(0.3f);
         mTowerPlacementGridActor->AddComponent(c_mesh);
     }
 
@@ -479,6 +550,7 @@ void LevelEditorController::InitializeTowerPlacementGrid()
         c_mesh->SetSortOrderValue(0);
         c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
         c_mesh->SetLineEndWorldSpacePosition(lineEnd);
+        c_mesh->SetLineWidth(0.3f);
         mTowerPlacementGridActor->AddComponent(c_mesh);
     }
 }

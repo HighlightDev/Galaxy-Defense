@@ -31,7 +31,7 @@ public:
     // MOUSE
     void TriggerOnMouseMove(const int32_t x, const int32_t y);
 
-    void TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection);
+    void TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection, const float scrollOffset);
 
     void TriggerOnMouseButtonKeyDown(const eMouseKeys key);
 

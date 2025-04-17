@@ -38,6 +38,12 @@ protected:
     static constexpr float sCameraMinDistance = 5.0f;
     static constexpr float sCameraMaxDistance = 135.0f;
 
+    float m_targetDistanceFromTargetToCamera;
+
+    float m_ZoomTime{0.0f};
+
+    bool bZoomDirty{false};
+
 public:
     ThirdPersonCamera(
         const std::string& cameraName,
@@ -76,6 +82,10 @@ public:
     float GetTimeForInterpolation() const;
 
     void SetTimeForInterpolation(float timeForInterpolation);
+
+    virtual void ProcessZoom(const float deltaTime);
+
+    virtual void ProcessTargetFollow(const float deltaTime);
 
     std::string GetCameraTypeName() const override;
 

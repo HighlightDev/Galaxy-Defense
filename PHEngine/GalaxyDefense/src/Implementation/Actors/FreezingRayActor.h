@@ -78,5 +78,10 @@ private:
     void DropState();
 
     void OnCanSwitchTargetTimeout();
+
+    std::vector<std::shared_ptr<PhysicsComponent>>
+    CreateExcludedCollisionComponentsVector(const std::shared_ptr<PhysicsComponent>& collisionComponentOfWhoSpawnedMe) const;
+
+    void SendShootRayCollisionEvent(const std::shared_ptr<Actor>& collidedActor, const eCollisionActionType collisionActionType);
 };
 } // namespace Game

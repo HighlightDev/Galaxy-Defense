@@ -12,7 +12,6 @@
 #include "Implementation/Actors/BlackHoleMissileActor.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
-#include "Implementation/GalaxySceneCamera.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 #include "Implementation/Modifiers/ElectroRayChainModifier.h"

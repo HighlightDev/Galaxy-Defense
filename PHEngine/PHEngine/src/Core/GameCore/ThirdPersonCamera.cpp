@@ -36,6 +36,7 @@ ThirdPersonCamera::ThirdPersonCamera(
     SetMaxDistanceFromTargetToCamera(sCameraMaxDistance);
     SetMinDistanceFromTargetToCamera(sCameraMinDistance);
     SetDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
+    m_targetDistanceFromTargetToCamera = camDistanceToThirdPersonTarget;
 }
 
 ThirdPersonCamera::~ThirdPersonCamera()
@@ -84,22 +85,8 @@ void ThirdPersonCamera::Tick(const float DeltaTime)
         Zoom(mouseZoomDirection, 5.0f);
     }
 
-    if (m_bThirdPersonTargetTransformationDirty) {
-        const float clampedDeltaTime = std::max(DeltaTime, 0.03f);
-        m_lerpTimeElapsed = std::min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
-
-        glm::vec3 finalTargetVector = m_thirdPersonTarget->GetRootComponent()->GetTranslation();
-        m_actualTargetVector
-            = EngineMath::LerpVec3(m_lerpTimeElapsed, 0.0f, m_timeForInterpolation, m_actualTargetVector, finalTargetVector);
-
-        SetTransformationDirty();
-
-        // If camera is at final position
-        if (EngineMath::FloatsNearEqual(m_lerpTimeElapsed, m_timeForInterpolation)) {
-            m_lerpTimeElapsed = 0.0f;
-            m_bThirdPersonTargetTransformationDirty = false;
-        }
-    }
+    ProcessZoom(DeltaTime);
+    ProcessTargetFollow(DeltaTime);
 }
 
 void ThirdPersonCamera::SetMaxDistanceFromTargetToCamera(const float maxDistanceFromTargetToCamera)
@@ -162,15 +149,54 @@ void ThirdPersonCamera::SetDistanceFromTargetToCamera(float distanceFromTargetTo
     SetTransformationDirty();
 }
 
+void ThirdPersonCamera::ProcessZoom(const float deltaTime)
+{
+    if (bZoomDirty) {
+        m_ZoomTime = std::min(m_ZoomTime + deltaTime, m_timeForInterpolation);
+        const float diff = m_targetDistanceFromTargetToCamera - m_distanceFromTargetToCamera;
+
+        const float lerpedDistance = EngineMath::LerpFloat(
+            m_ZoomTime, 0.0f, m_timeForInterpolation, m_distanceFromTargetToCamera, m_targetDistanceFromTargetToCamera);
+        SetDistanceFromTargetToCamera(lerpedDistance);
+
+        if (EngineMath::FloatsNearEqual(m_ZoomTime, m_timeForInterpolation)) {
+            m_ZoomTime = 0.0f;
+            bZoomDirty = false;
+        }
+    }
+}
+
+void ThirdPersonCamera::ProcessTargetFollow(const float deltaTime)
+{
+    if (m_bThirdPersonTargetTransformationDirty) {
+        const float clampedDeltaTime = std::max(deltaTime, 0.03f);
+        m_lerpTimeElapsed = std::min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
+
+        glm::vec3 finalTargetVector = m_thirdPersonTarget->GetRootComponent()->GetTranslation();
+        m_actualTargetVector
+            = EngineMath::LerpVec3(m_lerpTimeElapsed, 0.0f, m_timeForInterpolation, m_actualTargetVector, finalTargetVector);
+
+        SetTransformationDirty();
+
+        // If camera is at final position
+        if (EngineMath::FloatsNearEqual(m_lerpTimeElapsed, m_timeForInterpolation)) {
+            m_lerpTimeElapsed = 0.0f;
+            m_bThirdPersonTargetTransformationDirty = false;
+        }
+    }
+}
+
 void ThirdPersonCamera::Zoom(eMouseScrollDirection zoomDirection, float zoomPower)
 {
     switch (zoomDirection) {
     case eMouseScrollDirection::ZoomIn: {
-        SetDistanceFromTargetToCamera(m_distanceFromTargetToCamera - zoomPower);
+        m_targetDistanceFromTargetToCamera = m_distanceFromTargetToCamera - zoomPower;
+        bZoomDirty = true;
         break;
     }
     case eMouseScrollDirection::ZoomOut: {
-        SetDistanceFromTargetToCamera(m_distanceFromTargetToCamera + zoomPower);
+        m_targetDistanceFromTargetToCamera = m_distanceFromTargetToCamera + zoomPower;
+        bZoomDirty = true;
         break;
     }
 
