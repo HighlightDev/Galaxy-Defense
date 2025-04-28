@@ -49,8 +49,7 @@ glm::vec3 GalaxySceneCamera::GetEyeVector() const
 {
     assert(m_thirdPersonTarget);
     const float allowedDistance = m_maxDistanceFromTargetToCamera - m_minDistanceFromTargetToCamera;
-    const float currentZoomCoef
-        = m_minDistanceFromTargetToCamera + (m_maxDistanceFromTargetToCamera - m_distanceFromTargetToCamera) / allowedDistance;
+    const float currentZoomCoef = (m_maxDistanceFromTargetToCamera - m_distanceFromTargetToCamera) / allowedDistance;
     const auto& directionVec = -GetEyeSpaceForwardVector();
     const float max_offset_y = (directionVec * (allowedDistance + m_minDistanceFromTargetToCamera)).y;
     const float min_offset_y = (directionVec * m_minDistanceFromTargetToCamera).y;
@@ -104,7 +103,7 @@ void GalaxySceneCamera::Tick(const float deltaTime)
 
     if (mouseBindings->IsMouseScrollEventDirty()) {
         const auto mouseZoomDirection = mouseBindings->FlushMouseScrollEvent();
-        Zoom(mouseZoomDirection, 5.0f);
+        Zoom(mouseZoomDirection, 8.0f);
     }
 
     ProcessZoom(deltaTime);

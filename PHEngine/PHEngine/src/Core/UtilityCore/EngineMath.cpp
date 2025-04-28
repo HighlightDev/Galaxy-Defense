@@ -33,6 +33,13 @@ float LerpFloat(const float x, const float x1, const float x2, const float y1, c
     return ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
 }
 
+float CosineInterpolation(const float x, const float y1, const float y2)
+{
+    const float angle = x * PI; 
+    const float mu2 = (1.0f - std::cos(angle)) * 0.5f;
+    return LerpNormalizedFloat(y1, y2, mu2);
+}
+
 int32_t LerpInt(const float x, const float x1, const float x2, const int32_t y1, const int32_t y2)
 {
     const int32_t y_diff = (y2 - y1);

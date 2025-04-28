@@ -282,6 +282,8 @@ private:
 
     void PlanarReflectionPass();
 
+    void OutlinePass(const std::shared_ptr<SceneView>& sceneView);
+
     void HudTextPass();
 
     void GuiPass(const std::shared_ptr<SceneView>& sceneView);

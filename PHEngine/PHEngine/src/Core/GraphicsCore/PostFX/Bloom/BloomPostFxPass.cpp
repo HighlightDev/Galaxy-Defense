@@ -1,5 +1,6 @@
 #include "BloomPostFxPass.h"
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderParams.h"
 #include "Core/GraphicsCore/PostFX/Bloom/BloomConstants.h"
@@ -87,7 +88,7 @@ void BloomPostFxPass::ExecutePostFx(
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_NOTEQUAL, 1, 0xFF)
+        .SetStencilFunction(GL_EQUAL, EngineConstants::eStencilValues::BLOOM, 0xFF)
         .SetStencilMask(0x00);
 
     renderState.BindRenderState();

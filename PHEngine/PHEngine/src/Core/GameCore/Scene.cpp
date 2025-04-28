@@ -16,6 +16,8 @@
 #include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchHolder.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
@@ -105,6 +107,11 @@ void Scene::PostLevelInit()
     for (auto& camera : mActiveCameras) {
         camera->PostLevelInit();
     }
+
+    MaterialParser materialParser;
+    mOutlineMaterialSp = materialParser.ParseMaterialDescriptor("OutlineMaterial.m");
+    MaterialPropertySetter::SetMaterialPropertyValue(mOutlineMaterialSp, "color", glm::vec3(1.0, 0.0, 1.0));
+    RegisterMaterialInstance(mOutlineMaterialSp);
 }
 
 void Scene::PostPhysicsInitialize()
@@ -812,6 +819,11 @@ void Scene::SetLuaThreadFPSTextValue(const float fps)
         const auto value = std::to_string(fps);
         mDebugUiController->SetLuaFpsText(value.substr(0, IndexOf(value, ".") + 2));
     }
+}
+
+std::shared_ptr<IMaterial> Scene::GetOutlineMaterial() const
+{
+    return mOutlineMaterialSp;
 }
 
 #endif

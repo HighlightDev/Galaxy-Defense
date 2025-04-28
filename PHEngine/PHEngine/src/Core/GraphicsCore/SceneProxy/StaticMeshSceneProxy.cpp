@@ -28,6 +28,7 @@ void StaticMeshSceneProxy::CleanUp()
 
 void StaticMeshSceneProxy::PostConstructorInitialize()
 {
+    PrimitiveSceneProxy::PostConstructorInitialize();
     static constexpr uint64_t functionId = Hash64_CT("StaticMeshSceneProxy::PostConstructorInitialize");
 
     const auto shaderIdName = m_renderData.mIsDeferredShaded ? "DeferredNonSkeletalBase Shader" : "ForwardNonSkeletalBase Shader";
@@ -67,6 +68,16 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
                     assert(primitiveComponent);
                     primitiveComponent->SetBoundingBox(boundingBox);
                 });
+
+            if (const auto& outlineMatProxySp = sceneSp->GetOutlineMaterial()->GetMaterialProxyWp().lock()) {
+                mOutlineMaterialProxy = outlineMatProxySp;
+                const ShaderParams outlineShaderParams(
+                    "OutlineShader",
+                    FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
+                    FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
+                m_outlineShader = CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(
+                    "StaticMeshVertexFactory_OutlineShader_OutlineMaterial", outlineShaderParams, outlineMatProxySp);
+            }
         }
     }
 }
@@ -82,22 +93,27 @@ std::shared_ptr<StaticMeshSceneProxy::PlanarReflectionShaderType> StaticMeshScen
 }
 
 void StaticMeshSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
     ActiveBindedState& activeBindedState)
 {
-    const auto& shader = GetShader();
+    const auto& mainShader = GetShader();
 
-    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
+    const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(mainShader->GetShaderName());
     if (needToRebindShader) {
-        shader->ExecuteShader();
+        mainShader->ExecuteShader();
     }
-    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
-    shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+    mainShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
+    mainShader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
 }
 
 void StaticMeshSceneProxy::RenderPlanarReflection(
-    const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    const glm::vec4& plane,
+    const glm::mat4& mirrorMatrix,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
     ActiveBindedState& activeBindedState)
 {
     const auto& planarReflectionShader = GetPlanarReflectionShader();
@@ -110,6 +126,26 @@ void StaticMeshSceneProxy::RenderPlanarReflection(
     planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_relativeMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
+}
+
+void StaticMeshSceneProxy::RenderOutline(
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
+{
+    const auto& outlineShader = std::static_pointer_cast<StaticMeshSceneProxy::OutlineShaderType>(m_outlineShader);
+
+    if (mIsOutlineApplied) {
+        const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(outlineShader->GetShaderName());
+        if (needToRebindShader) {
+            outlineShader->ExecuteShader();
+        }
+        outlineShader->GetMaterialShader()->LoadUniformValues(mOutlineMaterialProxy, activeBindedState);
+        outlineShader->GetVertexFactoryShader()->SetMatrices(
+            m_relativeMatrix * glm::scale(glm::mat4(1), glm::vec3(3.5f)), viewMatrix, projectionMatrix);
+        m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    }
 }
 
 bool StaticMeshSceneProxy::IsDeferred() const

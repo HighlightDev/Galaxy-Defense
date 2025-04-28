@@ -21,6 +21,7 @@ PrimitiveSceneProxy::PrimitiveSceneProxy(
     , mSortOrderValue(component->GetSortOrderValue())
     , mCanBloomBeApplied(component->CanBloomBeApplied())
     , mDepthWriteMaskEnabled(component->IsDepthWriteMaskEnabled())
+    , mIsOutlineApplied(component->GetIsOutlineApplied())
     , mOriginPosition(component->GetBoundingBox().GetOrigin())
 {
 }
@@ -128,6 +129,16 @@ bool PrimitiveSceneProxy::IsDepthWriteMaskEnabled() const
 void PrimitiveSceneProxy::SetDepthWriteMaskEnabled(const bool isEnabled)
 {
     mDepthWriteMaskEnabled = isEnabled;
+}
+
+bool PrimitiveSceneProxy::GetIsOutlineApplied() const
+{
+    return mIsOutlineApplied;
+}
+
+void PrimitiveSceneProxy::SetIsOutlineApplied(const bool value)
+{
+    mIsOutlineApplied = value;
 }
 
 void PrimitiveSceneProxy::SetOriginPosition(const glm::vec3& origin)

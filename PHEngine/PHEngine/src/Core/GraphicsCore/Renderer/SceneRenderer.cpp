@@ -1,5 +1,6 @@
 #include "SceneRenderer.h"
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Components/LightComponent.h"
@@ -47,18 +48,16 @@ namespace Graphics {
 namespace Renderer {
 SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     : m_interThreadMgr(interThreadMgr)
-    , m_gbuffer(
-          std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
-              0,
-              0,
-              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
-    , m_resolvedSceneFramebuffer(
-          std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
-              0,
-              0,
-              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+    , m_gbuffer(std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
+          0,
+          0,
+          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+    , m_resolvedSceneFramebuffer(std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
+          0,
+          0,
+          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
     , m_deferredLightShader()
     , m_fontShader()
     , mDepthCollectShaderSkeletal()
@@ -69,12 +68,11 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , bLightProxiesDirty(false)
     , bPlanarReflectionProxiesDirty(false)
     , mActiveBindedState()
-    , mPostFxRenderer(
-          std::make_unique<PostFxRenderer>(ViewPortInfo(
-              0,
-              0,
-              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+    , mPostFxRenderer(std::make_unique<PostFxRenderer>(ViewPortInfo(
+          0,
+          0,
+          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
     ,
 #if DEBUG
     mDebugPhysicsRenderData()
@@ -284,7 +282,7 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
         renderState.GetStencilState()
             .SetIsStencilTestEnabled(false)
             .SetStencilOperation(0, 0, 0)
-            .SetStencilFunction(0, 0, 0)
+            .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0)
             .SetStencilMask(0x00);
 
         renderState.BindRenderState();
@@ -516,7 +514,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_ALWAYS, 0, 0xFF)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0xFF);
     renderState.BindRenderState();
 
@@ -526,7 +524,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     const auto& viewMatrix = cameraProxy->GetViewMatrix();
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
-    glStencilFunc(GL_ALWAYS, 1, 0xFF); // write 1 to stencil
+    glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF);
     mInstancedGeometryBatchRenderer->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
 
     if (mSkeletalProxiesVec.size() > 0) {
@@ -534,8 +532,9 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
             const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
                 && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
             if (bShouldRender) {
-                const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
-                glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 or 1 depending on bloom value
+                const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
+                                                                               : EngineConstants::eStencilValues::DEFAULT;
+                glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
                 proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
             }
         }
@@ -546,8 +545,9 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
             const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
                 && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
             if (bShouldRender) {
-                const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
-                glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 or 1 depending on bloom value
+                const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
+                                                                               : EngineConstants::eStencilValues::DEFAULT;
+                glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
                 proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
             }
         }
@@ -568,7 +568,7 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, 0, 0)
+        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0)
         .SetStencilMask(0);
     renderState.BindRenderState();
     // TODO: Make some check if light source (point or spot light) is too far from current view
@@ -695,7 +695,7 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_ALWAYS, 0, 0xFF)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0xFF);
     renderState.BindRenderState();
 
@@ -714,8 +714,9 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
         const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
             && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
         if (bShouldRender) {
-            const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
-            glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 or 1 depending on bloom value
+            const int32_t stencilFuncRefValue
+                = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM : EngineConstants::eStencilValues::DEFAULT;
+            glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
             proxy->Render(
                 sceneView->GetCameraProxy(),
                 sceneView->GetCameraProxy()->GetViewMatrix(),
@@ -730,6 +731,76 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
     glDisable(GL_CULL_FACE);
 
     m_resolvedSceneFramebuffer->UnbindFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
+void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
+{
+    RenderState renderState;
+    renderState.GetStencilState()
+        .SetIsStencilTestEnabled(true)
+        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilMask(0xFF);
+    renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+    renderState.BindRenderState();
+
+    const auto& cameraProxy = sceneView->GetCameraProxy();
+    const auto& viewMatrix = cameraProxy->GetViewMatrix();
+    const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
+
+    // Write outline value to stencil for objects which has to be outlined
+    {
+        if (mSkeletalProxiesVec.size() > 0) {
+            for (auto& proxy : mSkeletalProxiesVec) {
+                const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
+                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                if (bShouldRender && proxy->GetIsOutlineApplied()) {
+                    glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::OUTLINE, 0xFF);
+                    proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
+                }
+            }
+        }
+
+        if (mNonSkeletalProxiesVec.size() > 0) {
+            for (auto& proxy : mNonSkeletalProxiesVec) {
+                const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
+                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                if (bShouldRender && proxy->GetIsOutlineApplied()) {
+                    glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::OUTLINE, 0xFF);
+                    proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
+                }
+            }
+        }
+    }
+
+    // Draw outline (scaled up objects) only where stencil value is not equal to outline
+    {
+        renderState.GetStencilState()
+        .SetIsStencilTestEnabled(true)
+        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::OUTLINE, 0xFF)
+        .SetStencilMask(0x00);
+
+        if (mSkeletalProxiesVec.size() > 0) {
+            for (auto& proxy : mSkeletalProxiesVec) {
+                const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
+                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                if (bShouldRender && proxy->GetIsOutlineApplied()) {
+                    proxy->RenderOutline(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
+                }
+            }
+        }
+
+        if (mNonSkeletalProxiesVec.size() > 0) {
+            for (auto& proxy : mNonSkeletalProxiesVec) {
+                const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
+                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                if (bShouldRender && proxy->GetIsOutlineApplied()) {
+                    proxy->RenderOutline(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
+                }
+            }
+        }
+    }
 }
 
 void SceneRenderer::PlanarReflectionPass()
@@ -750,7 +821,7 @@ void SceneRenderer::PlanarReflectionPass()
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, 0, 0)
+        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0)
         .SetStencilMask(0);
 
     renderState.BindRenderState();
@@ -828,7 +899,7 @@ void SceneRenderer::HudTextPass()
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, 0, 0)
+        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0)
         .SetStencilMask(0);
 
     renderState.BindRenderState();
@@ -863,7 +934,7 @@ void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, 0, 0xFF)
+        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0);
 
     renderState.BindRenderState();
@@ -1150,11 +1221,10 @@ void SceneRenderer::RemoveLightProxyByProxyId(const int32_t proxyId)
 
 void SceneRenderer::RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId)
 {
-    PlanarReflectionProxiesVector.erase(
-        std::remove_if(
-            PlanarReflectionProxiesVector.begin(),
-            PlanarReflectionProxiesVector.end(),
-            [proxyId](const auto& planarReflectionProxy) { return planarReflectionProxy->GetSceneProxyId() == proxyId; }));
+    PlanarReflectionProxiesVector.erase(std::remove_if(
+        PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [proxyId](const auto& planarReflectionProxy) {
+            return planarReflectionProxy->GetSceneProxyId() == proxyId;
+        }));
 }
 
 void SceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy)
@@ -1692,7 +1762,7 @@ void SceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::m
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, 0, 0xFF)
+        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0);
     renderState.BindRenderState();
     // todo: delete this crap and use buffers =\

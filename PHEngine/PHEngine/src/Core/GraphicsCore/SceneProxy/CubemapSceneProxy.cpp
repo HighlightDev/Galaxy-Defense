@@ -39,6 +39,7 @@ void CubemapSceneProxy::CleanUp()
 
 void CubemapSceneProxy::PostConstructorInitialize()
 {
+    PrimitiveSceneProxy::PostConstructorInitialize();
     static constexpr uint64_t functionId = Hash64_CT("CubemapSceneProxy::PostConstructorInitialize");
 
     const ShaderParams shaderParams(

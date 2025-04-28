@@ -86,6 +86,8 @@ private:
 
     std::vector<std::shared_ptr<Graphics::IMaterial>> mMaterials;
 
+    std::shared_ptr<Graphics::IMaterial> mOutlineMaterialSp;
+
     std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
 
     std::shared_ptr<TextHandler> mTextHandler;
@@ -205,6 +207,8 @@ public:
     std::optional<CameraFrustum> GetCameraFrustum(const size_t cameraProxyId);
 
     void UnloadScene();
+
+    std::shared_ptr<Graphics::IMaterial> GetOutlineMaterial() const;
 
 #ifdef DEBUG
 

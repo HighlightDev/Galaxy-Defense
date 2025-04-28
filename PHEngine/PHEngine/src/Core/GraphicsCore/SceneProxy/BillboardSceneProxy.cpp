@@ -27,6 +27,8 @@ BillboardSceneProxy::~BillboardSceneProxy()
 
 void BillboardSceneProxy::PostConstructorInitialize()
 {
+    PrimitiveSceneProxy::PostConstructorInitialize();
+
     static constexpr uint64_t functionId = Hash64_CT("BillboardSceneProxy::PostConstructorInitialize");
 
     const ShaderParams shaderParams(

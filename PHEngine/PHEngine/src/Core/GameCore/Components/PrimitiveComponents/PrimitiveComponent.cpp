@@ -149,6 +149,20 @@ bool PrimitiveComponent::CanBloomBeApplied() const
     return mCanBloomBeApplied;
 }
 
+void PrimitiveComponent::SetIsOutlineApplied(const bool value)
+{
+    if (mIsOutlineApplied != value) {
+        mIsOutlineApplied = value;
+        bIsOutlineStateDirty = true;
+        SyncRenderData();
+    }
+}
+
+bool PrimitiveComponent::GetIsOutlineApplied() const
+{
+    return mIsOutlineApplied;
+}
+
 bool PrimitiveComponent::IsDepthWriteMaskEnabled() const
 {
     return mDepthWriteMaskEnabled;
@@ -219,6 +233,21 @@ void PrimitiveComponent::SyncRenderData()
                             }
                         });
                     bIsDepthTestStateDirty = false;
+                }
+
+                if (bIsOutlineStateDirty) {
+                    static constexpr uint64_t functionId = Hash64_CT("PrimitiveComponent::UpdateOutlineState_OnRenderThread()");
+                    sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+                        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                        GetObjectId(),
+                        functionId,
+                        [this, sceneRendererSp, isOutlineApplied = mIsOutlineApplied]() {
+                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
+                            if (primitiveSp) {
+                                primitiveSp->SetIsOutlineApplied(isOutlineApplied);
+                            }
+                        });
+                    bIsOutlineStateDirty = false;
                 }
             }
         }

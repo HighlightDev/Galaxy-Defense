@@ -18,6 +18,7 @@ SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent* component)
 
 void SkyboxSceneProxy::PostConstructorInitialize()
 {
+    PrimitiveSceneProxy::PostConstructorInitialize();
     static constexpr uint64_t functionId = Hash64_CT("SkyboxSceneProxy::PostConstructorInitialize");
 
     const ShaderParams shaderParams = ShaderParams(

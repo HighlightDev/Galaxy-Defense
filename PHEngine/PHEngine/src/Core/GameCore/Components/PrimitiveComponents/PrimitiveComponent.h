@@ -36,10 +36,13 @@ protected:
     bool bIsSortOrderStateDirty{false};
     bool bIsBloomStateDirty{false};
     bool bIsDepthTestStateDirty{false};
+    bool bIsOutlineStateDirty{false};
 
     bool mCanBloomBeApplied{false};
 
     bool mDepthWriteMaskEnabled{true};
+
+    bool mIsOutlineApplied{false};
 
 public:
     PrimitiveComponent(
@@ -86,6 +89,10 @@ public:
     bool IsDepthWriteMaskEnabled() const;
 
     void SetDepthWriteMaskEnabled(const bool isEnabled);
+
+    void SetIsOutlineApplied(const bool value);
+
+    bool GetIsOutlineApplied() const;
 
 private:
     void SyncRenderData();

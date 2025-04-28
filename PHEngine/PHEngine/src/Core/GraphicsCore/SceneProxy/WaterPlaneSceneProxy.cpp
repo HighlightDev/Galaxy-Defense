@@ -25,6 +25,7 @@ WaterPlaneSceneProxy::WaterPlaneSceneProxy(const WaterPlaneComponent* component)
 
 void WaterPlaneSceneProxy::PostConstructorInitialize()
 {
+    PrimitiveSceneProxy::PostConstructorInitialize();
     static constexpr uint64_t functionId = Hash64_CT("WaterPlaneSceneProxy::PostConstructorInitialize");
 
     const auto shaderIdName = "ForwardNonSkeletalBase Shader";

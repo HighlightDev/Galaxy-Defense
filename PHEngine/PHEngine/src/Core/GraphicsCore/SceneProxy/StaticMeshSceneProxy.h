@@ -19,9 +19,12 @@ class StaticMeshSceneProxy : public PrimitiveSceneProxy {
     using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
     using PlanarReflectionShaderType
         = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
+    using OutlineShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
 
 protected:
     MeshRenderData m_renderData;
+
+    std::shared_ptr<MaterialProxy> mOutlineMaterialProxy;
 
 protected:
     std::shared_ptr<ShaderType> GetShader() const;
@@ -46,6 +49,12 @@ public:
     void RenderPlanarReflection(
         const glm::vec4& plane,
         const glm::mat4& mirrorMatrix,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState) override;
+
+    void RenderOutline(
+        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
         const glm::mat4& projectionMatrix,
         ActiveBindedState& activeBindedState) override;

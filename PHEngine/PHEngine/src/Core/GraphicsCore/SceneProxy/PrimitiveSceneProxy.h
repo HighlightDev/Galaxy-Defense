@@ -62,11 +62,15 @@ protected:
 
     std::shared_ptr<IShader> m_planarReflectionShader;
 
+    std::shared_ptr<IShader> m_outlineShader;
+
     std::shared_ptr<MaterialProxy> mMaterialProxy;
 
     bool mCanBloomBeApplied{false};
 
     bool mDepthWriteMaskEnabled{true};
+
+    bool mIsOutlineApplied{false};
 
     glm::vec3 mOriginPosition;
 
@@ -107,6 +111,14 @@ public:
     {
     }
 
+    virtual void RenderOutline(
+        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState)
+    {
+    }
+
     virtual bool IsDeferred() const = 0;
 
     virtual eMeshFacing GetMeshFrontFace() const;
@@ -127,6 +139,10 @@ public:
     bool IsDepthWriteMaskEnabled() const;
 
     void SetDepthWriteMaskEnabled(const bool isEnabled);
+
+    bool GetIsOutlineApplied() const;
+
+    void SetIsOutlineApplied(const bool value);
 
     virtual RenderInfo GetRenderInfo() const = 0;
 

@@ -8,5 +8,6 @@ void main()
 {
     vec3 albedoColor = GetMaterialAlbedo(VsOutput);
     float alpha = GetMaterialAlphaMask(VsOutput);
-    FragColor = vec4(albedoColor, alpha);
+    vec4 emissionColor = GetMaterialEmission(VsOutput);
+    FragColor = vec4(mix(albedoColor, emissionColor.rgb, emissionColor.a), alpha);
 }

@@ -35,6 +35,7 @@ void SkeletalMeshSceneProxy::CleanUp()
 
 void SkeletalMeshSceneProxy::PostConstructorInitialize()
 {
+    PrimitiveSceneProxy::PostConstructorInitialize();
     static constexpr uint64_t functionId = Hash64_CT("SkeletalMeshSceneProxy::PostConstructorInitialize");
 
     const ShaderParams shaderParams(
