@@ -25,8 +25,12 @@ protected:
 
     glm::mat4 m_relativeMatrix;
 
+    glm::mat4 m_outlineMatrix;
+
+    bool bIsRootComponent{false};
+
+    float mOutlineThickness{0.0f};
 public:
-    bool bIsRootComponent = false;
 
     SceneComponent(
         const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);
@@ -41,6 +45,8 @@ public:
 
     /* This method works every time when this component has dirty transform */
     virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix = glm::mat4(1));
+
+    virtual void UpdateOutlineMatrix(const glm::mat4& parentRelativeMatrix = glm::mat4(1));
 
     void SetIsTransformationDirty(const bool isDirty);
 
@@ -68,11 +74,21 @@ public:
 
     glm::mat4 GetRelativeMatrix() const;
 
+    glm::mat4 GetOutlineMatrix() const;
+
     void AddTranslation(const glm::vec3& offsetTranslation);
 
     glm::vec3 GetHierarchyAccumulatedTranslation() const;
 
     glm::quat GetHierarchyAccumulatedRotator() const;
+
+    void SetIsRootComponent(const bool isRootComponent);
+
+    bool GetIsRootComponent() const;
+
+    void SetOutlineThickness(const float outlineThickness);
+
+    float GetOutlineThickness() const;
 
 private:
     void IterateHierarchyUpCollectRotator(const std::weak_ptr<Actor>& currentOwnerWp, glm::quat& accumulatedRotator) const;

@@ -128,6 +128,25 @@ void StaticMeshSceneProxy::RenderPlanarReflection(
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
 }
 
+void StaticMeshSceneProxy::RenderOutlineStencil(
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
+    ActiveBindedState& activeBindedState)
+{
+    const auto& outlineShader = std::static_pointer_cast<StaticMeshSceneProxy::OutlineShaderType>(m_outlineShader);
+
+    if (mIsOutlineApplied) {
+        const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(outlineShader->GetShaderName());
+        if (needToRebindShader) {
+            outlineShader->ExecuteShader();
+        }
+        outlineShader->GetMaterialShader()->LoadUniformValues(mOutlineMaterialProxy, activeBindedState);
+        outlineShader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+        m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    }
+}
+
 void StaticMeshSceneProxy::RenderOutline(
     const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
     const glm::mat4& viewMatrix,
@@ -142,8 +161,7 @@ void StaticMeshSceneProxy::RenderOutline(
             outlineShader->ExecuteShader();
         }
         outlineShader->GetMaterialShader()->LoadUniformValues(mOutlineMaterialProxy, activeBindedState);
-        outlineShader->GetVertexFactoryShader()->SetMatrices(
-            m_relativeMatrix * glm::scale(glm::mat4(1), glm::vec3(3.5f)), viewMatrix, projectionMatrix);
+        outlineShader->GetVertexFactoryShader()->SetMatrices(m_outlineMatrix, viewMatrix, projectionMatrix);
         m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
     }
 }

@@ -61,7 +61,7 @@ void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMat
         if (const auto& sceneSp = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                 sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(
-                    mSceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
+                    mSceneProxyId, GetObjectId(), functionId, m_relativeMatrix, m_outlineMatrix, GetTransformedBoundingBox());
                 const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
                 if (primitiveSp) {
                     primitiveSp->SetOriginPosition(mBoundingBox.GetOrigin());
@@ -241,10 +241,10 @@ void PrimitiveComponent::SyncRenderData()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetObjectId(),
                         functionId,
-                        [this, sceneRendererSp, isOutlineApplied = mIsOutlineApplied]() {
+                        [this, sceneRendererSp]() {
                             const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
                             if (primitiveSp) {
-                                primitiveSp->SetIsOutlineApplied(isOutlineApplied);
+                                primitiveSp->SetIsOutlineApplied(mIsOutlineApplied);
                             }
                         });
                     bIsOutlineStateDirty = false;

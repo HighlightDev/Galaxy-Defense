@@ -48,16 +48,18 @@ namespace Graphics {
 namespace Renderer {
 SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     : m_interThreadMgr(interThreadMgr)
-    , m_gbuffer(std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
-          0,
-          0,
-          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
-    , m_resolvedSceneFramebuffer(std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
-          0,
-          0,
-          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+    , m_gbuffer(
+          std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
+              0,
+              0,
+              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+    , m_resolvedSceneFramebuffer(
+          std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
+              0,
+              0,
+              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
     , m_deferredLightShader()
     , m_fontShader()
     , mDepthCollectShaderSkeletal()
@@ -68,11 +70,12 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , bLightProxiesDirty(false)
     , bPlanarReflectionProxiesDirty(false)
     , mActiveBindedState()
-    , mPostFxRenderer(std::make_unique<PostFxRenderer>(ViewPortInfo(
-          0,
-          0,
-          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+    , mPostFxRenderer(
+          std::make_unique<PostFxRenderer>(ViewPortInfo(
+              0,
+              0,
+              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
     ,
 #if DEBUG
     mDebugPhysicsRenderData()
@@ -500,17 +503,16 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
 
 void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneView>& sceneView)
 {
-    const auto& cameraProxy = sceneView->GetCameraProxy();
-
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
+    m_gbuffer->BindDeferredGBuffer();
+
+    OutlinePass(sceneView);
 
     RenderState renderState;
     renderState.GetBlendingState().SetIsBlendingEnabled(false);
-
     renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
-
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
@@ -519,8 +521,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     renderState.BindRenderState();
 
     // Deferred shading collect info
-    m_gbuffer->BindDeferredGBuffer();
-
+    const auto& cameraProxy = sceneView->GetCameraProxy();
     const auto& viewMatrix = cameraProxy->GetViewMatrix();
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
@@ -739,7 +740,7 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::OUTLINE, 0xFF)
         .SetStencilMask(0xFF);
     renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
     renderState.BindRenderState();
@@ -750,13 +751,13 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
 
     // Write outline value to stencil for objects which has to be outlined
     {
+        glColorMask(false, false, false, false);
         if (mSkeletalProxiesVec.size() > 0) {
             for (auto& proxy : mSkeletalProxiesVec) {
                 const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
                     && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
                 if (bShouldRender && proxy->GetIsOutlineApplied()) {
-                    glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::OUTLINE, 0xFF);
-                    proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
+                    proxy->RenderOutlineStencil(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
                 }
             }
         }
@@ -766,20 +767,23 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
                 const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
                     && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
                 if (bShouldRender && proxy->GetIsOutlineApplied()) {
-                    glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::OUTLINE, 0xFF);
-                    proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
+                    proxy->RenderOutlineStencil(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
                 }
             }
         }
+        glColorMask(true, true, true, true);
     }
 
     // Draw outline (scaled up objects) only where stencil value is not equal to outline
     {
         renderState.GetStencilState()
-        .SetIsStencilTestEnabled(true)
-        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::OUTLINE, 0xFF)
-        .SetStencilMask(0x00);
+            .SetIsStencilTestEnabled(true)
+            .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
+            .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::OUTLINE, 0xFF)
+            .SetStencilMask(0x00);
+
+        renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+        renderState.BindRenderState();
 
         if (mSkeletalProxiesVec.size() > 0) {
             for (auto& proxy : mSkeletalProxiesVec) {
@@ -801,6 +805,13 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
             }
         }
     }
+    renderState.GetStencilState()
+        .SetIsStencilTestEnabled(true)
+        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilMask(0xFF);
+    renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+    renderState.BindRenderState();
 }
 
 void SceneRenderer::PlanarReflectionPass()
@@ -1128,7 +1139,7 @@ std::shared_ptr<PrimitiveSceneProxy> SceneRenderer::GetPrimitiveProxyByProxyId(c
 {
     std::shared_ptr<PrimitiveSceneProxy> result = nullptr;
 
-    const auto foundPrimitiveProxyIt
+    auto foundPrimitiveProxyIt
         = std::find_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto& primitiveProxy) {
               return proxyId == primitiveProxy->GetSceneProxyId();
           });
@@ -1221,10 +1232,11 @@ void SceneRenderer::RemoveLightProxyByProxyId(const int32_t proxyId)
 
 void SceneRenderer::RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId)
 {
-    PlanarReflectionProxiesVector.erase(std::remove_if(
-        PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [proxyId](const auto& planarReflectionProxy) {
-            return planarReflectionProxy->GetSceneProxyId() == proxyId;
-        }));
+    PlanarReflectionProxiesVector.erase(
+        std::remove_if(
+            PlanarReflectionProxiesVector.begin(),
+            PlanarReflectionProxiesVector.end(),
+            [proxyId](const auto& planarReflectionProxy) { return planarReflectionProxy->GetSceneProxyId() == proxyId; }));
 }
 
 void SceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy)
@@ -1311,16 +1323,18 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
     const int32_t creatorObjectId,
     const uint64_t functionId,
     const glm::mat4& newRelativeMatrix,
+    const glm::mat4& newOutlineMatrix,
     const BoundingBox3D& newTransformedBoundingBox)
 {
     m_interThreadMgr.ExecuteOnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         creatorObjectId,
         functionId,
-        [this, primitiveSceneProxyIndex, newRelativeMatrix, newTransformedBoundingBox]() {
+        [this, primitiveSceneProxyIndex, newRelativeMatrix, newOutlineMatrix, newTransformedBoundingBox]() {
             const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
             if (primitiveSp) {
                 primitiveSp->SetTransformationMatrix(newRelativeMatrix);
+                primitiveSp->SetOutlineMatrix(newOutlineMatrix);
                 primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
             }
         });

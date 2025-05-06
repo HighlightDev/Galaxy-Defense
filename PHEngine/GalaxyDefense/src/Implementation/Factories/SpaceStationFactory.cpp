@@ -57,6 +57,7 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     c_mesh->SetIsOutlineApplied(true);
+    c_mesh->SetOutlineThickness(1.0f);
     towerActor->AddComponent(c_mesh);
 
     const auto& ghostController = std::make_shared<GhostController>(

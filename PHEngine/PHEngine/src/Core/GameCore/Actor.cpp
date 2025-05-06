@@ -26,7 +26,7 @@ Actor::Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore
     , m_parent()
 {
     assert(m_rootComponent);
-    m_rootComponent->bIsRootComponent = true;
+    m_rootComponent->SetIsRootComponent(true);
 
     AddEngineProperty(mIsVisible);
     AddEngineProperty(mIsEnabled);

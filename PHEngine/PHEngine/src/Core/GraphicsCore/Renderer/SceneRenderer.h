@@ -168,6 +168,7 @@ public:
         const int32_t creatorObjectId,
         const uint64_t functionId,
         const glm::mat4& newRelativeMatrix,
+        const glm::mat4& newOutlineMatrix,
         const BoundingBox3D& newTransformedBoundingBox);
 
     void UpdateLightComponentTransform_OnRenderThread(

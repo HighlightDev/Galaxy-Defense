@@ -56,6 +56,8 @@ class PrimitiveSceneProxy : public SceneProxyBase, public AProxyVisibilityContro
 protected:
     glm::mat4 m_relativeMatrix;
 
+    glm::mat4 m_outlineMatrix;
+
     std::shared_ptr<Skin> m_skin;
 
     std::shared_ptr<IShader> m_shader;
@@ -71,6 +73,8 @@ protected:
     bool mDepthWriteMaskEnabled{true};
 
     bool mIsOutlineApplied{false};
+
+    float mOutlineThickness{0.0f};
 
     glm::vec3 mOriginPosition;
 
@@ -119,6 +123,14 @@ public:
     {
     }
 
+    virtual void RenderOutlineStencil(
+        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState)
+    {
+    }
+
     virtual bool IsDeferred() const = 0;
 
     virtual eMeshFacing GetMeshFrontFace() const;
@@ -149,6 +161,8 @@ public:
     void SetOriginPosition(const glm::vec3& origin);
 
     glm::vec3 GetOriginPosition() const;
+
+    void SetOutlineMatrix(const glm::mat4& outlineMatrix);
 
 public:
     template<typename VertexFactoryType, typename BaseShaderType>

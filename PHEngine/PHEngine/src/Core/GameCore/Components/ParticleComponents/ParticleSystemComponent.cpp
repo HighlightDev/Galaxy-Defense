@@ -163,7 +163,7 @@ void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelati
             if (const auto& sceneSP = m_sceneWP.lock()) {
                 if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                     sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(
-                        mSceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
+                        mSceneProxyId, GetObjectId(), functionId, glm::mat4(1), m_relativeMatrix, GetTransformedBoundingBox());
                 }
             }
         }

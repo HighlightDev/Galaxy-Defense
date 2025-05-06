@@ -17,6 +17,7 @@ PrimitiveSceneProxy::PrimitiveSceneProxy(
     , AProxyVisibilityController(component->IsVisible())
     , bTransformInitialized(false)
     , m_relativeMatrix(component->GetRelativeMatrix())
+    , m_outlineMatrix(component->GetOutlineMatrix())
     , mMaterialProxy(materialProxy)
     , mSortOrderValue(component->GetSortOrderValue())
     , mCanBloomBeApplied(component->CanBloomBeApplied())
@@ -59,6 +60,11 @@ void PrimitiveSceneProxy::SetTransformationMatrix(const glm::mat4& relativeMatri
 {
     bTransformInitialized = true;
     m_relativeMatrix = relativeMatrix;
+}
+
+void PrimitiveSceneProxy::SetOutlineMatrix(const glm::mat4& outlineMatrix)
+{
+    m_outlineMatrix = outlineMatrix;
 }
 
 std::shared_ptr<Skin> PrimitiveSceneProxy::GetSkin() const

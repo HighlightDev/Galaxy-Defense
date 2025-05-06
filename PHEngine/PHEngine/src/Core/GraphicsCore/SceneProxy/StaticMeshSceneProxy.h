@@ -59,6 +59,12 @@ public:
         const glm::mat4& projectionMatrix,
         ActiveBindedState& activeBindedState) override;
 
+    virtual void RenderOutlineStencil(
+        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState) override;
+
     bool IsDeferred() const override;
 
     eMeshFacing GetMeshFrontFace() const override;

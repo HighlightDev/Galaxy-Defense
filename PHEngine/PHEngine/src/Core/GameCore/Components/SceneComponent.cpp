@@ -21,11 +21,14 @@ SceneComponent::SceneComponent(
           std::make_shared<EngineObjectProperty<glm::vec3>>(scale, "p_scale", [=](const glm::vec3& scale) { SyncScale(scale); }))
     , m_TransformTranslation(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_translation"))
     , bTransformationDirty(true)
-    , mTransform(std::make_shared<Transform>(
-          translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
-    , m_additionalRotationEuler(std::make_shared<EngineObjectProperty<glm::vec3>>(
-          glm::vec3(0.0f), "p_rotator", [=](const glm::vec3& rotator) { SetIsTransformationDirty(true); }))
+    , mTransform(
+          std::make_shared<Transform>(
+              translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
+    , m_additionalRotationEuler(
+          std::make_shared<EngineObjectProperty<glm::vec3>>(
+              glm::vec3(0.0f), "p_rotator", [=](const glm::vec3& rotator) { SetIsTransformationDirty(true); }))
     , m_relativeMatrix(1)
+    , m_outlineMatrix(1)
 {
     AddEngineProperty(m_additionalRotationEuler);
     AddEngineProperty(m_TransformScale);
@@ -60,10 +63,58 @@ void SceneComponent::AddTranslation(const glm::vec3& offsetTranslation)
     SetTranslation(mTransform->Translation + offsetTranslation);
 }
 
+void SceneComponent::SetOutlineThickness(const float outlineThickness)
+{
+    if (mOutlineThickness != outlineThickness) {
+        mOutlineThickness = outlineThickness;
+        SetIsTransformationDirty(false);
+    }
+}
+
+float SceneComponent::GetOutlineThickness() const
+{
+    return mOutlineThickness;
+}
+
+void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentRelativeMatrix)
+{
+    if (!mIsEnabled)
+        return;
+
+    // Update current outline matrix
+
+    const glm::vec3 thicknessScale = glm::vec3(mOutlineThickness) / mTransform->Scale;
+
+    const glm::mat4 identityMatrix(1);
+    m_outlineMatrix = identityMatrix;
+    m_outlineMatrix *= parentRelativeMatrix;
+    m_outlineMatrix *= glm::translate(identityMatrix, mTransform->Translation);
+    m_outlineMatrix *= glm::scale(identityMatrix, mTransform->Scale + thicknessScale);
+
+    if (bIsRootComponent) {
+        const glm::mat4 pitchRotation
+            = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().x), AXIS_RIGHT);
+        const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().y), AXIS_UP);
+        const glm::mat4 rollRotation
+            = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().z), AXIS_FORWARD);
+
+        m_outlineMatrix *= pitchRotation;
+        m_outlineMatrix *= yawRotation;
+        m_outlineMatrix *= rollRotation;
+    }
+
+    const auto nRotator = glm::normalize(mTransform->Rotator);
+    m_outlineMatrix *= glm::toMat4(nRotator);
+
+    SetIsTransformationDirty(false);
+}
+
 void SceneComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
 {
     if (!mIsEnabled)
         return;
+
+    UpdateOutlineMatrix(parentRelativeMatrix);
 
     // Update current relative matrix
 
@@ -203,6 +254,21 @@ void SceneComponent::IterateHierarchyUpCollectTranslation(
         IterateHierarchyUpCollectTranslation(currentOwnerSp->GetParent(), accumulatedTranslation);
         accumulatedTranslation += currentOwnerSp->GetRootComponent()->GetTranslation();
     }
+}
+
+glm::mat4 SceneComponent::GetOutlineMatrix() const
+{
+    return m_outlineMatrix;
+}
+
+void SceneComponent::SetIsRootComponent(const bool isRootComponent)
+{
+    bIsRootComponent = isRootComponent;
+}
+
+bool SceneComponent::GetIsRootComponent() const
+{
+    return bIsRootComponent;
 }
 
 } // namespace EngineCore

@@ -110,7 +110,7 @@ void Scene::PostLevelInit()
 
     MaterialParser materialParser;
     mOutlineMaterialSp = materialParser.ParseMaterialDescriptor("OutlineMaterial.m");
-    MaterialPropertySetter::SetMaterialPropertyValue(mOutlineMaterialSp, "color", glm::vec3(1.0, 0.0, 1.0));
+    MaterialPropertySetter::SetMaterialPropertyValue(mOutlineMaterialSp, "color", glm::vec3(0.8, 1.0, 0.2));
     RegisterMaterialInstance(mOutlineMaterialSp);
 }
 
