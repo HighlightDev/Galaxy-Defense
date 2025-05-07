@@ -87,10 +87,10 @@ void EditorLevel::CreateScene()
         200.0f);
 
     constexpr float c_levelExtent = 60.0f;
-    spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(), glm::vec3(c_levelExtent, 5.0f, c_levelExtent)));
-    spaceCamera->SetMaxDistanceFromTargetToCamera(200.0f);
     spaceCamera->SetMinDistanceFromTargetToCamera(20.0f);
-    spaceCamera->SetDistanceFromTargetToCamera(200.0f);
+    spaceCamera->InitializeMaxDistanceToCamera(
+        BoundingBox3D(glm::vec3(), glm::vec3(c_levelExtent, 5.0f, c_levelExtent)), glm::radians(60.0f));
+    spaceCamera->SetDistanceFromTargetToCamera(spaceCamera->GetMaxDistanceFromTargetToCamera());
     sceneSp->RegisterMainCamera(spaceCamera);
     spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);
 

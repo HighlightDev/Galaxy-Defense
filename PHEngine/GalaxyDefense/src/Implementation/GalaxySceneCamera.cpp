@@ -18,15 +18,15 @@ GalaxySceneCamera::GalaxySceneCamera(
     const float camDistanceToThirdPersonTarget,
     const glm::vec3& thirdPersonTargetOffset)
     : ThirdPersonCamera(
-        cameraName,
-        cameraType,
-        scene,
-        viewPort,
-        viewProjectionInfo,
-        initPitchDeg,
-        initYawDeg,
-        camDistanceToThirdPersonTarget,
-        thirdPersonTargetOffset)
+          cameraName,
+          cameraType,
+          scene,
+          viewPort,
+          viewProjectionInfo,
+          initPitchDeg,
+          initYawDeg,
+          camDistanceToThirdPersonTarget,
+          thirdPersonTargetOffset)
     , mFallbackToStartPositionTimer()
 {
     mFallbackToStartPositionTimer.SetIsPausable(true);
@@ -91,9 +91,30 @@ void GalaxySceneCamera::Tick(const float deltaTime)
             const glm::vec2 nCameraMovementDir = glm::normalize(centerOfScreen - mousePosition);
 
             const float s_movementPower = 100.0f * deltaTime;
-            m_actualTargetVector += glm::vec3(nCameraMovementDir.x * s_movementPower, 0, nCameraMovementDir.y * s_movementPower);
-            SetTransformationDirty();
-            bFallbackToStartPositionFlag = false;
+            const auto& newTargetVector = m_actualTargetVector
+                + glm::vec3(nCameraMovementDir.x * s_movementPower, 0, nCameraMovementDir.y * s_movementPower);
+
+            const glm::vec2 levelBoundariesMin = glm::vec2(mLevelBoundaries.GetMin().x, mLevelBoundaries.GetMin().z);
+            const glm::vec2 levelBoundariesMax = glm::vec2(mLevelBoundaries.GetMax().x, mLevelBoundaries.GetMax().z);
+            const glm::vec2 cameraPosition = glm::vec2(newTargetVector.x, newTargetVector.z);
+            const bool isInsideLevelBoundaries
+                = EngineMath::TestPointInAABB(levelBoundariesMin, levelBoundariesMax, cameraPosition);
+            if (isInsideLevelBoundaries)
+            {
+                m_actualTargetVector = EngineMath::LerpVec3(
+                    glm::clamp(m_cameraMovementTime, 0.0f, s_cameraMovementAccelerationTime),
+                    0.0f,
+                    s_cameraMovementAccelerationTime,
+                    m_actualTargetVector,
+                    newTargetVector);
+                SetTransformationDirty();
+                bFallbackToStartPositionFlag = false;
+                m_cameraMovementTime += deltaTime;
+            } else {
+                m_cameraMovementTime = 0.0f;
+            }
+        } else {
+            m_cameraMovementTime = 0.0f;
         }
     }
 
@@ -123,8 +144,13 @@ void GalaxySceneCamera::Tick(const float deltaTime)
     }
 }
 
-void GalaxySceneCamera::SetLevelBoundaries(const BoundingBox3D& levelBoundaries)
+void GalaxySceneCamera::InitializeMaxDistanceToCamera(const BoundingBox3D& levelBoundaries, const float FoVRadians)
 {
     mLevelBoundaries = levelBoundaries;
+    const float halfLevelWidth = std::abs(levelBoundaries.GetMax().x - levelBoundaries.GetMin().x) * 0.5f;
+    float halfFovRadians = FoVRadians * 0.5f;
+    halfFovRadians = std::clamp(halfFovRadians, 0.0f, EngineMath::PI_HALF - 0.01f); // avoid division by zero
+    const float maxDistance = halfLevelWidth / std::tan(halfFovRadians);
+    m_maxDistanceFromTargetToCamera = maxDistance;
 }
 } // namespace Game

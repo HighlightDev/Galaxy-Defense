@@ -144,10 +144,9 @@ void CombatLevel::CreateScene()
             std::abs(levelData.LevelBoundaryMax.x - levelData.LevelBoundaryMin.x),
             50.0f,
             std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y)));
-    spaceCamera->SetLevelBoundaries(levelBoundary);
-    spaceCamera->SetMaxDistanceFromTargetToCamera(150.0f);
     spaceCamera->SetMinDistanceFromTargetToCamera(20.0f);
-    spaceCamera->SetDistanceFromTargetToCamera(150.0f);
+    spaceCamera->InitializeMaxDistanceToCamera(levelBoundary, glm::radians(60.0f));
+    spaceCamera->SetDistanceFromTargetToCamera(spaceCamera->GetMaxDistanceFromTargetToCamera());
     sceneSp->RegisterMainCamera(spaceCamera);
     spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);
 

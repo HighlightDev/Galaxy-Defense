@@ -17,6 +17,8 @@ class GalaxySceneCamera : public ThirdPersonCamera {
 
     static constexpr uint32_t s_userIdleTimeLimit{2000}; // after 3000 ms return camera to start position of scene
 
+    static constexpr float s_cameraMovementAccelerationTime{0.5f};
+
     BoundingBox3D mLevelBoundaries;
 
     CameraFrustum mCameraFrustum;
@@ -26,6 +28,8 @@ class GalaxySceneCamera : public ThirdPersonCamera {
     bool bFallbackToStartPositionFlag{false};
 
     static constexpr float s_screenThresholdOffset{10.0f};
+
+    float m_cameraMovementTime{0.0f};
 
 public:
     GalaxySceneCamera(
@@ -41,7 +45,7 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void SetLevelBoundaries(const BoundingBox3D& levelBoundaries);
+    void InitializeMaxDistanceToCamera(const BoundingBox3D& levelBoundaries, const float FoVRadians);   
 
 protected:
     void OnTransformationUpdated() override;
