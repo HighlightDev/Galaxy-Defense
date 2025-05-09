@@ -285,7 +285,7 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
         renderState.GetStencilState()
             .SetIsStencilTestEnabled(false)
             .SetStencilOperation(0, 0, 0)
-            .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0)
+            .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
             .SetStencilMask(0x00);
 
         renderState.BindRenderState();
@@ -569,7 +569,7 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0);
     renderState.BindRenderState();
     // TODO: Make some check if light source (point or spot light) is too far from current view
@@ -832,7 +832,7 @@ void SceneRenderer::PlanarReflectionPass()
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0);
 
     renderState.BindRenderState();
@@ -910,7 +910,7 @@ void SceneRenderer::HudTextPass()
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0);
 
     renderState.BindRenderState();
@@ -945,7 +945,7 @@ void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0);
 
     renderState.BindRenderState();
@@ -1776,7 +1776,7 @@ void SceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::m
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(0, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0);
     renderState.BindRenderState();
     // todo: delete this crap and use buffers =\
