@@ -31,6 +31,7 @@ local UiRectangle = require("Ui/Core/uiRectangle")
 local UiLabel = require("Ui/Core/uiLabel")
 local UiToggleButton = require("Ui/Core/uiToggleButton")
 local UiProgressBar = require("Ui/Core/uiProgressBar")
+local UiSlider = require("Ui/Core/uiSlider")
 local LabelButton = require("Ui/Widgets/LabelButton")
 local Styles = require("Ui/Common/styles")
 
@@ -89,6 +90,9 @@ function SettingsOverlay:new(host)
     local testProgressBar = UiProgressBar:new(host, "TEST_PROGRESS_BAR")
     pauseSettingsOverlay:addWidget(testProgressBar)
 
+    local testSlider = UiSlider:new(host, "TEST_SLIDER")
+    pauseSettingsOverlay:addWidget(testSlider)
+
     local cancelButton = LabelButton:new(host, pauseSettingsOverlay, "nimbus_mono", "CancelButton")
     pauseSettingsOverlay:addCompoundWidget(cancelButton)
     cancelButton:subscribeOnMouseInputClickedCallback(function()
@@ -146,8 +150,8 @@ function SettingsOverlay:new(host)
         testProgressBar:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
         testProgressBar:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             100.0)
-        testProgressBar:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect
-            .widgetName, 100.0)
+            testProgressBar:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
+            100.0)
         testProgressBar:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, soundLabel.widgetName,
             30.0)
         testProgressBar:setHeight(50.0)
@@ -155,6 +159,23 @@ function SettingsOverlay:new(host)
         testProgressBar:setFillPercentValue(0.25)
         testProgressBar:setEmptyColorHexValue(0xAAEEFF)
         testProgressBar:setFilledColorHexValue(0xFFEEAA)
+
+        testSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
+        testSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+            100.0)
+        testSlider:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
+            100.0)
+        testSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, testProgressBar.widgetName,    
+            30.0)
+        testSlider:setHeight(50.0)
+        testSlider:setWidth(50.0)
+        testSlider:setZOrder(2)
+        testSlider:setSliderValue(0.5)
+        testSlider:setMaxSliderValue(1.0)
+        testSlider:setMinSliderValue(0.0)
+        testSlider:setSliderStep(0.01)
+        testSlider:setSliderThicknessPixels(10.0)
+        testSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL)
 
         applyButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
         applyButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,

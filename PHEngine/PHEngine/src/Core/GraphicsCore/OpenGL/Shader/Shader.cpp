@@ -138,7 +138,11 @@ void Shader::ProcessAllPredefines()
 
 uint32_t Shader::GetSubroutineIndex(const int32_t shaderType, const std::string& subroutineName) const
 {
-    return glGetSubroutineIndex(m_shaderProgramID, (GLenum)shaderType, subroutineName.c_str());
+    const auto result = glGetSubroutineIndex(m_shaderProgramID, (GLenum)shaderType, subroutineName.c_str());
+    if (result == GL_INVALID_INDEX) {
+        LogInfo("Shader::GetSubroutineIndex => subroutine " + subroutineName + " not found in shader " + m_shaderParams.ShaderName);
+    }
+    return result;
 }
 
 void Shader::LoadSubroutineIndex(const int32_t shaderType, int32_t countIndices, uint32_t* subroutineIndices) const

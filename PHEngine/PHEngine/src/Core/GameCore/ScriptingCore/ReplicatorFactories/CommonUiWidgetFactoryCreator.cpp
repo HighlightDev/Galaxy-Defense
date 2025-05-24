@@ -10,7 +10,7 @@
 #include "UiProgressBarReplicatorFactory.h"
 #include "UiRectangleReplicatorFactory.h"
 #include "UiRowLayoutReplicatorFactory.h"
-#include "UiScrollBarReplicatorFactory.h"
+#include "UiSliderReplicatorFactory.h"
 #include "UiToggleButtonReplicatorFactory.h"
 
 namespace EngineCore {
@@ -38,8 +38,8 @@ std::unique_ptr<IReplicatorFactory> CommonUiWidgetFactoryCreator::GetReplicatorF
         return std::make_unique<UiProgressBarReplicatorFactory>();
     case eCommonUiWidgetType::UI_ROW_LAYOUT:
         return std::make_unique<UiRowLayoutReplicatorFactory>();
-    case eCommonUiWidgetType::UI_SCROLL_BAR:
-        return std::make_unique<UiScrollBarReplicatorFactory>();
+    case eCommonUiWidgetType::UI_SLIDER_BAR:
+        return std::make_unique<UiSliderReplicatorFactory>();
 
     default:
         assert(false);

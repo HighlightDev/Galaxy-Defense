@@ -1,8 +1,8 @@
-#include "UiScrollBarReplicatorFactory.h"
+#include "UiSliderReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/ThreadHelper.h"
-#include "Core/GameCore/GUI/UiElements/UiScrollBar.h"
+#include "Core/GameCore/GUI/UiElements/UiSlider.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
@@ -14,13 +14,13 @@ using namespace EngineCore::GUI;
 using namespace Graphics;
 
 namespace EngineCore::Scripts {
-int32_t UiScrollBarReplicatorFactory::CreateReplicator(
+int32_t UiSliderReplicatorFactory::CreateReplicator(
     const std::weak_ptr<Scene>& sceneWp,
     const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp,
     const std::string& jsonParamsStr) const
 {
     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
-    const auto uiScrollBarLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
+    const auto uiSliderLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
     std::string name = "";
     if (jsonParamsStr != "") {
@@ -31,25 +31,25 @@ int32_t UiScrollBarReplicatorFactory::CreateReplicator(
     }
 
     if (const auto& sceneSp = sceneWp.lock()) {
-        static constexpr auto functionId = Hash64_CT("UiScrollBarReplicatorFactory::CreateReplicator");
+        static constexpr auto functionId = Hash64_CT("UiSliderReplicatorFactory::CreateReplicator");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-            uiScrollBarLuaProxyId,
+            uiSliderLuaProxyId,
             functionId,
-            [sceneSp, luaScriptProcessorWp, uiScrollBarLuaProxyId, name]() {
+            [sceneSp, luaScriptProcessorWp, uiSliderLuaProxyId, name]() {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
-                const auto& createdScrollBar = std::make_shared<UiScrollBar>(name);
-                createdScrollBar->Initialize();
-                createdScrollBar->SetLuaProxyId(uiScrollBarLuaProxyId);
-                createdScrollBar->SetLuaScriptProcessor(luaScriptProcessorWp);
-                sceneSp->RegisterEngineToLuaReplicator(createdScrollBar);
-                createdScrollBar->SetPendingToCreateLuaProxy();
+                const auto& createdSlider = std::make_shared<UiSlider>(name);
+                createdSlider->Initialize();
+                createdSlider->SetLuaProxyId(uiSliderLuaProxyId);
+                createdSlider->SetLuaScriptProcessor(luaScriptProcessorWp);
+                sceneSp->RegisterEngineToLuaReplicator(createdSlider);
+                createdSlider->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiScrollBarReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+        LogInfo("UiSliderReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
         return -1;
     }
 
-    return uiScrollBarLuaProxyId;
+    return uiSliderLuaProxyId;
 }
 } // namespace EngineCore::Scripts

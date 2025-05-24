@@ -15,7 +15,7 @@ namespace EngineCore {
 namespace Scripts {
 class LuaScriptProcessor;
 
-class UiScrollBarReplicatorFactory : public IReplicatorFactory {
+class UiSliderReplicatorFactory : public IReplicatorFactory {
 public:
     int32_t CreateReplicator(
         const std::weak_ptr<::EngineCore::Scene>& sceneWp,
