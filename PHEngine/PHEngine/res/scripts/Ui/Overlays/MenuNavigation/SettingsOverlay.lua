@@ -175,6 +175,7 @@ function SettingsOverlay:new(host)
         testSlider:setMinSliderValue(0.0)
         testSlider:setSliderStep(0.01)
         testSlider:setSliderThicknessPixels(10.0)
+        testSlider:setBlobThicknessPixels(20.0)
         testSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL)
 
         applyButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)

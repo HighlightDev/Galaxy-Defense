@@ -15,6 +15,7 @@ void UiSliderShader::AccessAllUniformLocations(uint32_t shaderProgramId)
     u_translation = GetUniform("translation", shaderProgramId);
     u_scale = GetUniform("scale", shaderProgramId);
     u_opacity = GetUniform("opacity", shaderProgramId);
+    u_color = GetUniform("color", shaderProgramId);
     u_widthHeightPx = GetUniform("widthAndHeight", shaderProgramId);
     u_borderRadius = GetUniform("borderRadius", shaderProgramId);
 
@@ -27,6 +28,11 @@ void UiSliderShader::AccessAllUniformLocations(uint32_t shaderProgramId)
 void UiSliderShader::SetOpacity(const float opacity)
 {
     u_opacity.LoadUniform(opacity);
+}
+
+void UiSliderShader::SetColor(const glm::vec3& color)
+{
+    u_color.LoadUniform(color);
 }
 
 void UiSliderShader::SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale)

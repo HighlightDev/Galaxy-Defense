@@ -18,7 +18,12 @@ UiSliderSceneProxy::UiSliderSceneProxy(const UiSlider* uiSliderBar)
     , mSliderValue(uiSliderBar->GetSliderValue())
     , mSliderStep(uiSliderBar->GetSliderStep())
     , mSliderThicknessPixels(uiSliderBar->GetSliderThicknessPixels())
+    , mBlobThicknessPixels(uiSliderBar->GetBlobThicknessPixels())
     , mSliderType(uiSliderBar->GetSliderType())
+    , mSliderToCenterOffset(uiSliderBar->GetSliderToCenterOffset())
+    , mSliderThicknessScale(uiSliderBar->GetSliderThicknessScale())
+    , mBlobThicknessScale(uiSliderBar->GetBlobThicknessScale())
+    , mBlobToCenterOffset(uiSliderBar->GetBlobToCenterOffset())
 {
     SetSliderThicknessPixels(mSliderThicknessPixels);
 }
@@ -45,13 +50,30 @@ void UiSliderSceneProxy::Render()
 {
     mUiSliderShader->ExecuteShader();
     mUiSliderShader->LoadRenderSliderLineSubroutine();
-    const glm::vec2 scaleOffset
-        = glm::vec2((mSliderThicknessScale - (mSliderThicknessScale * mScale)) * 0.5f);
+
+    // Render slider background
+    glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
+    mUiSliderShader->SetTransform(mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * glm::vec2(mScale));
+    mUiSliderShader->SetColor(glm::vec3(0.0f, 0.0f, 0.0f));
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+
+    // Render slider line
+    scaleOffset = glm::vec2((mSliderThicknessScale - (mSliderThicknessScale * mScale)) * 0.5f);
     mUiSliderShader->SetTransform(
-        mNormalizedTranslation + scaleOffset + mCenterOffset, mSliderThicknessScale * glm::vec2(mScale));
+        mNormalizedTranslation + scaleOffset + mCenterOffset + mSliderToCenterOffset, mSliderThicknessScale * glm::vec2(mScale));
     mUiSliderShader->SetOpacity(mOpacity * mOverlayOpacity);
     mUiSliderShader->SetBorderRadius(10.0f);
     mUiSliderShader->SetWidthHeightPixels(glm::vec2(static_cast<float>(mWidthHightPixels.x), static_cast<float>(20.0f)));
+    mUiSliderShader->SetColor(glm::vec3(1.0f, 0.0f, 0.0f));
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+
+    // Render slider blob
+    mUiSliderShader->LoadRenderSliderBlobSubroutine();
+    scaleOffset = glm::vec2((mBlobThicknessScale - (mBlobThicknessScale * mScale)) * 0.5f);
+    mUiSliderShader->SetTransform(
+        mNormalizedTranslation + scaleOffset + mCenterOffset + mBlobToCenterOffset, mBlobThicknessScale * glm::vec2(mScale));
+    mUiSliderShader->SetTransform(
+        mNormalizedTranslation + mCenterOffset + mBlobToCenterOffset, mBlobThicknessScale * glm::vec2(mScale));
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     mUiSliderShader->StopShader();
 }
@@ -84,28 +106,36 @@ void UiSliderSceneProxy::SetOpacity(const float opacity)
 void UiSliderSceneProxy::SetSliderThicknessPixels(const int32_t thicknessPixels)
 {
     mSliderThicknessPixels = thicknessPixels;
-    if (const auto& parentCanvasSp = mParentCanvasProxy.lock()) {
-        const auto& canvasWidthHightPixels = parentCanvasSp->GetWidthHeight();
-        if (canvasWidthHightPixels.x > 0 && canvasWidthHightPixels.y > 0) {
+}
 
-            const float sliderThicknessSide
-                = UiSlider::eUiSliderType::Horizontal == mSliderType ? canvasWidthHightPixels.y : canvasWidthHightPixels.x;
-            if (mSliderThicknessPixels > sliderThicknessSide) {
-                mSliderThicknessPixels = sliderThicknessSide;
-            }
-            const float mSliderThicknessNormalized
-                = static_cast<float>(mSliderThicknessPixels) / static_cast<float>(sliderThicknessSide);
-            mSliderThicknessScale = glm::vec2(
-                UiSlider::eUiSliderType::Horizontal == mSliderType ? mNormalizedScale.x : mSliderThicknessNormalized,
-                UiSlider::eUiSliderType::Vertical == mSliderType ? mNormalizedScale.y : mSliderThicknessNormalized);
-        }
-    }
+void UiSliderSceneProxy::SetBlobThicknessPixels(const int32_t thicknessPixels)
+{
+    mBlobThicknessPixels = thicknessPixels;
 }
 
 void UiSliderSceneProxy::SetSliderType(const UiSlider::eUiSliderType sliderType)
 {
     mSliderType = sliderType;
-    SetSliderThicknessPixels(mSliderThicknessPixels); // Update thickness scale based on new type
+}
+
+void UiSliderSceneProxy::SetSliderToCenterOffset(const glm::vec2& offset)
+{
+    mSliderToCenterOffset = offset;
+}
+
+void UiSliderSceneProxy::SetBlobToCenterOffset(const glm::vec2& offset)
+{
+    mBlobToCenterOffset = offset;
+}
+
+void UiSliderSceneProxy::SetSliderThicknessScale(const glm::vec2& scale)
+{
+    mSliderThicknessScale = scale;
+}
+
+void UiSliderSceneProxy::SetBlobThicknessScale(const glm::vec2& scale)
+{
+    mBlobThicknessScale = scale;
 }
 
 void UiSliderSceneProxy::CleanUp()

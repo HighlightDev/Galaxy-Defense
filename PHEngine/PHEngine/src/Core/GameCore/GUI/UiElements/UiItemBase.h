@@ -223,8 +223,6 @@ protected:
     std::shared_ptr<IUiTransformable> TryFindAncestryUiItem(const std::string& name) const;
 
 private:
-    void TransformChanged();
-
     void RebuildBoundingArea();
     void RebuildNormalizedTransform();
 

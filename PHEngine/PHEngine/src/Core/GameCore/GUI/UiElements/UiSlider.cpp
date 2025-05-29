@@ -32,6 +32,7 @@ void UiSlider::SetSliderValue(const float value)
 {
     if (!EngineMath::FloatsNearEqual(value, mSliderValue)) {
         mSliderValue = value;
+        UpdateSliderToCenterOffset();
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
     }
 }
@@ -45,6 +46,7 @@ void UiSlider::SetMaxSliderValue(const float maxSliderValue)
 {
     if (!EngineMath::FloatsNearEqual(maxSliderValue, mMaxSliderValue)) {
         mMaxSliderValue = maxSliderValue;
+        UpdateSliderToCenterOffset();
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
@@ -54,6 +56,7 @@ void UiSlider::SetMinSliderValue(const float minSliderValue)
 {
     if (!EngineMath::FloatsNearEqual(minSliderValue, mMinSliderValue)) {
         mMinSliderValue = minSliderValue;
+        UpdateSliderToCenterOffset();
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
@@ -102,12 +105,86 @@ int32_t UiSlider::GetSliderThicknessPixels() const
     return mSliderThicknessPixels;
 }
 
+int32_t UiSlider::GetBlobThicknessPixels() const
+{
+    return mBlobThicknessPixels;
+}
+
 void UiSlider::SetSliderThicknessPixels(const int32_t thicknessPixels)
 {
     if (thicknessPixels != mSliderThicknessPixels) {
         mSliderThicknessPixels = thicknessPixels;
+        UpdateSliderToCenterOffset();
+        UpdateSliderThicknessScale();
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+void UiSlider::SetBlobThicknessPixels(const int32_t thicknessPixels)
+{
+    if (thicknessPixels != mBlobThicknessPixels) {
+        mBlobThicknessPixels = thicknessPixels;
+        UpdateSliderToCenterOffset();
+        UpdateSliderThicknessScale();
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+void UiSlider::UpdateSliderToCenterOffset()
+{
+    if (const auto& parentCanvasSp = mParentCanvas.lock()) {
+        const auto canvasWidthPixels = parentCanvasSp->GetWidth();
+        const auto canvasHeightPixels = parentCanvasSp->GetHeight();
+        const float sliderDenominator = eUiSliderType::Horizontal == mSliderType ? static_cast<float>(canvasHeightPixels)
+                                                                                 : static_cast<float>(canvasWidthPixels);
+        if (sliderDenominator > 0.0f) {
+            const float sliderThicknessHalf = (static_cast<float>(mSliderThicknessPixels) * 0.5f) / sliderDenominator;
+            mSliderToCenterOffset = glm::vec2(
+                mSliderType == eUiSliderType::Horizontal ? 0.0f : ((mWidth * 0.5f) / canvasWidthPixels) - sliderThicknessHalf,
+                mSliderType == eUiSliderType::Horizontal ? ((mHeight * 0.5f) / canvasHeightPixels) - sliderThicknessHalf : 0.0f);
+
+            const float blobThicknessHalf = (static_cast<float>(mBlobThicknessPixels) * 0.5f) / sliderDenominator;
+
+            const float sliderNormalizedValue
+                = glm::clamp((mSliderValue - mMinSliderValue) / (mMaxSliderValue - mMinSliderValue), 0.0f, 1.0f);
+            const float blobOffset = sliderNormalizedValue * (mWidth - mBlobThicknessPixels)
+                / (mSliderType == eUiSliderType::Horizontal ? static_cast<float>(canvasWidthPixels)
+                                                            : static_cast<float>(canvasHeightPixels));
+            mBlobToCenterOffset = glm::vec2(
+                mSliderType == eUiSliderType::Horizontal ? blobOffset
+                                                         : mSliderToCenterOffset.x + sliderThicknessHalf - blobThicknessHalf,
+                mSliderType == eUiSliderType::Horizontal ? mSliderToCenterOffset.y + sliderThicknessHalf - blobThicknessHalf
+                                                         : blobOffset);
+        }
+    }
+}
+
+void UiSlider::UpdateSliderThicknessScale()
+{
+    if (const auto& parentCanvasSp = mParentCanvas.lock()) {
+        const auto canvasWidthPixels = parentCanvasSp->GetWidth();
+        const auto canvasHeightPixels = parentCanvasSp->GetHeight();
+        const glm::vec2 normalizedScale(
+            static_cast<float>(mWidth) / static_cast<float>(canvasWidthPixels),
+            static_cast<float>(mHeight) / static_cast<float>(canvasHeightPixels));
+        if (canvasWidthPixels > 0 && canvasHeightPixels > 0) {
+
+            const float sliderThicknessSide = eUiSliderType::Horizontal == mSliderType ? canvasHeightPixels : canvasWidthPixels;
+            if (mSliderThicknessPixels > sliderThicknessSide) {
+                mSliderThicknessPixels = sliderThicknessSide;
+            }
+            const float sliderThicknessNormalized
+                = static_cast<float>(mSliderThicknessPixels) / static_cast<float>(sliderThicknessSide);
+            mSliderThicknessScale = glm::vec2(
+                UiSlider::eUiSliderType::Horizontal == mSliderType ? normalizedScale.x : sliderThicknessNormalized,
+                UiSlider::eUiSliderType::Vertical == mSliderType ? normalizedScale.y : sliderThicknessNormalized);
+
+            const float blobThicknessNormalized
+                = static_cast<float>(mBlobThicknessPixels) / static_cast<float>(sliderThicknessSide);
+            mBlobThicknessScale = glm::vec2(blobThicknessNormalized);
+        }
     }
 }
 
@@ -120,9 +197,40 @@ void UiSlider::SetSliderType(const eUiSliderType sliderType)
 {
     if (sliderType != mSliderType) {
         mSliderType = sliderType;
+        UpdateSliderToCenterOffset();
+        UpdateSliderThicknessScale();
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
+}
+
+void UiSlider::UpdateAnchorTransform()
+{
+    UiItemBase::UpdateAnchorTransform();
+    UpdateSliderToCenterOffset();
+    UpdateSliderThicknessScale();
+    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+    SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+}
+
+glm::vec2 UiSlider::GetSliderToCenterOffset() const
+{
+    return mSliderToCenterOffset;
+}
+
+glm::vec2 UiSlider::GetSliderThicknessScale() const
+{
+    return mSliderThicknessScale;
+}
+
+glm::vec2 UiSlider::GetBlobToCenterOffset() const
+{
+    return mBlobToCenterOffset;
+}
+
+glm::vec2 UiSlider::GetBlobThicknessScale() const
+{
+    return mBlobThicknessScale;
 }
 
 std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> UiSlider::CreateUiSceneProxy() const
@@ -156,6 +264,7 @@ void UiSlider::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         const auto max_slider_value = jsonObj["max_slider_value"].get<float>();
         if (!EngineMath::FloatsNearEqual(mMaxSliderValue, max_slider_value)) {
             mMaxSliderValue = max_slider_value;
+            UpdateSliderToCenterOffset();
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
@@ -163,6 +272,7 @@ void UiSlider::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         const auto min_slider_value = jsonObj["min_slider_value"].get<float>();
         if (!EngineMath::FloatsNearEqual(mMinSliderValue, min_slider_value)) {
             mMinSliderValue = min_slider_value;
+            UpdateSliderToCenterOffset();
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
@@ -170,6 +280,7 @@ void UiSlider::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         const auto slider_value = jsonObj["slider_value"].get<float>();
         if (!EngineMath::FloatsNearEqual(mSliderValue, slider_value)) {
             mSliderValue = slider_value;
+            UpdateSliderToCenterOffset();
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
@@ -184,6 +295,17 @@ void UiSlider::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         const auto slider_thickness_pixels = jsonObj["slider_thickness_pixels"].get<int32_t>();
         if (slider_thickness_pixels != mSliderThicknessPixels) {
             mSliderThicknessPixels = slider_thickness_pixels;
+            UpdateSliderToCenterOffset();
+            UpdateSliderThicknessScale();
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
+    if (jsonObj.contains("blob_thickness_pixels")) {
+        const auto blob_thickness_pixels = jsonObj["blob_thickness_pixels"].get<int32_t>();
+        if (blob_thickness_pixels != mBlobThicknessPixels) {
+            mBlobThicknessPixels = blob_thickness_pixels;
+            UpdateSliderToCenterOffset();
+            UpdateSliderThicknessScale();
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
@@ -191,6 +313,8 @@ void UiSlider::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         const auto slider_type = static_cast<eUiSliderType>(jsonObj["slider_type"].get<int32_t>());
         if (slider_type != mSliderType) {
             mSliderType = slider_type;
+            UpdateSliderToCenterOffset();
+            UpdateSliderThicknessScale();
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
@@ -247,7 +371,12 @@ void UiSlider::SyncDataOnRenderThread()
                                 sliderSceneProxy->SetMinSliderValue(mMinSliderValue);
                                 sliderSceneProxy->SetSliderStep(mSliderStep);
                                 sliderSceneProxy->SetSliderThicknessPixels(mSliderThicknessPixels);
+                                sliderSceneProxy->SetBlobThicknessPixels(mBlobThicknessPixels);
                                 sliderSceneProxy->SetSliderType(mSliderType);
+                                sliderSceneProxy->SetSliderToCenterOffset(mSliderToCenterOffset);
+                                sliderSceneProxy->SetBlobToCenterOffset(mBlobToCenterOffset);
+                                sliderSceneProxy->SetSliderThicknessScale(mSliderThicknessScale);
+                                sliderSceneProxy->SetBlobThicknessScale(mBlobThicknessScale);
                             }
                         });
                 }
@@ -277,6 +406,7 @@ void UiSlider::SyncDataOnLuaThread()
                      sliderStep = mSliderStep,
                      opacity = mOpacity,
                      sliderThicknessPixels = mSliderThicknessPixels,
+                     blobThicknessPixels = mBlobThicknessPixels,
                      sliderType = mSliderType]() {
                         if (const auto& sliderLuaProxy
                             = std::static_pointer_cast<UiSliderLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
@@ -287,6 +417,7 @@ void UiSlider::SyncDataOnLuaThread()
                             sliderLuaProxy->SetOpacity_FromGameThread(opacity);
                             sliderLuaProxy->SetSliderThicknessPixels_FromGameThread(sliderThicknessPixels);
                             sliderLuaProxy->SetSliderType_FromGameThread(sliderType);
+                            sliderLuaProxy->SetSliderBlobThicknessPixels_FromGameThread(blobThicknessPixels);
                         }
                     });
             }

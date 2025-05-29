@@ -14,6 +14,7 @@ class UiSliderShader : public Shader {
     using Base = Shader;
 
     Uniform u_opacity;
+    Uniform u_color;
     Uniform u_translation;
     Uniform u_scale;
     Uniform u_widthHeightPx;
@@ -26,6 +27,8 @@ public:
     UiSliderShader(const ShaderParams& params);
 
     void SetOpacity(const float opacity);
+
+    void SetColor(const glm::vec3& color);
 
     void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
 

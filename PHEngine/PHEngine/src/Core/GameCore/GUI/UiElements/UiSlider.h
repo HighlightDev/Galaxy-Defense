@@ -22,13 +22,21 @@ private:
     float mOpacity{1.0f};
 
     int32_t mSliderThicknessPixels{20};
+    int32_t mBlobThicknessPixels{40};
+    glm::vec2 mSliderThicknessScale{1.0f};
+    glm::vec2 mBlobThicknessScale{1.0f};
 
     eUiSliderType mSliderType{eUiSliderType::Horizontal};
+
+    glm::vec2 mSliderToCenterOffset{0.0f, 0.0f};
+    glm::vec2 mBlobToCenterOffset{0.0f, 0.0f};
 
 public:
     explicit UiSlider(const std::string& name = std::string(""));
 
     ~UiSlider() override;
+
+    void UpdateAnchorTransform() override;
 
     void SetMaxSliderValue(const float maxSliderValue);
 
@@ -52,11 +60,23 @@ public:
 
     int32_t GetSliderThicknessPixels() const;
 
+    int32_t GetBlobThicknessPixels() const;
+
     void SetSliderThicknessPixels(const int32_t thicknessPixels);
+
+    void SetBlobThicknessPixels(const int32_t thicknessPixels);
 
     eUiSliderType GetSliderType() const;
 
     void SetSliderType(const eUiSliderType sliderType);
+
+    glm::vec2 GetSliderToCenterOffset() const;
+
+    glm::vec2 GetSliderThicknessScale() const;
+
+    glm::vec2 GetBlobToCenterOffset() const;
+
+    glm::vec2 GetBlobThicknessScale() const;
 
     std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
@@ -79,5 +99,9 @@ private:
     void SyncDataOnRenderThread();
 
     void SyncDataOnLuaThread();
+
+    void UpdateSliderToCenterOffset();
+
+    void UpdateSliderThicknessScale();
 };
 } // namespace EngineCore::GUI

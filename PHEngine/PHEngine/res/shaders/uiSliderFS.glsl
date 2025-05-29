@@ -5,6 +5,7 @@ layout(location = 0) out vec4 FragColor;
 in vec2 texCoords;
 
 uniform float opacity;
+uniform vec3 color;
 uniform float borderRadius = 0;
 uniform vec2 widthAndHeight;
 
@@ -22,7 +23,7 @@ subroutine(renderSlider) vec4 renderSliderLine()
     vec2 center = widthAndHeight * 0.5;
     float borderRadiusOpacityCoef
         = 1.0 - (step(0.01, borderRadius) * step(0.0, udRoundBox(pixelPos - center, center, borderRadius)));
-    return vec4(vec3(1.0), borderRadiusOpacityCoef * opacity);
+    return vec4(color, borderRadiusOpacityCoef * opacity);
 }
 
 subroutine(renderSlider) vec4 renderSliderBlob()

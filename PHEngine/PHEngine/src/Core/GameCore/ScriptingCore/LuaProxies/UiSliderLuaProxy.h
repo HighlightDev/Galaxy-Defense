@@ -18,6 +18,7 @@ protected:
     float mOpacity{1.0f};
 
     int32_t mSliderThicknessPixels{20};
+    int32_t mBlobThicknessPixels{40};
     UiSlider::eUiSliderType mSliderType{UiSlider::eUiSliderType::Horizontal};
 
 public:
@@ -40,6 +41,8 @@ public:
     void SetSliderType_FromGameThread(const UiSlider::eUiSliderType sliderType);
 
     void SetSliderThicknessPixels_FromGameThread(const int32_t thicknessPixels);
+
+    void SetSliderBlobThicknessPixels_FromGameThread(const int32_t thicknessPixels);
 };
 } // namespace Scripts
 } // namespace EngineCore

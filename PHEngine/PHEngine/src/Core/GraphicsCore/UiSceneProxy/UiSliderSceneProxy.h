@@ -22,9 +22,14 @@ class UiSliderSceneProxy : public UiSceneProxyBase {
     float mOpacity{1.0f};
 
     int32_t mSliderThicknessPixels{20};
+    int32_t mBlobThicknessPixels{40};
     glm::vec2 mSliderThicknessScale{1.0f, 1.0f};
+    glm::vec2 mBlobThicknessScale{1.0f, 1.0f};
 
     UiSlider::eUiSliderType mSliderType{UiSlider::eUiSliderType::Horizontal};
+
+    glm::vec2 mSliderToCenterOffset{0.0f, 0.0f};
+    glm::vec2 mBlobToCenterOffset{0.0f, 0.0f};
 
 public:
     UiSliderSceneProxy(const UiSlider* uiSlider);
@@ -45,7 +50,17 @@ public:
 
     void SetSliderThicknessPixels(const int32_t thicknessPixels);
 
+    void SetBlobThicknessPixels(const int32_t thicknessPixels);
+
     void SetSliderType(const UiSlider::eUiSliderType sliderType);
+
+    void SetSliderToCenterOffset(const glm::vec2& offset);
+
+    void SetBlobToCenterOffset(const glm::vec2& offset);
+
+    void SetSliderThicknessScale(const glm::vec2& scale);
+
+    void SetBlobThicknessScale(const glm::vec2& scale);
 
     void CleanUp() override;
 

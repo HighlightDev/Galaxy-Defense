@@ -59,6 +59,10 @@ function UiSlider:new(host, name)
 			value = 20,
 			dirty = false
 		},
+		blob_thickness_pixels = {
+			value = 40,
+			dirty = false
+		},
 		slider_type = {
 			value = UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL,
 			dirty = false
@@ -96,6 +100,9 @@ function UiSlider:updateFromReplicatorData(host)
             end;
 			if parsedJson.slider_thickness_pixels ~= nil then
 				self.sliderProperties.slider_thickness_pixels.value = tonumber(parsedJson.slider_thickness_pixels);
+			end;
+			if parsedJson.blob_thickness_pixels ~= nil then
+				self.sliderProperties.blob_thickness_pixels.value = tonumber(parsedJson.blob_thickness_pixels);
 			end;
 			if parsedJson.slider_type ~= nil then
 				self.sliderProperties.slider_type.value = tonumber(parsedJson.slider_type);
@@ -137,6 +144,10 @@ function UiSlider:setSliderValue(sliderValue)
 	end;
 end;
 
+function UiSlider:getSliderValue()
+	return self.sliderProperties.slider_value.value;
+end;
+
 function UiSlider:setMaxSliderValue(maxSliderValue)
     assert(maxSliderValue ~= nil and type(maxSliderValue) == "number");
     if self.sliderProperties.max_slider_value.value ~= maxSliderValue then
@@ -166,6 +177,14 @@ function UiSlider:setSliderThicknessPixels(sliderThicknessPixels)
 	if self.sliderProperties.slider_thickness_pixels.value ~= sliderThicknessPixels then
 		self.sliderProperties.slider_thickness_pixels.value = sliderThicknessPixels;
 		self.sliderProperties.slider_thickness_pixels.dirty = true;
+	end;
+end;
+
+function UiSlider:setBlobThicknessPixels(blobThicknessPixels)
+	assert(blobThicknessPixels ~= nil and type(blobThicknessPixels) == "number");
+	if self.sliderProperties.blob_thickness_pixels.value ~= blobThicknessPixels then
+		self.sliderProperties.blob_thickness_pixels.value = blobThicknessPixels;
+		self.sliderProperties.blob_thickness_pixels.dirty = true;
 	end;
 end;
 

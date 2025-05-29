@@ -18,6 +18,7 @@ UiSliderLuaProxy::UiSliderLuaProxy(const std::shared_ptr<UiSlider>& ownerSlider)
     , mSliderStep(ownerSlider->GetSliderStep())
     , mOpacity(ownerSlider->GetOpacity())
     , mSliderThicknessPixels(ownerSlider->GetSliderThicknessPixels())
+    , mBlobThicknessPixels(ownerSlider->GetBlobThicknessPixels())
     , mSliderType(ownerSlider->GetSliderType())
 {
 }
@@ -51,6 +52,7 @@ std::string UiSliderLuaProxy::GetGameThreadData()
     jsonObj["slider_step"] = mSliderStep;
     jsonObj["opacity"] = mOpacity;
     jsonObj["slider_thickness_pixels"] = mSliderThicknessPixels;
+    jsonObj["blob_thickness_pixels"] = mBlobThicknessPixels;
     jsonObj["slider_type"] = static_cast<int32_t>(mSliderType);
     return jsonObj.dump();
 }
@@ -88,6 +90,11 @@ void UiSliderLuaProxy::SetSliderType_FromGameThread(const UiSlider::eUiSliderTyp
 void UiSliderLuaProxy::SetSliderThicknessPixels_FromGameThread(const int32_t thicknessPixels)
 {
     mSliderThicknessPixels = thicknessPixels;
+}
+
+void UiSliderLuaProxy::SetSliderBlobThicknessPixels_FromGameThread(const int32_t thicknessPixels)
+{
+    mBlobThicknessPixels = thicknessPixels;
 }
 
 } // namespace Scripts
