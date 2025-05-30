@@ -114,7 +114,7 @@ void Engine::Initialize()
         resObs->CollectResourceConsumptionInfo();
         LogInfo("Pid:", resObs->GetPid(), " mem mb:", resObs->GetLastMemoryUsageMegabytes());
     });
-    m_resourceConsumptionLogTimer.StartTimer();
+    //m_resourceConsumptionLogTimer.StartTimer();
 #endif
 
     const auto& thisSp = std::dynamic_pointer_cast<Engine>(shared_from_this());

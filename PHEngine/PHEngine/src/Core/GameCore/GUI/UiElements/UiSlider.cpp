@@ -233,6 +233,19 @@ glm::vec2 UiSlider::GetBlobThicknessScale() const
     return mBlobThicknessScale;
 }
 
+float UiSlider::GetValueFromMousePosition(const glm::ivec2& mousePositionScreenSpace) const
+{
+    float result = 0.0f;
+    if (mWidth > 0 && mHeight > 0) {
+        const auto& boundingArea = GetBoundingArea();
+        const float mouseExtensionNormalizedValue = eUiSliderType::Horizontal == mSliderType
+            ? static_cast<float>(mousePositionScreenSpace.x - boundingArea.GetMin().x) / static_cast<float>(mWidth)
+            : static_cast<float>(mousePositionScreenSpace.y - boundingArea.GetMin().y) / static_cast<float>(mHeight);
+        result = mMinSliderValue + (mouseExtensionNormalizedValue * (mMaxSliderValue - mMinSliderValue));
+    }
+    return result;
+}
+
 std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> UiSlider::CreateUiSceneProxy() const
 {
     return std::make_shared<UiSliderSceneProxy>(this);

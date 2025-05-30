@@ -90,6 +90,8 @@ public:
 
     std::string GetUiTypeString() const override;
 
+    float GetValueFromMousePosition(const glm::ivec2& mousePositionScreenSpace) const;
+
 protected:
     void OnRegistered() override;
 

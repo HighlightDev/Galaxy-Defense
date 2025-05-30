@@ -175,8 +175,12 @@ function SettingsOverlay:new(host)
         testSlider:setMinSliderValue(0.0)
         testSlider:setSliderStep(0.01)
         testSlider:setSliderThicknessPixels(10.0)
-        testSlider:setBlobThicknessPixels(20.0)
+        testSlider:setBlobThicknessPixels(40.0)
         testSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL)
+        testSlider:enableSliderMouseInputReceiver(host)
+        testSlider:subscribeOnSliderValueChangedCallback(function(newValue)
+            print("testSlider:subscribeOnSliderValueChangedCallback => newValue: " .. tostring(newValue))
+        end)
 
         applyButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
         applyButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,

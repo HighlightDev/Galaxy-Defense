@@ -22,6 +22,7 @@ UiInputSystem::UiInputSystem(const std::weak_ptr<UiCanvas>& owner)
     mMousePressedTimer.SetIntervalMs(300);
     mMousePressedTimer.SetIsRepeat(false);
     mMousePressedTimer.SetCallback(std::bind(&UiInputSystem::OnMousePressedTimerTimeout, this));
+    mMousePressedTimer.SetIsPausable(false);
 }
 
 UiInputSystem::~UiInputSystem()
@@ -60,11 +61,11 @@ void UiInputSystem::UnpausableTick(const float deltaTime)
                 }
 
                 mIsMouseKeyPressed = true;
-            } else if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::RELEASED) {
-                if (mMousePressedTimer.IsRunning() && mIsMouseKeyPressed) {
+            } else if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::RELEASED && mIsMouseKeyPressed) {
+                if (mMousePressedTimer.IsRunning()) {
                     mMousePressedTimer.StopTimer();
                     ownerSp->OnMouseClicked(mMouseKeyPressedPosition);
-                } else if (mIsMouseKeyPressed) {
+                } else {
                     ownerSp->OnMouseReleased(mMouseKeyPressedPosition);
                 }
 

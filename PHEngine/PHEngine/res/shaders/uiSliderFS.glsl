@@ -28,7 +28,7 @@ subroutine(renderSlider) vec4 renderSliderLine()
 
 subroutine(renderSlider) vec4 renderSliderBlob()
 {
-    return vec4(vec3(1.0), opacity);
+    return vec4(color, opacity);
 }
 
 void main(void)

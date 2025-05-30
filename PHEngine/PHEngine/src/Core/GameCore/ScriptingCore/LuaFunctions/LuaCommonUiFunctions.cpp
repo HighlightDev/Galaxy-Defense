@@ -10,6 +10,7 @@
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiCanvasLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiItemBaseLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiSliderLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiToggleButtonLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
@@ -155,6 +156,11 @@ void LuaCommonUiFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
         mOwnerPtr,
         std::bind(&LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver, this, std::placeholders::_1),
         "_EnableToggleButtonMouseInputReceiver");
+    LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::EnableSliderMouseInputReceiver"), void(int32_t)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaCommonUiFunctions::EnableSliderMouseInputReceiver, this, std::placeholders::_1),
+        "_EnableSliderMouseInputReceiver");
     LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::EnableMouseInputReceiverBase"), void(int32_t)>::Bind(
         luaWrapper,
         mOwnerPtr,
@@ -465,6 +471,16 @@ void LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver(const std::tuple
         const auto& toggleButtonSp = std::dynamic_pointer_cast<UiToggleButtonLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
         assert(toggleButtonSp);
         toggleButtonSp->EnableMouseInputReceiver();
+    }
+}
+
+void LuaCommonUiFunctions::EnableSliderMouseInputReceiver(const std::tuple<int32_t /*lua proxy id*/>& data)
+{
+    const auto luaProxyId = std::get<0>(data);
+    if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
+        const auto& sliderSp = std::dynamic_pointer_cast<UiSliderLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
+        assert(sliderSp);
+        sliderSp->EnableMouseInputReceiver();
     }
 }
 

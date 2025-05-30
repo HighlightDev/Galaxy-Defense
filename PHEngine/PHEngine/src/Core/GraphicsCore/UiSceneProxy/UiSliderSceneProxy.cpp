@@ -51,20 +51,14 @@ void UiSliderSceneProxy::Render()
     mUiSliderShader->ExecuteShader();
     mUiSliderShader->LoadRenderSliderLineSubroutine();
 
-    // Render slider background
-    glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
-    mUiSliderShader->SetTransform(mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * glm::vec2(mScale));
-    mUiSliderShader->SetColor(glm::vec3(0.0f, 0.0f, 0.0f));
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
-
     // Render slider line
-    scaleOffset = glm::vec2((mSliderThicknessScale - (mSliderThicknessScale * mScale)) * 0.5f);
+    glm::vec2 scaleOffset = glm::vec2((mSliderThicknessScale - (mSliderThicknessScale * mScale)) * 0.5f);
     mUiSliderShader->SetTransform(
         mNormalizedTranslation + scaleOffset + mCenterOffset + mSliderToCenterOffset, mSliderThicknessScale * glm::vec2(mScale));
     mUiSliderShader->SetOpacity(mOpacity * mOverlayOpacity);
     mUiSliderShader->SetBorderRadius(10.0f);
     mUiSliderShader->SetWidthHeightPixels(glm::vec2(static_cast<float>(mWidthHightPixels.x), static_cast<float>(20.0f)));
-    mUiSliderShader->SetColor(glm::vec3(1.0f, 0.0f, 0.0f));
+    mUiSliderShader->SetColor(glm::vec3(1.0f, 1.0f, 1.0f));
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
 
     // Render slider blob

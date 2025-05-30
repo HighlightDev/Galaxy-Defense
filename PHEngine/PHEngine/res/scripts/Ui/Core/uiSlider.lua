@@ -21,13 +21,11 @@ setup();
 local UiItemBase = require("Ui/Core/uiItemBase");
 local CommonUiWidgetCreator = require("Ui/Core/commonUiWidgetCreator");
 local json = require("Ui/Core/3rdparty/json");
-
 UiSlider = UiItemBase:new();
 UiSlider.UiSliderType = {
 	SLIDER_TYPE_VERTICAL = 0,
-	SLIDER_TYPE_HORIZONTAL = 1,
-}
-
+	SLIDER_TYPE_HORIZONTAL = 1
+};
 function UiSlider:new(host, name)
 	assert(host ~= nil);
 	local jsonParameters = nil;
@@ -77,6 +75,7 @@ function UiSlider:new(host, name)
 	uiSliderObj.luaProxyId = luaProxyId;
 	uiSliderObj.sliderProperties = sliderProperties;
 	uiSliderObj.host = host;
+	uiSliderObj.onSliderValueChangedCallbacks = {};
 	return uiSliderObj;
 end;
 function UiSlider:updateFromReplicatorData(host)
@@ -87,17 +86,24 @@ function UiSlider:updateFromReplicatorData(host)
 			local parsedJson = json.decode(replicatorJsonData);
 			self:extractUiItemBaseReplicatorData(parsedJson);
 			if parsedJson.max_slider_value ~= nil then
-                self.sliderProperties.max_slider_value.value = tonumber(parsedJson.max_slider_value);
+				self.sliderProperties.max_slider_value.value = tonumber(parsedJson.max_slider_value);
 			end;
 			if parsedJson.min_slider_value ~= nil then
-                self.sliderProperties.min_slider_value.value = tonumber(parsedJson.min_slider_value);
+				self.sliderProperties.min_slider_value.value = tonumber(parsedJson.min_slider_value);
 			end;
 			if parsedJson.slider_value ~= nil then
 				self.sliderProperties.slider_value.value = tonumber(parsedJson.slider_value);
+				if self.onSliderValueChangedCallbacks ~= nil and #self.onSliderValueChangedCallbacks > 0 then
+					for _, callback in ipairs(self.onSliderValueChangedCallbacks) do
+						if callback ~= nil and type(callback) == "function" then
+							callback(self.sliderProperties.slider_value.value);
+						end;
+					end;
+				end;
 			end;
-            if parsedJson.slider_step ~= nil then
-                self.sliderProperties.slider_step.value = tonumber(parsedJson.slider_step);
-            end;
+			if parsedJson.slider_step ~= nil then
+				self.sliderProperties.slider_step.value = tonumber(parsedJson.slider_step);
+			end;
 			if parsedJson.slider_thickness_pixels ~= nil then
 				self.sliderProperties.slider_thickness_pixels.value = tonumber(parsedJson.slider_thickness_pixels);
 			end;
@@ -107,9 +113,9 @@ function UiSlider:updateFromReplicatorData(host)
 			if parsedJson.slider_type ~= nil then
 				self.sliderProperties.slider_type.value = tonumber(parsedJson.slider_type);
 			end;
-            if parsedJson.opacity ~= nil then
-                self.sliderProperties.opacity.value = tonumber(parsedJson.opacity);
-            end;
+			if parsedJson.opacity ~= nil then
+				self.sliderProperties.opacity.value = tonumber(parsedJson.opacity);
+			end;
 		end;
 	end;
 end;
@@ -129,6 +135,10 @@ function UiSlider:sendDataToReplicator(host)
 end;
 function UiSlider:update(host)
 end;
+function UiSlider:enableSliderMouseInputReceiver(host)
+    assert(host ~= nil and type(host) == "userdata")
+    _EnableSliderMouseInputReceiver(host, self.luaProxyId)
+end
 function UiSlider:setOpacity(opacity)
 	assert(opacity ~= nil and type(opacity) == "number");
 	if self.sliderProperties.opacity.value ~= opacity then
@@ -143,35 +153,30 @@ function UiSlider:setSliderValue(sliderValue)
 		self.sliderProperties.slider_value.dirty = true;
 	end;
 end;
-
 function UiSlider:getSliderValue()
 	return self.sliderProperties.slider_value.value;
 end;
-
 function UiSlider:setMaxSliderValue(maxSliderValue)
-    assert(maxSliderValue ~= nil and type(maxSliderValue) == "number");
-    if self.sliderProperties.max_slider_value.value ~= maxSliderValue then
-        self.sliderProperties.max_slider_value.value = maxSliderValue;
-        self.sliderProperties.max_slider_value.dirty = true;
-    end;
+	assert(maxSliderValue ~= nil and type(maxSliderValue) == "number");
+	if self.sliderProperties.max_slider_value.value ~= maxSliderValue then
+		self.sliderProperties.max_slider_value.value = maxSliderValue;
+		self.sliderProperties.max_slider_value.dirty = true;
+	end;
 end;
-
 function UiSlider:setMinSliderValue(minSliderValue)
-    assert(minSliderValue ~= nil and type(minSliderValue) == "number");
-    if self.sliderProperties.min_slider_value.value ~= minSliderValue then
-        self.sliderProperties.min_slider_value.value = minSliderValue;
-        self.sliderProperties.min_slider_value.dirty = true;
-    end;
+	assert(minSliderValue ~= nil and type(minSliderValue) == "number");
+	if self.sliderProperties.min_slider_value.value ~= minSliderValue then
+		self.sliderProperties.min_slider_value.value = minSliderValue;
+		self.sliderProperties.min_slider_value.dirty = true;
+	end;
 end;
-
 function UiSlider:setSliderStep(sliderStep)
-    assert(sliderStep ~= nil and type(sliderStep) == "number");
-    if self.sliderProperties.slider_step.value ~= sliderStep then
-        self.sliderProperties.slider_step.value = sliderStep;
-        self.sliderProperties.slider_step.dirty = true;
-    end;
+	assert(sliderStep ~= nil and type(sliderStep) == "number");
+	if self.sliderProperties.slider_step.value ~= sliderStep then
+		self.sliderProperties.slider_step.value = sliderStep;
+		self.sliderProperties.slider_step.dirty = true;
+	end;
 end;
-
 function UiSlider:setSliderThicknessPixels(sliderThicknessPixels)
 	assert(sliderThicknessPixels ~= nil and type(sliderThicknessPixels) == "number");
 	if self.sliderProperties.slider_thickness_pixels.value ~= sliderThicknessPixels then
@@ -179,7 +184,6 @@ function UiSlider:setSliderThicknessPixels(sliderThicknessPixels)
 		self.sliderProperties.slider_thickness_pixels.dirty = true;
 	end;
 end;
-
 function UiSlider:setBlobThicknessPixels(blobThicknessPixels)
 	assert(blobThicknessPixels ~= nil and type(blobThicknessPixels) == "number");
 	if self.sliderProperties.blob_thickness_pixels.value ~= blobThicknessPixels then
@@ -187,12 +191,15 @@ function UiSlider:setBlobThicknessPixels(blobThicknessPixels)
 		self.sliderProperties.blob_thickness_pixels.dirty = true;
 	end;
 end;
-
 function UiSlider:setSliderType(sliderType)
 	assert(sliderType ~= nil and type(sliderType) == "number" and (sliderType == UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL or sliderType == UiSlider.UiSliderType.SLIDER_TYPE_VERTICAL));
 	if self.sliderProperties.slider_type.value ~= sliderType then
 		self.sliderProperties.slider_type.value = sliderType;
 		self.sliderProperties.slider_type.dirty = true;
 	end;
+end;
+function UiSlider:subscribeOnSliderValueChangedCallback(sliderValueChangedCallback)
+	assert(sliderValueChangedCallback ~= nil and type(sliderValueChangedCallback) == "function");
+	self.onSliderValueChangedCallbacks[(#self.onSliderValueChangedCallbacks) + 1] = sliderValueChangedCallback;
 end;
 return UiSlider;

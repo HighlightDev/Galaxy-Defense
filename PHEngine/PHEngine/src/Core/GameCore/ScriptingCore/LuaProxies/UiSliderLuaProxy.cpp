@@ -1,6 +1,7 @@
 #include "UiSliderLuaProxy.h"
 
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverSlider.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 
@@ -55,6 +56,26 @@ std::string UiSliderLuaProxy::GetGameThreadData()
     jsonObj["blob_thickness_pixels"] = mBlobThicknessPixels;
     jsonObj["slider_type"] = static_cast<int32_t>(mSliderType);
     return jsonObj.dump();
+}
+
+void UiSliderLuaProxy::EnableMouseInputReceiver()
+{
+    if (mIsMouseInputReceiverEnabled)
+        return;
+
+    static constexpr auto functionId = Hash64_CT("UiSliderLuaProxy::EnableMouseInputReceiver");
+    if (const auto sceneSp = mSceneWp.lock()) {
+        mIsMouseInputReceiverEnabled = true;
+        const auto replicatorId = GetReplicatorId();
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
+                const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                assert(replicator);
+                const auto& uiSlider = std::static_pointer_cast<::EngineCore::GUI::UiSlider>(replicator);
+                assert(uiSlider);
+                uiSlider->SetMouseInputReceiver(std::make_shared<UiMouseInputReceiverSlider>(uiSlider));
+            });
+    }
 }
 
 void UiSliderLuaProxy::SetMaxSliderValue_FromGameThread(const float maxSliderValue)

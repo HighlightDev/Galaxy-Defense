@@ -59,9 +59,9 @@ void UiMouseInputReceiverBase::OnMouseReleased(
     if (mMouseReleasedCallback) {
         if (mMouseButtonWasPressedLastFrame) {
             mMouseReleasedCallback(mOwnerWp, mouseCursorPosition);
-            mMouseButtonWasPressedLastFrame = false;
         }
     }
+    mMouseButtonWasPressedLastFrame = false;
 }
 
 void UiMouseInputReceiverBase::OnMousePressed(
@@ -69,10 +69,10 @@ void UiMouseInputReceiverBase::OnMousePressed(
 {
     if (mMousePressedCallback) {
         if (EngineMath::TestPointInAABB(mouseInputArea.GetMin(), mouseInputArea.GetMax(), mouseCursorPosition)) {
-            mMouseButtonWasPressedLastFrame = true;
             mMousePressedCallback(mOwnerWp, mouseCursorPosition);
         }
     }
+    mMouseButtonWasPressedLastFrame = true;
 }
 
 void UiMouseInputReceiverBase::OnMouseClicked(

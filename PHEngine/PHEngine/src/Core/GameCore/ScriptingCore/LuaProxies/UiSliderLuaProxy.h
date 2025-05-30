@@ -24,10 +24,12 @@ protected:
 public:
     explicit UiSliderLuaProxy(const std::shared_ptr<UiSlider>& ownerUiItem);
 
+    void EnableMouseInputReceiver();
+    
     void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
-
+    
     std::string GetGameThreadData() override;
-
+    
     void SetMaxSliderValue_FromGameThread(const float maxSliderValue);
 
     void SetMinSliderValue_FromGameThread(const float minSliderValue);

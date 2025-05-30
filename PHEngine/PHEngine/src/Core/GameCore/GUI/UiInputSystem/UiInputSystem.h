@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/Input/Keys.h"
 
 #include <glm/vec2.hpp>
 
@@ -34,6 +35,8 @@ private:
     glm::ivec2 mMouseKeyPressedPosition;
 
     bool mIsMouseKeyPressed{false};
+
+    KeyState mLastMouseKeyState{KeyState::RELEASED};
 
 public:
     UiInputSystem(const std::weak_ptr<UiCanvas>& owner);

@@ -79,6 +79,8 @@ private:
 
     void EnableToggleButtonMouseInputReceiver(const std::tuple<int32_t /*lua proxy id*/>& data);
 
+    void EnableSliderMouseInputReceiver(const std::tuple<int32_t /*lua proxy id*/>& data);
+
     void
     SetUiWidgetParent(const std::tuple<int32_t /*lua proxy id*/, std::string /*canvas name*/, std::string /*parent name*/>& data);
 
