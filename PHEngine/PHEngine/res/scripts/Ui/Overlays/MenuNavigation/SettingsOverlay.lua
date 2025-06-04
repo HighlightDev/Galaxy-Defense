@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -46,12 +45,10 @@ function SettingsOverlay:new(host)
     local pauseSettingsOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "PauseSettingsCanvas")
     pauseSettingsOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, pauseSettingsOverlayCanvas.luaProxyId)
-        pauseSettingsOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-            0.3, "Opacity",
-            UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
+        pauseSettingsOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.3,
+            "Opacity", UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
         pauseSettingsOverlayCanvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-            0.3, "Opacity",
-            UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
+            0.3, "Opacity", UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
     local pauseSettingsOverlay = UiOverlay:createOverlay(host, "PauseSettingsOverlay", pauseSettingsOverlayCanvas)
 
@@ -90,8 +87,11 @@ function SettingsOverlay:new(host)
     local testProgressBar = UiProgressBar:new(host, "TEST_PROGRESS_BAR")
     pauseSettingsOverlay:addWidget(testProgressBar)
 
-    local testSlider = UiSlider:new(host, "TEST_SLIDER")
-    pauseSettingsOverlay:addWidget(testSlider)
+    local horizontalSlider = UiSlider:new(host, "horizontalSlider")
+    pauseSettingsOverlay:addWidget(horizontalSlider)
+
+    local verticalSlider = UiSlider:new(host, "verticalSlider")
+    pauseSettingsOverlay:addWidget(verticalSlider)
 
     local cancelButton = LabelButton:new(host, pauseSettingsOverlay, "nimbus_mono", "CancelButton")
     pauseSettingsOverlay:addCompoundWidget(cancelButton)
@@ -150,8 +150,8 @@ function SettingsOverlay:new(host)
         testProgressBar:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
         testProgressBar:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             100.0)
-            testProgressBar:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
-            100.0)
+        testProgressBar:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            backgroundRect.widgetName, 100.0)
         testProgressBar:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, soundLabel.widgetName,
             30.0)
         testProgressBar:setHeight(50.0)
@@ -160,26 +160,48 @@ function SettingsOverlay:new(host)
         testProgressBar:setEmptyColorHexValue(0xAAEEFF)
         testProgressBar:setFilledColorHexValue(0xFFEEAA)
 
-        testSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
-        testSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
-            100.0)
-        testSlider:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
-            100.0)
-        testSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, testProgressBar.widgetName,    
-            30.0)
-        testSlider:setHeight(50.0)
-        testSlider:setWidth(50.0)
-        testSlider:setZOrder(2)
-        testSlider:setSliderValue(0.5)
-        testSlider:setMaxSliderValue(1.0)
-        testSlider:setMinSliderValue(0.0)
-        testSlider:setSliderStep(0.01)
-        testSlider:setSliderThicknessPixels(10.0)
-        testSlider:setBlobThicknessPixels(40.0)
-        testSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL)
-        testSlider:enableSliderMouseInputReceiver(host)
-        testSlider:subscribeOnSliderValueChangedCallback(function(newValue)
+        horizontalSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
+        horizontalSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            backgroundRect.widgetName, 100.0)
+        horizontalSlider:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            backgroundRect.widgetName, 100.0)
+        horizontalSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
+            testProgressBar.widgetName, 30.0)
+        horizontalSlider:setHeight(30.0)
+        horizontalSlider:setZOrder(2)
+        horizontalSlider:setSliderValue(0.5)
+        horizontalSlider:setMaxSliderValue(1.0)
+        horizontalSlider:setMinSliderValue(0.0)
+        horizontalSlider:setSliderStep(0.1)
+        horizontalSlider:setSliderThicknessPixels(10.0)
+        horizontalSlider:setBlobThicknessPixels(40.0)
+        horizontalSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL)
+        horizontalSlider:setBlobColorHexValue(0x000000)
+        horizontalSlider:setSliderColorHexValue(0xFFFFFF)
+        horizontalSlider:enableSliderMouseInputReceiver(host)
+        horizontalSlider:subscribeOnSliderValueChangedCallback(function(newValue)
             print("testSlider:subscribeOnSliderValueChangedCallback => newValue: " .. tostring(newValue))
+        end)
+
+        verticalSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
+        verticalSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+            30.0)
+        verticalSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
+            horizontalSlider.widgetName, 30.0)
+        verticalSlider:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.TOP, applyButton.widgetName,
+            30.0)
+        verticalSlider:setWidth(40.0)
+        verticalSlider:setZOrder(2)
+        verticalSlider:setSliderValue(0.5)
+        verticalSlider:setMaxSliderValue(1.0)
+        verticalSlider:setMinSliderValue(0.0)
+        verticalSlider:setSliderStep(0.1)
+        verticalSlider:setSliderThicknessPixels(10.0)
+        verticalSlider:setBlobThicknessPixels(40.0)
+        verticalSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_VERTICAL)
+        verticalSlider:enableSliderMouseInputReceiver(host)
+        verticalSlider:subscribeOnSliderValueChangedCallback(function(newValue)
+            print("verticalSlider:subscribeOnSliderValueChangedCallback => newValue: " .. tostring(newValue))
         end)
 
         applyButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
@@ -200,8 +222,8 @@ function SettingsOverlay:new(host)
         cancelButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
         cancelButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, applyButton.widgetName,
             buttonHorizontalMargin)
-        cancelButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, backgroundRect.widgetName,
-            50)
+        cancelButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            backgroundRect.widgetName, 50)
         cancelButton:setWidth(buttonWidth)
         cancelButton:setHeight(100)
         cancelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
@@ -213,8 +235,10 @@ function SettingsOverlay:new(host)
         cancelButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
     end)
 
-    pauseSettingsOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
-    pauseSettingsOverlay.onEngineEventTriggered = function(eventName, jsonArgs) end
+    pauseSettingsOverlay.onGameEventTriggered = function(eventName, jsonArgs)
+    end
+    pauseSettingsOverlay.onEngineEventTriggered = function(eventName, jsonArgs)
+    end
 
     return pauseSettingsOverlay
 end

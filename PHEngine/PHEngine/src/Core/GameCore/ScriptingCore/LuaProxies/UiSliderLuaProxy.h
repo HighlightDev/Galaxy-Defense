@@ -21,6 +21,9 @@ protected:
     int32_t mBlobThicknessPixels{40};
     UiSlider::eUiSliderType mSliderType{UiSlider::eUiSliderType::Horizontal};
 
+    glm::vec3 mSliderColor{1.0f, 1.0f, 1.0f};
+    glm::vec3 mBlobColor{1.0f, 1.0f, 1.0f};
+
 public:
     explicit UiSliderLuaProxy(const std::shared_ptr<UiSlider>& ownerUiItem);
 
@@ -34,7 +37,7 @@ public:
 
     void SetMinSliderValue_FromGameThread(const float minSliderValue);
 
-    void SetSliderlValue_FromGameThread(const float sliderValue);
+    void SetSliderValue_FromGameThread(const float sliderValue);
 
     void SetSliderStep_FromGameThread(const float sliderStep);
 
@@ -45,6 +48,10 @@ public:
     void SetSliderThicknessPixels_FromGameThread(const int32_t thicknessPixels);
 
     void SetSliderBlobThicknessPixels_FromGameThread(const int32_t thicknessPixels);
+
+    void SetSliderColor_FromGameThread(const glm::vec3& color);
+
+    void SetBlobColor_FromGameThread(const glm::vec3& color);
 };
 } // namespace Scripts
 } // namespace EngineCore

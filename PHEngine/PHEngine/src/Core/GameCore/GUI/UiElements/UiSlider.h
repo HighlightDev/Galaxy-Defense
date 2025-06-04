@@ -31,6 +31,11 @@ private:
     glm::vec2 mSliderToCenterOffset{0.0f, 0.0f};
     glm::vec2 mBlobToCenterOffset{0.0f, 0.0f};
 
+    glm::vec3 mSliderColor{1.0f, 1.0f, 1.0f};
+    glm::vec3 mBlobColor{1.0f, 1.0f, 1.0f};
+
+    glm::vec2 mAspectRatioScale{1.0f, 1.0f};
+
 public:
     explicit UiSlider(const std::string& name = std::string(""));
 
@@ -77,6 +82,18 @@ public:
     glm::vec2 GetBlobToCenterOffset() const;
 
     glm::vec2 GetBlobThicknessScale() const;
+
+    glm::vec3 GetSliderColor() const;
+
+    void SetSliderColor(const glm::vec3& color);
+
+    glm::vec3 GetBlobColor() const;
+
+    void SetBlobColor(const glm::vec3& color);
+
+    glm::vec2 GetAspectRatioScale() const;
+
+    void SetAspectRatioScale(const glm::vec2& aspectRatioScale);
 
     std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 

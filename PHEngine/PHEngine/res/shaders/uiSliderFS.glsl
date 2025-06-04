@@ -28,7 +28,13 @@ subroutine(renderSlider) vec4 renderSliderLine()
 
 subroutine(renderSlider) vec4 renderSliderBlob()
 {
-    return vec4(color, opacity);
+    vec2 pixelPos = texCoords * widthAndHeight;
+    vec2 center = widthAndHeight * 0.5;
+    float radius = min(widthAndHeight.x, widthAndHeight.y) * 0.5;
+    float borderRadiusOpacityCoef
+        = 1.0 - (step(0.01, radius) * step(0.0, udRoundBox(pixelPos - center, center, radius)));
+    float smoothOpacity = smoothstep(0.0, 0.1, 1.0 - length(pixelPos - center) / radius);
+    return vec4(color, borderRadiusOpacityCoef * opacity * smoothOpacity);
 }
 
 void main(void)

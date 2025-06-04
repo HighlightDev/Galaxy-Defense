@@ -31,6 +31,11 @@ class UiSliderSceneProxy : public UiSceneProxyBase {
     glm::vec2 mSliderToCenterOffset{0.0f, 0.0f};
     glm::vec2 mBlobToCenterOffset{0.0f, 0.0f};
 
+    glm::vec3 mSliderColor{1.0f, 1.0f, 1.0f};
+    glm::vec3 mBlobColor{1.0f, 1.0f, 1.0f};
+
+    glm::vec2 mAspectRatioScale{1.0f, 1.0f};
+
 public:
     UiSliderSceneProxy(const UiSlider* uiSlider);
 
@@ -61,6 +66,12 @@ public:
     void SetSliderThicknessScale(const glm::vec2& scale);
 
     void SetBlobThicknessScale(const glm::vec2& scale);
+
+    void SetSliderColor(const glm::vec3& color);
+
+    void SetBlobColor(const glm::vec3& color);
+
+    void SetAspectRatioScale(const glm::vec2& aspectRatioScale);
 
     void CleanUp() override;
 

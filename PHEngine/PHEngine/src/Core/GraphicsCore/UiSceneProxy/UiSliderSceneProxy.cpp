@@ -17,6 +17,7 @@ UiSliderSceneProxy::UiSliderSceneProxy(const UiSlider* uiSliderBar)
     , mMinSliderValue(uiSliderBar->GetMinSliderValue())
     , mSliderValue(uiSliderBar->GetSliderValue())
     , mSliderStep(uiSliderBar->GetSliderStep())
+    , mOpacity(uiSliderBar->GetOpacity())
     , mSliderThicknessPixels(uiSliderBar->GetSliderThicknessPixels())
     , mBlobThicknessPixels(uiSliderBar->GetBlobThicknessPixels())
     , mSliderType(uiSliderBar->GetSliderType())
@@ -24,6 +25,9 @@ UiSliderSceneProxy::UiSliderSceneProxy(const UiSlider* uiSliderBar)
     , mSliderThicknessScale(uiSliderBar->GetSliderThicknessScale())
     , mBlobThicknessScale(uiSliderBar->GetBlobThicknessScale())
     , mBlobToCenterOffset(uiSliderBar->GetBlobToCenterOffset())
+    , mSliderColor(uiSliderBar->GetSliderColor())
+    , mBlobColor(uiSliderBar->GetBlobColor())
+    , mAspectRatioScale(uiSliderBar->GetAspectRatioScale())
 {
     SetSliderThicknessPixels(mSliderThicknessPixels);
 }
@@ -57,17 +61,21 @@ void UiSliderSceneProxy::Render()
         mNormalizedTranslation + scaleOffset + mCenterOffset + mSliderToCenterOffset, mSliderThicknessScale * glm::vec2(mScale));
     mUiSliderShader->SetOpacity(mOpacity * mOverlayOpacity);
     mUiSliderShader->SetBorderRadius(10.0f);
-    mUiSliderShader->SetWidthHeightPixels(glm::vec2(static_cast<float>(mWidthHightPixels.x), static_cast<float>(20.0f)));
-    mUiSliderShader->SetColor(glm::vec3(1.0f, 1.0f, 1.0f));
+    glm::vec2 widthHeightPixels = UiSlider::eUiSliderType::Horizontal == mSliderType
+        ? glm::vec2(static_cast<float>(mWidthHightPixels.x), static_cast<float>(mSliderThicknessPixels))
+        : glm::vec2(static_cast<float>(mSliderThicknessPixels), static_cast<float>(mWidthHightPixels.y));
+    mUiSliderShader->SetWidthHeightPixels(widthHeightPixels);
+    mUiSliderShader->SetColor(mSliderColor);
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
 
     // Render slider blob
     mUiSliderShader->LoadRenderSliderBlobSubroutine();
     scaleOffset = glm::vec2((mBlobThicknessScale - (mBlobThicknessScale * mScale)) * 0.5f);
     mUiSliderShader->SetTransform(
-        mNormalizedTranslation + scaleOffset + mCenterOffset + mBlobToCenterOffset, mBlobThicknessScale * glm::vec2(mScale));
-    mUiSliderShader->SetTransform(
-        mNormalizedTranslation + mCenterOffset + mBlobToCenterOffset, mBlobThicknessScale * glm::vec2(mScale));
+        mNormalizedTranslation + scaleOffset + mCenterOffset + mBlobToCenterOffset,
+        mBlobThicknessScale * glm::vec2(mScale) * mAspectRatioScale);
+    mUiSliderShader->SetColor(mBlobColor);
+    mUiSliderShader->SetWidthHeightPixels(glm::vec2(mBlobThicknessPixels));
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     mUiSliderShader->StopShader();
 }
@@ -130,6 +138,21 @@ void UiSliderSceneProxy::SetSliderThicknessScale(const glm::vec2& scale)
 void UiSliderSceneProxy::SetBlobThicknessScale(const glm::vec2& scale)
 {
     mBlobThicknessScale = scale;
+}
+
+void UiSliderSceneProxy::SetSliderColor(const glm::vec3& color)
+{
+    mSliderColor = color;
+}
+
+void UiSliderSceneProxy::SetBlobColor(const glm::vec3& color)
+{
+    mBlobColor = color;
+}
+
+void UiSliderSceneProxy::SetAspectRatioScale(const glm::vec2& aspectRatioScale)
+{
+    mAspectRatioScale = aspectRatioScale;
 }
 
 void UiSliderSceneProxy::CleanUp()

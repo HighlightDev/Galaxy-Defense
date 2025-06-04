@@ -80,42 +80,83 @@ void UiSliderLuaProxy::EnableMouseInputReceiver()
 
 void UiSliderLuaProxy::SetMaxSliderValue_FromGameThread(const float maxSliderValue)
 {
-    mMaxSliderValue = maxSliderValue;
+    if (!EngineMath::FloatsNearEqual(mMaxSliderValue, maxSliderValue)) {
+
+        mMaxSliderValue = maxSliderValue;
+        mIsLuaDataDirty = true;
+    }
 }
 
 void UiSliderLuaProxy::SetMinSliderValue_FromGameThread(const float minSliderValue)
 {
-    mMinSliderValue = minSliderValue;
+    if (!EngineMath::FloatsNearEqual(mMinSliderValue, minSliderValue)) {
+        mMinSliderValue = minSliderValue;
+        mIsLuaDataDirty = true;
+    }
 }
 
-void UiSliderLuaProxy::SetSliderlValue_FromGameThread(const float sliderValue)
+void UiSliderLuaProxy::SetSliderValue_FromGameThread(const float sliderValue)
 {
-    mSliderValue = sliderValue;
+    if (!EngineMath::FloatsNearEqual(mSliderValue, sliderValue)) {
+        mSliderValue = sliderValue;
+        mIsLuaDataDirty = true;
+    }
 }
 
 void UiSliderLuaProxy::SetSliderStep_FromGameThread(const float sliderStep)
 {
-    mSliderStep = sliderStep;
+    if (!EngineMath::FloatsNearEqual(mSliderStep, sliderStep)) {
+        mSliderStep = sliderStep;
+        mIsLuaDataDirty = true;
+    }
 }
 
 void UiSliderLuaProxy::SetOpacity_FromGameThread(const float opacity)
 {
-    mOpacity = opacity;
+    if (!EngineMath::FloatsNearEqual(mOpacity, opacity)) {
+        mOpacity = opacity;
+        mIsLuaDataDirty = true;
+    }
 }
 
 void UiSliderLuaProxy::SetSliderType_FromGameThread(const UiSlider::eUiSliderType sliderType)
 {
-    mSliderType = sliderType;
+    if (mSliderType != sliderType) {
+        mSliderType = sliderType;
+        mIsLuaDataDirty = true;
+    }
 }
 
 void UiSliderLuaProxy::SetSliderThicknessPixels_FromGameThread(const int32_t thicknessPixels)
 {
-    mSliderThicknessPixels = thicknessPixels;
+    if (mSliderThicknessPixels != thicknessPixels) {
+        mSliderThicknessPixels = thicknessPixels;
+        mIsLuaDataDirty = true;
+    }
 }
 
 void UiSliderLuaProxy::SetSliderBlobThicknessPixels_FromGameThread(const int32_t thicknessPixels)
 {
-    mBlobThicknessPixels = thicknessPixels;
+    if (mBlobThicknessPixels != thicknessPixels) {
+        mBlobThicknessPixels = thicknessPixels;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiSliderLuaProxy::SetSliderColor_FromGameThread(const glm::vec3& color)
+{
+    if (!EngineMath::CheckSimilarityVec3(mSliderColor, color)) {
+        mSliderColor = color;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiSliderLuaProxy::SetBlobColor_FromGameThread(const glm::vec3& color)
+{
+    if (!EngineMath::CheckSimilarityVec3(mBlobColor, color)) {
+        mBlobColor = color;
+        mIsLuaDataDirty = true;
+    }
 }
 
 } // namespace Scripts

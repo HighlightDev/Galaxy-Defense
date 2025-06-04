@@ -26,9 +26,15 @@ void UiMouseInputReceiverSlider::OnMousePositionChanged(
                 const BoundingBox2D<glm::ivec2> simplifiedInputArea
                     = UiSlider::eUiSliderType::Horizontal == sliderSp->GetSliderType()
                     ? BoundingBox2D<glm::ivec2>(
-                          mouseInputArea.GetOrigin(), glm::ivec2(mouseInputArea.GetHalfExtent().x, canvasSp->GetHeight() / 2))
+                          mouseInputArea.GetOrigin(),
+                          glm::ivec2(
+                              static_cast<int32_t>(static_cast<float>(mouseInputArea.GetHalfExtent().x) * 1.25f),
+                              canvasSp->GetHeight() / 2))
                     : BoundingBox2D<glm::ivec2>(
-                          mouseInputArea.GetOrigin(), glm::ivec2((canvasSp->GetWidth() / 2), mouseInputArea.GetHalfExtent().y));
+                          mouseInputArea.GetOrigin(),
+                          glm::ivec2(
+                              (canvasSp->GetWidth() / 2),
+                              static_cast<int32_t>(static_cast<float>(mouseInputArea.GetHalfExtent().y) * 1.25f)));
 
                 if (EngineMath::TestPointInAABB(
                         simplifiedInputArea.GetMin(), simplifiedInputArea.GetMax(), mouseCursorPosition)) {

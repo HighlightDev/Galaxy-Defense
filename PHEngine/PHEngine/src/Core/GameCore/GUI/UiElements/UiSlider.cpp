@@ -34,6 +34,7 @@ void UiSlider::SetSliderValue(const float value)
         mSliderValue = value;
         UpdateSliderToCenterOffset();
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
 }
 
@@ -132,6 +133,19 @@ void UiSlider::SetBlobThicknessPixels(const int32_t thicknessPixels)
     }
 }
 
+glm::vec2 UiSlider::GetAspectRatioScale() const
+{
+    return mAspectRatioScale;
+}
+
+void UiSlider::SetAspectRatioScale(const glm::vec2& aspectRatioScale)
+{
+    if (!EngineMath::CheckSimilarityVec2(mAspectRatioScale, aspectRatioScale)) {
+        mAspectRatioScale = aspectRatioScale;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+    }
+}
+
 void UiSlider::UpdateSliderToCenterOffset()
 {
     if (const auto& parentCanvasSp = mParentCanvas.lock()) {
@@ -149,14 +163,22 @@ void UiSlider::UpdateSliderToCenterOffset()
 
             const float sliderNormalizedValue
                 = glm::clamp((mSliderValue - mMinSliderValue) / (mMaxSliderValue - mMinSliderValue), 0.0f, 1.0f);
-            const float blobOffset = sliderNormalizedValue * (mWidth - mBlobThicknessPixels)
+            const float blobOffset = sliderNormalizedValue
+                * (eUiSliderType::Horizontal == mSliderType
+                       ? (mWidth
+                          - (mBlobThicknessPixels
+                             * (static_cast<float>(canvasWidthPixels) / static_cast<float>(canvasHeightPixels))))
+                       : (mHeight
+                          - (mBlobThicknessPixels
+                             * (static_cast<float>(canvasHeightPixels) / static_cast<float>(canvasWidthPixels)))))
                 / (mSliderType == eUiSliderType::Horizontal ? static_cast<float>(canvasWidthPixels)
                                                             : static_cast<float>(canvasHeightPixels));
             mBlobToCenterOffset = glm::vec2(
                 mSliderType == eUiSliderType::Horizontal ? blobOffset
                                                          : mSliderToCenterOffset.x + sliderThicknessHalf - blobThicknessHalf,
-                mSliderType == eUiSliderType::Horizontal ? mSliderToCenterOffset.y + sliderThicknessHalf - blobThicknessHalf
-                                                         : blobOffset);
+                mSliderType == eUiSliderType::Horizontal
+                    ? mSliderToCenterOffset.y + sliderThicknessHalf - (mAspectRatioScale.y * blobThicknessHalf)
+                    : blobOffset);
         }
     }
 }
@@ -207,6 +229,10 @@ void UiSlider::SetSliderType(const eUiSliderType sliderType)
 void UiSlider::UpdateAnchorTransform()
 {
     UiItemBase::UpdateAnchorTransform();
+    if (const auto& parentCanvasSp = mParentCanvas.lock()) {
+        SetAspectRatioScale(
+            glm::vec2(1.0f, static_cast<float>(parentCanvasSp->GetWidth()) / static_cast<float>(parentCanvasSp->GetHeight())));
+    }
     UpdateSliderToCenterOffset();
     UpdateSliderThicknessScale();
     SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
@@ -233,14 +259,50 @@ glm::vec2 UiSlider::GetBlobThicknessScale() const
     return mBlobThicknessScale;
 }
 
+glm::vec3 UiSlider::GetSliderColor() const
+{
+    return mSliderColor;
+}
+
+void UiSlider::SetSliderColor(const glm::vec3& color)
+{
+    if (!EngineMath::CheckSimilarityVec3(mSliderColor, color)) {
+        mSliderColor = color;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+glm::vec3 UiSlider::GetBlobColor() const
+{
+    return mBlobColor;
+}
+
+void UiSlider::SetBlobColor(const glm::vec3& color)
+{
+    if (!EngineMath::CheckSimilarityVec3(mBlobColor, color)) {
+        mBlobColor = color;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
 float UiSlider::GetValueFromMousePosition(const glm::ivec2& mousePositionScreenSpace) const
 {
     float result = 0.0f;
     if (mWidth > 0 && mHeight > 0) {
         const auto& boundingArea = GetBoundingArea();
-        const float mouseExtensionNormalizedValue = eUiSliderType::Horizontal == mSliderType
+        float mouseExtensionNormalizedValue = eUiSliderType::Horizontal == mSliderType
             ? static_cast<float>(mousePositionScreenSpace.x - boundingArea.GetMin().x) / static_cast<float>(mWidth)
             : static_cast<float>(mousePositionScreenSpace.y - boundingArea.GetMin().y) / static_cast<float>(mHeight);
+        mouseExtensionNormalizedValue = glm::clamp(mouseExtensionNormalizedValue, 0.0f, 1.0f);
+        if (mSliderStep > 0.0f) {
+            const float sliderRange = mMaxSliderValue - mMinSliderValue;
+            const float stepCount = sliderRange / mSliderStep;
+            const float stepSize = sliderRange / stepCount;
+            const float stepIndex = std::round(mouseExtensionNormalizedValue * stepCount);
+            mouseExtensionNormalizedValue = stepIndex * stepSize / sliderRange;
+        }
         result = mMinSliderValue + (mouseExtensionNormalizedValue * (mMaxSliderValue - mMinSliderValue));
     }
     return result;
@@ -338,6 +400,20 @@ void UiSlider::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
+    if (jsonObj.contains("slider_color")) {
+        const glm::vec3 color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["slider_color"]);
+        if (!EngineMath::CheckSimilarityVec3(color, mSliderColor)) {
+            mSliderColor = color;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
+    if (jsonObj.contains("blob_color")) {
+        const glm::vec3 color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["blob_color"]);
+        if (!EngineMath::CheckSimilarityVec3(color, mBlobColor)) {
+            mBlobColor = color;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
 }
 
 std::string UiSlider::GetUiTypeString() const
@@ -390,6 +466,9 @@ void UiSlider::SyncDataOnRenderThread()
                                 sliderSceneProxy->SetBlobToCenterOffset(mBlobToCenterOffset);
                                 sliderSceneProxy->SetSliderThicknessScale(mSliderThicknessScale);
                                 sliderSceneProxy->SetBlobThicknessScale(mBlobThicknessScale);
+                                sliderSceneProxy->SetSliderColor(mSliderColor);
+                                sliderSceneProxy->SetBlobColor(mBlobColor);
+                                sliderSceneProxy->SetAspectRatioScale(mAspectRatioScale);
                             }
                         });
                 }
@@ -420,10 +499,12 @@ void UiSlider::SyncDataOnLuaThread()
                      opacity = mOpacity,
                      sliderThicknessPixels = mSliderThicknessPixels,
                      blobThicknessPixels = mBlobThicknessPixels,
-                     sliderType = mSliderType]() {
+                     sliderType = mSliderType,
+                     sliderColor = mSliderColor,
+                     blobColor = mBlobColor]() {
                         if (const auto& sliderLuaProxy
                             = std::static_pointer_cast<UiSliderLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
-                            sliderLuaProxy->SetSliderlValue_FromGameThread(sliderValue);
+                            sliderLuaProxy->SetSliderValue_FromGameThread(sliderValue);
                             sliderLuaProxy->SetMaxSliderValue_FromGameThread(maxSliderValue);
                             sliderLuaProxy->SetMinSliderValue_FromGameThread(minSliderValue);
                             sliderLuaProxy->SetSliderStep_FromGameThread(sliderStep);
@@ -431,6 +512,8 @@ void UiSlider::SyncDataOnLuaThread()
                             sliderLuaProxy->SetSliderThicknessPixels_FromGameThread(sliderThicknessPixels);
                             sliderLuaProxy->SetSliderType_FromGameThread(sliderType);
                             sliderLuaProxy->SetSliderBlobThicknessPixels_FromGameThread(blobThicknessPixels);
+                            sliderLuaProxy->SetSliderColor_FromGameThread(sliderColor);
+                            sliderLuaProxy->SetBlobColor_FromGameThread(blobColor);
                         }
                     });
             }
