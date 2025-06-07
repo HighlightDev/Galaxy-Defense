@@ -5,6 +5,7 @@
 #include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
+#include "Core/GameCore/Event/GeneralSystemSettingsChangedEvent.h"
 #include "Core/GameCore/Event/KeyboardInputEvent.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 #include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
@@ -86,7 +87,8 @@ void Engine::Initialize()
             WindowSizeChangedGameThreadEvent,
             BroadcastGameThreadEvent,
             MouseButtonDownRootEvent,
-            RestartLevelGameThreadEvent>();
+            RestartLevelGameThreadEvent,
+            GeneralSystemSettingsChangedGameThreadEvent>();
 
     LuaThreadEventDispatcher::GetInstance()
         ->RegisterEventsByType<
@@ -95,7 +97,8 @@ void Engine::Initialize()
             MouseScrollLuaThreadEvent,
             MouseButtonDownLuaThreadEvent,
             WindowSizeChangedLuaThreadEvent,
-            BroadcastLuaThreadEvent>();
+            BroadcastLuaThreadEvent,
+            GeneralSystemSettingsChangedLuaThreadEvent>();
 
     m_sceneRenderer = std::make_shared<SceneRenderer>(m_interThreadMgr);
     m_sceneRenderer->Initialize();
@@ -114,7 +117,7 @@ void Engine::Initialize()
         resObs->CollectResourceConsumptionInfo();
         LogInfo("Pid:", resObs->GetPid(), " mem mb:", resObs->GetLastMemoryUsageMegabytes());
     });
-    //m_resourceConsumptionLogTimer.StartTimer();
+    // m_resourceConsumptionLogTimer.StartTimer();
 #endif
 
     const auto& thisSp = std::dynamic_pointer_cast<Engine>(shared_from_this());

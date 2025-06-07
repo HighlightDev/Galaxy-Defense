@@ -6,6 +6,7 @@
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxy.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
@@ -20,11 +21,11 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
 using namespace Graphics;
 using namespace TinyLogger;
+using namespace EngineCore::DataProviders;
 using namespace EngineCore::Scripts;
 using namespace IO;
 
@@ -37,11 +38,12 @@ Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
     , mLuaReplicators()
     , m_interThreadMgr(interThreadMgr)
     , mGameThreadDeltaSec(std::make_shared<EngineObjectProperty<float>>(0.0f, "GT_DeltaSec"))
-    , mScreenResolutionProperty(std::make_shared<EngineObjectProperty<glm::vec2>>(
-          glm::vec2(
-              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()),
-          "ScreenResolution"))
+    , mScreenResolutionProperty(
+          std::make_shared<EngineObjectProperty<glm::vec2>>(
+              glm::vec2(
+                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
+              "ScreenResolution"))
     , mDeferredResourceCreators()
     , mActors()
     , mMainCamera()
@@ -366,8 +368,10 @@ std::shared_ptr<UiHandler> Scene::GetUiHandler() const
 void Scene::Tick(const float delta)
 {
     mGameThreadDeltaSec->SetValue(delta);
-    mScreenResolutionProperty->SetValue(glm::vec2(
-        DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(), DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()));
+    mScreenResolutionProperty->SetValue(
+        glm::vec2(
+            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
 
     mPhysicsWorld->Tick(delta);
 

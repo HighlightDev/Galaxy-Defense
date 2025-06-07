@@ -40,23 +40,23 @@ function MainMenuOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
 
-    local mainMenuOverlay_1Canvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "MainMenuCanvas")
-    mainMenuOverlay_1Canvas:subscribeOnLuaProxyReady(function(host)
-        _InitializeCanvasInputSystem(host, mainMenuOverlay_1Canvas.luaProxyId)
-        mainMenuOverlay_1Canvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+    local mainMenuOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "MainMenuCanvas")
+    mainMenuOverlayCanvas:subscribeOnLuaProxyReady(function(host)
+        _InitializeCanvasInputSystem(host, mainMenuOverlayCanvas.luaProxyId)
+        mainMenuOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
             0.3, "Opacity",
             UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
-        mainMenuOverlay_1Canvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+        mainMenuOverlayCanvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
             0.3, "Opacity",
             UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
-    local mainMenuOverlay_1 = UiOverlay:createOverlay(host, "MainMenuOverlay", mainMenuOverlay_1Canvas)
+    local mainMenuOverlay = UiOverlay:createOverlay(host, "MainMenuOverlay", mainMenuOverlayCanvas)
 
     local menuHorizontalMargin = windowWidth / 4.0;
     local menuVerticalMargin = windowHeight / 15.0;
 
     local backgroundRect = UiRectangle:new(host, "MainMenuBackgroundContainer")
-    mainMenuOverlay_1:addWidget(backgroundRect)
+    mainMenuOverlay:addWidget(backgroundRect)
 
     local mainMenuOverlayHeight = (windowHeight - (menuVerticalMargin * 2.0))
     local buttonsCount = 4;
@@ -66,8 +66,8 @@ function MainMenuOverlay:new(host)
     local totalButtonMarginHeight = buttonsMarginCount * buttonVerticalMarginHeight;
     buttonHeight = (mainMenuOverlayHeight - totalButtonMarginHeight) / buttonsCount;
 
-    local newGameButton = LabelButton:new(host, mainMenuOverlay_1, "nimbus_mono", "NewGameButton")
-    mainMenuOverlay_1:addCompoundWidget(newGameButton)
+    local newGameButton = LabelButton:new(host, mainMenuOverlay, "nimbus_mono", "NewGameButton")
+    mainMenuOverlay:addCompoundWidget(newGameButton)
     newGameButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             newGameButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
@@ -80,8 +80,8 @@ function MainMenuOverlay:new(host)
             "CombatLevel")
     end)
 
-    local editorLvlButton = LabelButton:new(host, mainMenuOverlay_1, "nimbus_mono", "EditorLvlButton")
-    mainMenuOverlay_1:addCompoundWidget(editorLvlButton)
+    local editorLvlButton = LabelButton:new(host, mainMenuOverlay, "nimbus_mono", "EditorLvlButton")
+    mainMenuOverlay:addCompoundWidget(editorLvlButton)
     editorLvlButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             editorLvlButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
@@ -94,8 +94,8 @@ function MainMenuOverlay:new(host)
             "EditorLevel")
     end)
 
-    local settingsButton = LabelButton:new(host, mainMenuOverlay_1, "nimbus_mono", "SettingsButton")
-    mainMenuOverlay_1:addCompoundWidget(settingsButton)
+    local settingsButton = LabelButton:new(host, mainMenuOverlay, "nimbus_mono", "SettingsButton")
+    mainMenuOverlay:addCompoundWidget(settingsButton)
     settingsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             settingsButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
@@ -104,8 +104,8 @@ function MainMenuOverlay:new(host)
         end
     end)
 
-    local exitGameButton = LabelButton:new(host, mainMenuOverlay_1, "nimbus_mono", "ExitGameButton")
-    mainMenuOverlay_1:addCompoundWidget(exitGameButton)
+    local exitGameButton = LabelButton:new(host, mainMenuOverlay, "nimbus_mono", "ExitGameButton")
+    mainMenuOverlay:addCompoundWidget(exitGameButton)
     exitGameButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
     end)
@@ -117,23 +117,23 @@ function MainMenuOverlay:new(host)
         end
     end)
 
-    mainMenuOverlay_1:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
-        print("mainMenuOverlay_1:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
+    mainMenuOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
+        print("mainMenuOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
 
-        backgroundRect:setParent(host, mainMenuOverlay_1Canvas.widgetName, mainMenuOverlay_1Canvas.widgetName)
+        backgroundRect:setParent(host, mainMenuOverlayCanvas.widgetName, mainMenuOverlayCanvas.widgetName)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            mainMenuOverlay_1Canvas.widgetName, menuHorizontalMargin)
+            mainMenuOverlayCanvas.widgetName, menuHorizontalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            mainMenuOverlay_1Canvas.widgetName, menuHorizontalMargin)
+            mainMenuOverlayCanvas.widgetName, menuHorizontalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            mainMenuOverlay_1Canvas.widgetName, menuVerticalMargin)
+            mainMenuOverlayCanvas.widgetName, menuVerticalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-            mainMenuOverlay_1Canvas.widgetName, menuVerticalMargin)
+            mainMenuOverlayCanvas.widgetName, menuVerticalMargin)
         backgroundRect:setColorHexValue(Styles.Colors.panelColor)
         backgroundRect:setZOrder(1)
         backgroundRect:setBorderRadius(MainMenuOverlay.buttonRadius)
 
-        newGameButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
+        newGameButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         newGameButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
         newGameButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
@@ -149,7 +149,7 @@ function MainMenuOverlay:new(host)
         newGameButton:setLabelFontSize(20.0)
         newGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
 
-        editorLvlButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
+        editorLvlButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         editorLvlButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
         editorLvlButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect
@@ -166,7 +166,7 @@ function MainMenuOverlay:new(host)
         editorLvlButton:setLabelFontSize(20.0)
         editorLvlButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
 
-        settingsButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
+        settingsButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             backgroundRect.widgetName, 20)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
@@ -182,7 +182,7 @@ function MainMenuOverlay:new(host)
         settingsButton:setLabelFontSize(20.0)
         settingsButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
 
-        exitGameButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
+        exitGameButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
@@ -199,10 +199,10 @@ function MainMenuOverlay:new(host)
         exitGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
     end)
 
-    mainMenuOverlay_1.onGameEventTriggered = function(eventName, jsonArgs) end
-    mainMenuOverlay_1.onEngineEventTriggered = function(eventName, jsonArgs) end
+    mainMenuOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
+    mainMenuOverlay.onEngineEventTriggered = function(eventName, jsonArgs) end
 
-    return mainMenuOverlay_1;
+    return mainMenuOverlay;
 end
 
 return MainMenuOverlay

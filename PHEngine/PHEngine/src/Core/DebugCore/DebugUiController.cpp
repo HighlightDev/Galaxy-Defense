@@ -2,15 +2,16 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/UiInputComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverBase.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace IO;
 using namespace Graphics;
 
@@ -52,8 +53,8 @@ void DebugUiController::RecalculateWidgetsSize()
     assert(mCanvas);
     assert(mRectangleBackground && mRenderFpsLabel && mGameFpsLabel && mLuaFpsLabel && mImage && mImage1 && mNextPoolsArrowImage);
 
-    const auto windowWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
-    const auto windowHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
+    const auto windowWidth = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth();
+    const auto windowHeight = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();
     const auto imageMargin = 50;
     const auto imageHeight = (windowHeight / 2) - (4 * imageMargin);
 
@@ -116,8 +117,8 @@ void DebugUiController::InitializeWidgets()
     mPools.emplace_back(TexturePool::GetInstance());
 
     if (const auto& sceneSp = mSceneWp.lock()) {
-        const auto windowWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
-        const auto windowHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
+        const auto windowWidth = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth();
+        const auto windowHeight = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();
 
         const auto& uiHandler = sceneSp->GetUiHandler();
         mCanvas = uiHandler->CreateDebugCanvas(ViewPortInfo(0, 0, windowWidth, windowHeight));

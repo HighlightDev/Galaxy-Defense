@@ -28,6 +28,8 @@ public:
 
     ~SoundSource();
 
+    void CleanUp();
+
     void SetPitch(const float pitch);
 
     void SetGain(const float gain);

@@ -2,11 +2,11 @@
 
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Components/UiInputComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 
-using namespace IO;
+using namespace EngineCore::DataProviders;
 
 namespace EngineCore {
 namespace GUI {
@@ -18,7 +18,7 @@ UiInputSystem::UiInputSystem(const std::weak_ptr<UiCanvas>& owner)
     , mInputComponent(std::make_unique<UiInputComponent>(std::make_shared<ComponentData>(std::to_string(s_id++))))
     , mMouseKeyPressedPosition()
 {
-    mScreenHeight = static_cast<size_t>(DisplayDeviceDataProvider::GetInstance()->GetWindowHeight());
+    mScreenHeight = static_cast<size_t>(GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight());
     mMousePressedTimer.SetIntervalMs(300);
     mMousePressedTimer.SetIsRepeat(false);
     mMousePressedTimer.SetCallback(std::bind(&UiInputSystem::OnMousePressedTimerTimeout, this));

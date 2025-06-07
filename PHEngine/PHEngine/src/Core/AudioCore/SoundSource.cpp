@@ -27,6 +27,14 @@ SoundSource::~SoundSource()
     alDeleteSources(1, &mSourceDesc);
 }
 
+void SoundSource::CleanUp()
+{
+    if (mActiveBuffer) {
+        mActiveBuffer->CleanUp();
+        mActiveBuffer = nullptr;
+    }
+}
+
 void SoundSource::SetPitch(const float pitch)
 {
     mPitch = pitch;

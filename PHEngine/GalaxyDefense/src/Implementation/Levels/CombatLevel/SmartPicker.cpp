@@ -2,14 +2,15 @@
 
 #include "CombatActorsPoolHandler.h"
 #include "Core/GameCore/ACamera.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/RayCastWithFilterAdapter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 
 using namespace EnginePhysics;
+using namespace EngineCore::DataProviders;
 using namespace EngineCore;
 using namespace IO;
 
@@ -22,7 +23,7 @@ SmartPicker::SmartPicker(const std::shared_ptr<CombatActorsPoolHandler>& combatA
 glm::vec3 SmartPicker::CreateWorldSpaceRayFromScreenSpacePosition(
     const std::shared_ptr<ACamera>& camera, const glm::ivec2& screenSpacePosition) const
 {
-    const auto& displayDataProvider = DisplayDeviceDataProvider::GetInstance();
+    const auto& displayDataProvider = GeneralSystemSettingsDataProvider::GetInstance();
     const ScreenRayCaster screenRayCaster;
     return screenRayCaster.CastRayFromScreenSpaceToWorldSpace(
         screenSpacePosition,

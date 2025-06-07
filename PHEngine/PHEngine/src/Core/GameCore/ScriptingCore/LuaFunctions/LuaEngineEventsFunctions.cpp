@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/CommonCore/ThreadHelper.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Core/GameCore/Event/ExitGameEvent.h"
 #include "Core/GameCore/Event/LoadLevelEvent.h"
@@ -12,11 +13,14 @@
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
+#include "Core/UtilityCore/JsonUtilities.h"
 
 #include <json/json.hpp>
 
+#include <unordered_map>
+
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace IO;
 using namespace Event;
 
@@ -30,11 +34,14 @@ LuaEngineEventsFunctions::LuaEngineEventsFunctions(LuaScriptExecutorBase* ownerP
 LuaEngineEventsFunctions::~LuaEngineEventsFunctions()
 {
     WindowSizeChangedLuaThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedLuaThreadEvent::GetInstanceId());
+    GeneralSystemSettingsChangedLuaThreadEvent::GetInstance()->RemoveListener(
+        GeneralSystemSettingsChangedLuaThreadEvent::GetInstanceId());
 }
 
 void LuaEngineEventsFunctions::Initialize()
 {
     WindowSizeChangedLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
+    GeneralSystemSettingsChangedLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
 }
 
 void LuaEngineEventsFunctions::SetScene(const std::weak_ptr<Scene>& sceneWp)
@@ -174,6 +181,33 @@ void LuaEngineEventsFunctions::ProcessEvent(
         "System_OnEngineEventTriggered",
         (void*)mOwnerPtr,
         std::string("WindowSizeChanged"),
+        eventParams);
+}
+
+void LuaEngineEventsFunctions::ProcessEvent(
+    const GeneralSystemSettingsChangedLuaThreadEvent* sender, const GeneralSystemSettingsChangedLuaThreadEvent::EventData_t& data)
+{
+    const std::unordered_map<eSystemSettingsEventType, std::string> eventTypeToStringMap = {
+        {eSystemSettingsEventType::SOUND_SETTINGS_CHANGED, "sound"}, {eSystemSettingsEventType::MUSIC_SETTINGS_CHANGED, "music"}};
+    const auto& eventType = std::get<0>(data);
+    const auto& jsonParameters = std::get<1>(data);
+    const auto& parsedParameters = nlohmann::json::parse(jsonParameters);
+
+    assert(eventTypeToStringMap.count(eventType));
+    nlohmann::json jsonObj;
+    jsonObj["settings_type"] = eventTypeToStringMap.at(eventType);
+    if (parsedParameters.contains("action")) {
+        jsonObj["action"] = nlohmann_utilities::GetStringFromJson(parsedParameters["action"]);
+    }
+    if (parsedParameters.contains("gain")) {
+        jsonObj["gain"] = nlohmann_utilities::GetFloatFromJson(parsedParameters["gain"]);
+    }
+    const auto& eventParams = jsonObj.dump();
+    LuaFunctionInvoker<void(void*, std::string, std::string)>::Invoke(
+        mOwnerPtr->GetLuaInstance(),
+        "System_OnEngineEventTriggered",
+        (void*)mOwnerPtr,
+        std::string("GeneralSystemSettingsChanged"),
         eventParams);
 }
 } // namespace Scripts

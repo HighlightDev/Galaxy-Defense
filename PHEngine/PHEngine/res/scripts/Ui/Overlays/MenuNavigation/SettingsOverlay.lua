@@ -33,6 +33,7 @@ local UiProgressBar = require("Ui/Core/uiProgressBar")
 local UiSlider = require("Ui/Core/uiSlider")
 local LabelButton = require("Ui/Widgets/LabelButton")
 local Styles = require("Ui/Common/styles")
+local json = require("Ui/Core/3rdparty/json")
 
 SettingsOverlay = {
     buttonRadius = 6
@@ -63,13 +64,17 @@ function SettingsOverlay:new(host)
     local backgroundRect = UiRectangle:new(host)
     pauseSettingsOverlay:addWidget(backgroundRect)
 
-    local soundToggleButton = UiToggleButton:new(host, false)
-    pauseSettingsOverlay:addWidget(soundToggleButton)
-    soundToggleButton:setOnIsStateChangedCallback(function(newState)
-    end)
-
     local soundLabel = UiLabel:new(host, "nimbus_mono")
     pauseSettingsOverlay:addWidget(soundLabel)
+
+    local musicLabel = UiLabel:new(host, "nimbus_mono")
+    pauseSettingsOverlay:addWidget(musicLabel)
+
+    local musicSlider = UiSlider:new(host, "MusicSlider")
+    pauseSettingsOverlay:addWidget(musicSlider)
+
+    local soundSlider = UiSlider:new(host, "SoundSlider")
+    pauseSettingsOverlay:addWidget(soundSlider)
 
     local applyButton = LabelButton:new(host, pauseSettingsOverlay, "nimbus_mono", "ApplyButton")
     pauseSettingsOverlay:addCompoundWidget(applyButton)
@@ -83,16 +88,6 @@ function SettingsOverlay:new(host)
             applyButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
-
-    local testProgressBar = UiProgressBar:new(host, "TEST_PROGRESS_BAR")
-    pauseSettingsOverlay:addWidget(testProgressBar)
-
-    local horizontalSlider = UiSlider:new(host, "horizontalSlider")
-    pauseSettingsOverlay:addWidget(horizontalSlider)
-
-    local verticalSlider = UiSlider:new(host, "verticalSlider")
-    pauseSettingsOverlay:addWidget(verticalSlider)
-
     local cancelButton = LabelButton:new(host, pauseSettingsOverlay, "nimbus_mono", "CancelButton")
     pauseSettingsOverlay:addCompoundWidget(cancelButton)
     cancelButton:subscribeOnMouseInputClickedCallback(function()
@@ -122,86 +117,80 @@ function SettingsOverlay:new(host)
         backgroundRect:setZOrder(1)
         backgroundRect:setBorderRadius(SettingsOverlay.buttonRadius)
 
-        soundToggleButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
-        soundToggleButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            backgroundRect.widgetName, buttonHorizontalMargin)
-        soundToggleButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName,
-            50)
-        soundToggleButton:setWidth(buttonWidth / 4.0)
-        soundToggleButton:setHeight(buttonWidth / 4.0)
-        soundToggleButton:setZOrder(2)
-        soundToggleButton:setToggleOnColorHexValue(0xFFB732)
-        soundToggleButton:setToggleOffColorHexValue(Styles.Colors.buttonColor)
-        soundToggleButton:enableToggleButtonMouseInputReceiver(host)
-
         soundLabel:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
         soundLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             buttonHorizontalMargin)
-        soundLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.LEFT, soundToggleButton.widgetName,
-            buttonHorizontalMargin)
         soundLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName, 50)
         soundLabel:setHeight(buttonWidth / 4.0)
-        soundLabel:setText("Enable sound effects")
+        soundLabel:setWidth(buttonWidth * 2.0)
+        soundLabel:setText("Sound effects")
         soundLabel:setTextColorHexValue(0xFFFFFF)
-        soundLabel:setFontSize(11.0)
-        soundLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
+        soundLabel:setFontSize(8.0)
+        soundLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.RIGHT)
         soundLabel:setZOrder(2)
 
-        testProgressBar:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
-        testProgressBar:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
-            100.0)
-        testProgressBar:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            backgroundRect.widgetName, 100.0)
-        testProgressBar:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, soundLabel.widgetName,
-            30.0)
-        testProgressBar:setHeight(50.0)
-        testProgressBar:setZOrder(2)
-        testProgressBar:setFillPercentValue(0.25)
-        testProgressBar:setEmptyColorHexValue(0xAAEEFF)
-        testProgressBar:setFilledColorHexValue(0xFFEEAA)
-
-        horizontalSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
-        horizontalSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            backgroundRect.widgetName, 100.0)
-        horizontalSlider:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            backgroundRect.widgetName, 100.0)
-        horizontalSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            testProgressBar.widgetName, 30.0)
-        horizontalSlider:setHeight(30.0)
-        horizontalSlider:setZOrder(2)
-        horizontalSlider:setSliderValue(0.5)
-        horizontalSlider:setMaxSliderValue(1.0)
-        horizontalSlider:setMinSliderValue(0.0)
-        horizontalSlider:setSliderStep(0.1)
-        horizontalSlider:setSliderThicknessPixels(10.0)
-        horizontalSlider:setBlobThicknessPixels(40.0)
-        horizontalSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL)
-        horizontalSlider:setBlobColorHexValue(0x000000)
-        horizontalSlider:setSliderColorHexValue(0xFFFFFF)
-        horizontalSlider:enableSliderMouseInputReceiver(host)
-        horizontalSlider:subscribeOnSliderValueChangedCallback(function(newValue)
-            print("testSlider:subscribeOnSliderValueChangedCallback => newValue: " .. tostring(newValue))
+        soundSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
+        soundSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+            buttonHorizontalMargin * 0.5)
+        soundSlider:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
+            buttonHorizontalMargin * 0.5)
+        soundSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, soundLabel.widgetName, 60.0)
+        soundSlider:setHeight(30.0)
+        soundSlider:setZOrder(2)
+        soundSlider:setSliderValue(0.5)
+        soundSlider:setMaxSliderValue(1.0)
+        soundSlider:setMinSliderValue(0.0)
+        soundSlider:setSliderStep(0.1)
+        soundSlider:setSliderThicknessPixels(10.0)
+        soundSlider:setBlobThicknessPixels(40.0)
+        soundSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL)
+        soundSlider:setBlobColorHexValue(Styles.Colors.hoveredButtonColor)
+        soundSlider:setSliderColorHexValue(Styles.Colors.notActiveButtonColor)
+        soundSlider:enableSliderMouseInputReceiver(host)
+        soundSlider:subscribeOnSliderValueChangedCallback(function(newValue)
+            EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
+                "GeneralSystemSettingsEvents", json.encode({
+                    action = "change_sound",
+                    gain = math.max(0.0, math.min(newValue, 1.0))
+                }))
         end)
 
-        verticalSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
-        verticalSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
-            30.0)
-        verticalSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            horizontalSlider.widgetName, 30.0)
-        verticalSlider:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.TOP, applyButton.widgetName,
-            30.0)
-        verticalSlider:setWidth(40.0)
-        verticalSlider:setZOrder(2)
-        verticalSlider:setSliderValue(0.5)
-        verticalSlider:setMaxSliderValue(1.0)
-        verticalSlider:setMinSliderValue(0.0)
-        verticalSlider:setSliderStep(0.1)
-        verticalSlider:setSliderThicknessPixels(10.0)
-        verticalSlider:setBlobThicknessPixels(40.0)
-        verticalSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_VERTICAL)
-        verticalSlider:enableSliderMouseInputReceiver(host)
-        verticalSlider:subscribeOnSliderValueChangedCallback(function(newValue)
-            print("verticalSlider:subscribeOnSliderValueChangedCallback => newValue: " .. tostring(newValue))
+        musicLabel:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
+        musicLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+            buttonHorizontalMargin)
+        musicLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, soundSlider.widgetName, 50)
+        musicLabel:setHeight(buttonWidth / 4.0)
+        musicLabel:setWidth(buttonWidth * 2.0)
+        musicLabel:setText("Music")
+        musicLabel:setTextColorHexValue(0xFFFFFF)
+        musicLabel:setFontSize(8.0)
+        musicLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.RIGHT)
+        musicLabel:setZOrder(2)
+
+        musicSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
+        musicSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+            buttonHorizontalMargin * 0.5)
+        musicSlider:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
+            buttonHorizontalMargin * 0.5)
+        musicSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, musicLabel.widgetName, 60.0)
+        musicSlider:setHeight(30.0)
+        musicSlider:setZOrder(2)
+        musicSlider:setSliderValue(0.5)
+        musicSlider:setMaxSliderValue(1.0)
+        musicSlider:setMinSliderValue(0.0)
+        musicSlider:setSliderStep(0.1)
+        musicSlider:setSliderThicknessPixels(10.0)
+        musicSlider:setBlobThicknessPixels(40.0)
+        musicSlider:setSliderType(UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL)
+        musicSlider:setBlobColorHexValue(Styles.Colors.hoveredButtonColor)
+        musicSlider:setSliderColorHexValue(Styles.Colors.notActiveButtonColor)
+        musicSlider:enableSliderMouseInputReceiver(host)
+        musicSlider:subscribeOnSliderValueChangedCallback(function(newValue)
+            EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
+                "GeneralSystemSettingsEvents", json.encode({
+                    action = "change_music",
+                    gain = math.max(0.0, math.min(newValue, 1.0))
+                }))
         end)
 
         applyButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
@@ -238,6 +227,24 @@ function SettingsOverlay:new(host)
     pauseSettingsOverlay.onGameEventTriggered = function(eventName, jsonArgs)
     end
     pauseSettingsOverlay.onEngineEventTriggered = function(eventName, jsonArgs)
+        if "GeneralSystemSettingsChanged" == eventName and pauseSettingsOverlay.allWidgetLuaProxiesReady == true then
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            local parsedJson = json.decode(jsonArgs)
+            if parsedJson["settings_type"] ~= nil then
+                local settings_type = tostring(parsedJson["settings_type"])
+                local action = tostring(parsedJson["action"])
+                if "change_value" == action then
+                    local gain = tonumber(parsedJson["gain"])
+                    if gain ~= nil then
+                        if "sound" == settings_type then
+                            soundSlider:setSliderValue(gain)
+                        elseif "music" == settings_type then
+                            musicSlider:setSliderValue(gain)
+                        end
+                    end
+                end
+            end
+        end
     end
 
     return pauseSettingsOverlay

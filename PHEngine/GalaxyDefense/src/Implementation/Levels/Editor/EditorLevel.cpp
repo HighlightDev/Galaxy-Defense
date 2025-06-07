@@ -5,6 +5,7 @@
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
 #include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
@@ -13,7 +14,6 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Implementation/Events/ChangeEditModeEvent.h"
 #include "Implementation/GalaxySceneCamera.h"
 
@@ -23,6 +23,7 @@
 
 using namespace IO;
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace EngineCore::Scripts;
 using namespace EngineCore::GUI;
 using namespace Graphics;
@@ -79,8 +80,8 @@ void EditorLevel::CreateScene()
         ViewPortInfo(
             0,
             0,
-            DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-            DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()),
+            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
         std::make_shared<ViewPerspectiveInfo>(glm::radians<float>(60.0f), 16.0f / 9.0f, 0.1f, 500.0f),
         38.88f,
         0.0f,

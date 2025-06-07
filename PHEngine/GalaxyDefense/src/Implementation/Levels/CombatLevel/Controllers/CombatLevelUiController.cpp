@@ -1,18 +1,19 @@
 #include "CombatLevelUiController.h"
 
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Event/PauseGameEvent.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/InterThreadCommunicationMgr.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Implementation/LevelProgressSystem/LevelProgressController.h"
 #include "Implementation/LuaExecutors/LuaCombatLevelUiControllerExecutor.h"
 
 using namespace IO;
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace EngineCore::Scripts;
 using namespace Thread;
 

@@ -38,17 +38,17 @@ void UiMouseInputReceiverBase::SetMouseClickedCallback(std::function<void(std::w
 void UiMouseInputReceiverBase::OnMousePositionChanged(
     const BoundingBox2D<glm::ivec2>& mouseInputArea, const glm::ivec2& mouseCursorPosition)
 {
-    if (mMouseHoverEnteredCallback && mMouseHoverLeavedCallback) {
-        if (EngineMath::TestPointInAABB(mouseInputArea.GetMin(), mouseInputArea.GetMax(), mouseCursorPosition)) {
-            if (!mWasHoveredLastFrame) {
-                mWasHoveredLastFrame = true;
+    if (EngineMath::TestPointInAABB(mouseInputArea.GetMin(), mouseInputArea.GetMax(), mouseCursorPosition)) {
+        if (!mWasHoveredLastFrame) {
+            mWasHoveredLastFrame = true;
+            if (mMouseHoverEnteredCallback) {
                 mMouseHoverEnteredCallback(mOwnerWp, mouseCursorPosition);
             }
-        } else {
-            if (mWasHoveredLastFrame) {
-                mMouseHoverLeavedCallback(mOwnerWp, mouseCursorPosition);
-                mWasHoveredLastFrame = false;
-            }
+        }
+    } else if (mWasHoveredLastFrame) {
+        mWasHoveredLastFrame = false;
+        if (mMouseHoverLeavedCallback) {
+            mMouseHoverLeavedCallback(mOwnerWp, mouseCursorPosition);
         }
     }
 }
@@ -56,10 +56,8 @@ void UiMouseInputReceiverBase::OnMousePositionChanged(
 void UiMouseInputReceiverBase::OnMouseReleased(
     const BoundingBox2D<glm::ivec2>& mouseInputArea, const glm::ivec2& mouseCursorPosition)
 {
-    if (mMouseReleasedCallback) {
-        if (mMouseButtonWasPressedLastFrame) {
-            mMouseReleasedCallback(mOwnerWp, mouseCursorPosition);
-        }
+    if (mMouseReleasedCallback && mMouseButtonWasPressedLastFrame) {
+        mMouseReleasedCallback(mOwnerWp, mouseCursorPosition);
     }
     mMouseButtonWasPressedLastFrame = false;
 }
@@ -67,12 +65,12 @@ void UiMouseInputReceiverBase::OnMouseReleased(
 void UiMouseInputReceiverBase::OnMousePressed(
     const BoundingBox2D<glm::ivec2>& mouseInputArea, const glm::ivec2& mouseCursorPosition)
 {
-    if (mMousePressedCallback) {
-        if (EngineMath::TestPointInAABB(mouseInputArea.GetMin(), mouseInputArea.GetMax(), mouseCursorPosition)) {
+    if (EngineMath::TestPointInAABB(mouseInputArea.GetMin(), mouseInputArea.GetMax(), mouseCursorPosition)) {
+        mMouseButtonWasPressedLastFrame = true;
+        if (mMousePressedCallback) {
             mMousePressedCallback(mOwnerWp, mouseCursorPosition);
         }
     }
-    mMouseButtonWasPressedLastFrame = true;
 }
 
 void UiMouseInputReceiverBase::OnMouseClicked(

@@ -6,6 +6,7 @@
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
@@ -20,7 +21,6 @@
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
@@ -41,6 +41,7 @@ using namespace Graphics::Proxy;
 using namespace Graphics::OpenGL;
 using namespace EngineUtility;
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace IO;
 using namespace EngineCore::GUI;
 
@@ -52,14 +53,14 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
           std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
               0,
               0,
-              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
     , m_resolvedSceneFramebuffer(
           std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
               0,
               0,
-              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
     , m_deferredLightShader()
     , m_fontShader()
     , mDepthCollectShaderSkeletal()
@@ -74,8 +75,8 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
           std::make_unique<PostFxRenderer>(ViewPortInfo(
               0,
               0,
-              DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-              DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
     ,
 #if DEBUG
     mDebugPhysicsRenderData()

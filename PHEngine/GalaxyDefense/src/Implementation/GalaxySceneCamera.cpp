@@ -1,10 +1,10 @@
 #include "GalaxySceneCamera.h"
 
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/UtilityCore/EngineMath.h"
 
-using namespace IO;
+using namespace EngineCore::DataProviders;
 
 namespace Game {
 GalaxySceneCamera::GalaxySceneCamera(
@@ -73,7 +73,7 @@ void GalaxySceneCamera::Tick(const float deltaTime)
     }
 
     if (mouseBindings->GetMouseMoveEventReceivedAtLeastOnce()) {
-        const auto displayDeviceProvider = DisplayDeviceDataProvider::GetInstance();
+        const auto displayDeviceProvider = GeneralSystemSettingsDataProvider::GetInstance();
         const auto& mouseMoveEvent = mouseBindings->GetLastMouseCursorPosition();
         if ((mouseMoveEvent.x <= s_screenThresholdOffset
              || mouseMoveEvent.x >= (displayDeviceProvider->GetWindowWidth() - s_screenThresholdOffset))
@@ -99,8 +99,7 @@ void GalaxySceneCamera::Tick(const float deltaTime)
             const glm::vec2 cameraPosition = glm::vec2(newTargetVector.x, newTargetVector.z);
             const bool isInsideLevelBoundaries
                 = EngineMath::TestPointInAABB(levelBoundariesMin, levelBoundariesMax, cameraPosition);
-            if (isInsideLevelBoundaries)
-            {
+            if (isInsideLevelBoundaries) {
                 m_actualTargetVector = EngineMath::LerpVec3(
                     glm::clamp(m_cameraMovementTime, 0.0f, s_cameraMovementAccelerationTime),
                     0.0f,

@@ -1,7 +1,7 @@
+#include "Core/GameCore./DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
@@ -21,6 +21,7 @@
 #endif
 
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace EngineUtility;
 using namespace Game;
 using namespace IO;
@@ -36,7 +37,7 @@ void get_window_pos(GLFWwindow* window)
     int32_t x, y;
     glfwGetWindowPos(window, &x, &y);
 
-    DisplayDeviceDataProvider::GetInstance()->SetWindowPos(x, y);
+    GeneralSystemSettingsDataProvider::GetInstance()->SetWindowPos(x, y);
 }
 
 void mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
@@ -106,8 +107,8 @@ void get_screen_rezolution(GLFWmonitor* activeMonitor)
 {
     const GLFWvidmode* mode = glfwGetVideoMode(activeMonitor);
 
-    DisplayDeviceDataProvider::GetInstance()->SetScreenWidth(mode->width);
-    DisplayDeviceDataProvider::GetInstance()->SetScreenHeight(mode->height);
+    GeneralSystemSettingsDataProvider::GetInstance()->SetScreenWidth(mode->width);
+    GeneralSystemSettingsDataProvider::GetInstance()->SetScreenHeight(mode->height);
 }
 
 void get_window_size(GLFWwindow* window)
@@ -116,18 +117,18 @@ void get_window_size(GLFWwindow* window)
 
     glfwGetWindowSize(window, &width, &height);
 
-    DisplayDeviceDataProvider::GetInstance()->SetWindowWidth(width);
-    DisplayDeviceDataProvider::GetInstance()->SetWindowHeight(height);
+    GeneralSystemSettingsDataProvider::GetInstance()->SetWindowWidth(width);
+    GeneralSystemSettingsDataProvider::GetInstance()->SetWindowHeight(height);
 }
 
 void window_size_changed_callback(GLFWwindow* window, int width, int height)
 {
-    DisplayDeviceDataProvider::GetInstance()->SetWindowSize(width, height);
+    GeneralSystemSettingsDataProvider::GetInstance()->SetWindowSize(width, height);
 }
 
 void window_position_changed_callback(GLFWwindow* window, int xpos, int ypos)
 {
-    DisplayDeviceDataProvider::GetInstance()->SetWindowPos(xpos, ypos);
+    GeneralSystemSettingsDataProvider::GetInstance()->SetWindowPos(xpos, ypos);
 }
 
 #ifdef USE_LIBUNWIND
@@ -180,11 +181,11 @@ int32_t main(int32_t argc, char** argv)
     get_screen_rezolution(activeMonitor);
 
     if ("fullscreen" == windowMode) {
-        width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
-        height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
+        width = GeneralSystemSettingsDataProvider::GetInstance()->GetScreenWidth();
+        height = GeneralSystemSettingsDataProvider::GetInstance()->GetScreenHeight();
     } else if ("windowed" == windowMode) {
-        DisplayDeviceDataProvider::GetInstance()->SetScreenWidth(width);
-        DisplayDeviceDataProvider::GetInstance()->SetScreenHeight(height);
+        GeneralSystemSettingsDataProvider::GetInstance()->SetScreenWidth(width);
+        GeneralSystemSettingsDataProvider::GetInstance()->SetScreenHeight(height);
     }
 
     window = glfwCreateWindow(width, height, "PHEngine", "windowed" == windowMode ? nullptr : activeMonitor, NULL);

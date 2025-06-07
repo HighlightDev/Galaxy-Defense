@@ -10,6 +10,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Input/KeyboardBindings.h"
 #include "Core/GameCore/Input/MouseBindings.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -18,7 +19,6 @@
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GraphicsCore/SceneProxy/MainCameraSceneProxy.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/ScreenRayCaster.h"
@@ -34,6 +34,7 @@
 
 using namespace IO;
 using namespace Graphics;
+using namespace EngineCore::DataProviders;
 using namespace Resources;
 
 namespace Game {
@@ -42,15 +43,19 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     , mLevelBounds()
     , mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>("GameFlowController_InputComponent")))
     , mMainSceneCamera()
-    , mProjectileMarkerActor(std::make_shared<Actor>(
-          "MissileProjectileActor",
-          std::make_shared<SceneComponent>("MissileProjectileRootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
-    , mGhostTowerActor(std::make_shared<Actor>(
-          "GhostTowerActor",
-          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
-    , mRemoveTowerMarkerActor(std::make_shared<Actor>(
-          "RemoveTowerMarkerActor",
-          std::make_shared<SceneComponent>("RemoveTowerMarkerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mProjectileMarkerActor(
+          std::make_shared<Actor>(
+              "MissileProjectileActor",
+              std::make_shared<SceneComponent>("MissileProjectileRootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mGhostTowerActor(
+          std::make_shared<Actor>(
+              "GhostTowerActor",
+              std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mRemoveTowerMarkerActor(
+          std::make_shared<Actor>(
+              "RemoveTowerMarkerActor",
+              std::make_shared<SceneComponent>(
+                  "RemoveTowerMarkerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mRemoveTowerMarkerBlendColorProperty(
           std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_transparency_color_filler"))

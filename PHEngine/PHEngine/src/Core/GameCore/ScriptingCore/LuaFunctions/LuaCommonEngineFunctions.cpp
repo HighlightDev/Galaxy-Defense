@@ -3,12 +3,13 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/CommonCore/ThreadHelper.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace IO;
 
 namespace EngineCore {
@@ -71,12 +72,12 @@ void LuaCommonEngineFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
 
 int32_t LuaCommonEngineFunctions::GetWindowHeight(const std::tuple<>& data)
 {
-    return DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
+    return GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();
 }
 
 int32_t LuaCommonEngineFunctions::GetWindowWidth(const std::tuple<>& data)
 {
-    return DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
+    return GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth();
 }
 
 bool LuaCommonEngineFunctions::HasPressedKeyboardButtons(const std::tuple<>& data)

@@ -1,6 +1,6 @@
 #include "FontHandler.h"
 
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
+#include  "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/FontMeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -11,6 +11,7 @@
 
 using namespace IO;
 using namespace Resources;
+using namespace EngineCore::DataProviders;
 using namespace EngineUtility;
 
 namespace EngineCore {
@@ -261,7 +262,7 @@ void FontHandler::RegisterFont(const FontParams& fontParams)
     const auto& fontTextureAtlas = TexturePool::GetInstance()->GetOrAllocateResource(fontParams.FontTextureAtlas);
     const auto& fontDescriptorFile = std::make_shared<FontMetaFile>(
         FolderManager::GetInstance()->GetFontsPath() + fontParams.FontDescriptorFile,
-        DisplayDeviceDataProvider::GetInstance()->GetWidthToHeightRatio());
+        GeneralSystemSettingsDataProvider::GetInstance()->GetWidthToHeightRatio());
     mFontBatcherMap.emplace(fontParams.FontName, std::make_shared<FontBatcher>(fontMesh, fontTextureAtlas, fontDescriptorFile));
 
     const size_t maxFontCharactersCount = EngineConfigHolder::GetInstance()->GetEngineConfig().MaxFontCharactersCount;

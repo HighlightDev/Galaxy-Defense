@@ -16,11 +16,12 @@
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetFactoryCreator.h"
 #include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetType.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
+#include  "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 
 #include <json/json.hpp>
 
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace IO;
 
 namespace EngineCore {

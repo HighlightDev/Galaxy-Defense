@@ -1,15 +1,16 @@
 #include "ACamera.h"
 
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <algorithm>
 
 using namespace EngineMath;
+using namespace EngineCore::DataProviders;
 using namespace IO;
 using namespace Graphics::Renderer;
 

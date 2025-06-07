@@ -9,11 +9,11 @@
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedQuadraticBezierCurveComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/IoCore/FileFacade.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/UtilityCore/EngineMath.h"
@@ -24,6 +24,7 @@
 
 using namespace Resources;
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace Graphics;
 using namespace IO;
 
@@ -31,15 +32,18 @@ namespace Game {
 LevelEditorController::LevelEditorController(const std::weak_ptr<Scene>& sceneWp)
     : mSceneWp(sceneWp)
     , mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent")))
-    , mBezierCurvesActor(std::make_shared<Actor>(
-          "BezierCurvesActor",
-          std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
-    , mTowersActor(std::make_shared<Actor>(
-          "TowersActor",
-          std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
-    , mGhostTowerActor(std::make_shared<Actor>(
-          "GhostTowerActor",
-          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mBezierCurvesActor(
+          std::make_shared<Actor>(
+              "BezierCurvesActor",
+              std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mTowersActor(
+          std::make_shared<Actor>(
+              "TowersActor",
+              std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mGhostTowerActor(
+          std::make_shared<Actor>(
+              "GhostTowerActor",
+              std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mRoutesHandler(mSceneWp, mBezierCurvesActor)
     , mTowersHandler(mSceneWp, mTowersActor)
@@ -107,8 +111,8 @@ glm::vec3 LevelEditorController::RaycastLevelPlane(bool& raycastWasSuccessfull, 
         const glm::vec3& worldSpaceRay = screenRayCaster.CastRayFromScreenSpaceToWorldSpace(
             screenSpacePoint,
             glm::ivec2(
-                DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
-                DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
+                GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth() - 1,
+                GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight() - 1),
             projectionMatrix,
             viewMatrix);
         const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);

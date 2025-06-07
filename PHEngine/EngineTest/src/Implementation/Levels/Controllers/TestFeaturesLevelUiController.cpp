@@ -2,17 +2,18 @@
 
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Components/InputComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/InterThreadCommunicationMgr.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 
 using namespace IO;
 using namespace EngineCore;
 using namespace EngineCore::Scripts;
 using namespace Thread;
+using namespace EngineCore::DataProviders;
 
 namespace TestFeatures {
 TestFeaturesLevelUiController::TestFeaturesLevelUiController(const std::weak_ptr<Scene>& scene)
