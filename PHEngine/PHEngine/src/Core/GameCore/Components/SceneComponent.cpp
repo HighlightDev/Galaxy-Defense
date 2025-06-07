@@ -89,7 +89,7 @@ void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentRelativeMatrix)
     m_outlineMatrix = identityMatrix;
     m_outlineMatrix *= parentRelativeMatrix;
     m_outlineMatrix *= glm::translate(identityMatrix, mTransform->Translation);
-    m_outlineMatrix *= glm::scale(identityMatrix, mTransform->Scale + thicknessScale);
+    m_outlineMatrix *= glm::scale(identityMatrix, mTransform->Scale * thicknessScale);
 
     if (bIsRootComponent) {
         const glm::mat4 pitchRotation

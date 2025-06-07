@@ -153,9 +153,9 @@ void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelati
 
         // Update current relative matrix
         const glm::mat4 identityMatrix(1);
-        m_relativeMatrix = glm::mat4(1);
-        m_relativeMatrix *= glm::translate(glm::mat4(1), mTransform->Translation + ownerTranslation);
-        m_relativeMatrix *= glm::scale(glm::mat4(1), mTransform->Scale + ownerScale);
+        m_relativeMatrix = identityMatrix;
+        m_relativeMatrix *= glm::translate(identityMatrix, (mTransform->Translation + ownerTranslation));
+        m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale * ownerScale);
 
         if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
             // Update primitives proxy transform
@@ -163,7 +163,7 @@ void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelati
             if (const auto& sceneSP = m_sceneWP.lock()) {
                 if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                     sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(
-                        mSceneProxyId, GetObjectId(), functionId, glm::mat4(1), m_relativeMatrix, GetTransformedBoundingBox());
+                        mSceneProxyId, GetObjectId(), functionId, m_relativeMatrix, glm::mat4(1), GetTransformedBoundingBox());
                 }
             }
         }
