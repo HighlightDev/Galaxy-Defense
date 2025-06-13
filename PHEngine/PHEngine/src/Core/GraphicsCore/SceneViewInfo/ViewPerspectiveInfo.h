@@ -34,5 +34,30 @@ public:
     {
         return glm::perspective<float>(FoV, AspectRatio, NearPlane, FarPlane);
     }
+
+    eProjectionType GetProjectionType() const override
+    {
+        return eProjectionType::PERSPECTIVE;
+    }
+
+    inline float GetFoV() const
+    {
+        return FoV;
+    }
+
+    inline float GetAspectRatio() const
+    {
+        return AspectRatio;
+    }
+
+    inline float GetNearPlane() const
+    {
+        return NearPlane;
+    }
+
+    inline float GetFarPlane() const
+    {
+        return FarPlane;
+    }
 };
 } // namespace Graphics

@@ -43,17 +43,22 @@ public:
 
 private:
     /*Get Window height*/
-    int32_t GetWindowHeight(const std::tuple<>& data);
+    int32_t GetWindowHeight(const std::tuple<>& data) const;
 
     /*Get Window width*/
-    int32_t GetWindowWidth(const std::tuple<>& data);
+    int32_t GetWindowWidth(const std::tuple<>& data) const;
+
+    /*Getters for scene properties*/
+    float GetMusicGain(const std::tuple<>& data) const;
+    
+    float GetSoundGain(const std::tuple<>& data) const;
 
     /*Input callbacks*/
-    bool HasPressedKeyboardButtons(const std::tuple<>& data);
+    bool HasPressedKeyboardButtons(const std::tuple<>& data) const;
 
-    bool HasReleasedKeyboardButtons(const std::tuple<>& data);
+    bool HasReleasedKeyboardButtons(const std::tuple<>& data) const;
 
-    std::string GetKeyboardJsonData(const std::tuple<>& data);
+    std::string GetKeyboardJsonData(const std::tuple<>& data) const;
 };
 } // namespace Scripts
 } // namespace EngineCore

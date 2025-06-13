@@ -27,9 +27,14 @@ public:
     {
     }
 
-    virtual glm::mat4 CreateProjectionMatrix() const
+    glm::mat4 CreateProjectionMatrix() const override
     {
         return glm::ortho<float>(mLeft, mRight, mBottom, mTop, mZNear, mZFar);
+    }
+
+    eProjectionType GetProjectionType() const override
+    {
+        return eProjectionType::ORTHOGRAPHIC;
     }
 };
 } // namespace Graphics

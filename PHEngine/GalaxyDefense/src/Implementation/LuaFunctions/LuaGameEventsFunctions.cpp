@@ -3,10 +3,12 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/CommonCore/ThreadHelper.h"
+#include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Implementation/DataProviders/LevelDataProvider.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/EditModeTypeEnum.h"
 #include "Implementation/Events/ChangeEditModeEvent.h"
@@ -18,6 +20,7 @@
 #include <json/json.hpp>
 
 using namespace EngineCore;
+using namespace EngineCore::GUI;
 
 namespace Game {
 LuaGameEventsFunctions::LuaGameEventsFunctions(LuaScriptExecutorBase* ownerPtr)
@@ -74,6 +77,16 @@ void LuaGameEventsFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
         mOwnerPtr,
         std::bind(&LuaGameEventsFunctions::GetEnemySpaceshipsCountDestroyedByPlayer, this, std::placeholders::_1),
         "_GetEnemySpaceshipsCountDestroyedByPlayer");
+    LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetEditorLevelAreaBoundingBoxWidth"), float(void)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaGameEventsFunctions::GetEditorLevelAreaBoundingBoxWidth, this, std::placeholders::_1),
+        "_GetEditorLevelAreaBoundingBoxWidth");
+    LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetEditorLevelAreaBoundingBoxLength"), float(void)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaGameEventsFunctions::GetEditorLevelAreaBoundingBoxLength, this, std::placeholders::_1),
+        "_GetEditorLevelAreaBoundingBoxLength");
     LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::SendChangeGameModeGameThreadEvent"), void(int32_t, int32_t)>::
         Bind(
             luaWrapper,
@@ -97,14 +110,6 @@ void LuaGameEventsFunctions::ProcessEvent(
         (void*)mOwnerPtr,
         std::string("PlayerStatusChanged"),
         std::get<1>(data));
-#ifdef DEBUG
-    const auto& errorMsg = mOwnerPtr->GetLuaInstance().GetErrorMessageAt(-1);
-    if (errorMsg.size() > 1) {
-        std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
-        LogInfo("ERROR: Lua script execution failed:", errorMsg);
-        assert(false);
-    }
-#endif
 }
 
 void LuaGameEventsFunctions::ProcessEvent(
@@ -116,14 +121,6 @@ void LuaGameEventsFunctions::ProcessEvent(
         (void*)mOwnerPtr,
         std::string("LevelProgressChanged"),
         std::get<1>(data));
-#ifdef DEBUG
-    const auto& errorMsg = mOwnerPtr->GetLuaInstance().GetErrorMessageAt(-1);
-    if (errorMsg.size() > 1) {
-        std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
-        LogInfo("ERROR: Lua script execution failed:", errorMsg);
-        assert(false);
-    }
-#endif
 }
 
 void LuaGameEventsFunctions::ProcessEvent(const LuaChangeGameModeEvent* sender, const LuaChangeGameModeEvent::EventData_t& data)
@@ -137,14 +134,25 @@ void LuaGameEventsFunctions::ProcessEvent(const LuaChangeGameModeEvent* sender, 
         (void*)mOwnerPtr,
         std::string("GameModeChanged"),
         gameModeJson.dump());
-#ifdef DEBUG
-    const auto& errorMsg = mOwnerPtr->GetLuaInstance().GetErrorMessageAt(-1);
-    if (errorMsg.size() > 1) {
-        std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
-        LogInfo("ERROR: Lua script execution failed:", errorMsg);
-        assert(false);
-    }
-#endif
+}
+
+void LuaGameEventsFunctions::ProcessEvent(
+    const LevelAreaBBChangedLuaThreadEvent* sender, const LevelAreaBBChangedLuaThreadEvent::EventData_t& data)
+{
+    const auto& levelBb2d = std::get<0>(data);
+    const auto& halfExtent = levelBb2d.GetHalfExtent();
+    const auto width = halfExtent.x * 2.0f;
+    const auto length = halfExtent.y * 2.0f;
+
+    nlohmann::json jsonObj;
+    jsonObj["width"] = width;
+    jsonObj["lenght"] = length;
+    LuaFunctionInvoker<void(void*, std::string, int32_t)>::Invoke(
+        mOwnerPtr->GetLuaInstance(),
+        "System_OnGameEventTriggered",
+        (void*)mOwnerPtr,
+        std::string("EditLevelAreaBoundingBoxChanged"),
+        jsonObj.dump());
 }
 
 int32_t LuaGameEventsFunctions::GetSelectedMissileType(const std::tuple<>& data) const
@@ -169,6 +177,16 @@ std::string LuaGameEventsFunctions::GetAllMissilesData(const std::tuple<>& data)
 int32_t LuaGameEventsFunctions::GetEnemySpaceshipsCountDestroyedByPlayer(const std::tuple<>& data) const
 {
     return static_cast<int32_t>(PlayerDataProvider::GetInstance()->GetDestroyedEnemySpaceshipsCount());
+}
+
+float LuaGameEventsFunctions::GetEditorLevelAreaBoundingBoxWidth(const std::tuple<>& data) const
+{
+    return LevelDataProvider::GetInstance()->GetEditorLevelAreaBoundingBox().GetHalfExtent().x * 2.0f;
+}
+
+float LuaGameEventsFunctions::GetEditorLevelAreaBoundingBoxLength(const std::tuple<>& data) const
+{
+    return LevelDataProvider::GetInstance()->GetEditorLevelAreaBoundingBox().GetHalfExtent().y * 2.0f;
 }
 
 void LuaGameEventsFunctions::SendChangeGameModeGameThreadEvent(

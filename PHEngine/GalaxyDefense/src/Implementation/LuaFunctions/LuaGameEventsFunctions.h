@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/ScriptingCore/LuaFunctions/ILuaFunctionable.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
+#include "Implementation/Events/LevelAreaBBChangedEvent.h"
 #include "Implementation/Events/LevelProgressChangedEvent.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 
@@ -20,6 +21,7 @@ class LuaGameEventsFunctions : public ILuaFunctionable,
                                public LuaMainPlayerStatusChangedEvent,
                                public LuaLevelProgressChangedEvent,
                                public LuaChangeGameModeEvent,
+                               public LevelAreaBBChangedLuaThreadEvent,
                                public std::enable_shared_from_this<LuaGameEventsFunctions> {
 protected:
     ::EngineCore::Scripts::LuaScriptExecutorBase* mOwnerPtr;
@@ -52,12 +54,19 @@ public:
 
     void ProcessEvent(const LuaChangeGameModeEvent* sender, const LuaChangeGameModeEvent::EventData_t& data) override;
 
+    void ProcessEvent(
+        const LevelAreaBBChangedLuaThreadEvent* sender, const LevelAreaBBChangedLuaThreadEvent::EventData_t& data) override;
+
 private:
     int32_t GetSelectedMissileType(const std::tuple<>& data) const;
 
     std::string GetAllMissilesData(const std::tuple<>& data) const;
 
     int32_t GetEnemySpaceshipsCountDestroyedByPlayer(const std::tuple<>& data) const;
+
+    float GetEditorLevelAreaBoundingBoxWidth(const std::tuple<>& data) const;
+
+    float GetEditorLevelAreaBoundingBoxLength(const std::tuple<>& data) const;
 
     void SendChangeGameModeGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, int32_t /*game mode type*/>& data);
 

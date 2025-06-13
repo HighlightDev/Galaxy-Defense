@@ -21,7 +21,7 @@ class Scene;
 class Actor;
 class ThirdPersonCamera;
 class InputComponent;
-class RuntimeGeneratedQuadraticBezierCurveComponent;
+class RuntimeGeneratedLineComponent;
 } // namespace EngineCore
 
 namespace Graphics {
@@ -69,16 +69,22 @@ class LevelEditorController : public std::enable_shared_from_this<LevelEditorCon
 
     std::shared_ptr<::Graphics::IMaterial> mSplineMaterialPrefab;
 
+    std::shared_ptr<::Graphics::IMaterial> mGridLineMaterialPrefab;
+
     RoutesHandler mRoutesHandler;
 
     TowersHandler mTowersHandler;
 
     BarriersHandler mBarriersHandler;
 
+    std::stack<std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>> mIdleRuntimeGeneratedLineComponents;
+
 public:
     explicit LevelEditorController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
     ~LevelEditorController() override;
+
+    void Initialize();
 
     void OnPreLevelInit() override;
 
@@ -98,10 +104,8 @@ public:
 
     void ProcessEvent(const BroadcastGameThreadEvent* sender, const BroadcastGameThreadEvent::EventData_t& data) override;
 
-    void SetLevelAreaBoundingBox(const BoundingBox2D<glm::vec2>& levelAreaBoundingBox);
-
 private:
-    void Initialize();
+    void InitializeInternalActors();
 
     void InitializeRoutePlacementGrid();
 
@@ -109,8 +113,14 @@ private:
 
     void InitializeGhostTower();
 
+    void RestoreLineComponentsPool();
+
+    void ReAllocateLineComponents();
+
     bool IsTowerPositionValid(const glm::vec3 position) const;
 
     glm::vec3 RaycastLevelPlane(bool& raycastWasSuccessfull, const glm::ivec2& screenSpacePoint);
+
+    void UpdateVisibility();
 };
 } // namespace Game

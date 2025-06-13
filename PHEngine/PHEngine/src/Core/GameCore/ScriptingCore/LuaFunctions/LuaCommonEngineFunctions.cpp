@@ -68,19 +68,28 @@ void LuaCommonEngineFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
         mOwnerPtr,
         std::bind(&LuaCommonEngineFunctions::GetKeyboardJsonData, this, std::placeholders::_1),
         "_GetKeyboardJsonData");
+
+    LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetMusicGain"), float(void)>::Bind(
+        luaWrapper, mOwnerPtr, std::bind(&LuaCommonEngineFunctions::GetMusicGain, this, std::placeholders::_1), "_GetMusicGain");
+
+    LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetSoundGain"), float(void)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaCommonEngineFunctions::GetSoundGain, this, std::placeholders::_1),
+        "_GetSoundGain");
 }
 
-int32_t LuaCommonEngineFunctions::GetWindowHeight(const std::tuple<>& data)
+int32_t LuaCommonEngineFunctions::GetWindowHeight(const std::tuple<>& data) const
 {
     return GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();
 }
 
-int32_t LuaCommonEngineFunctions::GetWindowWidth(const std::tuple<>& data)
+int32_t LuaCommonEngineFunctions::GetWindowWidth(const std::tuple<>& data) const
 {
     return GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth();
 }
 
-bool LuaCommonEngineFunctions::HasPressedKeyboardButtons(const std::tuple<>& data)
+bool LuaCommonEngineFunctions::HasPressedKeyboardButtons(const std::tuple<>& data) const
 {
     if (const auto& luaProcessorSp = mLuaScriptProcessor.lock()) {
         return luaProcessorSp->GetEngineInputLuaProxy()->GetIsPressedKeyboardKeys();
@@ -88,7 +97,7 @@ bool LuaCommonEngineFunctions::HasPressedKeyboardButtons(const std::tuple<>& dat
     return false;
 }
 
-bool LuaCommonEngineFunctions::HasReleasedKeyboardButtons(const std::tuple<>& data)
+bool LuaCommonEngineFunctions::HasReleasedKeyboardButtons(const std::tuple<>& data) const
 {
     if (const auto& luaProcessorSp = mLuaScriptProcessor.lock()) {
         return luaProcessorSp->GetEngineInputLuaProxy()->GetIsReleasedKeyboardKeys();
@@ -96,12 +105,23 @@ bool LuaCommonEngineFunctions::HasReleasedKeyboardButtons(const std::tuple<>& da
     return false;
 }
 
-std::string LuaCommonEngineFunctions::GetKeyboardJsonData(const std::tuple<>& data)
+std::string LuaCommonEngineFunctions::GetKeyboardJsonData(const std::tuple<>& data) const
 {
     if (const auto& luaProcessorSp = mLuaScriptProcessor.lock()) {
         return luaProcessorSp->GetEngineInputLuaProxy()->GetKeyboardJsonData();
     }
     return "";
 }
+
+float LuaCommonEngineFunctions::GetMusicGain(const std::tuple<>& data) const
+{
+    return GeneralSystemSettingsDataProvider::GetInstance()->GetMusicGain();
+}
+
+float LuaCommonEngineFunctions::GetSoundGain(const std::tuple<>& data) const
+{
+    return GeneralSystemSettingsDataProvider::GetInstance()->GetSoundGain();
+}
+
 } // namespace Scripts
 } // namespace EngineCore

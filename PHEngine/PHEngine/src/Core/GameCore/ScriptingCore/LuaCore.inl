@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <any>
 #include <functional>
+#include <iostream>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -548,6 +549,14 @@ struct LuaFunctionInvoker<RetType(Args...)> {
         static constexpr size_t argsCount = sizeof...(args);
         HasLuaError(instanceWrapper, lua_pcall(instanceWrapper.GetState(), argsCount, 1, /*error handling in lua*/ 0));
 
+#ifdef DEBUG
+        const auto& errorMsg = instanceWrapper.GetErrorMessageAt(-1);
+        if (errorMsg.size() > 1) {
+            std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
+            assert(false);
+        }
+#endif
+
         int32_t stackIndex = -1;
         return LuaInnerCore::GetLuaValue<typename std::decay<RetType>::type>::Value(instanceWrapper, stackIndex);
     }
@@ -566,6 +575,15 @@ struct LuaFunctionInvoker<void(Args...)> {
 
         static constexpr size_t argsCount = sizeof...(args);
         HasLuaError(instanceWrapper, lua_pcall(instanceWrapper.GetState(), argsCount, 0, /*error handling in lua*/ 0));
+
+#ifdef DEBUG
+        const auto& errorMsg = instanceWrapper.GetErrorMessageAt(-1);
+        if (errorMsg.size() > 1) {
+            std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
+            LogInfo("ERROR: Lua script execution failed:", errorMsg);
+            assert(false);
+        }
+#endif
     }
 };
 

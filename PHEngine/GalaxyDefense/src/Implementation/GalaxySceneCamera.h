@@ -4,6 +4,7 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
+#include "Implementation/Events/LevelAreaBBChangedEvent.h"
 
 #include <glm/vec2.hpp>
 
@@ -13,9 +14,9 @@ using namespace EngineCore;
 using namespace Graphics;
 
 namespace Game {
-class GalaxySceneCamera : public ThirdPersonCamera {
+class GalaxySceneCamera : public ThirdPersonCamera, public Event::LevelAreaBBChangedGameThreadEvent {
 
-    static constexpr uint32_t s_userIdleTimeLimit{2000}; // after 3000 ms return camera to start position of scene
+    static constexpr uint32_t s_userIdleTimeLimit{2000}; // after 2000 ms return camera to start position of scene
 
     static constexpr float s_cameraMovementAccelerationTime{0.5f};
 
@@ -43,9 +44,17 @@ public:
         const float camDistanceToThirdPersonTarget,
         const glm::vec3& thirdPersonTargetOffset = glm::vec3());
 
+    ~GalaxySceneCamera() override;
+
     void Tick(const float deltaTime) override;
 
-    void InitializeMaxDistanceToCamera(const BoundingBox3D& levelBoundaries, const float FoVRadians);   
+    void Initialize() override;
+
+    void InitializeMaxDistanceToCamera(const BoundingBox3D& levelBoundaries, const float FoVRadians);
+
+    void ProcessEvent(
+        const Event::LevelAreaBBChangedGameThreadEvent* sender,
+        typename const Event::LevelAreaBBChangedGameThreadEvent::EventData_t& data) override;
 
 protected:
     void OnTransformationUpdated() override;

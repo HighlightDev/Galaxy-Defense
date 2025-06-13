@@ -22,15 +22,23 @@ void LevelPlacementGrid::Initialize()
 
 void LevelPlacementGrid::InitializeTowerGridData()
 {
-    const glm::vec2 levelAreaToGridCellAspectRatio = glm::vec2(
-        static_cast<float>(mTowerLevelAreaBoundingBox.GetHalfExtent().x) * 2.0f * s_gridCellSizeForTowerInv,
-        static_cast<float>(mTowerLevelAreaBoundingBox.GetHalfExtent().y) * 2.0f * s_gridCellSizeForTowerInv);
-    const auto levelGridDimensionsIntPart = glm::floor(levelAreaToGridCellAspectRatio);
+    const glm::vec2 levelAreaToGridCellAspectRatio
+        = mTowerLevelAreaBoundingBox.GetHalfExtent() * 2.0f * s_gridCellSizeForTowerInv;
+    auto levelGridDimensionsIntPart = glm::floor(levelAreaToGridCellAspectRatio);
     mTowerGridColumnsAndRowsCount
         = glm::ivec2(static_cast<int32_t>(levelGridDimensionsIntPart.x), static_cast<int32_t>(levelGridDimensionsIntPart.y));
+    // if (mTowerGridColumnsAndRowsCount.x % 2 != 0) {
+    //     mTowerGridColumnsAndRowsCount.x += 1;
+    //     levelGridDimensionsIntPart.x += s_gridCellSizeForTower;
+    // }
+
+    // if (mTowerGridColumnsAndRowsCount.y % 2 != 0) {
+    //     mTowerGridColumnsAndRowsCount.y += 1;
+    //     levelGridDimensionsIntPart.y += s_gridCellSizeForTower;
+    // }
     assert(mTowerGridColumnsAndRowsCount.x >= 2 && mTowerGridColumnsAndRowsCount.y >= 2);
     mTowerLevelAreaBoundingBox
-        = BoundingBox2D<glm::vec2>(glm::vec2(0.0f), glm::vec2(levelGridDimensionsIntPart * s_gridCellSizeForTower * 0.5f));
+        = BoundingBox2D<glm::vec2>(glm::vec2(0.0f), levelGridDimensionsIntPart * s_gridCellSizeForTower * 0.5f);
 }
 
 void LevelPlacementGrid::InitializeRouteGridData()
@@ -45,7 +53,7 @@ void LevelPlacementGrid::InitializeRouteGridData()
         = glm::ivec2(static_cast<int32_t>(levelGridDimensionsIntPart.x), static_cast<int32_t>(levelGridDimensionsIntPart.y));
     assert(mRouteGridColumnsAndRowsCount.x >= 2 && mRouteGridColumnsAndRowsCount.y >= 2);
     mRouteLevelAreaBoundingBox
-        = BoundingBox2D<glm::vec2>(glm::vec2(0.0f), glm::vec2(levelGridDimensionsIntPart * s_gridCellSizeForRoute * 0.5f));
+        = BoundingBox2D<glm::vec2>(glm::vec2(0.0f), levelGridDimensionsIntPart * s_gridCellSizeForRoute * 0.5f);
 }
 
 glm::ivec2 LevelPlacementGrid::GetTowerGridColumnsAndRowsCount() const
@@ -99,5 +107,12 @@ glm::vec2 LevelPlacementGrid::GetNearestToPositionRouteEdgeNode(const glm::vec2&
     const auto& nearestNormRoundedBoundaryPosition = nearestNormRoundedBoundaryIndices * (s_gridCellSizeForRoute * 0.5f);
     const auto& restoredPosition = (nearestNormRoundedBoundaryPosition * 2.0f) - mRouteLevelAreaBoundingBox.GetHalfExtent();
     return restoredPosition;
+}
+
+void LevelPlacementGrid::UpdateLevelAreaBoundingBox(const BoundingBox2D<glm::vec2>& newLvlAreaBoundingBox)
+{
+    mTowerLevelAreaBoundingBox = newLvlAreaBoundingBox;
+    mRouteLevelAreaBoundingBox = newLvlAreaBoundingBox;
+    Initialize();
 }
 } // namespace Game

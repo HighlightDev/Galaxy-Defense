@@ -38,6 +38,8 @@ public:
 
     glm::vec2 GetNearestToPositionRouteEdgeNode(const glm::vec2& xzPosition) const;
 
+    void UpdateLevelAreaBoundingBox(const BoundingBox2D<glm::vec2>& newLvlAreaBoundingBox);
+
 private:
     void Initialize();
 

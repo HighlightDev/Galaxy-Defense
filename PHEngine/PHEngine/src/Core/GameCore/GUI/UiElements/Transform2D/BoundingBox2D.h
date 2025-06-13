@@ -49,6 +49,16 @@ public:
     {
         return mOrigin - mHalfExtent;
     }
+
+    void SetHalfExtentX(typename const T::value_type halfX)
+    {
+        mHalfExtent.x = halfX;
+    }
+
+    void SetHalfExtentY(typename const T::value_type halfY)
+    {
+        mHalfExtent.y = halfY;
+    }
 };
 } // namespace GUI
 } // namespace EngineCore

@@ -2,9 +2,11 @@
 
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 using namespace EngineCore::DataProviders;
+using namespace Graphics;
 
 namespace Game {
 GalaxySceneCamera::GalaxySceneCamera(
@@ -33,6 +35,20 @@ GalaxySceneCamera::GalaxySceneCamera(
     mFallbackToStartPositionTimer.SetIsRepeat(true);
     mFallbackToStartPositionTimer.SetIntervalMs(s_userIdleTimeLimit);
     mFallbackToStartPositionTimer.SetCallback(std::bind(&GalaxySceneCamera::OnFallbackToStartPositionTimerTimeout, this));
+}
+
+void GalaxySceneCamera::Initialize()
+{
+    ThirdPersonCamera::Initialize();
+
+    Event::LevelAreaBBChangedGameThreadEvent::GetInstance()->AddListener(
+        std::dynamic_pointer_cast<Event::LevelAreaBBChangedGameThreadEvent>(shared_from_this()));
+}
+
+GalaxySceneCamera::~GalaxySceneCamera()
+{
+    Event::LevelAreaBBChangedGameThreadEvent::GetInstance()->RemoveListener(
+        Event::LevelAreaBBChangedGameThreadEvent::GetInstanceId());
 }
 
 void GalaxySceneCamera::OnFallbackToStartPositionTimerTimeout()
@@ -151,5 +167,20 @@ void GalaxySceneCamera::InitializeMaxDistanceToCamera(const BoundingBox3D& level
     halfFovRadians = std::clamp(halfFovRadians, 0.0f, EngineMath::PI_HALF - 0.01f); // avoid division by zero
     const float maxDistance = halfLevelWidth / std::tan(halfFovRadians);
     m_maxDistanceFromTargetToCamera = maxDistance;
+}
+
+void GalaxySceneCamera::ProcessEvent(
+    const Event::LevelAreaBBChangedGameThreadEvent* sender,
+    typename const Event::LevelAreaBBChangedGameThreadEvent::EventData_t& data)
+{
+    const auto& boundingBox2D = std::get<0>(data);
+    const auto& bbOrigin = boundingBox2D.GetOrigin();
+    const auto& bbHalfExtent = boundingBox2D.GetHalfExtent();
+    const BoundingBox3D newBb
+        = BoundingBox3D(glm::vec3(bbOrigin.x, 0.0f, bbOrigin.y), glm::vec3(bbHalfExtent.x, 25.0f, bbHalfExtent.y));
+    const float FoVRadians = eProjectionType::PERSPECTIVE == GetViewProjectionInfo()->GetProjectionType()
+        ? std::static_pointer_cast<ViewPerspectiveInfo>(GetViewProjectionInfo())->GetFoV()
+        : 0.0f;
+    InitializeMaxDistanceToCamera(newBb, FoVRadians);
 }
 } // namespace Game

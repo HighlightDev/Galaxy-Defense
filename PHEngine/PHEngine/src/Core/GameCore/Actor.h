@@ -151,6 +151,20 @@ public:
 
         return result;
     }
+
+    template<typename ComponentT>
+    typename std::enable_if<std::is_base_of<Component, ComponentT>::value, void>::type RemoveComponentsByType()
+    {
+        auto it = m_allComponents.begin();
+        while (it != m_allComponents.end()) {
+            if (std::dynamic_pointer_cast<ComponentT>(*it)) {
+                (*it)->RemoveOwner();
+                it = m_allComponents.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
 };
 
 } // namespace EngineCore

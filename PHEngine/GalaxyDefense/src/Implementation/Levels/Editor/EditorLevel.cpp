@@ -14,7 +14,9 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Implementation/DataProviders/LevelDataProvider.h"
 #include "Implementation/Events/ChangeEditModeEvent.h"
+#include "Implementation/Events/LevelAreaBBChangedEvent.h"
 #include "Implementation/GalaxySceneCamera.h"
 
 #include <glm/vec2.hpp>
@@ -33,8 +35,9 @@ namespace Game {
 EditorLevel::EditorLevel()
     : LevelBase("EditorLevel")
 {
-    Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::ChangeEditModeEvent>();
-    Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::ChangeEditModeEvent>();
+    Event::GameThreadEventDispatcher::GetInstance()
+        ->RegisterEventsByType<Event::ChangeEditModeEvent, Event::LevelAreaBBChangedGameThreadEvent>();
+    Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LevelAreaBBChangedLuaThreadEvent>();
 }
 
 EditorLevel::~EditorLevel()
@@ -70,6 +73,10 @@ void EditorLevel::CreateScene()
     const auto sceneSp = mSceneWp.lock();
     assert(sceneSp);
 
+    constexpr float c_defaultLevelExtent = 60.0f;
+    LevelDataProvider::GetInstance()->SetEditorLevelAreaBoundingBox(
+        BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(c_defaultLevelExtent)), false, true);
+
     const auto& a_sceneCenterActorDummy = sceneSp->GetActorByName("SceneCenterActorDummy");
     assert(a_sceneCenterActorDummy);
 
@@ -87,10 +94,9 @@ void EditorLevel::CreateScene()
         0.0f,
         200.0f);
 
-    constexpr float c_levelExtent = 60.0f;
     spaceCamera->SetMinDistanceFromTargetToCamera(20.0f);
     spaceCamera->InitializeMaxDistanceToCamera(
-        BoundingBox3D(glm::vec3(), glm::vec3(c_levelExtent, 5.0f, c_levelExtent)), glm::radians(60.0f));
+        BoundingBox3D(glm::vec3(), glm::vec3(c_defaultLevelExtent, 5.0f, c_defaultLevelExtent)), glm::radians(60.0f));
     spaceCamera->SetDistanceFromTargetToCamera(spaceCamera->GetMaxDistanceFromTargetToCamera());
     sceneSp->RegisterMainCamera(spaceCamera);
     spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);
@@ -123,7 +129,7 @@ void EditorLevel::CreateScene()
     std::static_pointer_cast<LightComponent>(a_light->GetComponentsByType<LightComponent>().front())->SetIsVisible(true);
 
     mLevelEditorController->OnLevelInit();
-    mLevelEditorController->SetLevelAreaBoundingBox(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(c_levelExtent)));
+    mLevelEditorController->Initialize();
 
     mUiController->OnLevelInit();
 }

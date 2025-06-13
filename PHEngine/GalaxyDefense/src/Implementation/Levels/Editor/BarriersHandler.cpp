@@ -125,7 +125,7 @@ void BarriersHandler::SetRayColor(const glm::vec3& currentRayColor)
 void BarriersHandler::UndoLastBarrier()
 {
     if ("" != mCurrentActiveBarrierName && mBarrierActors.count(mCurrentActiveBarrierName)) {
-        const auto& lastBarrierSp = mBarrierActors.at(mCurrentActiveBarrierName);
+        const auto lastBarrierSp = mBarrierActors.at(mCurrentActiveBarrierName);
         mBarrierActors.erase(mCurrentActiveBarrierName);
         lastBarrierSp->SetIsEnabled(false);
         const auto& sceneSp = mSceneWp.lock();

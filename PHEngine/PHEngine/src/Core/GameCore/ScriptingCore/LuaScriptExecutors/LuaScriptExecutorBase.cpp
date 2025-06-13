@@ -87,14 +87,6 @@ void LuaScriptExecutorBase::RunScript()
 
     if (mHasOnStart) {
         LuaFunctionInvoker<void(void*)>::Invoke(mLuaInstance, "System_OnStart", (void*)this);
-#ifdef DEBUG
-        const auto& errorMsg = mLuaInstance.GetErrorMessageAt(-1);
-        if (errorMsg.size() > 1) {
-            std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
-            LogInfo("ERROR: Lua script execution failed:", errorMsg);
-            assert(false);
-        }
-#endif
     }
 }
 
@@ -108,14 +100,6 @@ void LuaScriptExecutorBase::OnUpdate(const float deltaTime)
     if (mHasOnUpdate) {
         assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
         LuaFunctionInvoker<void(void*, float)>::Invoke(mLuaInstance, "System_OnUpdate", (void*)this, deltaTime);
-#ifdef DEBUG
-        const auto& errorMsg = mLuaInstance.GetErrorMessageAt(-1);
-        if (errorMsg.size() > 1) {
-            std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
-            LogInfo("ERROR: Lua script execution failed:", errorMsg);
-            assert(false);
-        }
-#endif
     }
 }
 
