@@ -32,9 +32,12 @@ private:
 
     std::vector<std::weak_ptr<Event_t>> m_listeners;
 
+    bool bLogEvent{false};
+
 protected:
-    TEvent()
+    TEvent(const bool _bLogEvent = false)
         : IEvent()
+        , bLogEvent(_bLogEvent)
     {
     }
 
@@ -43,9 +46,9 @@ public:
     {
     }
 
-    static Event_t* GetInstance()
+    static DerivedEventType* GetInstance()
     {
-        static Event_t m_instance;
+        static DerivedEventType m_instance;
         return &m_instance;
     }
 
@@ -60,10 +63,19 @@ public:
         mPolicy[(int32_t)order].EmplaceData(std::forward<DataTypesT>(data)...);
     }
 
+    template<typename>
+    struct is_tuple : std::false_type { };
+
+    template<typename... T>
+    struct is_tuple<std::tuple<T...>> : std::true_type { };
+
     void ProcessCachedEvents(const eExecutionOrder currentOrder) override
     {
         while (mPolicy[currentOrder].HasData()) {
             const EventData_t& packedData = mPolicy[currentOrder].PopData();
+            if (bLogEvent) {
+                LogInfo(ToString(), "::ProcessCachedEvents: ", packedData);
+            }
 
             for (const auto& listenerWp : m_listeners) {
                 if (const auto& listenerSp = listenerWp.lock()) {
@@ -75,12 +87,18 @@ public:
 
     void AddListener(const std::shared_ptr<Event_t>& eventListener)
     {
+        if (bLogEvent) {
+            LogInfo(ToString(), "::AddListener");
+        }
         std::lock_guard<std::mutex> lockEmplace(mListenersMutex);
         m_listeners.emplace_back(eventListener);
     }
 
     void RemoveListener(const size_t instanceId)
     {
+        if (bLogEvent) {
+            LogInfo(ToString(), "::RemoveListener: instanceId ", instanceId);
+        }
         std::lock_guard<std::mutex> lockRemove(mListenersMutex);
         if (m_listeners.size()) {
             m_listeners.erase(

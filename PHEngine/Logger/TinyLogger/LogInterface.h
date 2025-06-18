@@ -7,6 +7,7 @@
 #include <chrono>
 #include <ctime>
 #include <istream>
+#include <numeric>
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -41,31 +42,73 @@ struct TrueType {
 };
 
 template<typename T>
-struct IsDefaultType : public FalseType { };
-
-template<>
-struct IsDefaultType<int64_t> : public TrueType { };
-template<>
-struct IsDefaultType<int32_t> : public TrueType { };
-template<>
-struct IsDefaultType<int8_t> : public TrueType { };
-template<>
-struct IsDefaultType<uint64_t> : public TrueType { };
-template<>
-struct IsDefaultType<uint32_t> : public TrueType { };
-template<>
-struct IsDefaultType<uint8_t> : public TrueType { };
-template<>
-struct IsDefaultType<float> : public TrueType { };
-template<>
-struct IsDefaultType<double> : public TrueType { };
-template<>
-struct IsDefaultType<bool> : public TrueType { };
-
-template<typename T>
 struct ToString {
     template<typename U>
-    static typename std::enable_if<IsDefaultType<typename std::decay<T>::type>::value, std::string>::type Value(U simpleType)
+    static std::string Value(U unknownType)
+    {
+        return "Unknown argument type";
+    }
+};
+
+template<>
+struct ToString<bool> {
+    static std::string Value(bool simpleType)
+    {
+        return std::to_string(simpleType);
+    }
+};
+
+template<>
+struct ToString<int64_t> {
+    static std::string Value(int64_t simpleType)
+    {
+        return std::to_string(simpleType);
+    }
+};
+
+template<>
+struct ToString<int32_t> {
+    static std::string Value(int32_t simpleType)
+    {
+        return std::to_string(simpleType);
+    }
+};
+
+template<>
+struct ToString<int8_t> {
+    static std::string Value(int8_t simpleType)
+    {
+        return std::to_string(simpleType);
+    }
+};
+
+template<>
+struct ToString<uint64_t> {
+    static std::string Value(uint64_t simpleType)
+    {
+        return std::to_string(simpleType);
+    }
+};
+
+template<>
+struct ToString<uint32_t> {
+    static std::string Value(uint32_t simpleType)
+    {
+        return std::to_string(simpleType);
+    }
+};
+
+template<>
+struct ToString<uint8_t> {
+    static std::string Value(uint8_t simpleType)
+    {
+        return std::to_string(simpleType);
+    }
+};
+
+template<>
+struct ToString<float> {
+    static std::string Value(float simpleType)
     {
         return std::to_string(simpleType);
     }
@@ -87,13 +130,38 @@ struct CastTypeToString<std::string> {
     }
 };
 
+template<typename... TupleArgs>
+struct CastTypeToString<std::tuple<TupleArgs...>> {
+    static std::string Do(std::tuple<TupleArgs...> tuple)
+    {
+        using tuple_t = std::tuple<TupleArgs...>;
+        std::vector<std::string> innerTupleArgumentsStr;
+        constexpr size_t tupleSize = std::tuple_size<tuple_t>();
+        innerTupleArgumentsStr.reserve(tupleSize);
+        IterateTuple<tuple_t, tupleSize, 0>::Collect(innerTupleArgumentsStr, tuple);
+        return std::accumulate(
+            innerTupleArgumentsStr.cbegin(),
+            innerTupleArgumentsStr.cend(),
+            std::string(),
+            [](std::string& accumulatedStr, const std::string& argument) { return accumulatedStr + ", " + argument; });
+    }
+};
+
+template<>
+struct CastTypeToString<std::tuple<>> {
+    static std::string Do(const std::tuple<>& tuple)
+    {
+        return "|EmptyTuple|";
+    }
+};
+
 template<typename TupleT, size_t max_index, size_t index>
 struct IterateTuple {
     static void Collect(std::vector<std::string>& result, TupleT& tuple)
     {
         using tuple_arg_t = typename std::tuple_element<index, TupleT>::type;
         auto argument = CompressMessage<tuple_arg_t>(std::forward<tuple_arg_t>(std::get<index>(tuple)));
-        using compressed_arg_t = decltype(argument);
+        using compressed_arg_t = typename std::decay<decltype(argument)>::type;
 
         result.push_back(CastTypeToString<compressed_arg_t>::Do(std::forward<compressed_arg_t>(argument)));
         IterateTuple<TupleT, max_index, index + 1>::Collect(result, tuple);
@@ -129,7 +197,7 @@ struct Logger {
             std::to_string(index++), "| Timestamp: " + std::to_string(timePassedSinceStart), "| Thread: " + threadName + "| "};
 
         auto argTuple = std::make_tuple(std::forward<LogArgs>(args)...);
-        using tuple_t = decltype(argTuple);
+        using tuple_t = std::decay_t<decltype(argTuple)>;
         constexpr size_t size = std::tuple_size<tuple_t>();
         LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, argTuple);
         LoggerServer::GetInstance_()->EnqueuLogMessage(LogMessage(std::move(result)));

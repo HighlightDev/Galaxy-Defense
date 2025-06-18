@@ -18,6 +18,11 @@ public:
         eEventThreadType::GAME_THREAD,
         MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>::Event_t;
 
+    BroadcastGameThreadEvent()
+        : Event_t(true)
+    {
+    }
+
     std::string ToString() const override
     {
         return "BroadcastGameThreadEvent";
