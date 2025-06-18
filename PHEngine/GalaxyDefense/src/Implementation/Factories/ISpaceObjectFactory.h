@@ -14,6 +14,7 @@ namespace Game {
 class BackgroundSpaceObjectActor;
 class SpaceObjectActor;
 class BarrierActor;
+class PortalActor;
 
 class IBackgroundSpaceObjectFactory {
     virtual std::shared_ptr<BackgroundSpaceObjectActor> CreateSpaceObject(
@@ -46,7 +47,7 @@ class IBarrierFactory {
 };
 
 class IPortalFactory {
-    virtual std::shared_ptr<::EngineCore::Actor> CreatePortal(
+    virtual std::shared_ptr<PortalActor> CreatePortal(
         const std::shared_ptr<::EngineCore::Scene>& scene,
         const glm::vec3& translation,
         const glm::vec3& rotation,

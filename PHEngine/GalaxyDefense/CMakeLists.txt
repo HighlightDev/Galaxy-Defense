@@ -79,6 +79,7 @@ set(
     src/Implementation/Actors/SpaceStationActor.h
     src/Implementation/Actors/BarrierActor.h
     src/Implementation/Actors/BackgroundSpaceObjectActor.h
+    src/Implementation/Actors/PortalActor.h
     src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h
     src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h
     src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
@@ -167,6 +168,7 @@ set(
     src/Implementation/Actors/SpaceStationActor.cpp
     src/Implementation/Actors/BarrierActor.cpp
     src/Implementation/Actors/BackgroundSpaceObjectActor.cpp
+    src/Implementation/Actors/PortalActor.cpp
     src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.cpp
     src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp

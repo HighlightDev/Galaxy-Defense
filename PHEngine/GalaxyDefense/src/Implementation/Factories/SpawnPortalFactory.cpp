@@ -1,6 +1,5 @@
 #include "SpawnPortalFactory.h"
 
-#include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
@@ -8,6 +7,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
+#include "Implementation/Actors/PortalActor.h"
 
 using namespace Resources;
 using namespace EngineCore;
@@ -16,7 +16,7 @@ using namespace Graphics;
 namespace Game {
 size_t SpawnPortalFactory::s_portalCounter = 0;
 
-std::shared_ptr<Actor> SpawnPortalFactory::CreatePortal(
+std::shared_ptr<PortalActor> SpawnPortalFactory::CreatePortal(
     const std::shared_ptr<::EngineCore::Scene>& scene,
     const glm::vec3& translation,
     const glm::vec3& rotation,
@@ -26,7 +26,7 @@ std::shared_ptr<Actor> SpawnPortalFactory::CreatePortal(
     const auto& portalIndexStr = std::to_string(s_portalCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_portal_root_" + portalIndexStr, translation, glm::vec3(0), glm::vec3(1));
-    const auto& a_portal = std::make_shared<Actor>("a_portal_" + portalIndexStr, rootComponent);
+    const auto& a_portal = std::make_shared<PortalActor>("a_portal_" + portalIndexStr, rootComponent);
     scene->AddActor(a_portal);
 
     MaterialParser materialParser;

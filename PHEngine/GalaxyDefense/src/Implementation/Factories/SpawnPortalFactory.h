@@ -4,17 +4,18 @@
 
 namespace EngineCore {
 class Scene;
-class Actor;
 } // namespace EngineCore
 
 namespace Game {
+class PortalActor;
+
 class SpawnPortalFactory : public IPortalFactory {
     static size_t s_portalCounter;
 
 public:
     SpawnPortalFactory() = default;
 
-    virtual std::shared_ptr<::EngineCore::Actor> CreatePortal(
+    virtual std::shared_ptr<PortalActor> CreatePortal(
         const std::shared_ptr<::EngineCore::Scene>& scene,
         const glm::vec3& translation,
         const glm::vec3& rotation,

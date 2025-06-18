@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
@@ -52,8 +51,6 @@ class CombatController : public ITickable,
     std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
 
     BoundingBox3D mLevelBounds;
-
-    std::unordered_map<std::string, GameThreadTimer> mSpawnEnemyOnRouteTimers;
 
     eGameModeType mGameModeType{eGameModeType::INIT};
 

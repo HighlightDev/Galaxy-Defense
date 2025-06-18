@@ -27,6 +27,7 @@ class MissileActor;
 class SpaceObjectActor;
 class SpaceshipActor;
 class BarrierActor;
+class PortalActor;
 
 class CombatActorsPoolHandler : public std::enable_shared_from_this<CombatActorsPoolHandler> {
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
@@ -43,7 +44,7 @@ class CombatActorsPoolHandler : public std::enable_shared_from_this<CombatActors
 
     std::vector<std::shared_ptr<BarrierActor>> mBarriersPool;
 
-    std::vector<std::shared_ptr<::EngineCore::Actor>> mSpawnPortals;
+    std::vector<std::shared_ptr<PortalActor>> mSpawnPortals;
 
 public:
     explicit CombatActorsPoolHandler(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
@@ -63,7 +64,7 @@ public:
 
     std::shared_ptr<BarrierActor> GetFreeBarrierActor() const;
 
-    std::shared_ptr<::EngineCore::Actor> GetFreePortalActor() const;
+    std::shared_ptr<PortalActor> GetFreePortalActor() const;
 
     std::shared_ptr<SpaceStationActor> GetFreeSpaceStationActor() const;
 
@@ -78,6 +79,8 @@ public:
     const std::vector<std::shared_ptr<MissileActor>>& GetMissileActors() const;
 
     const std::vector<std::shared_ptr<SpaceStationActor>>& GetSpaceStationActors() const;
+
+    const std::vector<std::shared_ptr<PortalActor>> GetPortalActors() const;
 
     eGameObjectsType GetGameObjectTypeByActorId(const int32_t actorId) const;
 

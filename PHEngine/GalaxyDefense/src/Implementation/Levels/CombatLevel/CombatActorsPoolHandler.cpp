@@ -1,7 +1,6 @@
 #include "CombatActorsPoolHandler.h"
 
 #include "Core/CommonCore/Assertion.h"
-#include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/GameCore/Scene.h"
@@ -9,6 +8,7 @@
 #include "Implementation/Actors/BlackHoleMissileActor.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
 #include "Implementation/Actors/MissileActor.h"
+#include "Implementation/Actors/PortalActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Factories/AsteroidFactory.h"
@@ -70,8 +70,9 @@ std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayCh
     assert(sceneSp);
 
     ElectroRayChainFactory factory;
-    const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(std::static_pointer_cast<ElectroRayChainActor>(
-        factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1), 0.0f)));
+    const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(
+        std::static_pointer_cast<ElectroRayChainActor>(
+            factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1), 0.0f)));
     spawnedActor->TriggerDisabled();
     return spawnedActor;
 }
@@ -115,6 +116,11 @@ const std::vector<std::shared_ptr<MissileActor>>& CombatActorsPoolHandler::GetMi
 const std::vector<std::shared_ptr<SpaceStationActor>>& CombatActorsPoolHandler::GetSpaceStationActors() const
 {
     return mSpaceStations;
+}
+
+const std::vector<std::shared_ptr<PortalActor>> CombatActorsPoolHandler::GetPortalActors() const
+{
+    return mSpawnPortals;
 }
 
 void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count, const float hitRadius)
@@ -166,7 +172,7 @@ void CombatActorsPoolHandler::SpawnPortals(const int32_t count, const float port
     }
 }
 
-std::shared_ptr<Actor> CombatActorsPoolHandler::GetFreePortalActor() const
+std::shared_ptr<PortalActor> CombatActorsPoolHandler::GetFreePortalActor() const
 {
     const auto idlePortalIt
         = std::find_if(mSpawnPortals.cbegin(), mSpawnPortals.cend(), [](const auto& portalSp) { return !portalSp->IsEnabled(); });

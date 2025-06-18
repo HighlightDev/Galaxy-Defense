@@ -10,6 +10,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/BlackHoleMissileActor.h"
+#include "Implementation/Actors/PortalActor.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
@@ -103,6 +104,8 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
         portalSp->SetIsEnabled(true);
         pathData.GetRoutePoints();
         portalSp->GetRootComponent()->SetTranslation(pathData.GetRouteFirstPoint());
+        portalSp->SetNavigationController(mNavigationController);
+        portalSp->SetCombatActorsPoolsHandler(mCombatActorsPoolHandler);
     }
 
     for (const auto& [barrierName, barrierData] : levelData.BarriersData) {
@@ -181,21 +184,15 @@ void CombatController::PostPlayLevelFinished()
 
 void CombatController::OnCombatPreparationCompleted()
 {
+    const auto& spawnPortals = mCombatActorsPoolHandler->GetPortalActors();
     const auto& pathNames = mNavigationController->GetPathNames();
-    for (const auto& pathName : pathNames) {
+    assert(pathNames.size() == spawnPortals.size());
+    for (int i = 0; i < pathNames.size(); ++i) {
 
-        mSpawnEnemyOnRouteTimers.try_emplace(pathName);
-        auto& timer = mSpawnEnemyOnRouteTimers[pathName];
-        timer.SetIntervalMs(1500);
-        timer.SetIsPausable(true);
-        timer.SetIsRepeat(true);
-        timer.SetCallback([pathName, this]() {
-            if (const auto& freeShip = mCombatActorsPoolHandler->GetFreeSpaceshipActor()) {
-                mNavigationController->PutSpaceshipOnRoute(pathName, freeShip);
-            }
-        });
-
-        timer.StartTimer();
+        const auto& pathName = pathNames[i];
+        const auto& spawnPortal = spawnPortals[i];
+        spawnPortal->SetupSpaceshipSpawn(pathName, 1500UL);
+        spawnPortal->StartSpawn();
     }
 }
 
