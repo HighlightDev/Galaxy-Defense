@@ -48,7 +48,7 @@ std::string UiLabelLuaProxy::GetGameThreadData()
     auto jsonObj = nlohmann::json::parse(baseJsonStr);
     const auto textColor = std::vector<float>({mTextColor.r, mTextColor.g, mTextColor.b});
     jsonObj["text"] = mText;
-    jsonObj["opacity"] = mOpacity;
+    jsonObj["text_opacity"] = mOpacity;
     jsonObj["font_size"] = mFontSize;
     jsonObj["text_line_width"] = mTextLineWidth;
     jsonObj["text_color"] = textColor;

@@ -81,13 +81,15 @@ TextMeshData TextMeshCreator::CreateQuadVertices(const std::shared_ptr<TextField
     std::vector<float> vertices;
     std::vector<float> textureCoords;
     for (const auto& line : lines) {
-        // todo:
-        if (eTextHorizontalAlignmentType::CENTER == text->GetTextHorizontalAlignment()) {
-            const auto& lineMaxLengthInScreenCoords = line.GetMaxLength();
+        const auto& horizontalAlignment = text->GetTextHorizontalAlignment();
+        const auto& lineMaxLengthInScreenCoords = line.GetMaxLength();
+        if (eTextHorizontalAlignmentType::CENTER == horizontalAlignment) {
             curserX = (lineMaxLengthInScreenCoords * 0.5f) - (line.GetLineLength() * 0.5f);
+        } else if (eTextHorizontalAlignmentType::LEFT == horizontalAlignment) {
+            curserX = 0.0f;
+        } else if (eTextHorizontalAlignmentType::RIGHT == horizontalAlignment) {
+            curserX = lineMaxLengthInScreenCoords - line.GetLineLength();
         }
-        // else LEFT
-        // else RIGHT
         const float fontSize = text->GetFontSize();
 
         for (const auto& word : line.GetWords()) {

@@ -16,6 +16,7 @@ using namespace EngineCore::ShaderImpl;
 namespace Graphics {
 namespace Proxy {
 class UiRectangleSceneProxy : public UiSceneProxyBase {
+protected:
     std::shared_ptr<UiRectangleShader> mUiRectangleShader;
 
     glm::vec3 mColor;

@@ -11,6 +11,7 @@
 #include "UiRectangleReplicatorFactory.h"
 #include "UiRowLayoutReplicatorFactory.h"
 #include "UiSliderReplicatorFactory.h"
+#include "UiTextBlockReplicatorFactory.h"
 #include "UiToggleButtonReplicatorFactory.h"
 
 namespace EngineCore {
@@ -40,6 +41,8 @@ std::unique_ptr<IReplicatorFactory> CommonUiWidgetFactoryCreator::GetReplicatorF
         return std::make_unique<UiRowLayoutReplicatorFactory>();
     case eCommonUiWidgetType::UI_SLIDER_BAR:
         return std::make_unique<UiSliderReplicatorFactory>();
+    case eCommonUiWidgetType::UI_TEXT_BLOCK:
+        return std::make_unique<UiTextBlockReplicatorFactory>();
 
     default:
         assert(false);

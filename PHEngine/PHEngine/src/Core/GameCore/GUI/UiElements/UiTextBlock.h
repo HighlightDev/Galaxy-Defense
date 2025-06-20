@@ -1,29 +1,15 @@
 #pragma once
 
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
-#include "UiItemBase.h"
+#include "UiRectangle.h"
 
 #include <glm/vec3.hpp>
 
-namespace Graphics {
-namespace Proxy {
-class UiSceneProxyBase;
-}
-} // namespace Graphics
-
-namespace EngineCore {
-namespace Scripts {
-class LuaProxy;
-}
-} // namespace EngineCore
-
-using namespace EngineCore;
-
 namespace EngineCore {
 class UiCanvas;
-
 namespace GUI {
-class UiLabel : public UiItemBase {
+class UiTextBlock : public UiRectangle {
+
     std::string mText;
 
     float mOpacity;
@@ -39,9 +25,9 @@ class UiLabel : public UiItemBase {
     eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
 public:
-    explicit UiLabel(const std::string& fontName, const std::string& name = std::string(""));
+    explicit UiTextBlock(const std::string& name = std::string(""));
 
-    ~UiLabel() override;
+    ~UiTextBlock() override;
 
     void SetText(const std::string& text);
 

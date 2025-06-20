@@ -56,7 +56,7 @@ class TextFieldProxy {
     bool mIsSubscribedOnTextScreenSpaceSizeUpdate;
 
 public:
-    TextFieldProxy();
+    explicit TextFieldProxy();
 
     static std::shared_ptr<TextFieldProxy> CreateTextFieldProxyInstance(
         const int32_t uniqueTextId,

@@ -53,7 +53,7 @@ function UiLabel:new(host, fontName, name)
             value = "",
             dirty = false
         },
-        opacity = {
+        text_opacity = {
             value = 1.0,
             dirty = false
         },
@@ -104,8 +104,8 @@ function UiLabel:updateFromReplicatorData(host)
                 self.labelProperties.text_color.value.g = colorArray[2]
                 self.labelProperties.text_color.value.b = colorArray[3]
             end
-            if parsedJson["opacity"] ~= nil then
-                self.labelProperties.opacity.value = tonumber(parsedJson["opacity"])
+            if parsedJson["text_opacity"] ~= nil then
+                self.labelProperties.text_opacity.value = tonumber(parsedJson["text_opacity"])
             end
             if parsedJson["font_size"] ~= nil then
                 self.labelProperties.font_size.value = tonumber(parsedJson["font_size"])
@@ -149,9 +149,9 @@ end
 
 function UiLabel:setOpacity(opacity)
     assert(opacity ~= nil and type(opacity) == "number")
-    if self.labelProperties.opacity.value ~= opacity then
-        self.labelProperties.opacity.value = opacity
-        self.labelProperties.opacity.dirty = true
+    if self.labelProperties.text_opacity.value ~= opacity then
+        self.labelProperties.text_opacity.value = opacity
+        self.labelProperties.text_opacity.dirty = true
     end
 end
 

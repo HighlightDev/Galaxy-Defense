@@ -13,7 +13,8 @@ enum class eCommonUiWidgetType {
     UI_BACKGROUND_OVERLAY = 7,
     UI_PROGRESS_BAR = 8,
     UI_ROW_LAYOUT = 9,
-    UI_SLIDER_BAR = 10
+    UI_SLIDER_BAR = 10,
+    UI_TEXT_BLOCK = 11
 };
 }
 } // namespace EngineCore

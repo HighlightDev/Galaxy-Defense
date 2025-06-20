@@ -89,8 +89,8 @@ void UiLabel::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             bShouldUpdatePropertiesOnRT = true;
         }
     }
-    if (jsonObj.contains("opacity")) {
-        const auto opacity = jsonObj["opacity"].get<float>();
+    if (jsonObj.contains("text_opacity")) {
+        const auto opacity = jsonObj["text_opacity"].get<float>();
         if (!EngineMath::FloatsNearEqual(mOpacity, opacity)) {
             mOpacity = opacity;
             bShouldUpdatePropertiesOnRT = true;

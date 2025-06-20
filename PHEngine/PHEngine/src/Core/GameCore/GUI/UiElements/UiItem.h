@@ -26,6 +26,11 @@ public:
 
     void OnUnregistered() override;
 
+    std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const override
+    {
+        return nullptr;
+    }
+
     std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
     std::string GetUiTypeString() const override;

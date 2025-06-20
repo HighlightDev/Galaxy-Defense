@@ -10,7 +10,8 @@ CommonUiWidgetCreator = {
         UI_BACKGROUND_OVERLAY = 7,
         UI_PROGRESS_BAR = 8,
         UI_ROW_LAYOUT = 9,
-        UI_SLIDER_BAR = 10
+        UI_SLIDER_BAR = 10,
+        UI_TEXT_BLOCK = 11
     }
 }
 
@@ -37,6 +38,8 @@ local function getTypeToString(commonUiWidgetType)
         return "UI_ROW_LAYOUT"
     elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_SLIDER_BAR then
         return "UI_SLIDER_BAR"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_TEXT_BLOCK then
+        return "UI_TEXT_BLOCK"
     else
         assert(false, "Wrong type of widget type: " .. tostring(commonUiWidgetType))
     end

@@ -19,6 +19,10 @@
 
 using namespace EngineCore::Scripts;
 
+namespace Graphics::Proxy {
+class UiSceneProxyBase;
+}
+
 namespace EngineCore {
 class Scene;
 namespace GUI {
@@ -119,6 +123,8 @@ public:
     bool IsTransformDependentToUiItem(const std::string& uiItemName) const;
 
     std::shared_ptr<IUiMouseInputReceivable> GetMouseInputReceiver() const;
+
+    virtual std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const = 0;
 
     void SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable>& inputReceiver);
 
