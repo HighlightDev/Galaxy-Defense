@@ -19,13 +19,17 @@ using namespace Resources;
 
 namespace EngineCore {
 namespace GUI {
-UiTextBlock::UiTextBlock(const std::string& name)
+UiTextBlock::UiTextBlock(const std::string& fontName, const std::string& name)
     : UiRectangle(name)
+    , mFontName(fontName)
 {
+    assert(mFontName.size());
 }
 
 UiTextBlock::~UiTextBlock()
 {
+    volatile bool isDestroyed = true;
+    LogInfo("UiTextBlock::~UiTextBlock() => destroyed: " + std::to_string(isDestroyed));
 }
 
 void UiTextBlock::OnRegistered()
@@ -162,6 +166,57 @@ std::shared_ptr<LuaProxy> UiTextBlock::ReplicateLuaProxy()
 void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 {
     UiRectangle::SyncFromLuaJsonProperties(luaJsonPropsStr);
+
+    bool bShouldUpdatePropertiesOnRT = false;
+
+    const auto jsonObj = nlohmann::json::parse(luaJsonPropsStr);
+    if (jsonObj.contains("text")) {
+        const auto text = jsonObj["text"].get<std::string>();
+        if (mText != text) {
+            mText = text;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("text_color")) {
+        const glm::vec3 color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["text_color"]);
+        if (!EngineMath::CheckSimilarityVec3(color, mTextColor)) {
+            mTextColor = color;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("text_opacity")) {
+        const auto opacity = jsonObj["text_opacity"].get<float>();
+        if (!EngineMath::FloatsNearEqual(mOpacity, opacity)) {
+            mOpacity = opacity;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("font_size")) {
+        const auto font_size = jsonObj["font_size"].get<float>();
+        if (!EngineMath::FloatsNearEqual(mFontSize, font_size)) {
+            mFontSize = font_size;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("text_line_width")) {
+        const auto text_line_width = jsonObj["text_line_width"].get<float>();
+        if (!EngineMath::FloatsNearEqual(mTextLineWidth, text_line_width)) {
+            mTextLineWidth = text_line_width;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("text_horizontal_alignment")) {
+        const auto text_horizontal_alignment
+            = static_cast<eTextHorizontalAlignmentType>(jsonObj["text_horizontal_alignment"].get<uint8_t>());
+        if (text_horizontal_alignment != mTextHorizontalAlignment) {
+            mTextHorizontalAlignment = text_horizontal_alignment;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+
+    if (bShouldUpdatePropertiesOnRT) {
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+    }
 }
 
 void UiTextBlock::SyncDataOnRenderThread()
@@ -176,9 +231,26 @@ void UiTextBlock::SyncDataOnRenderThread()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetUId(),
                         functionId,
-                        [sceneRenderer, myUId = GetUId(), canvasUId = canvasSp->GetUId()]() {
+
+                        [sceneRenderer,
+                         myUId = GetUId(),
+                         canvasUId = canvasSp->GetUId(),
+                         opacity = mOpacity,
+                         text = mText,
+                         textLineWidth = mTextLineWidth,
+                         fontSize = mFontSize,
+                         textColor = mTextColor,
+                         textHorizontalAlignment = mTextHorizontalAlignment]() {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
-                            if (uiSceneProxy) { }
+                            if (uiSceneProxy) {
+                                const auto& textBlockSceneProxy = std::static_pointer_cast<UiTextBlockSceneProxy>(uiSceneProxy);
+                                textBlockSceneProxy->SetOpacity(opacity);
+                                textBlockSceneProxy->SetText(text);
+                                textBlockSceneProxy->SetTextLineWidth(textLineWidth);
+                                textBlockSceneProxy->SetFontSize(fontSize);
+                                textBlockSceneProxy->SetTextColor(textColor);
+                                textBlockSceneProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+                            }
                         });
                 }
             }
@@ -199,9 +271,23 @@ void UiTextBlock::SyncDataOnLuaThread()
                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                     GetUId(),
                     functionId,
-                    [luaScriptProcessorSp, luaProxyId = GetLuaProxyId()]() {
+                    [luaScriptProcessorSp,
+                     luaProxyId = GetLuaProxyId(),
+                     opacity = mOpacity,
+                     text = mText,
+                     textColor = mTextColor,
+                     textLineWidth = mTextLineWidth,
+                     fontSize = mFontSize,
+                     textHorizontalAlignment = mTextHorizontalAlignment]() {
                         if (const auto& textBlockLuaProxy
-                            = std::static_pointer_cast<UiTextBlockLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) { }
+                            = std::static_pointer_cast<UiTextBlockLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
+                            textBlockLuaProxy->SetOpacity_FromGameThread(opacity);
+                            textBlockLuaProxy->SetText_FromGameThread(text);
+                            textBlockLuaProxy->SetTextColor_FromGameThread(textColor);
+                            textBlockLuaProxy->SetTextLineWidth_FromGameThread(textLineWidth);
+                            textBlockLuaProxy->SetFontSize_FromGameThread(fontSize);
+                            textBlockLuaProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+                        }
                     });
             }
         }

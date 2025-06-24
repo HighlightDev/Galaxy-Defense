@@ -803,7 +803,7 @@ void UiItemBase::OnMouseClicked(const glm::ivec2& mouseCursorPosition)
 
 void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 {
-    const auto& jsonObj = nlohmann::json::parse(luaJsonPropsStr);
+    const auto jsonObj = nlohmann::json::parse(luaJsonPropsStr);
     if (jsonObj.contains("visible")) {
         const auto isVisible = jsonObj["visible"].get<bool>();
         // todo: maybe something better

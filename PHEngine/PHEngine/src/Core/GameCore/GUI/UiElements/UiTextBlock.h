@@ -12,20 +12,20 @@ class UiTextBlock : public UiRectangle {
 
     std::string mText;
 
-    float mOpacity;
+    float mOpacity{1.0f};
 
     const std::string mFontName;
 
-    float mFontSize;
+    float mFontSize{11.0f};
 
-    float mTextLineWidth;
+    float mTextLineWidth{1.0f};
 
     glm::vec3 mTextColor;
 
     eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
 public:
-    explicit UiTextBlock(const std::string& name = std::string(""));
+    explicit UiTextBlock(const std::string& fontName, const std::string& name = std::string(""));
 
     ~UiTextBlock() override;
 

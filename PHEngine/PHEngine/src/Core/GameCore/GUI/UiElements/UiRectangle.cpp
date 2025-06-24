@@ -146,7 +146,7 @@ void UiRectangle::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 {
     UiItemBase::SyncFromLuaJsonProperties(luaJsonPropsStr);
 
-    const auto& jsonObj = nlohmann::json::parse(luaJsonPropsStr);
+    const auto jsonObj = nlohmann::json::parse(luaJsonPropsStr);
     if (jsonObj.contains("color")) {
         const glm::vec3 color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["color"]);
         if (!EngineMath::CheckSimilarityVec3(color, mColor)) {

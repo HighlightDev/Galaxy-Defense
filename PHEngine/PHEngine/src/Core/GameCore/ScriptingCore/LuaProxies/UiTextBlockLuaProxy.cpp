@@ -43,5 +43,53 @@ std::string UiTextBlockLuaProxy::GetGameThreadData()
     auto jsonObj = nlohmann::json::parse(baseJsonStr);
     return jsonObj.dump();
 }
+
+void UiTextBlockLuaProxy::SetText_FromGameThread(const std::string& text)
+{
+    if (mText != text) {
+        mText = text;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetFontSize_FromGameThread(const float fontSize)
+{
+    if (!EngineMath::FloatsNearEqual(fontSize, mFontSize)) {
+        mFontSize = fontSize;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetTextLineWidth_FromGameThread(const float textLineWidth)
+{
+    if (!EngineMath::FloatsNearEqual(textLineWidth, mTextLineWidth)) {
+        mTextLineWidth = textLineWidth;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetTextColor_FromGameThread(const glm::vec3& texColor)
+{
+    if (!EngineMath::CheckSimilarityVec3(texColor, mTextColor)) {
+        mTextColor = texColor;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment)
+{
+    if (textHorizontalAlignment != mTextHorizontalAlignment) {
+        mTextHorizontalAlignment = textHorizontalAlignment;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetOpacity_FromGameThread(const float opacity)
+{
+    if (!EngineMath::FloatsNearEqual(mOpacity, opacity)) {
+        mOpacity = opacity;
+        mIsLuaDataDirty = true;
+    }
+}
 } // namespace Scripts
 } // namespace EngineCore
