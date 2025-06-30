@@ -31,6 +31,7 @@ set(BULLET_DEPENDENCE_INCLUDE ${ENGINE_DEPENDENCIES_DIR}/BulletPhysics/include/)
 set(BULLET_PHYS_INCLUDE ${BULLET_DEPENDENCE_INCLUDE}/BulletPhys/)
 set(LOGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
 set(SNDFILE_INCLUDE ${ENGINE_DEPENDENCIES_DIR}/SndFile/include/)
+set(FREE_TYPE_INCLUDE ${ENGINE_DEPENDENCIES_DIR}/FreeType/include/)
 
 target_include_directories(PHEngine
   PUBLIC ${ENGINE_CORE_INCLUDE}
@@ -45,6 +46,7 @@ target_include_directories(PHEngine
   PUBLIC ${LUA_DEPENDENCE_INCLUDE}
   PUBLIC ${SNDFILE_INCLUDE}
   PUBLIC ${NLOHMANN_JSON_INCLUDE}
+  PUBLIC ${FREE_TYPE_INCLUDE}
 )
 
 set(BULLET_LIBS
@@ -78,6 +80,7 @@ if(WIN32)
   findLibraryAndLinkToTarget(PHEngine PUBLIC sndfile ${ENGINE_DEPENDENCIES_DIR}/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC glfw3 ${ENGINE_DEPENDENCIES_DIR}/GLFW/lib/${LIB_LOCATION_PREFIX}/)
   findLibrariesAndLinkToTarget(PHEngine PUBLIC BULLET_LIBS ${ENGINE_DEPENDENCIES_DIR}/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
+  findLibraryAndLinkToTarget(PHEngine PUBLIC freetype ${ENGINE_DEPENDENCIES_DIR}/FreeType/lib/${LIB_LOCATION_PREFIX}/Debug/)
 
 elseif(UNIX)
 
@@ -102,6 +105,7 @@ elseif(UNIX)
   findLibraryAndLinkToTarget(PHEngine PUBLIC sndfile ${ENGINE_DEPENDENCIES_DIR}/SndFile/lib/Unix/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC glfw3 ${ENGINE_DEPENDENCIES_DIR}/GLFW/lib/Unix/)
   findLibrariesAndLinkToTarget(PHEngine PUBLIC BULLET_LIBS ${ENGINE_DEPENDENCIES_DIR}/BulletPhysics/lib/Unix/Release/)
+  findLibraryAndLinkToTarget(PHEngine PUBLIC freetype ${ENGINE_DEPENDENCIES_DIR}/FreeType/lib/Unix/Release/)
 endif()
 
 target_link_libraries(PHEngine

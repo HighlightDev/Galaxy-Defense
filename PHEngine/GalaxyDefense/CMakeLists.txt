@@ -225,6 +225,7 @@ set(NLOHMANN_JSON_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/json/nlohm
 set(BULLET_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/include/)
 set(BULLET_PHYS_INCLUDE ${BULLET_DEPENDENCE_INCLUDE}/BulletPhys/)
 set(SNDFILE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/include/)
+set(FREE_TYPE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/FreeType/include/)
 
 target_include_directories(${EXECUTABLE_NAME}
     PUBLIC ${GAME_SRC_INCLUDE}
@@ -238,6 +239,7 @@ target_include_directories(${EXECUTABLE_NAME}
     PUBLIC ${BULLET_PHYS_INCLUDE}
     PUBLIC ${SNDFILE_INCLUDE}
     PUBLIC ${NLOHMANN_JSON_INCLUDE}
+    PUBLIC ${FREE_TYPE_INCLUDE}
 )
 
 set(BULLET_LIBS
@@ -267,6 +269,7 @@ if(WIN32)
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC glfw3 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/${LIB_LOCATION_PREFIX}/)
     findLibrariesAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC BULLET_LIBS ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC freetype ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/FreeType/lib/${LIB_LOCATION_PREFIX}/Debug/)
 elseif(UNIX)
     set(LIB_LOCATION_PREFIX "Unix")
 
@@ -285,6 +288,7 @@ elseif(UNIX)
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/Unix/)
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC glfw3 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/Unix/)
     findLibrariesAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC BULLET_LIBS ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
+    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC freetype ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/FreeType/lib/Unix/Release/)
 endif()
 
 target_link_libraries(${EXECUTABLE_NAME}
