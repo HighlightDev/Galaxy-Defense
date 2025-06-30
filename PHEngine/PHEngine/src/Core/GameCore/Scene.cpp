@@ -101,12 +101,12 @@ void Scene::PostLevelInit()
     mDebugUiController->SetScene(shared_from_this());
 #endif
 
-    for (auto& actor : mActors) {
+    for (auto actor : mActors) {
         actor->SetScene(shared_from_this());
         actor->PostLevelInit();
     }
 
-    for (auto& camera : mActiveCameras) {
+    for (auto camera : mActiveCameras) {
         camera->PostLevelInit();
     }
 
@@ -120,7 +120,7 @@ void Scene::PostPhysicsInitialize()
 {
     LogInfo("Scene::PostPhysicsInitialize");
 
-    for (auto& actor : mActors) {
+    for (auto actor : mActors) {
         actor->PostPhysicsInitialize();
     }
 }
@@ -129,7 +129,7 @@ void Scene::PostPlayLevelFinished()
 {
     LogInfo("Scene::PostPlayLevelFinished");
 
-    for (auto& actor : mActors) {
+    for (auto actor : mActors) {
         actor->PostPlayLevelFinished();
     }
 
@@ -375,23 +375,24 @@ void Scene::Tick(const float delta)
 
     mPhysicsWorld->Tick(delta);
 
-    for (const auto& cameraPtr : mActiveCameras) {
+    for (const auto cameraPtr : mActiveCameras) {
         cameraPtr->Tick(delta);
     }
 
-    for (auto& actor : mActors) {
-        if (actor->IsEnabled()) {
+    for (int i = 0; i < mActors.size(); ++i) {
+        const auto& actor = mActors[i];
+        if (actor && actor->IsEnabled()) {
             actor->Tick(delta);
         }
     }
 
     mInstancedGeometryBatchHolder->Tick(delta);
 
-    for (const auto& actorController : mActorControllers) {
+    for (const auto actorController : mActorControllers) {
         actorController->Tick(delta);
     }
 
-    for (auto& dynamicMaterial : mDynamicMaterials) {
+    for (auto dynamicMaterial : mDynamicMaterials) {
         if (dynamicMaterial->IsEnabled()) {
             dynamicMaterial->Tick(delta);
         }
@@ -418,19 +419,19 @@ void Scene::UnpausableTick(const float deltaTime)
 {
     mPhysicsWorld->UnpausableTick(deltaTime);
 
-    for (const auto& cameraPtr : mActiveCameras) {
+    for (const auto cameraPtr : mActiveCameras) {
         cameraPtr->UnpausableTick(deltaTime);
     }
 
-    for (auto& actor : mActors) {
+    for (auto actor : mActors) {
         actor->UnpausableTick(deltaTime);
     }
 
-    for (const auto& actorController : mActorControllers) {
+    for (const auto actorController : mActorControllers) {
         actorController->UnpausableTick(deltaTime);
     }
 
-    for (auto& dynamicMaterial : mDynamicMaterials) {
+    for (auto dynamicMaterial : mDynamicMaterials) {
         dynamicMaterial->UnpausableTick(deltaTime);
     }
 
@@ -751,7 +752,7 @@ void Scene::UnloadUi()
 
 void Scene::UnloadActors()
 {
-    for (const auto& actor : mActors) {
+    for (const auto actor : mActors) {
         actor->CleanUp();
     }
     mActors.clear();
@@ -783,7 +784,7 @@ void Scene::UnloadDeferredResourceCreators()
 
 void Scene::UnloadActorControllers()
 {
-    for (const auto& actorController : mActorControllers) {
+    for (const auto actorController : mActorControllers) {
         actorController->CleanUp();
     }
     mActorControllers.clear();
@@ -793,7 +794,7 @@ void Scene::UnloadMaterials()
 {
     mDynamicMaterials.clear();
 
-    for (const auto& materialInstance : mMaterials) {
+    for (const auto materialInstance : mMaterials) {
         materialInstance->CleanUp();
     }
     mMaterials.clear();

@@ -48,6 +48,11 @@ std::vector<TextLine> TextMeshCreator::CreateStructure(const std::shared_ptr<Tex
                 resultTextLines.emplace_back(std::move(currentLine));
                 currentLine = CreateEmptyLine(textField);
                 if (!currentLine.IsEnoughSpaceForWord(currentWord)) {
+                    currentWord = CreateEmptyWord(textField);
+                    const auto textCharacter = mMetaData->GetCharacter(EngineUtility::Utf8_To_Unicode("."));
+                    currentWord.AddCharacter(textCharacter);
+                    currentWord.AddCharacter(textCharacter);
+                    currentWord.AddCharacter(textCharacter);
                     LogInfo(
                         "TextMeshCreator::CreateStructure => Word is extremely big, even to fit inside empty line. Text: ", text);
                 }
@@ -64,6 +69,11 @@ std::vector<TextLine> TextMeshCreator::CreateStructure(const std::shared_ptr<Tex
         resultTextLines.emplace_back(std::move(currentLine));
         currentLine = CreateEmptyLine(textField);
         if (!currentLine.IsEnoughSpaceForWord(currentWord)) {
+            currentWord = CreateEmptyWord(textField);
+            const auto textCharacter = mMetaData->GetCharacter(EngineUtility::Utf8_To_Unicode("."));
+            currentWord.AddCharacter(textCharacter);
+            currentWord.AddCharacter(textCharacter);
+            currentWord.AddCharacter(textCharacter);
             LogInfo("TextMeshCreator::CreateStructure => Word is extremely big, even to fit inside empty line. Text: ", text);
         }
     }
@@ -91,7 +101,6 @@ TextMeshData TextMeshCreator::CreateQuadVertices(const std::shared_ptr<TextField
             curserX = lineMaxLengthInScreenCoords - line.GetLineLength();
         }
         const float fontSize = text->GetFontSize();
-
         for (const auto& word : line.GetWords()) {
             for (const auto& letter : word.GetCharacters()) {
                 AddVerticesForCharacter(curserX, curserY, letter, fontSize, vertices);
