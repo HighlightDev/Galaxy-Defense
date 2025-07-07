@@ -269,7 +269,7 @@ if(WIN32)
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)
     findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC glfw3 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/${LIB_LOCATION_PREFIX}/)
     findLibrariesAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC BULLET_LIBS ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-    findLibraryAndLinkToTarget(${EXECUTABLE_NAME} PUBLIC freetype ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/FreeType/lib/${LIB_LOCATION_PREFIX}/Debug/)
+    findLibraryAndLinkToTarget(PHEngine PUBLIC freetype ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/FreeType/lib/${LIB_LOCATION_PREFIX}/Release/)
 elseif(UNIX)
     set(LIB_LOCATION_PREFIX "Unix")
 

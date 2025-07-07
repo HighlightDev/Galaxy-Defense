@@ -80,7 +80,7 @@ if(WIN32)
   findLibraryAndLinkToTarget(PHEngine PUBLIC sndfile ${ENGINE_DEPENDENCIES_DIR}/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)
   findLibraryAndLinkToTarget(PHEngine PUBLIC glfw3 ${ENGINE_DEPENDENCIES_DIR}/GLFW/lib/${LIB_LOCATION_PREFIX}/)
   findLibrariesAndLinkToTarget(PHEngine PUBLIC BULLET_LIBS ${ENGINE_DEPENDENCIES_DIR}/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC freetype ${ENGINE_DEPENDENCIES_DIR}/FreeType/lib/${LIB_LOCATION_PREFIX}/Debug/)
+  findLibraryAndLinkToTarget(PHEngine PUBLIC freetype ${ENGINE_DEPENDENCIES_DIR}/FreeType/lib/${LIB_LOCATION_PREFIX}/Release/)
 
 elseif(UNIX)
 
