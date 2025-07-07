@@ -1,0 +1,78 @@
+#pragma once
+
+#include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
+
+#include <freetype/freetype.h>
+#include <ft2build.h>
+#include <glm/vec2.hpp>
+
+#include <memory>
+#include <utility>
+
+using namespace Graphics::OpenGL;
+
+namespace GameCore::GUI {
+class FreeTypeFont;
+class FreeTypeFontAtlas {
+public:
+    struct Character {
+        float advanceX;
+        float advanceY;
+
+        float bitmapWidth;
+        float bitmapHeight;
+
+        float bitmapLeft;
+        float bitmapTop;
+
+        float xOffset;
+    };
+
+    inline GLuint getTexId()
+    {
+        return mTexID;
+    }
+    inline int getAtlasWidth()
+    {
+        return mWidthHeightTexture.x;
+    }
+    inline int getAtlasHeight()
+    {
+        return mWidthHeightTexture.y;
+    }
+    inline Character* getCharInfo()
+    {
+        return mChars;
+    }
+
+private:
+    GLuint mTexID;
+
+    VertexArrayObject m_buffer;
+
+    std::shared_ptr<FreeTypeFont> mFont;
+
+    int32_t mPixelSize;
+
+    glm::ivec2 mWidthHeightTexture;
+
+    Character mChars[128];
+
+    FT_GlyphSlot mSlot;
+
+private:
+    void InitializeFontAtlas();
+
+public:
+    FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const int32_t pixelSize);
+
+    virtual ~FreeTypeFontAtlas();
+
+    bool operator==(const FreeTypeFontAtlas& right) const;
+
+    VertexArrayObject* GetBuffer();
+
+    virtual void CleanUp();
+};
+
+} // namespace GameCore::GUI
