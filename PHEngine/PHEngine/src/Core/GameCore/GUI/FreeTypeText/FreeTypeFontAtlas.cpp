@@ -4,7 +4,7 @@
 
 #include <gl/glew.h>
 
-namespace GameCore::GUI {
+namespace EngineCore::GUI {
 FreeTypeFontAtlas::FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const int32_t pixelSize)
     : m_buffer(vao)
     , mFont(font)
@@ -102,4 +102,4 @@ void FreeTypeFontAtlas::InitializeFontAtlas()
     }
 }
 
-} // namespace GameCore::GUI
+} // namespace EngineCore::GUI

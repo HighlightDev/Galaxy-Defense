@@ -6,7 +6,7 @@
 #include <string>
 #include <mutex>
 
-namespace GameCore::GUI {
+namespace EngineCore::GUI {
 class FreeTypeFont {
 public:
     FreeTypeFont(const std::string& fontFile);
@@ -25,4 +25,4 @@ private:
     FT_Face mFace;
     bool mFaceInitialized = false;
 };
-} // namespace GameCore::GUI
+} // namespace EngineCore::GUI

@@ -2,7 +2,7 @@
 
 #include <exception>
 #include <fstream>
-namespace GameCore::GUI {
+namespace EngineCore::GUI {
 
 std::once_flag FreeTypeFont::s_initFlag;
 
@@ -68,4 +68,4 @@ FT_Face FreeTypeFont::getFaceHandle()
 {
     return mFace;
 }
-} // namespace GameCore::GUI
+} // namespace EngineCore::GUI

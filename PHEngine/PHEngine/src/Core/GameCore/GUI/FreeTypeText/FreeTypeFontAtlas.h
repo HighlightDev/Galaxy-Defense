@@ -11,7 +11,7 @@
 
 using namespace Graphics::OpenGL;
 
-namespace GameCore::GUI {
+namespace EngineCore::GUI {
 class FreeTypeFont;
 class FreeTypeFontAtlas {
 public:
@@ -75,4 +75,4 @@ public:
     virtual void CleanUp();
 };
 
-} // namespace GameCore::GUI
+} // namespace EngineCore::GUI
