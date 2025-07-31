@@ -32,7 +32,7 @@ void TowersHandler::CreateNewTower(const glm::vec3& position, const glm::vec3& s
         sceneSp->RegisterMaterialInstance(towerMaterialPrefab);
 
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, Hash("TowersHandler::CreateNewTower"), 0, [this, towerMaterialPrefab]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, Hash("TowersHandler::CreateNewTower"), 0, [towerMaterialPrefab]() {
                 const auto& albedoName = "Space_Station_COLOR.png";
                 const auto& normalName = "Space_Station_NORMAL.png";
                 const auto& roughnessName = "Space_Station_ROUGHNESS.jpg";

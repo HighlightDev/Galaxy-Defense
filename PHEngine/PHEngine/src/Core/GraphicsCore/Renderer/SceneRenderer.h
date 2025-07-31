@@ -37,6 +37,7 @@
 #include <glm/vec3.hpp>
 
 #include <cstddef>
+#include <memory>
 #include <utility>
 
 using namespace Thread;
@@ -60,7 +61,7 @@ class UiCanvas;
 
 namespace Graphics {
 namespace Renderer {
-class SceneRenderer {
+class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
     InterThreadCommunicationMgr& m_interThreadMgr;
 
     // G-buffers
@@ -130,6 +131,10 @@ public:
     std::shared_ptr<PlanarReflectionProxy> GetPlanarReflectionProxyByProxyId(const int32_t proxyId) const;
     std::shared_ptr<UiSceneProxyBase> GetUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId) const;
     std::shared_ptr<UiCanvasSceneProxy> GetCanvasSceneProxyByProxyId(const size_t proxyId) const;
+
+    std::vector<std::shared_ptr<PrimitiveSceneProxy>>& GetPrimitiveProxies();
+
+    std::shared_ptr<FontHandler> GetFontHandler() const;
 
     void RemovePrimitiveProxyByProxyId(const int32_t proxyId);
 

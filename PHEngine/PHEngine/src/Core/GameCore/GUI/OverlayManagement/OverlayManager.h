@@ -79,6 +79,12 @@ public:
 
     void CleanUp() override;
 
+    bool GetPendingAnimationFinishesToOpenOverlay() const;
+
+    void SetPendingAnimationFinishesToOpenOverlay(const bool value);
+
+    std::shared_ptr<IUiOverlay> GetCurrentOpenedOverlay() const;
+
 private:
     std::shared_ptr<IUiOverlay> FindOverlay(const std::string& overlayName) const;
 

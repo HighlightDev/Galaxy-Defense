@@ -54,6 +54,8 @@ public:
         return mRenderData;
     }
 
+    ParticlesRawDataHandler& GetParticlesRawDataHandler();
+
     size_t GetParticlesCount() const;
 
     void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;

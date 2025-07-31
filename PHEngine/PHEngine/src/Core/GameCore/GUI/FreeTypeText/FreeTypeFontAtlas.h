@@ -45,6 +45,11 @@ public:
         return mChars;
     }
 
+    inline std::shared_ptr<FreeTypeFont> GetFontFace() const
+    {
+        return mFont;
+    }
+
 private:
     GLuint mTexID;
 

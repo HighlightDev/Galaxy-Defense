@@ -72,7 +72,7 @@ void TestFeaturesLevelUiController::Initialize()
     if (const auto& sceneSp = mSceneWp.lock()) {
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             static constexpr uint64_t functionId = Hash64_CT("TestFeaturesLevelUiController::Initialize");
-            const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/MainMenuUiController.lua");
+            const auto luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/MainMenuUiController.lua");
             mExecutorId = luaScriptExecutor->GetUId();
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
                 eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]() {

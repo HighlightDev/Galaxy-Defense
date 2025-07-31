@@ -211,8 +211,8 @@ void PrimitiveComponent::SyncRenderData()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetObjectId(),
                         functionId,
-                        [this, sceneRendererSp, canBloomBeApplied = mCanBloomBeApplied]() {
-                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
+                        [sceneProxyId = mSceneProxyId, sceneRendererSp, canBloomBeApplied = mCanBloomBeApplied]() {
+                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
                                 primitiveSp->SetCanBloomBeApplied(canBloomBeApplied);
                             }
@@ -226,8 +226,8 @@ void PrimitiveComponent::SyncRenderData()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetObjectId(),
                         functionId,
-                        [this, sceneRendererSp, isDepthTestEnabled = mDepthWriteMaskEnabled]() {
-                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
+                        [sceneProxyId = mSceneProxyId, sceneRendererSp, isDepthTestEnabled = mDepthWriteMaskEnabled]() {
+                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
                                 primitiveSp->SetDepthWriteMaskEnabled(isDepthTestEnabled);
                             }
@@ -241,10 +241,10 @@ void PrimitiveComponent::SyncRenderData()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetObjectId(),
                         functionId,
-                        [this, sceneRendererSp]() {
-                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
+                        [sceneProxyId = mSceneProxyId, isOutlineApplied = mIsOutlineApplied, sceneRendererSp]() {
+                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
-                                primitiveSp->SetIsOutlineApplied(mIsOutlineApplied);
+                                primitiveSp->SetIsOutlineApplied(isOutlineApplied);
                             }
                         });
                     bIsOutlineStateDirty = false;

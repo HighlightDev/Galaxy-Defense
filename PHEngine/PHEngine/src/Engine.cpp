@@ -311,14 +311,22 @@ void Engine::ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLeve
     const auto lvlName = std::get<0>(data);
     static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::LoadLevelGameThreadEvent");
     m_interThreadMgr.ExecuteOnRenderThread(
-        Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, lvlName]() { PlayLevel(lvlName); });
+        Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [weak = weak_from_this(), lvlName]() {
+            if (const auto& strong = weak.lock()) {
+                strong->PlayLevel(lvlName);
+            }
+        });
 }
 
 void Engine::ProcessEvent(const RestartLevelGameThreadEvent* sender, const RestartLevelGameThreadEvent::EventData_t& data)
 {
     static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::RestartLevelGameThreadEvent");
     m_interThreadMgr.ExecuteOnRenderThread(
-        Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this]() { RestartLevel(); });
+        Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [weak = weak_from_this()]() {
+            if (const auto& strong = weak.lock()) {
+                strong->RestartLevel();
+            }
+        });
 }
 
 void Engine::LuaThreadPulse()

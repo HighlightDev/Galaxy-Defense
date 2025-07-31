@@ -89,7 +89,7 @@ void ACamera::UpdateCameraProxyData()
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                 GetObjectId(),
                 functionId,
-                [cameraPtr = this,
+                [weak = weak_from_this(),
                  eyeVector = GetEyeVector(),
                  viewMatrix = GetViewMatrix(),
                  eyeForwardVector = GetEyeSpaceForwardVector(),
@@ -97,16 +97,18 @@ void ACamera::UpdateCameraProxyData()
                  eyeUpVector = GetLocalSpaceUpVector(),
                  cameraProxyId = mCameraProxyId,
                  sceneRendererSp]() {
-                    if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId)) {
-                        assert(sceneViewSp);
-                        const auto& cameraProxy = sceneViewSp->GetCameraProxy();
-                        cameraProxy->UpdateEyeVector(eyeVector);
-                        cameraProxy->UpdateViewMatrix(viewMatrix);
-                        cameraProxy->SetForwardVector(eyeForwardVector);
-                        cameraProxy->SetRightVector(eyeRightVector);
-                        cameraProxy->SetUpVector(eyeUpVector);
+                    if (const auto& cameraPtr = weak.lock()) {
+                        if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId)) {
+                            assert(sceneViewSp);
+                            const auto& cameraProxy = sceneViewSp->GetCameraProxy();
+                            cameraProxy->UpdateEyeVector(eyeVector);
+                            cameraProxy->UpdateViewMatrix(viewMatrix);
+                            cameraProxy->SetForwardVector(eyeForwardVector);
+                            cameraProxy->SetRightVector(eyeRightVector);
+                            cameraProxy->SetUpVector(eyeUpVector);
 
-                        cameraPtr->OnCameraSceneProxyDataUpdated();
+                            cameraPtr->OnCameraSceneProxyDataUpdated();
+                        }
                     }
                 });
         }

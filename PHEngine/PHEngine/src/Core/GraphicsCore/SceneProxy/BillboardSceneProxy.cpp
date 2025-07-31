@@ -49,8 +49,11 @@ void BillboardSceneProxy::PostConstructorInitialize()
         if (const auto& sceneSp = deferredShadingSceneRendererSp->GetInterThreadCommunicationManager().GetSceneWP().lock()) {
             const auto boundingBox = m_skin->GetBoundingBox();
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId, [this, sceneSp, boundingBox]() {
-                    const auto& engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                mSceneProxyId,
+                functionId,
+                [sceneSp, boundingBox, goID = GetGameObjectId()]() {
+                    const auto& engineObject = sceneSp->GetEngineObjectById(goID);
                     assert(engineObject);
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
                     assert(primitiveComponent);
@@ -66,7 +69,9 @@ std::shared_ptr<typename BillboardSceneProxy::Shader_t> BillboardSceneProxy::Get
 }
 
 void BillboardSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
     ActiveBindedState& activeBindedState)
 {
     const auto& billboardShader = GetShader();
@@ -74,8 +79,7 @@ void BillboardSceneProxy::Render(
     const auto& viewPortInfo = cameraSceneProxy->GetViewPort();
     const auto screenResolution = glm::vec2(viewPortInfo.Width, viewPortInfo.Height);
     const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(billboardShader->GetShaderName());
-    if (needToRebindShader)
-    {
+    if (needToRebindShader) {
         billboardShader->ExecuteShader();
     }
 

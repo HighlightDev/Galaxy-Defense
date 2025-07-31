@@ -67,6 +67,9 @@ public:
 
     std::shared_ptr<IDeferredResource> GetDeferredResource() override;
 
+    std::shared_ptr<DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>>
+    GetPlanarReflectionDeferredController() const;
+
 private:
     void UpdateReflectionPlane();
 };

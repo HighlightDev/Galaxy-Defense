@@ -26,11 +26,14 @@ void OverlayManager::RegisterOverlay(std::shared_ptr<IUiOverlay> overlay)
     const auto& foundOverlay = FindOverlay(overlay->GetOverlayName());
     assert(!foundOverlay);
     mOverlays.emplace_back(overlay);
-    overlay->SubscribeOnAnimationFinished([this](const std::string& overlayName) {
-        if (mPendingAnimationFinishesToOpenOverlay && overlayName == "FadeOut") {
-            mPendingAnimationFinishesToOpenOverlay = false;
-            assert(mCurrentOpenedOverlay);
-            mCurrentOpenedOverlay->OpenOverlay();
+    overlay->SubscribeOnAnimationFinished([weak = weak_from_this()](const std::string& overlayName) {
+        if (const auto& overlayManagerPtr = weak.lock()) {
+            const auto overlayPtr = std::static_pointer_cast<OverlayManager>(overlayManagerPtr);
+            if (overlayPtr->GetPendingAnimationFinishesToOpenOverlay() && overlayName == "FadeOut") {
+                overlayPtr->SetPendingAnimationFinishesToOpenOverlay(false);
+                assert(overlayPtr->GetCurrentOpenedOverlay());
+                overlayPtr->GetCurrentOpenedOverlay()->OpenOverlay();
+            }
         }
     });
 }
@@ -50,6 +53,21 @@ void OverlayManager::UnregisterOverlay(std::shared_ptr<IUiOverlay> overlay)
         return overlay->GetOverlayName() == myOverlay->GetOverlayName();
     });
     mOverlays.erase(remove_it);
+}
+
+bool OverlayManager::GetPendingAnimationFinishesToOpenOverlay() const
+{
+    return mPendingAnimationFinishesToOpenOverlay;
+}
+
+void OverlayManager::SetPendingAnimationFinishesToOpenOverlay(const bool value)
+{
+    mPendingAnimationFinishesToOpenOverlay = value;
+}
+
+std::shared_ptr<IUiOverlay> OverlayManager::GetCurrentOpenedOverlay() const
+{
+    return mCurrentOpenedOverlay;
 }
 
 void OverlayManager::UnregisterBackgroundOverlay(std::shared_ptr<IUiOverlay> overlay)

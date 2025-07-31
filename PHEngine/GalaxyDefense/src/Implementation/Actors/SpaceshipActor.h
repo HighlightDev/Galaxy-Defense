@@ -95,6 +95,10 @@ public:
 
     std::shared_ptr<OnRouteMovementComponent> GetOnRouteMovementComponent() const;
 
+    std::shared_ptr<::EngineCore::UiComponent> GetUiComponent() const;
+
+    int32_t GetDamageTextFieldId() const;
+
 protected:
     virtual glm::vec2 CalculatePositionForDamageText() const;
 };

@@ -231,7 +231,7 @@ std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByTyp
 
 std::shared_ptr<MissileActor> CombatActorsPoolHandler::GetMissileOwnerActorById(const int32_t actorId) const
 {
-    const auto foundIt = std::find_if(mMissilesPool.cbegin(), mMissilesPool.cend(), [=](const auto& missile) {
+    const auto foundIt = std::find_if(mMissilesPool.cbegin(), mMissilesPool.cend(), [actorId](const auto& missile) {
         return missile->HasEngineObjectIdInHierarchy(actorId);
     });
     return foundIt != mMissilesPool.cend() ? (*foundIt) : nullptr;
@@ -247,7 +247,7 @@ std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetEnemyShipOwnerActorB
 
 std::shared_ptr<SpaceObjectActor> CombatActorsPoolHandler::GetSpaceObjectOwnerActorById(const int32_t actorId) const
 {
-    const auto foundIt = std::find_if(mSpaceObjectsPool.cbegin(), mSpaceObjectsPool.cend(), [=](const auto& spaceObject) {
+    const auto foundIt = std::find_if(mSpaceObjectsPool.cbegin(), mSpaceObjectsPool.cend(), [actorId](const auto& spaceObject) {
         return spaceObject->HasEngineObjectIdInHierarchy(actorId);
     });
     return foundIt != mSpaceObjectsPool.cend() ? (*foundIt) : nullptr;
@@ -255,7 +255,7 @@ std::shared_ptr<SpaceObjectActor> CombatActorsPoolHandler::GetSpaceObjectOwnerAc
 
 std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::GetSpaceStationOwnerActorById(const int32_t actorId) const
 {
-    const auto foundIt = std::find_if(mSpaceStations.cbegin(), mSpaceStations.cend(), [=](const auto& spaceStation) {
+    const auto foundIt = std::find_if(mSpaceStations.cbegin(), mSpaceStations.cend(), [actorId](const auto& spaceStation) {
         return spaceStation->HasEngineObjectIdInHierarchy(actorId);
     });
     return foundIt != mSpaceStations.cend() ? (*foundIt) : nullptr;

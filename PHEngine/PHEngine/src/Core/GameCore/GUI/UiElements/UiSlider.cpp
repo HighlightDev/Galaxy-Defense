@@ -450,25 +450,42 @@ void UiSlider::SyncDataOnRenderThread()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetUId(),
                         functionId,
-                        [this, sceneRenderer, myUId = GetUId(), canvasUId = canvasSp->GetUId()]() {
+                        [opacity = mOpacity,
+                         sliderValue = mSliderValue,
+                         maxSliderValue = mMaxSliderValue,
+                         minSliderValue = mMinSliderValue,
+                         sliderStep = mSliderStep,
+                         sliderThicknessPixels = mSliderThicknessPixels,
+                         blobThicknessPixels = mBlobThicknessPixels,
+                         sliderType = mSliderType,
+                         sliderToCenterOffset = mSliderToCenterOffset,
+                         blobToCenterOffset = mBlobToCenterOffset,
+                         sliderThicknessScale = mSliderThicknessScale,
+                         blobThicknessScale = mBlobThicknessScale,
+                         sliderColor = mSliderColor,
+                         blobColor = mBlobColor,
+                         aspectRatioScale = mAspectRatioScale,
+                         sceneRenderer,
+                         myUId = GetUId(),
+                         canvasUId = canvasSp->GetUId()]() {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                             if (uiSceneProxy) {
                                 const auto& sliderSceneProxy = std::static_pointer_cast<UiSliderSceneProxy>(uiSceneProxy);
-                                sliderSceneProxy->SetOpacity(mOpacity);
-                                sliderSceneProxy->SetSliderValue(mSliderValue);
-                                sliderSceneProxy->SetMaxSliderValue(mMaxSliderValue);
-                                sliderSceneProxy->SetMinSliderValue(mMinSliderValue);
-                                sliderSceneProxy->SetSliderStep(mSliderStep);
-                                sliderSceneProxy->SetSliderThicknessPixels(mSliderThicknessPixels);
-                                sliderSceneProxy->SetBlobThicknessPixels(mBlobThicknessPixels);
-                                sliderSceneProxy->SetSliderType(mSliderType);
-                                sliderSceneProxy->SetSliderToCenterOffset(mSliderToCenterOffset);
-                                sliderSceneProxy->SetBlobToCenterOffset(mBlobToCenterOffset);
-                                sliderSceneProxy->SetSliderThicknessScale(mSliderThicknessScale);
-                                sliderSceneProxy->SetBlobThicknessScale(mBlobThicknessScale);
-                                sliderSceneProxy->SetSliderColor(mSliderColor);
-                                sliderSceneProxy->SetBlobColor(mBlobColor);
-                                sliderSceneProxy->SetAspectRatioScale(mAspectRatioScale);
+                                sliderSceneProxy->SetOpacity(opacity);
+                                sliderSceneProxy->SetSliderValue(sliderValue);
+                                sliderSceneProxy->SetMaxSliderValue(maxSliderValue);
+                                sliderSceneProxy->SetMinSliderValue(minSliderValue);
+                                sliderSceneProxy->SetSliderStep(sliderStep);
+                                sliderSceneProxy->SetSliderThicknessPixels(sliderThicknessPixels);
+                                sliderSceneProxy->SetBlobThicknessPixels(blobThicknessPixels);
+                                sliderSceneProxy->SetSliderType(sliderType);
+                                sliderSceneProxy->SetSliderToCenterOffset(sliderToCenterOffset);
+                                sliderSceneProxy->SetBlobToCenterOffset(blobToCenterOffset);
+                                sliderSceneProxy->SetSliderThicknessScale(sliderThicknessScale);
+                                sliderSceneProxy->SetBlobThicknessScale(blobThicknessScale);
+                                sliderSceneProxy->SetSliderColor(sliderColor);
+                                sliderSceneProxy->SetBlobColor(blobColor);
+                                sliderSceneProxy->SetAspectRatioScale(aspectRatioScale);
                             }
                         });
                 }

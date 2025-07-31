@@ -1245,6 +1245,16 @@ std::shared_ptr<PlanarReflectionProxy> SceneRenderer::GetPlanarReflectionProxyBy
     return result;
 }
 
+std::vector<std::shared_ptr<PrimitiveSceneProxy>>& SceneRenderer::GetPrimitiveProxies()
+{
+    return PrimitiveProxiesVector;
+}
+
+std::shared_ptr<FontHandler> SceneRenderer::GetFontHandler() const
+{
+    return mFontHandler;
+}
+
 std::shared_ptr<UiSceneProxyBase> SceneRenderer::GetUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId) const
 {
     auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto& canvasProxy) {
@@ -1290,14 +1300,19 @@ void SceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<Mate
     static const uint64_t functionId = Hash("SceneRenderer::MaterialProxyAdded_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, materialProxy->GetSceneProxyId(), functionId, [this, materialProxy]() {
-            assert(!GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
-            LogInfo(
-                "SceneRenderer::MaterialProxyAdded_OnRenderThread => material name = ",
-                materialProxy->MaterialName,
-                "proxyId = ",
-                materialProxy->GetSceneProxyId());
-            MaterialProxiesVector.emplace_back(materialProxy);
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        materialProxy->GetSceneProxyId(),
+        functionId,
+        [weak = weak_from_this(), materialProxy]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                assert(!sceneRenderer->GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
+                LogInfo(
+                    "SceneRenderer::MaterialProxyAdded_OnRenderThread => material name = ",
+                    materialProxy->MaterialName,
+                    "proxyId = ",
+                    materialProxy->GetSceneProxyId());
+                sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy);
+            }
         });
 }
 
@@ -1305,10 +1320,15 @@ void SceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(
     const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
 {
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, bEnabled]() {
-            const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-            if (primitiveSp) {
-                primitiveSp->SetEnabled(bEnabled);
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), primitiveSceneProxyIndex, bEnabled]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                if (primitiveSp) {
+                    primitiveSp->SetEnabled(bEnabled);
+                }
             }
         });
 }
@@ -1317,10 +1337,15 @@ void SceneRenderer::UpdateLightComponentEnable_OnRenderThread(
     const int32_t lightSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
 {
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, lightSceneProxyIndex, bEnabled]() {
-            const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
-            if (lightSp) {
-                lightSp->SetEnabled(bEnabled);
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), lightSceneProxyIndex, bEnabled]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& lightSp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
+                if (lightSp) {
+                    lightSp->SetEnabled(bEnabled);
+                }
             }
         });
 }
@@ -1329,10 +1354,15 @@ void SceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(
     const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool visibility)
 {
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, visibility]() {
-            const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-            if (primitiveSp) {
-                primitiveSp->SetVisibility(visibility);
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), primitiveSceneProxyIndex, visibility]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                if (primitiveSp) {
+                    primitiveSp->SetVisibility(visibility);
+                }
             }
         });
 }
@@ -1341,10 +1371,15 @@ void SceneRenderer::UpdateLightComponentIsVisible_OnRenderThread(
     const int32_t lightSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool visibility)
 {
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, lightSceneProxyIndex, visibility]() {
-            const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
-            if (lightSp) {
-                lightSp->SetIsVisible(visibility);
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), lightSceneProxyIndex, visibility]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& lightSp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
+                if (lightSp) {
+                    lightSp->SetIsVisible(visibility);
+                }
             }
         });
 }
@@ -1356,10 +1391,15 @@ void SceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(
     const int32_t sortOrderValue)
 {
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, sortOrderValue, primitiveSceneProxyIndex]() {
-            const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-            if (primitiveSp) {
-                primitiveSp->SetSortOrderValue(sortOrderValue);
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), sortOrderValue, primitiveSceneProxyIndex]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                if (primitiveSp) {
+                    primitiveSp->SetSortOrderValue(sortOrderValue);
+                }
             }
         });
 }
@@ -1376,12 +1416,14 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         creatorObjectId,
         functionId,
-        [this, primitiveSceneProxyIndex, newRelativeMatrix, newOutlineMatrix, newTransformedBoundingBox]() {
-            const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-            if (primitiveSp) {
-                primitiveSp->SetTransformationMatrix(newRelativeMatrix);
-                primitiveSp->SetOutlineMatrix(newOutlineMatrix);
-                primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+        [weak = weak_from_this(), primitiveSceneProxyIndex, newRelativeMatrix, newOutlineMatrix, newTransformedBoundingBox]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                if (primitiveSp) {
+                    primitiveSp->SetTransformationMatrix(newRelativeMatrix);
+                    primitiveSp->SetOutlineMatrix(newOutlineMatrix);
+                    primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+                }
             }
         });
 }
@@ -1393,10 +1435,15 @@ void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
     const glm::mat4& newRelativeMatrix)
 {
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, newRelativeMatrix, lightSceneProxyIndex]() {
-            const auto& lightProxySp = GetLightProxyByProxyId(lightSceneProxyIndex);
-            if (lightProxySp) {
-                lightProxySp->SetTransformationMatrix(newRelativeMatrix);
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), newRelativeMatrix, lightSceneProxyIndex]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
+                if (lightProxySp) {
+                    lightProxySp->SetTransformationMatrix(newRelativeMatrix);
+                }
             }
         });
 }
@@ -1407,9 +1454,14 @@ void SceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const int32_t prim
     static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, primitiveSceneProxyIndex, functionId, [this, primitiveSceneProxyIndex]() {
-            RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-            SetProxiesAreDirty(true);
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        primitiveSceneProxyIndex,
+        functionId,
+        [weak = weak_from_this(), primitiveSceneProxyIndex]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                sceneRenderer->SetProxiesAreDirty(true);
+            }
         });
 }
 
@@ -1419,7 +1471,11 @@ void SceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread()
     static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [this]() { SetProxiesAreDirty(true); });
+        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [weak = weak_from_this()]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->SetProxiesAreDirty(true);
+            }
+        });
 }
 
 void SceneRenderer::LightSceneProxyDeleted_OnRenderThread(const int32_t lightSceneProxyIndex)
@@ -1428,9 +1484,11 @@ void SceneRenderer::LightSceneProxyDeleted_OnRenderThread(const int32_t lightSce
     static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxyDeleted_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightSceneProxyIndex]() {
-            RemoveLightProxyByProxyId(lightSceneProxyIndex);
-            SetLightProxiesAreDirty(true);
+        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [weak = weak_from_this(), lightSceneProxyIndex]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->RemoveLightProxyByProxyId(lightSceneProxyIndex);
+                sceneRenderer->SetLightProxiesAreDirty(true);
+            }
         });
 }
 
@@ -1440,7 +1498,11 @@ void SceneRenderer::LightSceneProxiesUpdated_OnRenderThread()
     static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxiesUpdated_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [this]() { SetLightProxiesAreDirty(true); });
+        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [weak = weak_from_this()]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->SetLightProxiesAreDirty(true);
+            }
+        });
 }
 
 void SceneRenderer::CameraSceneProxyAdded_OnRenderThread(
@@ -1453,9 +1515,12 @@ void SceneRenderer::CameraSceneProxyAdded_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
         cameraSceneProxy->GetSceneProxyId(),
         functionId,
-        [this, camera, cameraSceneProxy]() {
-            SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, PrimitiveProxiesVector));
-            camera->SetIsCameraProxyReady(true);
+        [weak = weak_from_this(), camera, cameraSceneProxy]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->SceneViewsVector.emplace_back(
+                    std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->GetPrimitiveProxies()));
+                camera->SetIsCameraProxyReady(true);
+            }
         });
 }
 
@@ -1480,12 +1545,17 @@ void SceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread(
     static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, primitiveComponent, primitiveSceneProxy]() {
-            assert(!GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
-            primitiveSceneProxy->PostConstructorInitialize();
-            PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
-            SetProxiesAreDirty(true);
-            primitiveComponent->SetIsSceneProxyReady(true);
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), primitiveComponent, primitiveSceneProxy]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                assert(!sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
+                primitiveSceneProxy->PostConstructorInitialize();
+                sceneRenderer->GetPrimitiveProxies().emplace_back(primitiveSceneProxy);
+                sceneRenderer->SetProxiesAreDirty(true);
+                primitiveComponent->SetIsSceneProxyReady(true);
+            }
         });
 }
 
@@ -1496,12 +1566,17 @@ void SceneRenderer::LightSceneProxyAdded_OnRenderThread(
     static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxyAdded_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightComponent, lightSceneProxy]() {
-            assert(!GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
-            LightProxiesVector.emplace_back(lightSceneProxy);
-            SetLightProxiesAreDirty(true);
-            lightComponent->SetIsSceneProxyReady(true);
-            lightSceneProxy->PostInitialize();
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), lightComponent, lightSceneProxy]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                assert(!sceneRenderer->GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
+                sceneRenderer->LightProxiesVector.emplace_back(lightSceneProxy);
+                sceneRenderer->SetLightProxiesAreDirty(true);
+                lightComponent->SetIsSceneProxyReady(true);
+                lightSceneProxy->PostInitialize();
+            }
         });
 }
 
@@ -1531,7 +1606,11 @@ void SceneRenderer::RegisterText_OnRenderThread(
         textField->GetNumberOfLines(),
         subscribeOnTextScreenSpaceSizeUpdate);
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, textFieldProxy]() { RegisterText(textFieldProxy); });
+        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [weak = weak_from_this(), textFieldProxy]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->RegisterText(textFieldProxy);
+            }
+        });
 }
 
 void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField>& textField)
@@ -1549,8 +1628,10 @@ void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextF
         eEnqueueJobPolicy::PUSH_ANYWAY,
         creatorObjectId,
         functionId,
-        [this, fontName = textField->GetFontName(), textFieldId = textField->GetTextFieldId()]() {
-            UnregisterText(fontName, textFieldId);
+        [weak = weak_from_this(), fontName = textField->GetFontName(), textFieldId = textField->GetTextFieldId()]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->UnregisterText(fontName, textFieldId);
+            }
         });
 }
 
@@ -1563,9 +1644,11 @@ void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(
     static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, uiCanvas, uiCanvasProxy]() {
-            RegisterUiCanvasProxy(uiCanvasProxy);
-            uiCanvas->SetIsSceneProxyReady(true);
+        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [weak = weak_from_this(), uiCanvas, uiCanvasProxy]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->RegisterUiCanvasProxy(uiCanvasProxy);
+                uiCanvas->SetIsSceneProxyReady(true);
+            }
         });
 }
 
@@ -1585,10 +1668,16 @@ void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
     static constexpr int32_t creatorObjectId = 0;
     static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiSceneProxy_OnRenderThread");
 
-    m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]() {
-        RegisterUiSceneProxy(uiSceneProxy, canvasUId);
-        uiItem->SetIsSceneProxyReady(true);
-    });
+    m_interThreadMgr.ExecuteOnRenderThread(
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), uiItem, uiSceneProxy, canvasUId]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->RegisterUiSceneProxy(uiSceneProxy, canvasUId);
+                uiItem->SetIsSceneProxyReady(true);
+            }
+        });
 }
 
 void SceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId)
@@ -1610,30 +1699,40 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [this, textFontName, textFieldId, textPosition = textField->GetPosition()]() {
-                TextPositionChanged(textFontName, textFieldId, textPosition);
+            [weak = weak_from_this(), textFontName, textFieldId, textPosition = textField->GetPosition()]() {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->TextPositionChanged(textFontName, textFieldId, textPosition);
+                }
             });
     } else if (eTextChangedDataType::COLOR == textChangedDataType) {
         m_interThreadMgr.ExecuteOnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [this, textFontName, textFieldId, textColor = textField->GetColor()]() {
-                TextColorChanged(textFontName, textFieldId, textColor);
+            [weak = weak_from_this(), textFontName, textFieldId, textColor = textField->GetColor()]() {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->TextColorChanged(textFontName, textFieldId, textColor);
+                }
             });
     } else if (eTextChangedDataType::TEXT == textChangedDataType) {
         m_interThreadMgr.ExecuteOnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [this, textFontName, textFieldId, text = textField->GetText()]() { TextChanged(textFontName, textFieldId, text); });
+            [weak = weak_from_this(), textFontName, textFieldId, text = textField->GetText()]() {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->TextChanged(textFontName, textFieldId, text);
+                }
+            });
     } else if (eTextChangedDataType::VISIBILITY == textChangedDataType) {
         m_interThreadMgr.ExecuteOnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [this, textFontName, textFieldId, isVisible = textField->GetIsVisible()]() {
-                TextVisibilityChanged(textFontName, textFieldId, isVisible);
+            [weak = weak_from_this(), textFontName, textFieldId, isVisible = textField->GetIsVisible()]() {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->TextVisibilityChanged(textFontName, textFieldId, isVisible);
+                }
             });
     }
 }
@@ -1646,15 +1745,17 @@ void SceneRenderer::MaterialPropertiesUpdated_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         0,
         functionId,
-        [this, materialProxyIndex, properties = std::move(properties)]() mutable {
-            const auto& materialProxySp = GetMaterialProxyByProxyId(materialProxyIndex);
-            if (materialProxySp) {
-                materialProxySp->UpdateProperties(std::move(properties));
-            } else {
-                LogInfo(
-                    "SceneRenderer::MaterialPropertiesUpdated_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    materialProxyIndex);
+        [weak = weak_from_this(), materialProxyIndex, properties = std::move(properties)]() mutable {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
+                if (materialProxySp) {
+                    materialProxySp->UpdateProperties(std::move(properties));
+                } else {
+                    LogInfo(
+                        "SceneRenderer::MaterialPropertiesUpdated_OnRenderThread => "
+                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                        materialProxyIndex);
+                }
             }
         });
 }
@@ -1665,12 +1766,17 @@ void SceneRenderer::PlanarReflectionSceneProxyAdded_OnRenderThread(
 {
     static const uint64_t functionId = Hash("SceneRenderer::PlanarReflectionSceneProxyAdded");
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, proxy->GetSceneProxyId(), functionId, [proxy, planarReflectionComponent, this]() {
-            const auto& reflectionProxySp = GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
-            assert(!reflectionProxySp);
-            PlanarReflectionProxiesVector.emplace_back(proxy);
-            SetPlanarReflectionProxiesAreDirty(true);
-            planarReflectionComponent->SetIsSceneProxyReady(true);
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        proxy->GetSceneProxyId(),
+        functionId,
+        [proxy, planarReflectionComponent, weak = weak_from_this()]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& reflectionProxySp = sceneRenderer->GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
+                assert(!reflectionProxySp);
+                sceneRenderer->PlanarReflectionProxiesVector.emplace_back(proxy);
+                sceneRenderer->SetPlanarReflectionProxiesAreDirty(true);
+                planarReflectionComponent->SetIsSceneProxyReady(true);
+            }
         });
 }
 
@@ -1679,15 +1785,20 @@ void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
 {
     static const uint64_t functionId = Hash("SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, cameraSceneProxyId, functionId, [this, cameraSceneProxyId, planarReflectionProxy]() {
-            const auto& sceneViewSp = GetSceneViewByProxyId(cameraSceneProxyId);
-            if (sceneViewSp) {
-                planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
-            } else {
-                LogInfo(
-                    "SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    cameraSceneProxyId);
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        cameraSceneProxyId,
+        functionId,
+        [weak = weak_from_this(), cameraSceneProxyId, planarReflectionProxy]() {
+            if (const auto& sceneRenderer = weak.lock()) {
+                const auto& sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraSceneProxyId);
+                if (sceneViewSp) {
+                    planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
+                } else {
+                    LogInfo(
+                        "SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => "
+                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                        cameraSceneProxyId);
+                }
             }
         });
 }
@@ -1721,11 +1832,18 @@ void SceneRenderer::TextChanged(const std::string& fontName, const int32_t textF
         static const uint64_t functionId = Hash("SceneRenderer::TextChanged");
 
         if (const auto& sceneSp = m_interThreadMgr.GetSceneWP().lock()) {
-            m_interThreadMgr.ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [=]() {
-                sceneSp->GetTextHandler()
-                    ->GetTextFieldById(textFieldProxyId)
-                    ->SetTextScreenSpaceSize(mFontHandler->GetTextScreenSpaceSize(fontName, textFieldProxyId));
-            });
+            m_interThreadMgr.ExecuteOnGameThread(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                creatorObjectId,
+                functionId,
+                [weak = weak_from_this(), sceneSp, textFieldProxyId, fontName]() {
+                    if (const auto& sceneRenderer = weak.lock()) {
+                        sceneSp->GetTextHandler()
+                            ->GetTextFieldById(textFieldProxyId)
+                            ->SetTextScreenSpaceSize(
+                                sceneRenderer->GetFontHandler()->GetTextScreenSpaceSize(fontName, textFieldProxyId));
+                    }
+                });
         }
     }
 }

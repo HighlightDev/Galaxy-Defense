@@ -231,7 +231,6 @@ void UiTextBlock::SyncDataOnRenderThread()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetUId(),
                         functionId,
-
                         [sceneRenderer,
                          myUId = GetUId(),
                          canvasUId = canvasSp->GetUId(),

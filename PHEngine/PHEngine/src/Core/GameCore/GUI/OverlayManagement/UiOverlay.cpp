@@ -30,9 +30,12 @@ void UiOverlay::SetOverlayCanvas(const std::shared_ptr<UiCanvas>& canvas)
     assert(!mCanvas);
     mCanvas = canvas;
     mCanvas->CreateAnimator();
-    mCanvas->GetAnimator()->SubscribeOnAnimationFinished([this](const std::string& animationName) {
-        if ("FadeOut" == animationName) {
-            mCanvas->SetIsVisible(false);
+    mCanvas->GetAnimator()->SubscribeOnAnimationFinished([weak = weak_from_this()](const std::string& animationName) {
+        if (const auto& uiOverlayPtr = weak.lock()) {
+            const auto uiOverlayStrong = std::static_pointer_cast<UiOverlay>(uiOverlayPtr);
+            if ("FadeOut" == animationName) {
+                uiOverlayStrong->GetCanvas()->SetIsVisible(false);
+            }
         }
     });
 }

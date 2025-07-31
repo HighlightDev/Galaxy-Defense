@@ -176,6 +176,11 @@ size_t ParticleSystemComponent::GetParticlesCount() const
     return mParticlesPool.size();
 }
 
+ParticlesRawDataHandler& ParticleSystemComponent::GetParticlesRawDataHandler()
+{
+    return mParticlesRawDataHandler;
+}
+
 void ParticleSystemComponent::SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter)
 {
     assert(!mParticleEmitter);
@@ -188,21 +193,27 @@ void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activePartic
     if (const auto& sceneSp = m_sceneWP.lock()) {
         if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]() mutable {
-                    const auto& proxyPtr = std::static_pointer_cast<ParticleSystemSceneProxy>(
-                        sceneRenderer->GetPrimitiveProxyByProxyId(mSceneProxyId));
-                    if (proxyPtr) {
-                        if (activeParticlesCount > 0) {
-                            proxyPtr->CopyParticlesRawData(
-                                mParticlesRawDataHandler.GetTranslationData(),
-                                mParticlesRawDataHandler.GetTranslationActiveDataChunkSize(),
-                                mParticlesRawDataHandler.GetRotationSizeData(),
-                                mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize(),
-                                mParticlesRawDataHandler.GetColorData(),
-                                mParticlesRawDataHandler.GetColorActiveDataChunkSize());
-                        }
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                GetObjectId(),
+                functionId,
+                [weak = weak_from_this(), activeParticlesCount, sceneRenderer, sceneProxyId = mSceneProxyId]() mutable {
+                    if (const auto& componentPtr = weak.lock()) {
+                        const auto particleComponentPtr = std::static_pointer_cast<ParticleSystemComponent>(componentPtr);
+                        const auto& proxyPtr = std::static_pointer_cast<ParticleSystemSceneProxy>(
+                            sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId));
+                        if (proxyPtr) {
+                            if (activeParticlesCount > 0) {
+                                proxyPtr->CopyParticlesRawData(
+                                    particleComponentPtr->GetParticlesRawDataHandler().GetTranslationData(),
+                                    particleComponentPtr->GetParticlesRawDataHandler().GetTranslationActiveDataChunkSize(),
+                                    particleComponentPtr->GetParticlesRawDataHandler().GetRotationSizeData(),
+                                    particleComponentPtr->GetParticlesRawDataHandler().GetRotationSizeActiveDataChunkSize(),
+                                    particleComponentPtr->GetParticlesRawDataHandler().GetColorData(),
+                                    particleComponentPtr->GetParticlesRawDataHandler().GetColorActiveDataChunkSize());
+                            }
 
-                        proxyPtr->SetActiveParticlesCount(activeParticlesCount);
+                            proxyPtr->SetActiveParticlesCount(activeParticlesCount);
+                        }
                     }
                 });
         }

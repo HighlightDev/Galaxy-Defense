@@ -54,8 +54,11 @@ void ParticleSystemSceneProxy::PostConstructorInitialize()
         if (const auto& sceneSp = deferredShadingSceneRendererSp->GetInterThreadCommunicationManager().GetSceneWP().lock()) {
             const auto boundingBox = m_skin->GetBoundingBox();
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId, [this, boundingBox, sceneSp]() {
-                    const auto& engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                mSceneProxyId,
+                functionId,
+                [boundingBox, sceneSp, goID = GetGameObjectId()]() {
+                    const auto& engineObject = sceneSp->GetEngineObjectById(goID);
                     assert(engineObject);
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
                     assert(primitiveComponent);

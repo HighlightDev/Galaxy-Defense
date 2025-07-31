@@ -123,11 +123,15 @@ void PointLightComponent::NotifySceneProxyThatShadowmapIsDirty(const uint64_t& f
     if (const auto& sceneSp = m_sceneWP.lock()) {
         if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]() {
-                    const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(mLightSceneProxyId);
-                    const auto& shadowInfo = lightProxySp->GetShadowInfo();
-                    if (shadowInfo) {
-                        shadowInfo->SetIsShadowMapDirty(true);
+                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [weak = weak_from_this(), sceneRenderer]() {
+                    if (const auto& componentPtr = weak.lock()) {
+                        const auto pointLightComponentPtr = std::static_pointer_cast<PointLightComponent>(componentPtr);
+                        const auto& lightProxySp
+                            = sceneRenderer->GetLightProxyByProxyId(pointLightComponentPtr->GetLightSceneProxyId());
+                        const auto& shadowInfo = lightProxySp->GetShadowInfo();
+                        if (shadowInfo) {
+                            shadowInfo->SetIsShadowMapDirty(true);
+                        }
                     }
                 });
         }

@@ -243,4 +243,14 @@ std::shared_ptr<OnRouteMovementComponent> SpaceshipActor::GetOnRouteMovementComp
 {
     return std::dynamic_pointer_cast<OnRouteMovementComponent>(GetMovementComponent());
 }
+
+std::shared_ptr<::EngineCore::UiComponent> SpaceshipActor::GetUiComponent() const
+{
+    return mUiComponent;
+}
+
+int32_t SpaceshipActor::GetDamageTextFieldId() const
+{
+    return mDamageTextFieldId;
+}
 } // namespace Game

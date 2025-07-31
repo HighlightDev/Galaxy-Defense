@@ -47,6 +47,12 @@ void PlanarReflectionComponent::UpdateReflectionPlane()
     mReflectionPlane = glm::vec4(glm::vec3(normal), d);
 }
 
+std::shared_ptr<DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>>
+PlanarReflectionComponent::GetPlanarReflectionDeferredController() const
+{
+    return mPlanarReflectionDeferredController;
+}
+
 ::Graphics::ViewPortInfo PlanarReflectionComponent::GetRenderTargetViewPortInfo() const
 {
     return mRenderTargetViewPortInfo;
@@ -73,14 +79,21 @@ void PlanarReflectionComponent::PostLevelInit()
     if (const auto& sceneSp = m_sceneWP.lock()) {
         if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]() {
-                    const auto& reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId);
-                    assert(reflectionSp);
-                    const auto& proxySp = std::static_pointer_cast<PlanarReflectionProxy>(reflectionSp);
-                    auto resourceTexture = proxySp->GetPlanarReflectionTexture();
-                    mPlanarReflectionDeferredController
-                        ->GetDeferredResource(); // Just in case deferred resource wasn't initialized
-                    mPlanarReflectionDeferredController->SetResource(resourceTexture);
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                GetObjectId(),
+                functionId,
+                [sceneRenderer, weak = weak_from_this(), planarReflectionSceneProxyId = mPlanarReflectionSceneProxyId]() {
+                    if (const auto& componentPtr = weak.lock()) {
+                        const auto planarReflectionComponentPtr
+                            = std::static_pointer_cast<PlanarReflectionComponent>(componentPtr);
+                        const auto& reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId);
+                        assert(reflectionSp);
+                        const auto& proxySp = std::static_pointer_cast<PlanarReflectionProxy>(reflectionSp);
+                        auto resourceTexture = proxySp->GetPlanarReflectionTexture();
+                        planarReflectionComponentPtr->GetPlanarReflectionDeferredController()
+                            ->GetDeferredResource(); // Just in case deferred resource wasn't initialized
+                        planarReflectionComponentPtr->GetPlanarReflectionDeferredController()->SetResource(resourceTexture);
+                    }
                 });
         }
     }
@@ -138,11 +151,19 @@ void PlanarReflectionComponent::SyncDataWithRenderThread()
     if (const auto& sceneSp = m_sceneWP.lock()) {
         if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]() {
-                    const auto& reflectionSp = std::static_pointer_cast<PlanarReflectionProxy>(
-                        sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId));
-                    if (reflectionSp) {
-                        reflectionSp->SetReflectionPlane(mReflectionPlane);
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                GetObjectId(),
+                functionId,
+                [weak = weak_from_this(),
+                 sceneRenderer,
+                 planarReflectionSceneProxyId = mPlanarReflectionSceneProxyId,
+                 reflectionPlane = mReflectionPlane]() {
+                    if (const auto& componentPtr = weak.lock()) {
+                        const auto& reflectionSp = std::static_pointer_cast<PlanarReflectionProxy>(
+                            sceneRenderer->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId));
+                        if (reflectionSp) {
+                            reflectionSp->SetReflectionPlane(reflectionPlane);
+                        }
                     }
                 });
         }

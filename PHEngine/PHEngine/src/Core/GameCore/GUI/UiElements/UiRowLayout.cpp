@@ -78,7 +78,7 @@ void UiRowLayout::RecalculatePositionsForChildren()
         auto potentialAccumulatedWidthOfChildren = 0;
         potentialAccumulatedWidthOfChildren = std::accumulate(
             mChildren.cbegin(), mChildren.cend(), 0, [](const int32_t total, const std::shared_ptr<UiItemBase>& child) {
-                return child->IsVisible() ? child->GetWidth() + total : total;
+                return child->IsVisible() ? static_cast<int32_t>(child->GetWidth()) + total : total;
             });
 
         potentialAccumulatedWidthOfChildren += spacingsCount * mSpacing;
