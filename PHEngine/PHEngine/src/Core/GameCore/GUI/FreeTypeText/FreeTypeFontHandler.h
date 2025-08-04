@@ -1,104 +1,115 @@
-// #pragma once
+#pragma once
 
-// #include "Core/CommonCore/Assertion.h"
-// #include "Core/GraphicsCore/Texture/ITexture.h"
-// #include "FreeTypeFontAtlas.h"
-// #include "FreeTypeTextFieldProxy.h"
+#include "Core/CommonCore/Assertion.h"
+#include "Core/GraphicsCore/Texture/ITexture.h"
 
-// #include <memory>
-// #include <unordered_map>
-// #include <vector>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
-// using namespace Graphics;
-// using namespace Graphics::Texture;
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
-// namespace EngineCore {
-// struct FreeTypeTextVertexChunkData {
-//     size_t mCurrentChunkOffset;
-//     size_t mTotalChunkSize;
+using namespace Graphics;
+using namespace Graphics::Texture;
 
-//     FreeTypeTextVertexChunkData();
-// };
+namespace Graphics::OpenGL {
+class VertexBufferObjectBase;
+}
 
-// class FreeTypeFontBatcher {
-//     FreeTypeTextVertexChunkData mPositionChunkData;
-//     FreeTypeTextVertexChunkData mTextureCoordinatesChunkData;
-//     size_t mVerticesCount;
+namespace EngineCore::GUI {
 
-//     std::shared_ptr<FreeTypeFontAtlas> mTextFontAtlas;
+class FreeTypeTextFieldProxy;
+class FreeTypeFontAtlas;
 
-//     std::vector<std::shared_ptr<FreeTypeTextFieldProxy>> mTextFields;
+struct FreeTypeTextVertexChunkData {
+    size_t mCurrentChunkOffset;
+    size_t mTotalChunkSize;
 
-// public:
-//     FreeTypeFontBatcher(const std::shared_ptr<FreeTypeFontAtlas>& fontAtlas);
+    FreeTypeTextVertexChunkData();
+};
 
-//     void RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
+class FreeTypeFontBatcher {
+    FreeTypeTextVertexChunkData mPositionChunkData;
+    FreeTypeTextVertexChunkData mTextureCoordinatesChunkData;
+    size_t mVerticesCount;
 
-//     void UnregisterText(const int32_t textFieldId);
+    std::shared_ptr<FreeTypeFontAtlas> mTextFontAtlas;
 
-//     void TextPositionChanged(const int32_t textFieldId, const glm::vec2& position);
+    std::vector<std::shared_ptr<FreeTypeTextFieldProxy>> mTextFields;
 
-//     void TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color);
+public:
+    FreeTypeFontBatcher(const std::shared_ptr<FreeTypeFontAtlas>& fontAtlas);
 
-//     void TextChanged(const int32_t textFieldProxyId, const std::string& text);
+    void RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
 
-//     void TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible);
+    void UnregisterText(const int32_t textFieldId);
 
-//     TextVertexChunkData& GetPositionChunkDataRef();
+    void TextPositionChanged(const int32_t textFieldId, const glm::vec2& position);
 
-//     TextVertexChunkData& GetTextureCoordinatesChunkDataRef();
+    void TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color);
 
-//     const std::shared_ptr<FreeTypeFontAtlas>& GetFreeTypeFontAtlas() const;
+    void TextChanged(const int32_t textFieldProxyId, const std::string& text);
 
-//     size_t GetVerticesCount() const;
+    void TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible);
 
-//     const std::vector<std::shared_ptr<FreeTypeTextFieldProxy>>& GetFreeTypeTexFieldProxies() const;
+    FreeTypeTextVertexChunkData& GetPositionChunkDataRef();
 
-//     const std::shared_ptr<FreeTypeTextFieldProxy>& GetFreeTypeTextFieldById(const int32_t textFieldId) const;
+    FreeTypeTextVertexChunkData& GetTextureCoordinatesChunkDataRef();
 
-// private:
-//     void AllocateTextSpace(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
+    const std::shared_ptr<FreeTypeFontAtlas>& GetFreeTypeFontAtlas() const;
 
-//     void FreeAllocatedTextSpace(const std::shared_ptr<FreeTypeTextFieldProxy>& removeTextFieldProxy);
+    size_t GetVerticesCount() const;
 
-//     void ReallocateTextSpace();
+    const std::vector<std::shared_ptr<FreeTypeTextFieldProxy>>& GetFreeTypeTextFieldProxies() const;
 
-//     void FontBufferSubData(
-//         const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy,
-//         VertexBufferObjectBase* const positionVBO,
-//         VertexBufferObjectBase* const textureCoordinatesVBO);
-// };
+    std::shared_ptr<FreeTypeTextFieldProxy> GetFreeTypeTextFieldById(const int32_t textFieldId) const;
 
-// class FreeTypeFontHandler {
-//     std::unordered_map<std::string, std::shared_ptr<FreeTypeFontBatcher>> mFontBatcherMap;
+    std::shared_ptr<ITexture> GetFontTextureAtlas() const;
 
-// public:
-//     FreeTypeFontHandler();
+private:
+    void AllocateTextSpace(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
 
-//     void RegisterFont(const std::string& fontFileName);
+    void FreeAllocatedTextSpace(const std::shared_ptr<FreeTypeTextFieldProxy>& removeTextFieldProxy);
 
-//     std::shared_ptr<FreeTypeFontBatcher> GetFontBatcher(const std::string& fontName) const;
+    void ReallocateTextSpace();
 
-//     const std::unordered_map<std::string, std::shared_ptr<FreeTypeFontBatcher>>& GetFontBatcher() const;
+    void FontBufferSubData(
+        const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy,
+        ::Graphics::OpenGL::VertexBufferObjectBase* const positionVBO,
+        ::Graphics::OpenGL::VertexBufferObjectBase* const textureCoordinatesVBO);
+};
 
-//     void RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
+class FreeTypeFontHandler {
+    std::unordered_map<std::string, std::shared_ptr<FreeTypeFontBatcher>> mFontBatcherMap;
 
-//     void UnregisterText(const std::string& fontName, const int32_t textFieldProxyId);
+public:
+    FreeTypeFontHandler();
 
-//     void TextPositionChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec2& position);
+    void RegisterFont(const std::string& fontFileName);
 
-//     void TextColorChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec3& color);
+    std::shared_ptr<FreeTypeFontBatcher> GetFontBatcher(const std::string& fontName) const;
 
-//     void TextVisibilityChanged(const std::string& fontName, const int32_t textFieldProxyId, const bool bIsVisible);
+    const std::unordered_map<std::string, std::shared_ptr<FreeTypeFontBatcher>>& GetFontBatcher() const;
 
-//     void TextChanged(const std::string& fontName, const int32_t textFieldProxyId, const std::string& text);
+    void RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
 
-//     float GetTextWidth(const std::string& fontName, const int32_t textFieldProxyId) const;
+    void UnregisterText(const std::string& fontName, const int32_t textFieldProxyId);
 
-//     float GetTextHeight(const std::string& fontName, const int32_t textFieldProxyId) const;
+    void TextPositionChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec2& position);
 
-//     bool IsTextSubscribedOnSizeChangeUpdate(const std::string& fontName, const int32_t textFieldProxyId) const;
+    void TextColorChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec3& color);
 
-//     glm::ivec2 GetTextScreenSpaceSize(const std::string& fontFileName, const int32_t textFieldProxyId) const;
-// };
-// } // namespace EngineCore
+    void TextVisibilityChanged(const std::string& fontName, const int32_t textFieldProxyId, const bool bIsVisible);
+
+    void TextChanged(const std::string& fontName, const int32_t textFieldProxyId, const std::string& text);
+
+    float GetTextWidth(const std::string& fontName, const int32_t textFieldProxyId) const;
+
+    float GetTextHeight(const std::string& fontName, const int32_t textFieldProxyId) const;
+
+    bool IsTextSubscribedOnSizeChangeUpdate(const std::string& fontName, const int32_t textFieldProxyId) const;
+
+    glm::ivec2 GetTextScreenSpaceSize(const std::string& fontFileName, const int32_t textFieldProxyId) const;
+};
+} // namespace EngineCore::GUI

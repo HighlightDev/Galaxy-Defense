@@ -8,6 +8,8 @@
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontAtlas.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeTextFieldProxy.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -91,6 +93,7 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , PlanarReflectionProxiesVector()
     , mUiCanvasProxies()
     , mFontHandler(std::make_shared<FontHandler>())
+    , mFreeTypeFontHandler(std::make_shared<FreeTypeFontHandler>())
     , mForwardRenderingProxiesVec()
     , mSkeletalProxiesVec()
     , mNonSkeletalProxiesVec()
@@ -312,6 +315,8 @@ void SceneRenderer::RegisterFonts()
             mFontHandler->RegisterFont(fontParams);
         }
     }
+
+    //mFreeTypeFontHandler->RegisterFont("13_5Atom_Sans_Regular.ttf");
 }
 
 void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
@@ -948,15 +953,12 @@ void SceneRenderer::HudTextPass()
 
     RenderState renderState;
     renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     renderState.GetDepthState().SetIsDepthTestEnabled(false).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
-
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
         .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
         .SetStencilMask(0);
-
     renderState.BindRenderState();
 
     for (const auto& renderData : renderDataMap) {
@@ -975,6 +977,42 @@ void SceneRenderer::HudTextPass()
         }
         m_fontShader->StopShader();
     }
+
+    renderState.GetBlendingState().SetIsBlendingEnabled(false);
+}
+
+void SceneRenderer::FontPass(const std::shared_ptr<SceneView>& sceneView)
+{
+    const auto& renderDataMap = mFreeTypeFontHandler->GetFontBatcher();
+
+    RenderState renderState;
+    renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    renderState.GetDepthState().SetIsDepthTestEnabled(false).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+    renderState.GetStencilState()
+        .SetIsStencilTestEnabled(false)
+        .SetStencilOperation(0, 0, 0)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilMask(0);
+    renderState.BindRenderState();
+
+    m_fontShader->ExecuteShader();
+    for (const auto& renderData : renderDataMap) {
+        const auto& renderDataSp = renderData.second;
+        renderDataSp->GetFontTextureAtlas()->BindTexture(0);
+
+        // todo: Change font shader to font shader
+        const auto& textFields = renderDataSp->GetFreeTypeTextFieldProxies();
+        m_fontShader->SetFontAtlasSlot(0);
+        for (const auto& textField : textFields) {
+            if (textField->GetIsVisible() && eTextFieldProxyType::HUD_TEXT_FIELD == textField->GetTextFieldProxyType()) {
+                m_fontShader->SetPosition(textField->GetPosition());
+                m_fontShader->SetColor(textField->GetColor());
+                renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(
+                    textField->GetVertexStart(), textField->GetVerticesCount(), GL_TRIANGLES);
+            }
+        }
+    }
+    m_fontShader->StopShader();
 
     renderState.GetBlendingState().SetIsBlendingEnabled(false);
 }
@@ -1133,6 +1171,8 @@ void SceneRenderer::RenderScene_RenderThread()
                     mPostFxRenderer->Execute(m_resolvedSceneFramebuffer);
 
                 HudTextPass();
+
+                //FontPass(sceneView);
 
                 GuiPass(sceneView);
 

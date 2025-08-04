@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/GUI/Common/FontHandler.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontHandler.h"
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
@@ -30,7 +31,6 @@
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/InterThreadCommunicationMgr.h"
-#include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
@@ -56,6 +56,8 @@ class ACamera;
 namespace GUI {
 class UiItemBase;
 class UiCanvas;
+class FreeTypeFontHandler;
+class FreeTypeTextFieldProxy;
 } // namespace GUI
 } // namespace EngineCore
 
@@ -100,6 +102,8 @@ class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
     std::vector<std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesVector;
     std::vector<std::shared_ptr<UiCanvasSceneProxy>> mUiCanvasProxies;
     std::shared_ptr<FontHandler> mFontHandler;
+
+    std::shared_ptr<::EngineCore::GUI::FreeTypeFontHandler> mFreeTypeFontHandler;
 
     // these proxies are collected from general type of proxies
     std::vector<std::shared_ptr<PrimitiveSceneProxy>> mForwardRenderingProxiesVec;
@@ -291,6 +295,8 @@ private:
     void OutlinePass(const std::shared_ptr<SceneView>& sceneView);
 
     void HudTextPass();
+
+    void FontPass(const std::shared_ptr<SceneView>& sceneView);
 
     void GuiPass(const std::shared_ptr<SceneView>& sceneView);
 

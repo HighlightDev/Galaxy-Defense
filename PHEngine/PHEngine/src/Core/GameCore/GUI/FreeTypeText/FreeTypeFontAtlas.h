@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
+#include "Core/GraphicsCore/Texture/ITexture.h"
 
 #include <freetype/freetype.h>
 #include <ft2build.h>
@@ -10,6 +11,7 @@
 #include <utility>
 
 using namespace Graphics::OpenGL;
+using namespace Graphics::Texture;
 
 namespace EngineCore::GUI {
 class FreeTypeFont;
@@ -28,10 +30,6 @@ public:
         float xOffset;
     };
 
-    inline GLuint getTexId()
-    {
-        return mTexID;
-    }
     inline int getAtlasWidth()
     {
         return mWidthHeightTexture.x;
@@ -50,8 +48,13 @@ public:
         return mFont;
     }
 
+    std::shared_ptr<ITexture> GetFontTextureAtlas() const
+    {
+        return mFontTextureAtlas;
+    }
+
 private:
-    GLuint mTexID;
+    std::shared_ptr<ITexture> mFontTextureAtlas;
 
     VertexArrayObject m_buffer;
 
@@ -70,8 +73,6 @@ private:
 
 public:
     FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const int32_t pixelSize);
-
-    virtual ~FreeTypeFontAtlas();
 
     bool operator==(const FreeTypeFontAtlas& right) const;
 

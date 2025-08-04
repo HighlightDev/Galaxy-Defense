@@ -50,12 +50,15 @@ UiItemBase::UiItemBase(const std::string& name)
     , mIsTransformDirty(false)
     , mIsPropertiesShouldBeUpdatedOnRenderThread(false)
     , mIsPropertiesShouldBeUpdatedOnLuaThread(false)
-    , mScaleProperty(std::make_shared<EngineObjectProperty<float>>(
-          1.0f, "Scale", [this](const float newScaleValue) { UpdateScaleProperty(); }))
-    , mVerticalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
-          0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
-    , mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
-          0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
+    , mScaleProperty(
+          std::make_shared<EngineObjectProperty<float>>(
+              1.0f, "Scale", [this](const float newScaleValue) { UpdateScaleProperty(); }))
+    , mVerticalCenterOffsetProperty(
+          std::make_shared<EngineObjectProperty<int32_t>>(
+              0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
+    , mHorizontalCenterOffsetProperty(
+          std::make_shared<EngineObjectProperty<int32_t>>(
+              0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
 {
     mProperties.emplace("Scale", mScaleProperty);
     mProperties.emplace("VerticalCenterOffset", mVerticalCenterOffsetProperty);
@@ -186,7 +189,7 @@ void UiItemBase::SetZOrder(const size_t zOrder)
 
 void UiItemBase::SetWidth(const size_t width)
 {
-    ext_assert(width > 0, "Name: " + GetName());
+    ext_assert(static_cast<bool>(width > 0UL), "Name: " + GetName());
     if (mWidth != width) {
         mWidth = width;
         SetIsTransformDirty(true);
@@ -195,7 +198,7 @@ void UiItemBase::SetWidth(const size_t width)
 
 void UiItemBase::SetHeight(const size_t height)
 {
-    ext_assert(height > 0, "Name: " + GetName());
+    ext_assert(static_cast<bool>(height > 0UL), "Name: " + GetName());
     if (mHeight != height) {
         mHeight = height;
         SetIsTransformDirty(true);

@@ -13,20 +13,17 @@
 using namespace EngineCore::DataProviders;
 
 namespace EngineCore::GUI {
-FreeTypeTextMeshCreator::FreeTypeTextMeshCreator()
+
+void FreeTypeTextMeshCreator::calculateVertices(
+    std::vector<glm::vec2>& vertices,
+    std::vector<glm::vec2>& texCoords,
+    const std::string& text,
+    float x,
+    float y,
+    int width,
+    int height,
+    std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
 {
-}
-
-void FreeTypeTextMeshCreator::recalculateVertices(
-    const std::string& text, float x, float y, int width, int height, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
-{
-    const auto windowWidth = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth();
-    const auto windowHeight = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();
-
-    _sx = 2.0 / windowWidth;
-    _sy = 2.0 / windowHeight;
-    _coords.clear(); // case there are any existing coords
-
     // Break the text into individual words
     std::vector<std::string> words = splitText(text);
     auto _pixelSize = 12;
@@ -34,13 +31,13 @@ void FreeTypeTextMeshCreator::recalculateVertices(
 
     std::vector<std::string> lines;
     int widthRemaining = width;
-    int spaceWidth = calcWidth(" ", ftFontAtlas);
+    int spaceWidth = CalcWidth(" ", ftFontAtlas);
     int indent = _pixelSize;
 
     // Create lines from our text, each containing the maximum amount of words we can fit within the given width
     std::string curLine = "";
     for (std::string word : words) {
-        int wordWidth = calcWidth(word, ftFontAtlas);
+        int wordWidth = CalcWidth(word, ftFontAtlas);
 
         if (wordWidth - spaceWidth > widthRemaining && width /* make sure there is a width specified */) {
 
@@ -69,22 +66,32 @@ void FreeTypeTextMeshCreator::recalculateVertices(
         if (y - startY > height && height)
             break;
 
-        recalculateVertices(line, x + indent, y, ftFontAtlas);
+        calculateVertices(vertices, texCoords, line, x + indent, y, ftFontAtlas);
         y += (ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6);
         indent = 0;
     }
 }
 
-void FreeTypeTextMeshCreator::recalculateVertices(
-    const std::string& text, float x, float y, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
+void FreeTypeTextMeshCreator::calculateVertices(
+    std::vector<glm::vec2>& vertices,
+    std::vector<glm::vec2>& texCoords,
+    const std::string& text,
+    float x,
+    float y,
+    std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
 {
+    const auto windowWidth = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth();
+    const auto windowHeight = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();
+    const auto _sx = 2.0 / windowWidth;
+    const auto _sy = 2.0 / windowHeight;
+
     // Coordinates passed in should specify where to start drawing from the top left of the text,
     // but FreeType starts drawing from the bottom-right, therefore move down one line
     y += ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6;
 
     // Calculate alignment (if applicable)
-    int textWidth = calcWidth(text, ftFontAtlas); // temp
-    auto _alignment = eFontFlags::CenterAligned;
+    int32_t textWidth = CalcWidth(text, ftFontAtlas); // temp
+    const auto _alignment = eFontFlags::CenterAligned;
     if (_alignment == eFontFlags::CenterAligned)
         x -= textWidth / 2.0;
     else if (_alignment == eFontFlags::RightAligned)
@@ -122,24 +129,19 @@ void FreeTypeTextMeshCreator::recalculateVertices(
         if (!w || !h)
             continue;
 
-        _coords.push_back(
-            glm::vec4(
-                x2, // window x
-                -y2, // window y
-                chars[*p].xOffset, // texture atlas x offset
-                0)); // texture atlas y offset
+        vertices.emplace_back(x2, -y2);
+        vertices.emplace_back(x2 + w, -y2);
+        vertices.emplace_back(x2, -y2 - h);
+        vertices.emplace_back(x2 + w, -y2);
+        vertices.emplace_back(x2, -y2 - h);
+        vertices.emplace_back(x2 + w, -y2 - h);
 
-        _coords.push_back(glm::vec4(x2 + w, -y2, chars[*p].xOffset + chars[*p].bitmapWidth / atlasWidth, 0));
-
-        _coords.push_back(glm::vec4(x2, -y2 - h, chars[*p].xOffset, chars[*p].bitmapHeight / atlasHeight));
-
-        _coords.push_back(glm::vec4(x2 + w, -y2, chars[*p].xOffset + chars[*p].bitmapWidth / atlasWidth, 0));
-
-        _coords.push_back(glm::vec4(x2, -y2 - h, chars[*p].xOffset, chars[*p].bitmapHeight / atlasHeight));
-
-        _coords.push_back(
-            glm::vec4(
-                x2 + w, -y2 - h, chars[*p].xOffset + chars[*p].bitmapWidth / atlasWidth, chars[*p].bitmapHeight / atlasHeight));
+        texCoords.emplace_back(chars[*p].xOffset, 0);
+        texCoords.emplace_back(chars[*p].xOffset + chars[*p].bitmapWidth / atlasWidth, 0);
+        texCoords.emplace_back(chars[*p].xOffset, chars[*p].bitmapHeight / atlasHeight);
+        texCoords.emplace_back(chars[*p].xOffset + chars[*p].bitmapWidth / atlasWidth, 0);
+        texCoords.emplace_back(chars[*p].xOffset, chars[*p].bitmapHeight / atlasHeight);
+        texCoords.emplace_back(chars[*p].xOffset + chars[*p].bitmapWidth / atlasWidth, chars[*p].bitmapHeight / atlasHeight);
     }
 }
 
@@ -168,9 +170,9 @@ std::vector<std::string> FreeTypeTextMeshCreator::splitText(const std::string& t
     return words;
 }
 
-int FreeTypeTextMeshCreator::calcWidth(const std::string& text, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
+int32_t FreeTypeTextMeshCreator::CalcWidth(const std::string& text, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
 {
-    int width = 0;
+    int32_t width = 0;
     FreeTypeFontAtlas::Character* chars = ftFontAtlas->getCharInfo();
     auto text_str = text.c_str();
     for (const char* p = text_str; *p; ++p) {
@@ -180,15 +182,29 @@ int FreeTypeTextMeshCreator::calcWidth(const std::string& text, std::shared_ptr<
     return width;
 }
 
-std::vector<glm::vec4> FreeTypeTextMeshCreator::CreateTextMesh(
+int32_t FreeTypeTextMeshCreator::CalcHeight(std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
+{
+    // For simplicity, we assume that height is the same for all lines
+    return ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6;
+}
+
+std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> FreeTypeTextMeshCreator::CreateTextMesh(
     std::shared_ptr<FreeTypeTextFieldProxy> textFieldProxy, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
 {
-    std::vector<glm::vec4> coords;
     if (textFieldProxy) {
-        recalculateVertices(
-            textFieldProxy->GetText(), 0, 0, textFieldProxy->GetLineWidth(), textFieldProxy->GetLineHeight(), ftFontAtlas);
-        coords = _coords;
+        std::vector<glm::vec2> vertices;
+        std::vector<glm::vec2> texCoords;
+        calculateVertices(
+            vertices,
+            texCoords,
+            textFieldProxy->GetText(),
+            0,
+            0,
+            textFieldProxy->GetLineWidth(),
+            textFieldProxy->GetLineHeight(),
+            ftFontAtlas);
+        return {vertices, texCoords};
     }
-    return coords;
+    return {};
 }
 } // namespace EngineCore::GUI

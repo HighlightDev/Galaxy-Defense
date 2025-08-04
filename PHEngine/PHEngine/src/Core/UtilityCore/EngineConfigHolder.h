@@ -40,7 +40,7 @@ struct EngineConfig {
     std::string BloomQualityName{""};
     float BloomThreshold{0.45f};
 
-    size_t MaxFontCharactersCount{0};
+    size_t MaxFontCharactersCount{1000};
 
     std::vector<std::string> FontsVector;
 

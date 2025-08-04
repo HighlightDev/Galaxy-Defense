@@ -1,5 +1,6 @@
 #include "FreeTypeFontAtlas.h"
 
+#include "Core/GraphicsCore/Texture/Texture2d.h"
 #include "FreeTypeFont.h"
 
 #include <gl/glew.h>
@@ -12,11 +13,6 @@ FreeTypeFontAtlas::FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_p
     , mWidthHeightTexture(0, 0)
 {
     InitializeFontAtlas();
-}
-
-FreeTypeFontAtlas::~FreeTypeFontAtlas()
-{
-    glDeleteTextures(1, &mTexID);
 }
 
 bool FreeTypeFontAtlas::operator==(const FreeTypeFontAtlas& right) const
@@ -57,10 +53,12 @@ void FreeTypeFontAtlas::InitializeFontAtlas()
         mWidthHeightTexture.y = std::max(mWidthHeightTexture.y, (int)mSlot->bitmap.rows);
     }
 
+    GLuint texID;
+
     // Create texture
-    glGenTextures(1, &mTexID);
-    glActiveTexture(GL_TEXTURE0 + mTexID);
-    glBindTexture(GL_TEXTURE_2D, mTexID);
+    glGenTextures(1, &texID);
+    glActiveTexture(GL_TEXTURE0 + texID);
+    glBindTexture(GL_TEXTURE_2D, texID);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     // Set texture parameters
@@ -100,6 +98,8 @@ void FreeTypeFontAtlas::InitializeFontAtlas()
         // Increase texture offset
         texPos += mSlot->bitmap.width + 2;
     }
+
+    mFontTextureAtlas = std::make_shared<Texture2d>(texID, mWidthHeightTexture);
 }
 
 } // namespace EngineCore::GUI
