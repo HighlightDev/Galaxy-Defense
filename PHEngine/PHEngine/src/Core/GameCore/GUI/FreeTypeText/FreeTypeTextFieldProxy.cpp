@@ -15,15 +15,14 @@ FreeTypeTextFieldProxy::FreeTypeTextFieldProxy()
     , mVerticesCount(0)
     , mIsVisible(false)
     , mText()
-    , mFontFileName()
-    , mPixelSize(16)
+    , mFontParams("", 42)
     , mColor()
     , mPosition()
     , mLineWidth(0)
     , mLineHeight(0)
     , mFontFlags(static_cast<int32_t>(eFontFlags::WordWrap | eFontFlags::LeftAligned))
-    , mCreatedMeshTextWidth(0)
-    , mCreatedMeshTextHeight(0)
+    , mCreatedMeshTextWidth(0.0f)
+    , mCreatedMeshTextHeight(0.0f)
     , mIsSubscribedOnTextScreenSpaceSizeUpdate(false)
 {
 }
@@ -38,6 +37,7 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
     const glm::vec3& color,
     const int32_t pixelSize,
     const int32_t fontFlags,
+    const eTextHorizontalAlignmentType textHorizontalAlignment,
     const int32_t lineWidth,
     const int32_t lineHeight,
     const bool isSubscribedOnTextScreenSpaceSizeUpdate)
@@ -47,13 +47,13 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
     result->mTextFieldId = uniqueTextId;
     result->mIsVisible = isVisible;
     result->mText = text;
-    result->mFontFileName = fontFileName;
-    result->mPixelSize = pixelSize;
+    result->mFontParams = FreeTypeFontParams(fontFileName, pixelSize);
     result->mColor = color;
     result->mPosition = position;
     result->mLineWidth = lineWidth;
     result->mLineHeight = lineHeight;
     result->mFontFlags = fontFlags;
+    result->mTextHorizontalAlignment = textHorizontalAlignment;
     result->mIsSubscribedOnTextScreenSpaceSizeUpdate = isSubscribedOnTextScreenSpaceSizeUpdate;
     return result;
 }
@@ -110,7 +110,7 @@ std::string FreeTypeTextFieldProxy::GetText() const
 
 std::string FreeTypeTextFieldProxy::GetFontFileName() const
 {
-    return mFontFileName;
+    return mFontParams.FontName;
 }
 
 int32_t FreeTypeTextFieldProxy::GetFontFlags() const
@@ -138,12 +138,12 @@ int32_t FreeTypeTextFieldProxy::GetLineHeight() const
     return mLineHeight;
 }
 
-int32_t FreeTypeTextFieldProxy::GetCreatedMeshTextWidth() const
+float FreeTypeTextFieldProxy::GetCreatedMeshTextWidth() const
 {
     return mCreatedMeshTextWidth;
 }
 
-int32_t FreeTypeTextFieldProxy::GetCreatedMeshTextHeight() const
+float FreeTypeTextFieldProxy::GetCreatedMeshTextHeight() const
 {
     return mCreatedMeshTextHeight;
 }
@@ -195,12 +195,17 @@ void FreeTypeTextFieldProxy::SetText(const std::string& text)
 
 void FreeTypeTextFieldProxy::SetFontFileName(const std::string& fontFileName)
 {
-    mFontFileName = fontFileName;
+    mFontParams.FontName = fontFileName;
 }
 
-void FreeTypeTextFieldProxy::SetPixelSize(const int32_t pixelSize)
+void FreeTypeTextFieldProxy::SetFontSize(const int32_t pixelSize)
 {
-    mPixelSize = pixelSize;
+    mFontParams.PixelSize = pixelSize;
+}
+
+int32_t FreeTypeTextFieldProxy::GetFontSize() const
+{
+    return mFontParams.PixelSize;
 }
 
 void FreeTypeTextFieldProxy::SetColor(const glm::vec3& color)
@@ -228,12 +233,12 @@ void FreeTypeTextFieldProxy::SetFontFlags(const int32_t fontFlags)
     mFontFlags = fontFlags;
 }
 
-void FreeTypeTextFieldProxy::SetCreatedMeshTextWidth(const int32_t createdMeshTextWidth)
+void FreeTypeTextFieldProxy::SetCreatedMeshTextWidth(const float createdMeshTextWidth)
 {
     mCreatedMeshTextWidth = createdMeshTextWidth;
 }
 
-void FreeTypeTextFieldProxy::SetCreatedMeshTextHeight(const int32_t createdMeshTextHeight)
+void FreeTypeTextFieldProxy::SetCreatedMeshTextHeight(const float createdMeshTextHeight)
 {
     mCreatedMeshTextHeight = createdMeshTextHeight;
 }
@@ -241,5 +246,20 @@ void FreeTypeTextFieldProxy::SetCreatedMeshTextHeight(const int32_t createdMeshT
 void FreeTypeTextFieldProxy::SetIsSubscribedOnTextScreenSpaceSizeUpdate(const bool isSubscribedOnTextScreenSpaceSizeUpdate)
 {
     mIsSubscribedOnTextScreenSpaceSizeUpdate = isSubscribedOnTextScreenSpaceSizeUpdate;
+}
+
+eTextHorizontalAlignmentType FreeTypeTextFieldProxy::GetTextHorizontalAlignment() const
+{
+    return mTextHorizontalAlignment;
+}
+
+void FreeTypeTextFieldProxy::SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment)
+{
+    mTextHorizontalAlignment = textHorizontalAlignment;
+}
+
+FreeTypeFontParams FreeTypeTextFieldProxy::GetFontParams() const
+{
+    return mFontParams;
 }
 } // namespace EngineCore::GUI

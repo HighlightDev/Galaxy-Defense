@@ -27,7 +27,7 @@ UiLabel::UiLabel(const std::string& fontName, const std::string& name)
     , mOpacity(1.0f)
     , mFontName(fontName)
     , mTextLineWidth(1.0f)
-    , mFontSize(5.0f)
+    , mFontSize(15)
     , mTextColor(glm::vec3())
 {
     assert(mFontName.size());
@@ -97,8 +97,8 @@ void UiLabel::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         }
     }
     if (jsonObj.contains("font_size")) {
-        const auto font_size = jsonObj["font_size"].get<float>();
-        if (!EngineMath::FloatsNearEqual(mFontSize, font_size)) {
+        const auto font_size = jsonObj["font_size"].get<int32_t>();
+        if (!mFontSize != font_size) {
             mFontSize = font_size;
             bShouldUpdatePropertiesOnRT = true;
         }
@@ -162,16 +162,16 @@ float UiLabel::GetTextLineWidth() const
     return mTextLineWidth;
 }
 
-void UiLabel::SetFontSize(const float fontSize)
+void UiLabel::SetFontSize(const int32_t fontSize)
 {
-    if (glm::abs(mFontSize - fontSize) > EngineMath::ENGINE_FLOAT_EPSILON) {
+    if (mFontSize != fontSize) {
         mFontSize = fontSize;
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
 }
 
-float UiLabel::GetFontSize() const
+int32_t UiLabel::GetFontSize() const
 {
     return mFontSize;
 }

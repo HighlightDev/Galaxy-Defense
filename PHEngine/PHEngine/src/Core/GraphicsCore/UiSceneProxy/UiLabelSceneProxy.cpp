@@ -1,14 +1,16 @@
 #include "UiLabelSceneProxy.h"
 
-#include "Core/GameCore/GUI/Common/FontHandler.h"
-#include "Core/GameCore/GUI/Common/TextFieldProxy.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/Common/UniqueFontTextIdGenerator.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontAtlas.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontHandler.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeTextFieldProxy.h"
 #include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+#include "Core/UtilityCore/EngineMath.h"
 #include "UiCanvasSceneProxy.h"
 
 #include <gl/glew.h>
@@ -56,26 +58,26 @@ void UiLabelSceneProxy::Initialize()
                 "",
                 "");
             mUiLabelShader = ShaderPool::GetInstance()->template GetOrAllocateResource<FontRenderingShader>(shaderParams);
-
-            mFontTexture = fontHandlerSp->GetFontBatcher(mFontName)->GetFontTextureAtlas();
-
-            mTextFieldProxy = TextFieldProxy::CreateTextFieldProxyInstance(
+            mTextFieldProxy = FreeTypeTextFieldProxy::CreateTextFieldProxyInstance(
                 UniqueFontTextIdGenerator::GenerateUniqueFontTextId(),
                 eTextFieldProxyType::GUI_TEXT_FIELD,
                 false,
                 mText,
-                mFontName,
+                "13_5Atom_Sans_Regular",
                 glm::vec2(),
                 mTextColor,
                 mFontSize,
+                0,
                 mTextHorizontalAlignment,
-                mTextLineWidth,
-                1,
+                800,
+                600,
                 false);
-
             fontHandlerSp->RegisterText(mTextFieldProxy);
+
+            mFontTexture
+                = fontHandlerSp->GetFontBatcher(FreeTypeFontParams("13_5Atom_Sans_Regular", mFontSize))->GetFontTextureAtlas();
         } else {
-            LogInfo("UiLabelSceneProxy::Initialize => CRIT: FontHandler is null");
+            LogInfo("UiLabelSceneProxy::Initialize => CRIT: FreeTypeFontHandler is null");
         }
     } else {
         LogInfo("UiLabelSceneProxy::Initialize => CRIT: CanvasProxy is null");
@@ -86,7 +88,7 @@ void UiLabelSceneProxy::Render()
 {
     if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            const auto& renderDataSp = fontHandlerSp->GetFontBatcher(mFontName);
+            const auto& renderDataSp = fontHandlerSp->GetFontBatcher(FreeTypeFontParams("13_5Atom_Sans_Regular", mFontSize));
             mUiLabelShader->ExecuteShader();
             const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeight();
             mUiLabelShader->SetPosition(glm::vec2(
@@ -96,7 +98,7 @@ void UiLabelSceneProxy::Render()
             mUiLabelShader->SetFontAtlasSlot(0);
             mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);
             mUiLabelShader->SetColor(mTextColor);
-            renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(
+            renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(
                 mTextFieldProxy->GetVertexStart(), mTextFieldProxy->GetVerticesCount(), GL_TRIANGLES);
             mUiLabelShader->StopShader();
         }
@@ -105,35 +107,43 @@ void UiLabelSceneProxy::Render()
 
 void UiLabelSceneProxy::SetText(const std::string& text)
 {
-    mText = text;
+    if (mText != text) {
+        mText = text;
 
-    if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
-        if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            fontHandlerSp->TextChanged(mTextFieldProxy->GetFontName(), mTextFieldProxy->GetTextFieldId(), mText);
+        if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
+            if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
+                fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
+            }
         }
     }
 }
 
 void UiLabelSceneProxy::SetTextLineWidth(const float textLineWidth)
 {
-    mTextLineWidth = textLineWidth;
-    mTextFieldProxy->SetLineMaxWidth(mTextLineWidth);
-
-    if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
-        if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            fontHandlerSp->TextChanged(mTextFieldProxy->GetFontName(), mTextFieldProxy->GetTextFieldId(), mText);
+    if (!EngineMath::FloatsNearEqual(textLineWidth, mTextLineWidth)) {
+        mTextLineWidth = textLineWidth;
+        mTextFieldProxy->SetLineWidth(mTextLineWidth);
+        if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
+            if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
+                fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
+            }
         }
     }
 }
 
-void UiLabelSceneProxy::SetFontSize(const float fontSize)
+void UiLabelSceneProxy::SetFontSize(const int32_t fontSize)
 {
-    mFontSize = fontSize;
-    mTextFieldProxy->SetFontSize(mFontSize);
+    if (mFontSize != fontSize) {
+        mFontSize = fontSize;
+        mTextFieldProxy->SetFontSize(mFontSize);
 
-    if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
-        if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            fontHandlerSp->TextChanged(mTextFieldProxy->GetFontName(), mTextFieldProxy->GetTextFieldId(), mText);
+        if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
+            if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
+                fontHandlerSp->FontSizeChanged(mTextFieldProxy);
+                // change texture according to new font
+                mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams("13_5Atom_Sans_Regular", mFontSize))
+                                   ->GetFontTextureAtlas();
+            }
         }
     }
 }
@@ -145,12 +155,14 @@ void UiLabelSceneProxy::SetOpacity(const float opacity)
 
 void UiLabelSceneProxy::SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment)
 {
-    mTextHorizontalAlignment = textHorizontalAlignment;
-    mTextFieldProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+    if (mTextHorizontalAlignment != textHorizontalAlignment) {
+        mTextHorizontalAlignment = textHorizontalAlignment;
+        mTextFieldProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
 
-    if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
-        if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            fontHandlerSp->TextChanged(mTextFieldProxy->GetFontName(), mTextFieldProxy->GetTextFieldId(), mText);
+        if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
+            if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
+                fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
+            }
         }
     }
 }
@@ -166,7 +178,7 @@ void UiLabelSceneProxy::CleanUp()
 
     if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            fontHandlerSp->UnregisterText(mTextFieldProxy->GetFontName(), mTextFieldProxy->GetTextFieldId());
+            fontHandlerSp->UnregisterText(mTextFieldProxy->GetTextFieldId());
         }
     }
 }

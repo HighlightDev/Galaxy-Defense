@@ -54,7 +54,7 @@ public:
 
     void ProcessEvent(
         const Event::LevelAreaBBChangedGameThreadEvent* sender,
-        typename const Event::LevelAreaBBChangedGameThreadEvent::EventData_t& data) override;
+        const typename Event::LevelAreaBBChangedGameThreadEvent::EventData_t& data) override;
 
 protected:
     void OnTransformationUpdated() override;

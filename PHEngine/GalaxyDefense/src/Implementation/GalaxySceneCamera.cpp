@@ -171,7 +171,7 @@ void GalaxySceneCamera::InitializeMaxDistanceToCamera(const BoundingBox3D& level
 
 void GalaxySceneCamera::ProcessEvent(
     const Event::LevelAreaBBChangedGameThreadEvent* sender,
-    typename const Event::LevelAreaBBChangedGameThreadEvent::EventData_t& data)
+    const typename Event::LevelAreaBBChangedGameThreadEvent::EventData_t& data)
 {
     const auto& boundingBox2D = std::get<0>(data);
     const auto& bbOrigin = boundingBox2D.GetOrigin();

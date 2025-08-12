@@ -130,23 +130,6 @@ struct CastTypeToString<std::string> {
     }
 };
 
-template<typename... TupleArgs>
-struct CastTypeToString<std::tuple<TupleArgs...>> {
-    static std::string Do(std::tuple<TupleArgs...> tuple)
-    {
-        using tuple_t = std::tuple<TupleArgs...>;
-        std::vector<std::string> innerTupleArgumentsStr;
-        constexpr size_t tupleSize = std::tuple_size<tuple_t>();
-        innerTupleArgumentsStr.reserve(tupleSize);
-        IterateTuple<tuple_t, tupleSize, 0>::Collect(innerTupleArgumentsStr, tuple);
-        return std::accumulate(
-            innerTupleArgumentsStr.cbegin(),
-            innerTupleArgumentsStr.cend(),
-            std::string(),
-            [](std::string& accumulatedStr, const std::string& argument) { return accumulatedStr + ", " + argument; });
-    }
-};
-
 template<>
 struct CastTypeToString<std::tuple<>> {
     static std::string Do(const std::tuple<>& tuple)
@@ -165,6 +148,23 @@ struct IterateTuple {
 
         result.push_back(CastTypeToString<compressed_arg_t>::Do(std::forward<compressed_arg_t>(argument)));
         IterateTuple<TupleT, max_index, index + 1>::Collect(result, tuple);
+    }
+};
+
+template<typename... TupleArgs>
+struct CastTypeToString<std::tuple<TupleArgs...>> {
+    static std::string Do(std::tuple<TupleArgs...> tuple)
+    {
+        using tuple_t = std::tuple<TupleArgs...>;
+        std::vector<std::string> innerTupleArgumentsStr;
+        constexpr size_t tupleSize = std::tuple_size<tuple_t>();
+        innerTupleArgumentsStr.reserve(tupleSize);
+        IterateTuple<tuple_t, tupleSize, 0>::Collect(innerTupleArgumentsStr, tuple);
+        return std::accumulate(
+            innerTupleArgumentsStr.cbegin(),
+            innerTupleArgumentsStr.cend(),
+            std::string(),
+            [](std::string& accumulatedStr, const std::string& argument) { return accumulatedStr + ", " + argument; });
     }
 };
 

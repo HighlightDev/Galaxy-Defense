@@ -1,6 +1,6 @@
 #include "UiCanvasSceneProxy.h"
 
-#include "Core/GameCore/GUI/Common/FontHandler.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontHandler.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/UtilityCore/EngineMath.h"
@@ -132,12 +132,12 @@ std::shared_ptr<UiSceneProxyBase> UiCanvasSceneProxy::GetSceneProxyById(const si
     return nullptr;
 }
 
-void UiCanvasSceneProxy::SetFontHandler(const std::weak_ptr<::EngineCore::FontHandler>& fontHandlerWp)
+void UiCanvasSceneProxy::SetFontHandler(const std::weak_ptr<::EngineCore::GUI::FreeTypeFontHandler>& fontHandlerWp)
 {
     mFontHandlerWp = fontHandlerWp;
 }
 
-std::weak_ptr<::EngineCore::FontHandler> UiCanvasSceneProxy::GetFontHandler() const
+std::weak_ptr<::EngineCore::GUI::FreeTypeFontHandler> UiCanvasSceneProxy::GetFontHandler() const
 {
     return mFontHandlerWp;
 }

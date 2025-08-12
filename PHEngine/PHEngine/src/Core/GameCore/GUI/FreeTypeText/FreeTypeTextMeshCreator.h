@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "FreeTypeFontAtlas.h"
 
 #include <freetype/freetype.h>
@@ -10,18 +11,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#ifndef PI
-#define PI 3.141596
-#endif
-
-#ifndef RAD_TO_DEG
-#define RAD_TO_DEG 180.0 / PI;
-#endif
-
-#ifndef DEG_TO_RAD
-#define DEG_TO_RAD PI / 180.0
-#endif
 
 namespace EngineCore::GUI {
 
@@ -42,18 +31,12 @@ public:
     std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>>
     CreateTextMesh(std::shared_ptr<FreeTypeTextFieldProxy> textFieldProxy, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
 
-    int32_t CalcWidth(const std::string& text, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
+    static int32_t CalcWidth(const std::string& text, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
 
-    int32_t CalcHeight(std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
+    static int32_t CalcHeight(std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
 
 private:
-    // Used to scale x and y coords
-    // Note: sx and sy are chosen so that one glyph pixel corresponds to one screen pixel
-
-    std::vector<std::string> splitText(const std::string& text);
-    // Returns the width (in pixels) of the std::string, given the current pixel size
-
-    // Calculate vertices for a paragraph label
+    static std::vector<std::string> splitText(const std::string& text);
 
     void calculateVertices(
         std::vector<glm::vec2>& vertices,
@@ -61,9 +44,11 @@ private:
         const std::string& text,
         float x,
         float y,
-        int width,
-        int height,
-        std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
+        const int width,
+        const int height,
+        std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas,
+        const eTextHorizontalAlignmentType alignment,
+        const int32_t fontSize);
     // Calculate vertices without regards to width or height boundaries
     void calculateVertices(
         std::vector<glm::vec2>& vertices,
@@ -71,7 +56,8 @@ private:
         const std::string& text,
         float x,
         float y,
-        std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
+        std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas,
+        const eTextHorizontalAlignmentType alignment);
 };
 
 } // namespace EngineCore::GUI

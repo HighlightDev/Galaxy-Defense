@@ -11,14 +11,14 @@
 namespace EngineCore {
 namespace GUI {
 class UiTextBlock;
-}
+class FreeTypeTextFieldProxy;
+} // namespace GUI
 } // namespace EngineCore
 
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Texture;
 
 namespace Graphics {
-class TextFieldProxy;
 
 namespace Proxy {
 class UiTextBlockSceneProxy : public UiRectangleSceneProxy {
@@ -33,11 +33,11 @@ class UiTextBlockSceneProxy : public UiRectangleSceneProxy {
 
     float mOpacity;
 
-    std::shared_ptr<::Graphics::TextFieldProxy> mTextFieldProxy;
+    std::shared_ptr<::GUI::FreeTypeTextFieldProxy> mTextFieldProxy;
 
     float mTextLineWidth;
 
-    float mFontSize;
+    int32_t mFontSize;
 
     ::EngineCore::eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
@@ -56,7 +56,7 @@ public:
 
     void SetTextLineWidth(const float textLineWidth);
 
-    void SetFontSize(const float fontSize);
+    void SetFontSize(const int32_t fontSize);
 
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 

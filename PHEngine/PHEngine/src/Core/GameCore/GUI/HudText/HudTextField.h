@@ -21,7 +21,7 @@ class HudTextField {
 
     std::string mText;
 
-    float mFontSize;
+    int32_t mFontSize;
 
     glm::vec3 mColor;
 
@@ -38,7 +38,7 @@ class HudTextField {
 public:
     HudTextField(
         const std::string& fontName,
-        const float fontSize,
+        const int32_t fontSize,
         const std::string& text,
         const glm::vec3& color,
         const glm::vec2& position,
@@ -48,7 +48,7 @@ public:
 
     HudTextField(
         const std::string& fontName,
-        const float fontSize,
+        const int32_t fontSize,
         const glm::vec3& color,
         const float lineMaxSize,
         const int32_t numberOfLines,
@@ -60,7 +60,7 @@ public:
 
     std::string GetFontName() const;
 
-    float GetFontSize() const;
+    int32_t GetFontSize() const;
 
     std::string GetText() const;
 

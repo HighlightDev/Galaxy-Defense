@@ -60,7 +60,7 @@ private:
 
     std::shared_ptr<FreeTypeFont> mFont;
 
-    int32_t mPixelSize;
+    int32_t mFontSize;
 
     glm::ivec2 mWidthHeightTexture;
 

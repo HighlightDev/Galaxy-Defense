@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontParams.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -36,9 +37,7 @@ class FreeTypeTextFieldProxy {
 
     std::string mText;
 
-    std::string mFontFileName;
-
-    int32_t mPixelSize;
+    FreeTypeFontParams mFontParams;
 
     glm::vec3 mColor;
 
@@ -50,11 +49,13 @@ class FreeTypeTextFieldProxy {
 
     int32_t mLineHeight;
 
-    int32_t mCreatedMeshTextWidth;
+    float mCreatedMeshTextWidth;
 
-    int32_t mCreatedMeshTextHeight;
+    float mCreatedMeshTextHeight;
 
     bool mIsSubscribedOnTextScreenSpaceSizeUpdate;
+
+    eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
 public:
     explicit FreeTypeTextFieldProxy();
@@ -69,6 +70,7 @@ public:
         const glm::vec3& color,
         const int32_t pixelSize,
         const int32_t fontFlags,
+        const eTextHorizontalAlignmentType textHorizontalAlignmentType,
         const int32_t lineWidth,
         const int32_t lineHeight,
         const bool isSubscribedOnTextScreenSpaceSizeUpdate);
@@ -107,9 +109,11 @@ public:
 
     int32_t GetFontFlags() const;
 
-    int32_t GetCreatedMeshTextWidth() const;
+    eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
 
-    int32_t GetCreatedMeshTextHeight() const;
+    float GetCreatedMeshTextWidth() const;
+
+    float GetCreatedMeshTextHeight() const;
 
     bool GetIsSubscribedOnTextScreenSpaceSizeUpdate() const;
 
@@ -131,7 +135,7 @@ public:
 
     void SetFontFileName(const std::string& fontFileName);
 
-    void SetPixelSize(const int32_t pixelSize);
+    void SetFontSize(const int32_t pixelSize);
 
     void SetColor(const glm::vec3& color);
 
@@ -143,9 +147,13 @@ public:
 
     void SetFontFlags(const int32_t fontFlags);
 
-    void SetCreatedMeshTextWidth(const int32_t createdMeshTextWidth);
+    FreeTypeFontParams GetFontParams() const;
 
-    void SetCreatedMeshTextHeight(const int32_t createdMeshTextHeight);
+    void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
+
+    void SetCreatedMeshTextWidth(const float createdMeshTextWidth);
+
+    void SetCreatedMeshTextHeight(const float createdMeshTextHeight);
 
     void SetIsSubscribedOnTextScreenSpaceSizeUpdate(const bool isSubscribedOnTextScreenSpaceSizeUpdate);
 };

@@ -106,16 +106,16 @@ float UiTextBlock::GetTextLineWidth() const
     return mTextLineWidth;
 }
 
-void UiTextBlock::SetFontSize(const float fontSize)
+void UiTextBlock::SetFontSize(const int32_t fontSize)
 {
-    if (glm::abs(mFontSize - fontSize) > EngineMath::ENGINE_FLOAT_EPSILON) {
+    if (mFontSize != fontSize) {
         mFontSize = fontSize;
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
 }
 
-float UiTextBlock::GetFontSize() const
+int32_t UiTextBlock::GetFontSize() const
 {
     return mFontSize;
 }
@@ -192,8 +192,8 @@ void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         }
     }
     if (jsonObj.contains("font_size")) {
-        const auto font_size = jsonObj["font_size"].get<float>();
-        if (!EngineMath::FloatsNearEqual(mFontSize, font_size)) {
+        const auto font_size = jsonObj["font_size"].get<int32_t>();
+        if (mFontSize != font_size) {
             mFontSize = font_size;
             bShouldUpdatePropertiesOnRT = true;
         }

@@ -9,7 +9,7 @@ namespace EngineCore::GUI {
 FreeTypeFontAtlas::FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const int32_t pixelSize)
     : m_buffer(vao)
     , mFont(font)
-    , mPixelSize(pixelSize)
+    , mFontSize(pixelSize)
     , mWidthHeightTexture(0, 0)
 {
     InitializeFontAtlas();
@@ -37,7 +37,7 @@ void FreeTypeFontAtlas::InitializeFontAtlas()
     FT_Set_Pixel_Sizes(
         face, // Font face handle
         0, // Pixel width  (0 defaults to pixel height)
-        mPixelSize); // Pixel height (0 defaults to pixel width)
+        mFontSize); // Pixel height (0 defaults to pixel width)
 
     // Main char set (32 - 128)
     for (int i = 32; i < 128; ++i) {

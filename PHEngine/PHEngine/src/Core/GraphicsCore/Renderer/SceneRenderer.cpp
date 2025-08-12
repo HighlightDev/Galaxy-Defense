@@ -9,6 +9,7 @@
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontAtlas.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontParams.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeTextFieldProxy.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
@@ -53,18 +54,16 @@ namespace Graphics {
 namespace Renderer {
 SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     : m_interThreadMgr(interThreadMgr)
-    , m_gbuffer(
-          std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
-              0,
-              0,
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
-    , m_resolvedSceneFramebuffer(
-          std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
-              0,
-              0,
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
+    , m_gbuffer(std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
+          0,
+          0,
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
+    , m_resolvedSceneFramebuffer(std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
+          0,
+          0,
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
     , m_deferredLightShader()
     , m_fontShader()
     , mDepthCollectShaderSkeletal()
@@ -75,12 +74,11 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , bLightProxiesDirty(false)
     , bPlanarReflectionProxiesDirty(false)
     , mActiveBindedState()
-    , mPostFxRenderer(
-          std::make_unique<PostFxRenderer>(ViewPortInfo(
-              0,
-              0,
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
+    , mPostFxRenderer(std::make_unique<PostFxRenderer>(ViewPortInfo(
+          0,
+          0,
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
     ,
 #if DEBUG
     mDebugPhysicsRenderData()
@@ -119,7 +117,7 @@ void RenderLabel(const std::shared_ptr<SceneView>& sceneView)
         auto cameraProxy = sceneView->GetCameraProxy();
         auto cameraViewPort = cameraProxy->GetViewPort();
         _font = std::make_shared<GLFont>(
-            "D:\\Development\\Projects\\Engine\\phengine\\PHEngine\\PHEngine\\src\\Core\\GraphicsCore\\GLFont\\test\\fonts\\13_"
+            "/home/dzinoviev/MyProjects/phengine/PHEngine/PHEngine/src/Core/GraphicsCore/GLFont/test/fonts/13_"
             "5Atom_"
             "Sans_Regular.ttf");
 
@@ -316,7 +314,10 @@ void SceneRenderer::RegisterFonts()
         }
     }
 
-    //mFreeTypeFontHandler->RegisterFont("13_5Atom_Sans_Regular.ttf");
+    const FreeTypeFontParams fontParams("13_5Atom_Sans_Regular", 58);
+    if (!mFreeTypeFontHandler->GetFontBatcher(fontParams)) {
+        mFreeTypeFontHandler->RegisterFont(fontParams);
+    }
 }
 
 void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
@@ -983,36 +984,40 @@ void SceneRenderer::HudTextPass()
 
 void SceneRenderer::FontPass(const std::shared_ptr<SceneView>& sceneView)
 {
-    const auto& renderDataMap = mFreeTypeFontHandler->GetFontBatcher();
+    const auto& renderDataMap = mFreeTypeFontHandler->GetFontBatcherMap();
+    const bool bHasTextToRender = std::any_of(renderDataMap.cbegin(), renderDataMap.cend(), [](const auto& pair) {
+        return pair.second->GetFreeTypeTextFieldProxies().size() > 0;
+    });
 
     RenderState renderState;
-    renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    renderState.GetDepthState().SetIsDepthTestEnabled(false).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
-    renderState.GetStencilState()
-        .SetIsStencilTestEnabled(false)
-        .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
-        .SetStencilMask(0);
-    renderState.BindRenderState();
+    if (bHasTextToRender) {
+        renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        renderState.GetDepthState().SetIsDepthTestEnabled(false).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+        renderState.GetStencilState()
+            .SetIsStencilTestEnabled(false)
+            .SetStencilOperation(0, 0, 0)
+            .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+            .SetStencilMask(0);
+        renderState.BindRenderState();
 
-    m_fontShader->ExecuteShader();
-    for (const auto& renderData : renderDataMap) {
-        const auto& renderDataSp = renderData.second;
-        renderDataSp->GetFontTextureAtlas()->BindTexture(0);
+        m_fontShader->ExecuteShader();
+        for (const auto& renderData : renderDataMap) {
+            const auto& renderDataSp = renderData.second;
+            renderDataSp->GetFontTextureAtlas()->BindTexture(0);
 
-        // todo: Change font shader to font shader
-        const auto& textFields = renderDataSp->GetFreeTypeTextFieldProxies();
-        m_fontShader->SetFontAtlasSlot(0);
-        for (const auto& textField : textFields) {
-            if (textField->GetIsVisible() && eTextFieldProxyType::HUD_TEXT_FIELD == textField->GetTextFieldProxyType()) {
-                m_fontShader->SetPosition(textField->GetPosition());
-                m_fontShader->SetColor(textField->GetColor());
-                renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(
-                    textField->GetVertexStart(), textField->GetVerticesCount(), GL_TRIANGLES);
+            const auto& textFields = renderDataSp->GetFreeTypeTextFieldProxies();
+            m_fontShader->SetFontAtlasSlot(0);
+            for (const auto& textField : textFields) {
+                if (textField->GetIsVisible() && eTextFieldProxyType::HUD_TEXT_FIELD == textField->GetTextFieldProxyType()) {
+                    m_fontShader->SetPosition(textField->GetPosition());
+                    m_fontShader->SetColor(textField->GetColor());
+                    renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(
+                        textField->GetVertexStart(), textField->GetVerticesCount(), GL_TRIANGLES);
+                }
             }
         }
+        m_fontShader->StopShader();
     }
-    m_fontShader->StopShader();
 
     renderState.GetBlendingState().SetIsBlendingEnabled(false);
 }
@@ -1172,11 +1177,11 @@ void SceneRenderer::RenderScene_RenderThread()
 
                 HudTextPass();
 
-                //FontPass(sceneView);
+                FontPass(sceneView);
 
                 GuiPass(sceneView);
 
-                RenderLabel(sceneView);
+                // RenderLabel(sceneView);
                 // TODO: rendering to render texture later....
             } else {
                 // TODO: rendering to render texture later....
@@ -1290,9 +1295,9 @@ std::vector<std::shared_ptr<PrimitiveSceneProxy>>& SceneRenderer::GetPrimitivePr
     return PrimitiveProxiesVector;
 }
 
-std::shared_ptr<FontHandler> SceneRenderer::GetFontHandler() const
+std::shared_ptr<FreeTypeFontHandler> SceneRenderer::GetFontHandler() const
 {
-    return mFontHandler;
+    return mFreeTypeFontHandler;
 }
 
 std::shared_ptr<UiSceneProxyBase> SceneRenderer::GetUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId) const
@@ -1328,11 +1333,10 @@ void SceneRenderer::RemoveLightProxyByProxyId(const int32_t proxyId)
 
 void SceneRenderer::RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId)
 {
-    PlanarReflectionProxiesVector.erase(
-        std::remove_if(
-            PlanarReflectionProxiesVector.begin(),
-            PlanarReflectionProxiesVector.end(),
-            [proxyId](const auto& planarReflectionProxy) { return planarReflectionProxy->GetSceneProxyId() == proxyId; }));
+    PlanarReflectionProxiesVector.erase(std::remove_if(
+        PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [proxyId](const auto& planarReflectionProxy) {
+            return planarReflectionProxy->GetSceneProxyId() == proxyId;
+        }));
 }
 
 void SceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy)
@@ -1632,18 +1636,19 @@ void SceneRenderer::RegisterText_OnRenderThread(
     static constexpr int32_t creatorObjectId = 0;
     static const uint64_t functionId = Hash("SceneRenderer::RegisterText_OnRenderThread");
 
-    const auto textFieldProxy = TextFieldProxy::CreateTextFieldProxyInstance(
+    const auto textFieldProxy = FreeTypeTextFieldProxy::CreateTextFieldProxyInstance(
         textField->GetTextFieldId(),
         eTextFieldProxyType::HUD_TEXT_FIELD,
         textField->GetIsVisible(),
         textField->GetText(),
-        textField->GetFontName(),
+        "13_5Atom_Sans_Regular",
         textField->GetPosition(),
         textField->GetColor(),
-        textField->GetFontSize(),
+        42,
+        0,
         textField->GetTextHorizontalAlignment(),
-        textField->GetLineMaxSize(),
-        textField->GetNumberOfLines(),
+        800,
+        600,
         subscribeOnTextScreenSpaceSizeUpdate);
     m_interThreadMgr.ExecuteOnRenderThread(
         eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [weak = weak_from_this(), textFieldProxy]() {
@@ -1668,9 +1673,9 @@ void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextF
         eEnqueueJobPolicy::PUSH_ANYWAY,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), fontName = textField->GetFontName(), textFieldId = textField->GetTextFieldId()]() {
+        [weak = weak_from_this(), textFieldId = textField->GetTextFieldId()]() {
             if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->UnregisterText(fontName, textFieldId);
+                sceneRenderer->UnregisterText(textFieldId);
             }
         });
 }
@@ -1739,9 +1744,9 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [weak = weak_from_this(), textFontName, textFieldId, textPosition = textField->GetPosition()]() {
+            [weak = weak_from_this(), textFieldId, textPosition = textField->GetPosition()]() {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->TextPositionChanged(textFontName, textFieldId, textPosition);
+                    sceneRenderer->TextPositionChanged(textFieldId, textPosition);
                 }
             });
     } else if (eTextChangedDataType::COLOR == textChangedDataType) {
@@ -1749,9 +1754,9 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [weak = weak_from_this(), textFontName, textFieldId, textColor = textField->GetColor()]() {
+            [weak = weak_from_this(), textFieldId, textColor = textField->GetColor()]() {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->TextColorChanged(textFontName, textFieldId, textColor);
+                    sceneRenderer->TextColorChanged(textFieldId, textColor);
                 }
             });
     } else if (eTextChangedDataType::TEXT == textChangedDataType) {
@@ -1759,9 +1764,9 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [weak = weak_from_this(), textFontName, textFieldId, text = textField->GetText()]() {
+            [weak = weak_from_this(), textFieldId, text = textField->GetText()]() {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->TextChanged(textFontName, textFieldId, text);
+                    sceneRenderer->TextChanged(textFieldId, text);
                 }
             });
     } else if (eTextChangedDataType::VISIBILITY == textChangedDataType) {
@@ -1769,9 +1774,9 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [weak = weak_from_this(), textFontName, textFieldId, isVisible = textField->GetIsVisible()]() {
+            [weak = weak_from_this(), textFieldId, isVisible = textField->GetIsVisible()]() {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->TextVisibilityChanged(textFontName, textFieldId, isVisible);
+                    sceneRenderer->TextVisibilityChanged(textFieldId, isVisible);
                 }
             });
     }
@@ -1843,31 +1848,31 @@ void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
         });
 }
 
-void SceneRenderer::RegisterText(const std::shared_ptr<TextFieldProxy>& textFieldProxy)
+void SceneRenderer::RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy)
 {
-    mFontHandler->RegisterText(textFieldProxy);
+    mFreeTypeFontHandler->RegisterText(textFieldProxy);
 }
 
-void SceneRenderer::UnregisterText(const std::string& fontName, const int32_t textFieldProxyId)
+void SceneRenderer::UnregisterText(const int32_t textFieldProxyId)
 {
-    mFontHandler->UnregisterText(fontName, textFieldProxyId);
+    mFreeTypeFontHandler->UnregisterText(textFieldProxyId);
 }
 
-void SceneRenderer::TextPositionChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec2& position)
+void SceneRenderer::TextPositionChanged(const int32_t textFieldProxyId, const glm::vec2& position)
 {
-    mFontHandler->TextPositionChanged(fontName, textFieldProxyId, position);
+    mFreeTypeFontHandler->TextPositionChanged(textFieldProxyId, position);
 }
 
-void SceneRenderer::TextColorChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec3& color)
+void SceneRenderer::TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color)
 {
-    mFontHandler->TextColorChanged(fontName, textFieldProxyId, color);
+    mFreeTypeFontHandler->TextColorChanged(textFieldProxyId, color);
 }
 
-void SceneRenderer::TextChanged(const std::string& fontName, const int32_t textFieldProxyId, const std::string& text)
+void SceneRenderer::TextChanged(const int32_t textFieldProxyId, const std::string& text)
 {
-    mFontHandler->TextChanged(fontName, textFieldProxyId, text);
+    mFreeTypeFontHandler->TextChanged(textFieldProxyId, text);
 
-    if (mFontHandler->IsTextSubscribedOnSizeChangeUpdate(fontName, textFieldProxyId)) {
+    if (mFreeTypeFontHandler->IsTextSubscribedOnSizeChangeUpdate(textFieldProxyId)) {
         static constexpr int32_t creatorObjectId = 0;
         static const uint64_t functionId = Hash("SceneRenderer::TextChanged");
 
@@ -1876,21 +1881,20 @@ void SceneRenderer::TextChanged(const std::string& fontName, const int32_t textF
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                 creatorObjectId,
                 functionId,
-                [weak = weak_from_this(), sceneSp, textFieldProxyId, fontName]() {
+                [weak = weak_from_this(), sceneSp, textFieldProxyId]() {
                     if (const auto& sceneRenderer = weak.lock()) {
                         sceneSp->GetTextHandler()
                             ->GetTextFieldById(textFieldProxyId)
-                            ->SetTextScreenSpaceSize(
-                                sceneRenderer->GetFontHandler()->GetTextScreenSpaceSize(fontName, textFieldProxyId));
+                            ->SetTextScreenSpaceSize(sceneRenderer->GetFontHandler()->GetTextScreenSpaceSize(textFieldProxyId));
                     }
                 });
         }
     }
 }
 
-void SceneRenderer::TextVisibilityChanged(const std::string& fontName, const int32_t textFieldProxyId, const bool bIsVisible)
+void SceneRenderer::TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible)
 {
-    mFontHandler->TextVisibilityChanged(fontName, textFieldProxyId, bIsVisible);
+    mFreeTypeFontHandler->TextVisibilityChanged(textFieldProxyId, bIsVisible);
 }
 
 void SceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy>& canvasSceneProxy)
@@ -1901,7 +1905,7 @@ void SceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasScenePro
     });
     assert(canvasIt == mUiCanvasProxies.end());
     mUiCanvasProxies.emplace_back(canvasSceneProxy);
-    canvasSceneProxy->SetFontHandler(mFontHandler);
+    canvasSceneProxy->SetFontHandler(mFreeTypeFontHandler);
 }
 
 void SceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)

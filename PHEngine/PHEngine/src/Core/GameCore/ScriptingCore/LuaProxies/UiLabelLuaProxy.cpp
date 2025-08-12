@@ -64,9 +64,9 @@ void UiLabelLuaProxy::SetText_FromGameThread(const std::string& text)
     }
 }
 
-void UiLabelLuaProxy::SetFontSize_FromGameThread(const float fontSize)
+void UiLabelLuaProxy::SetFontSize_FromGameThread(const int32_t fontSize)
 {
-    if (!EngineMath::FloatsNearEqual(fontSize, mFontSize)) {
+    if (!fontSize != mFontSize) {
         mFontSize = fontSize;
         mIsLuaDataDirty = true;
     }

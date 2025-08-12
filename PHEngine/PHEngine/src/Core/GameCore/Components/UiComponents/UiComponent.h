@@ -25,7 +25,7 @@ public:
 
     int32_t CreateTextField(
         const std::string& fontName,
-        const float fontSize,
+        const int32_t fontSize,
         const std::string& text,
         const glm::vec3& color,
         const glm::vec2& position,
@@ -36,7 +36,7 @@ public:
 
     int32_t CreateEmptyTextField(
         const std::string& fontName,
-        const float fontSize,
+        const int32_t fontSize,
         const glm::vec3& color,
         const bool receiveUpdateOnTextScreenSpaceSizeChanged,
         const float lineMaxSize,

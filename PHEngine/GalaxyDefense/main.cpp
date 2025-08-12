@@ -1,4 +1,4 @@
-#include "Core/GameCore./DataProviders/GeneralSystemSettingsDataProvider.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
 #include "Core/GameCore/LoggerExtension.h"

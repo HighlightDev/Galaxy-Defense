@@ -25,7 +25,7 @@ protected:
 
     const std::string mFontName;
 
-    float mFontSize;
+    int32_t mFontSize;
 
     float mTextLineWidth;
 
@@ -44,7 +44,7 @@ public:
 
     void SetOpacity_FromGameThread(const float opacity);
 
-    void SetFontSize_FromGameThread(const float fontSize);
+    void SetFontSize_FromGameThread(const int32_t fontSize);
 
     void SetTextLineWidth_FromGameThread(const float textLineWidth);
 

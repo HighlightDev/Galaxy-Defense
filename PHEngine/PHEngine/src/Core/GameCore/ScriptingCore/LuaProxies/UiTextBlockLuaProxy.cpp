@@ -52,9 +52,9 @@ void UiTextBlockLuaProxy::SetText_FromGameThread(const std::string& text)
     }
 }
 
-void UiTextBlockLuaProxy::SetFontSize_FromGameThread(const float fontSize)
+void UiTextBlockLuaProxy::SetFontSize_FromGameThread(const int32_t fontSize)
 {
-    if (!EngineMath::FloatsNearEqual(fontSize, mFontSize)) {
+    if (fontSize != mFontSize) {
         mFontSize = fontSize;
         mIsLuaDataDirty = true;
     }

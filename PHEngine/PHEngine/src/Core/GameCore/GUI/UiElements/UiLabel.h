@@ -30,7 +30,7 @@ class UiLabel : public UiItemBase {
 
     const std::string mFontName;
 
-    float mFontSize;
+    int32_t mFontSize;
 
     float mTextLineWidth;
 
@@ -55,9 +55,9 @@ public:
 
     float GetTextLineWidth() const;
 
-    void SetFontSize(const float fontSize);
+    void SetFontSize(const int32_t fontSize);
 
-    float GetFontSize() const;
+    int32_t GetFontSize() const;
 
     void SetTextColor(const glm::vec3& color);
 

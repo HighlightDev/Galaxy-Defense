@@ -17,13 +17,14 @@ const float shadowStartFrom = 0.4;
 
 void main(void)
 {
-    float alpha = 1.0 - texture(fontAtlas, texCoords).a;
-    float shadowAlpha = 1.0 - texture(fontAtlas, texCoords + shadowOffset).a;
+    // float alpha = 1.0 - texture(fontAtlas, texCoords).a;
+    // float shadowAlpha = 1.0 - texture(fontAtlas, texCoords + shadowOffset).a;
 
-    float fontSmoothEdgeAlpha = 1.0 - smoothstep(boldWidth, softWidth + boldWidth, alpha);
-    float shadowSmoothEdgeAlpha = 1.0 - smoothstep(shadowStartFrom, shadowStartFrom + shadowWidth, shadowAlpha);
+    // float fontSmoothEdgeAlpha = 1.0 - smoothstep(boldWidth, softWidth + boldWidth, alpha);
+    // float shadowSmoothEdgeAlpha = 1.0 - smoothstep(shadowStartFrom, shadowStartFrom + shadowWidth, shadowAlpha);
 
-    float overallAlpha = fontSmoothEdgeAlpha + (1.0 - fontSmoothEdgeAlpha) * shadowSmoothEdgeAlpha;
-    vec3 resultColor = mix((color * 0.5), color, fontSmoothEdgeAlpha / overallAlpha);
-    FragColor = vec4(resultColor, overallAlpha * opacity);
+    // float overallAlpha = fontSmoothEdgeAlpha + (1.0 - fontSmoothEdgeAlpha) * shadowSmoothEdgeAlpha;
+    // vec3 resultColor = mix((color * 0.5), color, fontSmoothEdgeAlpha / overallAlpha);
+    //FragColor = vec4(resultColor, overallAlpha * opacity);
+    FragColor = vec4(color, texture(fontAtlas, texCoords).r);
 }

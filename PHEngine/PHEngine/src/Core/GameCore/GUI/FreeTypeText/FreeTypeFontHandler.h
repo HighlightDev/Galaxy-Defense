@@ -2,6 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
+#include "FreeTypeFontParams.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -81,35 +82,39 @@ private:
 };
 
 class FreeTypeFontHandler {
-    std::unordered_map<std::string, std::shared_ptr<FreeTypeFontBatcher>> mFontBatcherMap;
+    mutable std::unordered_map<FreeTypeFontParams, std::shared_ptr<FreeTypeFontBatcher>> mFontBatcherMap;
 
 public:
-    FreeTypeFontHandler();
+    explicit FreeTypeFontHandler();
 
-    void RegisterFont(const std::string& fontFileName);
+    void RegisterFont(const FreeTypeFontParams& fontParams) const;
 
-    std::shared_ptr<FreeTypeFontBatcher> GetFontBatcher(const std::string& fontName) const;
+    std::shared_ptr<FreeTypeFontBatcher> GetFontBatcher(const FreeTypeFontParams& fontParams) const;
 
-    const std::unordered_map<std::string, std::shared_ptr<FreeTypeFontBatcher>>& GetFontBatcher() const;
+    const std::unordered_map<FreeTypeFontParams, std::shared_ptr<FreeTypeFontBatcher>>& GetFontBatcherMap() const;
 
     void RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
 
-    void UnregisterText(const std::string& fontName, const int32_t textFieldProxyId);
+    void UnregisterText(const int32_t textFieldProxyId);
 
-    void TextPositionChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec2& position);
+    void TextPositionChanged(const int32_t textFieldProxyId, const glm::vec2& position);
 
-    void TextColorChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec3& color);
+    void TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color);
 
-    void TextVisibilityChanged(const std::string& fontName, const int32_t textFieldProxyId, const bool bIsVisible);
+    void TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible);
 
-    void TextChanged(const std::string& fontName, const int32_t textFieldProxyId, const std::string& text);
+    void TextChanged(const int32_t textFieldProxyId, const std::string& text);
 
-    float GetTextWidth(const std::string& fontName, const int32_t textFieldProxyId) const;
+    void FontSizeChanged(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
 
-    float GetTextHeight(const std::string& fontName, const int32_t textFieldProxyId) const;
+    float GetTextWidth(const int32_t textFieldProxyId) const;
 
-    bool IsTextSubscribedOnSizeChangeUpdate(const std::string& fontName, const int32_t textFieldProxyId) const;
+    float GetTextHeight(const int32_t textFieldProxyId) const;
 
-    glm::ivec2 GetTextScreenSpaceSize(const std::string& fontFileName, const int32_t textFieldProxyId) const;
+    bool IsTextSubscribedOnSizeChangeUpdate(const int32_t textFieldProxyId) const;
+
+    glm::vec2 GetTextScreenSpaceSize(const int32_t textFieldProxyId) const;
+
+    std::shared_ptr<FreeTypeFontBatcher> FindFontBatcherByTextFieldProxyId(const int32_t proxyId) const;
 };
 } // namespace EngineCore::GUI

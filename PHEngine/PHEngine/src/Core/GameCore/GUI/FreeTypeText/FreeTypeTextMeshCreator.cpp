@@ -1,7 +1,6 @@
 #include "FreeTypeTextMeshCreator.h"
 
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "FreeTypeFont.h"
 #include "FreeTypeTextFieldProxy.h"
 
@@ -20,19 +19,22 @@ void FreeTypeTextMeshCreator::calculateVertices(
     const std::string& text,
     float x,
     float y,
-    int width,
-    int height,
-    std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
+    const int width,
+    const int height,
+    std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas,
+    const eTextHorizontalAlignmentType alignment,
+    const int32_t fontSize)
 {
     // Break the text into individual words
     std::vector<std::string> words = splitText(text);
-    auto _pixelSize = 12;
-    auto _alignment = eFontFlags::CenterAligned;
 
     std::vector<std::string> lines;
     int widthRemaining = width;
     int spaceWidth = CalcWidth(" ", ftFontAtlas);
-    int indent = _pixelSize;
+
+    // todo
+    int _flags = eFontFlags::WordWrap;
+    int indent = (_flags & eFontFlags::Indented) && alignment != eTextHorizontalAlignmentType::CENTER ? fontSize : 0;
 
     // Create lines from our text, each containing the maximum amount of words we can fit within the given width
     std::string curLine = "";
@@ -66,7 +68,7 @@ void FreeTypeTextMeshCreator::calculateVertices(
         if (y - startY > height && height)
             break;
 
-        calculateVertices(vertices, texCoords, line, x + indent, y, ftFontAtlas);
+        calculateVertices(vertices, texCoords, line, x + indent, y, ftFontAtlas, alignment);
         y += (ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6);
         indent = 0;
     }
@@ -78,7 +80,8 @@ void FreeTypeTextMeshCreator::calculateVertices(
     const std::string& text,
     float x,
     float y,
-    std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
+    std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas,
+    const eTextHorizontalAlignmentType alignment)
 {
     const auto windowWidth = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth();
     const auto windowHeight = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();
@@ -91,11 +94,11 @@ void FreeTypeTextMeshCreator::calculateVertices(
 
     // Calculate alignment (if applicable)
     int32_t textWidth = CalcWidth(text, ftFontAtlas); // temp
-    const auto _alignment = eFontFlags::CenterAligned;
-    if (_alignment == eFontFlags::CenterAligned)
+    if (alignment == eTextHorizontalAlignmentType::CENTER) {
         x -= textWidth / 2.0;
-    else if (_alignment == eFontFlags::RightAligned)
+    } else if (alignment == eTextHorizontalAlignmentType::RIGHT) {
         x -= textWidth;
+    }
 
     // Normalize window coordinates
     x = -1 + x * _sx;
@@ -202,7 +205,9 @@ std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> FreeTypeTextMeshCreato
             0,
             textFieldProxy->GetLineWidth(),
             textFieldProxy->GetLineHeight(),
-            ftFontAtlas);
+            ftFontAtlas,
+            textFieldProxy->GetTextHorizontalAlignment(),
+            textFieldProxy->GetFontSize());
         return {vertices, texCoords};
     }
     return {};

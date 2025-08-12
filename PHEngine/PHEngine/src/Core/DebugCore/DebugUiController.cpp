@@ -138,7 +138,7 @@ void DebugUiController::InitializeWidgets()
         mRenderFpsLabel = mRenderFpsLabel;
         mRenderFpsLabel->SetParents(mCanvas, mRectangleBackground);
         mRenderFpsLabel->SetTextColor(0xFF0000);
-        mRenderFpsLabel->SetFontSize(9.0f);
+        mRenderFpsLabel->SetFontSize(16);
         mRenderFpsLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
         mRenderFpsLabel->SetZOrder(2);
 
@@ -146,7 +146,7 @@ void DebugUiController::InitializeWidgets()
         mGameFpsLabel->Initialize();
         mGameFpsLabel->SetParents(mCanvas, mRectangleBackground);
         mGameFpsLabel->SetTextColor(0xFF0000);
-        mGameFpsLabel->SetFontSize(9.0f);
+        mGameFpsLabel->SetFontSize(16);
         mGameFpsLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
         mGameFpsLabel->SetZOrder(2);
 
@@ -154,7 +154,7 @@ void DebugUiController::InitializeWidgets()
         mLuaFpsLabel->Initialize();
         mLuaFpsLabel->SetParents(mCanvas, mRectangleBackground);
         mLuaFpsLabel->SetTextColor(0xFF0000);
-        mLuaFpsLabel->SetFontSize(9.0f);
+        mLuaFpsLabel->SetFontSize(16);
         mLuaFpsLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
         mLuaFpsLabel->SetZOrder(2);
 

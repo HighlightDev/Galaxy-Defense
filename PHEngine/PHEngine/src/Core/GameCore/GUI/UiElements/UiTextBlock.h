@@ -16,7 +16,7 @@ class UiTextBlock : public UiRectangle {
 
     const std::string mFontName;
 
-    float mFontSize{11.0f};
+    int32_t mFontSize{16};
 
     float mTextLineWidth{1.0f};
 
@@ -41,9 +41,9 @@ public:
 
     float GetTextLineWidth() const;
 
-    void SetFontSize(const float fontSize);
+    void SetFontSize(const int32_t fontSize);
 
-    float GetFontSize() const;
+    int32_t GetFontSize() const;
 
     void SetTextColor(const glm::vec3& color);
 

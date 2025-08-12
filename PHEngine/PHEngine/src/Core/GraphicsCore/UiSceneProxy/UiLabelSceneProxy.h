@@ -10,6 +10,7 @@
 namespace EngineCore {
 namespace GUI {
 class UiLabel;
+class FreeTypeTextFieldProxy;
 }
 } // namespace EngineCore
 
@@ -17,7 +18,6 @@ using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Texture;
 
 namespace Graphics {
-class TextFieldProxy;
 
 namespace Proxy {
 class UiLabelSceneProxy : public UiSceneProxyBase {
@@ -31,11 +31,11 @@ class UiLabelSceneProxy : public UiSceneProxyBase {
 
     float mOpacity;
 
-    std::shared_ptr<::Graphics::TextFieldProxy> mTextFieldProxy;
+    std::shared_ptr<::EngineCore::GUI::FreeTypeTextFieldProxy> mTextFieldProxy;
 
     float mTextLineWidth;
 
-    float mFontSize;
+    int32_t mFontSize;
 
     ::EngineCore::eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
@@ -54,7 +54,7 @@ public:
 
     void SetTextLineWidth(const float textLineWidth);
 
-    void SetFontSize(const float fontSize);
+    void SetFontSize(const int32_t fontSize);
 
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 

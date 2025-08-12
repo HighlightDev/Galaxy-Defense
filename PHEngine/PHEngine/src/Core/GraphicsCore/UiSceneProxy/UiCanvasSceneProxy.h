@@ -5,16 +5,12 @@
 #include <memory>
 #include <vector>
 
-namespace EngineCore {
-class FontHandler;
-
-namespace GUI {
+namespace EngineCore::GUI {
 class UiCanvas;
-}
-} // namespace EngineCore
+class FreeTypeFontHandler;
+} // namespace EngineCore::GUI
 
-namespace Graphics {
-namespace Proxy {
+namespace Graphics::Proxy {
 class UiSceneProxyBase;
 
 class UiCanvasSceneProxy {
@@ -28,7 +24,7 @@ class UiCanvasSceneProxy {
 
     std::vector<std::shared_ptr<UiSceneProxyBase>> mUiProxies;
 
-    std::weak_ptr<::EngineCore::FontHandler> mFontHandlerWp;
+    std::weak_ptr<::EngineCore::GUI::FreeTypeFontHandler> mFontHandlerWp;
 
     float mOverlayOpacity;
 
@@ -73,9 +69,8 @@ public:
 
     std::shared_ptr<UiSceneProxyBase> GetSceneProxyById(const size_t uid) const;
 
-    void SetFontHandler(const std::weak_ptr<::EngineCore::FontHandler>& fontHandlerWp);
+    void SetFontHandler(const std::weak_ptr<::EngineCore::GUI::FreeTypeFontHandler>& fontHandlerWp);
 
-    std::weak_ptr<::EngineCore::FontHandler> GetFontHandler() const;
+    std::weak_ptr<::EngineCore::GUI::FreeTypeFontHandler> GetFontHandler() const;
 };
-} // namespace Proxy
-} // namespace Graphics
+} // namespace Graphics::Proxy

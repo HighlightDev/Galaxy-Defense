@@ -19,7 +19,7 @@ using namespace EngineUtility;
 namespace Resources {
 std::shared_ptr<FreeTypeFontAtlas> FreeTypeFontMeshAllocationPolicy::AllocateMemory(const FreeTypeFontParams& arg)
 {
-    LogInfo("FreeTypeFontMeshAllocationPolicy::AllocateMemory: ", arg.FontDescriptorFile, " PixelSize: ", arg.PixelSize);
+    LogInfo("FreeTypeFontMeshAllocationPolicy::AllocateMemory: ", arg.FontName, " PixelSize: ", arg.PixelSize);
     VertexArrayObject vao;
     {
         static constexpr size_t verticesPerCharacter = 6;
@@ -47,7 +47,7 @@ std::shared_ptr<FreeTypeFontAtlas> FreeTypeFontMeshAllocationPolicy::AllocateMem
     }
 
     return std::make_shared<FreeTypeFontAtlas>(
-        vao, FreeTypeFontPool::GetInstance()->GetOrAllocateResource(arg.FontDescriptorFile), arg.PixelSize);
+        vao, FreeTypeFontPool::GetInstance()->GetOrAllocateResource(arg.FontName), arg.PixelSize);
 }
 
 void FreeTypeFontMeshAllocationPolicy::DeallocateMemory(const std::shared_ptr<FreeTypeFontAtlas>& arg)

@@ -44,8 +44,8 @@ FTLabel::FTLabel(std::shared_ptr<GLFont> ftFace, int windowWidth, int windowHeig
     recalculateMVP();
 
     _programId = glCreateProgram();
-    GLUtils::loadShader("D:\\Development\\Projects\\Engine\\phengine\\PHEngine\\PHEngine\\src\\Core\\GraphicsCore\\GLFont\\test\\shaders\\fontVertex.shader", GL_VERTEX_SHADER, _programId);
-    GLUtils::loadShader("D:\\Development\\Projects\\Engine\\phengine\\PHEngine\\PHEngine\\src\\Core\\GraphicsCore\\GLFont\\test\\shaders\\fontFragment.shader", GL_FRAGMENT_SHADER, _programId);
+    GLUtils::loadShader("/home/dzinoviev/MyProjects/phengine/PHEngine/PHEngine/src/Core/GraphicsCore/GLFont/test/shaders/fontVertex.shader", GL_VERTEX_SHADER, _programId);
+    GLUtils::loadShader("/home/dzinoviev/MyProjects/phengine/PHEngine/PHEngine/src/Core/GraphicsCore/GLFont/test/shaders/fontFragment.shader", GL_FRAGMENT_SHADER, _programId);
 
     glUseProgram(_programId);
 
