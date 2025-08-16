@@ -10,6 +10,7 @@
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+#include "Core/UtilityCore/EngineMath.h"
 #include "UiCanvasSceneProxy.h"
 
 #include <gl/glew.h>
@@ -27,7 +28,7 @@ UiTextBlockSceneProxy::UiTextBlockSceneProxy(const UiTextBlock* uiTextBlock)
     , mText("")
     , mFontName(uiTextBlock->GetFontName())
     , mOpacity(uiTextBlock->GetOpacity())
-    , mTextLineWidth(uiTextBlock->GetTextLineWidth())
+    , mTextLineWidthHeight(uiTextBlock->GetTextLineWidthHeight())
     , mFontSize(uiTextBlock->GetFontSize())
     , mTextHorizontalAlignment(uiTextBlock->GetTextHorizontalAlignment())
     , mTextColor(uiTextBlock->GetTextColor())
@@ -64,19 +65,17 @@ void UiTextBlockSceneProxy::Initialize()
                 eTextFieldProxyType::GUI_TEXT_FIELD,
                 false,
                 mText,
-                "13_5Atom_Sans_Regular",
+                mFontName,
                 glm::vec2(),
                 mTextColor,
                 mFontSize,
                 0,
                 mTextHorizontalAlignment,
-                800,
-                600,
+                mTextLineWidthHeight,
                 false);
 
             fontHandlerSp->RegisterText(mTextFieldProxy);
-            mFontTexture
-                = fontHandlerSp->GetFontBatcher(FreeTypeFontParams("13_5Atom_Sans_Regular", mFontSize))->GetFontTextureAtlas();
+            mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
         } else {
             LogInfo("UiTextBlockSceneProxy::Initialize => CRIT: FreeTypeFontHandler is null");
         }
@@ -91,9 +90,9 @@ void UiTextBlockSceneProxy::Render()
 
     if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            const auto& renderDataSp = fontHandlerSp->GetFontBatcher(FreeTypeFontParams("13_5Atom_Sans_Regular", mFontSize));
+            const auto& renderDataSp = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize));
             mUiLabelShader->ExecuteShader();
-            const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeight();
+            const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeightTextureSpace();
             mUiLabelShader->SetPosition(glm::vec2(
                 mNormalizedTranslation.x + mCenterOffset.x,
                 1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textHeightScreenSpace)));
@@ -121,11 +120,11 @@ void UiTextBlockSceneProxy::SetText(const std::string& text)
     }
 }
 
-void UiTextBlockSceneProxy::SetTextLineWidth(const float textLineWidth)
+void UiTextBlockSceneProxy::SetTextLineWidthHeight(const glm::ivec2& textLineWidthHeight)
 {
-    if (!EngineMath::FloatsNearEqual(textLineWidth, mTextLineWidth)) {
-        mTextLineWidth = textLineWidth;
-        mTextFieldProxy->SetLineWidth(mTextLineWidth);
+    if (textLineWidthHeight != mTextLineWidthHeight) {
+        mTextLineWidthHeight = textLineWidthHeight;
+        mTextFieldProxy->SetLineWidthHeight(mTextLineWidthHeight);
         if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
             if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
                 fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
@@ -144,8 +143,7 @@ void UiTextBlockSceneProxy::SetFontSize(const int32_t fontSize)
             if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
                 fontHandlerSp->FontSizeChanged(mTextFieldProxy);
                 // change texture according to new font
-                mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams("13_5Atom_Sans_Regular", mFontSize))
-                                   ->GetFontTextureAtlas();
+                mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
             }
         }
     }

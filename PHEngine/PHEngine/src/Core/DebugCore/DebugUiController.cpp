@@ -133,7 +133,7 @@ void DebugUiController::InitializeWidgets()
         mRectangleBackground->SetZOrder(1);
         mRectangleBackground->SetOpacity(0.0f);
 
-        mRenderFpsLabel = std::make_shared<UiLabel>("nimbus_mono", "DebugPanelRenderFPSLabel");
+        mRenderFpsLabel = std::make_shared<UiLabel>("13_5Atom_Sans_Regular", "DebugPanelRenderFPSLabel");
         mRenderFpsLabel->Initialize();
         mRenderFpsLabel = mRenderFpsLabel;
         mRenderFpsLabel->SetParents(mCanvas, mRectangleBackground);
@@ -142,7 +142,7 @@ void DebugUiController::InitializeWidgets()
         mRenderFpsLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
         mRenderFpsLabel->SetZOrder(2);
 
-        mGameFpsLabel = std::make_shared<UiLabel>("nimbus_mono", "DebugPanelGameFPSLabel");
+        mGameFpsLabel = std::make_shared<UiLabel>("13_5Atom_Sans_Regular", "DebugPanelGameFPSLabel");
         mGameFpsLabel->Initialize();
         mGameFpsLabel->SetParents(mCanvas, mRectangleBackground);
         mGameFpsLabel->SetTextColor(0xFF0000);
@@ -150,7 +150,7 @@ void DebugUiController::InitializeWidgets()
         mGameFpsLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
         mGameFpsLabel->SetZOrder(2);
 
-        mLuaFpsLabel = std::make_shared<UiLabel>("nimbus_mono", "DebugPanelLuaFPSLabel");
+        mLuaFpsLabel = std::make_shared<UiLabel>("13_5Atom_Sans_Regular", "DebugPanelLuaFPSLabel");
         mLuaFpsLabel->Initialize();
         mLuaFpsLabel->SetParents(mCanvas, mRectangleBackground);
         mLuaFpsLabel->SetTextColor(0xFF0000);

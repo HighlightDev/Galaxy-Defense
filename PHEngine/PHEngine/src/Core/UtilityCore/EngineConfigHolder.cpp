@@ -127,11 +127,9 @@ void EngineConfigHolder::FillEngineConfig(const std::list<std::string>& configLi
                        })),
         std::make_pair("render_debug_physics_data", std::function([=](const std::string& valueStr) {
                            mEngineConfig.RenderDebugPhysicsData = parseBool(valueStr);
-                       })),
+                       }))
 #endif
-        std::make_pair("fonts", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.FontsVector = parseStringVector(valueStr);
-                       }))};
+    };
 
     size_t config_prop_count = 0;
 

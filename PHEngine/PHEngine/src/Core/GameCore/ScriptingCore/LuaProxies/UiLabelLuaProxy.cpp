@@ -17,7 +17,7 @@ UiLabelLuaProxy::UiLabelLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiLabe
     , mFontName(ownerLabel->GetFontName())
     , mOpacity(ownerLabel->GetOpacity())
     , mFontSize(ownerLabel->GetFontSize())
-    , mTextLineWidth(ownerLabel->GetTextLineWidth())
+    , mTextLineWidthHeight(ownerLabel->GetTextLineWidthHeight())
     , mTextColor(ownerLabel->GetTextColor())
     , mTextHorizontalAlignment(ownerLabel->GetTextHorizontalAlignment())
 {
@@ -50,7 +50,6 @@ std::string UiLabelLuaProxy::GetGameThreadData()
     jsonObj["text"] = mText;
     jsonObj["text_opacity"] = mOpacity;
     jsonObj["font_size"] = mFontSize;
-    jsonObj["text_line_width"] = mTextLineWidth;
     jsonObj["text_color"] = textColor;
     jsonObj["text_horizontal_alignment"] = mTextHorizontalAlignment;
     return jsonObj.dump();
@@ -72,10 +71,10 @@ void UiLabelLuaProxy::SetFontSize_FromGameThread(const int32_t fontSize)
     }
 }
 
-void UiLabelLuaProxy::SetTextLineWidth_FromGameThread(const float textLineWidth)
+void UiLabelLuaProxy::SetTextLineWidthHeight_FromGameThread(const glm::ivec2& textLineWidthHeight)
 {
-    if (!EngineMath::FloatsNearEqual(textLineWidth, mTextLineWidth)) {
-        mTextLineWidth = textLineWidth;
+    if (textLineWidthHeight != mTextLineWidthHeight) {
+        mTextLineWidthHeight = textLineWidthHeight;
         mIsLuaDataDirty = true;
     }
 }

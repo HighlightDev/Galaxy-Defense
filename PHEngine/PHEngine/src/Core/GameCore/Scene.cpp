@@ -8,7 +8,6 @@
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/FirstPersonCamera.h"
-#include "Core/GameCore/GUI/Common/TextFieldProxy.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "Core/GameCore/LoggerExtension.h"

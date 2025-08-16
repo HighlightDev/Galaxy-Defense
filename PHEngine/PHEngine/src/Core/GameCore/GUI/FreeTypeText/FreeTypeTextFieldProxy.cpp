@@ -18,11 +18,9 @@ FreeTypeTextFieldProxy::FreeTypeTextFieldProxy()
     , mFontParams("", 42)
     , mColor()
     , mPosition()
-    , mLineWidth(0)
-    , mLineHeight(0)
     , mFontFlags(static_cast<int32_t>(eFontFlags::WordWrap | eFontFlags::LeftAligned))
-    , mCreatedMeshTextWidth(0.0f)
-    , mCreatedMeshTextHeight(0.0f)
+    , mCreatedMeshTextWidthTextureSpace(0.0f)
+    , mCreatedMeshTextHeightTextureSpace(0.0f)
     , mIsSubscribedOnTextScreenSpaceSizeUpdate(false)
 {
 }
@@ -38,8 +36,7 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
     const int32_t pixelSize,
     const int32_t fontFlags,
     const eTextHorizontalAlignmentType textHorizontalAlignment,
-    const int32_t lineWidth,
-    const int32_t lineHeight,
+    const glm::ivec2& lineWidthHeight,
     const bool isSubscribedOnTextScreenSpaceSizeUpdate)
 {
     std::shared_ptr<FreeTypeTextFieldProxy> result = std::make_shared<FreeTypeTextFieldProxy>();
@@ -50,8 +47,7 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
     result->mFontParams = FreeTypeFontParams(fontFileName, pixelSize);
     result->mColor = color;
     result->mPosition = position;
-    result->mLineWidth = lineWidth;
-    result->mLineHeight = lineHeight;
+    result->mLineWidthHeight = lineWidthHeight;
     result->mFontFlags = fontFlags;
     result->mTextHorizontalAlignment = textHorizontalAlignment;
     result->mIsSubscribedOnTextScreenSpaceSizeUpdate = isSubscribedOnTextScreenSpaceSizeUpdate;
@@ -128,24 +124,19 @@ glm::vec2 FreeTypeTextFieldProxy::GetPosition() const
     return mPosition;
 }
 
-int32_t FreeTypeTextFieldProxy::GetLineWidth() const
+glm::ivec2 FreeTypeTextFieldProxy::GetLineWidthHeight() const
 {
-    return mLineWidth;
+    return mLineWidthHeight;
 }
 
-int32_t FreeTypeTextFieldProxy::GetLineHeight() const
+float FreeTypeTextFieldProxy::GetCreatedMeshTextWidthTextureSpace() const
 {
-    return mLineHeight;
+    return mCreatedMeshTextWidthTextureSpace;
 }
 
-float FreeTypeTextFieldProxy::GetCreatedMeshTextWidth() const
+float FreeTypeTextFieldProxy::GetCreatedMeshTextHeightTextureSpace() const
 {
-    return mCreatedMeshTextWidth;
-}
-
-float FreeTypeTextFieldProxy::GetCreatedMeshTextHeight() const
-{
-    return mCreatedMeshTextHeight;
+    return mCreatedMeshTextHeightTextureSpace;
 }
 
 bool FreeTypeTextFieldProxy::GetIsSubscribedOnTextScreenSpaceSizeUpdate() const
@@ -218,14 +209,9 @@ void FreeTypeTextFieldProxy::SetPosition(const glm::vec2& position)
     mPosition = position;
 }
 
-void FreeTypeTextFieldProxy::SetLineWidth(const int32_t lineWidth)
+void FreeTypeTextFieldProxy::SetLineWidthHeight(const glm::ivec2& widthHeight)
 {
-    mLineWidth = lineWidth;
-}
-
-void FreeTypeTextFieldProxy::SetLineHeight(const int32_t lineHeight)
-{
-    mLineHeight = lineHeight;
+    mLineWidthHeight = widthHeight;
 }
 
 void FreeTypeTextFieldProxy::SetFontFlags(const int32_t fontFlags)
@@ -233,14 +219,14 @@ void FreeTypeTextFieldProxy::SetFontFlags(const int32_t fontFlags)
     mFontFlags = fontFlags;
 }
 
-void FreeTypeTextFieldProxy::SetCreatedMeshTextWidth(const float createdMeshTextWidth)
+void FreeTypeTextFieldProxy::SetCreatedMeshTextWidthTextureSpace(const float createdMeshTextWidthTextureSpace)
 {
-    mCreatedMeshTextWidth = createdMeshTextWidth;
+    mCreatedMeshTextWidthTextureSpace = createdMeshTextWidthTextureSpace;
 }
 
-void FreeTypeTextFieldProxy::SetCreatedMeshTextHeight(const float createdMeshTextHeight)
+void FreeTypeTextFieldProxy::SetCreatedMeshTextHeightTextureSpace(const float createdMeshTextHeightTextureSpace)
 {
-    mCreatedMeshTextHeight = createdMeshTextHeight;
+    mCreatedMeshTextHeightTextureSpace = createdMeshTextHeightTextureSpace;
 }
 
 void FreeTypeTextFieldProxy::SetIsSubscribedOnTextScreenSpaceSizeUpdate(const bool isSubscribedOnTextScreenSpaceSizeUpdate)

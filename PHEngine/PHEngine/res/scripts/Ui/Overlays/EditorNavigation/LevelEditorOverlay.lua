@@ -48,7 +48,7 @@ LevelEditorOverlay = {
     overlayName = "LevelEditorOverlay",
     editorContainerState = EditorContainerState.Expanded,
     currentEditModeType = EditModeType.IDLE,
-    labelFontName = "nimbus_mono"
+    labelFontName = "13_5Atom_Sans_Regular"
 }
 
 local function getRandomColor()
@@ -104,13 +104,13 @@ function LevelEditorOverlay:new(host)
     local newBarrierButton = ImageButton:new(host, overlay, "NewBarrierButton")
     overlay:addCompoundWidget(newBarrierButton)
 
-    local levelWidthLabel = UiLabel:new(host, "nimbus_mono", "LevelWidthLabel")
+    local levelWidthLabel = UiLabel:new(host, "13_5Atom_Sans_Regular", "LevelWidthLabel")
     overlay:addWidget(levelWidthLabel)
 
     local levelWidthSlider = UiSlider:new(host, "LevelWidthSlider")
     overlay:addWidget(levelWidthSlider)
 
-    local levelHeightLabel = UiLabel:new(host, "nimbus_mono", "LevelHeightLabel")
+    local levelHeightLabel = UiLabel:new(host, "13_5Atom_Sans_Regular", "LevelHeightLabel")
     overlay:addWidget(levelHeightLabel)
 
     local levelLengthSlider = UiSlider:new(host, "LevelHeightSlider")

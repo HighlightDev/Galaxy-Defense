@@ -29,7 +29,6 @@ local Json = require("Ui/Core/3rdparty/json")
 local function initialize(host)
     _LazyLoadResourcesAsync(host,
         [[arrow_right_1.png
-		,nimbus_mono.png
         ,nightRight.jpg
 		,nightLeft.jpg
 		,nightTop.jpg

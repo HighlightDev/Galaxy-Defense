@@ -67,7 +67,7 @@ function PauseOverlay:new(host)
     local totalButtonMarginHeight = buttonsMarginCount * buttonVerticalMarginHeight;
     buttonHeight = (pauseMenuHeight - totalButtonMarginHeight) / buttonsCount;
 
-    local continueButton = LabelButton:new(host, pauseMenuOverlay, "nimbus_mono", "ContinueButton")
+    local continueButton = LabelButton:new(host, pauseMenuOverlay, "13_5Atom_Sans_Regular", "ContinueButton")
     pauseMenuOverlay:addCompoundWidget(continueButton)
     continueButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendPauseGameThreadEvent(host,
@@ -82,7 +82,7 @@ function PauseOverlay:new(host)
         end
     end)
 
-    local settingsButton = LabelButton:new(host, pauseMenuOverlay, "nimbus_mono", "SettingsButton")
+    local settingsButton = LabelButton:new(host, pauseMenuOverlay, "13_5Atom_Sans_Regular", "SettingsButton")
     pauseMenuOverlay:addCompoundWidget(settingsButton)
     settingsButton:subscribeOnMouseInputClickedCallback(function()
         UiOverlayManager:openOverlay(host, "PauseSettingsOverlay")
@@ -95,7 +95,7 @@ function PauseOverlay:new(host)
         end
     end)
 
-    local exitToMainMenuButton = LabelButton:new(host, pauseMenuOverlay, "nimbus_mono", "ExitToMainMenuButton")
+    local exitToMainMenuButton = LabelButton:new(host, pauseMenuOverlay, "13_5Atom_Sans_Regular", "ExitToMainMenuButton")
     pauseMenuOverlay:addCompoundWidget(exitToMainMenuButton)
     exitToMainMenuButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -109,7 +109,7 @@ function PauseOverlay:new(host)
             "MainMenuLevel")
     end)
 
-    local exitGameButton = LabelButton:new(host, pauseMenuOverlay, "nimbus_mono", "ExitGameButton")
+    local exitGameButton = LabelButton:new(host, pauseMenuOverlay, "13_5Atom_Sans_Regular", "ExitGameButton")
     pauseMenuOverlay:addCompoundWidget(exitGameButton)
     exitGameButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)

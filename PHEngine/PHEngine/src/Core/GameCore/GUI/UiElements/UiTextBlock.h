@@ -3,6 +3,7 @@
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "UiRectangle.h"
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 namespace EngineCore {
@@ -18,7 +19,7 @@ class UiTextBlock : public UiRectangle {
 
     int32_t mFontSize{16};
 
-    float mTextLineWidth{1.0f};
+    glm::ivec2 mTextLineWidthHeight;
 
     glm::vec3 mTextColor;
 
@@ -39,7 +40,7 @@ public:
 
     std::string GetFontName() const;
 
-    float GetTextLineWidth() const;
+    glm::ivec2 GetTextLineWidthHeight() const;
 
     void SetFontSize(const int32_t fontSize);
 

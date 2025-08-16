@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/GameCore/GUI/Common/FontParams.h"
+
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFont.h"
 
 #include <memory>

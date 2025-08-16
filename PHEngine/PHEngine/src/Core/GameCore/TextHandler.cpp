@@ -37,12 +37,11 @@ std::shared_ptr<HudTextField> TextHandler::CreateTextField(
     const glm::vec3& color,
     const glm::vec2& position,
     const bool receiveUpdateOnTextScreenSpaceSizeChanged,
-    const float lineMaxSize,
-    const int32_t numberOfLines,
+    const glm::ivec2& lineMaxWidthHeight,
     const eTextHorizontalAlignmentType textHorizontalAlignment)
 {
-    const auto& textField = mRegisteredTexts.emplace_back(std::make_shared<HudTextField>(
-        fontName, fontSize, text, color, position, lineMaxSize, numberOfLines, textHorizontalAlignment));
+    const auto& textField = mRegisteredTexts.emplace_back(
+        std::make_shared<HudTextField>(fontName, fontSize, text, color, position, lineMaxWidthHeight, textHorizontalAlignment));
 
     RegisterTextField(textField, receiveUpdateOnTextScreenSpaceSizeChanged);
     return textField;
@@ -53,12 +52,11 @@ std::shared_ptr<HudTextField> TextHandler::CreateEmptyTextField(
     const int32_t fontSize,
     const glm::vec3& color,
     const bool receiveUpdateOnTextScreenSpaceSizeChanged,
-    const float lineMaxSize,
-    const int32_t numberOfLines,
+    const glm::ivec2& lineMaxWidthHeight,
     const eTextHorizontalAlignmentType textHorizontalAlignment)
 {
     const auto& textField = mRegisteredTexts.emplace_back(
-        std::make_shared<HudTextField>(fontName, fontSize, color, lineMaxSize, numberOfLines, textHorizontalAlignment));
+        std::make_shared<HudTextField>(fontName, fontSize, color, lineMaxWidthHeight, textHorizontalAlignment));
 
     RegisterTextField(textField, receiveUpdateOnTextScreenSpaceSizeChanged);
     return textField;

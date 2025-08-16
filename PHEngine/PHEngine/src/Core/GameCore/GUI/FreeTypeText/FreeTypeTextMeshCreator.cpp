@@ -203,8 +203,8 @@ std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> FreeTypeTextMeshCreato
             textFieldProxy->GetText(),
             0,
             0,
-            textFieldProxy->GetLineWidth(),
-            textFieldProxy->GetLineHeight(),
+            textFieldProxy->GetLineWidthHeight().x,
+            textFieldProxy->GetLineWidthHeight().y,
             ftFontAtlas,
             textFieldProxy->GetTextHorizontalAlignment(),
             textFieldProxy->GetFontSize());

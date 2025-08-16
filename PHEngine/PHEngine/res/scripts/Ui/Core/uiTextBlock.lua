@@ -85,10 +85,6 @@ function UiTextBlock:new(host, fontName, name)
             value = 5.0,
             dirty = false
         },
-        text_line_width = {
-            value = 1.0,
-            dirty = false
-        },
         text_horizontal_alignment = {
             value = UiLabel.TextHorizontalAlignmentType.LEFT,
             dirty = false
@@ -138,9 +134,6 @@ function UiTextBlock:updateFromReplicatorData(host)
             end
             if parsedJson["font_size"] ~= nil then
                 self.textBlockProperties.font_size.value = tonumber(parsedJson["font_size"])
-            end
-            if parsedJson["text_line_width"] ~= nil then
-                self.textBlockProperties.text_line_width.value = tonumber(parsedJson["text_line_width"])
             end
             if parsedJson["text_horizontal_alignment"] ~= nil then
                 self.textBlockProperties.text_horizontal_alignment.value = tonumber(
@@ -260,14 +253,6 @@ function UiTextBlock:setFontSize(fontSize)
     if self.textBlockProperties.font_size.value ~= fontSize then
         self.textBlockProperties.font_size.value = fontSize
         self.textBlockProperties.font_size.dirty = true
-    end
-end
-
-function UiTextBlock:setTextLineWidth(textLineWidth)
-    assert(textLineWidth ~= nil and type(textLineWidth) == "number")
-    if self.textBlockProperties.text_line_width.value ~= textLineWidth then
-        self.textBlockProperties.text_line_width.value = textLineWidth
-        self.textBlockProperties.text_line_width.dirty = true
     end
 end
 

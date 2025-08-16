@@ -90,7 +90,6 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , MaterialProxiesVector()
     , PlanarReflectionProxiesVector()
     , mUiCanvasProxies()
-    , mFontHandler(std::make_shared<FontHandler>())
     , mFreeTypeFontHandler(std::make_shared<FreeTypeFontHandler>())
     , mForwardRenderingProxiesVec()
     , mSkeletalProxiesVec()
@@ -283,7 +282,6 @@ void SceneRenderer::CleanUp()
 
 void SceneRenderer::PostLevelInit()
 {
-    RegisterFonts();
 }
 
 InterThreadCommunicationMgr& SceneRenderer::GetInterThreadCommunicationManager()
@@ -301,23 +299,6 @@ void SceneRenderer::OnWindowSizeChanged(const ViewPortInfo& viewPortInfo)
     m_gbuffer->ResizeRenderTargets(viewPortInfo);
     m_resolvedSceneFramebuffer->ResizeRenderTargets(viewPortInfo);
     mPostFxRenderer->ResizeRenderTargets(viewPortInfo);
-}
-
-void SceneRenderer::RegisterFonts()
-{
-    const auto& fonts = EngineConfigHolder::GetInstance()->GetEngineConfig().FontsVector;
-
-    for (const auto& font : fonts) {
-        if (!mFontHandler->GetFontBatcher(font)) {
-            FontParams fontParams(font, font + ".fnt", font + ".png");
-            mFontHandler->RegisterFont(fontParams);
-        }
-    }
-
-    const FreeTypeFontParams fontParams("13_5Atom_Sans_Regular", 58);
-    if (!mFreeTypeFontHandler->GetFontBatcher(fontParams)) {
-        mFreeTypeFontHandler->RegisterFont(fontParams);
-    }
 }
 
 void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
@@ -948,40 +929,6 @@ void SceneRenderer::PlanarReflectionPass()
     glDisable(GL_CLIP_DISTANCE0);
 }
 
-void SceneRenderer::HudTextPass()
-{
-    const auto& renderDataMap = mFontHandler->GetFontBatcher();
-
-    RenderState renderState;
-    renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    renderState.GetDepthState().SetIsDepthTestEnabled(false).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
-    renderState.GetStencilState()
-        .SetIsStencilTestEnabled(false)
-        .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
-        .SetStencilMask(0);
-    renderState.BindRenderState();
-
-    for (const auto& renderData : renderDataMap) {
-        const auto& renderDataSp = renderData.second;
-        renderDataSp->GetFontTextureAtlas()->BindTexture(0);
-        m_fontShader->ExecuteShader();
-        const auto& textFields = renderDataSp->GetTexFieldProxies();
-        m_fontShader->SetFontAtlasSlot(0);
-        for (const auto& textField : textFields) {
-            if (textField->GetIsVisible() && eTextFieldProxyType::HUD_TEXT_FIELD == textField->GetTextFieldProxyType()) {
-                m_fontShader->SetPosition(textField->GetPosition());
-                m_fontShader->SetColor(textField->GetColor());
-                renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(
-                    textField->GetVertexStart(), textField->GetVerticesCount(), GL_TRIANGLES);
-            }
-        }
-        m_fontShader->StopShader();
-    }
-
-    renderState.GetBlendingState().SetIsBlendingEnabled(false);
-}
-
 void SceneRenderer::FontPass(const std::shared_ptr<SceneView>& sceneView)
 {
     const auto& renderDataMap = mFreeTypeFontHandler->GetFontBatcherMap();
@@ -1174,8 +1121,6 @@ void SceneRenderer::RenderScene_RenderThread()
 
                 if (mPostFxRenderer)
                     mPostFxRenderer->Execute(m_resolvedSceneFramebuffer);
-
-                HudTextPass();
 
                 FontPass(sceneView);
 
@@ -1641,14 +1586,13 @@ void SceneRenderer::RegisterText_OnRenderThread(
         eTextFieldProxyType::HUD_TEXT_FIELD,
         textField->GetIsVisible(),
         textField->GetText(),
-        "13_5Atom_Sans_Regular",
+        textField->GetFontName(),
         textField->GetPosition(),
         textField->GetColor(),
-        42,
+        textField->GetFontSize(),
         0,
         textField->GetTextHorizontalAlignment(),
-        800,
-        600,
+        textField->GetLineMaxWidthHeight(),
         subscribeOnTextScreenSpaceSizeUpdate);
     m_interThreadMgr.ExecuteOnRenderThread(
         eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [weak = weak_from_this(), textFieldProxy]() {

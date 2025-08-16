@@ -30,7 +30,6 @@ local Json = require("Ui/Core/3rdparty/json")
 function CreateLevel(host)
     _LazyLoadResourcesAsync(host,
         [[arrow_right_1.png,
-		nimbus_mono.png,
 		Space_Station_COLOR.png,
 		Space_Station_NORMAL.png,
 		Space_Station_ROUGHNESS.jpg,

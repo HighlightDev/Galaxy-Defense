@@ -65,10 +65,10 @@ function LevelFailedOverlay:new(host)
     local backgroundRect = UiRectangle:new(host)
     levelFailedOverlay:addWidget(backgroundRect)
 
-    local descriptionLabel = UiLabel:new(host, "nimbus_mono")
+    local descriptionLabel = UiLabel:new(host, "13_5Atom_Sans_Regular")
     levelFailedOverlay:addWidget(descriptionLabel)
 
-    local restartButton = LabelButton:new(host, levelFailedOverlay, "nimbus_mono", "RestartButton")
+    local restartButton = LabelButton:new(host, levelFailedOverlay, "13_5Atom_Sans_Regular", "RestartButton")
     levelFailedOverlay:addCompoundWidget(restartButton)
     restartButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendRestartLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
@@ -81,7 +81,7 @@ function LevelFailedOverlay:new(host)
         end
     end)
 
-    local exitToMainMenuButton = LabelButton:new(host, levelFailedOverlay, "nimbus_mono", "ExitToMainMenuButton")
+    local exitToMainMenuButton = LabelButton:new(host, levelFailedOverlay, "13_5Atom_Sans_Regular", "ExitToMainMenuButton")
     levelFailedOverlay:addCompoundWidget(exitToMainMenuButton)
     exitToMainMenuButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,

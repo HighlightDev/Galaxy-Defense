@@ -28,7 +28,7 @@ UiLabelSceneProxy::UiLabelSceneProxy(const UiLabel* uiLabel)
     , mText("")
     , mFontName(uiLabel->GetFontName())
     , mOpacity(uiLabel->GetOpacity())
-    , mTextLineWidth(uiLabel->GetTextLineWidth())
+    , mTextLineWidthHeight(uiLabel->GetTextLineWidthHeight())
     , mFontSize(uiLabel->GetFontSize())
     , mTextHorizontalAlignment(uiLabel->GetTextHorizontalAlignment())
     , mTextColor(uiLabel->GetTextColor())
@@ -63,19 +63,17 @@ void UiLabelSceneProxy::Initialize()
                 eTextFieldProxyType::GUI_TEXT_FIELD,
                 false,
                 mText,
-                "13_5Atom_Sans_Regular",
+                mFontName,
                 glm::vec2(),
                 mTextColor,
                 mFontSize,
                 0,
                 mTextHorizontalAlignment,
-                800,
-                600,
+                mTextLineWidthHeight,
                 false);
             fontHandlerSp->RegisterText(mTextFieldProxy);
 
-            mFontTexture
-                = fontHandlerSp->GetFontBatcher(FreeTypeFontParams("13_5Atom_Sans_Regular", mFontSize))->GetFontTextureAtlas();
+            mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
         } else {
             LogInfo("UiLabelSceneProxy::Initialize => CRIT: FreeTypeFontHandler is null");
         }
@@ -88,12 +86,12 @@ void UiLabelSceneProxy::Render()
 {
     if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            const auto& renderDataSp = fontHandlerSp->GetFontBatcher(FreeTypeFontParams("13_5Atom_Sans_Regular", mFontSize));
+            const auto& renderDataSp = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize));
             mUiLabelShader->ExecuteShader();
-            const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeight();
+            const auto textHeightTextureSpace = mTextFieldProxy->GetCreatedMeshTextHeightTextureSpace();
             mUiLabelShader->SetPosition(glm::vec2(
                 mNormalizedTranslation.x + mCenterOffset.x,
-                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textHeightScreenSpace)));
+                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textHeightTextureSpace)));
             mFontTexture->BindTexture(0);
             mUiLabelShader->SetFontAtlasSlot(0);
             mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);
@@ -118,11 +116,11 @@ void UiLabelSceneProxy::SetText(const std::string& text)
     }
 }
 
-void UiLabelSceneProxy::SetTextLineWidth(const float textLineWidth)
+void UiLabelSceneProxy::SetTextLineWidthHeight(const glm::ivec2& textLineWidthHeight)
 {
-    if (!EngineMath::FloatsNearEqual(textLineWidth, mTextLineWidth)) {
-        mTextLineWidth = textLineWidth;
-        mTextFieldProxy->SetLineWidth(mTextLineWidth);
+    if (textLineWidthHeight != mTextLineWidthHeight) {
+        mTextLineWidthHeight = textLineWidthHeight;
+        mTextFieldProxy->SetLineWidthHeight(mTextLineWidthHeight);
         if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
             if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
                 fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
@@ -141,8 +139,7 @@ void UiLabelSceneProxy::SetFontSize(const int32_t fontSize)
             if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
                 fontHandlerSp->FontSizeChanged(mTextFieldProxy);
                 // change texture according to new font
-                mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams("13_5Atom_Sans_Regular", mFontSize))
-                                   ->GetFontTextureAtlas();
+                mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
             }
         }
     }

@@ -11,8 +11,7 @@ HudTextField::HudTextField(
     const std::string& text,
     const glm::vec3& color,
     const glm::vec2& position,
-    const float lineMaxSize,
-    const int32_t numberOfLines,
+    const glm::ivec2& lineMaxWidthHeight,
     const eTextHorizontalAlignmentType textHorizontalAlignment)
     : mTextFieldId(UniqueFontTextIdGenerator::GenerateUniqueFontTextId())
     , mIsVisible(true)
@@ -21,8 +20,7 @@ HudTextField::HudTextField(
     , mText(text)
     , mColor(color)
     , mPosition(position)
-    , mLineMaxWidth(lineMaxSize)
-    , mNumberOfLines(numberOfLines)
+    , mLineMaxWidthHeight(lineMaxWidthHeight)
     , mTextHorizontalAlignment(textHorizontalAlignment)
     , mScreenSpaceSize(0.0f, 0.0f)
 {
@@ -32,8 +30,7 @@ HudTextField::HudTextField(
     const std::string& fontName,
     const int32_t fontSize,
     const glm::vec3& color,
-    const float lineMaxSize,
-    const int32_t numberOfLines,
+    const glm::ivec2& lineMaxWidthHeight,
     const eTextHorizontalAlignmentType textHorizontalAlignment)
     : mTextFieldId(UniqueFontTextIdGenerator::GenerateUniqueFontTextId())
     , mIsVisible(false)
@@ -42,8 +39,7 @@ HudTextField::HudTextField(
     , mText()
     , mColor(color)
     , mPosition()
-    , mLineMaxWidth(lineMaxSize)
-    , mNumberOfLines(numberOfLines)
+    , mLineMaxWidthHeight(lineMaxWidthHeight)
     , mTextHorizontalAlignment(textHorizontalAlignment)
 {
 }
@@ -83,14 +79,9 @@ glm::vec2 HudTextField::GetPosition() const
     return mPosition;
 }
 
-float HudTextField::GetLineMaxSize() const
+glm::ivec2 HudTextField::GetLineMaxWidthHeight() const
 {
-    return mLineMaxWidth;
-}
-
-int32_t HudTextField::GetNumberOfLines() const
-{
-    return mNumberOfLines;
+    return mLineMaxWidthHeight;
 }
 
 eTextHorizontalAlignmentType HudTextField::GetTextHorizontalAlignment() const

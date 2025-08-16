@@ -22,7 +22,8 @@
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
-#include "Core/ResourceManagerCore/Pool/FontMeshPool.h"
+#include "Core/ResourceManagerCore/Pool/FreeTypeFontMeshPool.h"
+#include "Core/ResourceManagerCore/Pool/FreeTypeFontPool.h"
 #include "Core/ResourceManagerCore/Pool/InstancedMeshPool.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/ResourceManagerCore/Pool/ParticlesPool.h"
@@ -135,7 +136,8 @@ void Engine::CleanUp()
     m_luaThread.join();
 
     CompositeShaderPool::GetInstance()->CleanUp();
-    FontMeshPool::GetInstance()->CleanUp();
+    FreeTypeFontMeshPool::GetInstance()->CleanUp();
+    FreeTypeFontPool::GetInstance()->CleanUp();
     InstancedMeshPool::GetInstance()->CleanUp();
     MeshPool::GetInstance()->CleanUp();
     TexturePool::GetInstance()->CleanUp();

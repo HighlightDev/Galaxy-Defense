@@ -66,7 +66,7 @@ function MainMenuOverlay:new(host)
     local totalButtonMarginHeight = buttonsMarginCount * buttonVerticalMarginHeight;
     buttonHeight = (mainMenuOverlayHeight - totalButtonMarginHeight) / buttonsCount;
 
-    local newGameButton = LabelButton:new(host, mainMenuOverlay, "nimbus_mono", "NewGameButton")
+    local newGameButton = LabelButton:new(host, mainMenuOverlay, "13_5Atom_Sans_Regular", "NewGameButton")
     mainMenuOverlay:addCompoundWidget(newGameButton)
     newGameButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -80,7 +80,7 @@ function MainMenuOverlay:new(host)
             "CombatLevel")
     end)
 
-    local editorLvlButton = LabelButton:new(host, mainMenuOverlay, "nimbus_mono", "EditorLvlButton")
+    local editorLvlButton = LabelButton:new(host, mainMenuOverlay, "13_5Atom_Sans_Regular", "EditorLvlButton")
     mainMenuOverlay:addCompoundWidget(editorLvlButton)
     editorLvlButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -94,7 +94,7 @@ function MainMenuOverlay:new(host)
             "EditorLevel")
     end)
 
-    local settingsButton = LabelButton:new(host, mainMenuOverlay, "nimbus_mono", "SettingsButton")
+    local settingsButton = LabelButton:new(host, mainMenuOverlay, "13_5Atom_Sans_Regular", "SettingsButton")
     mainMenuOverlay:addCompoundWidget(settingsButton)
     settingsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -104,7 +104,7 @@ function MainMenuOverlay:new(host)
         end
     end)
 
-    local exitGameButton = LabelButton:new(host, mainMenuOverlay, "nimbus_mono", "ExitGameButton")
+    local exitGameButton = LabelButton:new(host, mainMenuOverlay, "13_5Atom_Sans_Regular", "ExitGameButton")
     mainMenuOverlay:addCompoundWidget(exitGameButton)
     exitGameButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
@@ -146,8 +146,8 @@ function MainMenuOverlay:new(host)
         newGameButton:setButtonBorderRadius(MainMenuOverlay.buttonRadius)
         newGameButton:setLabelText("New Game")
         newGameButton:setLabelTextColorHexValue(0xFFFFFF)
-        newGameButton:setLabelFontSize(20.0)
-        newGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        newGameButton:setLabelFontSize(56)
+        newGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
 
         editorLvlButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         editorLvlButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
@@ -163,8 +163,8 @@ function MainMenuOverlay:new(host)
         editorLvlButton:setButtonBorderRadius(MainMenuOverlay.buttonRadius)
         editorLvlButton:setLabelText("Go to editor")
         editorLvlButton:setLabelTextColorHexValue(0xFFFFFF)
-        editorLvlButton:setLabelFontSize(20.0)
-        editorLvlButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        editorLvlButton:setLabelFontSize(56)
+        editorLvlButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
 
         settingsButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -179,8 +179,8 @@ function MainMenuOverlay:new(host)
         settingsButton:setButtonBorderRadius(MainMenuOverlay.buttonRadius)
         settingsButton:setLabelText("Settings")
         settingsButton:setLabelTextColorHexValue(0xFFFFFF)
-        settingsButton:setLabelFontSize(20.0)
-        settingsButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        settingsButton:setLabelFontSize(56)
+        settingsButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
 
         exitGameButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
@@ -195,8 +195,8 @@ function MainMenuOverlay:new(host)
         exitGameButton:setButtonBorderRadius(MainMenuOverlay.buttonRadius)
         exitGameButton:setLabelText("Exit game")
         exitGameButton:setLabelTextColorHexValue(0xFFFFFF)
-        exitGameButton:setLabelFontSize(20.0)
-        exitGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        exitGameButton:setLabelFontSize(56)
+        exitGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
     end)
 
     mainMenuOverlay.onGameEventTriggered = function(eventName, jsonArgs) end

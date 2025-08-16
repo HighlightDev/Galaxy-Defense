@@ -3,6 +3,7 @@
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "UiItemBaseLuaProxy.h"
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 #include <string>
@@ -27,7 +28,7 @@ protected:
 
     int32_t mFontSize;
 
-    float mTextLineWidth;
+    glm::ivec2 mTextLineWidthHeight;
 
     glm::vec3 mTextColor;
 
@@ -46,7 +47,7 @@ public:
 
     void SetFontSize_FromGameThread(const int32_t fontSize);
 
-    void SetTextLineWidth_FromGameThread(const float textLineWidth);
+    void SetTextLineWidthHeight_FromGameThread(const glm::ivec2& textLineWidthHeight);
 
     void SetTextColor_FromGameThread(const glm::vec3& texColor);
 

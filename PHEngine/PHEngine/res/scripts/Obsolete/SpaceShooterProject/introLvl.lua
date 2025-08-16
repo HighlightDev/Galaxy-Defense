@@ -30,7 +30,6 @@ local Json = require("Ui/Core/3rdparty/json")
 function CreateTestLevel(host)
 	_LazyLoadResourcesAsync(host,
 		[[arrow_right_1.png
-		,nimbus_mono.png
 		,scaled_down_heart.png
 		,background_shield.png
 		,weapon_missile.png

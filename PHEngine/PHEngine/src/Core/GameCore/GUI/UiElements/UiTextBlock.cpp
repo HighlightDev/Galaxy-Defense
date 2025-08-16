@@ -52,7 +52,7 @@ void UiTextBlock::OnUnregistered()
 void UiTextBlock::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
     UiRectangle::OnPropertiesShouldBeUpdatedOnRenderThread();
-
+    mTextLineWidthHeight = GetBoundingArea().GetHalfExtent() * 2;
     SyncDataOnRenderThread();
 }
 
@@ -101,9 +101,9 @@ std::string UiTextBlock::GetFontName() const
     return mFontName;
 }
 
-float UiTextBlock::GetTextLineWidth() const
+glm::ivec2 UiTextBlock::GetTextLineWidthHeight() const
 {
-    return mTextLineWidth;
+    return mTextLineWidthHeight;
 }
 
 void UiTextBlock::SetFontSize(const int32_t fontSize)
@@ -198,13 +198,6 @@ void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             bShouldUpdatePropertiesOnRT = true;
         }
     }
-    if (jsonObj.contains("text_line_width")) {
-        const auto text_line_width = jsonObj["text_line_width"].get<float>();
-        if (!EngineMath::FloatsNearEqual(mTextLineWidth, text_line_width)) {
-            mTextLineWidth = text_line_width;
-            bShouldUpdatePropertiesOnRT = true;
-        }
-    }
     if (jsonObj.contains("text_horizontal_alignment")) {
         const auto text_horizontal_alignment
             = static_cast<eTextHorizontalAlignmentType>(jsonObj["text_horizontal_alignment"].get<uint8_t>());
@@ -236,7 +229,7 @@ void UiTextBlock::SyncDataOnRenderThread()
                          canvasUId = canvasSp->GetUId(),
                          opacity = mOpacity,
                          text = mText,
-                         textLineWidth = mTextLineWidth,
+                         textLineWidthHeight = mTextLineWidthHeight,
                          fontSize = mFontSize,
                          textColor = mTextColor,
                          textHorizontalAlignment = mTextHorizontalAlignment]() {
@@ -245,7 +238,7 @@ void UiTextBlock::SyncDataOnRenderThread()
                                 const auto& textBlockSceneProxy = std::static_pointer_cast<UiTextBlockSceneProxy>(uiSceneProxy);
                                 textBlockSceneProxy->SetOpacity(opacity);
                                 textBlockSceneProxy->SetText(text);
-                                textBlockSceneProxy->SetTextLineWidth(textLineWidth);
+                                textBlockSceneProxy->SetTextLineWidthHeight(textLineWidthHeight);
                                 textBlockSceneProxy->SetFontSize(fontSize);
                                 textBlockSceneProxy->SetTextColor(textColor);
                                 textBlockSceneProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
@@ -275,7 +268,7 @@ void UiTextBlock::SyncDataOnLuaThread()
                      opacity = mOpacity,
                      text = mText,
                      textColor = mTextColor,
-                     textLineWidth = mTextLineWidth,
+                     textLineWidthHeight = mTextLineWidthHeight,
                      fontSize = mFontSize,
                      textHorizontalAlignment = mTextHorizontalAlignment]() {
                         if (const auto& textBlockLuaProxy
@@ -283,7 +276,7 @@ void UiTextBlock::SyncDataOnLuaThread()
                             textBlockLuaProxy->SetOpacity_FromGameThread(opacity);
                             textBlockLuaProxy->SetText_FromGameThread(text);
                             textBlockLuaProxy->SetTextColor_FromGameThread(textColor);
-                            textBlockLuaProxy->SetTextLineWidth_FromGameThread(textLineWidth);
+                            textBlockLuaProxy->SetTextLineWidthHeight_FromGameThread(textLineWidthHeight);
                             textBlockLuaProxy->SetFontSize_FromGameThread(fontSize);
                             textBlockLuaProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
                         }

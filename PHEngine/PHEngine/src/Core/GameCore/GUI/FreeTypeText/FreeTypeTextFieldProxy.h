@@ -45,13 +45,11 @@ class FreeTypeTextFieldProxy {
 
     int32_t mFontFlags;
 
-    int32_t mLineWidth;
+    glm::ivec2 mLineWidthHeight;
 
-    int32_t mLineHeight;
+    float mCreatedMeshTextWidthTextureSpace;
 
-    float mCreatedMeshTextWidth;
-
-    float mCreatedMeshTextHeight;
+    float mCreatedMeshTextHeightTextureSpace;
 
     bool mIsSubscribedOnTextScreenSpaceSizeUpdate;
 
@@ -71,8 +69,7 @@ public:
         const int32_t pixelSize,
         const int32_t fontFlags,
         const eTextHorizontalAlignmentType textHorizontalAlignmentType,
-        const int32_t lineWidth,
-        const int32_t lineHeight,
+        const glm::ivec2& lineWidthHeight,
         const bool isSubscribedOnTextScreenSpaceSizeUpdate);
 
     int32_t GetTextFieldId() const;
@@ -103,17 +100,15 @@ public:
 
     glm::vec2 GetPosition() const;
 
-    int32_t GetLineHeight() const;
-
-    int32_t GetLineWidth() const;
+    glm::ivec2 GetLineWidthHeight() const;
 
     int32_t GetFontFlags() const;
 
     eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
 
-    float GetCreatedMeshTextWidth() const;
+    float GetCreatedMeshTextWidthTextureSpace() const;
 
-    float GetCreatedMeshTextHeight() const;
+    float GetCreatedMeshTextHeightTextureSpace() const;
 
     bool GetIsSubscribedOnTextScreenSpaceSizeUpdate() const;
 
@@ -141,9 +136,7 @@ public:
 
     void SetPosition(const glm::vec2& position);
 
-    void SetLineWidth(const int32_t lineWidth);
-
-    void SetLineHeight(const int32_t lineHeight);
+    void SetLineWidthHeight(const glm::ivec2& widthHeight);
 
     void SetFontFlags(const int32_t fontFlags);
 
@@ -151,9 +144,9 @@ public:
 
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 
-    void SetCreatedMeshTextWidth(const float createdMeshTextWidth);
+    void SetCreatedMeshTextWidthTextureSpace(const float createdMeshTextWidthTextureSpace);
 
-    void SetCreatedMeshTextHeight(const float createdMeshTextHeight);
+    void SetCreatedMeshTextHeightTextureSpace(const float createdMeshTextHeightTextureSpace);
 
     void SetIsSubscribedOnTextScreenSpaceSizeUpdate(const bool isSubscribedOnTextScreenSpaceSizeUpdate);
 };

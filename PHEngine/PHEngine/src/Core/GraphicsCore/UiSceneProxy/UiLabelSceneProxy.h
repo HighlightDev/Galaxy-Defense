@@ -33,7 +33,7 @@ class UiLabelSceneProxy : public UiSceneProxyBase {
 
     std::shared_ptr<::EngineCore::GUI::FreeTypeTextFieldProxy> mTextFieldProxy;
 
-    float mTextLineWidth;
+    glm::ivec2 mTextLineWidthHeight;
 
     int32_t mFontSize;
 
@@ -52,7 +52,7 @@ public:
 
     void SetOpacity(const float opacity);
 
-    void SetTextLineWidth(const float textLineWidth);
+    void SetTextLineWidthHeight(const glm::ivec2& textLineWidthHeight);
 
     void SetFontSize(const int32_t fontSize);
 

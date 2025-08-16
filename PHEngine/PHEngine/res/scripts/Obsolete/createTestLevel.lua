@@ -72,7 +72,6 @@ function CreateTestLevel(host)
 	,solar_cells_roughness_512.jpg
 	,solar_cells_metallic_512.jpg
 	,cube.obj
-	,nimbus_mono.png
 	,arrow_right_1.png
 	,tina.fbx
 	]])

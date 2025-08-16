@@ -160,7 +160,7 @@ function CombatOverlay:new(host)
     combatOverlay:addWidget(levelProgressRowLayout)
     combatOverlay.levelProgressRowLayout = levelProgressRowLayout
 
-    local testTextBlock = UiTextBlock:new(host, "nimbus_mono", "TestTextBlock")
+    local testTextBlock = UiTextBlock:new(host, "13_5Atom_Sans_Regular", "TestTextBlock")
     combatOverlay:addWidget(testTextBlock)
 
     fillRequirementTilesPool(host, combatOverlay, 10)

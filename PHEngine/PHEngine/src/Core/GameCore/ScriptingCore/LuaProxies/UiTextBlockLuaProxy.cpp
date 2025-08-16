@@ -60,10 +60,10 @@ void UiTextBlockLuaProxy::SetFontSize_FromGameThread(const int32_t fontSize)
     }
 }
 
-void UiTextBlockLuaProxy::SetTextLineWidth_FromGameThread(const float textLineWidth)
+void UiTextBlockLuaProxy::SetTextLineWidthHeight_FromGameThread(const glm::ivec2& textLineWidthHeight)
 {
-    if (!EngineMath::FloatsNearEqual(textLineWidth, mTextLineWidth)) {
-        mTextLineWidth = textLineWidth;
+    if (textLineWidthHeight != mTextLineWidthHeight) {
+        mTextLineWidthHeight = textLineWidthHeight;
         mIsLuaDataDirty = true;
     }
 }

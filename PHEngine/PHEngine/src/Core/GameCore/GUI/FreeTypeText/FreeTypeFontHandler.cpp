@@ -121,13 +121,9 @@ void FreeTypeFontBatcher::FontBufferSubData(
     textFieldProxy->SetTextureCoordinatesChunkSize(texCoordinatesSizeUpdate);
     const float textWidthScreenSpace = static_cast<float>(textMeshCreator.CalcWidth(textFieldProxy->GetText(), mTextFontAtlas));
     const float textHeightScreenSpace = static_cast<float>(textMeshCreator.CalcHeight(mTextFontAtlas));
-    textFieldProxy->SetCreatedMeshTextWidth(textWidthScreenSpace / static_cast<float>(displayDeviceProvider->GetWindowWidth()));
-    textFieldProxy->SetCreatedMeshTextHeight(
+    textFieldProxy->SetCreatedMeshTextWidthTextureSpace(textWidthScreenSpace / static_cast<float>(displayDeviceProvider->GetWindowWidth()));
+    textFieldProxy->SetCreatedMeshTextHeightTextureSpace(
         textHeightScreenSpace / static_cast<float>(displayDeviceProvider->GetWindowHeight()));
-
-    if (textFieldProxy->GetText() == "New Game") {
-        volatile int vertexPositionsCount = vertexPositions.size();
-    }
 }
 
 void FreeTypeFontBatcher::AllocateTextSpace(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy)
@@ -335,14 +331,14 @@ float FreeTypeFontHandler::GetTextWidth(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
     assert(batcherSp != nullptr);
-    return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidth();
+    return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidthTextureSpace();
 }
 
 float FreeTypeFontHandler::GetTextHeight(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
     assert(batcherSp != nullptr);
-    return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextHeight();
+    return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextHeightTextureSpace();
 }
 
 bool FreeTypeFontHandler::IsTextSubscribedOnSizeChangeUpdate(const int32_t textFieldProxyId) const
@@ -357,7 +353,7 @@ glm::vec2 FreeTypeFontHandler::GetTextScreenSpaceSize(const int32_t textFieldPro
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
     assert(batcherSp != nullptr);
     const auto textFiledSp = batcherSp->GetFreeTypeTextFieldById(textFieldProxyId);
-    return glm::vec2(textFiledSp->GetCreatedMeshTextWidth(), textFiledSp->GetCreatedMeshTextHeight());
+    return glm::vec2(textFiledSp->GetCreatedMeshTextWidthTextureSpace(), textFiledSp->GetCreatedMeshTextHeightTextureSpace());
 }
 
 std::shared_ptr<FreeTypeFontBatcher> FreeTypeFontHandler::FindFontBatcherByTextFieldProxyId(const int32_t proxyId) const

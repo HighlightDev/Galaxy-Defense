@@ -69,10 +69,6 @@ function UiLabel:new(host, fontName, name)
             value = 5.0,
             dirty = false
         },
-        text_line_width = {
-            value = 1.0,
-            dirty = false
-        },
         text_horizontal_alignment = {
             value = UiLabel.TextHorizontalAlignmentType.LEFT,
             dirty = false
@@ -109,9 +105,6 @@ function UiLabel:updateFromReplicatorData(host)
             end
             if parsedJson["font_size"] ~= nil then
                 self.labelProperties.font_size.value = tonumber(parsedJson["font_size"])
-            end
-            if parsedJson["text_line_width"] ~= nil then
-                self.labelProperties.text_line_width.value = tonumber(parsedJson["text_line_width"])
             end
             if parsedJson["text_horizontal_alignment"] ~= nil then
                 self.labelProperties.text_horizontal_alignment.value = tonumber(parsedJson["text_horizontal_alignment"])
@@ -186,14 +179,6 @@ function UiLabel:setFontSize(fontSize)
     if self.labelProperties.font_size.value ~= fontSize then
         self.labelProperties.font_size.value = fontSize
         self.labelProperties.font_size.dirty = true
-    end
-end
-
-function UiLabel:setTextLineWidth(textLineWidth)
-    assert(textLineWidth ~= nil and type(textLineWidth) == "number")
-    if self.labelProperties.text_line_width.value ~= textLineWidth then
-        self.labelProperties.text_line_width.value = textLineWidth
-        self.labelProperties.text_line_width.dirty = true
     end
 end
 

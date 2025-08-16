@@ -27,9 +27,7 @@ class HudTextField {
 
     glm::vec2 mPosition;
 
-    float mLineMaxWidth;
-
-    int32_t mNumberOfLines;
+    glm::ivec2 mLineMaxWidthHeight;
 
     eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
@@ -42,16 +40,14 @@ public:
         const std::string& text,
         const glm::vec3& color,
         const glm::vec2& position,
-        const float lineMaxSize,
-        const int32_t numberOfLines,
+        const glm::ivec2& lineMaxWidthHeight,
         const eTextHorizontalAlignmentType textHorizontalAlignment);
 
     HudTextField(
         const std::string& fontName,
         const int32_t fontSize,
         const glm::vec3& color,
-        const float lineMaxSize,
-        const int32_t numberOfLines,
+        const glm::ivec2& lineMaxWidthHeight,
         const eTextHorizontalAlignmentType textHorizontalAlignment);
 
     int32_t GetTextFieldId() const;
@@ -76,9 +72,7 @@ public:
 
     void SetPosition(const glm::vec2& position);
 
-    float GetLineMaxSize() const;
-
-    int32_t GetNumberOfLines() const;
+    glm::ivec2 GetLineMaxWidthHeight() const;
 
     eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
 

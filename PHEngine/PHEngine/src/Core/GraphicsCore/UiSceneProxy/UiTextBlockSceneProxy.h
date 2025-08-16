@@ -7,6 +7,7 @@
 #include "UiSceneProxyBase.h"
 
 #include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
 namespace EngineCore {
 namespace GUI {
@@ -35,7 +36,7 @@ class UiTextBlockSceneProxy : public UiRectangleSceneProxy {
 
     std::shared_ptr<::GUI::FreeTypeTextFieldProxy> mTextFieldProxy;
 
-    float mTextLineWidth;
+    glm::ivec2 mTextLineWidthHeight;
 
     int32_t mFontSize;
 
@@ -54,7 +55,7 @@ public:
 
     void SetOpacity(const float opacity);
 
-    void SetTextLineWidth(const float textLineWidth);
+    void SetTextLineWidthHeight(const glm::ivec2& textLineWidthHeight);
 
     void SetFontSize(const int32_t fontSize);
 

@@ -26,7 +26,7 @@ UiLabel::UiLabel(const std::string& fontName, const std::string& name)
     , mText("")
     , mOpacity(1.0f)
     , mFontName(fontName)
-    , mTextLineWidth(1.0f)
+    , mTextLineWidthHeight()
     , mFontSize(15)
     , mTextColor(glm::vec3())
 {
@@ -57,7 +57,7 @@ void UiLabel::OnUnregistered()
 void UiLabel::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
     UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
-    mTextLineWidth = mNormalizedScale.x;
+    mTextLineWidthHeight = GetBoundingArea().GetHalfExtent() * 2;
     SyncDataOnRenderThread();
 }
 
@@ -100,13 +100,6 @@ void UiLabel::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         const auto font_size = jsonObj["font_size"].get<int32_t>();
         if (!mFontSize != font_size) {
             mFontSize = font_size;
-            bShouldUpdatePropertiesOnRT = true;
-        }
-    }
-    if (jsonObj.contains("text_line_width")) {
-        const auto text_line_width = jsonObj["text_line_width"].get<float>();
-        if (!EngineMath::FloatsNearEqual(mTextLineWidth, text_line_width)) {
-            mTextLineWidth = text_line_width;
             bShouldUpdatePropertiesOnRT = true;
         }
     }
@@ -157,9 +150,9 @@ std::string UiLabel::GetFontName() const
     return mFontName;
 }
 
-float UiLabel::GetTextLineWidth() const
+glm::ivec2 UiLabel::GetTextLineWidthHeight() const
 {
-    return mTextLineWidth;
+    return mTextLineWidthHeight;
 }
 
 void UiLabel::SetFontSize(const int32_t fontSize)
@@ -241,7 +234,7 @@ void UiLabel::SyncDataOnRenderThread()
                          canvasUId = canvasSp->GetUId(),
                          opacity = mOpacity,
                          text = mText,
-                         textLineWidth = mTextLineWidth,
+                         textLineWidthHeight = mTextLineWidthHeight,
                          fontSize = mFontSize,
                          textColor = mTextColor,
                          textHorizontalAlignment = mTextHorizontalAlignment]() {
@@ -250,7 +243,7 @@ void UiLabel::SyncDataOnRenderThread()
                                 const auto& labelSceneProxy = std::static_pointer_cast<UiLabelSceneProxy>(uiSceneProxy);
                                 labelSceneProxy->SetOpacity(opacity);
                                 labelSceneProxy->SetText(text);
-                                labelSceneProxy->SetTextLineWidth(textLineWidth);
+                                labelSceneProxy->SetTextLineWidthHeight(textLineWidthHeight);
                                 labelSceneProxy->SetFontSize(fontSize);
                                 labelSceneProxy->SetTextColor(textColor);
                                 labelSceneProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
@@ -280,7 +273,7 @@ void UiLabel::SyncDataOnLuaThread()
                      opacity = mOpacity,
                      text = mText,
                      textColor = mTextColor,
-                     textLineWidth = mTextLineWidth,
+                     textLineWidthHeight = mTextLineWidthHeight,
                      fontSize = mFontSize,
                      textHorizontalAlignment = mTextHorizontalAlignment]() {
                         if (const auto& labelLuaProxy
@@ -288,7 +281,7 @@ void UiLabel::SyncDataOnLuaThread()
                             labelLuaProxy->SetOpacity_FromGameThread(opacity);
                             labelLuaProxy->SetText_FromGameThread(text);
                             labelLuaProxy->SetTextColor_FromGameThread(textColor);
-                            labelLuaProxy->SetTextLineWidth_FromGameThread(textLineWidth);
+                            labelLuaProxy->SetTextLineWidthHeight_FromGameThread(textLineWidthHeight);
                             labelLuaProxy->SetFontSize_FromGameThread(fontSize);
                             labelLuaProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
                         }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/GameCore/GUI/Common/FontHandler.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontHandler.h"
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
@@ -101,7 +100,6 @@ class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
     std::vector<std::shared_ptr<MaterialProxy>> MaterialProxiesVector;
     std::vector<std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesVector;
     std::vector<std::shared_ptr<UiCanvasSceneProxy>> mUiCanvasProxies;
-    std::shared_ptr<FontHandler> mFontHandler;
 
     std::shared_ptr<::EngineCore::GUI::FreeTypeFontHandler> mFreeTypeFontHandler;
 
@@ -294,13 +292,9 @@ private:
 
     void OutlinePass(const std::shared_ptr<SceneView>& sceneView);
 
-    void HudTextPass();
-
     void FontPass(const std::shared_ptr<SceneView>& sceneView);
 
     void GuiPass(const std::shared_ptr<SceneView>& sceneView);
-
-    void RegisterFonts();
 
     void SortPrimitives(const std::shared_ptr<SceneView>& sceneView);
 };
