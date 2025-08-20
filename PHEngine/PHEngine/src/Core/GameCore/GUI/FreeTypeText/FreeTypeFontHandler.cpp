@@ -119,11 +119,11 @@ void FreeTypeFontBatcher::FontBufferSubData(
     mTextureCoordinatesChunkData.mCurrentChunkOffset = texCoordinatesOffset + texCoordinatesSizeUpdate;
     textFieldProxy->SetTextureCoordinatesChunkOffset(texCoordinatesOffset);
     textFieldProxy->SetTextureCoordinatesChunkSize(texCoordinatesSizeUpdate);
-    const float textWidthScreenSpace = static_cast<float>(textMeshCreator.CalcWidth(textFieldProxy->GetText(), mTextFontAtlas));
-    const float textHeightScreenSpace = static_cast<float>(textMeshCreator.CalcHeight(mTextFontAtlas));
-    textFieldProxy->SetCreatedMeshTextWidthTextureSpace(textWidthScreenSpace / static_cast<float>(displayDeviceProvider->GetWindowWidth()));
+    const glm::vec2 textWidthHeightScreenSpace = textMeshCreator.CalcTextScreenSpaceSize(textFieldProxy, mTextFontAtlas);
+    textFieldProxy->SetCreatedMeshTextWidthTextureSpace(
+        static_cast<float>(textWidthHeightScreenSpace.x) / static_cast<float>(displayDeviceProvider->GetWindowWidth()));
     textFieldProxy->SetCreatedMeshTextHeightTextureSpace(
-        textHeightScreenSpace / static_cast<float>(displayDeviceProvider->GetWindowHeight()));
+        static_cast<float>(textWidthHeightScreenSpace.y) / static_cast<float>(displayDeviceProvider->GetWindowHeight()));
 }
 
 void FreeTypeFontBatcher::AllocateTextSpace(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy)

@@ -34,7 +34,8 @@ public:
         const glm::vec2& position,
         const bool receiveUpdateOnTextScreenSpaceSizeChanged,
         const glm::ivec2& lineMaxWidthHeight,
-        const eTextHorizontalAlignmentType textHorizontalAlignment);
+        const eTextHorizontalAlignmentType textHorizontalAlignment,
+        const eTextVerticalAlignmentType textVericalAlignment);
 
     std::shared_ptr<HudTextField> CreateEmptyTextField(
         const std::string& fontName,
@@ -42,7 +43,8 @@ public:
         const glm::vec3& color,
         const bool receiveUpdateOnTextScreenSpaceSizeChanged,
         const glm::ivec2& lineMaxWidthHeight,
-        const eTextHorizontalAlignmentType textHorizontalAlignment);
+        const eTextHorizontalAlignmentType textHorizontalAlignment,
+        const eTextVerticalAlignmentType textVericalAlignment);
 
     void UnregisterText(const int32_t fieldId);
 

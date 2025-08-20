@@ -17,8 +17,6 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/TextHandler.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
-#include "Core/GraphicsCore/GLFont/src/FTLabel.h"
-#include "Core/GraphicsCore/GLFont/src/GLFont.h"
 #include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
@@ -102,47 +100,6 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , mInstancedGeometryBatchRenderer(std::make_shared<InstancedGeometryBatchRenderer>())
 {
     LogInfo("SceneRenderer::ctor");
-}
-
-std::shared_ptr<GLFont> _font;
-std::shared_ptr<FTLabel> lblHello;
-
-bool bInitialized = false;
-
-void RenderLabel(const std::shared_ptr<SceneView>& sceneView)
-{
-    if (!bInitialized) {
-
-        auto cameraProxy = sceneView->GetCameraProxy();
-        auto cameraViewPort = cameraProxy->GetViewPort();
-        _font = std::make_shared<GLFont>(
-            "/home/dzinoviev/MyProjects/phengine/PHEngine/PHEngine/src/Core/GraphicsCore/GLFont/test/fonts/13_"
-            "5Atom_"
-            "Sans_Regular.ttf");
-
-        lblHello = std::make_shared<FTLabel>(
-            _font,
-            "Hello world, I was rendered by PHEngine! Are you ready to start your journey? Just type here some big text and. "
-            "Copilot will help you to write it! Pay attention to the fact that this text is not wrapped, so it will be rendered "
-            "in one line. But you can wrap it by using the WordWrap flag. Just add some random text here to see how it works. "
-            "And you can also use the Indented flag to indent the text. And you can also use the RightAligned flag to align the "
-            "text to the right. And you can also use the CenterAligned flag to center the text. And you can also use the "
-            "Underlined flag to underline the text. And you can also use the Bold flag to make the text bold. And you can also "
-            "use the Italic flag to make the text italic.",
-            0.0,
-            0.0,
-            cameraViewPort.Width,
-            0,
-            cameraViewPort.Width,
-            cameraViewPort.Height);
-        lblHello->setColor(1.0, 1.0, 1.0, 0.9);
-        lblHello->setPixelSize(64);
-        lblHello->setAlignment(FTLabel::FontFlags::LeftAligned);
-        lblHello->appendFontFlags(FTLabel::FontFlags::Indented);
-        bInitialized = true;
-    }
-
-    lblHello->render();
 }
 
 void SceneRenderer::Initialize()
@@ -1125,8 +1082,6 @@ void SceneRenderer::RenderScene_RenderThread()
                 FontPass(sceneView);
 
                 GuiPass(sceneView);
-
-                // RenderLabel(sceneView);
                 // TODO: rendering to render texture later....
             } else {
                 // TODO: rendering to render texture later....
@@ -1592,6 +1547,7 @@ void SceneRenderer::RegisterText_OnRenderThread(
         textField->GetFontSize(),
         0,
         textField->GetTextHorizontalAlignment(),
+        textField->GetTextVerticalAlignment(),
         textField->GetLineMaxWidthHeight(),
         subscribeOnTextScreenSpaceSizeUpdate);
     m_interThreadMgr.ExecuteOnRenderThread(

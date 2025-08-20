@@ -29,7 +29,7 @@ protected:
 
     glm::vec2 mNormalizedTranslation, mNormalizedScale;
 
-    glm::ivec2 mWidthHightPixels;
+    glm::ivec2 mWidthHeightPixels;
 
     float mOverlayOpacity{1.0f};
 
@@ -71,6 +71,8 @@ public:
     void SetCenterOffset(const glm::vec2& offset);
 
     glm::vec2 GetCenterOffset() const;
+
+    glm::vec2 GetNormalizedWidthHeight() const;
 
     virtual void OnSceneProxyRegistered() = 0;
 

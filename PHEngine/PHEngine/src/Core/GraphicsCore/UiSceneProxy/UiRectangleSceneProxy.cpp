@@ -48,7 +48,7 @@ void UiRectangleSceneProxy::Render()
     mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
     mUiRectangleShader->SetBorderRadius(mBorderRadius);
     mUiRectangleShader->SetWidthHeightPixels(
-        glm::vec2(static_cast<float>(mWidthHightPixels.x), static_cast<float>(mWidthHightPixels.y)));
+        glm::vec2(static_cast<float>(mWidthHeightPixels.x), static_cast<float>(mWidthHeightPixels.y)));
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     mUiRectangleShader->StopShader();
 }

@@ -11,7 +11,7 @@ namespace EngineCore {
 namespace GUI {
 class UiLabel;
 class FreeTypeTextFieldProxy;
-}
+} // namespace GUI
 } // namespace EngineCore
 
 using namespace EngineCore::ShaderImpl;
@@ -39,7 +39,11 @@ class UiLabelSceneProxy : public UiSceneProxyBase {
 
     ::EngineCore::eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
+    ::EngineCore::eTextVerticalAlignmentType mTextVerticalAlignment;
+
     glm::vec3 mTextColor;
+
+    glm::vec2 mTextAlignmentOffset;
 
 public:
     UiLabelSceneProxy(const ::EngineCore::GUI::UiLabel* uiLabel);
@@ -58,6 +62,8 @@ public:
 
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 
+    void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment);
+
     void SetTextColor(const glm::vec3& textColor);
 
     void CleanUp() override;
@@ -66,6 +72,8 @@ public:
 
 private:
     void Initialize();
+
+    void CalculateTextAlignmentOffset();
 };
 } // namespace Proxy
 } // namespace Graphics

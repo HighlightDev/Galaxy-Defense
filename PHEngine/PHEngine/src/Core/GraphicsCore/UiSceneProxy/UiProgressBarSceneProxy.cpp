@@ -54,7 +54,7 @@ void UiProgressBarSceneProxy::Render()
     mUiProgressBarShader->SetOpacity(mOpacity * mOverlayOpacity);
     mUiProgressBarShader->SetBorderRadius(s_borderRadius);
     mUiProgressBarShader->SetWidthHeightPixels(
-        glm::vec2(static_cast<float>(mWidthHightPixels.x), static_cast<float>(mWidthHightPixels.y)));
+        glm::vec2(static_cast<float>(mWidthHeightPixels.x), static_cast<float>(mWidthHeightPixels.y)));
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     mUiProgressBarShader->StopShader();
 }

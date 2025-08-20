@@ -153,6 +153,20 @@ eTextHorizontalAlignmentType UiTextBlock::GetTextHorizontalAlignment() const
     return mTextHorizontalAlignment;
 }
 
+void UiTextBlock::SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment)
+{
+    if (mTextVerticalAlignment != textVerticalAlignment) {
+        mTextVerticalAlignment = textVerticalAlignment;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+eTextVerticalAlignmentType UiTextBlock::GetTextVerticalAlignment() const
+{
+    return mTextVerticalAlignment;
+}
+
 std::shared_ptr<UiSceneProxyBase> UiTextBlock::CreateUiSceneProxy() const
 {
     return std::make_shared<UiTextBlockSceneProxy>(this);
@@ -206,6 +220,14 @@ void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             bShouldUpdatePropertiesOnRT = true;
         }
     }
+    if (jsonObj.contains("text_vertical_alignment")) {
+        const auto text_vertical_alignment
+            = static_cast<eTextVerticalAlignmentType>(jsonObj["text_vertical_alignment"].get<uint8_t>());
+        if (text_vertical_alignment != mTextVerticalAlignment) {
+            mTextVerticalAlignment = text_vertical_alignment;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
 
     if (bShouldUpdatePropertiesOnRT) {
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
@@ -232,7 +254,8 @@ void UiTextBlock::SyncDataOnRenderThread()
                          textLineWidthHeight = mTextLineWidthHeight,
                          fontSize = mFontSize,
                          textColor = mTextColor,
-                         textHorizontalAlignment = mTextHorizontalAlignment]() {
+                         textHorizontalAlignment = mTextHorizontalAlignment,
+                         textVerticalAlignment = mTextVerticalAlignment]() {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                             if (uiSceneProxy) {
                                 const auto& textBlockSceneProxy = std::static_pointer_cast<UiTextBlockSceneProxy>(uiSceneProxy);
@@ -242,6 +265,7 @@ void UiTextBlock::SyncDataOnRenderThread()
                                 textBlockSceneProxy->SetFontSize(fontSize);
                                 textBlockSceneProxy->SetTextColor(textColor);
                                 textBlockSceneProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+                                textBlockSceneProxy->SetTextVerticalAlignment(textVerticalAlignment);
                             }
                         });
                 }
@@ -270,7 +294,8 @@ void UiTextBlock::SyncDataOnLuaThread()
                      textColor = mTextColor,
                      textLineWidthHeight = mTextLineWidthHeight,
                      fontSize = mFontSize,
-                     textHorizontalAlignment = mTextHorizontalAlignment]() {
+                     textHorizontalAlignment = mTextHorizontalAlignment,
+                     textVerticalAlignment = mTextVerticalAlignment]() {
                         if (const auto& textBlockLuaProxy
                             = std::static_pointer_cast<UiTextBlockLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             textBlockLuaProxy->SetOpacity_FromGameThread(opacity);
@@ -279,6 +304,7 @@ void UiTextBlock::SyncDataOnLuaThread()
                             textBlockLuaProxy->SetTextLineWidthHeight_FromGameThread(textLineWidthHeight);
                             textBlockLuaProxy->SetFontSize_FromGameThread(fontSize);
                             textBlockLuaProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+                            textBlockLuaProxy->SetTextVerticalAlignment(textVerticalAlignment);
                         }
                     });
             }

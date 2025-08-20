@@ -28,7 +28,7 @@ std::string ToLower(const std::string& source);
 
 std::string RemoveAll(const std::string& source, const char symbol);
 
-int32_t Utf8_To_Unicode(const std::string& utf8_code);
+std::vector<uint32_t> Utf8_To_Unicode(const std::string& utf8Str);
 
 std::vector<std::string> ExtractUtf8FromUnicodeString(const std::string& unicodeString);
 } // namespace EngineUtility

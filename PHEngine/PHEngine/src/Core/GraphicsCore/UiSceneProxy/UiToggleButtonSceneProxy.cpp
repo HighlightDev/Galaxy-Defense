@@ -48,7 +48,7 @@ void UiToggleButtonSceneProxy::Render()
     mUiRectangleShader->SetTransform(mNormalizedTranslation + mCenterOffset + scaleOffset, mNormalizedScale * glm::vec2(mScale));
     mUiRectangleShader->SetColor(mToggleOffColor);
     mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
-    mUiRectangleShader->SetWidthHeightPixels(mWidthHightPixels);
+    mUiRectangleShader->SetWidthHeightPixels(mWidthHeightPixels);
     mUiRectangleShader->SetBorderRadius(0.0f);
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
 

@@ -30,6 +30,8 @@ protected:
 
     eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
+    eTextVerticalAlignmentType mTextVerticalAlignment;
+
 public:
     explicit UiTextBlockLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiTextBlock>& ownerTextBlock);
 
@@ -48,6 +50,8 @@ public:
     void SetTextColor_FromGameThread(const glm::vec3& texColor);
 
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
+
+    void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment);
 };
 } // namespace Scripts
 } // namespace EngineCore

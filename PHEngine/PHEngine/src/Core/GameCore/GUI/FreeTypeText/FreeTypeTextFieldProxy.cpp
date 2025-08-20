@@ -36,6 +36,7 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
     const int32_t pixelSize,
     const int32_t fontFlags,
     const eTextHorizontalAlignmentType textHorizontalAlignment,
+    const eTextVerticalAlignmentType textVericalAlignment,
     const glm::ivec2& lineWidthHeight,
     const bool isSubscribedOnTextScreenSpaceSizeUpdate)
 {
@@ -50,6 +51,7 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
     result->mLineWidthHeight = lineWidthHeight;
     result->mFontFlags = fontFlags;
     result->mTextHorizontalAlignment = textHorizontalAlignment;
+    result->mTextVerticalAlignment = textVericalAlignment;
     result->mIsSubscribedOnTextScreenSpaceSizeUpdate = isSubscribedOnTextScreenSpaceSizeUpdate;
     return result;
 }
@@ -242,6 +244,16 @@ eTextHorizontalAlignmentType FreeTypeTextFieldProxy::GetTextHorizontalAlignment(
 void FreeTypeTextFieldProxy::SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment)
 {
     mTextHorizontalAlignment = textHorizontalAlignment;
+}
+
+eTextVerticalAlignmentType FreeTypeTextFieldProxy::GetextVerticalAlignment() const
+{
+    return mTextVerticalAlignment;
+}
+
+void FreeTypeTextFieldProxy::SetTextVerticalAlignment(const eTextVerticalAlignmentType textVericalAlignment)
+{
+    mTextVerticalAlignment = textVericalAlignment;
 }
 
 FreeTypeFontParams FreeTypeTextFieldProxy::GetFontParams() const

@@ -39,7 +39,13 @@ void SpaceshipActor::OnSceneOwnerInitialized()
 {
     mUiComponent = GetComponentsByType<UiComponent>().back();
     mDamageTextFieldId = mUiComponent->CreateEmptyTextField(
-        "13_5Atom_Sans_Regular", 10, glm::vec3(1.0f, 0.0f, 0.0f), true, glm::ivec2(50), eTextHorizontalAlignmentType::LEFT);
+        "13_5Atom_Sans_Regular",
+        10,
+        glm::vec3(1.0f, 0.0f, 0.0f),
+        true,
+        glm::ivec2(50),
+        eTextHorizontalAlignmentType::CENTER,
+        eTextVerticalAlignmentType::CENTER);
 }
 
 void SpaceshipActor::TriggerSpawn(const glm::vec3& position)

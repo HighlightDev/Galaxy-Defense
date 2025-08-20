@@ -65,7 +65,7 @@ UniformArray IShader::GetUniformArray(
     GLint maxUniforms;
     glGetIntegerv(s_mapShaderTypeToUniformShaderType.at(shaderType), &maxUniforms);
     ext_assert(
-        maxUniforms >= countOfUniforms,
+        maxUniforms >= static_cast<GLint>(countOfUniforms),
         "Requested amount of uniforms is not supported by this type of shader. maxUniformsSupported: "
             + std::to_string(maxUniforms) + ", requested: " + std::to_string(countOfUniforms)
             + ", shaderType: " + std::to_string(static_cast<int8_t>(shaderType)));

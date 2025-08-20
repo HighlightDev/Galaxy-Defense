@@ -33,7 +33,10 @@ public:
 
     static int32_t CalcWidth(const std::string& text, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
 
-    static int32_t CalcHeight(std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
+    static int32_t CalcHeight(const std::string& text, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
+
+    static glm::ivec2 CalcTextScreenSpaceSize(
+        std::shared_ptr<FreeTypeTextFieldProxy> textFieldProxy, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas);
 
 private:
     static std::vector<std::string> splitText(const std::string& text);

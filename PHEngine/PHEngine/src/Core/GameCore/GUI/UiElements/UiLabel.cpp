@@ -111,6 +111,14 @@ void UiLabel::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             bShouldUpdatePropertiesOnRT = true;
         }
     }
+    if (jsonObj.contains("text_vertical_alignment")) {
+        const auto text_vertical_alignment
+            = static_cast<eTextVerticalAlignmentType>(jsonObj["text_vertical_alignment"].get<uint8_t>());
+        if (text_vertical_alignment != mTextVerticalAlignment) {
+            mTextVerticalAlignment = text_vertical_alignment;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
 
     if (bShouldUpdatePropertiesOnRT) {
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
@@ -202,6 +210,20 @@ eTextHorizontalAlignmentType UiLabel::GetTextHorizontalAlignment() const
     return mTextHorizontalAlignment;
 }
 
+eTextVerticalAlignmentType UiLabel::GetTextVerticalAlignment() const
+{
+    return mTextVerticalAlignment;
+}
+
+void UiLabel::SetTextVerticalAlignment(const eTextVerticalAlignmentType textVericalAlignment)
+{
+    if (mTextVerticalAlignment != textVericalAlignment) {
+        mTextVerticalAlignment = textVericalAlignment;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
 std::shared_ptr<UiSceneProxyBase> UiLabel::CreateUiSceneProxy() const
 {
     return std::make_shared<UiLabelSceneProxy>(this);
@@ -237,7 +259,8 @@ void UiLabel::SyncDataOnRenderThread()
                          textLineWidthHeight = mTextLineWidthHeight,
                          fontSize = mFontSize,
                          textColor = mTextColor,
-                         textHorizontalAlignment = mTextHorizontalAlignment]() {
+                         textHorizontalAlignment = mTextHorizontalAlignment,
+                         textVerticalAlignment = mTextVerticalAlignment]() {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUid, canvasUId);
                             if (uiSceneProxy) {
                                 const auto& labelSceneProxy = std::static_pointer_cast<UiLabelSceneProxy>(uiSceneProxy);
@@ -247,6 +270,7 @@ void UiLabel::SyncDataOnRenderThread()
                                 labelSceneProxy->SetFontSize(fontSize);
                                 labelSceneProxy->SetTextColor(textColor);
                                 labelSceneProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+                                labelSceneProxy->SetTextVerticalAlignment(textVerticalAlignment);
                             }
                         });
                 }
@@ -275,7 +299,8 @@ void UiLabel::SyncDataOnLuaThread()
                      textColor = mTextColor,
                      textLineWidthHeight = mTextLineWidthHeight,
                      fontSize = mFontSize,
-                     textHorizontalAlignment = mTextHorizontalAlignment]() {
+                     textHorizontalAlignment = mTextHorizontalAlignment,
+                     textVerticalAlignment = mTextVerticalAlignment]() {
                         if (const auto& labelLuaProxy
                             = std::static_pointer_cast<UiLabelLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             labelLuaProxy->SetOpacity_FromGameThread(opacity);
@@ -284,6 +309,7 @@ void UiLabel::SyncDataOnLuaThread()
                             labelLuaProxy->SetTextLineWidthHeight_FromGameThread(textLineWidthHeight);
                             labelLuaProxy->SetFontSize_FromGameThread(fontSize);
                             labelLuaProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+                            labelLuaProxy->SetTextVerticalAlignment(textVerticalAlignment);
                         }
                     });
             }

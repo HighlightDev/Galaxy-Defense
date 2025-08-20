@@ -1,9 +1,11 @@
 #include "UiSceneProxyBase.h"
 
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
 
 using namespace EngineCore::GUI;
+using namespace EngineCore::DataProviders;
 
 namespace Graphics {
 namespace Proxy {
@@ -14,7 +16,7 @@ UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
     , mParentCanvasProxy()
     , mNormalizedTranslation(uiItemBase->GetNormalizedTranslation())
     , mNormalizedScale(uiItemBase->GetNormalizedScale())
-    , mWidthHightPixels(glm::ivec2(static_cast<int32_t>(uiItemBase->GetWidth()), static_cast<int32_t>(uiItemBase->GetHeight())))
+    , mWidthHeightPixels(glm::ivec2(static_cast<int32_t>(uiItemBase->GetWidth()), static_cast<int32_t>(uiItemBase->GetWidth())))
     , mCenterOffset(glm::vec2(0.0f, 0.0f))
 {
 }
@@ -60,7 +62,7 @@ void UiSceneProxyBase::SetTransform(const glm::vec2& normalizedTranslation, cons
 
 void UiSceneProxyBase::SetWidthHeightPixels(const glm::ivec2& widthHeight)
 {
-    mWidthHightPixels = widthHeight;
+    mWidthHeightPixels = widthHeight;
 }
 
 void UiSceneProxyBase::SetOverlayOpacity(const float overlayOpacity)
@@ -101,5 +103,16 @@ void UiSceneProxyBase::SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProx
 void UiSceneProxyBase::Render()
 {
 }
+
+glm::vec2 UiSceneProxyBase::GetNormalizedWidthHeight() const
+{
+    const auto& screenResolution = glm::ivec2(
+        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight());
+    return glm::vec2(
+        static_cast<float>(mWidthHeightPixels.x) / static_cast<float>(screenResolution.x),
+        static_cast<float>(mWidthHeightPixels.y) / static_cast<float>(screenResolution.y));
+}
+
 } // namespace Proxy
 } // namespace Graphics

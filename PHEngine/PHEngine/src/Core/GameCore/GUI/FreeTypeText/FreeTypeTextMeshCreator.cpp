@@ -1,6 +1,7 @@
 #include "FreeTypeTextMeshCreator.h"
 
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
+#include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "FreeTypeFont.h"
 #include "FreeTypeTextFieldProxy.h"
 
@@ -30,7 +31,7 @@ void FreeTypeTextMeshCreator::calculateVertices(
 
     std::vector<std::string> lines;
     int widthRemaining = width;
-    int spaceWidth = CalcWidth(" ", ftFontAtlas);
+    const int spaceWidth = CalcWidth(" ", ftFontAtlas);
 
     // todo
     int _flags = eFontFlags::WordWrap;
@@ -92,14 +93,6 @@ void FreeTypeTextMeshCreator::calculateVertices(
     // but FreeType starts drawing from the bottom-right, therefore move down one line
     y += ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6;
 
-    // Calculate alignment (if applicable)
-    int32_t textWidth = CalcWidth(text, ftFontAtlas); // temp
-    if (alignment == eTextHorizontalAlignmentType::CENTER) {
-        x -= textWidth / 2.0;
-    } else if (alignment == eTextHorizontalAlignmentType::RIGHT) {
-        x -= textWidth;
-    }
-
     // Normalize window coordinates
     x = -1 + x * _sx;
     y = 1 - y * _sy;
@@ -107,26 +100,30 @@ void FreeTypeTextMeshCreator::calculateVertices(
     int atlasWidth = ftFontAtlas->getAtlasWidth();
     int atlasHeight = ftFontAtlas->getAtlasHeight();
 
-    FreeTypeFontAtlas::Character* chars = ftFontAtlas->getCharInfo();
+    const auto& chars = ftFontAtlas->getCharInfo();
 
-    for (const char* p = text.c_str(); *p; ++p) {
-        float x2 = x + chars[*p].bitmapLeft * _sx; // scaled x coord
-        float y2 = -y - chars[*p].bitmapTop * _sy; // scaled y coord
-        float w = chars[*p].bitmapWidth * _sx; // scaled width of character
-        float h = chars[*p].bitmapHeight * _sy; // scaled height of character
+    const std::vector<uint32_t> codepoints = EngineUtility::Utf8_To_Unicode(text);
+
+    for (size_t idx = 0; idx < codepoints.size(); ++idx) {
+        uint32_t cp = codepoints[idx];
+        if (!chars.count(cp)) {
+            continue; // skip characters not in the font atlas
+        }
+        const auto& character = chars.at(cp);
+        float x2 = x + character.bitmapLeft * _sx; // scaled x coord
+        float y2 = -y - character.bitmapTop * _sy; // scaled y coord
+        float w = character.bitmapWidth * _sx; // scaled width of character
+        float h = character.bitmapHeight * _sy; // scaled height of character
 
         // Calculate kerning value
-        FT_Vector kerning;
-        FT_Get_Kerning(
-            ftFontAtlas->GetFontFace()->getFaceHandle(), // font face handle
-            *p, // left glyph
-            *(p + 1), // right glyph
-            FT_KERNING_DEFAULT, // kerning mode
-            &kerning); // variable to store kerning value
+        FT_Vector kerning = {0, 0};
+        if (idx + 1 < codepoints.size()) {
+            FT_Get_Kerning(ftFontAtlas->GetFontFace()->getFaceHandle(), cp, codepoints[idx + 1], FT_KERNING_DEFAULT, &kerning);
+        }
 
         // Advance cursor to start of next character
-        x += (chars[*p].advanceX + (kerning.x >> 6)) * _sx;
-        y += chars[*p].advanceY * _sy;
+        x += (character.advanceX + (kerning.x >> 6)) * _sx;
+        y += character.advanceY * _sy;
 
         // Skip glyphs with no pixels (e.g. spaces)
         if (!w || !h)
@@ -139,12 +136,12 @@ void FreeTypeTextMeshCreator::calculateVertices(
         vertices.emplace_back(x2, -y2 - h);
         vertices.emplace_back(x2 + w, -y2 - h);
 
-        texCoords.emplace_back(chars[*p].xOffset, 0);
-        texCoords.emplace_back(chars[*p].xOffset + chars[*p].bitmapWidth / atlasWidth, 0);
-        texCoords.emplace_back(chars[*p].xOffset, chars[*p].bitmapHeight / atlasHeight);
-        texCoords.emplace_back(chars[*p].xOffset + chars[*p].bitmapWidth / atlasWidth, 0);
-        texCoords.emplace_back(chars[*p].xOffset, chars[*p].bitmapHeight / atlasHeight);
-        texCoords.emplace_back(chars[*p].xOffset + chars[*p].bitmapWidth / atlasWidth, chars[*p].bitmapHeight / atlasHeight);
+        texCoords.emplace_back(character.xOffset, 0);
+        texCoords.emplace_back(character.xOffset + character.bitmapWidth / atlasWidth, 0);
+        texCoords.emplace_back(character.xOffset, character.bitmapHeight / atlasHeight);
+        texCoords.emplace_back(character.xOffset + character.bitmapWidth / atlasWidth, 0);
+        texCoords.emplace_back(character.xOffset, character.bitmapHeight / atlasHeight);
+        texCoords.emplace_back(character.xOffset + character.bitmapWidth / atlasWidth, character.bitmapHeight / atlasHeight);
     }
 }
 
@@ -176,19 +173,57 @@ std::vector<std::string> FreeTypeTextMeshCreator::splitText(const std::string& t
 int32_t FreeTypeTextMeshCreator::CalcWidth(const std::string& text, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
 {
     int32_t width = 0;
-    FreeTypeFontAtlas::Character* chars = ftFontAtlas->getCharInfo();
-    auto text_str = text.c_str();
-    for (const char* p = text_str; *p; ++p) {
-        width += chars[*p].advanceX;
+    const auto& chars = ftFontAtlas->getCharInfo();
+    const std::vector<uint32_t> codepoints = EngineUtility::Utf8_To_Unicode(text);
+    for (const uint32_t c : codepoints) {
+        if (!chars.count(c)) {
+            continue; // skip characters not in the font atlas
+        }
+        width += chars.at(c).advanceX;
     }
 
     return width;
 }
 
-int32_t FreeTypeTextMeshCreator::CalcHeight(std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
+glm::ivec2 FreeTypeTextMeshCreator::CalcTextScreenSpaceSize(
+    std::shared_ptr<FreeTypeTextFieldProxy> textFieldProxy, std::shared_ptr<FreeTypeFontAtlas> ftFontAtlas)
 {
-    // For simplicity, we assume that height is the same for all lines
-    return ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6;
+    if (textFieldProxy) {
+        const auto& text = textFieldProxy->GetText();
+        if (text.empty()) {
+            return {0, 0};
+        }
+
+        std::vector<std::string> words = splitText(text);
+
+        const int32_t width = textFieldProxy->GetLineWidthHeight().x;
+        int widthRemaining = width;
+        const int spaceWidth = CalcWidth(" ", ftFontAtlas);
+
+        int32_t linesCount = 0;
+        std::string curLine = "";
+        for (const auto& word : words) {
+            const int wordWidth = CalcWidth(word, ftFontAtlas);
+            if (wordWidth - spaceWidth > widthRemaining && width /* make sure there is a width specified */) {
+                // If we have passed the given width
+                ++linesCount;
+                widthRemaining = width - wordWidth;
+                curLine = "";
+                curLine.append(word);
+            } else {
+                curLine.append(word);
+                widthRemaining = widthRemaining - wordWidth;
+            }
+        }
+
+        if (curLine != "") {
+            ++linesCount;
+        }
+
+        const int height = ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6;
+        return {CalcWidth(textFieldProxy->GetText(), ftFontAtlas), linesCount * height};
+    }
+    return {0, 0};
 }
 
 std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> FreeTypeTextMeshCreator::CreateTextMesh(

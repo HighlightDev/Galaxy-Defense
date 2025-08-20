@@ -31,7 +31,8 @@ public:
         const glm::vec2& position,
         const bool receiveUpdateOnTextScreenSpaceSizeChanged,
         const glm::ivec2& lineMaxWidthHeight,
-        const eTextHorizontalAlignmentType textHorizontalAlignment);
+        const eTextHorizontalAlignmentType textHorizontalAlignment,
+        const eTextVerticalAlignmentType textVericalAlignment);
 
     int32_t CreateEmptyTextField(
         const std::string& fontName,
@@ -39,7 +40,8 @@ public:
         const glm::vec3& color,
         const bool receiveUpdateOnTextScreenSpaceSizeChanged,
         const glm::ivec2& lineMaxWidthHeight,
-        const eTextHorizontalAlignmentType textHorizontalAlignment);
+        const eTextHorizontalAlignmentType textHorizontalAlignment,
+        const eTextVerticalAlignmentType textVericalAlignment);
 
     void DeleteTextField(const int32_t textFieldId);
 

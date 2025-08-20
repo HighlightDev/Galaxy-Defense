@@ -37,7 +37,8 @@ int32_t UiComponent::CreateTextField(
     const glm::vec2& position,
     const bool receiveUpdateOnTextScreenSpaceSizeChanged,
     const glm::ivec2& lineMaxWidthHeight,
-    const eTextHorizontalAlignmentType textHorizontalAlignment)
+    const eTextHorizontalAlignmentType textHorizontalAlignment,
+    const eTextVerticalAlignmentType textVericalAlignment)
 {
     if (const auto& sceneSp = m_sceneWP.lock()) {
         const auto& textHanderSp = sceneSp->GetTextHandler();
@@ -49,7 +50,8 @@ int32_t UiComponent::CreateTextField(
             position,
             receiveUpdateOnTextScreenSpaceSizeChanged,
             lineMaxWidthHeight,
-            textHorizontalAlignment);
+            textHorizontalAlignment,
+            textVericalAlignment);
         return textFieldSp->GetTextFieldId();
     }
 
@@ -62,7 +64,8 @@ int32_t UiComponent::CreateEmptyTextField(
     const glm::vec3& color,
     const bool receiveUpdateOnTextScreenSpaceSizeChanged,
     const glm::ivec2& lineMaxWidthHeight,
-    const eTextHorizontalAlignmentType textHorizontalAlignment)
+    const eTextHorizontalAlignmentType textHorizontalAlignment,
+    const eTextVerticalAlignmentType textVericalAlignment)
 {
     if (const auto& sceneSp = m_sceneWP.lock()) {
         const auto& textHanderSp = sceneSp->GetTextHandler();
@@ -72,7 +75,8 @@ int32_t UiComponent::CreateEmptyTextField(
             color,
             receiveUpdateOnTextScreenSpaceSizeChanged,
             lineMaxWidthHeight,
-            textHorizontalAlignment);
+            textHorizontalAlignment,
+            textVericalAlignment);
         return textFieldSp->GetTextFieldId();
     }
 

@@ -31,6 +31,7 @@ UiTextBlockSceneProxy::UiTextBlockSceneProxy(const UiTextBlock* uiTextBlock)
     , mTextLineWidthHeight(uiTextBlock->GetTextLineWidthHeight())
     , mFontSize(uiTextBlock->GetFontSize())
     , mTextHorizontalAlignment(uiTextBlock->GetTextHorizontalAlignment())
+    , mTextVerticalAlignment(uiTextBlock->GetTextVerticalAlignment())
     , mTextColor(uiTextBlock->GetTextColor())
 {
 }
@@ -71,6 +72,7 @@ void UiTextBlockSceneProxy::Initialize()
                 mFontSize,
                 0,
                 mTextHorizontalAlignment,
+                mTextVerticalAlignment,
                 mTextLineWidthHeight,
                 false);
 
@@ -165,6 +167,14 @@ void UiTextBlockSceneProxy::SetTextHorizontalAlignment(const eTextHorizontalAlig
                 fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
             }
         }
+    }
+}
+
+void UiTextBlockSceneProxy::SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment)
+{
+    if (mTextVerticalAlignment != textVerticalAlignment) {
+        mTextVerticalAlignment = textVerticalAlignment;
+        mTextFieldProxy->SetTextVerticalAlignment(textVerticalAlignment);
     }
 }
 

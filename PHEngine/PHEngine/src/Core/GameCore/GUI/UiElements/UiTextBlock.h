@@ -25,6 +25,8 @@ class UiTextBlock : public UiRectangle {
 
     eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
+    eTextVerticalAlignmentType mTextVerticalAlignment{eTextVerticalAlignmentType::TOP};
+
 public:
     explicit UiTextBlock(const std::string& fontName, const std::string& name = std::string(""));
 
@@ -55,6 +57,10 @@ public:
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 
     eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
+
+    void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment);
+
+    eTextVerticalAlignmentType GetTextVerticalAlignment() const;
 
     std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const override;
 

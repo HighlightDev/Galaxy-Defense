@@ -15,6 +15,13 @@ namespace EngineCore {
 namespace Scripts {
 UiTextBlockLuaProxy::UiTextBlockLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiTextBlock>& ownerTextBlock)
     : UiRectangleLuaProxy(ownerTextBlock)
+    , mFontName(ownerTextBlock->GetFontName())
+    , mFontSize(ownerTextBlock->GetFontSize())
+    , mTextLineWidthHeight(ownerTextBlock->GetTextLineWidthHeight())
+    , mTextColor(ownerTextBlock->GetTextColor())
+    , mTextHorizontalAlignment(ownerTextBlock->GetTextHorizontalAlignment())
+    , mTextVerticalAlignment(ownerTextBlock->GetTextVerticalAlignment())
+    , mOpacity(ownerTextBlock->GetOpacity())
 {
 }
 
@@ -41,6 +48,13 @@ std::string UiTextBlockLuaProxy::GetGameThreadData()
 {
     const auto& baseJsonStr = UiItemBaseLuaProxy::GetGameThreadData();
     auto jsonObj = nlohmann::json::parse(baseJsonStr);
+    const auto textColor = std::vector<float>({mTextColor.r, mTextColor.g, mTextColor.b});
+    jsonObj["text"] = mText;
+    jsonObj["text_opacity"] = mOpacity;
+    jsonObj["font_size"] = mFontSize;
+    jsonObj["text_color"] = textColor;
+    jsonObj["text_horizontal_alignment"] = mTextHorizontalAlignment;
+    jsonObj["text_vertical_alignment"] = mTextVerticalAlignment;
     return jsonObj.dump();
 }
 
@@ -80,6 +94,14 @@ void UiTextBlockLuaProxy::SetTextHorizontalAlignment(const eTextHorizontalAlignm
 {
     if (textHorizontalAlignment != mTextHorizontalAlignment) {
         mTextHorizontalAlignment = textHorizontalAlignment;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment)
+{
+    if (textVerticalAlignment != mTextVerticalAlignment) {
+        mTextVerticalAlignment = textVerticalAlignment;
         mIsLuaDataDirty = true;
     }
 }

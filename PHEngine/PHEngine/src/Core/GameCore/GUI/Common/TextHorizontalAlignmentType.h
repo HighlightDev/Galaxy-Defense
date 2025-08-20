@@ -2,6 +2,7 @@
 
 namespace EngineCore {
 enum class eTextHorizontalAlignmentType { LEFT, CENTER, RIGHT };
+enum class eTextVerticalAlignmentType { TOP, CENTER, BOTTOM };
 
 enum eFontFlags {
     LeftAligned = 1 << 1,

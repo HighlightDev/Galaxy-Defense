@@ -38,7 +38,7 @@ public:
     {
         return mWidthHeightTexture.y;
     }
-    inline Character* getCharInfo()
+    inline const std::unordered_map<uint32_t, Character>& getCharInfo() const
     {
         return mChars;
     }
@@ -64,7 +64,7 @@ private:
 
     glm::ivec2 mWidthHeightTexture;
 
-    Character mChars[128];
+    std::unordered_map<uint32_t, Character> mChars;
 
     FT_GlyphSlot mSlot;
 

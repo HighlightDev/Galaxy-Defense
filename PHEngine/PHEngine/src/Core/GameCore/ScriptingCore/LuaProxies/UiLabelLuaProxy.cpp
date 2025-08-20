@@ -20,6 +20,7 @@ UiLabelLuaProxy::UiLabelLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiLabe
     , mTextLineWidthHeight(ownerLabel->GetTextLineWidthHeight())
     , mTextColor(ownerLabel->GetTextColor())
     , mTextHorizontalAlignment(ownerLabel->GetTextHorizontalAlignment())
+    , mTextVerticalAlignment(ownerLabel->GetTextVerticalAlignment())
 {
 }
 
@@ -52,6 +53,7 @@ std::string UiLabelLuaProxy::GetGameThreadData()
     jsonObj["font_size"] = mFontSize;
     jsonObj["text_color"] = textColor;
     jsonObj["text_horizontal_alignment"] = mTextHorizontalAlignment;
+    jsonObj["text_vertical_alignment"] = mTextVerticalAlignment;
     return jsonObj.dump();
 }
 
@@ -91,6 +93,14 @@ void UiLabelLuaProxy::SetTextHorizontalAlignment(const eTextHorizontalAlignmentT
 {
     if (textHorizontalAlignment != mTextHorizontalAlignment) {
         mTextHorizontalAlignment = textHorizontalAlignment;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiLabelLuaProxy::SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment)
+{
+    if (textVerticalAlignment != mTextVerticalAlignment) {
+        mTextVerticalAlignment = textVerticalAlignment;
         mIsLuaDataDirty = true;
     }
 }

@@ -3,8 +3,10 @@
 #include <freetype/freetype.h>
 #include <ft2build.h>
 
-#include <string>
 #include <mutex>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace EngineCore::GUI {
 class FreeTypeFont {
@@ -16,13 +18,21 @@ public:
 
     FT_Face getFaceHandle();
 
+    static void CleanUp();
+
+    static const std::unordered_map<std::string, std::vector<uint32_t>>& getLanguageCharMap();
+
 private:
     static std::once_flag s_initFlag;
 
-    FT_Library mFt;
-    bool mFtInitialized = false;
+    static FT_Library mFt;
+
+    static bool mFtInitialized;
 
     FT_Face mFace;
+
     bool mFaceInitialized = false;
+
+    static bool mLanguageMapInitialized;
 };
 } // namespace EngineCore::GUI

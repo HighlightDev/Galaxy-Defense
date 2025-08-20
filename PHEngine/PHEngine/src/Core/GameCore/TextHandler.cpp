@@ -38,10 +38,11 @@ std::shared_ptr<HudTextField> TextHandler::CreateTextField(
     const glm::vec2& position,
     const bool receiveUpdateOnTextScreenSpaceSizeChanged,
     const glm::ivec2& lineMaxWidthHeight,
-    const eTextHorizontalAlignmentType textHorizontalAlignment)
+    const eTextHorizontalAlignmentType textHorizontalAlignment,
+    const eTextVerticalAlignmentType textVericalAlignment)
 {
-    const auto& textField = mRegisteredTexts.emplace_back(
-        std::make_shared<HudTextField>(fontName, fontSize, text, color, position, lineMaxWidthHeight, textHorizontalAlignment));
+    const auto& textField = mRegisteredTexts.emplace_back(std::make_shared<HudTextField>(
+        fontName, fontSize, text, color, position, lineMaxWidthHeight, textHorizontalAlignment, textVericalAlignment));
 
     RegisterTextField(textField, receiveUpdateOnTextScreenSpaceSizeChanged);
     return textField;
@@ -53,10 +54,11 @@ std::shared_ptr<HudTextField> TextHandler::CreateEmptyTextField(
     const glm::vec3& color,
     const bool receiveUpdateOnTextScreenSpaceSizeChanged,
     const glm::ivec2& lineMaxWidthHeight,
-    const eTextHorizontalAlignmentType textHorizontalAlignment)
+    const eTextHorizontalAlignmentType textHorizontalAlignment,
+    const eTextVerticalAlignmentType textVericalAlignment)
 {
-    const auto& textField = mRegisteredTexts.emplace_back(
-        std::make_shared<HudTextField>(fontName, fontSize, color, lineMaxWidthHeight, textHorizontalAlignment));
+    const auto& textField = mRegisteredTexts.emplace_back(std::make_shared<HudTextField>(
+        fontName, fontSize, color, lineMaxWidthHeight, textHorizontalAlignment, textVericalAlignment));
 
     RegisterTextField(textField, receiveUpdateOnTextScreenSpaceSizeChanged);
     return textField;

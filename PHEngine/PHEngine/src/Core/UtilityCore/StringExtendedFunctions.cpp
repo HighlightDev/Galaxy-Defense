@@ -96,20 +96,33 @@ std::string RemoveAll(const std::string& source, const char symbol)
     return result;
 }
 
-int32_t Utf8_To_Unicode(const std::string& utf8_code)
+std::vector<uint32_t> Utf8_To_Unicode(const std::string& utf8Str)
 {
-    const size_t utf8_size = utf8_code.length();
-    int32_t result_unicode = 0;
-
-    for (unsigned p = 0; p < utf8_size; ++p) {
-        const int32_t bit_count = (p ? 6 : 8 - utf8_size - (utf8_size == 1 ? 0 : 1)),
-                      shift = (p < utf8_size - 1 ? (6 * (utf8_size - p - 1)) : 0);
-
-        for (int k = 0; k < bit_count; ++k)
-            result_unicode += ((utf8_code[p] & (1 << k)) << shift);
+    // Convert UTF-8 string to a vector of Unicode codepoints
+    std::vector<uint32_t> codepoints;
+    for (size_t i = 0; i < utf8Str.size();) {
+        uint32_t cp = 0;
+        unsigned char c = utf8Str[i];
+        if (c < 0x80) { // 1-byte sequence
+            cp = c;
+            i += 1;
+        } else if ((c & 0xE0) == 0xC0) { // 2-byte sequence
+            cp = ((c & 0x1F) << 6) | (utf8Str[i + 1] & 0x3F);
+            i += 2;
+        } else if ((c & 0xF0) == 0xE0) { // 3-byte sequence
+            cp = ((c & 0x0F) << 12) | ((utf8Str[i + 1] & 0x3F) << 6) | (utf8Str[i + 2] & 0x3F);
+            i += 3;
+        } else if ((c & 0xF8) == 0xF0) { // 4-byte sequence
+            cp = ((c & 0x07) << 18) | ((utf8Str[i + 1] & 0x3F) << 12) | ((utf8Str[i + 2] & 0x3F) << 6) | (utf8Str[i + 3] & 0x3F);
+            i += 4;
+        } else {
+            // Invalid UTF-8, skip
+            i += 1;
+            continue;
+        }
+        codepoints.emplace_back(cp);
     }
-
-    return result_unicode;
+    return codepoints;
 }
 
 std::vector<std::string> ExtractUtf8FromUnicodeString(const std::string& unicodeString)

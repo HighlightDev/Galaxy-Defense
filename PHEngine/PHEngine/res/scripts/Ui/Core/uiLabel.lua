@@ -34,6 +34,12 @@ UiLabel.TextHorizontalAlignmentType = {
     RIGHT = 2
 }
 
+UiLabel.TextVerticalAlignmentType = {
+    TOP = 0,
+    CENTER = 1,
+    BOTTOM = 2
+}
+
 function UiLabel:new(host, fontName, name)
     assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and fontName ~= "")
 
@@ -72,6 +78,10 @@ function UiLabel:new(host, fontName, name)
         text_horizontal_alignment = {
             value = UiLabel.TextHorizontalAlignmentType.LEFT,
             dirty = false
+        },
+        text_vertical_alignment = {
+            value = UiLabel.TextVerticalAlignmentType.TOP,
+            dirty = false
         }
     }
 
@@ -108,6 +118,9 @@ function UiLabel:updateFromReplicatorData(host)
             end
             if parsedJson["text_horizontal_alignment"] ~= nil then
                 self.labelProperties.text_horizontal_alignment.value = tonumber(parsedJson["text_horizontal_alignment"])
+            end
+            if parsedJson["text_vertical_alignment"] ~= nil then
+                self.labelProperties.text_vertical_alignment.value = tonumber(parsedJson["text_vertical_alignment"])
             end
         end
     end
@@ -189,6 +202,16 @@ function UiLabel:setTextHorizontalAlignment(textHorizontalAlignment)
     if self.labelProperties.text_horizontal_alignment.value ~= textHorizontalAlignment then
         self.labelProperties.text_horizontal_alignment.value = textHorizontalAlignment
         self.labelProperties.text_horizontal_alignment.dirty = true
+    end
+end
+
+function UiLabel:setTextVerticalAlignment(textVerticalAlignment)
+    assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) == "number" and
+        textVerticalAlignment >= UiLabel.TextVerticalAlignmentType.TOP and
+        textVerticalAlignment <= UiLabel.TextVerticalAlignmentType.BOTTOM)
+    if self.labelProperties.text_vertical_alignment.value ~= textVerticalAlignment then
+        self.labelProperties.text_vertical_alignment.value = textVerticalAlignment
+        self.labelProperties.text_vertical_alignment.dirty = true
     end
 end
 

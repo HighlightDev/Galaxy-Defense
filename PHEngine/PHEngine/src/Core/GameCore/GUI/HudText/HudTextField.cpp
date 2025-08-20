@@ -12,7 +12,8 @@ HudTextField::HudTextField(
     const glm::vec3& color,
     const glm::vec2& position,
     const glm::ivec2& lineMaxWidthHeight,
-    const eTextHorizontalAlignmentType textHorizontalAlignment)
+    const eTextHorizontalAlignmentType textHorizontalAlignment,
+    const eTextVerticalAlignmentType textVericalAlignment)
     : mTextFieldId(UniqueFontTextIdGenerator::GenerateUniqueFontTextId())
     , mIsVisible(true)
     , mFontName(fontName)
@@ -22,6 +23,7 @@ HudTextField::HudTextField(
     , mPosition(position)
     , mLineMaxWidthHeight(lineMaxWidthHeight)
     , mTextHorizontalAlignment(textHorizontalAlignment)
+    , mTextVerticalAlignment(textVericalAlignment)
     , mScreenSpaceSize(0.0f, 0.0f)
 {
 }
@@ -31,7 +33,8 @@ HudTextField::HudTextField(
     const int32_t fontSize,
     const glm::vec3& color,
     const glm::ivec2& lineMaxWidthHeight,
-    const eTextHorizontalAlignmentType textHorizontalAlignment)
+    const eTextHorizontalAlignmentType textHorizontalAlignment,
+    const eTextVerticalAlignmentType textVericalAlignment)
     : mTextFieldId(UniqueFontTextIdGenerator::GenerateUniqueFontTextId())
     , mIsVisible(false)
     , mFontName(fontName)
@@ -41,6 +44,7 @@ HudTextField::HudTextField(
     , mPosition()
     , mLineMaxWidthHeight(lineMaxWidthHeight)
     , mTextHorizontalAlignment(textHorizontalAlignment)
+    , mTextVerticalAlignment(textVericalAlignment)
 {
 }
 
@@ -87,6 +91,11 @@ glm::ivec2 HudTextField::GetLineMaxWidthHeight() const
 eTextHorizontalAlignmentType HudTextField::GetTextHorizontalAlignment() const
 {
     return mTextHorizontalAlignment;
+}
+
+eTextVerticalAlignmentType HudTextField::GetTextVerticalAlignment() const
+{
+    return mTextVerticalAlignment;
 }
 
 void HudTextField::SetText(const std::string& text)

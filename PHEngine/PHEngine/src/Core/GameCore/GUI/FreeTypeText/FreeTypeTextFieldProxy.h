@@ -55,6 +55,8 @@ class FreeTypeTextFieldProxy {
 
     eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
+    eTextVerticalAlignmentType mTextVerticalAlignment{eTextVerticalAlignmentType::TOP};
+
 public:
     explicit FreeTypeTextFieldProxy();
 
@@ -69,6 +71,7 @@ public:
         const int32_t pixelSize,
         const int32_t fontFlags,
         const eTextHorizontalAlignmentType textHorizontalAlignmentType,
+        const eTextVerticalAlignmentType textVericalAlignmentType,
         const glm::ivec2& lineWidthHeight,
         const bool isSubscribedOnTextScreenSpaceSizeUpdate);
 
@@ -105,6 +108,8 @@ public:
     int32_t GetFontFlags() const;
 
     eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
+
+    eTextVerticalAlignmentType GetextVerticalAlignment() const;
 
     float GetCreatedMeshTextWidthTextureSpace() const;
 
@@ -143,6 +148,8 @@ public:
     FreeTypeFontParams GetFontParams() const;
 
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
+
+    void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVericalAlignment);
 
     void SetCreatedMeshTextWidthTextureSpace(const float createdMeshTextWidthTextureSpace);
 

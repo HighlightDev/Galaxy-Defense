@@ -6,22 +6,18 @@
 #include "Core/GraphicsCore/UiSceneProxy/UiRectangleSceneProxy.h"
 #include "UiSceneProxyBase.h"
 
-#include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
-namespace EngineCore {
-namespace GUI {
+namespace EngineCore::GUI {
 class UiTextBlock;
 class FreeTypeTextFieldProxy;
-} // namespace GUI
-} // namespace EngineCore
+} // namespace EngineCore::GUI
 
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Texture;
 
-namespace Graphics {
-
-namespace Proxy {
+namespace Graphics::Proxy {
 class UiTextBlockSceneProxy : public UiRectangleSceneProxy {
 
     std::shared_ptr<FontRenderingShader> mUiLabelShader;
@@ -42,6 +38,8 @@ class UiTextBlockSceneProxy : public UiRectangleSceneProxy {
 
     ::EngineCore::eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
+    ::EngineCore::eTextVerticalAlignmentType mTextVerticalAlignment;
+
     glm::vec3 mTextColor;
 
 public:
@@ -61,6 +59,8 @@ public:
 
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 
+    void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment);
+
     void SetTextColor(const glm::vec3& textColor);
 
     void CleanUp() override;
@@ -70,5 +70,4 @@ public:
 private:
     void Initialize();
 };
-} // namespace Proxy
-} // namespace Graphics
+} // namespace Graphics::Proxy

@@ -34,6 +34,8 @@ protected:
 
     eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
+    eTextVerticalAlignmentType mTextVerticalAlignment;
+
 public:
     explicit UiLabelLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiLabel>& ownerUiItem);
 
@@ -52,6 +54,8 @@ public:
     void SetTextColor_FromGameThread(const glm::vec3& texColor);
 
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
+
+    void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment);
 };
 } // namespace Scripts
 } // namespace EngineCore
