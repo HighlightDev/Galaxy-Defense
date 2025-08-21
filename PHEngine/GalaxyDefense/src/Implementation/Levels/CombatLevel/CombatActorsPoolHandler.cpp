@@ -88,10 +88,11 @@ std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor() c
     const auto& sceneSp = mSceneWp.lock();
     assert(sceneSp);
     constexpr float c_spaceshipSize = 2.5f;
+    constexpr int32_t c_spaceshipFontSize = 25;
     WeakSpaceShipFactory spaceShipFactory;
 
     return mEnemySpaceships.emplace_back(
-        spaceShipFactory.CreateSpaceShip(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(c_spaceshipSize), 25));
+        spaceShipFactory.CreateSpaceShip(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(c_spaceshipSize), c_spaceshipFontSize));
 }
 
 std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor() const

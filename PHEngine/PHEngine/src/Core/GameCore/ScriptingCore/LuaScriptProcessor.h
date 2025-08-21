@@ -15,6 +15,24 @@ namespace EngineCore {
 namespace Scripts {
 class LuaScriptExecutorBase;
 
+/**
+ * @class LuaScriptProcessor
+ * @brief Manages Lua script execution and communication within the game engine.
+ *
+ * The LuaScriptProcessor class is responsible for handling the lifecycle and execution
+ * of Lua scripts, managing Lua proxies, and facilitating communication between Lua scripts
+ * and other engine subsystems such as input and overlay management. It provides methods
+ * for registering and unregistering Lua script executors, accessing Lua proxies, and
+ * interacting with inter-thread communication mechanisms.
+ *
+ * @note This class is designed to be used with shared pointers and supports shared_from_this.
+ *
+ * @see LuaScriptExecutorBase
+ * @see LuaProxy
+ * @see EngineInputLuaProxy
+ * @see OverlayManagerLuaProxy
+ * @see InterThreadCommunicationMgr
+ */
 class LuaScriptProcessor : public std::enable_shared_from_this<LuaScriptProcessor> {
     InterThreadCommunicationMgr& m_interThreadMgr;
 

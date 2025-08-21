@@ -16,6 +16,11 @@ class FreeTypeFontPool : public PoolBase<FreeTypeFont, std::string, FreeTypeFont
 public:
     using poolType_t = PoolBase<FreeTypeFont, std::string, FreeTypeFontAllocationPolicy>;
 
+    FreeTypeFontPool()
+        : poolType_t([]() { FreeTypeFont::CleanUp(); })
+    {
+    }
+
     std::string ToString() const override;
 
     static std::unique_ptr<FreeTypeFontPool>& GetInstance();

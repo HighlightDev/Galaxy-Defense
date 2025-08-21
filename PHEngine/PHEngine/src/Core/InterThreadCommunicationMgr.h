@@ -40,6 +40,30 @@ enum eReadChainType : uint8_t { READ_1 = 0, READ_2 = 1 };
 
 enum eWriteChainType : uint8_t { WRITE_1 = 0, WRITE_2 = 1 };
 
+/**
+ * @struct TasksSwapChain
+ * @brief Manages two job queues (swap chains) for inter-thread communication, ensuring thread safety and minimizing false sharing.
+ *
+ * This structure provides two separate job deques (`Jobs1` and `Jobs2`), each aligned to avoid hardware destructive interference,
+ * which helps prevent performance degradation due to false sharing in multi-threaded environments. The `StoreOperationMutex`
+ * protects operations on the swap chain. The `ReadChainType` and `WriteChainType` indicate which chain is currently used for reading and writing.
+ *
+ * @var std::mutex StoreOperationMutex
+ *      Mutex to synchronize access to the swap chain operations.
+ * @var uint8_t ReadChainType
+ *      Indicates the current read chain type.
+ * @var uint8_t WriteChainType
+ *      Indicates the current write chain type.
+ * @var std::deque<Job> Jobs1
+ *      First job queue, aligned to avoid false sharing.
+ * @var std::deque<Job> Jobs2
+ *      Second job queue, aligned to avoid false sharing.
+ *
+ * @fn std::deque<Job>& GetDequeByIndex(const uint8_t index)
+ * @brief Returns a reference to the job deque specified by the index (0 for Jobs1, otherwise Jobs2).
+ * @param index Index of the job deque to retrieve.
+ * @return Reference to the selected job deque.
+ */
 struct TasksSwapChain {
     std::mutex StoreOperationMutex;
     uint8_t ReadChainType = {eReadChainType::READ_1};
@@ -55,6 +79,27 @@ struct TasksSwapChain {
     }
 };
 
+/**
+ * @class InterThreadCommunicationMgr
+ * @brief Manages communication and job scheduling between game, render, and Lua threads.
+ *
+ * This class provides mechanisms to enqueue and execute jobs on different threads (game, render, Lua)
+ * in a thread-safe manner. It maintains job queues for each thread and controls access using mutexes
+ * and atomic flags. The class also manages weak references to core engine components such as the scene,
+ * scene renderer, and Lua script processor.
+ *
+ * Main Responsibilities:
+ * - Enqueue jobs to game, render, and Lua threads with specific policies.
+ * - Execute jobs on respective threads via spin methods.
+ * - Control whether jobs can be pushed to game or Lua thread queues.
+ * - Manage weak pointers to engine components for safe cross-thread access.
+ * - Provide thread-safe job queue clearing and swapping mechanisms.
+ *
+ * Usage Notes:
+ * - SpinGameThreadJobs() and SpinRenderThreadJobs() should be called only on their respective threads.
+ * - Thread safety is ensured via mutexes and atomic flags.
+ * - Jobs are represented by the Job type and are processed according to the specified enqueue policy.
+ */
 class InterThreadCommunicationMgr {
     std::weak_ptr<Graphics::Renderer::SceneRenderer> mSceneRenderer;
 

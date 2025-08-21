@@ -3,7 +3,7 @@
 #include <freetype/freetype.h>
 #include <ft2build.h>
 
-#include <mutex>
+#include <atomic>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -23,11 +23,9 @@ public:
     static const std::unordered_map<std::string, std::vector<uint32_t>>& getLanguageCharMap();
 
 private:
-    static std::once_flag s_initFlag;
+    static std::atomic_bool s_initFlag;
 
     static FT_Library mFt;
-
-    static bool mFtInitialized;
 
     FT_Face mFace;
 

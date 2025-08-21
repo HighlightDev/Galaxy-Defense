@@ -27,6 +27,8 @@ protected:
     std::unordered_map<key_t, sharedValue_t> resourceMap;
     std::unordered_map<key_t, int32_t> referenceMap;
 
+    std::function<void()> mOnDisposeCallback;
+
 private:
     void IncreaseRefCounter(const key_t& key)
     {
@@ -56,6 +58,12 @@ private:
                 policy_t::DeallocateMemory(resourceMap[key]);
                 resourceMap.erase(key);
                 referenceMap.erase(key);
+            }
+        }
+
+        if (referenceMap.size() <= 0) {
+            if (mOnDisposeCallback) {
+                mOnDisposeCallback();
             }
         }
     }
@@ -95,7 +103,10 @@ private:
     }
 
 public:
-    PoolBase() = default;
+    PoolBase(std::function<void()> onDisposeCallback = nullptr)
+        : mOnDisposeCallback(onDisposeCallback)
+    {
+    }
 
     virtual ~PoolBase() = default;
 
@@ -111,6 +122,10 @@ public:
 
         resourceMap.clear();
         referenceMap.clear();
+
+        if (mOnDisposeCallback) {
+            mOnDisposeCallback();
+        }
     }
 
     template<typename InnerAllocationType = Common::NullType, typename Key_t>

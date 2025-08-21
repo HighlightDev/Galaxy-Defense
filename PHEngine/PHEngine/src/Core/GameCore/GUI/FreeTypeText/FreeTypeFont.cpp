@@ -7,23 +7,22 @@
 
 namespace EngineCore::GUI {
 
-std::once_flag FreeTypeFont::s_initFlag;
+std::atomic_bool FreeTypeFont::s_initFlag = false;
 FT_Library FreeTypeFont::mFt;
-bool FreeTypeFont::mFtInitialized = false;
 bool FreeTypeFont::mLanguageMapInitialized = false;
 
 FreeTypeFont::FreeTypeFont(const std::string& fontFile)
 {
     // Initialize FreeType
-    std::call_once(s_initFlag, [this]() {
+    if (!s_initFlag.load(std::memory_order::memory_order_seq_cst)) {
         // Initialize FreeType library only once
         const auto error = FT_Init_FreeType(&FreeTypeFont::mFt);
         if (error) {
             throw std::runtime_error("Failed to initialize FreeType");
         } else {
-            mFtInitialized = true;
+            s_initFlag.store(true, std::memory_order::memory_order_seq_cst);
         }
-    });
+    }
     setFontFile(fontFile);
 }
 
@@ -37,9 +36,9 @@ FreeTypeFont::~FreeTypeFont()
 
 void FreeTypeFont::CleanUp()
 {
-    if (mFtInitialized) {
+    if (s_initFlag.load(std::memory_order::memory_order_seq_cst)) {
         FT_Done_FreeType(mFt);
-        mFtInitialized = false;
+        s_initFlag.store(false, std::memory_order::memory_order_seq_cst);
     }
 }
 
@@ -50,6 +49,7 @@ const std::unordered_map<std::string, std::vector<uint32_t>>& FreeTypeFont::getL
         {"en", std::vector<uint32_t>(128 - 32)}, // English
         {"ru", std::vector<uint32_t>(0x44F - 0x410 + 1)}, // Russian
         {"zh", std::vector<uint32_t>(0x4E50 - 0x4E00 + 1)}, // Chinese
+        {"de", std::vector<uint32_t>(7)}, // German (includes umlauts, ASCII is already present in english)
     };
 
     if (!mLanguageMapInitialized) {
@@ -62,6 +62,8 @@ const std::unordered_map<std::string, std::vector<uint32_t>>& FreeTypeFont::getL
             languageCharMap["zh"].begin(),
             languageCharMap["zh"].end(),
             0x4E00); // Fill with Chinese characters from 0x4E00 to 0x4E50
+        std::vector<uint32_t> germanExtras = {0xE4, 0xF6, 0xFC, 0xC4, 0xD6, 0xDC, 0xDF}; // ä, ö, ü, Ä, Ö, Ü, ß
+        std::copy(germanExtras.begin(), germanExtras.end(), languageCharMap["de"].begin());
 
         mLanguageMapInitialized = true;
     }

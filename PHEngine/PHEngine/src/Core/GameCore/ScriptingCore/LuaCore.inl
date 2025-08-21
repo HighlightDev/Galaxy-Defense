@@ -1,3 +1,35 @@
+/**
+ * @file LuaCore.inl
+ * @brief Provides core utilities for integrating C++ types and functions with Lua scripts.
+ *
+ * This file contains templates and helper structures for pushing and retrieving values
+ * between C++ and Lua, invoking Lua functions from C++, and binding C++ callbacks to Lua.
+ * It supports various types including primitives, std::string, glm vectors/quaternions,
+ * and user-defined types. It also provides mechanisms for handling Lua tables and
+ * global variables, as well as error handling and assertion checks.
+ *
+ * Main components:
+ * - LuaValuePusher<T>: Pushes C++ values of type T onto the Lua stack.
+ * - PushValueToLua: Type-deduced helper for pushing values to Lua.
+ * - LuaMultipleValuesPusher<Ts...>: Pushes multiple values to Lua in order.
+ * - GetLuaValue<T>: Retrieves C++ values of type T from the Lua stack.
+ * - GetLuaArgsPack: Collects multiple arguments from the Lua stack into a tuple.
+ * - LuaCallbackInvoker: Invokes C++ functors from Lua, handling return values.
+ * - LuaFunctionInvoker: Invokes Lua functions from C++, handling arguments and return values.
+ * - LuaCallbackBinder: Binds C++ functions as Lua-callable callbacks.
+ * - GetLuaGlobalVariable<T>: Retrieves global Lua variables as C++ types.
+ * - LuaArgsCountForType<T>: Specifies how many Lua stack values a type occupies.
+ * - LuaRealArgsCounter: Computes the total number of Lua stack values for a tuple of types.
+ *
+ * Platform-specific FORCEINLINE macro is defined for function inlining.
+ *
+ * Dependencies:
+ * - GLM for vector and quaternion types.
+ * - Lua C API.
+ * - EngineCore internal modules (Assertion, LoggerExtension, LuaScriptExecutorBase, LuaHelper, LuaWrapper).
+ *
+ * @note This file is intended for internal use within the EngineCore::Scripts namespace.
+ */
 #pragma once
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/vec3.hpp>
