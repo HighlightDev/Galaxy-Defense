@@ -220,6 +220,7 @@ glm::ivec2 FreeTypeTextMeshCreator::CalcTextScreenSpaceSize(
             ++linesCount;
         }
 
+        // todo: this height is a bit bigger than text is in reality
         const int height = ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6;
         return {CalcWidth(textFieldProxy->GetText(), ftFontAtlas), linesCount * height};
     }

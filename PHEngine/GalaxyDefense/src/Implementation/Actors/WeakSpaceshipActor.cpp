@@ -14,8 +14,10 @@
 
 namespace Game {
 WeakSpaceshipActor::WeakSpaceshipActor(
-    const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent)
-    : SpaceshipActor(gameObjectName, rootComponent)
+    const std::string& gameObjectName,
+    const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
+    const int32_t textFontSize)
+    : SpaceshipActor(gameObjectName, rootComponent, textFontSize)
     , ITweenStateChangeNotifyable()
     , mWeakSpaceshipTweener()
 {

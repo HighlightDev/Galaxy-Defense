@@ -15,7 +15,9 @@
 
 namespace Game {
 SpaceshipActor::SpaceshipActor(
-    const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent)
+    const std::string& gameObjectName,
+    const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
+    const int32_t textFontSize)
     : Actor(gameObjectName, rootComponent)
     , mModifiersHandler(std::make_unique<ModifiersHandler>())
     , mLifePoints(30)
@@ -24,6 +26,7 @@ SpaceshipActor::SpaceshipActor(
     , mDamageTimeProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_damageEffect"))
     , mFreezingEffectProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_freezingEffect"))
     , mIsDamageEffectActive(false)
+    , mTextFontSize(textFontSize)
 {
     AddEngineProperty(mDamageTimeProperty);
     AddEngineProperty(mFreezingEffectProperty);
@@ -39,8 +42,8 @@ void SpaceshipActor::OnSceneOwnerInitialized()
 {
     mUiComponent = GetComponentsByType<UiComponent>().back();
     mDamageTextFieldId = mUiComponent->CreateEmptyTextField(
-        "13_5Atom_Sans_Regular",
-        10,
+        "Lora-VariableFont_wght",
+        mTextFontSize,
         glm::vec3(1.0f, 0.0f, 0.0f),
         true,
         glm::ivec2(50),

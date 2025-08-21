@@ -119,7 +119,7 @@ void FreeTypeFontBatcher::FontBufferSubData(
     mTextureCoordinatesChunkData.mCurrentChunkOffset = texCoordinatesOffset + texCoordinatesSizeUpdate;
     textFieldProxy->SetTextureCoordinatesChunkOffset(texCoordinatesOffset);
     textFieldProxy->SetTextureCoordinatesChunkSize(texCoordinatesSizeUpdate);
-    const glm::vec2 textWidthHeightScreenSpace = textMeshCreator.CalcTextScreenSpaceSize(textFieldProxy, mTextFontAtlas);
+    const glm::ivec2 textWidthHeightScreenSpace = textMeshCreator.CalcTextScreenSpaceSize(textFieldProxy, mTextFontAtlas);
     textFieldProxy->SetCreatedMeshTextWidthTextureSpace(
         static_cast<float>(textWidthHeightScreenSpace.x) / static_cast<float>(displayDeviceProvider->GetWindowWidth()));
     textFieldProxy->SetCreatedMeshTextHeightTextureSpace(

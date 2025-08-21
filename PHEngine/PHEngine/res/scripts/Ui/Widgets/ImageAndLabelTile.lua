@@ -55,7 +55,7 @@ function ImageAndLabelTile:new(host, overlay)
     }
 
     newObj.backgroundTile = UiRectangle:new(host)
-    newObj.label = UiLabel:new(host, "13_5Atom_Sans_Regular")
+    newObj.label = UiLabel:new(host, "Lora-VariableFont_wght")
     newObj.image = UiImage:new(host)
 
     overlay:addWidget(newObj.backgroundTile)

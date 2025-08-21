@@ -16,7 +16,8 @@ class ISpaceShipFactory {
         const std::shared_ptr<::EngineCore::Scene>& scene,
         const glm::vec3& translation,
         const glm::vec3& rotation,
-        const glm::vec3& scale)
+        const glm::vec3& scale,
+        const int32_t textFontSize)
         = 0;
 };
 } // namespace Game

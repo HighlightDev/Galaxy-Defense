@@ -44,8 +44,13 @@ protected:
     std::shared_ptr<EngineObjectProperty<float>> mDamageTimeProperty;
     std::shared_ptr<EngineObjectProperty<float>> mFreezingEffectProperty;
 
+    int32_t mTextFontSize{10};
+
 public:
-    SpaceshipActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
+    SpaceshipActor(
+        const std::string& gameObjectName,
+        const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
+        const int32_t textFontSize);
 
     void Tick(const float deltaTime) override;
 

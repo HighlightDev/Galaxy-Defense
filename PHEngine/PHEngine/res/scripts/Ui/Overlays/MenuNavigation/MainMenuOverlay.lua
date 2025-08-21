@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -43,12 +42,10 @@ function MainMenuOverlay:new(host)
     local mainMenuOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "MainMenuCanvas")
     mainMenuOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, mainMenuOverlayCanvas.luaProxyId)
-        mainMenuOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-            0.3, "Opacity",
-            UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
-        mainMenuOverlayCanvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-            0.3, "Opacity",
-            UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
+        mainMenuOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.3,
+            "Opacity", UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
+        mainMenuOverlayCanvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.3,
+            "Opacity", UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
     local mainMenuOverlay = UiOverlay:createOverlay(host, "MainMenuOverlay", mainMenuOverlayCanvas)
 
@@ -147,15 +144,14 @@ function MainMenuOverlay:new(host)
         newGameButton:setLabelText("New Game")
         newGameButton:setLabelTextColorHexValue(0xFFFFFF)
         newGameButton:setLabelFontSize(56)
-        newGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
-        newGameButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.BOTTOM)
+        newGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        newGameButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
 
         editorLvlButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         editorLvlButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
-        editorLvlButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect
-            .widgetName,
-            20)
+        editorLvlButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            backgroundRect.widgetName, 20)
         editorLvlButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, newGameButton.widgetName,
             buttonVerticalMarginHeight)
         editorLvlButton:setHeight(buttonHeight)
@@ -169,8 +165,8 @@ function MainMenuOverlay:new(host)
         editorLvlButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
 
         settingsButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
-        settingsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            backgroundRect.widgetName, 20)
+        settingsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+            20)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
             backgroundRect.widgetName, 20)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
@@ -179,19 +175,19 @@ function MainMenuOverlay:new(host)
         settingsButton:setZOrder(2)
         settingsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         settingsButton:setButtonBorderRadius(MainMenuOverlay.buttonRadius)
-        settingsButton:setLabelText("Настройки")
+        settingsButton:setLabelText("Settings")
         settingsButton:setLabelTextColorHexValue(0xFFFFFF)
         settingsButton:setLabelFontSize(56)
-        settingsButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.RIGHT)
-           settingsButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.BOTTOM)
+        settingsButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        settingsButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
 
         exitGameButton:setParent(host, mainMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
-        exitGameButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
-            20)
-        exitGameButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            settingsButton.widgetName, buttonVerticalMarginHeight)
+        exitGameButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            backgroundRect.widgetName, 20)
+        exitGameButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, settingsButton.widgetName,
+            buttonVerticalMarginHeight)
         exitGameButton:setHeight(buttonHeight)
         exitGameButton:setZOrder(2)
         exitGameButton:setButtonColorHexValue(Styles.Colors.buttonColor)
@@ -199,11 +195,14 @@ function MainMenuOverlay:new(host)
         exitGameButton:setLabelText("Exit game")
         exitGameButton:setLabelTextColorHexValue(0xFFFFFF)
         exitGameButton:setLabelFontSize(56)
-        exitGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
+        exitGameButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        exitGameButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
     end)
 
-    mainMenuOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
-    mainMenuOverlay.onEngineEventTriggered = function(eventName, jsonArgs) end
+    mainMenuOverlay.onGameEventTriggered = function(eventName, jsonArgs)
+    end
+    mainMenuOverlay.onEngineEventTriggered = function(eventName, jsonArgs)
+    end
 
     return mainMenuOverlay;
 end

@@ -50,12 +50,14 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     const std::shared_ptr<::EngineCore::Scene>& scene,
     const glm::vec3& translation,
     const glm::vec3& rotation,
-    const glm::vec3& scale)
+    const glm::vec3& scale,
+    const int32_t textFontSize)
 {
     const auto& enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_enemyShip_rootComponent_" + enemyShipIndexStr, translation, glm::vec3(0), glm::vec3(1));
-    const auto& a_enemySpaceship = std::make_shared<WeakSpaceshipActor>("a_enemyShip_" + enemyShipIndexStr, rootComponent);
+    const auto& a_enemySpaceship
+        = std::make_shared<WeakSpaceshipActor>("a_enemyShip_" + enemyShipIndexStr, rootComponent, textFontSize);
     scene->AddActor(a_enemySpaceship);
 
     bool bAlreadyExists = false;

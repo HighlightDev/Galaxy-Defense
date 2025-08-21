@@ -48,7 +48,7 @@ LevelEditorOverlay = {
     overlayName = "LevelEditorOverlay",
     editorContainerState = EditorContainerState.Expanded,
     currentEditModeType = EditModeType.IDLE,
-    labelFontName = "13_5Atom_Sans_Regular"
+    labelFontName = "Lora-VariableFont_wght"
 }
 
 local function getRandomColor()
@@ -104,13 +104,13 @@ function LevelEditorOverlay:new(host)
     local newBarrierButton = ImageButton:new(host, overlay, "NewBarrierButton")
     overlay:addCompoundWidget(newBarrierButton)
 
-    local levelWidthLabel = UiLabel:new(host, "13_5Atom_Sans_Regular", "LevelWidthLabel")
+    local levelWidthLabel = UiLabel:new(host, "Lora-VariableFont_wght", "LevelWidthLabel")
     overlay:addWidget(levelWidthLabel)
 
     local levelWidthSlider = UiSlider:new(host, "LevelWidthSlider")
     overlay:addWidget(levelWidthSlider)
 
-    local levelHeightLabel = UiLabel:new(host, "13_5Atom_Sans_Regular", "LevelHeightLabel")
+    local levelHeightLabel = UiLabel:new(host, "Lora-VariableFont_wght", "LevelHeightLabel")
     overlay:addWidget(levelHeightLabel)
 
     local levelLengthSlider = UiSlider:new(host, "LevelHeightSlider")
@@ -198,10 +198,10 @@ function LevelEditorOverlay:new(host)
     overlay.onWindowSizeChanged = function(width, height)
         assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number")
 
-        editorContainer:setHeight(height * 0.15)
+        editorContainer:setHeight(height * 0.25)
 
-        local buttonWidth = editorContainer:getHeight() * 0.55
-        local buttonHeight = editorContainer:getHeight() * 0.55
+        local buttonWidth = editorContainer:getHeight() * 0.35
+        local buttonHeight = editorContainer:getHeight() * 0.35
 
         changeContainerStateButton:setWidth(buttonWidth)
         changeContainerStateButton:setHeight(buttonHeight)
@@ -243,11 +243,11 @@ function LevelEditorOverlay:new(host)
             editorContainer.widgetName, 10)
         levelWidthLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, editorContainer.widgetName,
             10)
-        levelWidthLabel:setHeight(20.0)
+        levelWidthLabel:setHeight(30.0)
         levelWidthLabel:setWidth(windowWidth * 0.25)
         levelWidthLabel:setText("Level width")
         levelWidthLabel:setTextColorHexValue(0xFFFFFF)
-        levelWidthLabel:setFontSize(8.0)
+        levelWidthLabel:setFontSize(15)
         levelWidthLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
         levelWidthLabel:setZOrder(2)
 
@@ -282,11 +282,11 @@ function LevelEditorOverlay:new(host)
             editorContainer.widgetName, 10)
         levelHeightLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
             levelWidthSlider.widgetName, 20)
-        levelHeightLabel:setHeight(20.0)
+        levelHeightLabel:setHeight(30.0)
         levelHeightLabel:setWidth(windowWidth * 0.25)
         levelHeightLabel:setText("Level length")
         levelHeightLabel:setTextColorHexValue(0xFFFFFF)
-        levelHeightLabel:setFontSize(8.0)
+        levelHeightLabel:setFontSize(15)
         levelHeightLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
         levelHeightLabel:setZOrder(2)
 
@@ -316,8 +316,8 @@ function LevelEditorOverlay:new(host)
                 }))
         end)
 
-        local buttonWidth = editorContainer:getHeight() * 0.25
-        local buttonHeight = editorContainer:getHeight() * 0.25
+        local buttonWidth = editorContainer:getHeight() * 0.35
+        local buttonHeight = editorContainer:getHeight() * 0.35
 
         changeContainerStateButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
@@ -355,9 +355,11 @@ function LevelEditorOverlay:new(host)
         editStationSocketsButton:setButtonBorderRadius(8)
         editStationSocketsButton:setLabelText("Edit stations")
         editStationSocketsButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        editStationSocketsButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
         editStationSocketsButton:setLabelTextColorHexValue(0x000000)
         editStationSocketsButton:setZOrder(2)
         editStationSocketsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        editStationSocketsButton:setLabelFontSize(13)
 
         editRoutesButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editRoutesButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
@@ -369,9 +371,11 @@ function LevelEditorOverlay:new(host)
         editRoutesButton:setButtonBorderRadius(8)
         editRoutesButton:setLabelText("Edit routes")
         editRoutesButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        editRoutesButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
         editRoutesButton:setLabelTextColorHexValue(0x000000)
         editRoutesButton:setZOrder(2)
         editRoutesButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        editRoutesButton:setLabelFontSize(13)
 
         editBarriersButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editBarriersButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
@@ -383,9 +387,11 @@ function LevelEditorOverlay:new(host)
         editBarriersButton:setButtonBorderRadius(8)
         editBarriersButton:setLabelText("Edit barriers")
         editBarriersButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        editBarriersButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
         editBarriersButton:setLabelTextColorHexValue(0x000000)
         editBarriersButton:setZOrder(2)
         editBarriersButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        editBarriersButton:setLabelFontSize(13)
 
         newRouteButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         newRouteButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,

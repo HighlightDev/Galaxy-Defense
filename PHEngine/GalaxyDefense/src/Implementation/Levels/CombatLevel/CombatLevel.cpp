@@ -108,13 +108,14 @@ LevelData CombatLevel::LoadLevelDataFromFile(const std::string& levelName) const
     const auto& sceneSp = mSceneWp.lock();
     assert(sceneSp);
     FileFacade fileReader;
-    fileReader.OpenAndReadFile(levelName);
-    const auto& lvlJsonStr = fileReader.GetFileSrc().front();
-
-    LevelSerializationHelper lvlSerializationHelper;
-    const auto lvlData = lvlSerializationHelper.RestoreLevelFromJsonString(lvlJsonStr);
-    assert(lvlData.isDataValid());
-    return lvlData;
+    if (fileReader.OpenAndReadFile(levelName)) {
+        const auto& lvlJsonStr = fileReader.GetFileSrc().front();
+        LevelSerializationHelper lvlSerializationHelper;
+        const auto lvlData = lvlSerializationHelper.RestoreLevelFromJsonString(lvlJsonStr);
+        assert(lvlData.isDataValid());
+        return lvlData;
+    }
+    return {};
 }
 
 void CombatLevel::CreateScene()

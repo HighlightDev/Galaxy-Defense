@@ -14,13 +14,6 @@ bool FileFacade::OpenAndReadFile(const std::string& pathToFile)
     return LoadFile(pathToFile);
 }
 
-bool FileFacade::OpenAndReadOrCreateFile(const std::string& pathToFile)
-{
-    assert(pathToFile != "");
-    mPathToFile = pathToFile;
-    return OpenOrLoadFile(pathToFile);
-}
-
 const std::list<std::string>& FileFacade::GetFileSrc() const
 {
     return mFileSrc;
@@ -28,19 +21,21 @@ const std::list<std::string>& FileFacade::GetFileSrc() const
 
 bool FileFacade::LoadFile(const std::string& pathToFile)
 {
-    std::ifstream stream(pathToFile);
-    std::string line;
+    if (CheckIfFileExists(pathToFile)) {
+        std::ifstream stream(pathToFile);
+        std::string line;
+        while (stream.is_open() && getline(stream, line)) {
+            mFileSrc.emplace_back(std::move(line));
+        }
 
-    while (stream.is_open() && getline(stream, line)) {
-        mFileSrc.emplace_back(std::move(line));
+        return mFileSrc.size() > 0;
     }
-
-    return mFileSrc.size() > 0;
+    return false;
 }
 
-bool FileFacade::OpenOrLoadFile(const std::string& pathToFile)
+bool FileFacade::CheckIfFileExists(const std::string& pathToFile)
 {
-    return std::filesystem::exists(pathToFile) ? LoadFile(pathToFile) : true;
+    return std::filesystem::exists(pathToFile);
 }
 
 size_t FileFacade::GetFileSourceLinesCount() const

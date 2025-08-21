@@ -23,7 +23,8 @@ public:
         const std::shared_ptr<::EngineCore::Scene>& scene,
         const glm::vec3& translation,
         const glm::vec3& rotation,
-        const glm::vec3& scale) override;
+        const glm::vec3& scale,
+        const int32_t textFontSize) override;
 
     std::shared_ptr<::Graphics::IMaterial>
     GetMaterial(const std::shared_ptr<::EngineCore::Scene>& scene, bool alreadyExists) const;

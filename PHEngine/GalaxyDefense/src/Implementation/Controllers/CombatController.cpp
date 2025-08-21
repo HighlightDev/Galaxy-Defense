@@ -66,9 +66,11 @@ void CombatController::OnPreLevelInit()
 
 void CombatController::InitFromLevelData(const LevelData& levelData)
 {
-    assert(levelData.isDataValid());
     const auto& sceneSp = mScene.lock();
     assert(sceneSp);
+    if (!levelData.isDataValid()) {
+        return;
+    }
 
     mLevelBounds = BoundingBox3D(
         glm::vec3(0.0f),
@@ -365,8 +367,8 @@ void CombatController::ProcessEvent(
         const std::shared_ptr<Actor>& srcCollisionActor = eGameObjectsType::SPACESHIP == srcActorGameObjectType
             ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(srcActorId))
             : eGameObjectsType::NEUTRAL_SPACE_OBJECT == srcActorGameObjectType
-            ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
-            : nullptr;
+                ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
+                : nullptr;
         assert(srcCollisionActor);
         for (const auto& collidedActorId : collidedActorIds) {
             const auto& gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedActorId);

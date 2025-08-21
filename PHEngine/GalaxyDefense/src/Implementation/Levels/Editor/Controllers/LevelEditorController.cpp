@@ -285,7 +285,7 @@ void LevelEditorController::ProcessEvent(
                 LevelSerializationHelper lvlSerialization;
                 const std::string& serializedPathJsonStr = lvlSerialization.DumpLevelToJsonString(lvlData);
                 FileFacade fileFacade;
-                fileFacade.OpenAndReadOrCreateFile(lvlName);
+                fileFacade.OpenAndReadFile(lvlName);
                 fileFacade.RewriteSrc(serializedPathJsonStr);
                 fileFacade.WriteToFile();
             } else if ("set_level_width" == doneAction) {

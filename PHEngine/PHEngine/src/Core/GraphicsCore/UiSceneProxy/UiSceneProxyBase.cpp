@@ -16,7 +16,7 @@ UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
     , mParentCanvasProxy()
     , mNormalizedTranslation(uiItemBase->GetNormalizedTranslation())
     , mNormalizedScale(uiItemBase->GetNormalizedScale())
-    , mWidthHeightPixels(glm::ivec2(static_cast<int32_t>(uiItemBase->GetWidth()), static_cast<int32_t>(uiItemBase->GetWidth())))
+    , mWidthHeightPixels(glm::ivec2(static_cast<int32_t>(uiItemBase->GetWidth()), static_cast<int32_t>(uiItemBase->GetHeight())))
     , mCenterOffset(glm::vec2(0.0f, 0.0f))
 {
 }

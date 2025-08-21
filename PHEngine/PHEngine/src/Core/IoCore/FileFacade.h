@@ -14,7 +14,6 @@ public:
     FileFacade() = default;
 
     bool OpenAndReadFile(const std::string& pathToFile);
-    bool OpenAndReadOrCreateFile(const std::string& pathToFile);
 
     size_t GetFileSourceLinesCount() const;
 
@@ -33,7 +32,7 @@ public:
 
 private:
     bool LoadFile(const std::string& pathToFile);
-    bool OpenOrLoadFile(const std::string& pathToFile);
+    bool CheckIfFileExists(const std::string& pathToFile);
 
     std::string ConcatFileSrc() const;
 };

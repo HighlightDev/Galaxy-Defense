@@ -13,7 +13,10 @@ class WeakSpaceshipActor : public SpaceshipActor, public ITweenStateChangeNotify
     std::shared_ptr<Tweener> mWeakSpaceshipTweener;
 
 public:
-    WeakSpaceshipActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
+    WeakSpaceshipActor(
+        const std::string& gameObjectName,
+        const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
+        const int32_t textFontSize);
 
     void TriggerDamageReceived(const size_t damage, const eDamageDealerType damageDealerType) override;
 

@@ -70,9 +70,8 @@ std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayCh
     assert(sceneSp);
 
     ElectroRayChainFactory factory;
-    const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(
-        std::static_pointer_cast<ElectroRayChainActor>(
-            factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1), 0.0f)));
+    const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(std::static_pointer_cast<ElectroRayChainActor>(
+        factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1), 0.0f)));
     spawnedActor->TriggerDisabled();
     return spawnedActor;
 }
@@ -92,7 +91,7 @@ std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor() c
     WeakSpaceShipFactory spaceShipFactory;
 
     return mEnemySpaceships.emplace_back(
-        spaceShipFactory.CreateSpaceShip(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(c_spaceshipSize)));
+        spaceShipFactory.CreateSpaceShip(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(c_spaceshipSize), 25));
 }
 
 std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor() const
@@ -263,11 +262,12 @@ std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::GetSpaceStationOwner
 
 eGameObjectsType CombatActorsPoolHandler::GetGameObjectTypeByActorId(const int32_t actorId) const
 {
-    const auto result = GetEnemyShipOwnerActorById(actorId) ? eGameObjectsType::SPACESHIP
-        : GetMissileOwnerActorById(actorId)                 ? eGameObjectsType::MISSILE
-        : GetSpaceObjectOwnerActorById(actorId)             ? eGameObjectsType::NEUTRAL_SPACE_OBJECT
-        : GetSpaceStationOwnerActorById(actorId)            ? eGameObjectsType::SPACE_STATION
-                                                            : eGameObjectsType::UNDEFINED;
+    const auto result = GetEnemyShipOwnerActorById(actorId)
+        ? eGameObjectsType::SPACESHIP
+        : GetMissileOwnerActorById(actorId) ? eGameObjectsType::MISSILE
+                                            : GetSpaceObjectOwnerActorById(actorId)
+                ? eGameObjectsType::NEUTRAL_SPACE_OBJECT
+                : GetSpaceStationOwnerActorById(actorId) ? eGameObjectsType::SPACE_STATION : eGameObjectsType::UNDEFINED;
 
     assert(eGameObjectsType::UNDEFINED != result);
 
