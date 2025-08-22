@@ -42,6 +42,8 @@ class UiTextBlockSceneProxy : public UiRectangleSceneProxy {
 
     glm::vec3 mTextColor;
 
+    glm::vec2 mTextAlignmentOffset;
+
 public:
     UiTextBlockSceneProxy(const ::EngineCore::GUI::UiTextBlock* uiTextBlock);
 
@@ -69,5 +71,7 @@ public:
 
 private:
     void Initialize();
+
+    void CalculateTextAlignmentOffset();
 };
 } // namespace Graphics::Proxy

@@ -88,6 +88,10 @@ function UiTextBlock:new(host, fontName, name)
         text_horizontal_alignment = {
             value = UiLabel.TextHorizontalAlignmentType.LEFT,
             dirty = false
+        },
+        text_vertical_alignment = {
+            value = UiLabel.TextVerticalAlignmentType.TOP,
+            dirty = false
         }
     }
 
@@ -138,6 +142,9 @@ function UiTextBlock:updateFromReplicatorData(host)
             if parsedJson["text_horizontal_alignment"] ~= nil then
                 self.textBlockProperties.text_horizontal_alignment.value = tonumber(
                     parsedJson["text_horizontal_alignment"])
+            end
+            if parsedJson["text_vertical_alignment"] ~= nil then
+                self.textBlockProperties.text_vertical_alignment.value = tonumber(parsedJson["text_vertical_alignment"])
             end
         end
     end
@@ -263,6 +270,16 @@ function UiTextBlock:setTextHorizontalAlignment(textHorizontalAlignment)
     if self.textBlockProperties.text_horizontal_alignment.value ~= textHorizontalAlignment then
         self.textBlockProperties.text_horizontal_alignment.value = textHorizontalAlignment
         self.textBlockProperties.text_horizontal_alignment.dirty = true
+    end
+end
+
+function UiTextBlock:setTextVerticalAlignment(textVerticalAlignment)
+    assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) == "number" and textVerticalAlignment >=
+               UiLabel.TextVerticalAlignmentType.TOP and textVerticalAlignment <=
+               UiLabel.TextVerticalAlignmentType.BOTTOM)
+    if self.textBlockProperties.text_vertical_alignment.value ~= textVerticalAlignment then
+        self.textBlockProperties.text_vertical_alignment.value = textVerticalAlignment
+        self.textBlockProperties.text_vertical_alignment.dirty = true
     end
 end
 

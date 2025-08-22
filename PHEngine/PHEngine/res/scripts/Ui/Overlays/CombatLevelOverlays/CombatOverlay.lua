@@ -361,10 +361,13 @@ function CombatOverlay:new(host)
             levelProgressRowLayout.widgetName, 20)
         testTextBlock:setWidth(levelProgressContainerWidth)
         testTextBlock:setHeight(levelProgressContainerWidth)
-        testTextBlock:setText("Hello my dear friend! How are you today? I hope you are doing well. This is a test text block for the combat overlay.")
-        testTextBlock:setFontSize(9)
+        testTextBlock:setText(
+            "Hello my dear friend! How are you today? I hope you are doing well. This is a test text block for the combat overlay.")
+        testTextBlock:setFontSize(15)
         testTextBlock:setOpacity(1.0)
         testTextBlock:setTextColorHexValue(0x000000)
+        testTextBlock:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        testTextBlock:setTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
 
         backgroundRect:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,

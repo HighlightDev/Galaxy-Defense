@@ -194,22 +194,19 @@ glm::ivec2 FreeTypeTextMeshCreator::CalcTextScreenSpaceSize(
             return {0, 0};
         }
 
-        std::vector<std::string> words = splitText(text);
-
         const int32_t width = textFieldProxy->GetLineWidthHeight().x;
         int widthRemaining = width;
+        std::vector<std::string> words = splitText(text);
         const int spaceWidth = CalcWidth(" ", ftFontAtlas);
 
-        int32_t linesCount = 0;
+        std::vector<int32_t> lineWidths;
         std::string curLine = "";
         for (const auto& word : words) {
             const int wordWidth = CalcWidth(word, ftFontAtlas);
-            if (wordWidth - spaceWidth > widthRemaining && width /* make sure there is a width specified */) {
-                // If we have passed the given width
-                ++linesCount;
+            if (wordWidth - spaceWidth > widthRemaining && width > 0) { // If we have passed the given width
                 widthRemaining = width - wordWidth;
-                curLine = "";
-                curLine.append(word);
+                lineWidths.emplace_back(CalcWidth(curLine, ftFontAtlas));
+                curLine = word;
             } else {
                 curLine.append(word);
                 widthRemaining = widthRemaining - wordWidth;
@@ -217,12 +214,17 @@ glm::ivec2 FreeTypeTextMeshCreator::CalcTextScreenSpaceSize(
         }
 
         if (curLine != "") {
-            ++linesCount;
+            lineWidths.emplace_back(CalcWidth(curLine, ftFontAtlas));
         }
 
-        // todo: this height is a bit bigger than text is in reality
-        const int height = ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6;
-        return {CalcWidth(textFieldProxy->GetText(), ftFontAtlas), linesCount * height};
+        const auto maxWidthIt
+            = std::max_element(lineWidths.cbegin(), lineWidths.cend(), [ftFontAtlas](const int32_t left, const int32_t right) {
+                  return left < right;
+              });
+        const int32_t textWidth = maxWidthIt != lineWidths.cend() ? *maxWidthIt : 0;
+        const int32_t textHeight = ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6;
+
+        return {textWidth, static_cast<int32_t>(lineWidths.size()) * textHeight};
     }
     return {0, 0};
 }

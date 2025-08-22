@@ -96,8 +96,8 @@ void UiTextBlockSceneProxy::Render()
             mUiLabelShader->ExecuteShader();
             const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeightTextureSpace();
             mUiLabelShader->SetPosition(glm::vec2(
-                mNormalizedTranslation.x + mCenterOffset.x,
-                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textHeightScreenSpace)));
+                mNormalizedTranslation.x + mCenterOffset.x + mTextAlignmentOffset.x,
+                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textHeightScreenSpace + mTextAlignmentOffset.y)));
             mFontTexture->BindTexture(0);
             mUiLabelShader->SetFontAtlasSlot(0);
             mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);
@@ -119,6 +119,7 @@ void UiTextBlockSceneProxy::SetText(const std::string& text)
                 fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
             }
         }
+        CalculateTextAlignmentOffset();
     }
 }
 
@@ -132,6 +133,7 @@ void UiTextBlockSceneProxy::SetTextLineWidthHeight(const glm::ivec2& textLineWid
                 fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
             }
         }
+        CalculateTextAlignmentOffset();
     }
 }
 
@@ -148,6 +150,7 @@ void UiTextBlockSceneProxy::SetFontSize(const int32_t fontSize)
                 mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
             }
         }
+        CalculateTextAlignmentOffset();
     }
 }
 
@@ -167,6 +170,7 @@ void UiTextBlockSceneProxy::SetTextHorizontalAlignment(const eTextHorizontalAlig
                 fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
             }
         }
+        CalculateTextAlignmentOffset();
     }
 }
 
@@ -175,6 +179,7 @@ void UiTextBlockSceneProxy::SetTextVerticalAlignment(const eTextVerticalAlignmen
     if (mTextVerticalAlignment != textVerticalAlignment) {
         mTextVerticalAlignment = textVerticalAlignment;
         mTextFieldProxy->SetTextVerticalAlignment(textVerticalAlignment);
+        CalculateTextAlignmentOffset();
     }
 }
 
@@ -193,6 +198,28 @@ void UiTextBlockSceneProxy::CleanUp()
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
             fontHandlerSp->UnregisterText(mTextFieldProxy->GetTextFieldId());
         }
+    }
+}
+
+void UiTextBlockSceneProxy::CalculateTextAlignmentOffset()
+{
+    if (mTextHorizontalAlignment == eTextHorizontalAlignmentType::LEFT) {
+        mTextAlignmentOffset.x = 0.0f;
+    } else if (mTextHorizontalAlignment == eTextHorizontalAlignmentType::CENTER) {
+        mTextAlignmentOffset.x
+            = (GetNormalizedWidthHeight().x * 0.5f) - (mTextFieldProxy->GetCreatedMeshTextWidthTextureSpace() * 0.5f);
+    } else if (mTextHorizontalAlignment == eTextHorizontalAlignmentType::RIGHT) {
+        mTextAlignmentOffset.x = GetNormalizedWidthHeight().x - mTextFieldProxy->GetCreatedMeshTextWidthTextureSpace();
+    }
+
+    // Free type text start coordinates are from the bottom left corner
+    if (mTextVerticalAlignment == eTextVerticalAlignmentType::BOTTOM) {
+        mTextAlignmentOffset.y = 0.0f;
+    } else if (mTextVerticalAlignment == eTextVerticalAlignmentType::CENTER) {
+        mTextAlignmentOffset.y
+            = (GetNormalizedWidthHeight().y * 0.5f) - (mTextFieldProxy->GetCreatedMeshTextHeightTextureSpace() * 0.5f);
+    } else if (mTextVerticalAlignment == eTextVerticalAlignmentType::TOP) {
+        mTextAlignmentOffset.y = GetNormalizedWidthHeight().y - mTextFieldProxy->GetCreatedMeshTextHeightTextureSpace();
     }
 }
 } // namespace Proxy
