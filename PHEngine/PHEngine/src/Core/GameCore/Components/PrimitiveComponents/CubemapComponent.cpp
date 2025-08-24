@@ -20,11 +20,6 @@ eComponentType CubemapComponent::GetComponentType() const
     return PRIMITIVE_COMPONENT;
 }
 
-void CubemapComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& actorData = GetSerializeDataActor(dataContainer);
-}
-
 std::shared_ptr<PrimitiveSceneProxy> CubemapComponent::CreateSceneProxy() const
 {
     return std::make_shared<CubemapSceneProxy>(this);

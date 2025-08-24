@@ -27,8 +27,6 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     eComponentType GetComponentType() const override;
 
     void ProcessEvent(

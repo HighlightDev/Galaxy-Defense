@@ -3,7 +3,6 @@
 #include "ComponentType.h"
 #include "Core/GameCore/EngineObject.h"
 #include "Core/GameCore/ITickable.h"
-#include "Core/GameCore/Serialize/ISerializable.h"
 
 #include <memory>
 
@@ -13,7 +12,7 @@ class Actor;
 // This is the base abstract class
 // of all components which could be
 // picked by actor
-class Component : public EngineObject, public ITickable, public ISerializable, public std::enable_shared_from_this<Component> {
+class Component : public EngineObject, public ITickable, public std::enable_shared_from_this<Component> {
     std::weak_ptr<Actor> m_owner;
 
 protected:
@@ -58,10 +57,6 @@ public:
 
     virtual void PostLevelInit();
 
-    virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
-
-protected:
-    SerializeDataActor& GetSerializeDataActor(SerializeDataContainer& dataContainer);
 };
 
 } // namespace EngineCore

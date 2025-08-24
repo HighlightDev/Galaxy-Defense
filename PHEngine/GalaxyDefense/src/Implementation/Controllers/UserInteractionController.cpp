@@ -43,19 +43,15 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     , mLevelBounds()
     , mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>("GameFlowController_InputComponent")))
     , mMainSceneCamera()
-    , mProjectileMarkerActor(
-          std::make_shared<Actor>(
-              "MissileProjectileActor",
-              std::make_shared<SceneComponent>("MissileProjectileRootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
-    , mGhostTowerActor(
-          std::make_shared<Actor>(
-              "GhostTowerActor",
-              std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
-    , mRemoveTowerMarkerActor(
-          std::make_shared<Actor>(
-              "RemoveTowerMarkerActor",
-              std::make_shared<SceneComponent>(
-                  "RemoveTowerMarkerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mProjectileMarkerActor(std::make_shared<Actor>(
+          "MissileProjectileActor",
+          std::make_shared<SceneComponent>("MissileProjectileRootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mGhostTowerActor(std::make_shared<Actor>(
+          "GhostTowerActor",
+          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mRemoveTowerMarkerActor(std::make_shared<Actor>(
+          "RemoveTowerMarkerActor",
+          std::make_shared<SceneComponent>("RemoveTowerMarkerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mRemoveTowerMarkerBlendColorProperty(
           std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_transparency_color_filler"))
@@ -595,10 +591,10 @@ void UserInteractionController::InitializeRemoveTowerMarker()
 
     MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "albedo", albedo_texture);
     MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "mask", mask_texture);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "inverse_y", (int32_t)true);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "use_mask", (int32_t)true);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "fill_albedo_transparency_with_color", (int32_t)true);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "use_custom_color_for_albedo", (int32_t)true);
+    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "inverse_y", (int32_t) true);
+    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "use_mask", (int32_t) true);
+    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "fill_albedo_transparency_with_color", (int32_t) true);
+    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "use_custom_color_for_albedo", (int32_t) true);
     MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "albedo_custom_color", glm::vec3(1.0f, 0.0f, 0.0f));
     MaterialPropertySetter::SetMaterialPropertyValue(
         billboard_material, mRemoveTowerMarkerActor, "p_transparency_color_filler", "b_transparency_color_filler");
@@ -627,7 +623,13 @@ void UserInteractionController::TriggerPlayerStatusChangedEvent(
     assert(sceneSp);
     static constexpr auto functionId = Hash64_CT("UserInteractionController::TriggerPlayerStatusChangedEvent");
     sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, static_cast<int32_t>(statusChanged), functionId, [statusChanged, jsonArgs]() {
+        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+        static_cast<int32_t>(statusChanged),
+        functionId,
+        [statusChanged, jsonArgs](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, statusChanged, jsonArgs);
         });
 }

@@ -3,12 +3,11 @@
 #include "Actor.h"
 #include "Core/GameCore/Components/MovementComponent.h"
 #include "Core/GameCore/ITickable.h"
-#include "Core/GameCore/Serialize/ISerializable.h"
 
 #include <memory>
 
 namespace EngineCore {
-class ActorController : public ITickable, public ISerializable, public std::enable_shared_from_this<ActorController> {
+class ActorController : public ITickable, public std::enable_shared_from_this<ActorController> {
 protected:
     std::weak_ptr<Actor> m_actorWp;
 
@@ -23,17 +22,13 @@ public:
 
     virtual void Initialize();
 
-    void Tick(const float deltaTime) override
-    {
-    }
+    void Tick(const float deltaTime) override;
 
-    void UnpausableTick(const float deltaTime) override { };
+    void UnpausableTick(const float deltaTime) override;
 
     std::weak_ptr<Actor> GetBindedActor() const;
 
     std::string GetBindedActorName() const;
-
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 };
 
 } // namespace EngineCore

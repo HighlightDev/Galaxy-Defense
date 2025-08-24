@@ -54,18 +54,33 @@ void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMat
 {
     Base::UpdateRelativeMatrix(parentRelativeMatrix);
 
-    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         // Update primitives proxy transform
         static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
 
         if (const auto& sceneSp = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-                sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(
-                    mSceneProxyId, GetObjectId(), functionId, m_relativeMatrix, m_outlineMatrix, GetTransformedBoundingBox());
-                const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(mSceneProxyId);
-                if (primitiveSp) {
-                    primitiveSp->SetOriginPosition(mBoundingBox.GetOrigin());
-                }
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+                    eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                    GetObjectId(),
+                    functionId,
+                    [sceneProxyId = mSceneProxyId,
+                     relativeMatrix = m_relativeMatrix,
+                     outlineMatrix = m_outlineMatrix,
+                     boundingBox = mBoundingBox,
+                     newTransformedBoundingBox = GetTransformedBoundingBox()]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                        if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
+                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
+                            if (primitiveSp) {
+                                primitiveSp->SetTransformationMatrix(relativeMatrix);
+                                primitiveSp->SetOutlineMatrix(outlineMatrix);
+                                primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+                                primitiveSp->SetOriginPosition(boundingBox.GetOrigin());
+                            }
+                        }
+                    });
             }
         }
     }
@@ -116,12 +131,12 @@ int32_t PrimitiveComponent::GetSortOrderValue() const
 
 void PrimitiveComponent::SetIsSceneProxyReady(const bool isReady)
 {
-    bIsSceneProxyReady.store(isReady, std::memory_order::memory_order_seq_cst);
+    bIsSceneProxyReady.store(isReady, std::memory_order::seq_cst);
 }
 
 bool PrimitiveComponent::IsSceneProxyReady() const
 {
-    return bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst);
+    return bIsSceneProxyReady.load(std::memory_order::seq_cst);
 }
 
 BoundingBox3D PrimitiveComponent::GetTransformedBoundingBox() const
@@ -179,7 +194,7 @@ void PrimitiveComponent::SetDepthWriteMaskEnabled(const bool isEnabled)
 
 void PrimitiveComponent::SyncRenderData()
 {
-    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSP = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                 if (bIsEnabledStateDirty) {
@@ -211,7 +226,10 @@ void PrimitiveComponent::SyncRenderData()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetObjectId(),
                         functionId,
-                        [sceneProxyId = mSceneProxyId, sceneRendererSp, canBloomBeApplied = mCanBloomBeApplied]() {
+                        [sceneProxyId = mSceneProxyId, sceneRendererSp, canBloomBeApplied = mCanBloomBeApplied](
+                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
                                 primitiveSp->SetCanBloomBeApplied(canBloomBeApplied);
@@ -226,7 +244,10 @@ void PrimitiveComponent::SyncRenderData()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetObjectId(),
                         functionId,
-                        [sceneProxyId = mSceneProxyId, sceneRendererSp, isDepthTestEnabled = mDepthWriteMaskEnabled]() {
+                        [sceneProxyId = mSceneProxyId, sceneRendererSp, isDepthTestEnabled = mDepthWriteMaskEnabled](
+                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
                                 primitiveSp->SetDepthWriteMaskEnabled(isDepthTestEnabled);
@@ -241,7 +262,10 @@ void PrimitiveComponent::SyncRenderData()
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                         GetObjectId(),
                         functionId,
-                        [sceneProxyId = mSceneProxyId, isOutlineApplied = mIsOutlineApplied, sceneRendererSp]() {
+                        [sceneProxyId = mSceneProxyId, isOutlineApplied = mIsOutlineApplied, sceneRendererSp](
+                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
                                 primitiveSp->SetIsOutlineApplied(isOutlineApplied);

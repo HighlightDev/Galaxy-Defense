@@ -69,8 +69,6 @@ public:
 
     void PostLevelInit() override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     void SetMaxDistanceFromTargetToCamera(const float maxDistanceFromTargetToCamera);
 
     void SetMinDistanceFromTargetToCamera(const float minDistanceFromTargetToCamera);

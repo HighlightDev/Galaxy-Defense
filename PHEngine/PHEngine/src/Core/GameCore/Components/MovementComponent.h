@@ -22,8 +22,6 @@ public:
 
     eComponentType GetComponentType() const override;
 
-    virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
-
     virtual void Move(const float deltaTime) = 0;
 
     virtual void Move(const glm::vec3& direction, const float deltaTime) = 0;

@@ -55,14 +55,6 @@ std::vector<eKeyActionType> InputComponent::GetPressedKeyActions()
     return result;
 }
 
-void InputComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& dataActor = GetSerializeDataActor(dataContainer);
-    std::shared_ptr<SerializeDataInputComponent> inputComp = std::make_shared<SerializeDataInputComponent>();
-    inputComp->ComponentName = EngineObjectName;
-    dataActor.ComponentsData.emplace_back(inputComp);
-}
-
 std::shared_ptr<KeyboardBindings> InputComponent::GetKeyboardBindings() const
 {
     return m_keyboardBindings;

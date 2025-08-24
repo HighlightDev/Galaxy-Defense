@@ -441,7 +441,7 @@ void UiSlider::OnUnregistered()
 void UiSlider::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiSlider::SyncDataOnRenderThread");
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& canvasSp = GetParentCanvas().lock()) {
                 if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -467,7 +467,10 @@ void UiSlider::SyncDataOnRenderThread()
                          aspectRatioScale = mAspectRatioScale,
                          sceneRenderer,
                          myUId = GetUId(),
-                         canvasUId = canvasSp->GetUId()]() {
+                         canvasUId = canvasSp->GetUId()](
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                             if (uiSceneProxy) {
                                 const auto& sliderSceneProxy = std::static_pointer_cast<UiSliderSceneProxy>(uiSceneProxy);
@@ -499,7 +502,7 @@ void UiSlider::SyncDataOnRenderThread()
 void UiSlider::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiSlider::SyncDataOnLuaThread");
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
@@ -518,7 +521,10 @@ void UiSlider::SyncDataOnLuaThread()
                      blobThicknessPixels = mBlobThicknessPixels,
                      sliderType = mSliderType,
                      sliderColor = mSliderColor,
-                     blobColor = mBlobColor]() {
+                     blobColor = mBlobColor](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& sliderLuaProxy
                             = std::static_pointer_cast<UiSliderLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             sliderLuaProxy->SetSliderValue_FromGameThread(sliderValue);

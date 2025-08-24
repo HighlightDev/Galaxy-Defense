@@ -37,12 +37,11 @@ Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
     , mLuaReplicators()
     , m_interThreadMgr(interThreadMgr)
     , mGameThreadDeltaSec(std::make_shared<EngineObjectProperty<float>>(0.0f, "GT_DeltaSec"))
-    , mScreenResolutionProperty(
-          std::make_shared<EngineObjectProperty<glm::vec2>>(
-              glm::vec2(
-                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
-              "ScreenResolution"))
+    , mScreenResolutionProperty(std::make_shared<EngineObjectProperty<glm::vec2>>(
+          glm::vec2(
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
+          "ScreenResolution"))
     , mDeferredResourceCreators()
     , mActors()
     , mMainCamera()
@@ -367,10 +366,9 @@ std::shared_ptr<UiHandler> Scene::GetUiHandler() const
 void Scene::Tick(const float delta)
 {
     mGameThreadDeltaSec->SetValue(delta);
-    mScreenResolutionProperty->SetValue(
-        glm::vec2(
-            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
+    mScreenResolutionProperty->SetValue(glm::vec2(
+        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
 
     mPhysicsWorld->Tick(delta);
 
@@ -398,15 +396,18 @@ void Scene::Tick(const float delta)
     }
 
 #if DEBUG
-    if (const auto& sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock()) {
-        m_interThreadMgr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-            GetObjectId(),
-            Hash("Scene::UpdatePhysicsRenderData"),
-            [sceneRendererSp, physRenderData = mPhysicsWorld->GetDebugPhysicsRenderData()]() {
+    m_interThreadMgr.ExecuteOnRenderThread(
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        GetObjectId(),
+        Hash("Scene::UpdatePhysicsRenderData"),
+        [physRenderData = mPhysicsWorld->GetDebugPhysicsRenderData()](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+            if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                 sceneRendererSp->SetDebugPhysicsRenderData(physRenderData);
-            });
-    }
+            }
+        });
 
     mDebugUiController->Tick(delta);
 #endif
@@ -453,13 +454,18 @@ void Scene::UnpausableTick(const float deltaTime)
 void Scene::ProcessEvent(
     const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t& data)
 {
-    if (const auto& sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock()) {
-        m_interThreadMgr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-            GetObjectId(),
-            Hash("Scene::WindowSizeChangedGameThreadEvent"),
-            [sceneRendererSp, viewPortInfo = std::get<0>(data)]() { sceneRendererSp->OnWindowSizeChanged(viewPortInfo); });
-    }
+    m_interThreadMgr.ExecuteOnRenderThread(
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        GetObjectId(),
+        Hash("Scene::WindowSizeChangedGameThreadEvent"),
+        [viewPortInfo = std::get<0>(data)](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+            if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
+                sceneRendererSp->OnWindowSizeChanged(viewPortInfo);
+            }
+        });
 }
 
 void Scene::ProcessEvent(const MouseButtonDownRootEvent* sender, const MouseButtonDownRootEvent::EventData_t& data)
@@ -470,7 +476,7 @@ void Scene::ProcessEvent(const MouseButtonDownRootEvent* sender, const MouseButt
 
     auto recieverType = eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS;
     if (mUiHandler->CheckIfUiInterceptsMouseEvent(glm::ivec2(currentMousePosition.x, invertedScreenYPosition))) {
-        LogInfo("Scene::MouseButtonDownRootEvent => Mouse press events will be propagated only to UI input system");
+        LogInfo("Scene::MouseButtonDownRootEvent: Mouse press events will be propagated only to UI input system");
         recieverType
             = eMouseEventTargetReceiverType::UI_INPUT_SYSTEM; // Mouse press events will be propagated only to UI input system
     }

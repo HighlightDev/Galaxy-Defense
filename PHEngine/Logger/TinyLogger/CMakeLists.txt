@@ -9,4 +9,4 @@ set(HEADERS
     LogInterface.h
 )
 
-add_library(TinyLogger STATIC ${HEADERS} ${SOURCES})
+add_library(TinyLogger SHARED ${HEADERS} ${SOURCES})

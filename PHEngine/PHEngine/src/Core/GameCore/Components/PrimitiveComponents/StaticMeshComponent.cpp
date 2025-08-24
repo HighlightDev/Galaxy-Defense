@@ -3,8 +3,6 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
-#include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/StaticMeshSceneProxy.h"
 
@@ -63,14 +61,6 @@ std::shared_ptr<IMaterial> StaticMeshComponent::GetMaterial() const
     }
     assert(materialResult != nullptr);
     return materialResult;
-}
-
-void StaticMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& actorData = GetSerializeDataActor(dataContainer);
-
-    auto staticCompData = SerializeHelper::GetSerializedDataStaticMesh(this);
-    actorData.ComponentsData.emplace_back(staticCompData);
 }
 
 std::shared_ptr<PrimitiveSceneProxy> StaticMeshComponent::CreateSceneProxy() const

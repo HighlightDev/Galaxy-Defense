@@ -4,7 +4,6 @@
 #include "Core/GameCore/Input/KeyboardBindings.h"
 #include "Core/GameCore/Input/MouseBindings.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GraphicsCore/SceneProxy/MainCameraSceneProxy.h"
 
 using namespace Graphics;
@@ -105,12 +104,6 @@ void FirstPersonCamera::MoveCamera(int32_t direction)
         break;
     }
     SetTransformationDirty();
-}
-
-void FirstPersonCamera::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    const auto& cameraData = SerializeHelper::GetSerializedDataCamera(this);
-    dataContainer.Cameras.emplace_back(cameraData);
 }
 
 float FirstPersonCamera::GetCameraMoveSpeed() const

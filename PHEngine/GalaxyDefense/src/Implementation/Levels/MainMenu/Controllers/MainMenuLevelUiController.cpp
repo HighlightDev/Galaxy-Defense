@@ -78,7 +78,13 @@ void MainMenuLevelUiController::RestartLuaScripts()
             mOverlayManager->CleanUp();
             static constexpr uint64_t functionId = Hash64_CT("MainMenuLevelUiController::Initialize");
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]() {
+                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+                0,
+                functionId,
+                [luaScriptProcessorSp, luaScriptExecutor](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     luaScriptExecutor->RestartScript();
                 });
         }
@@ -94,7 +100,13 @@ void MainMenuLevelUiController::Initialize()
             luaScriptExecutor->Initialize();
             mExecutorId = luaScriptExecutor->GetUId();
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]() {
+                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+                0,
+                functionId,
+                [luaScriptProcessorSp, luaScriptExecutor](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     luaScriptProcessorSp->RegisterLuaScriptExecutor(luaScriptExecutor);
                     luaScriptExecutor->RunScript();
                 });

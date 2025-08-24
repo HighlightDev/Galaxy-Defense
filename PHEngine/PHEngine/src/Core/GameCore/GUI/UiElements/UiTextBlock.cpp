@@ -237,7 +237,7 @@ void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 void UiTextBlock::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiTextBlock::SyncDataOnRenderThread");
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& canvasSp = GetParentCanvas().lock()) {
                 if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -255,7 +255,10 @@ void UiTextBlock::SyncDataOnRenderThread()
                          fontSize = mFontSize,
                          textColor = mTextColor,
                          textHorizontalAlignment = mTextHorizontalAlignment,
-                         textVerticalAlignment = mTextVerticalAlignment]() {
+                         textVerticalAlignment = mTextVerticalAlignment](
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                             if (uiSceneProxy) {
                                 const auto& textBlockSceneProxy = std::static_pointer_cast<UiTextBlockSceneProxy>(uiSceneProxy);
@@ -279,7 +282,7 @@ void UiTextBlock::SyncDataOnRenderThread()
 void UiTextBlock::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiTextBlock::SyncDataOnLuaThread");
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
@@ -295,7 +298,10 @@ void UiTextBlock::SyncDataOnLuaThread()
                      textLineWidthHeight = mTextLineWidthHeight,
                      fontSize = mFontSize,
                      textHorizontalAlignment = mTextHorizontalAlignment,
-                     textVerticalAlignment = mTextVerticalAlignment]() {
+                     textVerticalAlignment = mTextVerticalAlignment](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& textBlockLuaProxy
                             = std::static_pointer_cast<UiTextBlockLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             textBlockLuaProxy->SetOpacity_FromGameThread(opacity);

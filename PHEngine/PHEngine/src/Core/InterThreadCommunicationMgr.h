@@ -42,11 +42,13 @@ enum eWriteChainType : uint8_t { WRITE_1 = 0, WRITE_2 = 1 };
 
 /**
  * @struct TasksSwapChain
- * @brief Manages two job queues (swap chains) for inter-thread communication, ensuring thread safety and minimizing false sharing.
+ * @brief Manages two job queues (swap chains) for inter-thread communication, ensuring thread safety and minimizing false
+ * sharing.
  *
  * This structure provides two separate job deques (`Jobs1` and `Jobs2`), each aligned to avoid hardware destructive interference,
  * which helps prevent performance degradation due to false sharing in multi-threaded environments. The `StoreOperationMutex`
- * protects operations on the swap chain. The `ReadChainType` and `WriteChainType` indicate which chain is currently used for reading and writing.
+ * protects operations on the swap chain. The `ReadChainType` and `WriteChainType` indicate which chain is currently used for
+ * reading and writing.
  *
  * @var std::mutex StoreOperationMutex
  *      Mutex to synchronize access to the swap chain operations.
@@ -64,16 +66,21 @@ enum eWriteChainType : uint8_t { WRITE_1 = 0, WRITE_2 = 1 };
  * @param index Index of the job deque to retrieve.
  * @return Reference to the selected job deque.
  */
+
+using TaskJob_t = Job<
+    std::weak_ptr<Graphics::Renderer::SceneRenderer>,
+    std::weak_ptr<EngineCore::Scene>,
+    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor>>;
 struct TasksSwapChain {
     std::mutex StoreOperationMutex;
     uint8_t ReadChainType = {eReadChainType::READ_1};
     uint8_t WriteChainType = {eWriteChainType::WRITE_2};
 
     // make sure we won't get false sharing for our jobs
-    alignas(hardware_destructive_interference_size) std::deque<Job> Jobs1;
-    alignas(hardware_destructive_interference_size) std::deque<Job> Jobs2;
+    alignas(hardware_destructive_interference_size) std::deque<TaskJob_t> Jobs1;
+    alignas(hardware_destructive_interference_size) std::deque<TaskJob_t> Jobs2;
 
-    inline std::deque<Job>& GetDequeByIndex(const uint8_t index)
+    inline std::deque<TaskJob_t>& GetDequeByIndex(const uint8_t index)
     {
         return index == 0 ? Jobs1 : Jobs2;
     }
@@ -109,9 +116,9 @@ class InterThreadCommunicationMgr {
 
     std::mutex m_gameThreadMutex;
 
-    std::deque<Job> m_gameThreadJobs;
+    std::deque<TaskJob_t> m_gameThreadJobs;
 
-    std::deque<Job> m_luaThreadJobs;
+    std::deque<TaskJob_t> m_luaThreadJobs;
 
     std::mutex m_luaThreadMutex;
 
@@ -130,19 +137,28 @@ public:
         const eEnqueueJobPolicy policy,
         const int32_t creatorObjectId,
         const uint64_t functionId,
-        std::function<void(void)> gameThreadJobCallback);
+        std::function<void(
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp)> gameThreadJobCallback);
 
     void ExecuteOnGameThread(
         const eEnqueueJobPolicy policy,
         const int32_t creatorObjectId,
         const uint64_t functionId,
-        std::function<void(void)> renderThreadJobCallback);
+        std::function<void(
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp)> renderThreadJobCallback);
 
     void ExecuteOnLuaThread(
         const eEnqueueJobPolicy policy,
         const int32_t creatorObjectId,
         const uint64_t functionId,
-        std::function<void(void)> luaThreadJobCallback);
+        std::function<void(
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp)> luaThreadJobCallback);
 
     /* @ Should be executed only on game thread! */
     void SpinGameThreadJobs();
@@ -173,13 +189,13 @@ public:
     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> GetLuaScriptProcessor() const;
 
 private:
-    void ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job&& job);
+    void ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, TaskJob_t&& job);
 
-    void ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, Job&& job);
+    void ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, TaskJob_t&& job);
 
-    void ProcessPushLuaThreadJob(const eEnqueueJobPolicy policy, Job&& job);
+    void ProcessPushLuaThreadJob(const eEnqueueJobPolicy policy, TaskJob_t&& job);
 
-    void ProcessPushJob(const eEnqueueJobPolicy policy, Job&& job, std::deque<Job>& jobs);
+    void ProcessPushJob(const eEnqueueJobPolicy policy, TaskJob_t&& job, std::deque<TaskJob_t>& jobs);
 
     void SwapRenderThreadChain();
 };

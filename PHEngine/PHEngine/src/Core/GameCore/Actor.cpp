@@ -4,7 +4,6 @@
 #include "Core/GameCore/Components/ComponentType.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <functional>
@@ -17,9 +16,9 @@ Actor::Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore
     , m_rootComponent(rootComponent)
     , m_physicsComponent(nullptr)
     , mIsVisible(std::make_shared<EngineObjectProperty<bool>>(
-          true, "p_isVisible", [=](const bool& visibility) { SetIsVisible(visibility); }))
+          true, "p_isVisible", [this](const bool& visibility) { SetIsVisible(visibility); }))
     , mIsEnabled(std::make_shared<EngineObjectProperty<bool>>(
-          true, "p_isEnabled", [=](const bool& isEnabled) { SetIsEnabled(isEnabled); }))
+          true, "p_isEnabled", [this](const bool& isEnabled) { SetIsEnabled(isEnabled); }))
     , m_inputComponent()
     , m_movementComponent()
     , mTweeners()
@@ -118,39 +117,6 @@ bool Actor::HasEngineObjectIdInHierarchy(const int32_t id) const
     }
 
     return false;
-}
-
-void Actor::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    SerializeDataActor data;
-    data.ActorName = EngineObject::EngineObjectName;
-    data.RootCompTranslation = m_rootComponent ? m_rootComponent->GetTranslation() : glm::vec3();
-    const glm::vec3 eulerAngles = m_rootComponent ? EngineMath::QuatToEulerAngles(m_rootComponent->GetRotator()) : glm::vec3(0);
-
-    data.RootCompRotation = glm::vec3(RAD_TO_DEG(eulerAngles.x), RAD_TO_DEG(eulerAngles.y), RAD_TO_DEG(eulerAngles.z));
-    data.RootCompScale = m_rootComponent ? m_rootComponent->GetScale() : glm::vec3(1);
-
-    dataContainer.Actors.emplace_back(data);
-
-    for (const auto& component : m_allComponents) {
-        component->CollectDataForSerialization(dataContainer);
-    }
-
-    if (m_physicsComponent) {
-        m_physicsComponent->CollectDataForSerialization(dataContainer);
-    }
-
-    if (m_inputComponent) {
-        m_inputComponent->CollectDataForSerialization(dataContainer);
-    }
-
-    if (m_movementComponent) {
-        m_movementComponent->CollectDataForSerialization(dataContainer);
-    }
-
-    for (const auto& tweener : mTweeners) {
-        tweener->CollectDataForSerialization(dataContainer);
-    }
 }
 
 void Actor::UpdateTransform()

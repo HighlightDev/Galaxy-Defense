@@ -21,8 +21,6 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
 private:
     void SyncHitBoxScale(const glm::vec3& scale);
 };

@@ -74,7 +74,13 @@ void LevelEditorUiController::Initialize()
             luaScriptExecutor->Initialize();
             mExecutorId = luaScriptExecutor->GetUId();
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]() {
+                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+                0,
+                functionId,
+                [luaScriptProcessorSp, luaScriptExecutor](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     luaScriptProcessorSp->RegisterLuaScriptExecutor(luaScriptExecutor);
                     luaScriptExecutor->RunScript();
                 });

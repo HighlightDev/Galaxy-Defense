@@ -5,7 +5,6 @@
 #include "Core/GameCore/Input/MouseBindings.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GraphicsCore/SceneProxy/MainCameraSceneProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 
@@ -232,12 +231,6 @@ std::shared_ptr<CameraSceneProxy> ThirdPersonCamera::CreateSceneProxy() const
 std::string ThirdPersonCamera::GetCameraTypeName() const
 {
     return eCameraType::MAIN_THIRD_PERSON_CAMERA == m_cameraType ? "MainThirdPersonCamera" : "ThirdPersonCamera";
-}
-
-void ThirdPersonCamera::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto cameraData = SerializeHelper::GetSerializedDataCamera(this);
-    dataContainer.Cameras.emplace_back(cameraData);
 }
 
 void ThirdPersonCamera::SetThirdPersonTargetDeferred(const std::string& targetEngineObjectName)

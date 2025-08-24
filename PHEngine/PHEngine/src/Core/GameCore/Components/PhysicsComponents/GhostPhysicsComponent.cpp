@@ -4,7 +4,6 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 
@@ -39,16 +38,6 @@ void GhostPhysicsComponent::Tick(const float deltaTime)
 
     mDescriptor->UpdateMotionWorldTransformLocalState(bIsDirty, deltaTime);
     bIsTransformationDirty = bIsDirty;
-}
-
-void GhostPhysicsComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    // todo:
-    // SerializeDataActor &actorData = Component::GetSerializeDataActor(dataContainer);
-    // auto physCompData = SerializeHelper::GetSerializeDataPhysicsComponent(this);
-    // physCompData->ComponentName = EngineObjectName;
-
-    // actorData.ComponentsData.emplace_back(physCompData);
 }
 
 void GhostPhysicsComponent::SyncHitBoxScale(const glm::vec3& scale)

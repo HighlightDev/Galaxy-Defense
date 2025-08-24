@@ -34,7 +34,10 @@ int32_t UiLabelReplicatorFactory::CreateReplicator(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             uiLabelLuaProxyId,
             functionId,
-            [sceneSp, fontName, luaScriptProcessorWp, uiLabelLuaProxyId, name]() {
+            [sceneSp, fontName, luaScriptProcessorWp, uiLabelLuaProxyId, name](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                 const auto& createdUiLabel = std::make_shared<UiLabel>(fontName, name);
                 createdUiLabel->Initialize();

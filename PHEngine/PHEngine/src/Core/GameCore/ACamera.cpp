@@ -67,12 +67,12 @@ size_t ACamera::GetCameraProxyId() const
 
 void ACamera::SetIsCameraProxyReady(const bool isReady)
 {
-    bIsCameraProxyReady.store(isReady, std::memory_order::memory_order_seq_cst);
+    bIsCameraProxyReady.store(isReady, std::memory_order::seq_cst);
 }
 
 bool ACamera::IsCameraProxyReady() const
 {
-    return bIsCameraProxyReady.load(std::memory_order::memory_order_seq_cst);
+    return bIsCameraProxyReady.load(std::memory_order::seq_cst);
 }
 
 void ACamera::SetRotation(const int32_t deltaX, const int32_t deltaY)
@@ -83,21 +83,23 @@ void ACamera::SetRotation(const int32_t deltaX, const int32_t deltaY)
 void ACamera::UpdateCameraProxyData()
 {
     if (auto sceneSp = mScene.lock()) {
-        if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-            static constexpr uint64_t functionId = Hash64_CT("ACamera::UpdateCameraProxyData");
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                GetObjectId(),
-                functionId,
-                [weak = weak_from_this(),
-                 eyeVector = GetEyeVector(),
-                 viewMatrix = GetViewMatrix(),
-                 eyeForwardVector = GetEyeSpaceForwardVector(),
-                 eyeRightVector = GetEyeSpaceRightVector(),
-                 eyeUpVector = GetLocalSpaceUpVector(),
-                 cameraProxyId = mCameraProxyId,
-                 sceneRendererSp]() {
-                    if (const auto& cameraPtr = weak.lock()) {
+        static constexpr uint64_t functionId = Hash64_CT("ACamera::UpdateCameraProxyData");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            GetObjectId(),
+            functionId,
+            [weak = weak_from_this(),
+             eyeVector = GetEyeVector(),
+             viewMatrix = GetViewMatrix(),
+             eyeForwardVector = GetEyeSpaceForwardVector(),
+             eyeRightVector = GetEyeSpaceRightVector(),
+             eyeUpVector = GetLocalSpaceUpVector(),
+             cameraProxyId = mCameraProxyId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& cameraPtr = weak.lock()) {
+                    if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                         if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId)) {
                             assert(sceneViewSp);
                             const auto& cameraProxy = sceneViewSp->GetCameraProxy();
@@ -110,8 +112,8 @@ void ACamera::UpdateCameraProxyData()
                             cameraPtr->OnCameraSceneProxyDataUpdated();
                         }
                     }
-                });
-        }
+                }
+            });
     }
 }
 
@@ -135,7 +137,7 @@ void ACamera::Tick(const float DeltaTime)
         mPlanarReflectionComponent->Tick(DeltaTime);
     }
 
-    if (bTransformationDirty && bIsCameraProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (bTransformationDirty && bIsCameraProxyReady.load(std::memory_order::seq_cst)) {
         bTransformationDirty = false;
         OnTransformationUpdated();
         UpdateCameraProxyData();
@@ -150,20 +152,23 @@ void ACamera::ProcessEvent(
     mViewPort = newViewPortInfo;
 
     if (auto sceneSp = mScene.lock()) {
-        if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-            static constexpr uint64_t functionId = Hash64_CT("ACamera::WindowSizeChangedGameThreadEvent");
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                GetObjectId(),
-                functionId,
-                [newViewPortInfo = mViewPort, cameraProxyId = mCameraProxyId, sceneRendererSp]() {
+        static constexpr uint64_t functionId = Hash64_CT("ACamera::WindowSizeChangedGameThreadEvent");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            GetObjectId(),
+            functionId,
+            [newViewPortInfo = mViewPort, cameraProxyId = mCameraProxyId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId)) {
                         assert(sceneViewSp);
                         const auto& cameraProxy = sceneViewSp->GetCameraProxy();
                         cameraProxy->SetViewPortInfo(newViewPortInfo);
                     }
-                });
-        }
+                }
+            });
     }
 }
 

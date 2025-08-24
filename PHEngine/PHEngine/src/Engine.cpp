@@ -211,8 +211,8 @@ void Engine::PlayLevel(const std::string& levelName)
     assert(m_levelFactory);
 
     if (!m_level || (m_level->GetLevelName() != levelName)) {
-        bLevelIsLoading.store(true, std::memory_order::memory_order_seq_cst);
-        bPauseGameThreadExecution.store(false, std::memory_order::memory_order_seq_cst);
+        bLevelIsLoading.store(true, std::memory_order::seq_cst);
+        bPauseGameThreadExecution.store(false, std::memory_order::seq_cst);
         if (m_level) {
             UnloadCurrentLevel();
         }
@@ -228,7 +228,7 @@ void Engine::PlayLevel(const std::string& levelName)
         PostLevelInit();
         ResourceMap::GetInstance()->WaitUntilResourcesLoad();
         PostPlayLevelFinished();
-        bLevelIsLoading.store(false, std::memory_order::memory_order_seq_cst);
+        bLevelIsLoading.store(false, std::memory_order::seq_cst);
     }
 }
 
@@ -238,8 +238,8 @@ void Engine::RestartLevel()
     assert(m_levelFactory);
     assert(m_level);
 
-    bLevelIsLoading.store(true, std::memory_order::memory_order_seq_cst);
-    bPauseGameThreadExecution.store(false, std::memory_order::memory_order_seq_cst);
+    bLevelIsLoading.store(true, std::memory_order::seq_cst);
+    bPauseGameThreadExecution.store(false, std::memory_order::seq_cst);
     const auto currentLevelName = m_level->GetLevelName();
     UnloadCurrentLevel();
 
@@ -254,7 +254,7 @@ void Engine::RestartLevel()
     PostLevelInit();
     ResourceMap::GetInstance()->WaitUntilResourcesLoad();
     PostPlayLevelFinished();
-    bLevelIsLoading.store(false, std::memory_order::memory_order_seq_cst);
+    bLevelIsLoading.store(false, std::memory_order::seq_cst);
 }
 
 void Engine::PreLevelInit()
@@ -313,7 +313,12 @@ void Engine::ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLeve
     const auto lvlName = std::get<0>(data);
     static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::LoadLevelGameThreadEvent");
     m_interThreadMgr.ExecuteOnRenderThread(
-        Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [weak = weak_from_this(), lvlName]() {
+        Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        0,
+        functionId,
+        [weak = weak_from_this(), lvlName]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& strong = weak.lock()) {
                 strong->PlayLevel(lvlName);
             }
@@ -324,7 +329,12 @@ void Engine::ProcessEvent(const RestartLevelGameThreadEvent* sender, const Resta
 {
     static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::RestartLevelGameThreadEvent");
     m_interThreadMgr.ExecuteOnRenderThread(
-        Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [weak = weak_from_this()]() {
+        Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+        0,
+        functionId,
+        [weak = weak_from_this()]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& strong = weak.lock()) {
                 strong->RestartLevel();
             }
@@ -336,7 +346,7 @@ void Engine::LuaThreadPulse()
     using namespace std::chrono_literals;
     ThreadHelper::GetInstance()->RegisterThread("Lua");
 
-    while (bLuaThreadExecution.load(std::memory_order::memory_order_seq_cst)) {
+    while (bLuaThreadExecution.load(std::memory_order::seq_cst)) {
         const auto ltStartTimePoint = EngineTime::GetNowTime();
         if (!bLevelIsLoading.load()) {
             ProcessLuaThreadEvents(eExecutionOrder::PRE_EXECUTION);
@@ -365,7 +375,7 @@ void Engine::GameThreadPulse()
 {
     ThreadHelper::GetInstance()->RegisterThread("Game");
 
-    while (bGameThreadExecution.load(std::memory_order::memory_order_seq_cst)) {
+    while (bGameThreadExecution.load(std::memory_order::seq_cst)) {
         const auto gtStartTimePoint = EngineTime::GetNowTime();
 
         if (!bLevelIsLoading.load()) {

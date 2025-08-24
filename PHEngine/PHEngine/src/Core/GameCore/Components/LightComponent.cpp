@@ -22,12 +22,12 @@ LightComponent::~LightComponent()
 
 void LightComponent::SetIsSceneProxyReady(const bool isSceneProxyReady)
 {
-    bIsSceneProxyReady.store(isSceneProxyReady, std::memory_order::memory_order_seq_cst);
+    bIsSceneProxyReady.store(isSceneProxyReady, std::memory_order::seq_cst);
 }
 
 bool LightComponent::IsSceneProxyReady() const
 {
-    return bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst);
+    return bIsSceneProxyReady.load(std::memory_order::seq_cst);
 }
 
 void LightComponent::SetLightSceneProxyId(const int32_t lightSceneProxyId)
@@ -83,7 +83,7 @@ void LightComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
     // Update light proxy transform
     static const uint64_t functionId = Hash("LightComponent::UpdateLightComponentTransform_GameThread");
 
-    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         SetIsTransformationDirty(false);
         if (const auto& sceneSP = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -98,7 +98,7 @@ void LightComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
 
 void LightComponent::SyncRenderData()
 {
-    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSP = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                 if (bIsEnabledStateDirty) {

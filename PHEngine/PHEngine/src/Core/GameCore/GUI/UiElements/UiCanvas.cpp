@@ -36,8 +36,8 @@ UiCanvas::UiCanvas(const ViewPortInfo& canvasScreenProperties, const std::string
     , mIsTransformDirty(true)
     , mInputSystem()
     , mDescendingByZOrderHierarchyChildren()
-    , mOpacityProperty(
-          std::make_shared<EngineObjectProperty<float>>(1.0f, "Opacity", [=](const float opacity) { UpdateOpacityProperty(); }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
+          1.0f, "Opacity", [this](const float opacity) { UpdateOpacityProperty(); }))
 {
     LogInfo("UiCanvas::ctor => ", mUId);
 
@@ -77,22 +77,22 @@ std::shared_ptr<LuaProxy> UiCanvas::ReplicateLuaProxy()
 
 void UiCanvas::SetIsSceneProxyReady(const bool isReady)
 {
-    mIsSceneProxyReady.store(isReady, std::memory_order::memory_order_seq_cst);
+    mIsSceneProxyReady.store(isReady, std::memory_order::seq_cst);
 }
 
 bool UiCanvas::GetIsSceneProxyReady() const
 {
-    return mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst);
+    return mIsSceneProxyReady.load(std::memory_order::seq_cst);
 }
 
 void UiCanvas::SetIsLuaProxyReady(const bool isReady)
 {
-    mIsLuaProxyReady.store(isReady, std::memory_order::memory_order_seq_cst);
+    mIsLuaProxyReady.store(isReady, std::memory_order::seq_cst);
 }
 
 bool UiCanvas::GetIsLuaProxyReady() const
 {
-    return mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst);
+    return mIsLuaProxyReady.load(std::memory_order::seq_cst);
 }
 
 void UiCanvas::InitLuaProxy(const std::shared_ptr<Scene>& sceneSp)
@@ -105,7 +105,13 @@ void UiCanvas::InitLuaProxy(const std::shared_ptr<Scene>& sceneSp)
     luaProxy->SetLuaScriptProcessor(GetLuaScriptProcessorWp());
 
     sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, GetUId(), functionId, [this, luaScriptProcessorWp = GetLuaScriptProcessorWp(), luaProxy] {
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        GetUId(),
+        functionId,
+        [this, luaScriptProcessorWp = GetLuaScriptProcessorWp(), luaProxy](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& luaProcessorSp = luaScriptProcessorWp.lock()) {
                 luaProcessorSp->AddLuaProxy(luaProxy);
                 SetIsLuaProxyReady(true);
@@ -388,12 +394,12 @@ void UiCanvas::UnpausableTick(const float deltaTime)
         mIsTransformDirty = false;
     }
 
-    if (mIsPropertiesShouldBeUpdatedOnRenderThread && mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsPropertiesShouldBeUpdatedOnRenderThread && mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         SyncDataOnRenderThread();
         mIsPropertiesShouldBeUpdatedOnRenderThread = false;
     }
 
-    if (mIsPropertiesShouldBeUpdatedOnLuaThread && mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsPropertiesShouldBeUpdatedOnLuaThread && mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         SyncDataOnLuaThread();
         mIsPropertiesShouldBeUpdatedOnLuaThread = false;
     }
@@ -495,7 +501,10 @@ void UiCanvas::SyncDataOnRenderThread()
                  isVisible = mIsVisible,
                  absoluteOrigin = mAbsoluteOrigin,
                  widthHeight = mWidthHeight,
-                 canvasZOrder = mCanvasZOrder]() {
+                 canvasZOrder = mCanvasZOrder](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(uid)) {
                         canvasProxy->SetIsVisible(isVisible);
                         canvasProxy->SetAbsoluteOrigin(absoluteOrigin);
@@ -520,7 +529,10 @@ void UiCanvas::SyncDataOnLuaThread()
                  luaProxyId = GetLuaProxyId(),
                  isVisible = mIsVisible,
                  interceptsMouseInputEvents = mCanInterceptMouseInputEvents,
-                 canvasZOrder = mCanvasZOrder]() {
+                 canvasZOrder = mCanvasZOrder](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& canvasProxy
                         = std::static_pointer_cast<UiCanvasLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                         canvasProxy->SetIsVisible_FromGameThread(isVisible);
@@ -638,7 +650,7 @@ void UiCanvas::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 
 void UiCanvas::UpdateOpacityProperty()
 {
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         static constexpr uint64_t functionId = Hash64_CT("UiCanvas::UpdateOpacityProperty");
         if (const auto& sceneSp = mScene.lock()) {
             if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -646,7 +658,10 @@ void UiCanvas::UpdateOpacityProperty()
                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                     GetUId(),
                     functionId,
-                    [sceneRendererSp, uid = GetUId(), opacity = mOpacityProperty->GetValue()]() {
+                    [sceneRendererSp, uid = GetUId(), opacity = mOpacityProperty->GetValue()](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& canvasProxy = sceneRendererSp->GetCanvasSceneProxyByProxyId(uid)) {
                             canvasProxy->SetOverlayOpacity(opacity);
                         }
@@ -666,7 +681,7 @@ void UiCanvas::CleanUp()
 
 void UiCanvas::RemoveSceneProxy()
 {
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = mScene.lock()) {
             if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                 // Clear all children scene proxies, because all of them relate to current canvas
@@ -691,7 +706,7 @@ void UiCanvas::RemoveFromReplicators()
 
 void UiCanvas::RemoveLuaProxy()
 {
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& luaProcessorSp = GetLuaScriptProcessorWp().lock()) {
             luaProcessorSp->RemoveLuaProxy(GetLuaProxyId());
         }

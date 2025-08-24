@@ -126,7 +126,13 @@ void UiItemBaseLuaProxy::SetParent(const std::string& canvasName, const std::str
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, canvasName, parentName]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, canvasName, parentName](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& uiItemBase = std::static_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
@@ -145,7 +151,10 @@ void UiItemBaseLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameter
             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
             mLuaProxyId,
             functionId,
-            [sceneSp, replicatorId, jsonStr = jsonParameters]() {
+            [sceneSp, replicatorId, jsonStr = jsonParameters](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& uiItemBase = std::static_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
@@ -210,7 +219,13 @@ void UiItemBaseLuaProxy::AddAnimation(const std::string& animationName, const An
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY, mLuaProxyId, functionId, [sceneSp, replicatorId, animationName, animationData]() {
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, animationName, animationData](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
@@ -226,7 +241,13 @@ void UiItemBaseLuaProxy::AddSequenceAnimation(const std::string& animationName, 
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY, mLuaProxyId, functionId, [sceneSp, replicatorId, animationName, animationSequence]() {
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, animationName, animationSequence](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
@@ -242,7 +263,13 @@ void UiItemBaseLuaProxy::StartAnimation(const std::string& animationName)
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, animationName]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, animationName](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
@@ -260,7 +287,13 @@ void UiItemBaseLuaProxy::StartSequenceAnimation(const std::string& animationSequ
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, animationSequenceName]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, animationSequenceName](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
@@ -287,7 +320,13 @@ void UiItemBaseLuaProxy::EnableMouseInputReceiverBase()
         mIsMouseInputReceiverEnabled = true;
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& uiItemBase = std::static_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
@@ -307,7 +346,10 @@ void UiItemBaseLuaProxy::EnableMouseInputReceiverBase()
                                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                     senderSp->GetReplicatorId(),
                                     functionId,
-                                    [luaScriptProcessorSp, luaProxyId]() {
+                                    [luaScriptProcessorSp, luaProxyId](
+                                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                                         if (const auto& baseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(
                                                 luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                                             baseLuaProxySp->SetInputClicked_FromGameThread(true);
@@ -330,7 +372,10 @@ void UiItemBaseLuaProxy::EnableMouseInputReceiverBase()
                                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                     senderSp->GetReplicatorId(),
                                     functionId,
-                                    [luaScriptProcessorSp, luaProxyId]() {
+                                    [luaScriptProcessorSp, luaProxyId](
+                                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                                         if (const auto& baseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(
                                                 luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                                             baseLuaProxySp->SetInputPressState_FromGameThread(
@@ -354,7 +399,10 @@ void UiItemBaseLuaProxy::EnableMouseInputReceiverBase()
                                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                     senderSp->GetReplicatorId(),
                                     functionId,
-                                    [luaScriptProcessorSp, luaProxyId]() {
+                                    [luaScriptProcessorSp, luaProxyId](
+                                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                                         if (const auto& baseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(
                                                 luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                                             baseLuaProxySp->SetInputPressState_FromGameThread(
@@ -378,7 +426,10 @@ void UiItemBaseLuaProxy::EnableMouseInputReceiverBase()
                                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                     senderSp->GetReplicatorId(),
                                     functionId,
-                                    [luaScriptProcessorSp, luaProxyId]() {
+                                    [luaScriptProcessorSp, luaProxyId](
+                                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                                         if (const auto& baseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(
                                                 luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                                             baseLuaProxySp->SetInputCursorHoverState_FromGameThread(
@@ -402,7 +453,10 @@ void UiItemBaseLuaProxy::EnableMouseInputReceiverBase()
                                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                     senderSp->GetReplicatorId(),
                                     functionId,
-                                    [luaScriptProcessorSp, luaProxyId]() {
+                                    [luaScriptProcessorSp, luaProxyId](
+                                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                                         if (const auto& baseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(
                                                 luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                                             baseLuaProxySp->SetInputCursorHoverState_FromGameThread(

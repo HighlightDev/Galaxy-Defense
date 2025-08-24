@@ -37,10 +37,6 @@ void NoPhysicsMovementComponent::Tick(const float deltaTime)
     MovementComponent::Tick(deltaTime);
 }
 
-void NoPhysicsMovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-}
-
 void NoPhysicsMovementComponent::Move(const float deltaTime)
 {
     if (const auto& actorRootComponentSp = m_actorRootComponent.lock()) {

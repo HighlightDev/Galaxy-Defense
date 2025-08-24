@@ -35,7 +35,10 @@ int32_t UiToggleButtonReplicatorFactory::CreateReplicator(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             uiToggleButtonLuaProxyId,
             functionId,
-            [sceneSp, isStateOn, luaScriptProcessorWp, uiToggleButtonLuaProxyId, name]() {
+            [sceneSp, isStateOn, luaScriptProcessorWp, uiToggleButtonLuaProxyId, name](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                 const auto& createdUiToggleButton = std::make_shared<UiToggleButton>(isStateOn, name);
                 createdUiToggleButton->Initialize();

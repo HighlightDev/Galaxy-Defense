@@ -29,12 +29,12 @@ PlanarReflectionComponent::~PlanarReflectionComponent()
 
 void PlanarReflectionComponent::SetIsSceneProxyReady(const bool isReady)
 {
-    bIsSceneProxyReady.store(isReady, std::memory_order::memory_order_seq_cst);
+    bIsSceneProxyReady.store(isReady, std::memory_order::seq_cst);
 }
 
 bool PlanarReflectionComponent::IsSceneProxyReady() const
 {
-    return bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst);
+    return bIsSceneProxyReady.load(std::memory_order::seq_cst);
 }
 
 void PlanarReflectionComponent::UpdateReflectionPlane()
@@ -77,16 +77,20 @@ void PlanarReflectionComponent::PostLevelInit()
 
     static const uint64_t functionId = Hash("PlanarReflectionComponent::PostLevelInit");
     if (const auto& sceneSp = m_sceneWP.lock()) {
-        if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                GetObjectId(),
-                functionId,
-                [sceneRenderer, weak = weak_from_this(), planarReflectionSceneProxyId = mPlanarReflectionSceneProxyId]() {
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            GetObjectId(),
+            functionId,
+            [weak = weak_from_this(), planarReflectionSceneProxyId = mPlanarReflectionSceneProxyId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     if (const auto& componentPtr = weak.lock()) {
                         const auto planarReflectionComponentPtr
                             = std::static_pointer_cast<PlanarReflectionComponent>(componentPtr);
-                        const auto& reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId);
+                        const auto& reflectionSp
+                            = sceneRendererSp->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId);
                         assert(reflectionSp);
                         const auto& proxySp = std::static_pointer_cast<PlanarReflectionProxy>(reflectionSp);
                         auto resourceTexture = proxySp->GetPlanarReflectionTexture();
@@ -94,21 +98,21 @@ void PlanarReflectionComponent::PostLevelInit()
                             ->GetDeferredResource(); // Just in case deferred resource wasn't initialized
                         planarReflectionComponentPtr->GetPlanarReflectionDeferredController()->SetResource(resourceTexture);
                     }
-                });
-        }
+                }
+            });
     }
 }
 
 void PlanarReflectionComponent::Tick(const float deltaTime)
 {
     if (mIsEnabled) {
-        if (bTransformationDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+        if (bTransformationDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
             UpdateRelativeMatrix();
             UpdateReflectionPlane();
             bIsRenderDataDirty = true;
         }
 
-        if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+        if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
             SyncDataWithRenderThread();
             bIsRenderDataDirty = false;
         }
@@ -149,24 +153,26 @@ void PlanarReflectionComponent::SyncDataWithRenderThread()
 {
     static const uint64_t functionId = Hash("PlanarReflectionComponent::SyncDataWithRenderThread");
     if (const auto& sceneSp = m_sceneWP.lock()) {
-        if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                GetObjectId(),
-                functionId,
-                [weak = weak_from_this(),
-                 sceneRenderer,
-                 planarReflectionSceneProxyId = mPlanarReflectionSceneProxyId,
-                 reflectionPlane = mReflectionPlane]() {
-                    if (const auto& componentPtr = weak.lock()) {
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            GetObjectId(),
+            functionId,
+            [weak = weak_from_this(),
+             planarReflectionSceneProxyId = mPlanarReflectionSceneProxyId,
+             reflectionPlane = mReflectionPlane](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& componentPtr = weak.lock()) {
+                    if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                         const auto& reflectionSp = std::static_pointer_cast<PlanarReflectionProxy>(
-                            sceneRenderer->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId));
+                            sceneRendererSp->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId));
                         if (reflectionSp) {
                             reflectionSp->SetReflectionPlane(reflectionPlane);
                         }
                     }
-                });
-        }
+                }
+            });
     }
 }
 } // namespace EngineCore

@@ -36,7 +36,10 @@ int32_t UiSliderReplicatorFactory::CreateReplicator(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             uiSliderLuaProxyId,
             functionId,
-            [sceneSp, luaScriptProcessorWp, uiSliderLuaProxyId, name]() {
+            [sceneSp, luaScriptProcessorWp, uiSliderLuaProxyId, name](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                 const auto& createdSlider = std::make_shared<UiSlider>(name);
                 createdSlider->Initialize();

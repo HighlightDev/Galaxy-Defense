@@ -50,15 +50,12 @@ UiItemBase::UiItemBase(const std::string& name)
     , mIsTransformDirty(false)
     , mIsPropertiesShouldBeUpdatedOnRenderThread(false)
     , mIsPropertiesShouldBeUpdatedOnLuaThread(false)
-    , mScaleProperty(
-          std::make_shared<EngineObjectProperty<float>>(
-              1.0f, "Scale", [this](const float newScaleValue) { UpdateScaleProperty(); }))
-    , mVerticalCenterOffsetProperty(
-          std::make_shared<EngineObjectProperty<int32_t>>(
-              0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
-    , mHorizontalCenterOffsetProperty(
-          std::make_shared<EngineObjectProperty<int32_t>>(
-              0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
+    , mScaleProperty(std::make_shared<EngineObjectProperty<float>>(
+          1.0f, "Scale", [this](const float newScaleValue) { UpdateScaleProperty(); }))
+    , mVerticalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
+          0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
+    , mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
+          0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
 {
     mProperties.emplace("Scale", mScaleProperty);
     mProperties.emplace("VerticalCenterOffset", mVerticalCenterOffsetProperty);
@@ -102,13 +99,13 @@ void UiItemBase::SetParents(const std::string& uiCanvasName, const std::string& 
 void UiItemBase::SetIsSceneProxyReady(const bool isSceneProxyReady)
 {
     LogInfo("UiItemBase::SetIsSceneProxyReady => name: ", mName, ", readiness value: ", isSceneProxyReady);
-    mIsSceneProxyReady.store(isSceneProxyReady, std::memory_order::memory_order_seq_cst);
+    mIsSceneProxyReady.store(isSceneProxyReady, std::memory_order::seq_cst);
 }
 
 void UiItemBase::SetIsLuaProxyReady(const bool isLuaProxyReady)
 {
     LogInfo("UiItemBase::SetIsLuaProxyReady => name: ", mName, ", readiness value: ", isLuaProxyReady);
-    mIsLuaProxyReady.store(isLuaProxyReady, std::memory_order::memory_order_seq_cst);
+    mIsLuaProxyReady.store(isLuaProxyReady, std::memory_order::seq_cst);
 }
 
 std::weak_ptr<Scene> UiItemBase::GetScene() const
@@ -520,9 +517,9 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
             assert(leftAnchorUiItem);
             const auto& leftAnchorUiItemBoundingArea = leftAnchorUiItem->GetBoundingArea();
 
-            const int32_t originX = eUiAnchor::LEFT == leftAnchor.GetDstAnchor() ? leftAnchorUiItemBoundingArea.GetMin().x
-                : eUiAnchor::RIGHT == leftAnchor.GetDstAnchor()                  ? leftAnchorUiItemBoundingArea.GetMax().x
-                                                                                 : 0;
+            const int32_t originX = eUiAnchor::LEFT == leftAnchor.GetDstAnchor()
+                ? leftAnchorUiItemBoundingArea.GetMin().x
+                : eUiAnchor::RIGHT == leftAnchor.GetDstAnchor() ? leftAnchorUiItemBoundingArea.GetMax().x : 0;
             mAbsoluteOrigin.x = originX + leftAnchor.GetSrcAnchorMargin() + mHorizontalCenterOffset;
         } else if (mAnchors.count(eUiAnchor::RIGHT)) {
             const auto& rightAnchor = mAnchors.at(eUiAnchor::RIGHT);
@@ -531,9 +528,9 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
 
             const auto& rightAnchorUiItemBoundingArea = rightAnchorUiItem->GetBoundingArea();
 
-            const int32_t anchorOriginX = eUiAnchor::LEFT == rightAnchor.GetDstAnchor() ? rightAnchorUiItemBoundingArea.GetMin().x
-                : eUiAnchor::RIGHT == rightAnchor.GetDstAnchor()                        ? rightAnchorUiItemBoundingArea.GetMax().x
-                                                                                        : 0;
+            const int32_t anchorOriginX = eUiAnchor::LEFT == rightAnchor.GetDstAnchor()
+                ? rightAnchorUiItemBoundingArea.GetMin().x
+                : eUiAnchor::RIGHT == rightAnchor.GetDstAnchor() ? rightAnchorUiItemBoundingArea.GetMax().x : 0;
             mAbsoluteOrigin.x = anchorOriginX - mWidth - rightAnchor.GetSrcAnchorMargin() + mHorizontalCenterOffset;
         }
     }
@@ -596,9 +593,9 @@ void UiItemBase::CalculateVerticalAnchorPositions()
             assert(bottomAnchorUiItem);
             const auto& bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
 
-            const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMin().y
-                : eUiAnchor::TOP == bottomAnchor.GetDstAnchor()                      ? bottomAnchorUiItemBoundingArea.GetMax().y
-                                                                                     : 0;
+            const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor()
+                ? bottomAnchorUiItemBoundingArea.GetMin().y
+                : eUiAnchor::TOP == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMax().y : 0;
             mAbsoluteOrigin.y = originY + bottomAnchor.GetSrcAnchorMargin() + mVerticalCenterOffset;
         } else if (mAnchors.count(eUiAnchor::TOP)) {
             const auto& topAnchor = mAnchors.at(eUiAnchor::TOP);
@@ -607,9 +604,9 @@ void UiItemBase::CalculateVerticalAnchorPositions()
 
             const auto& topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
 
-            const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMin().y
-                : eUiAnchor::TOP == topAnchor.GetDstAnchor()                            ? topAnchorUiItemBoundingArea.GetMax().y
-                                                                                        : 0;
+            const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.GetDstAnchor()
+                ? topAnchorUiItemBoundingArea.GetMin().y
+                : eUiAnchor::TOP == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMax().y : 0;
             mAbsoluteOrigin.y = anchorOriginY - mHeight - topAnchor.GetSrcAnchorMargin() + mVerticalCenterOffset;
         }
     }
@@ -885,7 +882,7 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 void UiItemBase::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnRenderThread");
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& canvasSp = GetParentCanvas().lock()) {
                 SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
@@ -901,7 +898,10 @@ void UiItemBase::SyncDataOnRenderThread()
                      normTranslation = mNormalizedTranslation,
                      normScale = mNormalizedScale,
                      width = mWidth,
-                     height = mHeight]() {
+                     height = mHeight](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& sceneRenderer
                             = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
@@ -923,7 +923,7 @@ void UiItemBase::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnLuaThread");
     SetIsVisibleDirty(false);
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
@@ -940,7 +940,10 @@ void UiItemBase::SyncDataOnLuaThread()
                      height = mHeight,
                      horizontalOffset = mHorizontalCenterOffset,
                      verticalOffset = mVerticalCenterOffset,
-                     anchorsMap = mAnchors]() {
+                     anchorsMap = mAnchors](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& uiItemBaseLuaProxy
                             = std::static_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             uiItemBaseLuaProxy->SetIsVisible_FromGameThread(visible);
@@ -970,7 +973,13 @@ void UiItemBase::InitLuaProxy(const std::shared_ptr<Scene>& sceneSp)
     luaProxy->SetLuaScriptProcessor(GetLuaScriptProcessorWp());
 
     sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, GetUId(), functionId, [this, luaScriptProcessorWp = GetLuaScriptProcessorWp(), luaProxy] {
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        GetUId(),
+        functionId,
+        [this, luaScriptProcessorWp = GetLuaScriptProcessorWp(), luaProxy](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& luaProcessorSp = luaScriptProcessorWp.lock()) {
                 luaProcessorSp->AddLuaProxy(luaProxy);
                 SetIsLuaProxyReady(true);
@@ -981,14 +990,17 @@ void UiItemBase::InitLuaProxy(const std::shared_ptr<Scene>& sceneSp)
 void UiItemBase::UpdateScaleProperty()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiItemBase::UpdateScaleProperty");
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& canvasSp = GetParentCanvas().lock()) {
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                     GetUId(),
                     functionId,
-                    [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), scale = mScaleProperty->GetValue()]() {
+                    [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), scale = mScaleProperty->GetValue()](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& sceneRenderer
                             = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
@@ -1005,7 +1017,7 @@ void UiItemBase::UpdateScaleProperty()
 void UiItemBase::UpdateCenterOffsetProperties()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiItemBase::UpdateCenterOffsetProperties");
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         glm::vec2 normalizedCenterOffset;
         if (const auto& rootParentSp = GetRootParent().lock()) {
             const auto rootWidth = rootParentSp->GetWidth();
@@ -1027,7 +1039,10 @@ void UiItemBase::UpdateCenterOffsetProperties()
                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                     GetUId(),
                     functionId,
-                    [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), normalizedCenterOffset]() {
+                    [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), normalizedCenterOffset](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& sceneRenderer
                             = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
@@ -1109,7 +1124,7 @@ void UiItemBase::RemoveFromReplicators()
 
 void UiItemBase::RemoveLuaProxy()
 {
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& luaProcessorSp = GetLuaScriptProcessorWp().lock()) {
             luaProcessorSp->RemoveLuaProxy(GetLuaProxyId());
         }

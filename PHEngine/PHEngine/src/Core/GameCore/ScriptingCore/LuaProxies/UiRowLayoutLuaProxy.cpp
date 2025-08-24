@@ -44,7 +44,10 @@ void UiRowLayoutLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParamete
             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
             mLuaProxyId,
             functionId,
-            [sceneSp, replicatorId, jsonStr = jsonParameters]() {
+            [sceneSp, replicatorId, jsonStr = jsonParameters](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& rowLayout = std::static_pointer_cast<::EngineCore::GUI::UiRowLayout>(replicator);

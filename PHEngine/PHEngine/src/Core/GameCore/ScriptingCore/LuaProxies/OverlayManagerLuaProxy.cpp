@@ -46,7 +46,13 @@ void OverlayManagerLuaProxy::OpenOverlay(const std::string& overlayName)
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, overlayName]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, overlayName](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
@@ -62,7 +68,13 @@ void OverlayManagerLuaProxy::OpenBackgroundOverlay(const std::string& overlayNam
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, overlayName]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, overlayName](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
@@ -78,7 +90,13 @@ void OverlayManagerLuaProxy::CloseCurrentOverlay()
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
@@ -94,7 +112,13 @@ void OverlayManagerLuaProxy::CloseOverlayAndClearHistory()
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
@@ -110,7 +134,13 @@ void OverlayManagerLuaProxy::CloseBackgroundOverlay(const std::string& overlayNa
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, overlayName]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, overlayName](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);

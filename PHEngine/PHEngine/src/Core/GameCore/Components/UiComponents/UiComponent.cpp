@@ -25,10 +25,6 @@ eComponentType UiComponent::GetComponentType() const
     return eComponentType::UI_COMPONENT;
 }
 
-void UiComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-}
-
 int32_t UiComponent::CreateTextField(
     const std::string& fontName,
     const int32_t fontSize,

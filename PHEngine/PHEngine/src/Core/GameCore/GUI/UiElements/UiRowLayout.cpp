@@ -167,7 +167,7 @@ void UiRowLayout::OnPropertiesShouldBeUpdatedOnLuaThread()
 void UiRowLayout::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiRowLayout::SyncDataOnLuaThread");
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
@@ -175,7 +175,10 @@ void UiRowLayout::SyncDataOnLuaThread()
                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                     GetUId(),
                     functionId,
-                    [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), spacing = mSpacing, alignment = mAlignmentType]() {
+                    [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), spacing = mSpacing, alignment = mAlignmentType](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& layoutLuaProxy
                             = std::static_pointer_cast<UiRowLayoutLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             layoutLuaProxy->SetSpacing_FromGameThread(spacing);

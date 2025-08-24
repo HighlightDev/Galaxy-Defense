@@ -36,8 +36,12 @@ std::string ActorController::GetBindedActorName() const
     return "";
 }
 
-void ActorController::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+void ActorController::Tick(const float deltaTime)
 {
-    dataContainer.ActorControllerData.emplace_back(std::make_shared<SerializeDataPlayerController>(GetBindedActorName()));
 }
+
+void ActorController::UnpausableTick(const float deltaTime)
+{
+}
+
 } // namespace EngineCore

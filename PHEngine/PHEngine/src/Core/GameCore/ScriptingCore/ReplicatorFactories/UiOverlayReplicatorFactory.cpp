@@ -37,7 +37,10 @@ int32_t UiOverlayReplicatorFactory::CreateReplicator(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             canvasLuaProxyId,
             functionId,
-            [sceneSp, luaScriptProcessorWp, overlayManagerReplicatorId, overlayName, canvasLuaProxyId, overlayLuaProxyId]() {
+            [sceneSp, luaScriptProcessorWp, overlayManagerReplicatorId, overlayName, canvasLuaProxyId, overlayLuaProxyId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                 const auto& uiOverlay = std::make_shared<UiOverlay>(overlayName, sceneSp, luaScriptProcessorWp);
                 const auto& uiCanvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(

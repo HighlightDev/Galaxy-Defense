@@ -67,7 +67,13 @@ void UiCanvasLuaProxy::AddAnimation(const std::string& animationName, const Anim
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY, mLuaProxyId, functionId, [sceneSp, replicatorId, animationName, animationData]() {
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId, animationName, animationData](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
@@ -86,7 +92,10 @@ void UiCanvasLuaProxy::AddSequenceAnimation(const std::string& sequenceAnimation
             eEnqueueJobPolicy::PUSH_ANYWAY,
             mLuaProxyId,
             functionId,
-            [sceneSp, replicatorId, sequenceAnimationName, animationSequence]() {
+            [sceneSp, replicatorId, sequenceAnimationName, animationSequence](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
@@ -115,7 +124,10 @@ void UiCanvasLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameters)
             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
             mLuaProxyId,
             functionId,
-            [sceneSp, replicatorId, jsonStr = jsonParameters]() {
+            [sceneSp, replicatorId, jsonStr = jsonParameters](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
@@ -152,7 +164,13 @@ void UiCanvasLuaProxy::InitializeInputSystem()
     if (const auto sceneSp = mSceneWp.lock()) {
         const auto replicatorId = GetReplicatorId();
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mLuaProxyId,
+            functionId,
+            [sceneSp, replicatorId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                 assert(replicator);
                 const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);

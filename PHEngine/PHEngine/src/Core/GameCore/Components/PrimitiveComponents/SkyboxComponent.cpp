@@ -2,7 +2,6 @@
 
 #include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 
@@ -50,18 +49,6 @@ void SkyboxComponent::Tick(const float deltaTime)
     Base::Tick(deltaTime);
 
     SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * m_rotateSpeed), AXIS_UP));
-}
-
-void SkyboxComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& actorData = GetSerializeDataActor(dataContainer);
-
-    std::shared_ptr<SerializeDataSkyboxComponent> skyboxCompData = std::make_shared<SerializeDataSkyboxComponent>();
-
-    skyboxCompData->ComponentName = EngineObjectName;
-    skyboxCompData->Scale = GetScale();
-    skyboxCompData->Material = SerializeHelper::GetSerializeDataMaterial(GetMaterial());
-    actorData.ComponentsData.emplace_back(skyboxCompData);
 }
 
 std::shared_ptr<PrimitiveSceneProxy> SkyboxComponent::CreateSceneProxy() const

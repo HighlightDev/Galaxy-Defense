@@ -205,7 +205,7 @@ void UiProgressBar::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr
 void UiProgressBar::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiProgressBar::SyncDataOnRenderThread");
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& canvasSp = GetParentCanvas().lock()) {
                 if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -220,7 +220,10 @@ void UiProgressBar::SyncDataOnRenderThread()
                          emptyColor = mEmptyColor,
                          filledColor = mFilledColor,
                          opacity = mOpacity,
-                         fillPercentValue = mFillPercentValue]() {
+                         fillPercentValue = mFillPercentValue](
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                             if (uiSceneProxy) {
                                 const auto& statusBarSceneProxy = std::static_pointer_cast<UiProgressBarSceneProxy>(uiSceneProxy);
@@ -241,7 +244,7 @@ void UiProgressBar::SyncDataOnRenderThread()
 void UiProgressBar::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiProgressBar::SyncDataOnLuaThread");
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
@@ -254,7 +257,10 @@ void UiProgressBar::SyncDataOnLuaThread()
                      opacity = mOpacity,
                      emptyColor = mEmptyColor,
                      filledColor = mFilledColor,
-                     fillPercentValue = mFillPercentValue]() {
+                     fillPercentValue = mFillPercentValue](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& rectangleLuaProxy
                             = std::static_pointer_cast<UiProgressBarLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             rectangleLuaProxy->SetOpacity_FromGameThread(opacity);

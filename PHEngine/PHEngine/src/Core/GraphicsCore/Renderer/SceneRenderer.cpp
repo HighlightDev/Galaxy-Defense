@@ -1130,12 +1130,12 @@ std::shared_ptr<PrimitiveSceneProxy> SceneRenderer::GetPrimitiveProxyByProxyId(c
 {
     std::shared_ptr<PrimitiveSceneProxy> result = nullptr;
 
-    auto foundPrimitiveProxyIt
-        = std::find_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto& primitiveProxy) {
+    const auto foundPrimitiveProxyIt
+        = std::find_if(PrimitiveProxiesVector.cbegin(), PrimitiveProxiesVector.cend(), [=](const auto& primitiveProxy) {
               return proxyId == primitiveProxy->GetSceneProxyId();
           });
 
-    if (foundPrimitiveProxyIt != PrimitiveProxiesVector.end()) {
+    if (foundPrimitiveProxyIt != PrimitiveProxiesVector.cend()) {
         result = *foundPrimitiveProxyIt;
     }
 
@@ -1247,7 +1247,10 @@ void SceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<Mate
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         materialProxy->GetSceneProxyId(),
         functionId,
-        [weak = weak_from_this(), materialProxy]() {
+        [weak = weak_from_this(), materialProxy](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 assert(!sceneRenderer->GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
                 LogInfo(
@@ -1267,7 +1270,10 @@ void SceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), primitiveSceneProxyIndex, bEnabled]() {
+        [weak = weak_from_this(), primitiveSceneProxyIndex, bEnabled](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
                 if (primitiveSp) {
@@ -1284,7 +1290,10 @@ void SceneRenderer::UpdateLightComponentEnable_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), lightSceneProxyIndex, bEnabled]() {
+        [weak = weak_from_this(), lightSceneProxyIndex, bEnabled](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& lightSp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
                 if (lightSp) {
@@ -1301,7 +1310,10 @@ void SceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), primitiveSceneProxyIndex, visibility]() {
+        [weak = weak_from_this(), primitiveSceneProxyIndex, visibility](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
                 if (primitiveSp) {
@@ -1318,7 +1330,10 @@ void SceneRenderer::UpdateLightComponentIsVisible_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), lightSceneProxyIndex, visibility]() {
+        [weak = weak_from_this(), lightSceneProxyIndex, visibility](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& lightSp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
                 if (lightSp) {
@@ -1338,7 +1353,10 @@ void SceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), sortOrderValue, primitiveSceneProxyIndex]() {
+        [weak = weak_from_this(), sortOrderValue, primitiveSceneProxyIndex](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
                 if (primitiveSp) {
@@ -1360,7 +1378,10 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), primitiveSceneProxyIndex, newRelativeMatrix, newOutlineMatrix, newTransformedBoundingBox]() {
+        [weak = weak_from_this(), primitiveSceneProxyIndex, newRelativeMatrix, newOutlineMatrix, newTransformedBoundingBox](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
                 if (primitiveSp) {
@@ -1382,7 +1403,10 @@ void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), newRelativeMatrix, lightSceneProxyIndex]() {
+        [weak = weak_from_this(), newRelativeMatrix, lightSceneProxyIndex](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
                 if (lightProxySp) {
@@ -1401,7 +1425,10 @@ void SceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const int32_t prim
         eEnqueueJobPolicy::PUSH_ANYWAY,
         primitiveSceneProxyIndex,
         functionId,
-        [weak = weak_from_this(), primitiveSceneProxyIndex]() {
+        [weak = weak_from_this(), primitiveSceneProxyIndex](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 sceneRenderer->RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
                 sceneRenderer->SetProxiesAreDirty(true);
@@ -1415,7 +1442,13 @@ void SceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread()
     static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [weak = weak_from_this()]() {
+        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this()](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 sceneRenderer->SetProxiesAreDirty(true);
             }
@@ -1428,7 +1461,13 @@ void SceneRenderer::LightSceneProxyDeleted_OnRenderThread(const int32_t lightSce
     static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxyDeleted_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [weak = weak_from_this(), lightSceneProxyIndex]() {
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), lightSceneProxyIndex](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 sceneRenderer->RemoveLightProxyByProxyId(lightSceneProxyIndex);
                 sceneRenderer->SetLightProxiesAreDirty(true);
@@ -1442,7 +1481,13 @@ void SceneRenderer::LightSceneProxiesUpdated_OnRenderThread()
     static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxiesUpdated_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [weak = weak_from_this()]() {
+        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this()](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 sceneRenderer->SetLightProxiesAreDirty(true);
             }
@@ -1459,7 +1504,10 @@ void SceneRenderer::CameraSceneProxyAdded_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
         cameraSceneProxy->GetSceneProxyId(),
         functionId,
-        [weak = weak_from_this(), camera, cameraSceneProxy]() {
+        [weak = weak_from_this(), camera, cameraSceneProxy](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 sceneRenderer->SceneViewsVector.emplace_back(
                     std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->GetPrimitiveProxies()));
@@ -1492,7 +1540,10 @@ void SceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread(
         eEnqueueJobPolicy::PUSH_ANYWAY,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), primitiveComponent, primitiveSceneProxy]() {
+        [weak = weak_from_this(), primitiveComponent, primitiveSceneProxy](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 assert(!sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
                 primitiveSceneProxy->PostConstructorInitialize();
@@ -1513,7 +1564,10 @@ void SceneRenderer::LightSceneProxyAdded_OnRenderThread(
         eEnqueueJobPolicy::PUSH_ANYWAY,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), lightComponent, lightSceneProxy]() {
+        [weak = weak_from_this(), lightComponent, lightSceneProxy](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 assert(!sceneRenderer->GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
                 sceneRenderer->LightProxiesVector.emplace_back(lightSceneProxy);
@@ -1551,7 +1605,13 @@ void SceneRenderer::RegisterText_OnRenderThread(
         textField->GetLineMaxWidthHeight(),
         subscribeOnTextScreenSpaceSizeUpdate);
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [weak = weak_from_this(), textFieldProxy]() {
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), textFieldProxy](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 sceneRenderer->RegisterText(textFieldProxy);
             }
@@ -1573,7 +1633,10 @@ void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextF
         eEnqueueJobPolicy::PUSH_ANYWAY,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), textFieldId = textField->GetTextFieldId()]() {
+        [weak = weak_from_this(), textFieldId = textField->GetTextFieldId()](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 sceneRenderer->UnregisterText(textFieldId);
             }
@@ -1589,7 +1652,13 @@ void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(
     static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [weak = weak_from_this(), uiCanvas, uiCanvasProxy]() {
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), uiCanvas, uiCanvasProxy](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 sceneRenderer->RegisterUiCanvasProxy(uiCanvasProxy);
                 uiCanvas->SetIsSceneProxyReady(true);
@@ -1617,7 +1686,10 @@ void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
         eEnqueueJobPolicy::PUSH_ANYWAY,
         creatorObjectId,
         functionId,
-        [weak = weak_from_this(), uiItem, uiSceneProxy, canvasUId]() {
+        [weak = weak_from_this(), uiItem, uiSceneProxy, canvasUId](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 sceneRenderer->RegisterUiSceneProxy(uiSceneProxy, canvasUId);
                 uiItem->SetIsSceneProxyReady(true);
@@ -1644,7 +1716,10 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [weak = weak_from_this(), textFieldId, textPosition = textField->GetPosition()]() {
+            [weak = weak_from_this(), textFieldId, textPosition = textField->GetPosition()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     sceneRenderer->TextPositionChanged(textFieldId, textPosition);
                 }
@@ -1654,7 +1729,10 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [weak = weak_from_this(), textFieldId, textColor = textField->GetColor()]() {
+            [weak = weak_from_this(), textFieldId, textColor = textField->GetColor()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     sceneRenderer->TextColorChanged(textFieldId, textColor);
                 }
@@ -1664,7 +1742,10 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [weak = weak_from_this(), textFieldId, text = textField->GetText()]() {
+            [weak = weak_from_this(), textFieldId, text = textField->GetText()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     sceneRenderer->TextChanged(textFieldId, text);
                 }
@@ -1674,7 +1755,10 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
             functionId,
-            [weak = weak_from_this(), textFieldId, isVisible = textField->GetIsVisible()]() {
+            [weak = weak_from_this(), textFieldId, isVisible = textField->GetIsVisible()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     sceneRenderer->TextVisibilityChanged(textFieldId, isVisible);
                 }
@@ -1690,7 +1774,10 @@ void SceneRenderer::MaterialPropertiesUpdated_OnRenderThread(
         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         0,
         functionId,
-        [weak = weak_from_this(), materialProxyIndex, properties = std::move(properties)]() mutable {
+        [weak = weak_from_this(), materialProxyIndex, properties = std::move(properties)](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) mutable {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
                 if (materialProxySp) {
@@ -1714,7 +1801,10 @@ void SceneRenderer::PlanarReflectionSceneProxyAdded_OnRenderThread(
         eEnqueueJobPolicy::PUSH_ANYWAY,
         proxy->GetSceneProxyId(),
         functionId,
-        [proxy, planarReflectionComponent, weak = weak_from_this()]() {
+        [proxy, planarReflectionComponent, weak = weak_from_this()](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& reflectionProxySp = sceneRenderer->GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
                 assert(!reflectionProxySp);
@@ -1733,7 +1823,10 @@ void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
         eEnqueueJobPolicy::PUSH_ANYWAY,
         cameraSceneProxyId,
         functionId,
-        [weak = weak_from_this(), cameraSceneProxyId, planarReflectionProxy]() {
+        [weak = weak_from_this(), cameraSceneProxyId, planarReflectionProxy](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& sceneRenderer = weak.lock()) {
                 const auto& sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraSceneProxyId);
                 if (sceneViewSp) {
@@ -1781,7 +1874,10 @@ void SceneRenderer::TextChanged(const int32_t textFieldProxyId, const std::strin
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                 creatorObjectId,
                 functionId,
-                [weak = weak_from_this(), sceneSp, textFieldProxyId]() {
+                [weak = weak_from_this(), sceneSp, textFieldProxyId](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& sceneRenderer = weak.lock()) {
                         sceneSp->GetTextHandler()
                             ->GetTextFieldById(textFieldProxyId)

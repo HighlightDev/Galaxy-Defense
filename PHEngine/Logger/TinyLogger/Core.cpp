@@ -37,16 +37,16 @@ void LoggerServer::AddLoggerClient(const std::shared_ptr<LoggerClientBase>& clie
 
 void LoggerServer::StartLogThread()
 {
-    if (!mIsThreadRunning.load(std::memory_order::memory_order_seq_cst)) {
-        mIsThreadRunning.store(true, std::memory_order::memory_order_seq_cst);
+    if (!mIsThreadRunning.load(std::memory_order::seq_cst)) {
+        mIsThreadRunning.store(true, std::memory_order::seq_cst);
         mLogThread = std::thread(std::bind(&LoggerServer::UpdateLoggerMainLoop, this));
     }
 }
 
 void LoggerServer::StopLogThread()
 {
-    if (mIsThreadRunning.load(std::memory_order::memory_order_seq_cst)) {
-        mIsThreadRunning.store(false, std::memory_order::memory_order_seq_cst);
+    if (mIsThreadRunning.load(std::memory_order::seq_cst)) {
+        mIsThreadRunning.store(false, std::memory_order::seq_cst);
         mLogThread.join();
     }
     WriteLogMessage();
@@ -85,7 +85,7 @@ void LoggerServer::WriteLogMessage()
 
 void LoggerServer::UpdateLoggerMainLoop()
 {
-    while (mIsThreadRunning.load(std::memory_order::memory_order_seq_cst)) {
+    while (mIsThreadRunning.load(std::memory_order::seq_cst)) {
         WriteLogMessage();
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }

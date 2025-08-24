@@ -40,7 +40,7 @@ void RuntimeGeneratedLineComponent::UnpausableTick(const float deltaTime)
 {
     StaticMeshComponent::UnpausableTick(deltaTime);
 
-    if (mIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         SyncRenderData();
         mIsRenderDataDirty = false;
     }
@@ -103,7 +103,9 @@ void RuntimeGeneratedLineComponent::SyncRenderData()
                  sceneProxyId = mSceneProxyId,
                  lineBeginWorldSpacePosition = mLineBeginWorldSpacePosition,
                  lineEndWorldSpacePosition = mLineEndWorldSpacePosition,
-                 lineWidth = mLineWidth]() {
+                 lineWidth = mLineWidth]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& lineProxySp = std::static_pointer_cast<RuntimeGeneratedLineSceneProxy>(
                             sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         lineProxySp->SetLineBeginWorldSpacePosition(lineBeginWorldSpacePosition);

@@ -104,7 +104,13 @@ void LuaEngineEventsFunctions::SendPauseGameThreadEvent(
     if (const auto& sceneSp = mSceneWp.lock()) {
         static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendPauseGameThreadEvent");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [isPause]() {
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [isPause](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 PauseGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, isPause);
             });
     }
@@ -117,7 +123,12 @@ void LuaEngineEventsFunctions::SendExitGameThreadEvent(const std::tuple<int32_t 
     if (const auto& sceneSp = mSceneWp.lock()) {
         static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendExitGameThreadEvent");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, []() {
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+               std::weak_ptr<EngineCore::Scene> sceneWp,
+               std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ExitGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION);
             });
     }
@@ -132,7 +143,13 @@ void LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent(
     if (const auto& sceneSp = mSceneWp.lock()) {
         static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [levelName]() {
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [levelName](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 LoadLevelGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, levelName);
             });
     }
@@ -148,7 +165,13 @@ void LuaEngineEventsFunctions::SendBroadcastGameThreadEvent(
     if (const auto& sceneSp = mSceneWp.lock()) {
         static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendBroadcastGameThreadEvent");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [eventHeader, eventJsonParameters]() {
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [eventHeader, eventJsonParameters](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 BroadcastGameThreadEvent::GetInstance()->SendEvent(
                     eExecutionOrder::POST_EXECUTION, eventHeader, eventJsonParameters);
             });
@@ -162,7 +185,12 @@ void LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent(const std::tuple<
     if (const auto& sceneSp = mSceneWp.lock()) {
         static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, []() {
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+               std::weak_ptr<EngineCore::Scene> sceneWp,
+               std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 RestartLevelGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION);
             });
     }

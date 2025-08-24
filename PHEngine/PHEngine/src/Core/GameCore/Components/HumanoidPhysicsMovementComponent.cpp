@@ -62,17 +62,6 @@ void HumanoidPhysicsMovementComponent::Teleport(const glm::vec3& teleportPositio
 {
 }
 
-void HumanoidPhysicsMovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& actorData = GetSerializeDataActor(dataContainer);
-
-    std::shared_ptr<SerializeDataCharacterMovementComponent> data = std::make_shared<SerializeDataCharacterMovementComponent>();
-    data->ComponentName = EngineObjectName;
-    data->CameraName = mCameraName;
-    data->LaunchDirection = mDirection;
-    actorData.ComponentsData.emplace_back(data);
-}
-
 void HumanoidPhysicsMovementComponent::ProcessEvent(
     const CameraTransformChangedGameThreadEvent* sender, const CameraTransformChangedGameThreadEvent::EventData_t& data)
 {

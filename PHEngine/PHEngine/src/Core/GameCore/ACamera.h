@@ -4,7 +4,6 @@
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
-#include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
@@ -37,7 +36,6 @@ enum eCameraType {
 
 class ACamera : public EngineObject,
                 public ITickable,
-                public ISerializable,
                 public std::enable_shared_from_this<ACamera>,
                 public WindowSizeChangedGameThreadEvent {
     float m_rotateSensetivity;
@@ -118,8 +116,6 @@ public:
     virtual glm::vec3 GetLocalSpaceUpVector() const = 0;
 
     virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const = 0;
-
-    virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
 
     std::shared_ptr<PlanarReflectionComponent> GetPlanarReflectionComponent() const;
 

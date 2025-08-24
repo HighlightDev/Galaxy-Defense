@@ -430,7 +430,9 @@ void CombatController::ProcessEvent(const ChangeGameModeEvent* sender, const typ
                     eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
                     static_cast<int32_t>(eGameModeType::SPACE_STATION_PLACEMENT),
                     functionId,
-                    []() {
+                    [](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                       std::weak_ptr<EngineCore::Scene> sceneWp,
+                       std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         LuaChangeGameModeEvent::GetInstance()->SendEvent(
                             eExecutionOrder::POST_EXECUTION, eGameModeType::SPACE_STATION_PLACEMENT);
                     });
@@ -438,7 +440,12 @@ void CombatController::ProcessEvent(const ChangeGameModeEvent* sender, const typ
         } else if (eGameModeType::SPACE_STATION_PLACEMENT == mGameModeType && eGameModeType::COMBAT == newValue) {
             if (const auto& sceneSp = mScene.lock()) {
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-                    eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, static_cast<int32_t>(eGameModeType::COMBAT), functionId, []() {
+                    eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+                    static_cast<int32_t>(eGameModeType::COMBAT),
+                    functionId,
+                    [](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                       std::weak_ptr<EngineCore::Scene> sceneWp,
+                       std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         LuaChangeGameModeEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eGameModeType::COMBAT);
                     });
                 OnCombatPreparationCompleted();

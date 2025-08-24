@@ -37,8 +37,6 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     eComponentType GetComponentType() const override;
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;

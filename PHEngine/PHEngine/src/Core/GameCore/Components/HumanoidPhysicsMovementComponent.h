@@ -35,8 +35,6 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     void ProcessEvent(
         const CameraTransformChangedGameThreadEvent* sender,
         const typename CameraTransformChangedGameThreadEvent::EventData_t& data) override;

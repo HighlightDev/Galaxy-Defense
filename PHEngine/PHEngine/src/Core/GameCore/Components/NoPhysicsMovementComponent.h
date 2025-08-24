@@ -19,8 +19,6 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     void Move(const float deltaTime) override;
 
     void Move(const glm::vec3& direction, const float deltaTime) override;

@@ -25,8 +25,6 @@ public:
 
     ~PhysicsComponent() override;
 
-    virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
-
     void OnPostOwnerInitialized() override;
 
     void SetIsEnabled(const bool isEnabled) override;

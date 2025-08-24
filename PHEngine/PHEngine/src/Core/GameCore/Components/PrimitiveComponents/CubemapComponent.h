@@ -25,8 +25,6 @@ public:
 
     eComponentType GetComponentType() const override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
     inline const CubemapRenderData& GetRenderData() const

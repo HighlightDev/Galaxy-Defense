@@ -58,7 +58,7 @@ void FolderManager::CreateFilePathMap(const std::string& absolutePathToDirectory
                 mAbsFilesPathMap.count(fileName) == 0 && mFilesPathMap.count(fileName) == 0,
                 "Such file name already exists: " + fileName);
             mFilesPathMap[fileName] = relativePathToDirectory;
-            mAbsFilesPathMap[fileName] = dirEntry.path().u8string();
+            mAbsFilesPathMap[fileName] = dirEntry.path().string();
         }
     }
 }

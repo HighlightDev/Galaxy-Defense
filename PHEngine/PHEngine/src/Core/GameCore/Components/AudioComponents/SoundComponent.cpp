@@ -49,10 +49,6 @@ void SoundComponent::Tick(const float deltaTime)
 {
 }
 
-void SoundComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-}
-
 eComponentType SoundComponent::GetComponentType() const
 {
     return AUDIO_COMPONENT;

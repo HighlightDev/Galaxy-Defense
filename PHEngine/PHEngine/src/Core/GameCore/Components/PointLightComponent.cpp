@@ -65,35 +65,6 @@ void PointLightComponent::Tick(const float deltaTime)
     Base::Tick(deltaTime);
 }
 
-void PointLightComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& actorData = GetSerializeDataActor(dataContainer);
-
-    auto lightCompData = std::make_shared<SerializeDataPointLightComponent>();
-    const auto& pointLightRenderData = GetRenderData();
-
-    lightCompData->ComponentName = EngineObjectName;
-    lightCompData->AmbientLight = pointLightRenderData->Ambient;
-    lightCompData->DiffuseLight = pointLightRenderData->Diffuse;
-    lightCompData->SpecularLight = pointLightRenderData->Specular;
-    lightCompData->Translation = GetTranslation();
-    lightCompData->Attenuation = pointLightRenderData->Attenuation;
-    lightCompData->RadianceRadius = pointLightRenderData->RadianceRadius;
-
-    const bool bHasShadowMap = pointLightRenderData->ShadowInfo != nullptr;
-
-    if (bHasShadowMap) {
-        lightCompData->ShadowMapSize
-            = static_cast<float>(pointLightRenderData->ShadowInfo->GetAtlasResource()->GetTextureRezolution().x);
-    } else {
-        lightCompData->ShadowMapSize = 0.0f;
-    }
-
-    lightCompData->bHasShadowMap = bHasShadowMap;
-
-    actorData.ComponentsData.emplace_back(lightCompData);
-}
-
 void PointLightComponent::ProcessEvent(
     const PhysicsComponentUpdatedGameThreadEvent* sender, const PhysicsComponentUpdatedGameThreadEvent::EventData_t& data)
 {
@@ -121,20 +92,25 @@ void PointLightComponent::ProcessEvent(
 void PointLightComponent::NotifySceneProxyThatShadowmapIsDirty(const uint64_t& functionId)
 {
     if (const auto& sceneSp = m_sceneWP.lock()) {
-        if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [weak = weak_from_this(), sceneRenderer]() {
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+            GetObjectId(),
+            functionId,
+            [weak = weak_from_this()](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+    std::weak_ptr<EngineCore::Scene> sceneWp,
+    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     if (const auto& componentPtr = weak.lock()) {
                         const auto pointLightComponentPtr = std::static_pointer_cast<PointLightComponent>(componentPtr);
                         const auto& lightProxySp
-                            = sceneRenderer->GetLightProxyByProxyId(pointLightComponentPtr->GetLightSceneProxyId());
+                            = sceneRendererSp->GetLightProxyByProxyId(pointLightComponentPtr->GetLightSceneProxyId());
                         const auto& shadowInfo = lightProxySp->GetShadowInfo();
                         if (shadowInfo) {
                             shadowInfo->SetIsShadowMapDirty(true);
                         }
                     }
-                });
-        }
+                }
+            });
     }
 }
 } // namespace EngineCore

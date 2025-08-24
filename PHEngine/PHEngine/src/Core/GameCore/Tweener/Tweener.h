@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Core/GameCore/ITickable.h"
-#include "Core/GameCore/Serialize/ISerializable.h"
-#include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Tweener/ITweenController.h"
 #include "Core/GameCore/Tweener/ITweenStateChangeNotifyable.h"
 #include "State.h"
@@ -13,7 +11,7 @@
 namespace EngineCore {
 class Actor;
 
-class Tweener : public ITickable, public ISerializable {
+class Tweener : public ITickable {
     static int32_t s_id;
 
     int32_t m_id;
@@ -61,8 +59,6 @@ public:
     void Tick(const float deltaTime) override;
 
     void UnpausableTick(const float deltaTime) override { };
-
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
     void SubscribeOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer);
 

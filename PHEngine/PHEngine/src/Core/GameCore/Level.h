@@ -35,10 +35,6 @@ public:
 
     virtual void PostPlayLevelFinished();
 
-    void SerializeLevel(const std::string& pathToFolder);
-
-    void DeserializeLevel(const std::string& pathToFile);
-
     virtual void UnloadLevel() = 0;
 
     void Tick(const float deltaTime) override;
@@ -46,10 +42,5 @@ public:
     void UnpausableTick(const float deltaTime) override;
 
     virtual void RestartLuaScripts();
-
-private:
-    void InstantiateLevelFromSerializedContainer(struct SerializeDataContainer& container);
-
-    void CollectAllocatedResourcesForSerialization(struct SerializeDataContainer& container);
 };
 } // namespace EngineCore

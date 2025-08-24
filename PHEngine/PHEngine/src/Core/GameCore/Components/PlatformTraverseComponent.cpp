@@ -107,13 +107,4 @@ void PlatformTraverseComponent::Tick(const float deltaTime)
     }
 }
 
-void PlatformTraverseComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& actorData = GetSerializeDataActor(dataContainer);
-
-    std::shared_ptr<SerializeDataPlatformTraverseComponent> data = std::make_shared<SerializeDataPlatformTraverseComponent>();
-    data->ComponentName = EngineObjectName;
-
-    actorData.ComponentsData.emplace_back(data);
-}
 } // namespace EngineCore

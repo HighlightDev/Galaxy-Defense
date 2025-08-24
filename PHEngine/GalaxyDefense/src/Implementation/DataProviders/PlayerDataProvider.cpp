@@ -19,12 +19,12 @@ PlayerDataProvider* PlayerDataProvider::GetInstance()
 
 eMissileType PlayerDataProvider::GetSelectedMissileType() const
 {
-    return mSelectedMissileType.load(std::memory_order::memory_order_seq_cst);
+    return mSelectedMissileType.load(std::memory_order::seq_cst);
 }
 
 void PlayerDataProvider::SetSelectedMissileType(const eMissileType missileType)
 {
-    mSelectedMissileType.store(missileType, std::memory_order::memory_order_seq_cst);
+    mSelectedMissileType.store(missileType, std::memory_order::seq_cst);
     const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::ACTIVE_WEAPON_CHANGED;
     nlohmann::json jsonObj;
     jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);

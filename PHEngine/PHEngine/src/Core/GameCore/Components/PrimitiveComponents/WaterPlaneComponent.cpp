@@ -34,7 +34,7 @@ void WaterPlaneComponent::Tick(const float deltaTime)
 {
     PrimitiveComponent::Tick(deltaTime);
 
-    if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         SyncRenderData();
         bIsRenderDataDirty = false;
     }
@@ -111,7 +111,9 @@ void WaterPlaneComponent::SyncRenderData()
                  farClipPlane = m_farClipPlane,
                  nearClipPlane = m_nearClipPlane,
                  transparencyDepth = m_transparencyDepth,
-                 waveStrength = m_waveStrength]() {
+                 waveStrength = m_waveStrength]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& primitiveProxySp = std::static_pointer_cast<WaterPlaneSceneProxy>(
                             sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         primitiveProxySp->SetFarClipPlane(farClipPlane);

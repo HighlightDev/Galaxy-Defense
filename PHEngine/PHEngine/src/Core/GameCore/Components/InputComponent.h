@@ -21,8 +21,6 @@ public:
     // Game thread tick
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     std::vector<eKeyActionType> GetReleasedKeyActions();
 
     std::vector<eKeyActionType> GetPressedKeyActions();

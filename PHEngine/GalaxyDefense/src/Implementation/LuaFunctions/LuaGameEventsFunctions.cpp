@@ -198,7 +198,13 @@ void LuaGameEventsFunctions::SendChangeGameModeGameThreadEvent(
     if (const auto& sceneSp = mSceneWp.lock()) {
         static constexpr auto functionId = Hash64_CT("LuaGameEventsFunctions::SendChangeGameModeGameThreadEvent");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [gameModeType]() {
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [gameModeType](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ChangeGameModeEvent::GetInstance()->SendEvent(
                     eExecutionOrder::POST_EXECUTION, static_cast<eGameModeType>(gameModeType));
             });
@@ -216,7 +222,13 @@ void LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent(
     if (const auto& sceneSp = mSceneWp.lock()) {
         static constexpr auto functionId = Hash64_CT("LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
-            static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [editModeType]() {
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [editModeType](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ChangeEditModeEvent::GetInstance()->SendEvent(
                     eExecutionOrder::POST_EXECUTION, static_cast<eEditModeType>(editModeType));
             });

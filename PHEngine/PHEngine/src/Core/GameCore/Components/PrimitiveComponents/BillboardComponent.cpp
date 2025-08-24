@@ -30,15 +30,10 @@ void BillboardComponent::UnpausableTick(float deltaTime)
 {
     PrimitiveComponent::UnpausableTick(deltaTime);
 
-    if (bIsExtentDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (bIsExtentDataDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         SyncRenderData();
         bIsExtentDataDirty = false;
     }
-}
-
-void BillboardComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& actorData = GetSerializeDataActor(dataContainer);
 }
 
 std::shared_ptr<PrimitiveSceneProxy> BillboardComponent::CreateSceneProxy() const
@@ -92,19 +87,22 @@ std::shared_ptr<IMaterial> BillboardComponent::GetMaterial() const
 void BillboardComponent::SyncRenderData()
 {
     if (const auto& sceneSp = m_sceneWP.lock()) {
-        if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-            static const uint64_t functionId = Hash("BillboardComponent:SetBillboardExtent");
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-                GetObjectId(),
-                functionId,
-                [sceneRenderer, sceneProxyId = mSceneProxyId, billboardExtent = mBillboardExtent]() {
+        static const uint64_t functionId = Hash("BillboardComponent:SetBillboardExtent");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+            GetObjectId(),
+            functionId,
+            [sceneProxyId = mSceneProxyId,
+             billboardExtent = mBillboardExtent](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+    std::weak_ptr<EngineCore::Scene> sceneWp,
+    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     if (const auto& billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(
-                            sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
+                            sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         billboardProxySp->SetBillboardExtent(billboardExtent);
                     }
-                });
-        }
+                }
+            });
     }
 }
 

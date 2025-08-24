@@ -39,7 +39,10 @@ int32_t UiCanvasReplicatorFactory::CreateReplicator(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             canvasLuaProxyId,
             functionId,
-            [originX, originY, width, height, sceneSp, luaScriptProcessorWp, canvasLuaProxyId, name = name]() {
+            [originX, originY, width, height, sceneSp, luaScriptProcessorWp, canvasLuaProxyId, name = name](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                 const auto& createdUiCanvas
                     = sceneSp->GetUiHandler()->CreateCanvas(ViewPortInfo(originX, originY, width, height), name);

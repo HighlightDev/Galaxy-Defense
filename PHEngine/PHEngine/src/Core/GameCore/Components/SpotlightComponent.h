@@ -21,8 +21,6 @@ public:
 
     std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     std::shared_ptr<SpotlightRenderData> GetRenderData() const;
 };
 } // namespace EngineCore

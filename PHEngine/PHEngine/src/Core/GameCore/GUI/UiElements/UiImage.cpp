@@ -64,7 +64,13 @@ void UiImage::ReallocateTexture(const bool updateRenderThreadData, const bool up
     if (const auto& sceneSp = GetScene().lock()) {
         auto& interThreadMngr = sceneSp->GetInterThreadCommunicationManager();
         interThreadMngr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, updateRenderThreadData, updateLuaThreadData]() {
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            GetUId(),
+            functionId,
+            [this, updateRenderThreadData, updateLuaThreadData](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& texturePool = TexturePool::GetInstance();
                 if (mTexture) {
                     assert(texturePool->TryToFreeMemory(mTexture));
@@ -107,17 +113,24 @@ void UiImage::SetTexture(const std::shared_ptr<ITexture>& texture)
     static constexpr uint64_t functionId = Hash64_CT("UiImage::SetTexture");
     if (const auto& sceneSp = GetScene().lock()) {
         auto& interThreadMngr = sceneSp->GetInterThreadCommunicationManager();
-        interThreadMngr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, texture]() {
-            if (mTexture && mTextureSrc != "") {
-                assert(TexturePool::GetInstance()->TryToFreeMemory(mTexture));
-                mTextureSrc = "";
-                mTexture = nullptr;
-            }
+        interThreadMngr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            GetUId(),
+            functionId,
+            [this, texture](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (mTexture && mTextureSrc != "") {
+                    assert(TexturePool::GetInstance()->TryToFreeMemory(mTexture));
+                    mTextureSrc = "";
+                    mTexture = nullptr;
+                }
 
-            mTexture = texture;
-            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
-            SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
-        });
+                mTexture = texture;
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+            });
     }
 }
 
@@ -278,7 +291,7 @@ void UiImage::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 void UiImage::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiImage::SyncDataOnRenderThread");
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& canvasSp = GetParentCanvas().lock()) {
                 if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -294,7 +307,10 @@ void UiImage::SyncDataOnRenderThread()
                          isCustomColor = mIsCustomColor,
                          opacity = mOpacity,
                          rotationDegrees = mRotationDegrees,
-                         isFlipped = mIsFlipped]() {
+                         isFlipped = mIsFlipped](
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canasUId);
                             if (uiSceneProxy) {
                                 const auto& imageSceneProxy = std::static_pointer_cast<UiImageSceneProxy>(uiSceneProxy);
@@ -317,7 +333,7 @@ void UiImage::SyncDataOnRenderThread()
 void UiImage::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiImage::SyncDataOnLuaThread");
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
@@ -332,7 +348,10 @@ void UiImage::SyncDataOnLuaThread()
                      opacity = mOpacity,
                      textureSrc = mTextureSrc,
                      rotationDegrees = mRotationDegrees,
-                     isFlipped = mIsFlipped]() {
+                     isFlipped = mIsFlipped](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& imageLuaProxy
                             = std::static_pointer_cast<UiImageLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             imageLuaProxy->SetOpacity_FromGameThread(opacity);

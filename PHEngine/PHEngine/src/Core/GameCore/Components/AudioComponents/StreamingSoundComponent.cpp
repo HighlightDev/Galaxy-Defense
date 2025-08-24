@@ -41,10 +41,6 @@ void StreamingSoundComponent::Tick(const float deltaTime)
     mStreamingSoundSource->UpdateBufferStream();
 }
 
-void StreamingSoundComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-}
-
 eComponentType StreamingSoundComponent::GetComponentType() const
 {
     return AUDIO_COMPONENT;

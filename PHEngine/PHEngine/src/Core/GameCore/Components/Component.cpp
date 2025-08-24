@@ -10,7 +10,7 @@ Component::Component(const std::string& gameObjectName)
     : EngineObject(gameObjectName)
     , m_owner()
     , mIsEnabled(std::make_shared<EngineObjectProperty<bool>>(
-          true, "p_isEnabled", [=](const bool& isEnabled) { SetIsEnabled(isEnabled); }))
+          true, "p_isEnabled", [this](const bool& isEnabled) { SetIsEnabled(isEnabled); }))
     , m_sceneWP()
 {
     AddEngineProperty(mIsEnabled);
@@ -89,18 +89,6 @@ void Component::OnPostOwnerInitialized()
 
 void Component::PostLevelInit()
 {
-}
-
-SerializeDataActor& Component::GetSerializeDataActor(SerializeDataContainer& dataContainer)
-{
-    const auto& spOwner = GetOwner().lock();
-    assert(spOwner);
-    auto it
-        = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [&spOwner](const SerializeDataActor& actorData) {
-              return actorData.ActorName == spOwner->GetName();
-          });
-    assert(it != dataContainer.Actors.end());
-    return *it;
 }
 
 std::weak_ptr<Actor> Component::GetOwner() const

@@ -39,8 +39,6 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     eComponentType GetComponentType() const override;
 
     /* This method works every time when this component has dirty transform */

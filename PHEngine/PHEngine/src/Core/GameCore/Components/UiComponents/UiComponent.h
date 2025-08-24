@@ -21,8 +21,6 @@ public:
 
     eComponentType GetComponentType() const override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     int32_t CreateTextField(
         const std::string& fontName,
         const int32_t fontSize,

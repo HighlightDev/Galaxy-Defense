@@ -173,7 +173,7 @@ void UiRectangle::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 void UiRectangle::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnRenderThread");
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& canvasSp = GetParentCanvas().lock()) {
                 if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -187,7 +187,10 @@ void UiRectangle::SyncDataOnRenderThread()
                          canvasUId = canvasSp->GetUId(),
                          color = mColor,
                          opacity = mOpacity,
-                         borderRadius = mBorderRadius]() {
+                         borderRadius = mBorderRadius](
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                             if (uiSceneProxy) {
                                 const auto& rectangleSceneProxy = std::static_pointer_cast<UiRectangleSceneProxy>(uiSceneProxy);
@@ -207,7 +210,7 @@ void UiRectangle::SyncDataOnRenderThread()
 void UiRectangle::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnLuaThread");
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
@@ -219,7 +222,10 @@ void UiRectangle::SyncDataOnLuaThread()
                      luaProxyId = GetLuaProxyId(),
                      opacity = mOpacity,
                      color = mColor,
-                     borderRadius = mBorderRadius]() {
+                     borderRadius = mBorderRadius](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& rectangleLuaProxy
                             = std::static_pointer_cast<UiRectangleLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             rectangleLuaProxy->SetOpacity_FromGameThread(opacity);

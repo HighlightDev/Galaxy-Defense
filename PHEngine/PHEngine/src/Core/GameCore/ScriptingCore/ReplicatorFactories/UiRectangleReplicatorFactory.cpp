@@ -37,7 +37,10 @@ int32_t UiRectangleReplicatorFactory::CreateReplicator(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             uiRectangleLuaProxyId,
             functionId,
-            [sceneSp, luaScriptProcessorWp, uiRectangleLuaProxyId, name]() {
+            [sceneSp, luaScriptProcessorWp, uiRectangleLuaProxyId, name](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                 const auto& createdUiRectangle = std::make_shared<UiRectangle>(name);
                 createdUiRectangle->Initialize();

@@ -47,89 +47,93 @@ void EngineConfigHolder::FillEngineConfig(const std::list<std::string>& configLi
         return vectorItems;
     };
 
-    std::unordered_map<std::string, std::function<void(const std::string& valueStr)>> config_values_map = {
-        std::make_pair("window_mode", std::function([=](const std::string& valueStr) { mEngineConfig.WindowMode = valueStr; })),
-        std::make_pair(
-            "active_monitor", std::function([=](const std::string& valueStr) { mEngineConfig.ActiveMonitor = valueStr; })),
-        std::make_pair("max_skeletal_mesh_bones", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.MaxSkeletBones = parseUInt(valueStr);
-                       })),
-        std::make_pair("max_static_mesh_instances_per_batch", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.MaxStaticMeshInstancesPerBatch = parseUInt(valueStr);
-                       })),
-        std::make_pair("enable_point_lights", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.EnablePointLights = parseBool(valueStr);
-                       })),
-        std::make_pair("enable_spot_lights", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.EnableSpotLights = parseBool(valueStr);
-                       })),
-        std::make_pair("enable_shadows", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.EnableShadows = parseBool(valueStr);
-                       })),
-        std::make_pair("max_dir_light_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.MaxDirLightCount = parseUInt(valueStr);
-                       })),
-        std::make_pair("max_dir_light_shadow_map_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.MaxDirLightShadowMapCount = parseUInt(valueStr);
-                       })),
-        std::make_pair("max_point_light_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.MaxPointLightCount = parseUInt(valueStr);
-                       })),
-        std::make_pair("max_point_light_shadow_map_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.MaxPointLightShadowMapCount = parseUInt(valueStr);
-                       })),
-        std::make_pair("max_spotlight_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.MaxSpotlightCount = parseUInt(valueStr);
-                       })),
-        std::make_pair("max_spotlight_shadow_map_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.MaxSpotlightShadowMapCount = parseUInt(valueStr);
-                       })),
-        std::make_pair("dir_light_PCF_samples_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.DirLightPCFSamplesCount = parseUInt(valueStr);
-                       })),
-        std::make_pair("point_light_PCF_samples_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.PointLightPCFSamplesCount = parseUInt(valueStr);
-                       })),
-        std::make_pair("spotlight_PCF_samples_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.SpotlightPCFSamplesCount = parseUInt(valueStr);
-                       })),
-        std::make_pair("shadow_ortho_projection_half_extent", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.ShadowOrthoProjectionHalfExtent = parseFloat(valueStr);
-                       })),
-        std::make_pair("shadow_map_bias_dir_light", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.ShadowMapBiasDirLight = parseFloat(valueStr);
-                       })),
-        std::make_pair("shadow_map_bias_point_light", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.ShadowMapBiasPointLight = parseFloat(valueStr);
-                       })),
-        std::make_pair("shadow_map_bias_spot_light", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.ShadowMapBiasSpotlight = parseFloat(valueStr);
-                       })),
-        std::make_pair("max_font_characters_count", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.MaxFontCharactersCount = parseUInt(valueStr);
-                       })),
-        std::make_pair(
-            "enable_hdr", std::function([=](const std::string& valueStr) { mEngineConfig.IsHdrEnabled = parseBool(valueStr); })),
-        std::make_pair("hdr_exposure_value", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.HdrExposureValue = parseFloat(valueStr);
-                       })),
-        std::make_pair("enable_bloom", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.IsBloomEnabled = parseBool(valueStr);
-                       })),
-        std::make_pair(
-            "bloom_quality", std::function([=](const std::string& valueStr) { mEngineConfig.BloomQualityName = valueStr; })),
-        std::make_pair("bloom_threshold", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.BloomThreshold = parseFloat(valueStr);
-                       })),
+    std::unordered_map<std::string, std::function<void(const std::string& valueStr)>> config_values_map
+        = {std::make_pair(
+               "window_mode", std::function([=, this](const std::string& valueStr) { mEngineConfig.WindowMode = valueStr; })),
+           std::make_pair("active_monitor", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.ActiveMonitor = valueStr;
+                          })),
+           std::make_pair("max_skeletal_mesh_bones", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.MaxSkeletBones = parseUInt(valueStr);
+                          })),
+           std::make_pair("max_static_mesh_instances_per_batch", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.MaxStaticMeshInstancesPerBatch = parseUInt(valueStr);
+                          })),
+           std::make_pair("enable_point_lights", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.EnablePointLights = parseBool(valueStr);
+                          })),
+           std::make_pair("enable_spot_lights", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.EnableSpotLights = parseBool(valueStr);
+                          })),
+           std::make_pair("enable_shadows", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.EnableShadows = parseBool(valueStr);
+                          })),
+           std::make_pair("max_dir_light_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.MaxDirLightCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("max_dir_light_shadow_map_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.MaxDirLightShadowMapCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("max_point_light_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.MaxPointLightCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("max_point_light_shadow_map_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.MaxPointLightShadowMapCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("max_spotlight_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.MaxSpotlightCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("max_spotlight_shadow_map_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.MaxSpotlightShadowMapCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("dir_light_PCF_samples_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.DirLightPCFSamplesCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("point_light_PCF_samples_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.PointLightPCFSamplesCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("spotlight_PCF_samples_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.SpotlightPCFSamplesCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("shadow_ortho_projection_half_extent", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.ShadowOrthoProjectionHalfExtent = parseFloat(valueStr);
+                          })),
+           std::make_pair("shadow_map_bias_dir_light", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.ShadowMapBiasDirLight = parseFloat(valueStr);
+                          })),
+           std::make_pair("shadow_map_bias_point_light", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.ShadowMapBiasPointLight = parseFloat(valueStr);
+                          })),
+           std::make_pair("shadow_map_bias_spot_light", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.ShadowMapBiasSpotlight = parseFloat(valueStr);
+                          })),
+           std::make_pair("max_font_characters_count", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.MaxFontCharactersCount = parseUInt(valueStr);
+                          })),
+           std::make_pair("enable_hdr", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.IsHdrEnabled = parseBool(valueStr);
+                          })),
+           std::make_pair("hdr_exposure_value", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.HdrExposureValue = parseFloat(valueStr);
+                          })),
+           std::make_pair("enable_bloom", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.IsBloomEnabled = parseBool(valueStr);
+                          })),
+           std::make_pair("bloom_quality", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.BloomQualityName = valueStr;
+                          })),
+           std::make_pair("bloom_threshold", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.BloomThreshold = parseFloat(valueStr);
+                          })),
 #ifdef DEBUG
-        std::make_pair("debug_enable_ambient_music", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.EnableAmbientMusic = parseBool(valueStr);
-                       })),
-        std::make_pair("render_debug_physics_data", std::function([=](const std::string& valueStr) {
-                           mEngineConfig.RenderDebugPhysicsData = parseBool(valueStr);
-                       }))
+           std::make_pair("debug_enable_ambient_music", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.EnableAmbientMusic = parseBool(valueStr);
+                          })),
+           std::make_pair("render_debug_physics_data", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.RenderDebugPhysicsData = parseBool(valueStr);
+                          }))
 #endif
-    };
+        };
 
     size_t config_prop_count = 0;
 

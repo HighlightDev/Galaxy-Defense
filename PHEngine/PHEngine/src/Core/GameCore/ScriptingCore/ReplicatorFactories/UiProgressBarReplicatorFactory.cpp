@@ -36,7 +36,10 @@ int32_t UiProgressBarReplicatorFactory::CreateReplicator(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             uiProgressBarLuaProxyId,
             functionId,
-            [sceneSp, luaScriptProcessorWp, uiProgressBarLuaProxyId, name]() {
+            [sceneSp, luaScriptProcessorWp, uiProgressBarLuaProxyId, name](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                 const auto& createdUiProgressBar = std::make_shared<UiProgressBar>(name);
                 createdUiProgressBar->Initialize();

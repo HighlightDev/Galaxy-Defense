@@ -61,7 +61,13 @@ void EngineToLuaReplicatorBase::InitLuaProxy(const std::shared_ptr<Scene>& scene
         luaProxy->SetSceneWp(sceneSp);
         luaProxy->SetLuaScriptProcessor(luaScriptProcessorSp);
         luaScriptProcessorSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY, GetReplicatorId(), functionId, [this, luaScriptProcessorSp, luaProxy] {
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            GetReplicatorId(),
+            functionId,
+            [this, luaScriptProcessorSp, luaProxy](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 luaScriptProcessorSp->AddLuaProxy(luaProxy);
             });
     }

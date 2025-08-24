@@ -15,6 +15,7 @@ struct MATERIAL_VS_OUTPUT {
 
     vec3 WorldBitangent;
 
+    // float due to perspective interpolation between vertex and fragment shader
     float InstanceID;
 };
 

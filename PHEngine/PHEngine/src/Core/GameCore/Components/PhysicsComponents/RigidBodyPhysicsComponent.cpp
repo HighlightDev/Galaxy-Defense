@@ -4,7 +4,6 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
-#include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 
@@ -43,12 +42,4 @@ void RigidBodyPhysicsComponent::Tick(const float deltaTime)
     }
 }
 
-void RigidBodyPhysicsComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    SerializeDataActor& actorData = Component::GetSerializeDataActor(dataContainer);
-    auto physCompData = SerializeHelper::GetSerializeDataPhysicsComponent(this);
-    physCompData->ComponentName = EngineObjectName;
-
-    actorData.ComponentsData.emplace_back(physCompData);
-}
 } // namespace EnginePhysics

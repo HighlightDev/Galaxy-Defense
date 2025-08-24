@@ -249,7 +249,10 @@ void OverlayManager::SyncLuaThreadData()
                     functionId,
                     [overlayManagerLuaProxy,
                      overlayName = GetCurrentOpenedOverlayName(),
-                     overlayNames = mActiveBackgroundOverlays]() {
+                     overlayNames = mActiveBackgroundOverlays](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         overlayManagerLuaProxy->SetCurrentOverlay(overlayName);
                         overlayManagerLuaProxy->SetActiveBackgroundOverlays(overlayNames);
                     });

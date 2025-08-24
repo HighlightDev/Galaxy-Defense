@@ -3,7 +3,6 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/GameCore/Tweener/AnimationTweenController.h"
 #include "Core/GameCore/Tweener/BooleanTweenController.h"
 #include "Core/GameCore/Tweener/EulerAnglesRotationTweenController.h"
@@ -151,31 +150,6 @@ void Tweener::ChangeState(const std::string& dstStateName)
             DoTransition(dstStateName);
         }
     }
-}
-
-void Tweener::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    const auto parentSp = GetParentActorWp().lock();
-    assert(parentSp);
-    auto it = std::find_if(
-        dataContainer.Actors.begin(),
-        dataContainer.Actors.end(),
-        [parentName = parentSp->GetName()](const SerializeDataActor& actorData) { return actorData.ActorName == parentName; });
-    assert(it != dataContainer.Actors.end());
-
-    std::shared_ptr<SerializeDataTweener> tweenerData = std::make_shared<SerializeDataTweener>();
-
-    tweenerData->TweenerRelPath = GetRelPathTweener();
-
-    for (const auto& binding : mPropertyBindings) {
-        SerializeDataTweener::SerializeTweenerBinding bindingData;
-        bindingData.BindingName = binding.second->BindingName;
-        bindingData.EngineObjectName = binding.second->EngineObjectName;
-        bindingData.EngineObjectPropertyName = binding.second->EngineObjectPropertyName;
-        tweenerData->Bindings.emplace_back(bindingData);
-    }
-
-    it->TweenerData = tweenerData;
 }
 
 void Tweener::SubscribeOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer)

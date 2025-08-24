@@ -36,7 +36,10 @@ int32_t UiImageReplicatorFactory::CreateReplicator(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             uiImageLuaProxyId,
             functionId,
-            [sceneSp, luaScriptProcessorWp, uiImageLuaProxyId, name]() {
+            [sceneSp, luaScriptProcessorWp, uiImageLuaProxyId, name](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                 const auto& createdUiImage = std::make_shared<UiImage>(name);
                 createdUiImage->Initialize();

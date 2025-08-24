@@ -40,7 +40,10 @@ int32_t UiTextBlockReplicatorFactory::CreateReplicator(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             uiTextBlockLuaProxyId,
             functionId,
-            [sceneSp, luaScriptProcessorWp, uiTextBlockLuaProxyId, name, fontName]() {
+            [sceneSp, luaScriptProcessorWp, uiTextBlockLuaProxyId, name, fontName](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                 const auto& createdUiTextBlock = std::make_shared<UiTextBlock>(fontName, name);
                 createdUiTextBlock->Initialize();

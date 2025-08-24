@@ -64,11 +64,6 @@ std::shared_ptr<UiMouseBindings> UiInputComponent::GetMouseBindings() const
     return m_uiMouseBindings;
 }
 
-void UiInputComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    // todo
-}
-
 void UiInputComponent::Tick(const float deltaTime)
 {
 }

@@ -242,7 +242,7 @@ std::string UiLabel::GetUiTypeString() const
 void UiLabel::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiLabel::SyncDataOnRenderThread");
-    if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& canvasSp = GetParentCanvas().lock()) {
                 if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -260,7 +260,10 @@ void UiLabel::SyncDataOnRenderThread()
                          fontSize = mFontSize,
                          textColor = mTextColor,
                          textHorizontalAlignment = mTextHorizontalAlignment,
-                         textVerticalAlignment = mTextVerticalAlignment]() {
+                         textVerticalAlignment = mTextVerticalAlignment](
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUid, canvasUId);
                             if (uiSceneProxy) {
                                 const auto& labelSceneProxy = std::static_pointer_cast<UiLabelSceneProxy>(uiSceneProxy);
@@ -284,7 +287,7 @@ void UiLabel::SyncDataOnRenderThread()
 void UiLabel::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiLabel::SyncDataOnLuaThread");
-    if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
@@ -300,7 +303,10 @@ void UiLabel::SyncDataOnLuaThread()
                      textLineWidthHeight = mTextLineWidthHeight,
                      fontSize = mFontSize,
                      textHorizontalAlignment = mTextHorizontalAlignment,
-                     textVerticalAlignment = mTextVerticalAlignment]() {
+                     textVerticalAlignment = mTextVerticalAlignment](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& labelLuaProxy
                             = std::static_pointer_cast<UiLabelLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
                             labelLuaProxy->SetOpacity_FromGameThread(opacity);

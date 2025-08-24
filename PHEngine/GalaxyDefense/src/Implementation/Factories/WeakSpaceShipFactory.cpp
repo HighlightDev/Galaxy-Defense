@@ -89,7 +89,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     }
 
     const auto d_mesh = std::make_shared<InstancedMeshComponentData>(
-        "MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0), rotation, scale, spaceshipPbs_mat);
+        "WeakSpaceShipMesh_c_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0), rotation, scale, spaceshipPbs_mat);
     const auto& meshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
     const auto& c_mesh
         = std::static_pointer_cast<InstancedStaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));

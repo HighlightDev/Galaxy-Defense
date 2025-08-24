@@ -43,34 +43,4 @@ void SpotlightComponent::Tick(const float deltaTime)
     Base::Tick(deltaTime);
 }
 
-void SpotlightComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& actorData = GetSerializeDataActor(dataContainer);
-
-    auto lightCompData = std::make_shared<SerializeDataSpotlightComponent>();
-    const auto& renderData = GetRenderData();
-
-    lightCompData->ComponentName = EngineObjectName;
-    lightCompData->AmbientLight = renderData->Ambient;
-    lightCompData->DiffuseLight = renderData->Diffuse;
-    lightCompData->SpecularLight = renderData->Specular;
-    lightCompData->Translation = GetTranslation();
-    lightCompData->Rotation = GetRotationDegrees();
-    lightCompData->Attenuation = renderData->Attenuation;
-    lightCompData->RadianceRadius = renderData->RadianceRadius;
-    lightCompData->Cutoff = renderData->Cutoff;
-
-    const bool bHasShadowMap = renderData->ShadowInfo != nullptr;
-
-    if (bHasShadowMap) {
-        lightCompData->ShadowMapSize = static_cast<float>(renderData->ShadowInfo->GetAtlasResource()->GetTextureRezolution().x);
-    } else {
-        lightCompData->ShadowMapSize = 0.0f;
-    }
-
-    lightCompData->bHasShadowMap = bHasShadowMap;
-
-    actorData.ComponentsData.emplace_back(lightCompData);
-}
-
 } // namespace EngineCore

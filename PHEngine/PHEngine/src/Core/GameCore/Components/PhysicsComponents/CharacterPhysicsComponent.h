@@ -17,8 +17,6 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     void SetWalkVelocity(const glm::vec3& velocity);
 
     void SetJumpVelocity();

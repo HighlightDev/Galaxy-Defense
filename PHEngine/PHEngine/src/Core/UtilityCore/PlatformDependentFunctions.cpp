@@ -31,7 +31,7 @@ const char* get_module_file_name(HMODULE module)
 std::string get_module_file_name()
 {
     const auto& path = std::filesystem::canonical("/proc/self/exe");
-    const auto& pathToExeStr = path.u8string();
+    const auto& pathToExeStr = path.string();
     return pathToExeStr;
 }
 

@@ -38,8 +38,6 @@ public:
 
     void UnpausableTick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
     void SetBillboardExtent(const float extent);

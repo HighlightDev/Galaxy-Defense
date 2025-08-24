@@ -89,14 +89,10 @@ void ParticleSystemComponent::Tick(const float deltaTime)
     mParticlesRawDataHandler.SetRotationSizeActiveDataChunkSize(particleRotationSizeByteOffset);
     mParticlesRawDataHandler.SetColorActiveDataChunkSize(particleColorByteOffset);
 
-    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst) && (activeParticlesCount || mPrevActiveParticles > 0)) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && (activeParticlesCount || mPrevActiveParticles > 0)) {
         SyncDataWithRenderThread(activeParticlesCount);
         mPrevActiveParticles = activeParticlesCount;
     }
-}
-
-void ParticleSystemComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
 }
 
 std::shared_ptr<PrimitiveSceneProxy> ParticleSystemComponent::CreateSceneProxy() const
@@ -136,7 +132,7 @@ void ParticleSystemComponent::ResetParticles()
     mParticlesRawDataHandler.ResetRotationSizeData();
     mParticlesRawDataHandler.ResetColorData();
 
-    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         SyncDataWithRenderThread(0, true);
         mPrevActiveParticles = 0;
     }
@@ -157,7 +153,7 @@ void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelati
         m_relativeMatrix *= glm::translate(identityMatrix, (mTransform->Translation + ownerTranslation));
         m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale * ownerScale);
 
-        if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst)) {
+        if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
             // Update primitives proxy transform
             static const uint64_t functionId = Hash("ParticleSystemComponent:UpdatePrimitiveComponentTransform_GameThread");
             if (const auto& sceneSP = m_sceneWP.lock()) {
@@ -167,7 +163,7 @@ void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelati
                 }
             }
         }
-        SetIsTransformationDirty(bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst));
+        SetIsTransformationDirty(bIsSceneProxyReady.load(std::memory_order::seq_cst));
     }
 }
 
@@ -191,16 +187,19 @@ void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activePartic
 {
     static const uint64_t functionId = Hash("ParticleSystemComponent: SyncDataWithRenderThread");
     if (const auto& sceneSp = m_sceneWP.lock()) {
-        if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                GetObjectId(),
-                functionId,
-                [weak = weak_from_this(), activeParticlesCount, sceneRenderer, sceneProxyId = mSceneProxyId]() mutable {
-                    if (const auto& componentPtr = weak.lock()) {
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            GetObjectId(),
+            functionId,
+            [weak = weak_from_this(), activeParticlesCount, sceneProxyId = mSceneProxyId](
+                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) mutable {
+                if (const auto& componentPtr = weak.lock()) {
+                    if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                         const auto particleComponentPtr = std::static_pointer_cast<ParticleSystemComponent>(componentPtr);
                         const auto& proxyPtr = std::static_pointer_cast<ParticleSystemSceneProxy>(
-                            sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId));
+                            sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId));
                         if (proxyPtr) {
                             if (activeParticlesCount > 0) {
                                 proxyPtr->CopyParticlesRawData(
@@ -215,8 +214,8 @@ void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activePartic
                             proxyPtr->SetActiveParticlesCount(activeParticlesCount);
                         }
                     }
-                });
-        }
+                }
+            });
     }
 }
 } // namespace EngineCore

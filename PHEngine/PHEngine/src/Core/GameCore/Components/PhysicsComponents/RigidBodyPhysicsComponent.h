@@ -19,6 +19,5 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 };
 } // namespace EnginePhysics

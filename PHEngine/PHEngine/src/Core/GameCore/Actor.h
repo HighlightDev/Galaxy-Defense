@@ -6,7 +6,6 @@
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/ITickable.h"
-#include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "EngineObject.h"
 
@@ -20,7 +19,7 @@ namespace EngineCore {
 
 class Scene;
 
-class Actor : public EngineObject, public ITickable, public ISerializable, public std::enable_shared_from_this<Actor> {
+class Actor : public EngineObject, public ITickable, public std::enable_shared_from_this<Actor> {
 protected:
     std::shared_ptr<SceneComponent> m_rootComponent;
 
@@ -58,8 +57,6 @@ public:
     void Tick(const float deltaTime) override;
 
     void UnpausableTick(const float deltaTime) override;
-
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
     virtual void ChangeTweenerState(const std::string& tweenerName, const std::string& stateName);
 

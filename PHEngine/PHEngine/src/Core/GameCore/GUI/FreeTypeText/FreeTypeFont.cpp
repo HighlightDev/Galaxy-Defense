@@ -14,13 +14,13 @@ bool FreeTypeFont::mLanguageMapInitialized = false;
 FreeTypeFont::FreeTypeFont(const std::string& fontFile)
 {
     // Initialize FreeType
-    if (!s_initFlag.load(std::memory_order::memory_order_seq_cst)) {
+    if (!s_initFlag.load(std::memory_order::seq_cst)) {
         // Initialize FreeType library only once
         const auto error = FT_Init_FreeType(&FreeTypeFont::mFt);
         if (error) {
             throw std::runtime_error("Failed to initialize FreeType");
         } else {
-            s_initFlag.store(true, std::memory_order::memory_order_seq_cst);
+            s_initFlag.store(true, std::memory_order::seq_cst);
         }
     }
     setFontFile(fontFile);
@@ -36,9 +36,9 @@ FreeTypeFont::~FreeTypeFont()
 
 void FreeTypeFont::CleanUp()
 {
-    if (s_initFlag.load(std::memory_order::memory_order_seq_cst)) {
+    if (s_initFlag.load(std::memory_order::seq_cst)) {
         FT_Done_FreeType(mFt);
-        s_initFlag.store(false, std::memory_order::memory_order_seq_cst);
+        s_initFlag.store(false, std::memory_order::seq_cst);
     }
 }
 

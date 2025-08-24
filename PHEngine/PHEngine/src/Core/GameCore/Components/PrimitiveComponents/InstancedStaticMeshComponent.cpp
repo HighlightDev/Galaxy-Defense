@@ -83,10 +83,6 @@ std::shared_ptr<IMaterial> InstancedStaticMeshComponent::GetMaterial() const
     return materialResult;
 }
 
-void InstancedStaticMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-}
-
 std::shared_ptr<PrimitiveSceneProxy> InstancedStaticMeshComponent::CreateSceneProxy() const
 {
     return std::make_shared<InstancedStaticMeshSceneProxy>(this);

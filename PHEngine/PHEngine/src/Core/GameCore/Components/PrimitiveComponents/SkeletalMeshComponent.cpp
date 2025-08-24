@@ -4,8 +4,6 @@
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
-#include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
-#include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
 #include "Core/IoCore/FolderManager.h"
@@ -20,10 +18,10 @@ namespace EngineCore {
 SkeletalMeshComponent::SkeletalMeshComponent(
     const std::shared_ptr<MeshComponentData>& meshComponentData, const MeshRenderData& renderData)
     : PrimitiveComponent(
-          meshComponentData->EngineObjectName,
-          meshComponentData->m_translation,
-          meshComponentData->m_eulerRotationDegrees,
-          meshComponentData->m_scale)
+        meshComponentData->EngineObjectName,
+        meshComponentData->m_translation,
+        meshComponentData->m_eulerRotationDegrees,
+        meshComponentData->m_scale)
     , m_renderData(renderData)
     , mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() + meshComponentData->m_luaScriptPath)
     , mLuaInstance(std::make_unique<LuaWrapper>())
@@ -104,18 +102,10 @@ void SkeletalMeshComponent::Tick(const float deltaTime)
     const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
     mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
 
-    if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst) && (bUpdateData || bIsRenderDataDirty)) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && (bUpdateData || bIsRenderDataDirty)) {
         SyncDataWithRenderThread();
         bIsRenderDataDirty = false;
     }
-}
-
-void SkeletalMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-{
-    auto& actorData = GetSerializeDataActor(dataContainer);
-
-    auto staticCompData = SerializeHelper::GetSerializedDataSkeletalMesh(this);
-    actorData.ComponentsData.emplace_back(staticCompData);
 }
 
 void SkeletalMeshComponent::SyncDataWithRenderThread()
@@ -134,7 +124,9 @@ void SkeletalMeshComponent::SyncDataWithRenderThread()
                  srcAnimationTime = SrcAnimationTime->GetValue(),
                  dstAnimationTime = DstAnimationTime->GetValue(),
                  srcAnimation = SrcAnimationName->GetValue(),
-                 dstAnimation = DstAnimationName->GetValue()]() {
+                 dstAnimation = DstAnimationName->GetValue()]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& primitiveProxySp = std::static_pointer_cast<SkeletalMeshSceneProxy>(
                             sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         primitiveProxySp->UpdateAnimationData(

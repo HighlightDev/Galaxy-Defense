@@ -41,8 +41,6 @@ public:
 
     std::string GetCameraTypeName() const override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     void MoveCamera(int32_t direction);
 
     float GetCameraMoveSpeed() const;

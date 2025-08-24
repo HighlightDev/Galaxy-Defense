@@ -31,8 +31,6 @@ public:
 
     void Tick(const float deltaTime) override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     void PostLevelInit() override;
 
     const std::vector<std::tuple<std::string, EulerAnglesTransform, float>>& GetMovementPoints() const;

@@ -35,8 +35,6 @@ public:
 
     std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
 
-    void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
     std::shared_ptr<DirectionalLightRenderData> GetRenderData() const;
 
     void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;

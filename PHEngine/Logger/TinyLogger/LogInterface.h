@@ -164,7 +164,7 @@ struct CastTypeToString<std::tuple<TupleArgs...>> {
             innerTupleArgumentsStr.cbegin(),
             innerTupleArgumentsStr.cend(),
             std::string(),
-            [](std::string& accumulatedStr, const std::string& argument) { return accumulatedStr + ", " + argument; });
+            [](const std::string& accumulatedStr, const std::string& argument) { return accumulatedStr + ", " + argument; });
     }
 };
 
@@ -202,8 +202,6 @@ struct Logger {
         LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, argTuple);
         LoggerServer::GetInstance_()->EnqueuLogMessage(LogMessage(std::move(result)));
     }
-
-#define LOG_INFO (AT)
 
     /* initialization should be called before any action with log*/
 

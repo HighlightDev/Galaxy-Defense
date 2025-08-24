@@ -6,7 +6,6 @@
 #include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
 #include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 
