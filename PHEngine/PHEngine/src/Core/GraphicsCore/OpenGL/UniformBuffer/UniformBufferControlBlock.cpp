@@ -95,10 +95,24 @@ void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserIn
     glNamedBufferSubData(mUniformBufferDescriptorId, userInfo.mMemoryOffset, size, data);
 }
 
-void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data, const size_t offset, const size_t size)
+void UniformBufferControlBlock::SetDataInUniformBuffer(
+    const UniformBufferUserInfo& userInfo, const void* data, const size_t offset, const size_t size)
 {
     assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
     glBindBufferRange(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId, userInfo.mMemoryOffset + offset, size);
     glNamedBufferSubData(mUniformBufferDescriptorId, userInfo.mMemoryOffset + offset, size, data);
+}
+
+void UniformBufferControlBlock::BindUniformBufferRange(
+    const UniformBufferUserInfo& userInfo, const uint32_t offset, const uint32_t size)
+{
+    assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
+    glBindBufferRange(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId, userInfo.mMemoryOffset + offset, size);
+}
+
+void UniformBufferControlBlock::BindUniformBuffer()
+{
+    assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
+    glBindBufferBase(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId);
 }
 } // namespace Graphics::OpenGL

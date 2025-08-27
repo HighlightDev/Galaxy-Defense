@@ -43,6 +43,10 @@ public:
 
     void SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data, const size_t offset, const size_t size);
 
+    void BindUniformBufferRange(const UniformBufferUserInfo& userInfo, const uint32_t offset, const uint32_t size);
+
+    void BindUniformBuffer();
+
 private:
     void ReallocateBuffer(const uint32_t newMemorySize);
 

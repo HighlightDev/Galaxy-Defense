@@ -8,11 +8,9 @@ in vec3 VertexBitangent;
 
 #include "materialCommon.incl.glsl"
 
-layout (std140) uniform Matrices {
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-    mat4 worldMatrices[MAX_STATIC_MESH_INSTANCES_PER_BATCH];
-};
+uniform mat4 worldMatrices[MAX_STATIC_MESH_INSTANCES_PER_BATCH];
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 vec4 GetLocalToWorldSpacePosition()
 {

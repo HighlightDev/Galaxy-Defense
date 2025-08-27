@@ -159,8 +159,8 @@ function CreateTestLevel(host)
 				ambient = { r = 0.2, g = 0.2, b = 0.2 },
 				diffuse = { r = 1.68, g = 1.5, b = 1.5 },
 				specular = { r = 0.4, g = 0.4, b = 0.4 },
-				is_enabled = 0,
-				is_visible = 0,
+				is_enabled = 1,
+				is_visible = 1,
 				shadowAtlasSize = 256
 			}
 		))
@@ -182,8 +182,8 @@ function CreateTestLevel(host)
 				specular = { r = 0.4, g = 0.4, b = 0.4 },
 				attenuation = {x = 1, y = 1, z = 1},
 				radianceRadius = 100.0,
-				is_enabled = 1,
-				is_visible = 1,
+				is_enabled = 0,
+				is_visible = 0,
 				shadowAtlasSize = 256
 			}
 		))

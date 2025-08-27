@@ -35,13 +35,18 @@ uniform sampler2D DirLightShadowMaps[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
 uniform samplerCube PointLightShadowMaps[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
 uniform sampler2D SpotlightShadowMaps[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 
-uniform vec3 DirLightAmbientColor[MAX_DIR_LIGHT_COUNT];
-uniform vec3 DirLightDiffuseColor[MAX_DIR_LIGHT_COUNT];
-uniform vec3 DirLightSpecularColor[MAX_DIR_LIGHT_COUNT];
-uniform vec3 DirLightDirection[MAX_DIR_LIGHT_COUNT];
-uniform mat4 DirLightShadowMatrices[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
-uniform vec4 DirLightShadowAtlasOffset[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
-uniform int DirLightCount;
+layout(std140) uniform LightData
+{
+    vec4 DirLightAmbientColor[MAX_DIR_LIGHT_COUNT];
+    vec4 DirLightDiffuseColor[MAX_DIR_LIGHT_COUNT];
+    vec4 DirLightSpecularColor[MAX_DIR_LIGHT_COUNT];
+    vec4 DirLightDirection[MAX_DIR_LIGHT_COUNT];
+    mat4 DirLightShadowMatrices[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
+    vec4 DirLightShadowAtlasOffset[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
+    int DirectionalLightCount;
+};
+
+//uniform int DirLightCount;
 uniform int DirLightShadowMapCount;
 
 uniform int PointLightCount;
@@ -265,11 +270,11 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal, in vec3 albed
 
     vec3 directLighting = vec3(0);
     {
-        for (int directLightIndex = 0; directLightIndex < DirLightCount; ++directLightIndex) {
+        for (int directLightIndex = 0; directLightIndex < DirectionalLightCount; ++directLightIndex) {
             // calculate per-light radiance
-            vec3 Li = -normalize(DirLightDirection[directLightIndex]);
+            vec3 Li = -normalize(DirLightDirection[directLightIndex].xyz);
 
-            vec3 lightRadiance = DirLightDiffuseColor[directLightIndex]; // for now
+            vec3 lightRadiance = DirLightDiffuseColor[directLightIndex].rgb;
 
             vec3 LRadiance = lightRadiance;
 
@@ -407,8 +412,8 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal)
     }
 
     /* DIRECTIONAL LIGHTS */
-    for (int dirLightIndex = 0; dirLightIndex < DirLightCount; ++dirLightIndex) {
-        vec3 direction = -normalize(DirLightDirection[dirLightIndex]);
+    for (int dirLightIndex = 0; dirLightIndex < DirectionalLightCount; ++dirLightIndex) {
+        vec3 direction = -normalize(DirLightDirection[dirLightIndex].xyz);
         float nDotD = dot(direction, nWorldNormal);
         float diffuseFactor = max(nDotD, 0.0);
         float litFactor = 1.0f;
@@ -433,7 +438,7 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal)
                 DirLightShadowMaps[dirLightIndex], shadowmapAtlasSize, shadowCoordinatesAndDepth, shadowTransitionValue);
         }
 
-        resultDiffuseColor += DirLightDiffuseColor[dirLightIndex] * diffuseFactor * litFactor;
+        resultDiffuseColor += DirLightDiffuseColor[dirLightIndex].rgb * diffuseFactor * litFactor;
     }
 
     /* SPOT LIGHTS */
@@ -487,7 +492,7 @@ void main()
     vec4 emissionColor = texture(gBuffer_Emission, fs_in.tex_coords);
 
 #ifdef SHADING_MODEL_PBR
-    vec3 ambientColor = (1.0 - step(1, DirLightCount)) * GetAmbientColor();
+    vec3 ambientColor = (1.0 - step(1, DirectionalLightCount)) * GetAmbientColor();
     vec3 ambientAlbedo = albedo * ambientColor;
     vec4 totalColor
         = vec4(GetPBRLightColor(pixelWorldPos, worldNormal, albedo, metallicRoughness), 1.0) + vec4(ambientAlbedo, 1.0);

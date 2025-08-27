@@ -1,12 +1,15 @@
 #pragma once
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
+#include "Core/GraphicsCore/OpenGL/Shader/UniformBuffer.h"
 #include "Core/GraphicsCore/SceneProxy/LightSceneProxy.h"
+#include "UniformBufferStructure/DeferredLightShaderUniformBufferStructure.h"
 
 #include <string>
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Proxy;
+using namespace EngineCore::ShaderImpl::UniformBufferStructure;
 
 namespace EngineCore {
 namespace ShaderImpl {
@@ -17,17 +20,13 @@ class DeferredLightShader : public Shader {
 
     Uniform u_CameraWorldPosition;
 
-#ifndef NO_LIT
-    UniformArray u_DirLightAmbientColor;
-    UniformArray u_DirLightDiffuseColor;
-    UniformArray u_DirLightSpecularColor;
-    UniformArray u_DirLightDirection;
+    DeferredLightShaderUniformBufferStructure<5> lightData;
 
+    std::shared_ptr<UniformBuffer> u_dataBuffer;
+
+#ifndef NO_LIT
     UniformArray u_DirectionalLightShadowMaps;
-    UniformArray u_DirectionalLightShadowMatrices;
-    UniformArray u_DirectionalLightAtlasOffset;
     Uniform u_DirectionalLightShadowMapCount;
-    Uniform u_DirectionalLightCount;
 
     UniformArray u_PointLightDiffuseColor;
     UniformArray u_PointLightSpecularColor;
@@ -66,7 +65,7 @@ class DeferredLightShader : public Shader {
 public:
     DeferredLightShader(const ShaderParams& params);
 
-    virtual ~DeferredLightShader();
+    ~DeferredLightShader() override;
 
     void SetGBufferAlbedo(int32_t slot);
 

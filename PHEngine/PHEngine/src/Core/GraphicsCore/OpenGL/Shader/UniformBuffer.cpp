@@ -7,7 +7,8 @@
 
 namespace Graphics::OpenGL {
 
-UniformBuffer::UniformBuffer(const std::shared_ptr<UniformBufferControlBlock>& controlBlock, const UniformBufferUserInfo& userInfo)
+UniformBuffer::UniformBuffer(
+    const std::shared_ptr<UniformBufferControlBlock>& controlBlock, const UniformBufferUserInfo& userInfo)
     : mControlBlock(controlBlock)
     , mUserInfo(userInfo)
 {
@@ -37,7 +38,24 @@ void UniformBuffer::ResetBuffer()
     }
 }
 
-UniformBuffer UniformBuffer::CreateUniformBuffer(const std::shared_ptr<UniformBufferControlBlock>& controlBlock, const GLuint shaderProgram, const GLsizeiptr size, bool dynamic)
+void UniformBuffer::BindUniformBuffer()
+{
+    mControlBlock->BindUniformBuffer();
+}
+
+void UniformBuffer::BindUniformBufferRange(const uint32_t offset, const uint32_t size)
+{
+    assert(mControlBlock);
+    assert(offset + size <= mUserInfo.mMemorySize);
+    assert(mUserInfo.mUniformBufferUserId != std::numeric_limits<uint32_t>::max());
+    mControlBlock->BindUniformBufferRange(mUserInfo, offset, size);
+}
+
+UniformBuffer UniformBuffer::CreateUniformBuffer(
+    const std::shared_ptr<UniformBufferControlBlock>& controlBlock,
+    const GLuint shaderProgram,
+    const GLsizeiptr size,
+    bool dynamic)
 {
     const auto& userInfo = controlBlock->AllocateMemoryInUniformBuffer(shaderProgram, size);
     return UniformBuffer(controlBlock, userInfo);
