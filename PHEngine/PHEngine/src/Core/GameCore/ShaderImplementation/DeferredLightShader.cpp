@@ -38,22 +38,9 @@ void DeferredLightShader::AccessAllUniformLocations(uint32_t shaderProgramId)
     u_gBuffer_Emission = GetUniform("gBuffer_Emission", shaderProgramId);
 
 #ifndef NO_LIT
-    constexpr size_t maxDirLightCount = 5;
 
     u_dataBuffer = Resources::UniformBufferPool::GetInstance()->GetOrAllocateResource(
         UniformBufferParameters{"DeferredLightShader_DataBuffer", "LightData", 0, lightData.GetSizeInBytes(), shaderProgramId});
-
-    if (cfg.EnablePointLights) {
-        u_PointLightDiffuseColor
-            = GetUniformArray("PointLightDiffuseColor", cfg.MaxPointLightCount, shaderProgramId, eShaderType::FragmentShader);
-        u_PointLightSpecularColor
-            = GetUniformArray("PointLightSpecularColor", cfg.MaxPointLightCount, shaderProgramId, eShaderType::FragmentShader);
-        u_PointLightAttenuation
-            = GetUniformArray("PointLightAttenuation", cfg.MaxPointLightCount, shaderProgramId, eShaderType::FragmentShader);
-        u_PointLightPositionWorld
-            = GetUniformArray("PointLightPositionWorld", cfg.MaxPointLightCount, shaderProgramId, eShaderType::FragmentShader);
-        u_PointLightCount = GetUniform("PointLightCount", shaderProgramId);
-    }
 
     if (cfg.EnableSpotLights) {
         u_SpotlightAmbientColor
@@ -73,8 +60,7 @@ void DeferredLightShader::AccessAllUniformLocations(uint32_t shaderProgramId)
 
     if (cfg.EnableShadows) {
         u_DirectionalLightShadowMaps
-            = GetUniformArray("DirLightShadowMaps", maxDirLightCount, shaderProgramId, eShaderType::FragmentShader);
-        u_DirectionalLightShadowMapCount = GetUniform("DirLightShadowMapCount", shaderProgramId);
+            = GetUniformArray("DirLightShadowMaps", lightData.s_maxDirLightCount, shaderProgramId, eShaderType::FragmentShader);
         u_PointLightShadowMaps = GetUniformArray(
             "PointLightShadowMaps", cfg.MaxPointLightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
         u_PointLightShadowProjectionFarPlane = GetUniformArray(
@@ -96,10 +82,9 @@ void DeferredLightShader::AccessAllUniformLocations(uint32_t shaderProgramId)
 void DeferredLightShader::SetShaderPredefine()
 {
     const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-    constexpr size_t maxDirLightCount = 5;
 
-    DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_COUNT", maxDirLightCount);
-    DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_COUNT", cfg.MaxPointLightCount);
+    DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_COUNT", lightData.s_maxDirLightCount);
+    DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_COUNT", lightData.s_maxPointLightCount);
     DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_COUNT", cfg.MaxSpotlightCount);
     DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_DIR_LIGHT", cfg.ShadowMapBiasDirLight);
     DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_POINT_LIGHT", cfg.ShadowMapBiasPointLight);
@@ -107,7 +92,7 @@ void DeferredLightShader::SetShaderPredefine()
     DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_DIR_LIGHT", cfg.DirLightPCFSamplesCount);
     DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_POINT_LIGHT", cfg.PointLightPCFSamplesCount);
     DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_SPOTLIGHT", cfg.SpotlightPCFSamplesCount);
-    DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", maxDirLightCount);
+    DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", lightData.s_maxDirLightCount);
     DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", cfg.MaxPointLightShadowMapCount);
     DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_SHADOW_MAP_COUNT", cfg.MaxSpotlightShadowMapCount);
 
@@ -178,7 +163,7 @@ void DeferredLightShader::SetGBufferEmission(const int32_t slot)
 
 void DeferredLightShader::SetDirectionalLightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset)
 {
-    if (std::size(lightData.DirectionalLightAtlasOffset) > index) {
+    if ((sizeof(lightData.DirectionalLightAtlasOffset) / sizeof(glm::vec4)) > index) {
         lightData.DirectionalLightAtlasOffset[index] = atlasOffset;
     }
     u_DirectionalLightShadowMaps.LoadUniform(index, slot);
@@ -191,12 +176,12 @@ void DeferredLightShader::SetDirectionalLightShadowMapSlot(size_t index, int32_t
 
 void DeferredLightShader::SetDirectionalLightShadowMapCount(int32_t count)
 {
-    u_DirectionalLightShadowMapCount.LoadUniform(count);
+    lightData.DirectionalLightShadowMapCount = count;
 }
 
 void DeferredLightShader::SetDirectionalLightShadowMatrix(size_t index, const glm::mat4& shadowMatrix)
 {
-    if (std::size(lightData.DirectionalLightShadowMatrices) > index) {
+    if ((sizeof(lightData.DirectionalLightShadowMatrices) / sizeof(glm::vec4)) > index) {
         lightData.DirectionalLightShadowMatrices[index] = shadowMatrix;
     }
 }
@@ -240,7 +225,6 @@ void DeferredLightShader::SetSpotlightShadowMatrix(size_t index, const glm::mat4
 void DeferredLightShader::SetLightsInfo(const std::vector<std::shared_ptr<LightSceneProxy>>& lightsProxies)
 {
     const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-    constexpr size_t maxDirLightCount = 5;
 
     // Directional lights
     int32_t dirLightProxyIndex = 0, pointLightProxyIndex = 0, spotlightProxyIndex = 0;
@@ -251,7 +235,7 @@ void DeferredLightShader::SetLightsInfo(const std::vector<std::shared_ptr<LightS
 
         if (LightSceneProxyType::DIR_LIGHT == lightProxy->GetLightProxyType()) {
             const auto dirLProxySp = std::static_pointer_cast<DirectionalLightSceneProxy>(lightProxy);
-            if (dirLightProxyIndex < maxDirLightCount) {
+            if (dirLightProxyIndex < lightData.s_maxDirLightCount) {
                 lightData.AmbientColors[dirLightProxyIndex] = glm::vec4(dirLProxySp->AmbientColor, 0.0f);
                 lightData.DiffuseColors[dirLightProxyIndex] = glm::vec4(dirLProxySp->DiffuseColor, 0.0f);
                 lightData.SpecularColors[dirLightProxyIndex] = glm::vec4(dirLProxySp->SpecularColor, 0.0f);
@@ -262,12 +246,13 @@ void DeferredLightShader::SetLightsInfo(const std::vector<std::shared_ptr<LightS
 
         if (cfg.EnablePointLights && LightSceneProxyType::POINT_LIGHT == lightProxy->GetLightProxyType()) {
             const auto& pointLProxySp = std::static_pointer_cast<PointLightSceneProxy>(lightProxy);
-            u_PointLightDiffuseColor.LoadUniform(pointLightProxyIndex, pointLProxySp->DiffuseColor);
-            u_PointLightSpecularColor.LoadUniform(pointLightProxyIndex, pointLProxySp->SpecularColor);
-            u_PointLightPositionWorld.LoadUniform(pointLightProxyIndex, pointLProxySp->GetPosition());
-            u_PointLightAttenuation.LoadUniform(pointLightProxyIndex, pointLProxySp->GetAttenuation());
-
-            pointLightProxyIndex++;
+            if (pointLightProxyIndex < lightData.s_maxPointLightCount) {
+                lightData.PointLightDiffuseColor[pointLightProxyIndex] = glm::vec4(pointLProxySp->DiffuseColor, 0.0f);
+                lightData.PointLightSpecularColor[pointLightProxyIndex] = glm::vec4(pointLProxySp->SpecularColor, 0.0f);
+                lightData.PointLightAttenuation[pointLightProxyIndex] = glm::vec4(pointLProxySp->GetAttenuation(), 0.0f);
+                lightData.PointLightPositionWorld[pointLightProxyIndex] = glm::vec4(pointLProxySp->GetPosition(), 0.0f);
+                pointLightProxyIndex++;
+            }
         }
 
         if (cfg.EnableSpotLights && LightSceneProxyType::SPOT_LIGHT == lightProxy->GetLightProxyType()) {
@@ -283,7 +268,7 @@ void DeferredLightShader::SetLightsInfo(const std::vector<std::shared_ptr<LightS
     }
 
     lightData.DirectionalLightCount = dirLightProxyIndex;
-    u_PointLightCount.LoadUniform(pointLightProxyIndex);
+    lightData.PointLightCount = pointLightProxyIndex;
     u_SpotlightCount.LoadUniform(spotlightProxyIndex);
 
     u_dataBuffer->SetData(lightData.GetRawData(), lightData.GetSizeInBytes());

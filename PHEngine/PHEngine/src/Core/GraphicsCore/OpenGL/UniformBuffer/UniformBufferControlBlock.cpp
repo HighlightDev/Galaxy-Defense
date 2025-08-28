@@ -19,6 +19,11 @@ UniformBufferControlBlock::UniformBufferControlBlock(
     glGenBuffers(1, &mUniformBufferDescriptorId);
     glBindBuffer(GL_UNIFORM_BUFFER, mUniformBufferDescriptorId);
     glBufferData(GL_UNIFORM_BUFFER, initialBufferSize, nullptr, GL_DYNAMIC_DRAW);
+    GLint bufferSize = 0;
+    glGetBufferParameteriv(GL_UNIFORM_BUFFER, GL_BUFFER_SIZE, &bufferSize);
+    if (bufferSize != initialBufferSize) {
+        LogInfo("ERROR: UniformBufferControlBlock: glBufferData failed to allocate the requested buffer size for ", mBlockName);
+    }
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 

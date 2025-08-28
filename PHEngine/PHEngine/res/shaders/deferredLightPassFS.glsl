@@ -30,33 +30,29 @@ uniform sampler2D gBuffer_MetallicRoughness;
 uniform sampler2D gBuffer_Emission;
 
 uniform sampler2D DirLightShadowMaps[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
-// todo: IMPORTANT!! some vendors don't support array of cubemap samplers,
-// so currently engine supports only one cubemap sampler
+// todo: IMPORTANT!! some vendors don't support array of cubemap samplers
 uniform samplerCube PointLightShadowMaps[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
 uniform sampler2D SpotlightShadowMaps[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 
 layout(std140) uniform LightData
 {
+    int DirectionalLightCount;
+    int DirectionalLightShadowMapCount;
+    int PointLightCount;
     vec4 DirLightAmbientColor[MAX_DIR_LIGHT_COUNT];
     vec4 DirLightDiffuseColor[MAX_DIR_LIGHT_COUNT];
     vec4 DirLightSpecularColor[MAX_DIR_LIGHT_COUNT];
     vec4 DirLightDirection[MAX_DIR_LIGHT_COUNT];
-    mat4 DirLightShadowMatrices[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
     vec4 DirLightShadowAtlasOffset[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
-    int DirectionalLightCount;
+    vec4 PointLightDiffuseColor[MAX_POINT_LIGHT_COUNT];
+    vec4 PointLightSpecularColor[MAX_POINT_LIGHT_COUNT];
+    vec4 PointLightAttenuation[MAX_POINT_LIGHT_COUNT];
+    vec4 PointLightPositionWorld[MAX_POINT_LIGHT_COUNT];
+    mat4 DirLightShadowMatrices[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
 };
 
-//uniform int DirLightCount;
-uniform int DirLightShadowMapCount;
-
-uniform int PointLightCount;
-uniform int PointLightShadowMapCount;
-uniform vec3 PointLightDiffuseColor[MAX_POINT_LIGHT_COUNT];
-uniform vec3 PointLightSpecularColor[MAX_POINT_LIGHT_COUNT];
-uniform vec3 PointLightAttenuation[MAX_POINT_LIGHT_COUNT];
 uniform float PointLightShadowProjectionFarPlane[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
-uniform vec3 PointLightPositionWorld[MAX_POINT_LIGHT_COUNT];
-
+uniform int PointLightShadowMapCount;
 uniform vec3 SpotlightAmbientColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 uniform vec3 SpotlightDiffuseColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 uniform vec3 SpotlightSpecularColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
@@ -253,7 +249,7 @@ vec3 CalculatePointLightLitColor(in vec3 radiance, in int pointLightIndex, in ve
         * CalcLitFactorPointLight(
                PointLightShadowMaps[pointLightIndex],
                pixelWorldPos,
-               PointLightPositionWorld[pointLightIndex],
+               PointLightPositionWorld[pointLightIndex].xyz,
                PointLightShadowProjectionFarPlane[pointLightIndex])
         * radiance;
 }
@@ -283,7 +279,7 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal, in vec3 albed
             // Calculating shadow
             float litFactor = 1.0f;
 #ifdef ENABLE_SHADOWS
-            if (DirLightShadowMapCount > directLightIndex) {
+            if (DirectionalLightShadowMapCount > directLightIndex) {
                 vec4 atlasOffset = DirLightShadowAtlasOffset[directLightIndex];
                 mat4 shadowMatrix = DirLightShadowMatrices[directLightIndex];
 
@@ -312,14 +308,14 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal, in vec3 albed
     {
         for (int pointLightIndex = 0; pointLightIndex < PointLightCount; ++pointLightIndex) {
             // calculate per-light radiance
-            vec3 toLVec = PointLightPositionWorld[pointLightIndex] - pixelWorldPos;
+            vec3 toLVec = PointLightPositionWorld[pointLightIndex].xyz - pixelWorldPos;
             float lSrcDstSquared = dot(toLVec, toLVec);
             float lSrcDist = sqrt(lSrcDstSquared);
             vec3 Li = toLVec / lSrcDist;
 
             float attenuation = clamp(10.0 / lSrcDist, 0.0, 1.0);
 
-            vec3 LRadiance = PointLightDiffuseColor[pointLightIndex] * attenuation;
+            vec3 LRadiance = PointLightDiffuseColor[pointLightIndex].rgb * attenuation;
 
             vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo, LRadiance, metallicRoughness);
 #ifdef ENABLE_SHADOWS
@@ -391,7 +387,7 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal)
 
     /* POINT LIGHTS */
     for (int pointLightIndex = 0; pointLightIndex < PointLightCount; ++pointLightIndex) {
-        vec3 pointLightPositionWorld = PointLightPositionWorld[pointLightIndex];
+        vec3 pointLightPositionWorld = PointLightPositionWorld[pointLightIndex].xyz;
         vec3 nToLightVec = normalize(pointLightPositionWorld - pixelWorldPos);
         float nDotP = dot(nToLightVec, nWorldNormal);
         float diffuseFactor = max(nDotP, 0.0);
@@ -408,7 +404,7 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal)
                 PointLightShadowProjectionFarPlane[pointLightIndex]);
         }
 
-        resultDiffuseColor += PointLightDiffuseColor[pointLightIndex] * diffuseFactor * attenuation * litFactor;
+        resultDiffuseColor += PointLightDiffuseColor[pointLightIndex].rgb * diffuseFactor * attenuation * litFactor;
     }
 
     /* DIRECTIONAL LIGHTS */
@@ -419,11 +415,10 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal)
         float litFactor = 1.0f;
 
         // Calculating shadow
-        if (DirLightShadowMapCount > dirLightIndex) {
+        if (DirectionalLightShadowMapCount > dirLightIndex) {
             // Common
             vec4 atlasOffset = DirLightShadowAtlasOffset[dirLightIndex];
             mat4 shadowMatrix = DirLightShadowMatrices[dirLightIndex];
-            //
 
             vec4 shadowProjectedPosition = (shadowMatrix * vec4(pixelWorldPos, 1.0));
             vec3 shadowFragCoords = shadowProjectedPosition.xyz / shadowProjectedPosition.w;

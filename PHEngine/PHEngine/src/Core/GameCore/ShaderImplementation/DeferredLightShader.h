@@ -20,7 +20,7 @@ class DeferredLightShader : public Shader {
 
     Uniform u_CameraWorldPosition;
 
-    DeferredLightShaderUniformBufferStructure<5> lightData;
+    DeferredLightShaderUniformBufferStructure<5, 20> lightData;
 
     std::shared_ptr<UniformBuffer> u_dataBuffer;
 
@@ -28,15 +28,9 @@ class DeferredLightShader : public Shader {
     UniformArray u_DirectionalLightShadowMaps;
     Uniform u_DirectionalLightShadowMapCount;
 
-    UniformArray u_PointLightDiffuseColor;
-    UniformArray u_PointLightSpecularColor;
-    UniformArray u_PointLightAttenuation;
-    UniformArray u_PointLightPositionWorld;
-
     UniformArray u_PointLightShadowMaps;
     UniformArray u_PointLightShadowProjectionFarPlane;
     Uniform u_PointLightShadowMapCount;
-    Uniform u_PointLightCount;
 
     UniformArray u_SpotlightAmbientColor;
     UniformArray u_SpotlightDiffuseColor;
