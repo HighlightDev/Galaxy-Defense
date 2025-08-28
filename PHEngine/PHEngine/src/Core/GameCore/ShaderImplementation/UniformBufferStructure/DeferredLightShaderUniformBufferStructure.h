@@ -23,8 +23,20 @@
 
 #include <vector>
 
+// each array element must be aligned to vec4
+// so we wrap scalar types in a struct aligned to vec4
+template<typename ScalarType>
+struct alignas(glm::vec4) ScalarArray {
+    ScalarType data;
+
+    ScalarArray& operator=(ScalarType value)
+    {
+        data = value;
+        return *this;
+    }
+};
+
 namespace EngineCore::ShaderImpl::UniformBufferStructure {
-#pragma pack(push, 1) // exact fit - no padding
 template<int32_t MaxDirLightCount, int32_t MaxPointLightCount>
 struct DeferredLightShaderUniformBufferStructure {
 
@@ -49,7 +61,7 @@ struct DeferredLightShaderUniformBufferStructure {
 
     glm::mat4 DirectionalLightShadowMatrices[MaxDirLightCount] = {};
 
-    alignas(glm::vec4) float PointLightShadowProjectionFarPlane[MaxPointLightCount] = {0.0f};
+    ScalarArray<float> PointLightShadowProjectionFarPlane[MaxPointLightCount] = {0.0f};
 
     uint32_t GetSizeInBytes() const
     {
@@ -61,5 +73,4 @@ struct DeferredLightShaderUniformBufferStructure {
         return reinterpret_cast<void*>(const_cast<DeferredLightShaderUniformBufferStructure*>(this));
     }
 };
-#pragma pack(pop)
 } // namespace EngineCore::ShaderImpl::UniformBufferStructure

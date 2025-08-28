@@ -20,7 +20,7 @@ class DeferredLightShader : public Shader {
 
     Uniform u_CameraWorldPosition;
 
-    DeferredLightShaderUniformBufferStructure<5, 20> lightData;
+    DeferredLightShaderUniformBufferStructure<5, 20> mLightData;
 
     std::shared_ptr<UniformBuffer> u_dataBuffer;
 
