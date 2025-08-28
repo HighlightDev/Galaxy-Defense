@@ -30,7 +30,7 @@ uniform sampler2D gBuffer_MetallicRoughness;
 uniform sampler2D gBuffer_Emission;
 
 uniform sampler2D DirLightShadowMaps[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
-// todo: IMPORTANT!! some vendors don't support array of cubemap samplers
+// IMPORTANT!! some vendors don't support array of cubemap samplers
 uniform samplerCube PointLightShadowMaps[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
 uniform sampler2D SpotlightShadowMaps[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 
@@ -39,6 +39,7 @@ layout(std140) uniform LightData
     int DirectionalLightCount;
     int DirectionalLightShadowMapCount;
     int PointLightCount;
+    int PointLightShadowMapCount;
     vec4 DirLightAmbientColor[MAX_DIR_LIGHT_COUNT];
     vec4 DirLightDiffuseColor[MAX_DIR_LIGHT_COUNT];
     vec4 DirLightSpecularColor[MAX_DIR_LIGHT_COUNT];
@@ -49,10 +50,9 @@ layout(std140) uniform LightData
     vec4 PointLightAttenuation[MAX_POINT_LIGHT_COUNT];
     vec4 PointLightPositionWorld[MAX_POINT_LIGHT_COUNT];
     mat4 DirLightShadowMatrices[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
+    float PointLightShadowProjectionFarPlane[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
 };
 
-uniform float PointLightShadowProjectionFarPlane[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
-uniform int PointLightShadowMapCount;
 uniform vec3 SpotlightAmbientColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 uniform vec3 SpotlightDiffuseColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 uniform vec3 SpotlightSpecularColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];

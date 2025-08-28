@@ -26,11 +26,7 @@ class DeferredLightShader : public Shader {
 
 #ifndef NO_LIT
     UniformArray u_DirectionalLightShadowMaps;
-    Uniform u_DirectionalLightShadowMapCount;
-
     UniformArray u_PointLightShadowMaps;
-    UniformArray u_PointLightShadowProjectionFarPlane;
-    Uniform u_PointLightShadowMapCount;
 
     UniformArray u_SpotlightAmbientColor;
     UniformArray u_SpotlightDiffuseColor;

@@ -18,6 +18,7 @@
  */
 
 #include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
 #include <vector>
@@ -33,6 +34,7 @@ struct DeferredLightShaderUniformBufferStructure {
     int32_t DirectionalLightCount{0};
     int32_t DirectionalLightShadowMapCount{0};
     int32_t PointLightCount{0};
+    int32_t PointLightShadowMapCount{0};
 
     glm::vec4 AmbientColors[MaxDirLightCount] = {};
     glm::vec4 DiffuseColors[MaxDirLightCount] = {};
@@ -46,6 +48,8 @@ struct DeferredLightShaderUniformBufferStructure {
     glm::vec4 PointLightPositionWorld[MaxPointLightCount] = {};
 
     glm::mat4 DirectionalLightShadowMatrices[MaxDirLightCount] = {};
+
+    alignas(glm::vec4) float PointLightShadowProjectionFarPlane[MaxPointLightCount] = {0.0f};
 
     uint32_t GetSizeInBytes() const
     {

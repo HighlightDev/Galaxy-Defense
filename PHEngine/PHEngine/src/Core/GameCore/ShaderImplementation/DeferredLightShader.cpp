@@ -63,9 +63,6 @@ void DeferredLightShader::AccessAllUniformLocations(uint32_t shaderProgramId)
             = GetUniformArray("DirLightShadowMaps", lightData.s_maxDirLightCount, shaderProgramId, eShaderType::FragmentShader);
         u_PointLightShadowMaps = GetUniformArray(
             "PointLightShadowMaps", cfg.MaxPointLightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
-        u_PointLightShadowProjectionFarPlane = GetUniformArray(
-            "PointLightShadowProjectionFarPlane", cfg.MaxPointLightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
-        u_PointLightShadowMapCount = GetUniform("PointLightShadowMapCount", shaderProgramId);
         u_SpotlightShadowMaps = GetUniformArray(
             "SpotlightShadowMaps", cfg.MaxSpotlightShadowMapCount, shaderProgramId, eShaderType::FragmentShader);
         u_SpotlightShadowProjectionFarPlane = GetUniformArray(
@@ -163,7 +160,7 @@ void DeferredLightShader::SetGBufferEmission(const int32_t slot)
 
 void DeferredLightShader::SetDirectionalLightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset)
 {
-    if ((sizeof(lightData.DirectionalLightAtlasOffset) / sizeof(glm::vec4)) > index) {
+    if (std::size(lightData.DirectionalLightAtlasOffset) > index) {
         lightData.DirectionalLightAtlasOffset[index] = atlasOffset;
     }
     u_DirectionalLightShadowMaps.LoadUniform(index, slot);
@@ -181,7 +178,7 @@ void DeferredLightShader::SetDirectionalLightShadowMapCount(int32_t count)
 
 void DeferredLightShader::SetDirectionalLightShadowMatrix(size_t index, const glm::mat4& shadowMatrix)
 {
-    if ((sizeof(lightData.DirectionalLightShadowMatrices) / sizeof(glm::vec4)) > index) {
+    if (std::size(lightData.DirectionalLightShadowMatrices) > index) {
         lightData.DirectionalLightShadowMatrices[index] = shadowMatrix;
     }
 }
@@ -193,12 +190,14 @@ void DeferredLightShader::SetPointLightShadowMapSlot(size_t index, int32_t slot)
 
 void DeferredLightShader::SetPointLightShadowMapCount(int32_t count)
 {
-    u_PointLightShadowMapCount.LoadUniform(count);
+    lightData.PointLightShadowMapCount = count;
 }
 
 void DeferredLightShader::SetPointLightShadowProjectionFarPlane(size_t index, float FarPlane)
 {
-    u_PointLightShadowProjectionFarPlane.LoadUniform(index, FarPlane);
+    if (std::size(lightData.PointLightShadowProjectionFarPlane) > index) {
+        lightData.PointLightShadowProjectionFarPlane[index] = FarPlane;
+    }
 }
 
 void DeferredLightShader::SetSpotlightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset)
@@ -226,7 +225,6 @@ void DeferredLightShader::SetLightsInfo(const std::vector<std::shared_ptr<LightS
 {
     const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
 
-    // Directional lights
     int32_t dirLightProxyIndex = 0, pointLightProxyIndex = 0, spotlightProxyIndex = 0;
     for (const auto& lightProxy : lightsProxies) {
         if (!lightProxy->IsEnabled() || !lightProxy->IsVisible()) {
