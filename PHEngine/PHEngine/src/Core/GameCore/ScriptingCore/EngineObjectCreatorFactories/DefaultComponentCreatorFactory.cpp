@@ -155,8 +155,8 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             const auto& cfg = EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig();
             const float orthoHalfExtent = cfg.ShadowOrthoProjectionHalfExtent;
             const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
-            const auto& directionalLightTAR
-                = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize));
+            const auto& directionalLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(
+                eShadowMapReservationType::DIRECTIONAL_LIGHT_SHADOW_MAP, glm::ivec2(shadowAtlasSize));
             shadowInfo = std::make_shared<ProjectedDirectionalLightShadowInfo>(directionalLightTAR, orthoHalfExtent);
         }
 
@@ -168,7 +168,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto ambient = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["ambient"]);
         const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
         const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
-        const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenutation"]);
+        const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenuation"]);
         const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["radianceRadius"]);
         const auto cutoff = nlohmann_utilities::GetFloatFromJson(jsonObj["cutoff"]);
         const bool isEnabled = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]));
@@ -176,7 +176,8 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         std::shared_ptr<ProjectedShadowInfo> shadowInfo;
         if (jsonObj.contains("shadowAtlasSize")) {
             const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
-            const auto& pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize));
+            const auto& pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(
+                eShadowMapReservationType::SPOT_LIGHT_SHADOW_MAP, glm::ivec2(shadowAtlasSize));
             shadowInfo = std::make_shared<ProjectedSpotlightShadowInfo>(pointLightTAR);
         }
 

@@ -1,6 +1,7 @@
 #include "EngineConfigHolder.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/IoCore/FileFacade.h"
 #include "StringExtendedFunctions.h"
 
@@ -62,26 +63,17 @@ void EngineConfigHolder::FillEngineConfig(const std::list<std::string>& configLi
            std::make_pair("enable_point_lights", std::function([=, this](const std::string& valueStr) {
                               mEngineConfig.EnablePointLights = parseBool(valueStr);
                           })),
-           std::make_pair("enable_spot_lights", std::function([=, this](const std::string& valueStr) {
-                              mEngineConfig.EnableSpotLights = parseBool(valueStr);
-                          })),
            std::make_pair("enable_shadows", std::function([=, this](const std::string& valueStr) {
                               mEngineConfig.EnableShadows = parseBool(valueStr);
                           })),
-           std::make_pair("max_dir_light_count", std::function([=, this](const std::string& valueStr) {
-                              mEngineConfig.MaxDirLightCount = parseUInt(valueStr);
+           std::make_pair("shadowmap_size", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.ShadowMapSize = parseUInt(valueStr);
                           })),
            std::make_pair("max_dir_light_shadow_map_count", std::function([=, this](const std::string& valueStr) {
                               mEngineConfig.MaxDirLightShadowMapCount = parseUInt(valueStr);
                           })),
-           std::make_pair("max_point_light_count", std::function([=, this](const std::string& valueStr) {
-                              mEngineConfig.MaxPointLightCount = parseUInt(valueStr);
-                          })),
            std::make_pair("max_point_light_shadow_map_count", std::function([=, this](const std::string& valueStr) {
                               mEngineConfig.MaxPointLightShadowMapCount = parseUInt(valueStr);
-                          })),
-           std::make_pair("max_spotlight_count", std::function([=, this](const std::string& valueStr) {
-                              mEngineConfig.MaxSpotlightCount = parseUInt(valueStr);
                           })),
            std::make_pair("max_spotlight_shadow_map_count", std::function([=, this](const std::string& valueStr) {
                               mEngineConfig.MaxSpotlightShadowMapCount = parseUInt(valueStr);
@@ -135,19 +127,17 @@ void EngineConfigHolder::FillEngineConfig(const std::list<std::string>& configLi
 #endif
         };
 
-    size_t config_prop_count = 0;
-
     for (const auto& line : configLines) {
         if ("" != Trim(line) && !StartsWith(line, "#")) {
             const auto [key, value] = GetKeyValueConfigFromLine(line);
-            assert(config_values_map.count(key));
-            const auto fn = config_values_map[key];
-            fn(value);
-            ++config_prop_count;
+            if (config_values_map.count(key)) {
+                const auto fn = config_values_map[key];
+                fn(value);
+            } else {
+                EngineCore::LogInfo("EngineConfigHolder::FillEngineConfig: unknown key: ", key, ". Skip.");
+            }
         }
     }
-
-    assert(config_prop_count == config_values_map.size());
 }
 
 std::pair<std::string, std::string> EngineConfigHolder::GetKeyValueConfigFromLine(const std::string& line) const

@@ -13,7 +13,6 @@ SpotlightComponent::SpotlightComponent(const std::shared_ptr<LightComponentData>
         = glm::quat(glm::vec3(DEG_TO_RAD(data->Rotation.x), DEG_TO_RAD(data->Rotation.y), DEG_TO_RAD(data->Rotation.z)));
 
     const auto& spotlightComponentData = std::static_pointer_cast<SpotlightComponentData>(data);
-    assert(nullptr == mLightRenderData);
     mLightRenderData = std::make_shared<SpotlightRenderData>(
         spotlightComponentData->Attenuation,
         spotlightComponentData->RadianceRadius,

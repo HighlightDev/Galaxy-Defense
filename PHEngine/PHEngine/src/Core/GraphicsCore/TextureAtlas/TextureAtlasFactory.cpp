@@ -1,13 +1,16 @@
 #include "TextureAtlasFactory.h"
 
 #include "Core/GameCore/Event/TextureAtlasGeneratedEvent.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 #include "TextureAtlasSpaceRequest.h"
 
 #include <gl/glew.h>
 
 #include <algorithm>
 
+using namespace EngineUtility;
 using namespace Resources;
 
 namespace Graphics {
@@ -15,7 +18,9 @@ namespace Graphics {
 std::unique_ptr<TextureAtlasFactory> TextureAtlasFactory::m_instance;
 
 TextureAtlasFactory::TextureAtlasFactory()
+    : mShadowMapSize(1024)
 {
+    mShadowMapSize = EngineConfigHolder::GetInstance()->GetEngineConfig().ShadowMapSize;
 }
 
 TextureAtlasFactory::~TextureAtlasFactory()
@@ -24,22 +29,26 @@ TextureAtlasFactory::~TextureAtlasFactory()
 
 void TextureAtlasFactory::AddTextureCubeAtlasReservation(size_t requestId, const glm::ivec2& size)
 {
+    LogInfo("TextureAtlasFactory::AddTextureCubeAtlasReservation: size: ", size, ", request id: ", requestId);
     CubemapReservations.emplace_back(std::make_pair(requestId, size));
 }
 
-void TextureAtlasFactory::AddTextureAtlasReservation(size_t requestId, const glm::ivec2& size)
+void TextureAtlasFactory::AddTextureAtlasReservation(
+    const eShadowMapReservationType reservationType, const size_t requestId, const glm::ivec2& size)
 {
-    if (Reservations.size() == 0) {
-        Reservations.emplace_back(std::make_pair(requestId, size));
+    LogInfo("TextureAtlasFactory::AddTextureAtlasReservation: size: ", size, ", request id: ", requestId);
+    auto& reservations = Reservations[static_cast<size_t>(reservationType)];
+    if (reservations.size() == 0) {
+        reservations.emplace_back(std::make_pair(requestId, size));
     } else {
         const auto calcSquare = [](const glm::ivec2& quad) -> int32_t { return (quad.x * quad.y); };
         bool bInserted = false;
 
         // Inserting new reservation size according to ascending rule
         int32_t index = 0;
-        for (auto cit = Reservations.cbegin(); cit != Reservations.end(); ++cit, index++) {
+        for (auto cit = reservations.cbegin(); cit != reservations.end(); ++cit, index++) {
             if (calcSquare((cit->second)) <= calcSquare(size)) {
-                Reservations.insert(cit, std::make_pair(requestId, size));
+                reservations.insert(cit, std::make_pair(requestId, size));
                 bInserted = true;
                 break;
             }
@@ -47,15 +56,16 @@ void TextureAtlasFactory::AddTextureAtlasReservation(size_t requestId, const glm
 
         // If new reservation size is the lowest - just insert it in the end
         if (!bInserted) {
-            Reservations.emplace_back(std::make_pair(requestId, size));
+            reservations.emplace_back(std::make_pair(requestId, size));
         }
     }
 }
 
-TextureAtlasSpaceRequest TextureAtlasFactory::AddTextureAtlasRequest(const glm::ivec2& size)
+TextureAtlasSpaceRequest
+TextureAtlasFactory::AddTextureAtlasRequest(const eShadowMapReservationType reservationType, const glm::ivec2& size)
 {
     TextureAtlasSpaceRequest obtainer;
-    AddTextureAtlasReservation(obtainer.MyRequestId, size);
+    AddTextureAtlasReservation(reservationType, obtainer.MyRequestId, size);
     return obtainer;
 }
 
@@ -68,58 +78,74 @@ TextureAtlasSpaceRequest TextureAtlasFactory::AddTextureCubeAtlasRequest(const g
 
 void TextureAtlasFactory::AllocateTexture2dAtlasSpace()
 {
-    if (!Reservations.size())
-        return;
+    for (const auto reservationType :
+         {eShadowMapReservationType::DIRECTIONAL_LIGHT_SHADOW_MAP, eShadowMapReservationType::SPOT_LIGHT_SHADOW_MAP}) {
+        auto& reservations = Reservations[static_cast<size_t>(reservationType)];
+        if (!reservations.size())
+            continue;
 
-    auto getRelevantEmptyChunk = [](const std::vector<TextureAtlasCell>& emptyChunks, const glm::ivec2& reservation) {
-        size_t reverseIndex = emptyChunks.size() - 1;
-        std::vector<TextureAtlasCell>::const_iterator result = emptyChunks.end();
-        for (auto rit = emptyChunks.rbegin(); rit != emptyChunks.rend(); ++rit, --reverseIndex) {
-            if (rit->Width >= reservation.x && rit->Height >= reservation.y) {
-                // enough space for cell in empty chunk
-                result = emptyChunks.begin() + reverseIndex;
-                break;
+        auto getRelevantEmptyChunk = [](const std::vector<TextureAtlasCell>& emptyChunks, const glm::ivec2& reservation) {
+            size_t reverseIndex = emptyChunks.size() - 1;
+            std::vector<TextureAtlasCell>::const_iterator result = emptyChunks.end();
+            for (auto rit = emptyChunks.rbegin(); rit != emptyChunks.rend(); ++rit, --reverseIndex) {
+                if (rit->Width >= reservation.x && rit->Height >= reservation.y) {
+                    // enough space for cell in empty chunk
+                    result = emptyChunks.begin() + reverseIndex;
+                    break;
+                }
+            }
+
+            return result;
+        };
+
+        while (reservations.size()) {
+            TextureAtlas2D atlas;
+            std::map<size_t, TextureAtlasCell>& cells = atlas.Cells;
+            std::vector<TextureAtlasCell> emptyChunks
+                = {TextureAtlasCell(mShadowMapSize, mShadowMapSize, 0, 0, mShadowMapSize, mShadowMapSize)};
+
+            auto it = reservations.begin();
+
+            if (it->second.x > mShadowMapSize || it->second.y > mShadowMapSize) {
+                LogInfo(
+                    "TextureAtlasFactory::AllocateTexture2dAtlasSpace: too big size: ",
+                    it->second,
+                    " for request id: ",
+                    it->first,
+                    ", clamp to ",
+                    mShadowMapSize);
+                it->second = glm::ivec2(mShadowMapSize);
+            }
+
+            while (it != reservations.end()) {
+                auto relevantChunkIt = getRelevantEmptyChunk(emptyChunks, it->second);
+                if (relevantChunkIt != emptyChunks.end()) {
+                    TextureAtlasCell newCell(
+                        mShadowMapSize, mShadowMapSize, relevantChunkIt->X, relevantChunkIt->Y, it->second.x, it->second.y);
+                    cells.insert(std::make_pair(it->first, newCell));
+                    SplitChunk(emptyChunks, relevantChunkIt, newCell);
+
+                    it = reservations.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+            if (atlas.Cells.size()) {
+                atlas.ShrinkReservedMemory();
+                atlas.AllocateReservedMemory();
+                auto texAtlas = std::make_shared<TextureAtlas2D>(atlas);
+                m_textureAtlases.push_back(texAtlas);
+
+                auto texAtlas2D = std::static_pointer_cast<TextureAtlas2D>(texAtlas);
+                for (auto cellPair : texAtlas2D->Cells) {
+                    mTextureAtlasHandlers[cellPair.first]
+                        = std::make_shared<Texture2dAtlasHandler>(texAtlas2D->m_atlasTexture, cellPair.second);
+                }
             }
         }
 
-        return result;
-    };
-
-    while (Reservations.size()) {
-        TextureAtlas2D atlas;
-        std::map<size_t, TextureAtlasCell>& cells = atlas.Cells;
-        std::vector<TextureAtlasCell> emptyChunks
-            = {TextureAtlasCell(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE)};
-
-        auto it = Reservations.begin();
-        while (it != Reservations.end()) {
-            auto relevantChunkIt = getRelevantEmptyChunk(emptyChunks, it->second);
-            if (relevantChunkIt != emptyChunks.end()) {
-                TextureAtlasCell newCell(
-                    SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, relevantChunkIt->X, relevantChunkIt->Y, it->second.x, it->second.y);
-                cells.insert(std::make_pair(it->first, newCell));
-                SplitChunk(emptyChunks, relevantChunkIt, newCell);
-
-                it = Reservations.erase(it);
-            } else {
-                ++it;
-            }
-        }
-        if (atlas.Cells.size()) {
-            atlas.ShrinkReservedMemory();
-            atlas.AllocateReservedMemory();
-            auto texAtlas = std::make_shared<TextureAtlas2D>(atlas);
-            m_textureAtlases.push_back(texAtlas);
-
-            auto texAtlas2D = std::static_pointer_cast<TextureAtlas2D>(texAtlas);
-            for (auto cellPair : texAtlas2D->Cells) {
-                mTextureAtlasHandlers[cellPair.first]
-                    = std::make_shared<Texture2dAtlasHandler>(texAtlas2D->m_atlasTexture, cellPair.second);
-            }
-        }
+        reservations.clear();
     }
-
-    Reservations.clear();
 }
 
 void TextureAtlasFactory::AllocateTextureCubeSpace()
@@ -200,22 +226,22 @@ void TextureAtlasFactory::SplitChunk(
     TextureAtlasCell& splitCenterCell)
 {
     TextureAtlasCell leftTopCell = TextureAtlasCell(
-        SHADOW_MAP_SIZE,
-        SHADOW_MAP_SIZE,
+        mShadowMapSize,
+        mShadowMapSize,
         splittingEmptyChunkIt->X,
         splittingEmptyChunkIt->Y + splitCenterCell.Height,
         splitCenterCell.Width,
         splittingEmptyChunkIt->Height - splitCenterCell.Height);
     TextureAtlasCell rightBottomCell = TextureAtlasCell(
-        SHADOW_MAP_SIZE,
-        SHADOW_MAP_SIZE,
+        mShadowMapSize,
+        mShadowMapSize,
         splittingEmptyChunkIt->X + splitCenterCell.Width,
         splittingEmptyChunkIt->Y,
         splittingEmptyChunkIt->Width - splitCenterCell.Width,
         splitCenterCell.Height);
     TextureAtlasCell rightTopCell = TextureAtlasCell(
-        SHADOW_MAP_SIZE,
-        SHADOW_MAP_SIZE,
+        mShadowMapSize,
+        mShadowMapSize,
         splittingEmptyChunkIt->X + splitCenterCell.Width,
         splittingEmptyChunkIt->Y + splitCenterCell.Height,
         splittingEmptyChunkIt->Width - splitCenterCell.Width,
@@ -240,6 +266,11 @@ void TextureAtlasFactory::SplitChunk(
     emptyChunks.emplace_back(rightBottomCell);
 
     std::sort(emptyChunks.begin(), emptyChunks.end(), sortFunctor);
+}
+
+int32_t TextureAtlasFactory::GetShadowMapSize() const
+{
+    return mShadowMapSize;
 }
 
 } // namespace Graphics

@@ -6,6 +6,7 @@
 
 #include <glm/vec2.hpp>
 
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <unordered_map>
@@ -15,18 +16,20 @@ using namespace Graphics::Texture;
 
 namespace Graphics {
 class TextureAtlasFactory {
+
     static std::unique_ptr<TextureAtlasFactory> m_instance;
 
     std::vector<std::shared_ptr<TextureAtlas>> m_textureAtlases;
 
     std::unordered_map<size_t /*request id*/, std::shared_ptr<TextureAtlasHandler>> mTextureAtlasHandlers;
 
-    std::vector<std::pair<size_t, glm::ivec2>> Reservations;
+    std::array<std::vector<std::pair<size_t, glm::ivec2>>, 2> Reservations;
 
     std::vector<std::pair<size_t, glm::ivec2>> CubemapReservations;
+    
+    int32_t mShadowMapSize;
 
 public:
-    enum { SHADOW_MAP_SIZE = 1 << 10 };
 
     TextureAtlasFactory();
 
@@ -42,7 +45,7 @@ public:
 
     void AllocateAtlasSpace();
 
-    TextureAtlasSpaceRequest AddTextureAtlasRequest(const glm::ivec2& size);
+    TextureAtlasSpaceRequest AddTextureAtlasRequest(const eShadowMapReservationType reservationType, const glm::ivec2& size);
 
     TextureAtlasSpaceRequest AddTextureCubeAtlasRequest(const glm::ivec2& size);
 
@@ -50,12 +53,15 @@ public:
 
     void DeallocateTextureAtlasByRequestId(size_t requestId);
 
+    int32_t GetShadowMapSize() const;
+
 private:
     void AllocateTexture2dAtlasSpace();
 
     void AllocateTextureCubeSpace();
 
-    void AddTextureAtlasReservation(size_t requestId, const glm::ivec2& size);
+    void
+    AddTextureAtlasReservation(const eShadowMapReservationType reservationType, const size_t requestId, const glm::ivec2& size);
 
     void AddTextureCubeAtlasReservation(size_t requestId, const glm::ivec2& size);
 

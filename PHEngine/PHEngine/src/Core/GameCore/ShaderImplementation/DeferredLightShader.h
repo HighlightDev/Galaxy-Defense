@@ -18,29 +18,14 @@ class DeferredLightShader : public Shader {
 
     using Base = Shader;
 
-    Uniform u_CameraWorldPosition;
-
-    DeferredLightShaderUniformBufferStructure<5, 20> mLightData;
+    DeferredLightShaderUniformBufferStructure<5, 20, 20> mLightData;
 
     std::shared_ptr<UniformBuffer> u_dataBuffer;
 
 #ifndef NO_LIT
     UniformArray u_DirectionalLightShadowMaps;
     UniformArray u_PointLightShadowMaps;
-
-    UniformArray u_SpotlightAmbientColor;
-    UniformArray u_SpotlightDiffuseColor;
-    UniformArray u_SpotlightSpecularColor;
-    UniformArray u_SpotlightDirection;
-    UniformArray u_SpotlightPosition;
-    UniformArray u_SpotlightCutoff;
-
     UniformArray u_SpotlightShadowMaps;
-    UniformArray u_SpotlightShadowProjectionFarPlane;
-    UniformArray u_SpotlightShadowMatrices;
-    UniformArray u_SpotlightAtlasOffset;
-    Uniform u_SpotlightShadowMapCount;
-    Uniform u_SpotlightCount;
 #endif
 
     Uniform u_gBuffer_Position;
@@ -72,19 +57,9 @@ public:
 #ifndef NO_LIT
     void SetLightsInfo(const std::vector<std::shared_ptr<LightSceneProxy>>& lightsProxies);
 
-    void SetDirectionalLightShadowMapSlot(size_t index, int32_t slot);
     void SetDirectionalLightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset);
-    void SetDirectionalLightShadowMapCount(int32_t count);
-    void SetDirectionalLightShadowMatrix(size_t index, const glm::mat4& shadowMatrix);
-
     void SetPointLightShadowMapSlot(size_t index, int32_t slot);
-    void SetPointLightShadowMapCount(int32_t count);
-    void SetPointLightShadowProjectionFarPlane(size_t index, float FarPlane);
-
     void SetSpotlightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset);
-    void SetSpotlightShadowMapCount(int32_t count);
-    void SetSpotlightShadowProjectionFarPlane(size_t index, float FarPlane);
-    void SetSpotlightShadowMatrix(size_t index, const glm::mat4& shadowMatrix);
 #endif
 
     void SetCameraWorldPosition(const glm::vec3& cameraWorldPosition);

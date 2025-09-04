@@ -63,7 +63,7 @@ void TextureAtlas2D::ShrinkReservedMemory()
         max.y = std::max(cit->second.Y + cit->second.Height, max.y);
     }
 
-    int32_t shadowMapSize = TextureAtlasFactory::SHADOW_MAP_SIZE;
+    int32_t shadowMapSize = TextureAtlasFactory::GetInstance()->GetShadowMapSize();
     while (true) {
         if (shadowMapSize > max.x && shadowMapSize > max.y) {
             int32_t shrinkedShadowMapSize = shadowMapSize >> 1;

@@ -23,30 +23,18 @@
 
 #include <vector>
 
-// each array element must be aligned to vec4
-// so we wrap scalar types in a struct aligned to vec4
-template<typename ScalarType>
-struct alignas(glm::vec4) ScalarArray {
-    ScalarType data;
-
-    ScalarArray& operator=(ScalarType value)
-    {
-        data = value;
-        return *this;
-    }
-};
-
 namespace EngineCore::ShaderImpl::UniformBufferStructure {
-template<int32_t MaxDirLightCount, int32_t MaxPointLightCount>
+template<int32_t MaxDirLightCount, int32_t MaxPointLightCount, int32_t MaxSpotLightCount>
 struct DeferredLightShaderUniformBufferStructure {
 
     static constexpr int32_t s_maxDirLightCount = MaxDirLightCount;
     static constexpr int32_t s_maxPointLightCount = MaxPointLightCount;
+    static constexpr int32_t s_maxSpotLightCount = MaxSpotLightCount;
 
-    int32_t DirectionalLightCount{0};
-    int32_t DirectionalLightShadowMapCount{0};
-    int32_t PointLightCount{0};
-    int32_t PointLightShadowMapCount{0};
+    glm::vec4 CameraWorldPosition;
+
+    glm::ivec4 LightsCount; // x: DL, y: PL, z: SL
+    glm::ivec4 ShadowMapsCount; // x: DL, y: PL, z: SL
 
     glm::vec4 AmbientColors[MaxDirLightCount] = {};
     glm::vec4 DiffuseColors[MaxDirLightCount] = {};
@@ -58,10 +46,19 @@ struct DeferredLightShaderUniformBufferStructure {
     glm::vec4 PointLightSpecularColor[MaxPointLightCount] = {};
     glm::vec4 PointLightAttenuation[MaxPointLightCount] = {};
     glm::vec4 PointLightPositionWorld[MaxPointLightCount] = {};
+    glm::vec4 PointLightShadowProjectionFarPlane[MaxPointLightCount] = {};
+
+    glm::vec4 SpotlightAmbientColor[MaxSpotLightCount] = {};
+    glm::vec4 SpotlightDiffuseColor[MaxSpotLightCount] = {};
+    glm::vec4 SpotlightSpecularColor[MaxSpotLightCount] = {};
+    glm::vec4 SpotlightDirection[MaxSpotLightCount] = {};
+    glm::vec4 SpotlightPosition[MaxSpotLightCount] = {};
+    glm::vec4 SpotlightCutoff[MaxSpotLightCount] = {};
+    glm::vec4 SpotlightShadowAtlasOffset[MaxSpotLightCount] = {};
+    glm::vec4 SpotLightShadowProjectionFarPlane[MaxSpotLightCount] = {};
 
     glm::mat4 DirectionalLightShadowMatrices[MaxDirLightCount] = {};
-
-    ScalarArray<float> PointLightShadowProjectionFarPlane[MaxPointLightCount] = {0.0f};
+    glm::mat4 SpotlightShadowMatrices[MaxSpotLightCount] = {};
 
     uint32_t GetSizeInBytes() const
     {

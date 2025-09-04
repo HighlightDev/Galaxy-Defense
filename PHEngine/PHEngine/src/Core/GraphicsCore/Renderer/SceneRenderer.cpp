@@ -575,7 +575,6 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
                 shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
                 m_deferredLightShader->SetDirectionalLightShadowMapSlot(
                     dirLightIndex, shadowMapSlot, shadowInfo->GetTextureAtlasOffset());
-                m_deferredLightShader->SetDirectionalLightShadowMatrix(dirLightIndex, shadowInfo->GetShadowMatrix());
 
                 dirShadowMapCount++;
                 dirLightIndex++;
@@ -590,8 +589,6 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
             if (shadowInfo) {
                 shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
                 m_deferredLightShader->SetPointLightShadowMapSlot(pointLightIndex, shadowMapSlot);
-                m_deferredLightShader->SetPointLightShadowProjectionFarPlane(
-                    pointLightIndex, pointLightProxy->GetRadianceRadius());
                 shadowMapSlot++;
                 pointShadowMapCount++;
                 pointLightIndex++;
@@ -606,21 +603,15 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
                 shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
                 m_deferredLightShader->SetSpotlightShadowMapSlot(
                     spotlightIndex, shadowMapSlot, shadowInfo->GetTextureAtlasOffset());
-                m_deferredLightShader->SetSpotlightShadowProjectionFarPlane(spotlightIndex, spotLightProxy->GetRadianceRadius());
-                m_deferredLightShader->SetSpotlightShadowMatrix(spotlightIndex, shadowInfo->GetShadowMatrix());
                 shadowMapSlot++;
                 spotlightShadowMapCount++;
                 spotlightIndex++;
             }
         }
     }
-
-    m_deferredLightShader->SetCameraWorldPosition(cameraProxy->GetEyeVector());
-    m_deferredLightShader->SetDirectionalLightShadowMapCount(dirShadowMapCount);
-    m_deferredLightShader->SetPointLightShadowMapCount(pointShadowMapCount);
-    m_deferredLightShader->SetSpotlightShadowMapCount(spotlightShadowMapCount);
-    // ************************** SHADOWS ************************** //
+// ************************** SHADOWS ************************** //
 #endif
+    m_deferredLightShader->SetCameraWorldPosition(cameraProxy->GetEyeVector());
 
     m_gbuffer->BindPositionTexture(0);
     m_gbuffer->BindAlbedoTexture(1);

@@ -14,14 +14,12 @@ struct EngineConfig {
     size_t MaxStaticMeshInstancesPerBatch{0};
 
     bool EnablePointLights{true};
-    bool EnableSpotLights{true};
     bool EnableShadows{true};
 
-    size_t MaxDirLightCount{0};
+    uint32_t ShadowMapSize{1024};
+
     size_t MaxDirLightShadowMapCount{0};
-    size_t MaxPointLightCount{0};
     size_t MaxPointLightShadowMapCount{0};
-    size_t MaxSpotlightCount{0};
     size_t MaxSpotlightShadowMapCount{0};
 
     size_t DirLightPCFSamplesCount{0};
