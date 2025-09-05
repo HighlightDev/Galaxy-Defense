@@ -82,8 +82,8 @@ void LuaScriptExecutorBase::RunScript()
     const bool bScriptExecuted = mLuaInstance.ExecuteScript(folderManager->GetFileAbsPathByFileName(mScriptName));
     assert(bScriptExecuted);
 
-    mHasOnStart = GetLuaGlobalVariable<int64_t>::Value(mLuaInstance, "HasOnStart", -1);
-    mHasOnUpdate = GetLuaGlobalVariable<int64_t>::Value(mLuaInstance, "HasOnUpdate", -1);
+    mHasOnStart = GetLuaGlobalVariable::Value<int64_t>(mLuaInstance, "HasOnStart", -1);
+    mHasOnUpdate = GetLuaGlobalVariable::Value<int64_t>(mLuaInstance, "HasOnUpdate", -1);
 
     if (mHasOnStart) {
         LuaFunctionInvoker<void(void*)>::Invoke(mLuaInstance, "System_OnStart", (void*)this);

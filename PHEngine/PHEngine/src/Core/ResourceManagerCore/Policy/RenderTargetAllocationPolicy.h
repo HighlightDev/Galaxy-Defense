@@ -25,6 +25,13 @@ public:
         return std::make_shared<eTextureType>(texParams);
     }
 
+    static inline std::shared_ptr<ITexture> AllocateMemory(const TexParams& texParams)
+    {
+        // to sutisfy Allocatable concept
+        assert(false);
+        return nullptr;
+    }
+
     static inline void DeallocateMemory(std::shared_ptr<ITexture> arg)
     {
         LogInfo("RenderTargetAllocationPolicy::DeallocateMemory");

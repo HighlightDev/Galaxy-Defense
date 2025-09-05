@@ -4,6 +4,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 
 #include <algorithm>
+#include <concepts>
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -14,12 +15,27 @@ using namespace EngineCore;
 
 namespace Resources {
 
+template<typename AllocationType, typename ValueType>
+concept Deallocatable = requires(std::shared_ptr<ValueType> v)
+{
+    AllocationType::DeallocateMemory(v);
+};
+
+template<typename AllocationType, typename KeyType, typename ValueType>
+concept Allocatable = requires(const KeyType& k)
+{
+    {
+        AllocationType::AllocateMemory(k)
+    }
+    ->std::same_as<std::shared_ptr<ValueType>>;
+};
+
 template<typename ValueType, typename KeyType, typename AllocationPolicyType>
-class PoolBase {
+requires Deallocatable<AllocationPolicyType, ValueType>&& Allocatable<AllocationPolicyType, KeyType, ValueType> class PoolBase {
 public:
     using value_t = ValueType;
     using key_t = KeyType;
-    using policy_t = AllocationPolicyType;
+    using allocationPolicy_t = AllocationPolicyType;
     using sharedValue_t = std::shared_ptr<ValueType>;
     using resourceMap_t = std::unordered_map<key_t, sharedValue_t>;
 
@@ -55,7 +71,7 @@ private:
             auto& referenceCount = referenceMap[key];
             --referenceCount;
             if (referenceCount == 0) {
-                policy_t::DeallocateMemory(resourceMap[key]);
+                allocationPolicy_t::DeallocateMemory(resourceMap[key]);
                 resourceMap.erase(key);
                 referenceMap.erase(key);
             }
@@ -74,7 +90,7 @@ private:
     {
         sharedValue_t resource = GetResource(key);
         if (!resource) {
-            resource = policy_t::template AllocateMemory<InnerAllocationType>(key);
+            resource = allocationPolicy_t::template AllocateMemory<InnerAllocationType>(key);
             resourceMap.emplace(key, resource);
         }
 
@@ -91,7 +107,7 @@ private:
     {
         sharedValue_t resource = GetResource(key);
         if (!resource) {
-            resource = policy_t::AllocateMemory(key);
+            resource = allocationPolicy_t::AllocateMemory(key);
             resourceMap.emplace(key, resource);
         }
 
@@ -117,7 +133,7 @@ public:
         LogInfo(ToString(), "::CleanUp");
         for (auto it = resourceMap.begin(); it != resourceMap.end(); ++it) {
             auto key = it->first;
-            policy_t::DeallocateMemory(resourceMap[key]);
+            allocationPolicy_t::DeallocateMemory(resourceMap[key]);
         }
 
         resourceMap.clear();

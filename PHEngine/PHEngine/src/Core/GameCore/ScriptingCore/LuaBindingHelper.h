@@ -1,6 +1,7 @@
 #pragma once
 
 #include <any>
+#include <concepts>
 #include <functional>
 #include <type_traits>
 #include <utility>
@@ -15,7 +16,7 @@
  * and helpers for binding C++ functions as Lua callbacks using a hash-based lookup.
  *
  * @namespace EngineCore::Scripts
- * 
+ *
  * @tparam FunctorType The type of functor to wrap.
  * @struct WrapFunctorIntoAny
  * @brief Template structure to wrap a functor into std::any as a std::function.
@@ -45,6 +46,10 @@
  */
 namespace EngineCore {
 namespace Scripts {
+
+template<typename ScriptExecutorType>
+concept ScriptExecutable = std::is_base_of_v<LuaScriptExecutorBase, ScriptExecutorType>;
+
 template<typename FunctorType>
 struct WrapFunctorIntoAny;
 
@@ -65,8 +70,8 @@ template<uint64_t functionHash, typename ReturnType, typename... ArgsType>
 struct LuaCallbackBindingHelper<functionHash, ReturnType(ArgsType...)> {
     using tupledParamsPack_t = std::tuple<ArgsType...>;
 
-    template<typename FunctionType, typename ScriptExecutorType>
-    static typename std::enable_if<std::is_base_of<LuaScriptExecutorBase, ScriptExecutorType>::value, void>::type
+    template<typename FunctionType, ScriptExecutable ScriptExecutorType>
+    static void
     Bind(const LuaWrapper& luaInstance, ScriptExecutorType* ownerPtr, FunctionType&& f, const std::string& functionName)
     {
         ownerPtr->AddFunctor(

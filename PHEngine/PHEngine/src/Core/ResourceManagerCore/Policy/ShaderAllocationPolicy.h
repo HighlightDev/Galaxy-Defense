@@ -21,6 +21,13 @@ struct ShaderAllocationPolicy {
         return std::shared_ptr<Shader>(std::make_shared<ShaderT>(arg));
     }
 
+    static std::shared_ptr<Shader> AllocateMemory(const ShaderParams& arg)
+    {
+        // to sutisfy Allocatable concept
+        assert(false);
+        return nullptr;
+    }
+
     static void DeallocateMemory(std::shared_ptr<Shader> arg)
     {
         LogInfo("ShaderAllocationPolicy::AllocateMemory");

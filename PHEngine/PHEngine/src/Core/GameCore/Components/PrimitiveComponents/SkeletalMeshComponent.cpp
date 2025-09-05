@@ -55,7 +55,7 @@ void SkeletalMeshComponent::OnSceneOwnerInitialized()
     PrimitiveComponent::OnSceneOwnerInitialized();
 
     if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath)) {
-        mTimeIncreaseMultiply = GetLuaGlobalVariable<float>::Value(*mLuaInstance.get(), "AnimationTimeMultiply", -1);
+        mTimeIncreaseMultiply = GetLuaGlobalVariable::Value<float>(*mLuaInstance.get(), "AnimationTimeMultiply", -1);
     }
 }
 
@@ -124,9 +124,10 @@ void SkeletalMeshComponent::SyncDataWithRenderThread()
                  srcAnimationTime = SrcAnimationTime->GetValue(),
                  dstAnimationTime = DstAnimationTime->GetValue(),
                  srcAnimation = SrcAnimationName->GetValue(),
-                 dstAnimation = DstAnimationName->GetValue()]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                 dstAnimation = DstAnimationName->GetValue()](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& primitiveProxySp = std::static_pointer_cast<SkeletalMeshSceneProxy>(
                             sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         primitiveProxySp->UpdateAnimationData(

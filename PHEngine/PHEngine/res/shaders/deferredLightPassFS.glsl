@@ -18,6 +18,7 @@
 const float INV_COUNT_PCF_DIR_LIGHT_SAMPLES = 1.0 / (((PCF_SAMPLES_DIR_LIGHT * 2) + 1) * ((PCF_SAMPLES_DIR_LIGHT * 2) + 1));
 const float INV_COUNT_PCF_POINT_LIGHT_SAMPLES
     = 1.0 / (PCF_SAMPLES_POINT_LIGHT * PCF_SAMPLES_POINT_LIGHT * PCF_SAMPLES_POINT_LIGHT);
+const float INV_COUNT_PCF_SPOT_LIGHT_SAMPLES = 1.0 / (((PCF_SAMPLES_SPOTLIGHT * 2) + 1) * ((PCF_SAMPLES_SPOTLIGHT * 2) + 1));
 
 layout(location = 0) out vec4 FragColor;
 
@@ -111,7 +112,8 @@ float CalcLitFactorPointLight(
     for (float x = -offset; x < offset; x += offsetStep) {
         for (float y = -offset; y < offset; y += offsetStep) {
             for (float z = -offset; z < offset; z += offsetStep) {
-                float shadowmapDepth = texture(PointLightShadowMaps[pointLightIndex], LightToFragVec + vec3(x, y, z)).r; // depth is in range [0 ; 1]
+                float shadowmapDepth = texture(PointLightShadowMaps[pointLightIndex], LightToFragVec + vec3(x, y, z))
+                                           .r; // depth is in range [0 ; 1]
                 shadowmapDepth *= shadowmapProjectionFarPlane; // now depth is linear in world space
                                                                // in range [0 ; Far Plane]
                 shadow += step(shadowmapDepth, actualDepth - SHADOWMAP_BIAS_POINT_LIGHT);
@@ -146,7 +148,7 @@ float CalcLitFactorSpotlight(
         }
     }
 
-    shadow *= INV_COUNT_PCF_POINT_LIGHT_SAMPLES;
+    shadow *= INV_COUNT_PCF_SPOT_LIGHT_SAMPLES;
     return 1 - shadow;
 }
 
@@ -340,7 +342,8 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal, in vec3 albed
             // Calculating shadow
             float litFactor = 1.0f;
 #ifdef ENABLE_SHADOWS
-            if (ShadowMapsCount.z > spotlightIndex && spotlightFactor > SpotlightCutoff[spotlightIndex].x) {
+            if (ShadowMapsCount.z > spotlightIndex && spotlightFactor > SpotlightCutoff[spotlightIndex].x
+                && ShadowMapsCount.z <= MAX_SPOTLIGHT_SHADOW_MAP_COUNT) {
                 vec4 atlasOffset = SpotlightShadowAtlasOffset[spotlightIndex];
                 mat4 shadowMatrix = SpotlightShadowMatrices[spotlightIndex];
 
@@ -390,10 +393,7 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal)
         // Calculating shadow
         if (ShadowMapsCount.y > pointLightIndex && ShadowMapsCount.y <= MAX_POINT_LIGHT_SHADOW_MAP_COUNT) {
             litFactor = CalcLitFactorPointLight(
-                pointLightIndex,
-                pixelWorldPos,
-                pointLightPositionWorld,
-                PointLightShadowProjectionFarPlane[pointLightIndex].x);
+                pointLightIndex, pixelWorldPos, pointLightPositionWorld, PointLightShadowProjectionFarPlane[pointLightIndex].x);
         }
 
         resultDiffuseColor += PointLightDiffuseColor[pointLightIndex].rgb * diffuseFactor * attenuation * litFactor;
@@ -438,7 +438,8 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal)
         diffuseFactor *= smoothstep(SpotlightCutoff[spotlightIndex].x, 1.0, spotlightFactor);
 
         float litFactor = 1.0f;
-        if (ShadowMapsCount.z > spotlightIndex && spotlightFactor > SpotlightCutoff[spotlightIndex].x) {
+        if (ShadowMapsCount.z > spotlightIndex && spotlightFactor > SpotlightCutoff[spotlightIndex].x
+            && ShadowMapsCount.z <= MAX_SPOTLIGHT_SHADOW_MAP_COUNT) {
             vec4 atlasOffset = SpotlightShadowAtlasOffset[spotlightIndex];
             mat4 shadowMatrix = SpotlightShadowMatrices[spotlightIndex];
 

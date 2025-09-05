@@ -19,6 +19,13 @@ struct CompositeShaderAllocationPolicy {
         return std::make_shared<CompositeShaderType>(arg);
     }
 
+    static std::shared_ptr<IShader> AllocateMemory(const CompositeShaderParams& arg)
+    {
+        // to sutisfy Allocatable concept
+        assert(false);
+        return nullptr;
+    }
+
     static void DeallocateMemory(std::shared_ptr<IShader> arg)
     {
         LogInfo("CompositeShaderAllocationPolicy::DeallocateMemory");

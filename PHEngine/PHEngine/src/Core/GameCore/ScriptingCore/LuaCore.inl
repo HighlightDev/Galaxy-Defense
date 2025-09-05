@@ -9,17 +9,17 @@
  * global variables, as well as error handling and assertion checks.
  *
  * Main components:
- * - LuaValuePusher<T>: Pushes C++ values of type T onto the Lua stack.
+ * - ValuePusher<T>: Pushes C++ values of type T onto the Lua stack.
  * - PushValueToLua: Type-deduced helper for pushing values to Lua.
- * - LuaMultipleValuesPusher<Ts...>: Pushes multiple values to Lua in order.
- * - GetLuaValue<T>: Retrieves C++ values of type T from the Lua stack.
- * - GetLuaArgsPack: Collects multiple arguments from the Lua stack into a tuple.
- * - LuaCallbackInvoker: Invokes C++ functors from Lua, handling return values.
+ * - ChainValuesPusher<Ts...>: Pushes multiple values to Lua in order.
+ * - GetValue<T>: Retrieves C++ values of type T from the Lua stack.
+ * - GetArgsPack: Collects multiple arguments from the Lua stack into a tuple.
+ * - CallbackInvoker: Invokes C++ functors from Lua, handling return values.
  * - LuaFunctionInvoker: Invokes Lua functions from C++, handling arguments and return values.
  * - LuaCallbackBinder: Binds C++ functions as Lua-callable callbacks.
- * - GetLuaGlobalVariable<T>: Retrieves global Lua variables as C++ types.
+ * - GetLuaGlobalVariable: Retrieves global Lua variables as C++ types.
  * - LuaArgsCountForType<T>: Specifies how many Lua stack values a type occupies.
- * - LuaRealArgsCounter: Computes the total number of Lua stack values for a tuple of types.
+ * - ArgsCounter: Computes the total number of Lua stack values for a tuple of types.
  *
  * Platform-specific FORCEINLINE macro is defined for function inlining.
  *
@@ -38,11 +38,8 @@
 #include <algorithm>
 #include <any>
 #include <functional>
-#include <iostream>
-#include <string>
 #include <tuple>
 #include <type_traits>
-#include <utility>
 
 extern "C" {
 #include <lua/lauxlib.h>
@@ -64,402 +61,136 @@ extern "C" {
 
 using namespace EngineCore;
 
-namespace EngineCore {
-namespace Scripts {
-struct LuaTableBase { };
-
-template<typename... Args>
-struct LuaTable : public LuaTableBase, public std::tuple<Args...> { };
-
+namespace EngineCore::Scripts {
 namespace LuaInnerCore {
 /*------------ Inner Core  --------------*/
 
 template<typename ArgType>
-struct LuaValuePusher;
+struct ValuePusher {
 
-template<>
-struct LuaValuePusher<void*> {
-    FORCEINLINE static void Push(lua_State* state, void* value)
+    template <typename T>
+    FORCEINLINE static void Push(lua_State* state, T&& value)
     {
-        lua_pushlightuserdata(state, value);
+        using bareType_t = std::decay<T>::type;
+        if constexpr (std::is_integral_v<bareType_t>) {
+            lua_pushinteger(state, value);
+        } else if constexpr (std::is_floating_point_v<bareType_t>) {
+            lua_pushnumber(state, value);
+        } else if constexpr (std::is_same_v<std::string, bareType_t>) {
+            lua_pushstring(state, value.c_str());
+        } else if constexpr (std::is_same_v<bool, bareType_t>) {
+            lua_pushboolean(state, value);
+        } else if constexpr (std::is_same_v<void*, bareType_t>) {
+            lua_pushlightuserdata(state, value);
+        }
     }
 };
-
-template<>
-struct LuaValuePusher<std::string> {
-    FORCEINLINE static void Push(lua_State* state, const std::string& value)
-    {
-        lua_pushstring(state, value.c_str());
-    }
-};
-
-template<>
-struct LuaValuePusher<float> {
-    FORCEINLINE static void Push(lua_State* state, const float& value)
-    {
-        lua_pushnumber(state, value);
-    }
-};
-
-template<>
-struct LuaValuePusher<int32_t> {
-    FORCEINLINE static void Push(lua_State* state, const int32_t& value)
-    {
-        lua_pushinteger(state, value);
-    }
-};
-
-template<>
-struct LuaValuePusher<bool> {
-    FORCEINLINE static void Push(lua_State* state, const bool& value)
-    {
-        lua_pushboolean(state, value);
-    }
-};
-
-template<>
-struct LuaValuePusher<double> {
-    FORCEINLINE static void Push(lua_State* state, const double& value)
-    {
-        lua_pushnumber(state, value);
-    }
-};
-
-template<>
-struct LuaValuePusher<int64_t> {
-    FORCEINLINE static void Push(lua_State* state, const int64_t& value)
-    {
-        lua_pushinteger(state, value);
-    }
-};
-
-template<typename ArgType>
-inline typename std::enable_if<std::is_pointer<ArgType>::value>::type PushValueToLua(lua_State* state, const ArgType& value)
-{
-    LuaValuePusher<void*>::Push(state, (void*)value);
-}
-
-template<typename ArgType>
-inline typename std::enable_if<!std::is_pointer<ArgType>::value>::type PushValueToLua(lua_State* state, const ArgType& value)
-{
-    LuaValuePusher<ArgType>::Push(state, value);
-}
 
 template<typename... Args>
-struct LuaMultipleValuesPusher;
+struct ChainValuesPusher;
 
 template<typename Arg, typename... Args>
-struct LuaMultipleValuesPusher<Arg, Args...> {
+struct ChainValuesPusher<Arg, Args...> {
     FORCEINLINE static void Push(const LuaWrapper& instanceWrapper, Arg&& arg, Args&&... args)
     {
-        LuaValuePusher<typename std::decay<Arg>::type>::Push(instanceWrapper.GetState(), std::forward<Arg>(arg));
-        LuaMultipleValuesPusher<Args...>::Push(instanceWrapper, std::forward<Args>(args)...);
+        ValuePusher<typename std::decay<Arg>::type>::Push(instanceWrapper.GetState(), std::forward<Arg>(arg));
+        ChainValuesPusher<Args...>::Push(instanceWrapper, std::forward<Args>(args)...);
     }
 };
 
 template<>
-struct LuaMultipleValuesPusher<> {
+struct ChainValuesPusher<> {
     FORCEINLINE static void Push(const LuaWrapper& instanceWrapper)
     {
     }
 };
 
 template<typename VariableType>
-struct GetLuaValue {
+struct GetValue {
     FORCEINLINE static VariableType Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
     {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
+        return CallImpl<VariableType>(instanceWrapper.GetState(), stackIndex);
     }
 
     FORCEINLINE static VariableType Value(lua_State* state, int32_t& stackIndex)
     {
-        return Inner_Value(state, stackIndex);
+        return CallImpl<VariableType>(state, stackIndex);
     }
 
 private:
-    FORCEINLINE static typename std::enable_if<std::is_pointer<VariableType>::value, VariableType>::type
-    Inner_Value(lua_State* state, int32_t& stackIndex)
+    template<typename ArgType>
+    FORCEINLINE static ArgType CallImpl(lua_State* state, int32_t& stackIndex)
     {
-        const int32_t currentStackIndex = stackIndex--;
-        return (VariableType)lua_touserdata(state, currentStackIndex);
+        if constexpr (std::is_same_v<ArgType, void*>) {
+            const int32_t currentStackIndex = stackIndex--;
+            return (ArgType)lua_touserdata(state, currentStackIndex);
+        } else if constexpr (std::is_same_v<ArgType, std::string>) {
+            const int32_t currentStackIndex = stackIndex--;
+            assert(lua_isstring(state, currentStackIndex));
+            return lua_tostring(state, currentStackIndex);
+        } else if constexpr (std::is_integral_v<ArgType>) {
+            const int32_t currentStackIndex = stackIndex--;
+            assert(lua_isinteger(state, currentStackIndex));
+            return lua_tointeger(state, currentStackIndex);
+        } else if constexpr (std::is_floating_point_v<ArgType>) {
+            const int32_t currentStackIndex = stackIndex--;
+            assert(lua_isnumber(state, currentStackIndex));
+            return lua_tonumber(state, currentStackIndex);
+        } else if constexpr (std::is_same_v<ArgType, bool>) {
+            const int32_t currentStackIndex = stackIndex--;
+            assert(lua_isboolean(state, currentStackIndex));
+            return lua_toboolean(state, currentStackIndex);
+        } else if constexpr (std::is_same_v<ArgType, glm::vec4>) {
+            // direction is reversed because stackIndex is decreasing
+            const float w = GetValue<float>::Value(state, stackIndex);
+            const float z = GetValue<float>::Value(state, stackIndex);
+            const float y = GetValue<float>::Value(state, stackIndex);
+            const float x = GetValue<float>::Value(state, stackIndex);
+            return glm::vec4(x, y, z, w);
+        } else if constexpr (std::is_same_v<ArgType, glm::ivec4>) {
+            // direction is reversed because stackIndex is decreasing
+            const int32_t w = GetValue<int32_t>::Value(state, stackIndex);
+            const int32_t z = GetValue<int32_t>::Value(state, stackIndex);
+            const int32_t y = GetValue<int32_t>::Value(state, stackIndex);
+            const int32_t x = GetValue<int32_t>::Value(state, stackIndex);
+            return glm::ivec4(x, y, z, w);
+        } else if constexpr (std::is_same_v<ArgType, glm::vec3>) {
+            // direction is reversed because stackIndex is decreasing
+            const float z = GetValue<float>::Value(state, stackIndex);
+            const float y = GetValue<float>::Value(state, stackIndex);
+            const float x = GetValue<float>::Value(state, stackIndex);
+            return glm::vec3(x, y, z);
+        } else if constexpr (std::is_same_v<ArgType, glm::quat>) {
+            // direction is reversed because stackIndex is decreasing
+            const float w = GetValue<float>::Value(state, stackIndex);
+            const float z = GetValue<float>::Value(state, stackIndex);
+            const float y = GetValue<float>::Value(state, stackIndex);
+            const float x = GetValue<float>::Value(state, stackIndex);
+            return glm::quat(w, x, y, z);
+        } else if constexpr (std::is_void_v<ArgType>) {
+        }
     }
-};
-
-template<>
-struct GetLuaValue<std::string> {
-public:
-    static std::string Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    static std::string Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static std::string Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isstring(state, currentStackIndex));
-        return lua_tostring(state, currentStackIndex);
-    }
-};
-
-template<>
-struct GetLuaValue<int64_t> {
-public:
-    FORCEINLINE static int64_t Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    FORCEINLINE static int64_t Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static int64_t Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isinteger(state, currentStackIndex));
-        return lua_tointeger(state, currentStackIndex);
-    }
-};
-
-template<>
-struct GetLuaValue<bool> {
-public:
-    FORCEINLINE static bool Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    FORCEINLINE static bool Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static bool Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isboolean(state, currentStackIndex));
-        return lua_toboolean(state, currentStackIndex);
-    }
-};
-
-template<>
-struct GetLuaValue<double> {
-public:
-    FORCEINLINE static double Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    FORCEINLINE static double Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static double Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isnumber(state, currentStackIndex));
-        return lua_tonumber(state, currentStackIndex);
-    }
-};
-
-template<>
-struct GetLuaValue<int32_t> {
-public:
-    FORCEINLINE static int32_t Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    FORCEINLINE static int32_t Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static int32_t Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isinteger(state, currentStackIndex));
-        return (int32_t)lua_tointeger(state, currentStackIndex);
-    }
-};
-
-template<>
-struct GetLuaValue<float> {
-public:
-    FORCEINLINE static float Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    FORCEINLINE static float Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static float Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isnumber(state, currentStackIndex));
-        return (float)lua_tonumber(state, currentStackIndex);
-    }
-};
-
-template<>
-struct GetLuaValue<void> {
-    FORCEINLINE static void Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-    }
-};
-
-template<>
-struct GetLuaValue<glm::quat> {
-public:
-    FORCEINLINE static glm::quat Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    FORCEINLINE static glm::quat Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static glm::quat Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        // direction is reversed because stackIndex is decreasing
-        const float w = GetLuaValue<float>::Value(state, stackIndex);
-        const float z = GetLuaValue<float>::Value(state, stackIndex);
-        const float y = GetLuaValue<float>::Value(state, stackIndex);
-        const float x = GetLuaValue<float>::Value(state, stackIndex);
-        return glm::quat(w, x, y, z);
-    }
-};
-
-template<>
-struct GetLuaValue<glm::vec4> {
-public:
-    FORCEINLINE static glm::vec4 Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    FORCEINLINE static glm::vec4 Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static glm::vec4 Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        // direction is reversed because stackIndex is decreasing
-        const float w = GetLuaValue<float>::Value(state, stackIndex);
-        const float z = GetLuaValue<float>::Value(state, stackIndex);
-        const float y = GetLuaValue<float>::Value(state, stackIndex);
-        const float x = GetLuaValue<float>::Value(state, stackIndex);
-        return glm::vec4(x, y, z, w);
-    }
-};
-
-template<>
-struct GetLuaValue<glm::ivec4> {
-public:
-    FORCEINLINE static glm::ivec4 Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    FORCEINLINE static glm::ivec4 Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static glm::ivec4 Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        // direction is reversed because stackIndex is decreasing
-        const int32_t w = GetLuaValue<int32_t>::Value(state, stackIndex);
-        const int32_t z = GetLuaValue<int32_t>::Value(state, stackIndex);
-        const int32_t y = GetLuaValue<int32_t>::Value(state, stackIndex);
-        const int32_t x = GetLuaValue<int32_t>::Value(state, stackIndex);
-        return glm::ivec4(x, y, z, w);
-    }
-};
-
-template<>
-struct GetLuaValue<glm::vec3> {
-public:
-    FORCEINLINE static glm::vec3 Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
-    {
-        return Inner_Value(instanceWrapper.GetState(), stackIndex);
-    }
-
-    FORCEINLINE static glm::vec3 Value(lua_State* state, int32_t& stackIndex)
-    {
-        return Inner_Value(state, stackIndex);
-    }
-
-private:
-    FORCEINLINE static glm::vec3 Inner_Value(lua_State* state, int32_t& stackIndex)
-    {
-        // direction is reversed because stackIndex is decreasing
-        const float z = GetLuaValue<float>::Value(state, stackIndex);
-        const float y = GetLuaValue<float>::Value(state, stackIndex);
-        const float x = GetLuaValue<float>::Value(state, stackIndex);
-        return glm::vec3(x, y, z);
-    }
-};
-
-template<size_t LuaTableParamCount, typename tuple_type, typename LuaTableType>
-struct GetLuaTableValue;
-
-template<size_t LuaTableParamCount, typename tuple_type, typename... Args>
-struct GetLuaTableValue<LuaTableParamCount, tuple_type, LuaTable<Args...>> {
-    FORCEINLINE static void Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
-    {
-    }
-};
-
-template<typename tuple_type, typename... Args>
-struct GetLuaTableValue<0, tuple_type, LuaTable<Args...>> { };
-
-template<typename T>
-struct IsLuaTable {
-    enum { value = std::is_base_of<LuaTableBase, T>::value };
 };
 
 template<typename tuple_type, size_t argsCount>
-struct GetLuaArgsPack {
+struct GetArgsPack {
     using arg_type = typename std::tuple_element<argsCount - 1, tuple_type>::type;
 
     FORCEINLINE static void Collect(lua_State* state, tuple_type& params, int32_t& stackIndex)
     {
-        std::get<argsCount - 1>(params) = GetLuaValue<arg_type>::Value(state, stackIndex);
-        GetLuaArgsPack<tuple_type, argsCount - 1>::Collect(state, params, stackIndex);
+        std::get<argsCount - 1>(params) = GetValue<arg_type>::Value(state, stackIndex);
+        GetArgsPack<tuple_type, argsCount - 1>::Collect(state, params, stackIndex);
     }
 };
 
 template<typename tuple_type>
-struct GetLuaArgsPack<tuple_type, 0> {
+struct GetArgsPack<tuple_type, 0> {
     FORCEINLINE static void Collect(lua_State* state, tuple_type& params, int32_t& stackIndex)
     {
     }
 };
 
-struct LuaGetGlobalBase {
+struct GetGlobalBase {
     FORCEINLINE static void GetGlobal(const LuaWrapper& instanceWrapper, const std::string& variableName)
     {
         lua_getglobal(instanceWrapper.GetState(), variableName.c_str());
@@ -467,20 +198,20 @@ struct LuaGetGlobalBase {
 };
 
 template<typename FunctorType, typename ArgsPack_t, typename ReturnValueType>
-struct LuaCallbackInvoker {
+struct CallbackInvoker {
     FORCEINLINE static int Invoke(lua_State* state, void* ownerPtr, const uint64_t funcHash, const ArgsPack_t& packArgs)
     {
         LuaScriptExecutorBase* baseExecutorInstance = reinterpret_cast<LuaScriptExecutorBase*>(ownerPtr);
         const auto functor_any = baseExecutorInstance->GetFunctorAny(funcHash);
         const auto& functor = std::any_cast<FunctorType>(functor_any);
         const auto retValue = functor(packArgs);
-        PushValueToLua<ReturnValueType>(state, retValue);
+        ValuePusher<ReturnValueType>::Push(state, retValue);
         return 1;
     }
 };
 
 template<typename FunctorType, typename ArgsPack_t>
-struct LuaCallbackInvoker<FunctorType, ArgsPack_t, void> {
+struct CallbackInvoker<FunctorType, ArgsPack_t, void> {
     FORCEINLINE static int Invoke(lua_State* state, void* ownerPtr, const uint64_t funcHash, const ArgsPack_t& packArgs)
     {
         LuaScriptExecutorBase* baseExecutorInstance = reinterpret_cast<LuaScriptExecutorBase*>(ownerPtr);
@@ -491,76 +222,40 @@ struct LuaCallbackInvoker<FunctorType, ArgsPack_t, void> {
     }
 };
 
-template<typename T>
-struct LuaArgsCountForType {
-    static constexpr int32_t value = 1;
-};
-template<>
-struct LuaArgsCountForType<glm::vec3> {
-    static constexpr int32_t value = 3;
-};
-template<>
-struct LuaArgsCountForType<glm::vec4> {
-    static constexpr int32_t value = 4;
-};
-template<>
-struct LuaArgsCountForType<glm::ivec4> {
-    static constexpr int32_t value = 4;
-};
-template<>
-struct LuaArgsCountForType<glm::quat> {
-    static constexpr int32_t value = 4;
-};
+template<typename ArgType>
+FORCEINLINE static constexpr int32_t GetArgsCountForType()
+{
+    if constexpr (std::is_same_v<ArgType, glm::vec3> || std::is_same_v<ArgType, glm::ivec3>) {
+        return 3;
+    } else if constexpr (
+        std::is_same_v<ArgType, glm::vec4> || std::is_same_v<ArgType, glm::ivec4> || std::is_same_v<ArgType, glm::quat>) {
+        return 4;
+    } else {
+        return 1;
+    }
+}
 
 template<typename tuple_t, int32_t currentIndex>
-struct LuaRealArgsCounter {
-    static constexpr int32_t value = LuaArgsCountForType<typename std::tuple_element<currentIndex, tuple_t>::type>::value
-        + LuaRealArgsCounter<tuple_t, currentIndex - 1>::value;
+struct ArgsCounter {
+    static constexpr int32_t value = GetArgsCountForType<typename std::tuple_element<currentIndex, tuple_t>::type>()
+        + ArgsCounter<tuple_t, currentIndex - 1>::value;
 };
 
 template<typename tuple_t>
-struct LuaRealArgsCounter<tuple_t, -1> {
+struct ArgsCounter<tuple_t, -1> {
     static constexpr int32_t value = 0;
 };
 /*------------ Inner Core  --------------*/
 } // namespace LuaInnerCore
 
-template<typename GlobalVariableType>
-struct GetLuaGlobalVariable;
-
-template<>
-struct GetLuaGlobalVariable<std::string> {
-    FORCEINLINE static std::string Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
+struct GetLuaGlobalVariable {
+    template<typename VariableType>
+    FORCEINLINE static VariableType
+    Value(const LuaWrapper& instanceWrapper, const std::string& variableName, const int32_t stackIndex)
     {
-        LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
-        return LuaInnerCore::GetLuaValue<std::string>::Value(instanceWrapper, stackIndex);
-    }
-};
-
-template<>
-struct GetLuaGlobalVariable<int64_t> {
-    FORCEINLINE static int64_t Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
-    {
-        LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
-        return LuaInnerCore::GetLuaValue<int64_t>::Value(instanceWrapper, stackIndex);
-    }
-};
-
-template<>
-struct GetLuaGlobalVariable<double> {
-    FORCEINLINE static double Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
-    {
-        LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
-        return LuaInnerCore::GetLuaValue<double>::Value(instanceWrapper, stackIndex);
-    }
-};
-
-template<>
-struct GetLuaGlobalVariable<float> {
-    FORCEINLINE static float Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
-    {
-        LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
-        return LuaInnerCore::GetLuaValue<float>::Value(instanceWrapper, stackIndex);
+        LuaInnerCore::GetGlobalBase::GetGlobal(instanceWrapper, variableName);
+        int32_t localStackIndex = stackIndex;
+        return LuaInnerCore::GetValue<VariableType>::Value(instanceWrapper, localStackIndex);
     }
 };
 
@@ -576,7 +271,7 @@ struct LuaFunctionInvoker<RetType(Args...)> {
         lua_getglobal(instanceWrapper.GetState(), functionName.c_str());
         assert(lua_isfunction(instanceWrapper.GetState(), -1));
 
-        LuaInnerCore::LuaMultipleValuesPusher<TArgs...>::Push(instanceWrapper, std::forward<TArgs>(args)...);
+        LuaInnerCore::ChainValuesPusher<TArgs...>::Push(instanceWrapper, std::forward<TArgs>(args)...);
 
         static constexpr size_t argsCount = sizeof...(args);
         HasLuaError(instanceWrapper, lua_pcall(instanceWrapper.GetState(), argsCount, 1, /*error handling in lua*/ 0));
@@ -590,7 +285,7 @@ struct LuaFunctionInvoker<RetType(Args...)> {
 #endif
 
         int32_t stackIndex = -1;
-        return LuaInnerCore::GetLuaValue<typename std::decay<RetType>::type>::Value(instanceWrapper, stackIndex);
+        return LuaInnerCore::GetValue<typename std::decay<RetType>::type>::Value(instanceWrapper, stackIndex);
     }
 };
 
@@ -603,7 +298,7 @@ struct LuaFunctionInvoker<void(Args...)> {
         lua_getglobal(instanceWrapper.GetState(), functionName.c_str());
         assert(lua_isfunction(instanceWrapper.GetState(), -1));
 
-        LuaInnerCore::LuaMultipleValuesPusher<TArgs...>::Push(instanceWrapper, std::forward<TArgs>(args)...);
+        LuaInnerCore::ChainValuesPusher<TArgs...>::Push(instanceWrapper, std::forward<TArgs>(args)...);
 
         static constexpr size_t argsCount = sizeof...(args);
         HasLuaError(instanceWrapper, lua_pcall(instanceWrapper.GetState(), argsCount, 0, /*error handling in lua*/ 0));
@@ -643,15 +338,15 @@ private:
         auto ownerPtr = lua_touserdata(state, 1);
         assert(ownerPtr);
 
-        static constexpr size_t argsCount = sizeof...(ArgsType);
-        auto topStackIndex = LuaRealArgsCounter<args_t, argsCount - 1>::value + 1; // + 1 because of host data at index 1
+        constexpr size_t argsCount = sizeof...(ArgsType);
+        auto topStackIndex
+            = ArgsCounter<args_t, argsCount - 1>::value + 1; // + 1 because of host data at index 1
 
         args_t parameterPack;
-        GetLuaArgsPack<args_t, argsCount>::Collect(state, parameterPack, topStackIndex);
+        GetArgsPack<args_t, argsCount>::Collect(state, parameterPack, topStackIndex);
 
-        return LuaCallbackInvoker<std::function<return_t(args_t)>, args_t, return_t>::Invoke(
+        return CallbackInvoker<std::function<return_t(args_t)>, args_t, return_t>::Invoke(
             state, ownerPtr, sFuncHash, parameterPack);
     }
 };
-} // namespace Scripts
-} // namespace EngineCore
+} // namespace EngineCore::Scripts
