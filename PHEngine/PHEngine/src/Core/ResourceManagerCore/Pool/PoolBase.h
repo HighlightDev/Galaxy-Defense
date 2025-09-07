@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <concepts>
 #include <cstddef>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -16,22 +17,16 @@ using namespace EngineCore;
 namespace Resources {
 
 template<typename AllocationType, typename ValueType>
-concept Deallocatable = requires(std::shared_ptr<ValueType> v)
-{
-    AllocationType::DeallocateMemory(v);
-};
+concept Deallocatable = requires(std::shared_ptr<ValueType> v) { AllocationType::DeallocateMemory(v); };
 
 template<typename AllocationType, typename KeyType, typename ValueType>
-concept Allocatable = requires(const KeyType& k)
-{
-    {
-        AllocationType::AllocateMemory(k)
-    }
-    ->std::same_as<std::shared_ptr<ValueType>>;
+concept Allocatable = requires(const KeyType& k) {
+    { AllocationType::AllocateMemory(k) } -> std::same_as<std::shared_ptr<ValueType>>;
 };
 
 template<typename ValueType, typename KeyType, typename AllocationPolicyType>
-requires Deallocatable<AllocationPolicyType, ValueType>&& Allocatable<AllocationPolicyType, KeyType, ValueType> class PoolBase {
+    requires Deallocatable<AllocationPolicyType, ValueType> && Allocatable<AllocationPolicyType, KeyType, ValueType>
+class PoolBase {
 public:
     using value_t = ValueType;
     using key_t = KeyType;
