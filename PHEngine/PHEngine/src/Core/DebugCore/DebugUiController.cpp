@@ -102,21 +102,21 @@ void DebugUiController::RecalculateWidgetsSize()
     mRenderFpsLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mRectangleBackground->GetName());
     mRenderFpsLabel->SetAnchorMargin(eUiAnchor::LEFT, 20);
     mRenderFpsLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
-    mRenderFpsLabel->SetHeight(20);
+    mRenderFpsLabel->SetHeight(30);
 
     mGameFpsLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mRectangleBackground->GetName());
     mGameFpsLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mRectangleBackground->GetName());
     mGameFpsLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mRenderFpsLabel->GetName());
     mGameFpsLabel->SetAnchorMargin(eUiAnchor::LEFT, 20);
     mGameFpsLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
-    mGameFpsLabel->SetHeight(20);
+    mGameFpsLabel->SetHeight(30);
 
     mLuaFpsLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mRectangleBackground->GetName());
     mLuaFpsLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mRectangleBackground->GetName());
     mLuaFpsLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mGameFpsLabel->GetName());
     mLuaFpsLabel->SetAnchorMargin(eUiAnchor::LEFT, 20);
     mLuaFpsLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
-    mLuaFpsLabel->SetHeight(20);
+    mLuaFpsLabel->SetHeight(30);
 
     mImage1->SetHeight(imageWidth);
     mImage1->SetWidth(imageWidth);

@@ -44,12 +44,13 @@ void FreeTypeTextMeshCreator::calculateVertices(
 
         if (wordWidth - spaceWidth > widthRemaining && width /* make sure there is a width specified */) {
 
-            // If we have passed the given width, add this line to our collection and start a new line
-            lines.push_back(curLine);
-            widthRemaining = width - wordWidth;
-            curLine = "";
-
+            if (curLine != "") {
+                // If we have passed the given width, add this line to our collection and start a new line
+                lines.push_back(curLine);
+                curLine = "";
+            }
             // Start next line with current word
+            widthRemaining = width - wordWidth;
             curLine.append(word);
         } else {
             // Otherwise, add this word to the current line
@@ -64,14 +65,20 @@ void FreeTypeTextMeshCreator::calculateVertices(
 
     // Print each line, increasing the y value as we go
     float startY = y - (ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6);
-    for (std::string line : lines) {
-        // If we go past the specified height, stop drawing
-        if (y - startY > height && height)
-            break;
+    if ((y - startY) > height) {
+        // not enough space for any line
+        calculateVertices(vertices, texCoords, "container.height < line.height", x + indent, y, ftFontAtlas, alignment);
+    } else {
+        for (std::string line : lines) {
+            // If we go past the specified height, stop drawing
+            const auto actualCursor = (y - startY);
+            if (actualCursor > height && height)
+                break;
 
-        calculateVertices(vertices, texCoords, line, x + indent, y, ftFontAtlas, alignment);
-        y += (ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6);
-        indent = 0;
+            calculateVertices(vertices, texCoords, line, x + indent, y, ftFontAtlas, alignment);
+            y += (ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6);
+            indent = 0;
+        }
     }
 }
 
