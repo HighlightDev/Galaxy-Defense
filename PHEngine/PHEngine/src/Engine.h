@@ -70,6 +70,14 @@ class Engine : public PauseGameThreadEvent,
 
 #if DEBUG
     GameThreadTimer m_resourceConsumptionLogTimer;
+
+    size_t rtCounter{0};
+    size_t gtCounter{0};
+    size_t ltCounter{0};
+
+    float sumRtSeconds{0.0f};
+    float sumGtSeconds{0.0f};
+    float sumLtSeconds{0.0f};
 #endif
 
 public:

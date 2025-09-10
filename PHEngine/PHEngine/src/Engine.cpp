@@ -288,14 +288,6 @@ void Engine::PostPlayLevelFinished()
     m_scene->PostPlayLevelFinished();
 }
 
-size_t rtCounter = 0;
-size_t gtCounter = 0;
-size_t luaThreadCounter = 0;
-
-float sumRtFramesTime = 0.0f;
-float sumGtFramesTime = 0.0f;
-float sumLuaThreadFramesTime = 0.0f;
-
 void Engine::ProcessEvent(const PauseGameThreadEvent* sender, const PauseGameThreadEvent::EventData_t& data)
 {
     bPauseGameThreadExecution.store(std::get<0>(data));
@@ -316,9 +308,10 @@ void Engine::ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLeve
         Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         0,
         functionId,
-        [weak = weak_from_this(), lvlName]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+        [weak = weak_from_this(), lvlName](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& strong = weak.lock()) {
                 strong->PlayLevel(lvlName);
             }
@@ -332,9 +325,10 @@ void Engine::ProcessEvent(const RestartLevelGameThreadEvent* sender, const Resta
         Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         0,
         functionId,
-        [weak = weak_from_this()]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+        [weak = weak_from_this()](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& strong = weak.lock()) {
                 strong->RestartLevel();
             }
@@ -359,14 +353,14 @@ void Engine::LuaThreadPulse()
         mLuaThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(ltStartTimePoint));
 
 #ifdef DEBUG
-        if (luaThreadCounter == 100) {
-            luaThreadCounter = 0;
-            const float fps = 100.0f / (float)sumLuaThreadFramesTime;
+        if (sumLtSeconds >= 1.0f) {
+            const float fps = static_cast<float>(ltCounter) * (1.0f / sumLtSeconds);
             m_scene->SetLuaThreadFPSTextValue(fps);
-            sumLuaThreadFramesTime = 0.0f;
+            ltCounter = 0;
+            sumLtSeconds = 0.0f;
         }
-        sumLuaThreadFramesTime += mLuaThreadDeltaTimeSeconds;
-        ++luaThreadCounter;
+        sumLtSeconds += mLuaThreadDeltaTimeSeconds;
+        ++ltCounter;
 #endif
     }
 }
@@ -401,13 +395,13 @@ void Engine::GameThreadPulse()
         mGameThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(gtStartTimePoint));
 
 #ifdef DEBUG
-        if (gtCounter == 1000) {
-            gtCounter = 0;
-            const float fps = 1000.0f / (float)sumGtFramesTime;
+        if (sumGtSeconds >= 1.0f) { // duration is >= than one second
+            const float fps = static_cast<float>(gtCounter) * (1.0f / sumGtSeconds);
             m_scene->SetGameThreadFPSTextValue(fps);
-            sumGtFramesTime = 0.0f;
+            sumGtSeconds = 0.0f;
+            gtCounter = 0;
         }
-        sumGtFramesTime += mGameThreadDeltaTimeSeconds;
+        sumGtSeconds += mGameThreadDeltaTimeSeconds;
         ++gtCounter;
 #endif
     }
@@ -432,13 +426,13 @@ void Engine::RenderThreadPulse()
     mRenderThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(rtStartTimePoint));
 
 #ifdef DEBUG
-    if (rtCounter == 10) {
-        rtCounter = 0;
-        const float fps = 10.0f / sumRtFramesTime;
+    if (sumRtSeconds >= 1.0f) {
+        const float fps = (static_cast<float>(rtCounter) * (1.0f / sumRtSeconds));
         m_scene->SetRenderThreadFPSTextValue(fps);
-        sumRtFramesTime = 0.0f;
+        sumRtSeconds = 0.0f;
+        rtCounter = 0;
     }
-    sumRtFramesTime += mRenderThreadDeltaTimeSeconds;
+    sumRtSeconds += mRenderThreadDeltaTimeSeconds;
     ++rtCounter;
 #endif
 }

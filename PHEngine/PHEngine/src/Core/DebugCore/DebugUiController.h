@@ -1,23 +1,30 @@
 #pragma once
 
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
-#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
-#include "Core/GameCore/GUI/UiElements/UiImage.h"
-#include "Core/GameCore/GUI/UiElements/UiItemBase.h"
-#include "Core/GameCore/GUI/UiElements/UiLabel.h"
-#include "Core/GameCore/GUI/UiElements/UiRectangle.h"
+#include "Core/GameCore/ITickable.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/ITextureObtainable.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
-using namespace EngineCore::GUI;
 using namespace Graphics::Texture;
 using namespace Resources;
 using namespace Event;
 
+namespace EngineCore::GUI {
+class UiCanvas;
+class UiImage;
+class UiItemBase;
+class UiItem;
+class UiLabel;
+class UiRectangle;
+class UiRowLayout;
+} // namespace EngineCore::GUI
+
 namespace EngineCore {
+
 class Scene;
 class UiInputComponent;
 
@@ -28,7 +35,7 @@ class DebugUiController : public ITickable,
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
     std::shared_ptr<::EngineCore::GUI::UiCanvas> mCanvas;
-    std::vector<std::shared_ptr<::EngineCore::GUI::UiImage>> mImages;
+    std::vector<std::pair<std::shared_ptr<::EngineCore::GUI::UiLabel>, std::shared_ptr<::EngineCore::GUI::UiImage>>> mImagePairs;
 
     std::unique_ptr<UiInputComponent> mInputComponent;
 
@@ -44,9 +51,15 @@ class DebugUiController : public ITickable,
     std::shared_ptr<::EngineCore::GUI::UiLabel> mGameFpsLabel;
     std::shared_ptr<::EngineCore::GUI::UiLabel> mLuaFpsLabel;
 
-    std::shared_ptr<::EngineCore::GUI::UiRectangle> mRectangleBackground;
-    std::shared_ptr<::EngineCore::GUI::UiImage> mImage;
     std::shared_ptr<::EngineCore::GUI::UiImage> mImage1;
+    std::shared_ptr<::EngineCore::GUI::UiImage> mImage2;
+    std::shared_ptr<::EngineCore::GUI::UiLabel> mImage1Label;
+    std::shared_ptr<::EngineCore::GUI::UiLabel> mImage2Label;
+    std::shared_ptr<::EngineCore::GUI::UiItem> mImage1Container;
+    std::shared_ptr<::EngineCore::GUI::UiItem> mImage2Container;
+
+    std::shared_ptr<::EngineCore::GUI::UiRowLayout> mTexturesLayout;
+    std::shared_ptr<::EngineCore::GUI::UiRectangle> mRectangleBackground;
     std::shared_ptr<::EngineCore::GUI::UiImage> mNextPoolsArrowImage;
 
 public:
@@ -76,7 +89,11 @@ public:
 private:
     void InitializeWidgets();
 
-    std::shared_ptr<ITexture> GetNextTexture() const;
+    void GoToNextTexture();
+
+    std::shared_ptr<ITexture> GetCurrentTexture() const;
+
+    std::string GetCurrentTextureName() const;
 
     void OnNextPoolButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2& mouseCursorPosition);
 

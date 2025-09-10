@@ -33,7 +33,6 @@ void UiRowLayout::UpdateAnchorTransform()
 
 void UiRowLayout::SetSpacing(const uint32_t spacing)
 {
-    assert(mSpacing < mWidth);
     if (mSpacing != spacing) {
         mSpacing = spacing;
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);

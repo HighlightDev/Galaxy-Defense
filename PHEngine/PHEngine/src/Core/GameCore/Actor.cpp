@@ -211,8 +211,12 @@ void Actor::ChangeTweenerState(const std::string& tweenerName, const std::string
             auto tweenerSp = *it;
             tweenerSp->NotifyStateChangedObservers(); // if state was changed and is pending to notify - firstly do it
             tweenerSp->ChangeState(stateName);
+            bLastTweenerChangeWasValid = true;
         } else {
-            LogInfo("Actor::ChangeTweenerState: missing tweener ", tweenerName);
+            if (bLastTweenerChangeWasValid) {
+                bLastTweenerChangeWasValid = false;
+                LogInfo("Actor::ChangeTweenerState: missing tweener ", tweenerName);
+            }
         }
     }
 }

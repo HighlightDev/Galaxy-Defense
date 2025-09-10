@@ -23,6 +23,15 @@ std::string TexturePool::ToString() const
     return "TexturePool";
 }
 
+std::string TexturePool::GetTextureName(const std::shared_ptr<ITexture>& texture) const
+{
+    const auto texParamOpt = GetKeyOptional(texture);
+    if (texParamOpt.has_value()) {
+        return texParamOpt.value();
+    }
+    return "Unknown";
+}
+
 std::shared_ptr<TexturePool> TexturePool::GetInstance()
 {
     if (!m_instance)

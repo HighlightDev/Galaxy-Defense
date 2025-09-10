@@ -48,6 +48,8 @@ protected:
 
     std::vector<std::shared_ptr<EngineCore::Component>> m_allComponents;
 
+    bool bLastTweenerChangeWasValid{true};
+
 public:
     Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 

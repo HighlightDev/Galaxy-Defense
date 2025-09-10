@@ -23,6 +23,8 @@ public:
 
     size_t GetTexturesCount() const override;
 
+    std::string GetTextureName(const std::shared_ptr<ITexture>& texture) const override;
+
     static std::shared_ptr<TexturePool> GetInstance();
 
     static void ReloadInstance();

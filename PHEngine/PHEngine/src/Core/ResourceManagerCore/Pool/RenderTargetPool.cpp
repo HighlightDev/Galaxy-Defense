@@ -23,6 +23,16 @@ std::string RenderTargetPool::ToString() const
     return "RenderTargetPool";
 }
 
+std::string RenderTargetPool::GetTextureName(const std::shared_ptr<ITexture>& texture) const
+{
+    const auto rtParamOpt = GetKeyOptional(texture);
+    if (rtParamOpt.has_value()) {
+        const auto& rtParams = rtParamOpt.value();
+        return TexParams::ToString(rtParams);
+    }
+    return "Unknown texture";
+}
+
 std::shared_ptr<RenderTargetPool> RenderTargetPool::GetInstance()
 {
     if (!m_instance)

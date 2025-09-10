@@ -16,6 +16,8 @@ class SceneView {
 
     std::unordered_map<size_t /*proxy id*/, bool> mVisibilityMap;
 
+    int32_t mLastFrameVisiblePrimitives{0};
+
 public:
     SceneView(
         const std::shared_ptr<CameraSceneProxy>& cameraProxy,

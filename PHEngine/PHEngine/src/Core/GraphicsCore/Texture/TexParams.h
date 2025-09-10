@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <string>
 
 namespace Graphics {
 namespace Texture {
@@ -37,6 +38,49 @@ struct TexParams {
     TexParams();
 
     ~TexParams();
+
+    static std::string ToString(const TexParams& texParams)
+    {
+        const std::unordered_map<GLint, std::string> internalFormatToStrMap
+            = {{GL_RG, "RG"},
+               {GL_RGB, "RGB"},
+               {GL_RGB8, "RGB8"},
+               {GL_RGBA8, "RGBA8"},
+               {GL_RGB16, "RGB16"},
+               {GL_RGB16F, "RGB16F"},
+               {GL_RGBA16, "RGBA16"},
+               {GL_DEPTH24_STENCIL8, "DEPTH24_STENCIL8"},
+               {GL_DEPTH32F_STENCIL8, "DEPTH32F_STENCIL8"},
+               {GL_DEPTH_COMPONENT24, "DEPTH_COMPONENT24"},
+               {GL_RG_INTEGER, "RG_INTEGER"},
+               {GL_R8, "R8"},
+               {GL_R16, "R16"},
+               {GL_RG8, "RG8"},
+               {GL_RG16, "RG16"},
+               {GL_R16F, "R16F"},
+               {GL_R32F, "R32F"},
+               {GL_RG16F, "RG16F"},
+               {GL_RG32F, "RG32F"},
+               {GL_R8I, "R8I"},
+               {GL_R8UI, "R8UI"},
+               {GL_R16I, "R16I"},
+               {GL_R16UI, "R16UI"},
+               {GL_R32I, "R32I"},
+               {GL_R32UI, "R32UI"},
+               {GL_RG8I, "RG8I"},
+               {GL_RG8UI, "RG8UI"},
+               {GL_RG16I, "RG16I"},
+               {GL_RG16UI, "RG16UI"},
+               {GL_RG32I, "RG32I"},
+               {GL_RG32UI, "RG32UI"}};
+
+        std::string result;
+        result += std::to_string(texParams.TexBufferWidth) + "x" + std::to_string(texParams.TexBufferHeight) + "_";
+        result += internalFormatToStrMap.count(texParams.TexPixelInternalFormat) > 0
+            ? internalFormatToStrMap.at(texParams.TexPixelInternalFormat)
+            : "unknown internal format";
+        return result;
+    }
 
 private:
     friend struct std::hash<TexParams>;

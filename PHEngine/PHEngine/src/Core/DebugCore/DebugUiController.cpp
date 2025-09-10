@@ -3,7 +3,13 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/UiInputComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
+#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
+#include "Core/GameCore/GUI/UiElements/UiImage.h"
+#include "Core/GameCore/GUI/UiElements/UiItemBase.h"
+#include "Core/GameCore/GUI/UiElements/UiLabel.h"
+#include "Core/GameCore/GUI/UiElements/UiRectangle.h"
+#include "Core/GameCore/GUI/UiElements/UiRowLayout.h"
 #include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverBase.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
@@ -14,6 +20,7 @@ using namespace EngineCore;
 using namespace EngineCore::DataProviders;
 using namespace IO;
 using namespace Graphics;
+using namespace EngineCore::GUI;
 
 namespace EngineCore {
 namespace Debug {
@@ -51,17 +58,44 @@ void DebugUiController::PostPlayLevelFinished()
 void DebugUiController::RecalculateWidgetsSize()
 {
     assert(mCanvas);
-    assert(mRectangleBackground && mRenderFpsLabel && mGameFpsLabel && mLuaFpsLabel && mImage && mImage1 && mNextPoolsArrowImage);
+    assert(
+        mRectangleBackground && mRenderFpsLabel && mGameFpsLabel && mLuaFpsLabel && mImage1 && mImage2 && mNextPoolsArrowImage);
 
     const auto windowWidth = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth();
     const auto windowHeight = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();
     const auto imageMargin = 50;
     const auto imageHeight = (windowHeight / 2) - (4 * imageMargin);
+    const auto imageWidth = (windowWidth / 2.5) - (4 * imageMargin);
 
-    mRectangleBackground->SetWidth(imageHeight + (imageMargin * 2));
+    mRectangleBackground->SetWidth(imageWidth + (imageMargin * 2));
     mRectangleBackground->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mCanvas->GetName());
     mRectangleBackground->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mCanvas->GetName());
     mRectangleBackground->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mCanvas->GetName());
+
+    mTexturesLayout->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mCanvas->GetName());
+    mTexturesLayout->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mCanvas->GetName());
+    mTexturesLayout->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mCanvas->GetName());
+    mTexturesLayout->SetHeight(imageWidth + (imageMargin * 2));
+    mTexturesLayout->SetAlignment(eUiRowAlignmentType::CENTER);
+    mTexturesLayout->SetSpacing(imageMargin);
+
+    mImage1Container->SetHeight(imageWidth * 1.25);
+    mImage1Container->SetWidth(imageWidth * 1.25);
+
+    mImage2Container->SetHeight(imageWidth * 1.25);
+    mImage2Container->SetWidth(imageWidth * 1.25);
+
+    mImage1Label->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mImage1Container->GetName());
+    mImage1Label->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mImage1Container->GetName());
+    mImage1Label->SetAnchorMargin(eUiAnchor::TOP, 10);
+    mImage1Label->SetHeight(imageWidth / 2);
+    mImage1Label->SetWidth(imageWidth);
+
+    mImage2Label->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mImage2Container->GetName());
+    mImage2Label->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mImage2Container->GetName());
+    mImage2Label->SetAnchorMargin(eUiAnchor::TOP, 10);
+    mImage2Label->SetHeight(imageWidth / 2);
+    mImage2Label->SetWidth(imageWidth);
 
     mRenderFpsLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mRectangleBackground->GetName());
     mRenderFpsLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mRectangleBackground->GetName());
@@ -84,30 +118,16 @@ void DebugUiController::RecalculateWidgetsSize()
     mLuaFpsLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
     mLuaFpsLabel->SetHeight(20);
 
-    mImage->SetHeight(imageHeight);
-    mImage->SetWidth(imageHeight);
-    mImage->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mRectangleBackground->GetName());
-    mImage->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mRectangleBackground->GetName());
-    mImage->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mRectangleBackground->GetName());
-    mImage->SetAnchorMargin(eUiAnchor::LEFT, imageMargin);
-    mImage->SetAnchorMargin(eUiAnchor::TOP, imageMargin * 3);
-    mImage->SetAnchorMargin(eUiAnchor::RIGHT, imageMargin);
-
-    mImage1->SetHeight(imageHeight);
-    mImage1->SetWidth(imageHeight);
-    mImage1->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mRectangleBackground->GetName());
-    mImage1->SetAnchor(eUiAnchor::TOP, eUiAnchor::BOTTOM, mImage->GetName());
-    mImage1->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mRectangleBackground->GetName());
-    mImage1->SetAnchorMargin(eUiAnchor::LEFT, imageMargin);
-    mImage1->SetAnchorMargin(eUiAnchor::TOP, imageMargin);
-    mImage1->SetAnchorMargin(eUiAnchor::RIGHT, imageMargin);
-
-    mNextPoolsArrowImage->SetHeight(imageHeight / 2);
-    mNextPoolsArrowImage->SetWidth(imageHeight / 2);
-    mNextPoolsArrowImage->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mRectangleBackground->GetName());
-    mNextPoolsArrowImage->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mRectangleBackground->GetName());
-    mNextPoolsArrowImage->SetAnchorMargin(eUiAnchor::BOTTOM, 35);
-    mNextPoolsArrowImage->SetAnchorMargin(eUiAnchor::LEFT, 35);
+    mImage1->SetHeight(imageWidth);
+    mImage1->SetWidth(imageWidth);
+    mImage1->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mImage1Container->GetName());
+    mImage1->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mImage1Container->GetName());
+    mImage2->SetHeight(imageWidth);
+    mImage2->SetWidth(imageWidth);
+    mImage2->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mImage2Container->GetName());
+    mImage2->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mImage2Container->GetName());
+    mNextPoolsArrowImage->SetHeight(imageWidth / 2);
+    mNextPoolsArrowImage->SetWidth(imageWidth / 2);
 }
 
 void DebugUiController::InitializeWidgets()
@@ -160,21 +180,49 @@ void DebugUiController::InitializeWidgets()
         mLuaFpsLabel->SetTextVerticalAlignment(eTextVerticalAlignmentType::TOP);
         mLuaFpsLabel->SetZOrder(2);
 
-        mImage = std::make_shared<UiImage>("DebugPanelUpperImage");
-        mImage->Initialize();
-        mImage->SetParents(mCanvas, mRectangleBackground);
-        mImage->SetOpacity(1);
-        mImage->SetZOrder(2);
+        mTexturesLayout = std::make_shared<UiRowLayout>("TexturesLayout");
+        mTexturesLayout->Initialize();
+        mTexturesLayout->SetParents(mCanvas, mCanvas);
 
-        mImage1 = std::make_shared<UiImage>("DebugPanelBottomImage");
+        mImage1Container = std::make_shared<UiItem>("Image1Container");
+        mImage1Container->SetParents(mCanvas, mTexturesLayout);
+
+        mImage2Container = std::make_shared<UiItem>("Image2Container");
+        mImage2Container->SetParents(mCanvas, mTexturesLayout);
+
+        mImage1Label = std::make_shared<UiLabel>("Lora-VariableFont_wght", "DebugImage1Label");
+        mImage1Label->Initialize();
+        mImage1Label->SetParents(mCanvas, mImage1Container);
+        mImage1Label->SetTextColor(0xFFFFFF);
+        mImage1Label->SetFontSize(20);
+        mImage1Label->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
+        mImage1Label->SetTextVerticalAlignment(eTextVerticalAlignmentType::TOP);
+        mImage1Label->SetZOrder(2);
+
+        mImage2Label = std::make_shared<UiLabel>("Lora-VariableFont_wght", "DebugImage2Label");
+        mImage2Label->Initialize();
+        mImage2Label->SetParents(mCanvas, mImage2Container);
+        mImage2Label->SetTextColor(0xFFFFFF);
+        mImage2Label->SetFontSize(20);
+        mImage2Label->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
+        mImage2Label->SetTextVerticalAlignment(eTextVerticalAlignmentType::TOP);
+        mImage2Label->SetZOrder(2);
+
+        mImage1 = std::make_shared<UiImage>("DebugPanelImage1");
         mImage1->Initialize();
-        mImage1->SetParents(mCanvas, mRectangleBackground);
+        mImage1->SetParents(mCanvas, mImage1Container);
         mImage1->SetOpacity(1);
         mImage1->SetZOrder(2);
 
+        mImage2 = std::make_shared<UiImage>("DebugPanelImage2");
+        mImage2->Initialize();
+        mImage2->SetParents(mCanvas, mImage2Container);
+        mImage2->SetOpacity(1);
+        mImage2->SetZOrder(2);
+
         mNextPoolsArrowImage = std::make_shared<UiImage>("DebugPanelArrowRightImage");
         mNextPoolsArrowImage->Initialize();
-        mNextPoolsArrowImage->SetParents(mCanvas, mRectangleBackground);
+        mNextPoolsArrowImage->SetParents(mCanvas, mTexturesLayout);
         mNextPoolsArrowImage->SetOpacity(1);
         mNextPoolsArrowImage->SetZOrder(2);
         mNextPoolsArrowImage->SetTextureSrc("arrow_right_1.png");
@@ -184,8 +232,8 @@ void DebugUiController::InitializeWidgets()
             std::bind(&DebugUiController::OnNextPoolButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
         mNextPoolsArrowImage->SetMouseInputReceiver(arrowMouseInputReceiver);
 
-        mImages.emplace_back(mImage);
-        mImages.emplace_back(mImage1);
+        mImagePairs.emplace_back(mImage1Label, mImage1);
+        mImagePairs.emplace_back(mImage2Label, mImage2);
 
         RecalculateWidgetsSize();
     }
@@ -211,8 +259,11 @@ void DebugUiController::UnpausableTick(const float deltaTime)
                 if (!mCanvas->IsVisible()) {
                     mCanvas->SetIsVisible(true);
                 }
-                for (const auto& mImage : mImages) {
-                    mImage->SetTexture(GetNextTexture());
+                const auto& activePool = mPools[mPoolIndex];
+                for (const auto& [label, image] : mImagePairs) {
+                    GoToNextTexture();
+                    image->SetTexture(GetCurrentTexture());
+                    label->SetText(GetCurrentTextureName());
                 }
             }
         }
@@ -221,24 +272,36 @@ void DebugUiController::UnpausableTick(const float deltaTime)
     mPressButtonCooldown += deltaTime;
 }
 
-std::shared_ptr<ITexture> DebugUiController::GetNextTexture() const
+void DebugUiController::GoToNextTexture()
 {
     const auto& activePool = mPools[mPoolIndex];
     const auto totalCount = activePool->GetTexturesCount();
-    mTextureIndex = mTextureIndex > (totalCount - 1) ? 0 : mTextureIndex;
+    mTextureIndex = mTextureIndex >= (totalCount - 1) ? 0 : mTextureIndex + 1;
+}
 
-    return activePool->GetTextureAt(mTextureIndex++);
+std::shared_ptr<ITexture> DebugUiController::GetCurrentTexture() const
+{
+    const auto& activePool = mPools[mPoolIndex];
+    return activePool->GetTextureAt(mTextureIndex);
+}
+
+std::string DebugUiController::GetCurrentTextureName() const
+{
+    const auto& activePool = mPools[mPoolIndex];
+    return activePool->GetTextureName(GetCurrentTexture());
 }
 
 void DebugUiController::OnNextPoolButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2& mouseCursorPosition)
 {
-    mTextureIndex = 0;
+    mTextureIndex = -1;
     if ((++mPoolIndex) >= mPools.size()) {
         mPoolIndex = 0;
     }
 
-    for (const auto& mImage : mImages) {
-        mImage->SetTexture(GetNextTexture());
+    for (const auto& [label, image] : mImagePairs) {
+        GoToNextTexture();
+        image->SetTexture(GetCurrentTexture());
+        label->SetText(GetCurrentTextureName());
     }
 }
 
