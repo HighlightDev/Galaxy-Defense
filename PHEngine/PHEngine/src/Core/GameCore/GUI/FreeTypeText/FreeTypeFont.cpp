@@ -28,10 +28,6 @@ FreeTypeFont::FreeTypeFont(const std::string& fontFile)
 
 FreeTypeFont::~FreeTypeFont()
 {
-    if (mFaceInitialized) {
-        FT_Done_Face(mFace);
-        mFaceInitialized = false;
-    }
 }
 
 void FreeTypeFont::CleanUp()

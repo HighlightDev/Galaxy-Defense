@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Assertion.h"
-
+#include <cassert>
 #include <string>
 #include <thread>
 #include <unordered_map>
