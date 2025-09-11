@@ -12,7 +12,7 @@ namespace Event {
 class ChangeGameModeEvent
     : public TEvent<ChangeGameModeEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eGameModeType>> {
 public:
-    using Event_t = TEvent<ChangeGameModeEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eGameModeType>>::Event_t;
+    using Type_t = TEvent<ChangeGameModeEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eGameModeType>>::Type_t;
 
     std::string ToString() const override
     {
@@ -23,7 +23,7 @@ public:
 class LuaChangeGameModeEvent
     : public TEvent<LuaChangeGameModeEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<eGameModeType>> {
 public:
-    using Event_t = TEvent<LuaChangeGameModeEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<eGameModeType>>::Event_t;
+    using Type_t = TEvent<LuaChangeGameModeEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<eGameModeType>>::Type_t;
 
     std::string ToString() const override
     {

@@ -10,7 +10,7 @@ struct MouseMovedGameThreadEvent : public TEvent<
                                        eEventThreadType::GAME_THREAD,
                                        SingleDataEventPolicy<glm::ivec4 /*X, Y, deltaX, deltaY*/>> {
 public:
-    using Event_t = TEvent<MouseMovedGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec4>>::Event_t;
+    using Type_t = TEvent<MouseMovedGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec4>>::Type_t;
 
     std::string ToString() const override
     {
@@ -23,7 +23,7 @@ struct MouseMovedLuaThreadEvent : public TEvent<
                                       eEventThreadType::LUA_THREAD,
                                       SingleDataEventPolicy<glm::ivec4 /*X, Y, deltaX, deltaY*/>> {
 public:
-    using Event_t = TEvent<MouseMovedLuaThreadEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<glm::ivec4>>::Event_t;
+    using Type_t = TEvent<MouseMovedLuaThreadEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<glm::ivec4>>::Type_t;
 
     std::string ToString() const override
     {

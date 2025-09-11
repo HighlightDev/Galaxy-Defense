@@ -15,10 +15,10 @@ class ElectroRaySphereContactCollisionEvent
           eEventThreadType::GAME_THREAD,
           MultipleDataEventPolicy<int32_t /*srcCollisionObject*/, std::vector<int32_t>> /*dstCollisionObjects*/> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         ElectroRaySphereContactCollisionEvent,
         eEventThreadType::GAME_THREAD,
-        MultipleDataEventPolicy<int32_t, std::vector<int32_t>>>::Event_t;
+        MultipleDataEventPolicy<int32_t, std::vector<int32_t>>>::Type_t;
 
     std::string ToString() const override
     {

@@ -9,10 +9,10 @@ struct MouseScrollGameThreadEvent : public TEvent<
                                         eEventThreadType::GAME_THREAD,
                                         SingleDataEventPolicy<EngineCore::eMouseScrollDirection, float>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         MouseScrollGameThreadEvent,
         eEventThreadType::GAME_THREAD,
-        SingleDataEventPolicy<EngineCore::eMouseScrollDirection, float>>::Event_t;
+        SingleDataEventPolicy<EngineCore::eMouseScrollDirection, float>>::Type_t;
 
     std::string ToString() const override
     {
@@ -25,10 +25,10 @@ struct MouseScrollLuaThreadEvent : public TEvent<
                                        eEventThreadType::LUA_THREAD,
                                        SingleDataEventPolicy<EngineCore::eMouseScrollDirection, float>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         MouseScrollLuaThreadEvent,
         eEventThreadType::LUA_THREAD,
-        SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>::Event_t;
+        SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>::Type_t;
 
     std::string ToString() const override
     {

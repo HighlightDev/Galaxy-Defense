@@ -29,7 +29,7 @@ ElectroRayActor::ElectroRayActor(
     , mElectroLineEnd()
     , mElectroLineOriginSpeed(1.0f)
     , mElectroLineDestinationSpeed(1.5f)
-    , mElectroLineOriginStartMovementDelayTimer()
+    , mElectroLineOriginStartMovementDelayTimer(std::make_shared<GameThreadTimer>())
     , bLineOriginStartMovement(false)
     , bElectroLineCollided(false)
     , mCollidedSpaceship()
@@ -42,10 +42,11 @@ ElectroRayActor::ElectroRayActor(
 
 void ElectroRayActor::Initialize()
 {
-    mElectroLineOriginStartMovementDelayTimer.SetIsPausable(true);
-    mElectroLineOriginStartMovementDelayTimer.SetIsRepeat(false);
-    mElectroLineOriginStartMovementDelayTimer.SetIntervalMs(1000);
-    mElectroLineOriginStartMovementDelayTimer.SetCallback(
+    mElectroLineOriginStartMovementDelayTimer->Initialize();
+    mElectroLineOriginStartMovementDelayTimer->SetIsPausable(true);
+    mElectroLineOriginStartMovementDelayTimer->SetIsRepeat(false);
+    mElectroLineOriginStartMovementDelayTimer->SetIntervalMs(1000);
+    mElectroLineOriginStartMovementDelayTimer->SetCallback(
         std::bind(&ElectroRayActor::OnElectroLineOriginStartMovementDelayTimerTimeout, this));
 }
 
@@ -151,7 +152,7 @@ void ElectroRayActor::TriggerSpawn(
 
     if (const auto& spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock()) {
         mElectroLineEnd = mElectroLineBegin = spaceshipWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
-        mElectroLineOriginStartMovementDelayTimer.StartTimer();
+        mElectroLineOriginStartMovementDelayTimer->StartTimer();
     }
 }
 
@@ -201,7 +202,7 @@ void ElectroRayActor::OnElectroLineOriginStartMovementDelayTimerTimeout()
 
 void ElectroRayActor::DropState()
 {
-    mElectroLineOriginStartMovementDelayTimer.StopTimer();
+    mElectroLineOriginStartMovementDelayTimer->StopTimer();
     mCollidedSpaceship.reset();
     bLineOriginStartMovement = false;
     bElectroLineCollided = false;

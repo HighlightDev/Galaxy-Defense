@@ -12,10 +12,10 @@ class LevelProgressChangedEvent : public TEvent<
                                       eEventThreadType::GAME_THREAD,
                                       MultipleDataEventPolicy<eLevelProgressStatusType, std::string /*args*/>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         LevelProgressChangedEvent,
         eEventThreadType::GAME_THREAD,
-        MultipleDataEventPolicy<eLevelProgressStatusType, std::string /*args*/>>::Event_t;
+        MultipleDataEventPolicy<eLevelProgressStatusType, std::string /*args*/>>::Type_t;
 
     std::string ToString() const override
     {
@@ -28,10 +28,10 @@ class LuaLevelProgressChangedEvent : public TEvent<
                                          eEventThreadType::LUA_THREAD,
                                          MultipleDataEventPolicy<eLevelProgressStatusType, std::string /*args*/>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         LuaLevelProgressChangedEvent,
         eEventThreadType::LUA_THREAD,
-        MultipleDataEventPolicy<eLevelProgressStatusType, std::string /*args*/>>::Event_t;
+        MultipleDataEventPolicy<eLevelProgressStatusType, std::string /*args*/>>::Type_t;
 
     std::string ToString() const override
     {

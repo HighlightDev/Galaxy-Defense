@@ -21,6 +21,7 @@ SpaceshipActor::SpaceshipActor(
     : Actor(gameObjectName, rootComponent)
     , mModifiersHandler(std::make_unique<ModifiersHandler>())
     , mLifePoints(30)
+    , mDamageMessageTimer(std::make_shared<GameThreadTimer>())
     , mDamageEffectTimePassed(0.0f)
     , mDamageEffectDuration(0.5f)
     , mDamageTimeProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_damageEffect"))
@@ -32,10 +33,11 @@ SpaceshipActor::SpaceshipActor(
     AddEngineProperty(mFreezingEffectProperty);
 
     static constexpr size_t s_dmgTextShowDuration = 1500;
-    mDamageMessageTimer.SetIntervalMs(s_dmgTextShowDuration);
-    mDamageMessageTimer.SetIsRepeat(false);
-    mDamageMessageTimer.SetIsPausable(true);
-    mDamageMessageTimer.SetCallback([this]() { mUiComponent->SetVisibility(mDamageTextFieldId, false); });
+    mDamageMessageTimer->Initialize();
+    mDamageMessageTimer->SetIntervalMs(s_dmgTextShowDuration);
+    mDamageMessageTimer->SetIsRepeat(false);
+    mDamageMessageTimer->SetIsPausable(true);
+    mDamageMessageTimer->SetCallback([this]() { mUiComponent->SetVisibility(mDamageTextFieldId, false); });
 }
 
 void SpaceshipActor::OnSceneOwnerInitialized()
@@ -92,7 +94,7 @@ void SpaceshipActor::Tick(const float deltaTime)
         }
     }
 
-    if (mDamageMessageTimer.IsRunning()) {
+    if (mDamageMessageTimer->IsRunning()) {
         if (const auto& sceneSp = mSceneOwner.lock()) {
             const auto& spaceShipTranslation = GetRootComponent()->GetTranslation();
             const auto& mainCameraSp = sceneSp->GetMainCamera();
@@ -131,7 +133,7 @@ void SpaceshipActor::TriggerDamageReceived(const size_t dmg, const eDamageDealer
         playerDataProvider->SetDestroyedEnemySpaceshipsCount(playerDataProvider->GetDestroyedEnemySpaceshipsCount() + 1);
     }
 
-    mDamageMessageTimer.RestartTimer();
+    mDamageMessageTimer->RestartTimer();
 }
 
 glm::vec2 SpaceshipActor::CalculatePositionForDamageText() const

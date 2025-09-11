@@ -9,10 +9,10 @@ class WindowSizeChangedGameThreadEvent : public TEvent<
                                              Event::eEventThreadType::GAME_THREAD,
                                              SingleDataEventPolicy<::Graphics::ViewPortInfo>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         WindowSizeChangedGameThreadEvent,
         eEventThreadType::GAME_THREAD,
-        MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
+        MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Type_t;
 
     std::string ToString() const override
     {
@@ -25,10 +25,10 @@ class WindowSizeChangedLuaThreadEvent : public TEvent<
                                             Event::eEventThreadType::LUA_THREAD,
                                             SingleDataEventPolicy<::Graphics::ViewPortInfo>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         WindowSizeChangedLuaThreadEvent,
         eEventThreadType::LUA_THREAD,
-        MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
+        MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Type_t;
 
     std::string ToString() const override
     {

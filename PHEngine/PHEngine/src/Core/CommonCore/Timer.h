@@ -12,23 +12,21 @@ class GameThreadTimer;
 
 class GameThreadTimersHolder : public ITickable {
 private:
-    std::vector<GameThreadTimer*> mTimerInstances;
+    std::vector<std::weak_ptr<GameThreadTimer>> mTimerInstances;
 
     GameThreadTimersHolder();
 
 public:
     static GameThreadTimersHolder* GetInstance();
 
-    void RegisterTimerInstance(GameThreadTimer* instance);
-
-    void UnregisterTimerInstance(GameThreadTimer* instance);
+    void RegisterTimerInstance(std::shared_ptr<GameThreadTimer> instance);
 
     void Tick(const float deltaSeconds) override;
 
     void UnpausableTick(const float deltaTime) override;
 };
 
-class GameThreadTimer {
+class GameThreadTimer : public std::enable_shared_from_this<GameThreadTimer> {
     friend class GameThreadTimersHolder;
 
     static size_t s_instanceId;
@@ -47,14 +45,18 @@ class GameThreadTimer {
 
     std::function<void(void)> mCallback;
 
+    bool m_isInitialized;
+
 public:
     GameThreadTimer();
 
-    virtual ~GameThreadTimer();
+    virtual ~GameThreadTimer() = default;
 
     GameThreadTimer(const GameThreadTimer&) = delete;
 
     GameThreadTimer& operator=(const GameThreadTimer&) = delete;
+
+    void Initialize();
 
     size_t GetInstanceId() const;
 

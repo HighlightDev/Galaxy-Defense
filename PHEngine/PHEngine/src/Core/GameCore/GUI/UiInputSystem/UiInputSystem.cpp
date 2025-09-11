@@ -16,13 +16,15 @@ UiInputSystem::UiInputSystem(const std::weak_ptr<UiCanvas>& owner)
     : mScreenHeight(0)
     , mOwnerWp(owner)
     , mInputComponent(std::make_unique<UiInputComponent>(std::make_shared<ComponentData>(std::to_string(s_id++))))
+    , mMousePressedTimer(std::make_shared<GameThreadTimer>())
     , mMouseKeyPressedPosition()
 {
     mScreenHeight = static_cast<size_t>(GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight());
-    mMousePressedTimer.SetIntervalMs(300);
-    mMousePressedTimer.SetIsRepeat(false);
-    mMousePressedTimer.SetCallback(std::bind(&UiInputSystem::OnMousePressedTimerTimeout, this));
-    mMousePressedTimer.SetIsPausable(false);
+    mMousePressedTimer->Initialize();
+    mMousePressedTimer->SetIntervalMs(300);
+    mMousePressedTimer->SetIsRepeat(false);
+    mMousePressedTimer->SetCallback(std::bind(&UiInputSystem::OnMousePressedTimerTimeout, this));
+    mMousePressedTimer->SetIsPausable(false);
 }
 
 UiInputSystem::~UiInputSystem()
@@ -57,13 +59,13 @@ void UiInputSystem::UnpausableTick(const float deltaTime)
 
             if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
                 if (!mIsMouseKeyPressed) {
-                    mMousePressedTimer.StartTimer();
+                    mMousePressedTimer->StartTimer();
                 }
 
                 mIsMouseKeyPressed = true;
             } else if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::RELEASED && mIsMouseKeyPressed) {
-                if (mMousePressedTimer.IsRunning()) {
-                    mMousePressedTimer.StopTimer();
+                if (mMousePressedTimer->IsRunning()) {
+                    mMousePressedTimer->StopTimer();
                     ownerSp->OnMouseClicked(mMouseKeyPressedPosition);
                 } else {
                     ownerSp->OnMouseReleased(mMouseKeyPressedPosition);

@@ -14,10 +14,10 @@ class LevelAreaBBChangedGameThreadEvent : public TEvent<
                                               eEventThreadType::GAME_THREAD,
                                               MultipleDataEventPolicy<BoundingBox2D<glm::vec2>>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         LevelAreaBBChangedGameThreadEvent,
         eEventThreadType::GAME_THREAD,
-        MultipleDataEventPolicy<BoundingBox2D<glm::vec2>>>::Event_t;
+        MultipleDataEventPolicy<BoundingBox2D<glm::vec2>>>::Type_t;
 
     std::string ToString() const override
     {
@@ -30,10 +30,10 @@ class LevelAreaBBChangedLuaThreadEvent : public TEvent<
                                              eEventThreadType::LUA_THREAD,
                                              MultipleDataEventPolicy<BoundingBox2D<glm::vec2>>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         LevelAreaBBChangedLuaThreadEvent,
         eEventThreadType::LUA_THREAD,
-        MultipleDataEventPolicy<BoundingBox2D<glm::vec2>>>::Event_t;
+        MultipleDataEventPolicy<BoundingBox2D<glm::vec2>>>::Type_t;
 
     std::string ToString() const override
     {

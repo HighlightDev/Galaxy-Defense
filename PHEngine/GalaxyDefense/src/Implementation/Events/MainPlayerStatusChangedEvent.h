@@ -12,10 +12,10 @@ class MainPlayerStatusChangedEvent : public TEvent<
                                          eEventThreadType::GAME_THREAD,
                                          MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         MainPlayerStatusChangedEvent,
         eEventThreadType::GAME_THREAD,
-        MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>>::Event_t;
+        MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>>::Type_t;
 
     std::string ToString() const override
     {
@@ -28,10 +28,10 @@ class LuaMainPlayerStatusChangedEvent : public TEvent<
                                             eEventThreadType::LUA_THREAD,
                                             MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         LuaMainPlayerStatusChangedEvent,
         eEventThreadType::LUA_THREAD,
-        MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>>::Event_t;
+        MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>>::Type_t;
 
     std::string ToString() const override
     {

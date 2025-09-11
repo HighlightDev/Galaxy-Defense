@@ -43,7 +43,7 @@ void WeakSpaceshipActor::TriggerDamageReceived(const size_t damage, const eDamag
     if (CheckIsAliveAfterDamage(damage)) {
         mIsDamageEffectActive = true;
         mDamageEffectTimePassed = 0.0f;
-        mDamageMessageTimer.RestartTimer();
+        mDamageMessageTimer->RestartTimer();
         mUiComponent->SetText(mDamageTextFieldId, std::to_string(damage));
         mUiComponent->SetVisibility(mDamageTextFieldId, true);
         mUiComponent->SetPosition(mDamageTextFieldId, CalculatePositionForDamageText());

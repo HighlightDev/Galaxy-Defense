@@ -52,6 +52,8 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     , mRemoveTowerMarkerActor(std::make_shared<Actor>(
           "RemoveTowerMarkerActor",
           std::make_shared<SceneComponent>("RemoveTowerMarkerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mReadyToShootTimer(std::make_shared<GameThreadTimer>())
+    , mReloadPlacementTower(std::make_shared<GameThreadTimer>())
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mRemoveTowerMarkerBlendColorProperty(
           std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_transparency_color_filler"))
@@ -59,13 +61,15 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     mGhostTowerActor->AddEngineProperty(mGhostTowerBlendColorProperty);
     mRemoveTowerMarkerActor->AddEngineProperty(mRemoveTowerMarkerBlendColorProperty);
 
-    mReadyToShootTimer.SetIsPausable(true);
-    mReadyToShootTimer.SetIsRepeat(false);
-    mReadyToShootTimer.SetIntervalMs(500);
-
-    mReloadPlacementTower.SetIsPausable(true);
-    mReloadPlacementTower.SetIsRepeat(false);
-    mReloadPlacementTower.SetIntervalMs(200);
+    mReadyToShootTimer->Initialize();
+    mReadyToShootTimer->SetIsPausable(true);
+    mReadyToShootTimer->SetIsRepeat(false);
+    mReadyToShootTimer->SetIntervalMs(500);
+    
+    mReloadPlacementTower->Initialize();
+    mReloadPlacementTower->SetIsPausable(true);
+    mReloadPlacementTower->SetIsRepeat(false);
+    mReloadPlacementTower->SetIntervalMs(200);
 }
 
 void UserInteractionController::SetUserInteractionType(const eUserInteractionType interactionType)
@@ -282,7 +286,7 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
     }
 
     if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
-        if (!mReloadPlacementTower.IsRunning()
+        if (!mReloadPlacementTower->IsRunning()
             && (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType
                 || eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType)) {
             const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
@@ -315,7 +319,7 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                 root["towers_count"] = std::to_string(
                     mCombatActorsPoolHandler->GetSpaceStationsCountWithState(eSpaceStationActivityState::ACTIVE));
                 TriggerPlayerStatusChangedEvent(eMainPlayerStatusType::TOWERS_COUNT_CHANGED, root.dump());
-                mReloadPlacementTower.StartTimer();
+                mReloadPlacementTower->StartTimer();
             }
         }
     }
@@ -343,9 +347,9 @@ void UserInteractionController::ProcessCombatStage()
         } else if (!mProjectileMarkerActor->IsEnabled()) {
             mSelectedSpaceStationId = -1;
             PlayerDataProvider::GetInstance()->SetSelectedTowerId(-1);
-        } else if (mProjectileMarkerActor->IsEnabled() && mShootCallback && !mReadyToShootTimer.IsRunning()) {
+        } else if (mProjectileMarkerActor->IsEnabled() && mShootCallback && !mReadyToShootTimer->IsRunning()) {
             mShootCallback();
-            mReadyToShootTimer.StartTimer();
+            mReadyToShootTimer->StartTimer();
         }
     } else if (mProjectileMarkerActor->IsEnabled()) {
         const auto& mousePosition = mouseBindings->GetLastMouseCursorPosition();

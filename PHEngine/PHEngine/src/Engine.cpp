@@ -110,15 +110,17 @@ void Engine::Initialize()
     m_luaThread = std::thread(std::bind(&Engine::LuaThreadPulse, this));
 
 #if DEBUG
-    m_resourceConsumptionLogTimer.SetIntervalMs(3000);
-    m_resourceConsumptionLogTimer.SetIsRepeat(true);
-    m_resourceConsumptionLogTimer.SetIsPausable(false);
-    m_resourceConsumptionLogTimer.SetCallback([]() {
+    m_resourceConsumptionLogTimer = std::make_shared<GameThreadTimer>();
+    m_resourceConsumptionLogTimer->Initialize();
+    m_resourceConsumptionLogTimer->SetIntervalMs(3000);
+    m_resourceConsumptionLogTimer->SetIsRepeat(true);
+    m_resourceConsumptionLogTimer->SetIsPausable(false);
+    m_resourceConsumptionLogTimer->SetCallback([]() {
         const auto& resObs = ResourceUsageObserver::GetInstance();
         resObs->CollectResourceConsumptionInfo();
         LogInfo("Pid:", resObs->GetPid(), " mem mb:", resObs->GetLastMemoryUsageMegabytes());
     });
-    // m_resourceConsumptionLogTimer.StartTimer();
+    m_resourceConsumptionLogTimer->StartTimer();
 #endif
 
     const auto& thisSp = std::dynamic_pointer_cast<Engine>(shared_from_this());

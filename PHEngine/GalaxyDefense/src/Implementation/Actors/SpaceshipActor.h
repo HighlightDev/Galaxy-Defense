@@ -33,7 +33,7 @@ protected:
 
     int32_t mDamageTextFieldId{-1};
 
-    GameThreadTimer mDamageMessageTimer;
+    std::shared_ptr<GameThreadTimer> mDamageMessageTimer;
 
     float mDamageEffectTimePassed;
 

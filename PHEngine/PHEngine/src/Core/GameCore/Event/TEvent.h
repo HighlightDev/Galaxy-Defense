@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "IEvent.h"
@@ -18,19 +19,22 @@ namespace Event {
 template<typename DerivedEventType, eEventThreadType threadType, typename EventHandlePolicy>
 class TEvent : public IEvent {
 public:
-    using EventHandlePolicy_t = EventHandlePolicy;
-    using Event_t = TEvent<DerivedEventType, threadType, EventHandlePolicy>;
-    using EventData_t = typename EventHandlePolicy_t::TupleData_t;
+    using Type_t = TEvent<DerivedEventType, threadType, EventHandlePolicy>;
     using DerivedEventType_t = DerivedEventType;
+    using EventHandlePolicy_t = EventHandlePolicy;
+    using EventData_t = typename EventHandlePolicy_t::TupleData_t;
 
 private:
     static constexpr eEventThreadType mThreadType = threadType;
+    static constexpr const char* mThreadName = eEventThreadType::GAME_THREAD == mThreadType
+        ? "GameThread"
+        : eEventThreadType::LUA_THREAD == mThreadType ? "LuaThread" : "UnknownThread";
 
     std::mutex mListenersMutex;
 
     EventHandlePolicy mPolicy[2];
 
-    std::vector<std::weak_ptr<Event_t>> m_listeners;
+    std::vector<std::weak_ptr<Type_t>> m_listeners;
 
     bool bLogEvent{false};
 
@@ -63,12 +67,6 @@ public:
         mPolicy[(int32_t)order].EmplaceData(std::forward<DataTypesT>(data)...);
     }
 
-    template<typename>
-    struct is_tuple : std::false_type { };
-
-    template<typename... T>
-    struct is_tuple<std::tuple<T...>> : std::true_type { };
-
     void ProcessCachedEvents(const eExecutionOrder currentOrder) override
     {
         while (mPolicy[currentOrder].HasData()) {
@@ -85,7 +83,7 @@ public:
         }
     }
 
-    void AddListener(const std::shared_ptr<Event_t>& eventListener)
+    void AddListener(const std::shared_ptr<Type_t>& eventListener)
     {
         if (bLogEvent) {
             LogInfo(ToString(), "::AddListener");

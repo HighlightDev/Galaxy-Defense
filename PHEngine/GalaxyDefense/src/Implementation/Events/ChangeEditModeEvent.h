@@ -12,7 +12,7 @@ namespace Event {
 class ChangeEditModeEvent
     : public TEvent<ChangeEditModeEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eEditModeType>> {
 public:
-    using Event_t = TEvent<ChangeEditModeEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eEditModeType>>::Event_t;
+    using Type_t = TEvent<ChangeEditModeEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eEditModeType>>::Type_t;
 
     std::string ToString() const override
     {

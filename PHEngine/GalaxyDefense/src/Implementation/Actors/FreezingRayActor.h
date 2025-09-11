@@ -35,7 +35,7 @@ class FreezingRayActor : public MissileActor {
 
     std::shared_ptr<EngineObjectProperty<float>> mOpacity;
 
-    GameThreadTimer mSwitchTargetMinTimer;
+    std::shared_ptr<GameThreadTimer> mSwitchTargetMinTimer;
 
 public:
     FreezingRayActor(

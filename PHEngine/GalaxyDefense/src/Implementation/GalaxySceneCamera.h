@@ -24,7 +24,7 @@ class GalaxySceneCamera : public ThirdPersonCamera, public Event::LevelAreaBBCha
 
     CameraFrustum mCameraFrustum;
 
-    GameThreadTimer mFallbackToStartPositionTimer;
+    std::shared_ptr<GameThreadTimer> mFallbackToStartPositionTimer;
 
     bool bFallbackToStartPositionFlag{false};
 

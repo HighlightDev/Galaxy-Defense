@@ -10,9 +10,9 @@ namespace Event {
 class TextureAtlasGeneratedGameThreadEvent
     : public TEvent<TextureAtlasGeneratedGameThreadEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eTextureType>> {
 public:
-    using Event_t
+    using Type_t
         = TEvent<TextureAtlasGeneratedGameThreadEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eTextureType>>::
-            Event_t;
+            Type_t;
 
     std::string ToString() const override
     {

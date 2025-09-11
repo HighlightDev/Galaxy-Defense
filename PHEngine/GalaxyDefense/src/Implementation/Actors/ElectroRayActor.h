@@ -32,7 +32,7 @@ class ElectroRayActor : public MissileActor {
     float mElectroLineOriginSpeed;
     float mElectroLineDestinationSpeed;
 
-    GameThreadTimer mElectroLineOriginStartMovementDelayTimer;
+    std::shared_ptr<GameThreadTimer> mElectroLineOriginStartMovementDelayTimer;
     bool bLineOriginStartMovement;
 
     std::weak_ptr<::EngineCore::Actor> mCollidedSpaceship;

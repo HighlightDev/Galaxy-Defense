@@ -69,7 +69,7 @@ class Engine : public PauseGameThreadEvent,
     bool bExitGame{false};
 
 #if DEBUG
-    GameThreadTimer m_resourceConsumptionLogTimer;
+    std::shared_ptr<GameThreadTimer> m_resourceConsumptionLogTimer;
 
     size_t rtCounter{0};
     size_t gtCounter{0};

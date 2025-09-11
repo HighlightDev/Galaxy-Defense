@@ -11,8 +11,8 @@ namespace Event {
 class CameraTransformChangedGameThreadEvent
     : public TEvent<CameraTransformChangedGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<ACamera*>> {
 public:
-    using Event_t
-        = TEvent<CameraTransformChangedGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<ACamera*>>::Event_t;
+    using Type_t
+        = TEvent<CameraTransformChangedGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<ACamera*>>::Type_t;
 
     std::string ToString() const override
     {

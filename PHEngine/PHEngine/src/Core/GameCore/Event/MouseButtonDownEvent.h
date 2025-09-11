@@ -15,10 +15,10 @@ struct MouseButtonDownRootEvent : public TEvent<
                                       MouseButtonDownRootEvent,
                                       eEventThreadType::GAME_THREAD,
                                       SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>> {
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         MouseButtonDownRootEvent,
         eEventThreadType::GAME_THREAD,
-        SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>::Event_t;
+        SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>::Type_t;
 
     std::string ToString() const override
     {
@@ -31,10 +31,10 @@ struct MouseButtonDownGameThreadEvent : public TEvent<
                                             eEventThreadType::GAME_THREAD,
                                             SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         MouseButtonDownRootEvent,
         eEventThreadType::GAME_THREAD,
-        SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>::Event_t;
+        SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>::Type_t;
 
     std::string ToString() const override
     {
@@ -47,9 +47,9 @@ struct MouseButtonDownLuaThreadEvent : public TEvent<
                                            eEventThreadType::LUA_THREAD,
                                            SingleDataEventPolicy<std::vector<MouseKeysData>>> {
 public:
-    using Event_t
+    using Type_t
         = TEvent<MouseButtonDownLuaThreadEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>::
-            Event_t;
+            Type_t;
 
     std::string ToString() const override
     {

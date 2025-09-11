@@ -20,10 +20,10 @@ class ShootRayCollisionEvent : public TEvent<
                                        eRayType /*ray type*/,
                                        eCollisionActionType /*collision action type*/>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         ShootRayCollisionEvent,
         eEventThreadType::GAME_THREAD,
-        MultipleDataEventPolicy<std::weak_ptr<MissileActor>, std::weak_ptr<Actor>>>::Event_t;
+        MultipleDataEventPolicy<std::weak_ptr<MissileActor>, std::weak_ptr<Actor>>>::Type_t;
 
     std::string ToString() const override
     {

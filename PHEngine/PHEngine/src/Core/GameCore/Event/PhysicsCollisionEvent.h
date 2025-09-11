@@ -26,7 +26,7 @@ using ParentEvent_t = TEvent<
 
 class PhysicsCollisionGameThreadEvent : public ParentEvent_t {
 public:
-    using Event = ParentEvent_t::Event_t;
+    using Event = ParentEvent_t::Type_t;
 
     std::string ToString() const override
     {

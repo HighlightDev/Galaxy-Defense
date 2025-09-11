@@ -29,12 +29,13 @@ GalaxySceneCamera::GalaxySceneCamera(
           initYawDeg,
           camDistanceToThirdPersonTarget,
           thirdPersonTargetOffset)
-    , mFallbackToStartPositionTimer()
+    , mFallbackToStartPositionTimer(std::make_shared<GameThreadTimer>())
 {
-    mFallbackToStartPositionTimer.SetIsPausable(true);
-    mFallbackToStartPositionTimer.SetIsRepeat(true);
-    mFallbackToStartPositionTimer.SetIntervalMs(s_userIdleTimeLimit);
-    mFallbackToStartPositionTimer.SetCallback(std::bind(&GalaxySceneCamera::OnFallbackToStartPositionTimerTimeout, this));
+    mFallbackToStartPositionTimer->Initialize();
+    mFallbackToStartPositionTimer->SetIsPausable(true);
+    mFallbackToStartPositionTimer->SetIsRepeat(true);
+    mFallbackToStartPositionTimer->SetIntervalMs(s_userIdleTimeLimit);
+    mFallbackToStartPositionTimer->SetCallback(std::bind(&GalaxySceneCamera::OnFallbackToStartPositionTimerTimeout, this));
 }
 
 void GalaxySceneCamera::Initialize()
@@ -134,7 +135,7 @@ void GalaxySceneCamera::Tick(const float deltaTime)
     }
 
     if (!isUserMouseMoveIdle) {
-        mFallbackToStartPositionTimer.RestartTimer();
+        mFallbackToStartPositionTimer->RestartTimer();
     }
 
     if (mouseBindings->IsMouseScrollEventDirty()) {

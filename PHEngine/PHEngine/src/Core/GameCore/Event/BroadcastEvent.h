@@ -13,13 +13,13 @@ class BroadcastGameThreadEvent : public TEvent<
                                      eEventThreadType::GAME_THREAD,
                                      MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         BroadcastGameThreadEvent,
         eEventThreadType::GAME_THREAD,
-        MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>::Event_t;
+        MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>::Type_t;
 
     BroadcastGameThreadEvent()
-        : Event_t(true)
+        : Type_t(true)
     {
     }
 
@@ -34,10 +34,10 @@ class BroadcastLuaThreadEvent : public TEvent<
                                     eEventThreadType::LUA_THREAD,
                                     MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         BroadcastLuaThreadEvent,
         eEventThreadType::LUA_THREAD,
-        MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>::Event_t;
+        MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>::Type_t;
 
     std::string ToString() const override
     {

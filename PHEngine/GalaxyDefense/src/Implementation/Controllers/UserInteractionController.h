@@ -69,9 +69,9 @@ class UserInteractionController : public ILevelController,
 
     std::shared_ptr<Actor> mRemoveTowerMarkerActor;
 
-    GameThreadTimer mReadyToShootTimer;
+    std::shared_ptr<GameThreadTimer> mReadyToShootTimer;
 
-    GameThreadTimer mReloadPlacementTower;
+    std::shared_ptr<GameThreadTimer> mReloadPlacementTower;
 
     std::function<void()> mShootCallback;
 

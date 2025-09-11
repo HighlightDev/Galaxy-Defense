@@ -16,10 +16,10 @@ class GeneralSystemSettingsChangedGameThreadEvent
           eEventThreadType::GAME_THREAD,
           MultipleDataEventPolicy<eSystemSettingsEventType /*event type*/, std::string /*json parameters*/>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         GeneralSystemSettingsChangedGameThreadEvent,
         eEventThreadType::GAME_THREAD,
-        MultipleDataEventPolicy<eSystemSettingsEventType /*event header*/, std::string /*json parameters*/>>::Event_t;
+        MultipleDataEventPolicy<eSystemSettingsEventType /*event header*/, std::string /*json parameters*/>>::Type_t;
 
     std::string ToString() const override
     {
@@ -31,10 +31,10 @@ class GeneralSystemSettingsChangedLuaThreadEvent : public TEvent < GeneralSystem
     eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<eSystemSettingsEventType /*event type*/,
     std::string /*json parameters*/ >> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         GeneralSystemSettingsChangedLuaThreadEvent,
         eEventThreadType::LUA_THREAD,
-        MultipleDataEventPolicy<eSystemSettingsEventType /*event type*/, std::string /*json parameters*/>>::Event_t;
+        MultipleDataEventPolicy<eSystemSettingsEventType /*event type*/, std::string /*json parameters*/>>::Type_t;
 
     std::string ToString() const override
     {

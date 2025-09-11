@@ -5,7 +5,7 @@
 namespace Event {
 struct PauseGameThreadEvent : public TEvent<PauseGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<bool>> {
 public:
-    using Event_t = TEvent<PauseGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<bool>>::Event_t;
+    using Type_t = TEvent<PauseGameThreadEvent, eEventThreadType::GAME_THREAD, SingleDataEventPolicy<bool>>::Type_t;
 
     std::string ToString() const override
     {

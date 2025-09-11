@@ -18,34 +18,24 @@ GameThreadTimersHolder* GameThreadTimersHolder::GetInstance()
     return &mInstance;
 }
 
-void GameThreadTimersHolder::RegisterTimerInstance(GameThreadTimer* instance)
+void GameThreadTimersHolder::RegisterTimerInstance(std::shared_ptr<GameThreadTimer> instance)
 {
-    assert(mTimerInstances.end() == std::find_if(mTimerInstances.begin(), mTimerInstances.end(), [=](const auto m_instance) {
-               return instance->GetInstanceId() == m_instance->GetInstanceId();
-           }));
     LogInfo(
-        "GameThreadTimersHolder::RegisterTimerInstance => Current Thread: ",
+        "GameThreadTimersHolder::RegisterTimerInstance: instanceID: ",
+        instance,
+        ", threadName: ",
         ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads());
     mTimerInstances.emplace_back(instance);
-}
-
-void GameThreadTimersHolder::UnregisterTimerInstance(GameThreadTimer* instance)
-{
-    const auto removeIt = std::remove_if(mTimerInstances.begin(), mTimerInstances.end(), [=](const auto m_instance) {
-        return instance->GetInstanceId() == m_instance->GetInstanceId();
-    });
-    LogInfo(
-        "GameThreadTimersHolder::UnregisterTimerInstance => Current Thread: ",
-        ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads());
-    mTimerInstances.erase(removeIt);
 }
 
 void GameThreadTimersHolder::Tick(const float deltaSeconds)
 {
     const float deltaMilliseconds = deltaSeconds * 1000.0f;
-    for (const auto& timer : mTimerInstances) {
-        if (timer->m_isPausable) {
-            timer->TimerPulse(deltaMilliseconds);
+    for (const auto& timerWp : mTimerInstances) {
+        if (const auto& timerSp = timerWp.lock()) {
+            if (timerSp->m_isPausable) {
+                timerSp->TimerPulse(deltaMilliseconds);
+            }
         }
     }
 }
@@ -53,9 +43,11 @@ void GameThreadTimersHolder::Tick(const float deltaSeconds)
 void GameThreadTimersHolder::UnpausableTick(const float deltaSeconds)
 {
     const float deltaMilliseconds = deltaSeconds * 1000.0f;
-    for (const auto& timer : mTimerInstances) {
-        if (!timer->m_isPausable) {
-            timer->TimerPulse(deltaMilliseconds);
+    for (const auto& timerWp : mTimerInstances) {
+        if (const auto& timerSp = timerWp.lock()) {
+            if (!timerSp->m_isPausable) {
+                timerSp->TimerPulse(deltaMilliseconds);
+            }
         }
     }
 }
@@ -69,13 +61,16 @@ GameThreadTimer::GameThreadTimer()
     , m_isRepeat(false)
     , m_isRunning(false)
     , m_isPausable(true)
+    , m_isInitialized(false)
 {
-    GameThreadTimersHolder::GetInstance()->RegisterTimerInstance(this);
 }
 
-GameThreadTimer::~GameThreadTimer()
+void GameThreadTimer::Initialize()
 {
-    GameThreadTimersHolder::GetInstance()->UnregisterTimerInstance(this);
+    if (!m_isInitialized) {
+        GameThreadTimersHolder::GetInstance()->RegisterTimerInstance(shared_from_this());
+        m_isInitialized = true;
+    }
 }
 
 size_t GameThreadTimer::GetInstanceId() const
@@ -117,6 +112,7 @@ void GameThreadTimer::SetIsPausable(const bool isPausable)
 
 void GameThreadTimer::StartTimer()
 {
+    ext_assert(m_isInitialized, "Timer wasn't initialized!");
     m_isRunning = true;
     m_timerTimeMilliseconds = 0.0f;
 }

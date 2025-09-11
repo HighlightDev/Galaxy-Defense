@@ -30,7 +30,7 @@ private:
 
     std::unique_ptr<::EngineCore::UiInputComponent> mInputComponent;
 
-    GameThreadTimer mMousePressedTimer;
+    std::shared_ptr<GameThreadTimer> mMousePressedTimer;
 
     glm::ivec2 mMouseKeyPressedPosition;
 

@@ -30,6 +30,7 @@ FreezingRayActor::FreezingRayActor(
     , mFreezingLineBegin()
     , mFreezingLineEnd()
     , mOpacity(std::make_shared<EngineObjectProperty<float>>(1.0f, "p_opacity"))
+    , mSwitchTargetMinTimer(std::make_shared<GameThreadTimer>())
 {
     mMissileType = eMissileType::FREEZING_RAY;
     AddEngineProperty(mOpacity);
@@ -40,10 +41,11 @@ void FreezingRayActor::Initialize()
 {
     constexpr size_t s_switchTargetMinTimeout = 1500;
 
-    mSwitchTargetMinTimer.SetIsPausable(true);
-    mSwitchTargetMinTimer.SetIsRepeat(false);
-    mSwitchTargetMinTimer.SetIntervalMs(s_switchTargetMinTimeout);
-    mSwitchTargetMinTimer.SetCallback(std::bind(&FreezingRayActor::OnCanSwitchTargetTimeout, this));
+    mSwitchTargetMinTimer->Initialize();
+    mSwitchTargetMinTimer->SetIsPausable(true);
+    mSwitchTargetMinTimer->SetIsRepeat(false);
+    mSwitchTargetMinTimer->SetIntervalMs(s_switchTargetMinTimeout);
+    mSwitchTargetMinTimer->SetCallback(std::bind(&FreezingRayActor::OnCanSwitchTargetTimeout, this));
 }
 
 void FreezingRayActor::OnCanSwitchTargetTimeout()
@@ -139,7 +141,7 @@ void FreezingRayActor::Tick(const float deltaTime)
                         const auto& collidedActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
                         assert(collidedActor);
                         const bool mCollideWithOldActor
-                            = mLastCollidedActorId == collidedActor->GetObjectId() || mSwitchTargetMinTimer.IsRunning();
+                            = mLastCollidedActorId == collidedActor->GetObjectId() || mSwitchTargetMinTimer->IsRunning();
                         if (mCollideWithOldActor) {
                             const auto& previousCollidedActor
                                 = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
@@ -159,7 +161,7 @@ void FreezingRayActor::Tick(const float deltaTime)
                             mLastCollidedActorId = collidedActor->GetObjectId();
                             SendShootRayCollisionEvent(
                                 collidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
-                            mSwitchTargetMinTimer.StartTimer();
+                            mSwitchTargetMinTimer->StartTimer();
                             mFreezingLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                         }
                     }

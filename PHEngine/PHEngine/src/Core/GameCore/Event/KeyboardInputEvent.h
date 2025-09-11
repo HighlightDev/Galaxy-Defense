@@ -14,10 +14,10 @@ struct KeyboardButtonDownGameThreadEvent : public TEvent<
                                                eEventThreadType::GAME_THREAD,
                                                SingleDataEventPolicy<std::vector<KeyboardKeysData>>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         KeyboardButtonDownGameThreadEvent,
         eEventThreadType::GAME_THREAD,
-        SingleDataEventPolicy<std::vector<KeyboardKeysData>>>::Event_t;
+        SingleDataEventPolicy<std::vector<KeyboardKeysData>>>::Type_t;
 
     std::string ToString() const override
     {
@@ -30,10 +30,10 @@ struct KeyboardButtonDownLuaThreadEvent : public TEvent<
                                               eEventThreadType::LUA_THREAD,
                                               SingleDataEventPolicy<std::vector<KeyboardKeysData>>> {
 public:
-    using Event_t = TEvent<
+    using Type_t = TEvent<
         KeyboardButtonDownLuaThreadEvent,
         eEventThreadType::LUA_THREAD,
-        SingleDataEventPolicy<std::vector<KeyboardKeysData>>>::Event_t;
+        SingleDataEventPolicy<std::vector<KeyboardKeysData>>>::Type_t;
 
     std::string ToString() const override
     {
