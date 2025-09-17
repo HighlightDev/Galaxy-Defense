@@ -17,7 +17,8 @@ UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
     , mNormalizedTranslation(uiItemBase->GetNormalizedTranslation())
     , mNormalizedScale(uiItemBase->GetNormalizedScale())
     , mWidthHeightPixels(glm::ivec2(static_cast<int32_t>(uiItemBase->GetWidth()), static_cast<int32_t>(uiItemBase->GetHeight())))
-    , mCenterOffset(glm::vec2(0.0f, 0.0f))
+    , mScale(1.0f)
+    , mCenterOffset(0.0f)
 {
 }
 
@@ -75,12 +76,12 @@ float UiSceneProxyBase::GetOverlayOpacity() const
     return mOverlayOpacity;
 }
 
-void UiSceneProxyBase::SetScale(const float scale)
+void UiSceneProxyBase::SetScale(const glm::vec2& scale)
 {
     mScale = scale;
 }
 
-float UiSceneProxyBase::GetScale() const
+glm::vec2 UiSceneProxyBase::GetScale() const
 {
     return mScale;
 }

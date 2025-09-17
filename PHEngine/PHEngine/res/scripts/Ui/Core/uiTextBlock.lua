@@ -49,7 +49,7 @@ function UiTextBlock:new(host, fontName, name)
         CommonUiWidgetCreator.CommonUiWidgetType.UI_TEXT_BLOCK, jsonParameters)
 
     local textBlockProperties = {
-        color = {
+        rectangle_color = {
             value = {
                 r = 0.0,
                 g = 0.0,
@@ -57,7 +57,23 @@ function UiTextBlock:new(host, fontName, name)
             },
             dirty = false
         },
-        opacity = {
+        rectangle_opacity = {
+            value = 1.0,
+            dirty = false
+        },
+        rectangle_radius = {
+            value = 0.0,
+            dirty = false
+        },
+        border_color = {
+            value = {
+                r = 0.0,
+                g = 0.0,
+                b = 0.0
+            },
+            dirty = false
+        },
+        border_opacity = {
             value = 1.0,
             dirty = false
         },
@@ -112,14 +128,26 @@ function UiTextBlock:updateFromReplicatorData(host)
             local parsedJson = json.decode(replicatorJsonData)
             self:extractUiItemBaseReplicatorData(parsedJson)
 
-            if parsedJson["color"] ~= nil then
-                local colorArray = parsedJson["color"]
-                self.textBlockProperties.color.value.r = colorArray[1]
-                self.textBlockProperties.color.value.g = colorArray[2]
-                self.textBlockProperties.color.value.b = colorArray[3]
+            if parsedJson["rectangle_color"] ~= nil then
+                local colorArray = parsedJson["rectangle_color"]
+                self.textBlockProperties.rectangle_color.value.r = colorArray[1]
+                self.textBlockProperties.rectangle_color.value.g = colorArray[2]
+                self.textBlockProperties.rectangle_color.value.b = colorArray[3]
             end
-            if parsedJson["opacity"] ~= nil then
-                self.textBlockProperties.opacity.value = parsedJson["opacity"]
+            if parsedJson["rectangle_opacity"] ~= nil then
+                self.textBlockProperties.rectangle_opacity.value = parsedJson["rectangle_opacity"]
+            end
+            if parsedJson["rectangle_radius"] ~= nil then
+                self.textBlockProperties.rectangle_radius.value = parsedJson["rectangle_radius"]
+            end
+            if parsedJson["border_color"] ~= nil then
+                local colorArray = parsedJson["border_color"]
+                self.textBlockProperties.border_color.value.r = colorArray[1]
+                self.textBlockProperties.border_color.value.g = colorArray[2]
+                self.textBlockProperties.border_color.value.b = colorArray[3]
+            end
+            if parsedJson["border_opacity"] ~= nil then
+                self.textBlockProperties.border_opacity.value = parsedJson["border_opacity"]
             end
             if parsedJson["border_radius"] ~= nil then
                 self.textBlockProperties.border_radius.value = parsedJson["border_radius"]
@@ -158,7 +186,6 @@ function UiTextBlock:sendDataToReplicator(host)
         if value.dirty then
             isPropsDirty = true
             propertiesData[tostring(key)] = value.value
-            print("UiTextBlock:sendDataToReplicator: " .. tostring(key) .. " = " .. tostring(value.value))
             value.dirty = false
         end
     end
@@ -189,26 +216,69 @@ function UiTextBlock:setRectangleColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
             0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
-    self.textBlockProperties.color.value.r = r
-    self.textBlockProperties.color.value.g = g
-    self.textBlockProperties.color.value.b = b
+    self.textBlockProperties.rectangle_color.value.r = r
+    self.textBlockProperties.rectangle_color.value.g = g
+    self.textBlockProperties.rectangle_color.value.b = b
 
-    self.textBlockProperties.color.dirty = true
+    self.textBlockProperties.rectangle_color.dirty = true
 end
 
-function UiTextBlock:setOpacity(opacity)
+function UiTextBlock:setRectangleOpacity(opacity)
     assert(opacity ~= nil and type(opacity) == "number")
-    if self.textBlockProperties.opacity.value ~= opacity then
-        self.textBlockProperties.opacity.value = opacity
-        self.textBlockProperties.opacity.dirty = true
+    if self.textBlockProperties.rectangle_opacity.value ~= opacity then
+        self.textBlockProperties.rectangle_opacity.value = opacity
+        self.textBlockProperties.rectangle_opacity.dirty = true
     end
 end
 
-function UiTextBlock:setRectangleBorderRadius(borderRadius)
+function UiTextBlock:setRectangleRadius(borderRadius)
+    assert(borderRadius ~= nil and type(borderRadius) == "number")
+    if self.textBlockProperties.rectangle_radius.value ~= borderRadius then
+        self.textBlockProperties.rectangle_radius.value = borderRadius
+        self.textBlockProperties.rectangle_radius.dirty = true
+    end
+end
+
+function UiTextBlock:setBorderColor(r, g, b)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+
+    self.textBlockProperties.border_color.value.r = r
+    self.textBlockProperties.border_color.value.g = g
+    self.textBlockProperties.border_color.value.b = b
+
+    self.textBlockProperties.border_color.dirty = true
+end
+
+function UiTextBlock:setBorderColorHexValue(colorHex)
+    assert(colorHex ~= nil and type(colorHex) == "number")
+
+    local mask_b = 0xFF;
+    local mask_g = 0xFF << 0x8;
+    local mask_r = 0xFF << 0x10;
+
+    local r = (mask_r & colorHex) >> 0x10;
+    local g = (mask_g & colorHex) >> 0x8;
+    local b = mask_b & colorHex;
+
+    local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
+    self:setBorderColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+end
+
+function UiTextBlock:setBorderRadius(borderRadius)
     assert(borderRadius ~= nil and type(borderRadius) == "number")
     if self.textBlockProperties.border_radius.value ~= borderRadius then
         self.textBlockProperties.border_radius.value = borderRadius
         self.textBlockProperties.border_radius.dirty = true
+    end
+end
+
+function UiTextBlock:setBorderOpacity(opacity)
+    assert(opacity ~= nil and type(opacity) == "number")
+    if self.textBlockProperties.border_opacity.value ~= opacity then
+        self.textBlockProperties.border_opacity.value = opacity
+        self.textBlockProperties.border_opacity.dirty = true
     end
 end
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
-#include "UiRectangle.h"
+#include "UiItemBase.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -9,7 +9,7 @@
 namespace EngineCore {
 class UiCanvas;
 namespace GUI {
-class UiTextBlock : public UiRectangle {
+class UiTextBlock : public UiItemBase {
 
     std::string mText;
 
@@ -26,6 +26,18 @@ class UiTextBlock : public UiRectangle {
     eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
     eTextVerticalAlignmentType mTextVerticalAlignment{eTextVerticalAlignmentType::TOP};
+
+    glm::vec3 mRectangleColor;
+
+    float mRectangleOpacity{1.0f};
+
+    float mRectangleRadius;
+
+    glm::vec3 mBorderColor;
+
+    float mBorderRadius;
+
+    float mBorderOpacity{1.0f};
 
 public:
     explicit UiTextBlock(const std::string& fontName, const std::string& name = std::string(""));
@@ -61,6 +73,30 @@ public:
     void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment);
 
     eTextVerticalAlignmentType GetTextVerticalAlignment() const;
+
+    void SetRectangleColor(const glm::vec3& color);
+
+    void SetRectangleOpacity(const float opacity);
+
+    void SetRectangleRadius(const float borderRadius);
+
+    glm::vec3 GetRectangleColor() const;
+
+    float GetRectangleOpacity() const;
+
+    float GetRectangleRadius() const;
+
+    void SetBorderColor(const glm::vec3& color);
+
+    void SetBorderRadius(const float borderRadius);
+
+    void SetBorderOpacity(const float opacity);
+
+    float GetBorderOpacity() const;
+
+    glm::vec3 GetBorderColor() const;
+
+    float GetBorderRadius() const;
 
     std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const override;
 

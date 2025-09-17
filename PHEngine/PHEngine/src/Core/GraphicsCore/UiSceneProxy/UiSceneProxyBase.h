@@ -33,7 +33,7 @@ protected:
 
     float mOverlayOpacity{1.0f};
 
-    float mScale{1.0f};
+    glm::vec2 mScale;
 
     glm::vec2 mCenterOffset;
 
@@ -64,9 +64,9 @@ public:
 
     float GetOverlayOpacity() const;
 
-    void SetScale(const float scale);
+    void SetScale(const glm::vec2& scale);
 
-    float GetScale() const;
+    glm::vec2 GetScale() const;
 
     void SetCenterOffset(const glm::vec2& offset);
 

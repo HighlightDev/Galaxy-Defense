@@ -1870,9 +1870,9 @@ void SceneRenderer::TextChanged(const int32_t textFieldProxyId, const std::strin
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& sceneRenderer = weak.lock()) {
-                        sceneSp->GetTextHandler()
-                            ->GetTextFieldById(textFieldProxyId)
-                            ->SetTextScreenSpaceSize(sceneRenderer->GetFontHandler()->GetTextScreenSpaceSize(textFieldProxyId));
+                        const auto textSp = sceneSp->GetTextHandler()->GetTextFieldById(textFieldProxyId);
+                        textSp->SetTextNormalizedSize(sceneRenderer->GetFontHandler()->GetTextSizeNormalized(textFieldProxyId));
+                        textSp->SetTextScreenSpaceSize(sceneRenderer->GetFontHandler()->GetTextScreenSpaceSize(textFieldProxyId));
                     }
                 });
         }

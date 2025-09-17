@@ -33,7 +33,7 @@ void UiImageSceneProxy::Render()
     if (mTexture) {
         mUiImageShader->ExecuteShader();
         const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
-        mUiImageShader->SetTransform(mNormalizedTranslation + mCenterOffset + scaleOffset, mNormalizedScale * glm::vec2(mScale));
+        mUiImageShader->SetTransform(mNormalizedTranslation + mCenterOffset + scaleOffset, mNormalizedScale * mScale);
 
         mTexture->BindTexture(0);
         mUiImageShader->SetImageTexture(0);

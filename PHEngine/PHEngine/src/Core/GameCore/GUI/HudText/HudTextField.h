@@ -33,7 +33,9 @@ class HudTextField {
 
     eTextVerticalAlignmentType mTextVerticalAlignment;
 
-    glm::vec2 mScreenSpaceSize;
+    glm::vec2 mNormalizedSize;
+
+    glm::ivec2 mScreenSpaceSize;
 
 public:
     HudTextField(
@@ -82,8 +84,12 @@ public:
 
     eTextVerticalAlignmentType GetTextVerticalAlignment() const;
 
-    void SetTextScreenSpaceSize(const glm::vec2& screenSpaceSize);
+    void SetTextNormalizedSize(const glm::vec2& normalizedSize);
 
-    glm::vec2 GetScreenSpaceSize() const;
+    glm::vec2 GetNormalizedSize() const;
+
+    void SetTextScreenSpaceSize(const glm::ivec2& screenSpaceSize);
+
+    glm::ivec2 GetTextScreenSpaceSize() const;
 };
 } // namespace EngineCore

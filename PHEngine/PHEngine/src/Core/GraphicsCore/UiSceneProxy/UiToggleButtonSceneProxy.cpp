@@ -45,7 +45,7 @@ void UiToggleButtonSceneProxy::Render()
     mUiRectangleShader->ExecuteShader();
     // Render background
     const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
-    mUiRectangleShader->SetTransform(mNormalizedTranslation + mCenterOffset + scaleOffset, mNormalizedScale * glm::vec2(mScale));
+    mUiRectangleShader->SetTransform(mNormalizedTranslation + mCenterOffset + scaleOffset, mNormalizedScale * mScale);
     mUiRectangleShader->SetColor(mToggleOffColor);
     mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
     mUiRectangleShader->SetWidthHeightPixels(mWidthHeightPixels);

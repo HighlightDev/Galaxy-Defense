@@ -16,9 +16,18 @@ float udRoundBox(in vec2 pixelPos, in vec2 centerPos, float radius)
 
 void main(void)
 {
-    vec2 pixelPos = texCoords * widthAndHeight;
     vec2 center = widthAndHeight * 0.5;
-    float borderRadiusOpacityCoef
-        = 1.0 - (step(0.01, borderRadius) * step(0.0, udRoundBox(pixelPos - center, center, borderRadius)));
+    vec2 currentPixelPos = texCoords * widthAndHeight;
+
+    int pixelsToCheck = 1;
+    float sumNeighborRounding = 0.0;
+    for (int i = -pixelsToCheck; i <= pixelsToCheck; i += 1) {
+        for (int j = -pixelsToCheck; j <= pixelsToCheck; j += 1) {
+            vec2 neighborPixelPos = vec2(currentPixelPos.x + float(i) * 2, currentPixelPos.y + float(j) * 2);
+            sumNeighborRounding += udRoundBox(neighborPixelPos - center, center, borderRadius);
+        }
+    }
+    int totalPixelsChecked = (pixelsToCheck * 2 + 1) * (pixelsToCheck * 2 + 1);
+    float borderRadiusOpacityCoef = 1.0 - sumNeighborRounding / float(totalPixelsChecked);
     FragColor = vec4(color, borderRadiusOpacityCoef * opacity);
 }

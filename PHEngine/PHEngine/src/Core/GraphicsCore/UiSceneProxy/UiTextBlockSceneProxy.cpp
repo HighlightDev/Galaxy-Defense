@@ -1,5 +1,6 @@
 #include "UiTextBlockSceneProxy.h"
 
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/Common/UniqueFontTextIdGenerator.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontAtlas.h"
@@ -13,18 +14,15 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "UiCanvasSceneProxy.h"
 
-#include <gl/glew.h>
-
 using namespace Resources;
 using namespace IO;
 using namespace Graphics;
 using namespace EngineCore::GUI;
 using namespace EngineCore;
 
-namespace Graphics {
-namespace Proxy {
+namespace Graphics::Proxy {
 UiTextBlockSceneProxy::UiTextBlockSceneProxy(const UiTextBlock* uiTextBlock)
-    : UiRectangleSceneProxy(uiTextBlock)
+    : UiSceneProxyBase(uiTextBlock)
     , mText("")
     , mFontName(uiTextBlock->GetFontName())
     , mOpacity(uiTextBlock->GetOpacity())
@@ -33,6 +31,12 @@ UiTextBlockSceneProxy::UiTextBlockSceneProxy(const UiTextBlock* uiTextBlock)
     , mTextHorizontalAlignment(uiTextBlock->GetTextHorizontalAlignment())
     , mTextVerticalAlignment(uiTextBlock->GetTextVerticalAlignment())
     , mTextColor(uiTextBlock->GetTextColor())
+    , mRectangleColor(uiTextBlock->GetRectangleColor())
+    , mRectangleOpacity(uiTextBlock->GetRectangleOpacity())
+    , mRectangleRadius(uiTextBlock->GetRectangleRadius())
+    , mBorderColor(uiTextBlock->GetBorderColor())
+    , mBorderRadius(uiTextBlock->GetBorderRadius())
+    , mBorderOpacity(uiTextBlock->GetBorderOpacity())
 {
 }
 
@@ -42,16 +46,26 @@ UiTextBlockSceneProxy::~UiTextBlockSceneProxy()
 
 void UiTextBlockSceneProxy::OnSceneProxyRegistered()
 {
-    UiRectangleSceneProxy::OnSceneProxyRegistered();
-
     Initialize();
 }
 
 void UiTextBlockSceneProxy::Initialize()
 {
+    const auto& folderManager = FolderManager::GetInstance();
+    {
+        ShaderParams shaderParams(
+            "UiRectangle Shader",
+            folderManager->GetShadersPath() + "uiVS.glsl",
+            folderManager->GetShadersPath() + "uiRectangleFS.glsl",
+            "",
+            "",
+            "",
+            "");
+        mUiRectangleShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiRectangleShader>(shaderParams);
+    }
+
     if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            const auto& folderManager = FolderManager::GetInstance();
             ShaderParams shaderParams(
                 "UiLabel Shader",
                 folderManager->GetShadersPath() + "fontVS.glsl",
@@ -88,25 +102,14 @@ void UiTextBlockSceneProxy::Initialize()
 
 void UiTextBlockSceneProxy::Render()
 {
-    UiRectangleSceneProxy::Render();
-
-    if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
-        if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            const auto& renderDataSp = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize));
-            mUiLabelShader->ExecuteShader();
-            const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeightTextureSpace();
-            mUiLabelShader->SetPosition(glm::vec2(
-                mNormalizedTranslation.x + mCenterOffset.x + mTextAlignmentOffset.x,
-                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textHeightScreenSpace + mTextAlignmentOffset.y)));
-            mFontTexture->BindTexture(0);
-            mUiLabelShader->SetFontAtlasSlot(0);
-            mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);
-            mUiLabelShader->SetColor(mTextColor);
-            renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(
-                mTextFieldProxy->GetVertexStart(), mTextFieldProxy->GetVerticesCount(), GL_TRIANGLES);
-            mUiLabelShader->StopShader();
-        }
-    }
+    constexpr float boundariesPaddingFactor = 0.9f;
+    // Render borders
+    RenderRectangle(
+        glm::vec2(1.0f) * mBorderAspectRatioFactor, mBorderColor, mBorderOpacity, mBorderRadius);
+    // Render background rectangle
+    RenderRectangle(glm::vec2(boundariesPaddingFactor), mRectangleColor, mRectangleOpacity, mRectangleRadius);
+    // Render text
+    RenderText();
 }
 
 void UiTextBlockSceneProxy::SetText(const std::string& text)
@@ -120,6 +123,7 @@ void UiTextBlockSceneProxy::SetText(const std::string& text)
             }
         }
         CalculateTextAlignmentOffset();
+        CalculateBoundariesScaleToFitText();
     }
 }
 
@@ -134,6 +138,7 @@ void UiTextBlockSceneProxy::SetTextLineWidthHeight(const glm::ivec2& textLineWid
             }
         }
         CalculateTextAlignmentOffset();
+        CalculateBoundariesScaleToFitText();
     }
 }
 
@@ -151,6 +156,7 @@ void UiTextBlockSceneProxy::SetFontSize(const int32_t fontSize)
             }
         }
         CalculateTextAlignmentOffset();
+        CalculateBoundariesScaleToFitText();
     }
 }
 
@@ -171,6 +177,7 @@ void UiTextBlockSceneProxy::SetTextHorizontalAlignment(const eTextHorizontalAlig
             }
         }
         CalculateTextAlignmentOffset();
+        CalculateBoundariesScaleToFitText();
     }
 }
 
@@ -180,6 +187,7 @@ void UiTextBlockSceneProxy::SetTextVerticalAlignment(const eTextVerticalAlignmen
         mTextVerticalAlignment = textVerticalAlignment;
         mTextFieldProxy->SetTextVerticalAlignment(textVerticalAlignment);
         CalculateTextAlignmentOffset();
+        CalculateBoundariesScaleToFitText();
     }
 }
 
@@ -188,11 +196,40 @@ void UiTextBlockSceneProxy::SetTextColor(const glm::vec3& textColor)
     mTextColor = textColor;
 }
 
+void UiTextBlockSceneProxy::SetRectangleColor(const glm::vec3& rectangleColor)
+{
+    mRectangleColor = rectangleColor;
+}
+
+void UiTextBlockSceneProxy::SetRectangleOpacity(const float rectangleOpacity)
+{
+    mRectangleOpacity = rectangleOpacity;
+}
+
+void UiTextBlockSceneProxy::SetRectangleRadius(const float rectangleBorderRadius)
+{
+    mRectangleRadius = rectangleBorderRadius;
+}
+
+void UiTextBlockSceneProxy::SetBorderColor(const glm::vec3& borderColor)
+{
+    mBorderColor = borderColor;
+}
+
+void UiTextBlockSceneProxy::SetBorderRadius(const float borderRadius)
+{
+    mBorderRadius = borderRadius;
+}
+
+void UiTextBlockSceneProxy::SetBorderOpacity(const float borderOpacity)
+{
+    mBorderOpacity = borderOpacity;
+}
+
 void UiTextBlockSceneProxy::CleanUp()
 {
-    UiRectangleSceneProxy::CleanUp();
-
     ShaderPool::GetInstance()->TryToFreeMemory(mUiLabelShader);
+    ShaderPool::GetInstance()->TryToFreeMemory(mUiRectangleShader);
 
     if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
@@ -207,9 +244,9 @@ void UiTextBlockSceneProxy::CalculateTextAlignmentOffset()
         mTextAlignmentOffset.x = 0.0f;
     } else if (mTextHorizontalAlignment == eTextHorizontalAlignmentType::CENTER) {
         mTextAlignmentOffset.x
-            = (GetNormalizedWidthHeight().x * 0.5f) - (mTextFieldProxy->GetCreatedMeshTextWidthTextureSpace() * 0.5f);
+            = (GetNormalizedWidthHeight().x * 0.5f) - (mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().x * 0.5f);
     } else if (mTextHorizontalAlignment == eTextHorizontalAlignmentType::RIGHT) {
-        mTextAlignmentOffset.x = GetNormalizedWidthHeight().x - mTextFieldProxy->GetCreatedMeshTextWidthTextureSpace();
+        mTextAlignmentOffset.x = GetNormalizedWidthHeight().x - mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().x;
     }
 
     // Free type text start coordinates are from the bottom left corner
@@ -217,10 +254,65 @@ void UiTextBlockSceneProxy::CalculateTextAlignmentOffset()
         mTextAlignmentOffset.y = 0.0f;
     } else if (mTextVerticalAlignment == eTextVerticalAlignmentType::CENTER) {
         mTextAlignmentOffset.y
-            = (GetNormalizedWidthHeight().y * 0.5f) - (mTextFieldProxy->GetCreatedMeshTextHeightTextureSpace() * 0.5f);
+            = (GetNormalizedWidthHeight().y * 0.5f) - (mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().y * 0.5f);
     } else if (mTextVerticalAlignment == eTextVerticalAlignmentType::TOP) {
-        mTextAlignmentOffset.y = GetNormalizedWidthHeight().y - mTextFieldProxy->GetCreatedMeshTextHeightTextureSpace();
+        mTextAlignmentOffset.y = GetNormalizedWidthHeight().y - mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().y;
     }
 }
-} // namespace Proxy
-} // namespace Graphics
+
+void UiTextBlockSceneProxy::CalculateBoundariesScaleToFitText()
+{
+    constexpr float boundariesPadding = 1.3f;
+    mBoundariesScaleToFitText = (glm::vec2(mTextFieldProxy->GetCreatedMeshTextWidthHeightScreenSpace()) * boundariesPadding)
+        / glm::vec2(mWidthHeightPixels);
+
+    constexpr float boundariesPaddingFactor = 0.9f;
+    mBorderAspectRatioFactor = glm::vec2(1.0f);
+    if (mBoundariesScaleToFitText.x > mBoundariesScaleToFitText.y) {
+        float diff = mBoundariesScaleToFitText.x - mBoundariesScaleToFitText.y;
+        diff -= diff * boundariesPaddingFactor;
+        mBorderAspectRatioFactor.x -= (diff / (float)mBoundariesScaleToFitText.x);
+    } else if (mBoundariesScaleToFitText.x < mBoundariesScaleToFitText.y) {
+        float diff = mBoundariesScaleToFitText.y - mBoundariesScaleToFitText.x;
+        diff -= diff * boundariesPaddingFactor;
+        mBorderAspectRatioFactor.y -= (diff / (float)mBoundariesScaleToFitText.y);
+    }
+}
+
+void UiTextBlockSceneProxy::RenderText()
+{
+    if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
+        if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
+            const auto& renderDataSp = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize));
+            mUiLabelShader->ExecuteShader();
+            const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().y;
+            mUiLabelShader->SetPosition(glm::vec2(
+                mNormalizedTranslation.x + mCenterOffset.x + mTextAlignmentOffset.x,
+                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textHeightScreenSpace + mTextAlignmentOffset.y)));
+            mFontTexture->BindTexture(0);
+            mUiLabelShader->SetFontAtlasSlot(0);
+            mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);
+            mUiLabelShader->SetColor(mTextColor);
+            renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(
+                mTextFieldProxy->GetVertexStart(), mTextFieldProxy->GetVerticesCount(), GL_TRIANGLES);
+            mUiLabelShader->StopShader();
+        }
+    }
+}
+
+void UiTextBlockSceneProxy::RenderRectangle(
+    const glm::vec2& scale, const glm::vec3& color, const float opacity, const float borderRadius)
+{
+    mUiRectangleShader->ExecuteShader();
+    const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * scale * mBoundariesScaleToFitText)) * 0.5f);
+    mUiRectangleShader->SetTransform(
+        mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * scale * mBoundariesScaleToFitText);
+    mUiRectangleShader->SetColor(color);
+    mUiRectangleShader->SetOpacity(opacity * mOverlayOpacity);
+    mUiRectangleShader->SetBorderRadius(borderRadius);
+    mUiRectangleShader->SetWidthHeightPixels(
+        glm::vec2(static_cast<float>(mWidthHeightPixels.x), static_cast<float>(mWidthHeightPixels.y)));
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    mUiRectangleShader->StopShader();
+}
+} // namespace Graphics::Proxy

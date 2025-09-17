@@ -110,7 +110,7 @@ void SpaceshipActor::Tick(const float deltaTime)
             if (const auto& dmgTextFieldSp = mUiComponent->GetTextFieldById(mDamageTextFieldId)) {
                 mUiComponent->SetPosition(
                     mDamageTextFieldId,
-                    textureSpaceTranslation - (dmgTextFieldSp->GetScreenSpaceSize().x * 0.5f) + glm::vec2(0.0f, -0.2f));
+                    textureSpaceTranslation - (dmgTextFieldSp->GetNormalizedSize().x * 0.5f) + glm::vec2(0.0f, -0.2f));
             }
         }
     }
@@ -152,7 +152,7 @@ glm::vec2 SpaceshipActor::CalculatePositionForDamageText() const
 
             const glm::vec2 textureSpaceTranslation
                 = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
-            return (textureSpaceTranslation + glm::vec2(dmgTextFieldSp->GetScreenSpaceSize().x * -0.5f, -0.2f));
+            return (textureSpaceTranslation + glm::vec2(dmgTextFieldSp->GetNormalizedSize().x * -0.5f, -0.2f));
         }
     }
 

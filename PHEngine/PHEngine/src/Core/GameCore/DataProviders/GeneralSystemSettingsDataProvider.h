@@ -59,9 +59,13 @@ public:
 
     inline void SetWindowPos(int32_t posX, int32_t posY);
 
-    inline float GetHeightToWidthRatio() const;
+    inline float GetScreenHeightToWidthRatio() const;
 
-    inline float GetWidthToHeightRatio() const;
+    inline float GetScreenWidthToHeightRatio() const;
+
+    inline float GetWindowHeightToWidthRatio() const;
+
+    inline float GetWindowWidthToHeightRatio() const;
 
     inline int32_t GetWindowPosX() const;
 
@@ -112,14 +116,24 @@ inline void GeneralSystemSettingsDataProvider::SetWindowPos(int32_t posX, int32_
     m_windowPosY = posY;
 }
 
-inline float GeneralSystemSettingsDataProvider::GetHeightToWidthRatio() const
+inline float GeneralSystemSettingsDataProvider::GetScreenHeightToWidthRatio() const
 {
     return (float)m_screenHeight / (float)m_screenWidth;
 }
 
-inline float GeneralSystemSettingsDataProvider::GetWidthToHeightRatio() const
+inline float GeneralSystemSettingsDataProvider::GetScreenWidthToHeightRatio() const
 {
     return (float)m_screenWidth / (float)m_screenHeight;
+}
+
+inline float GeneralSystemSettingsDataProvider::GetWindowHeightToWidthRatio() const
+{
+    return (float)m_windowHeight / (float)m_windowWidth;
+}
+
+inline float GeneralSystemSettingsDataProvider::GetWindowWidthToHeightRatio() const
+{
+    return (float)m_windowWidth / (float)m_windowHeight;
 }
 
 inline int32_t GeneralSystemSettingsDataProvider::GetWindowPosX() const

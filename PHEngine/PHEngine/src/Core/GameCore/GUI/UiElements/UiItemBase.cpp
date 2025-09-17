@@ -1005,7 +1005,8 @@ void UiItemBase::UpdateScaleProperty()
                             = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                             if (uiSceneProxy) {
-                                uiSceneProxy->SetScale(scale);
+                                // todo: make scale vec2 instead of float
+                                uiSceneProxy->SetScale(glm::vec2(scale));
                             }
                         }
                     });

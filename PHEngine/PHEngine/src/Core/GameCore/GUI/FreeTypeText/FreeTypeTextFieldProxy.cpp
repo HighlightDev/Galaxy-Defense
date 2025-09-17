@@ -19,8 +19,7 @@ FreeTypeTextFieldProxy::FreeTypeTextFieldProxy()
     , mColor()
     , mPosition()
     , mFontFlags(static_cast<int32_t>(eFontFlags::WordWrap | eFontFlags::LeftAligned))
-    , mCreatedMeshTextWidthTextureSpace(0.0f)
-    , mCreatedMeshTextHeightTextureSpace(0.0f)
+    , mCreatedMeshTextWidthHeightNormalized()
     , mIsSubscribedOnTextScreenSpaceSizeUpdate(false)
 {
 }
@@ -131,14 +130,14 @@ glm::ivec2 FreeTypeTextFieldProxy::GetLineWidthHeight() const
     return mLineWidthHeight;
 }
 
-float FreeTypeTextFieldProxy::GetCreatedMeshTextWidthTextureSpace() const
+glm::vec2 FreeTypeTextFieldProxy::GetCreatedMeshTextWidthHeightNormalized() const
 {
-    return mCreatedMeshTextWidthTextureSpace;
+    return mCreatedMeshTextWidthHeightNormalized;
 }
 
-float FreeTypeTextFieldProxy::GetCreatedMeshTextHeightTextureSpace() const
+glm::ivec2 FreeTypeTextFieldProxy::GetCreatedMeshTextWidthHeightScreenSpace() const
 {
-    return mCreatedMeshTextHeightTextureSpace;
+    return mCreatedMeshTextWidthHeightScreenSpace;
 }
 
 bool FreeTypeTextFieldProxy::GetIsSubscribedOnTextScreenSpaceSizeUpdate() const
@@ -221,14 +220,14 @@ void FreeTypeTextFieldProxy::SetFontFlags(const int32_t fontFlags)
     mFontFlags = fontFlags;
 }
 
-void FreeTypeTextFieldProxy::SetCreatedMeshTextWidthTextureSpace(const float createdMeshTextWidthTextureSpace)
+void FreeTypeTextFieldProxy::SetCreatedMeshTextWidthHeightScreenSpace(const glm::ivec2& createdMeshTextWidthHeightScreenSpace)
 {
-    mCreatedMeshTextWidthTextureSpace = createdMeshTextWidthTextureSpace;
+    mCreatedMeshTextWidthHeightScreenSpace = createdMeshTextWidthHeightScreenSpace;
 }
 
-void FreeTypeTextFieldProxy::SetCreatedMeshTextHeightTextureSpace(const float createdMeshTextHeightTextureSpace)
+void FreeTypeTextFieldProxy::SetCreatedMeshTextWidthHeightNormalized(const glm::vec2& createdMeshTextWidthHeightTextureSpace)
 {
-    mCreatedMeshTextHeightTextureSpace = createdMeshTextHeightTextureSpace;
+    mCreatedMeshTextWidthHeightNormalized = createdMeshTextWidthHeightTextureSpace;
 }
 
 void FreeTypeTextFieldProxy::SetIsSubscribedOnTextScreenSpaceSizeUpdate(const bool isSubscribedOnTextScreenSpaceSizeUpdate)

@@ -355,8 +355,8 @@ function CombatOverlay:new(host)
         levelProgressRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
 
         testTextBlock:setParent(host, combatOverlayCanvas.widgetName, levelProgressContainer.widgetName)
-        testTextBlock:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-            levelProgressRowLayout.widgetName)
+        testTextBlock:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            levelProgressRowLayout.widgetName, 20)
         testTextBlock:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
             levelProgressRowLayout.widgetName, 20)
         testTextBlock:setWidth(levelProgressContainerWidth)
@@ -364,10 +364,15 @@ function CombatOverlay:new(host)
         testTextBlock:setText(
             "Hello my dear friend! How are you today? I hope you are doing well. This is a test text block for the combat overlay.")
         testTextBlock:setFontSize(15)
-        testTextBlock:setOpacity(1.0)
+        testTextBlock:setRectangleOpacity(1.0)
+        testTextBlock:setRectangleColor(0.6, 0.6, 0.6)
         testTextBlock:setTextColorHexValue(0x000000)
         testTextBlock:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
         testTextBlock:setTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
+        testTextBlock:setRectangleRadius(6)
+        testTextBlock:setBorderColorHexValue(0xFFFFFF)
+        testTextBlock:setBorderRadius(6)
+        testTextBlock:setBorderOpacity(1.0)
 
         backgroundRect:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,

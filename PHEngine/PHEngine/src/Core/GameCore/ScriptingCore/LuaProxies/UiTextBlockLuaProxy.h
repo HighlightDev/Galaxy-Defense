@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
-#include "UiRectangleLuaProxy.h"
+#include "UiItemBaseLuaProxy.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -14,7 +14,7 @@ class UiTextBlock;
 
 namespace EngineCore {
 namespace Scripts {
-class UiTextBlockLuaProxy : public UiRectangleLuaProxy {
+class UiTextBlockLuaProxy : public UiItemBaseLuaProxy {
 protected:
     std::string mText;
 
@@ -31,6 +31,18 @@ protected:
     eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
     eTextVerticalAlignmentType mTextVerticalAlignment;
+
+    glm::vec3 mRectangleColor;
+
+    float mRectangleOpacity;
+
+    float mRectangleRadius;
+
+    glm::vec3 mBorderColor;
+
+    float mBorderRadius;
+
+    float mBorderOpacity;
 
 public:
     explicit UiTextBlockLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiTextBlock>& ownerTextBlock);
@@ -52,6 +64,18 @@ public:
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 
     void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment);
+
+    void SetRectangleColor_FromGameThread(const glm::vec3& color);
+
+    void SetRectangleOpacity_FromGameThread(const float opacity);
+
+    void SetRectangleBorderRadius_FromGameThread(const float borderRadius);
+
+    void SetBorderColor_FromGameThread(const glm::vec3& color);
+
+    void SetBorderRadius_FromGameThread(const float borderRadius);
+
+    void SetBorderOpacity_FromGameThread(const float opacity);
 };
 } // namespace Scripts
 } // namespace EngineCore

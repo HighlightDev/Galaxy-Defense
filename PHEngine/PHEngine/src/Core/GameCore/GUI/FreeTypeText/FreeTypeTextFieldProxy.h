@@ -47,15 +47,16 @@ class FreeTypeTextFieldProxy {
 
     glm::ivec2 mLineWidthHeight;
 
-    float mCreatedMeshTextWidthTextureSpace;
+    glm::vec2 mCreatedMeshTextWidthHeightNormalized;
 
-    float mCreatedMeshTextHeightTextureSpace;
+    glm::ivec2 mCreatedMeshTextWidthHeightScreenSpace;
 
     bool mIsSubscribedOnTextScreenSpaceSizeUpdate;
 
     eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
     eTextVerticalAlignmentType mTextVerticalAlignment{eTextVerticalAlignmentType::TOP};
+
 
 public:
     explicit FreeTypeTextFieldProxy();
@@ -111,9 +112,9 @@ public:
 
     eTextVerticalAlignmentType GetextVerticalAlignment() const;
 
-    float GetCreatedMeshTextWidthTextureSpace() const;
+    glm::vec2 GetCreatedMeshTextWidthHeightNormalized() const;
 
-    float GetCreatedMeshTextHeightTextureSpace() const;
+    glm::ivec2 GetCreatedMeshTextWidthHeightScreenSpace() const;
 
     bool GetIsSubscribedOnTextScreenSpaceSizeUpdate() const;
 
@@ -151,9 +152,9 @@ public:
 
     void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVericalAlignment);
 
-    void SetCreatedMeshTextWidthTextureSpace(const float createdMeshTextWidthTextureSpace);
+    void SetCreatedMeshTextWidthHeightNormalized(const glm::vec2& createdMeshTextWidthHeightTextureSpace);
 
-    void SetCreatedMeshTextHeightTextureSpace(const float createdMeshTextHeightTextureSpace);
+    void SetCreatedMeshTextWidthHeightScreenSpace(const glm::ivec2& createdMeshTextWidthHeightScreenSpace);
 
     void SetIsSubscribedOnTextScreenSpaceSizeUpdate(const bool isSubscribedOnTextScreenSpaceSizeUpdate);
 };

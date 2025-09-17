@@ -20,16 +20,16 @@ using namespace Resources;
 namespace EngineCore {
 namespace GUI {
 UiTextBlock::UiTextBlock(const std::string& fontName, const std::string& name)
-    : UiRectangle(name)
+    : UiItemBase(name)
     , mFontName(fontName)
+    , mTextLineWidthHeight(0)
 {
-    assert(mFontName.size());
+    ext_assert(!mFontName.empty(), "Font name is empty.");
 }
 
 UiTextBlock::~UiTextBlock()
 {
-    volatile bool isDestroyed = true;
-    LogInfo("UiTextBlock::~UiTextBlock() => destroyed: " + std::to_string(isDestroyed));
+    LogInfo("UiTextBlock::dctor");
 }
 
 void UiTextBlock::OnRegistered()
@@ -51,15 +51,14 @@ void UiTextBlock::OnUnregistered()
 
 void UiTextBlock::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiRectangle::OnPropertiesShouldBeUpdatedOnRenderThread();
+    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
     mTextLineWidthHeight = GetBoundingArea().GetHalfExtent() * 2;
     SyncDataOnRenderThread();
 }
 
 void UiTextBlock::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiRectangle::OnPropertiesShouldBeUpdatedOnLuaThread();
-
+    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
     SyncDataOnLuaThread();
 }
 
@@ -167,6 +166,84 @@ eTextVerticalAlignmentType UiTextBlock::GetTextVerticalAlignment() const
     return mTextVerticalAlignment;
 }
 
+void UiTextBlock::SetRectangleColor(const glm::vec3& color)
+{
+    if (mRectangleColor != color) {
+        mRectangleColor = color;
+    }
+}
+
+void UiTextBlock::SetRectangleOpacity(const float opacity)
+{
+    if (!EngineMath::FloatsNearEqual(mRectangleOpacity, opacity)) {
+        mRectangleOpacity = opacity;
+    }
+}
+
+void UiTextBlock::SetRectangleRadius(const float borderRadius)
+{
+    if (!EngineMath::FloatsNearEqual(mRectangleRadius, borderRadius)) {
+        mRectangleRadius = borderRadius;
+    }
+}
+
+glm::vec3 UiTextBlock::GetRectangleColor() const
+{
+    return mRectangleColor;
+}
+
+float UiTextBlock::GetRectangleOpacity() const
+{
+    return mRectangleOpacity;
+}
+
+float UiTextBlock::GetRectangleRadius() const
+{
+    return mRectangleRadius;
+}
+
+glm::vec3 UiTextBlock::GetBorderColor() const
+{
+    return mBorderColor;
+}
+
+float UiTextBlock::GetBorderOpacity() const
+{
+    return mBorderOpacity;
+}
+
+float UiTextBlock::GetBorderRadius() const
+{
+    return mBorderRadius;
+}
+
+void UiTextBlock::SetBorderColor(const glm::vec3& color)
+{
+    if (mBorderColor != color) {
+        mBorderColor = color;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+void UiTextBlock::SetBorderRadius(const float borderRadius)
+{
+    if (!EngineMath::FloatsNearEqual(mBorderRadius, borderRadius)) {
+        mBorderRadius = borderRadius;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+void UiTextBlock::SetBorderOpacity(const float opacity)
+{
+    if (!EngineMath::FloatsNearEqual(mBorderOpacity, opacity)) {
+        mBorderOpacity = opacity;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
 std::shared_ptr<UiSceneProxyBase> UiTextBlock::CreateUiSceneProxy() const
 {
     return std::make_shared<UiTextBlockSceneProxy>(this);
@@ -179,7 +256,7 @@ std::shared_ptr<LuaProxy> UiTextBlock::ReplicateLuaProxy()
 
 void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 {
-    UiRectangle::SyncFromLuaJsonProperties(luaJsonPropsStr);
+    UiItemBase::SyncFromLuaJsonProperties(luaJsonPropsStr);
 
     bool bShouldUpdatePropertiesOnRT = false;
 
@@ -228,6 +305,48 @@ void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             bShouldUpdatePropertiesOnRT = true;
         }
     }
+    if (jsonObj.contains("rectangle_opacity")) {
+        const auto rectangle_opacity = jsonObj["rectangle_opacity"].get<float>();
+        if (!EngineMath::FloatsNearEqual(mRectangleOpacity, rectangle_opacity)) {
+            mRectangleOpacity = rectangle_opacity;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("rectangle_color")) {
+        const glm::vec3 rectangle_color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["rectangle_color"]);
+        if (!EngineMath::CheckSimilarityVec3(rectangle_color, mRectangleColor)) {
+            mRectangleColor = rectangle_color;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("rectangle_radius")) {
+        const auto rectangle_radius = jsonObj["rectangle_radius"].get<float>();
+        if (!EngineMath::FloatsNearEqual(mRectangleRadius, rectangle_radius)) {
+            mRectangleRadius = rectangle_radius;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("border_color")) {
+        const glm::vec3 border_color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["border_color"]);
+        if (!EngineMath::CheckSimilarityVec3(border_color, mBorderColor)) {
+            mBorderColor = border_color;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("border_radius")) {
+        const auto border_radius = jsonObj["border_radius"].get<float>();
+        if (!EngineMath::FloatsNearEqual(mBorderRadius, border_radius)) {
+            mBorderRadius = border_radius;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("border_opacity")) {
+        const auto border_opacity = jsonObj["border_opacity"].get<float>();
+        if (!EngineMath::FloatsNearEqual(mBorderOpacity, border_opacity)) {
+            mBorderOpacity = border_opacity;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
 
     if (bShouldUpdatePropertiesOnRT) {
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
@@ -255,7 +374,13 @@ void UiTextBlock::SyncDataOnRenderThread()
                          fontSize = mFontSize,
                          textColor = mTextColor,
                          textHorizontalAlignment = mTextHorizontalAlignment,
-                         textVerticalAlignment = mTextVerticalAlignment](
+                         textVerticalAlignment = mTextVerticalAlignment,
+                         rectangleOpacity = mRectangleOpacity,
+                         rectangleColor = mRectangleColor,
+                         rectangleBorderRadius = mRectangleRadius,
+                         borderColor = mBorderColor,
+                         borderRadius = mBorderRadius,
+                         borderOpacity = mBorderOpacity](
                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                             std::weak_ptr<EngineCore::Scene> sceneWp,
                             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -269,6 +394,12 @@ void UiTextBlock::SyncDataOnRenderThread()
                                 textBlockSceneProxy->SetTextColor(textColor);
                                 textBlockSceneProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
                                 textBlockSceneProxy->SetTextVerticalAlignment(textVerticalAlignment);
+                                textBlockSceneProxy->SetRectangleOpacity(rectangleOpacity);
+                                textBlockSceneProxy->SetRectangleColor(rectangleColor);
+                                textBlockSceneProxy->SetRectangleRadius(rectangleBorderRadius);
+                                textBlockSceneProxy->SetBorderColor(borderColor);
+                                textBlockSceneProxy->SetBorderRadius(borderRadius);
+                                textBlockSceneProxy->SetBorderOpacity(borderOpacity);
                             }
                         });
                 }
@@ -298,7 +429,13 @@ void UiTextBlock::SyncDataOnLuaThread()
                      textLineWidthHeight = mTextLineWidthHeight,
                      fontSize = mFontSize,
                      textHorizontalAlignment = mTextHorizontalAlignment,
-                     textVerticalAlignment = mTextVerticalAlignment](
+                     textVerticalAlignment = mTextVerticalAlignment,
+                     rectangleColor = mRectangleColor,
+                     rectangleOpacity = mRectangleOpacity,
+                     rectangleBorderRadius = mRectangleRadius,
+                     borderColor = mBorderColor,
+                     borderRadius = mBorderRadius,
+                     borderOpacity = mBorderOpacity](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -311,6 +448,12 @@ void UiTextBlock::SyncDataOnLuaThread()
                             textBlockLuaProxy->SetFontSize_FromGameThread(fontSize);
                             textBlockLuaProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
                             textBlockLuaProxy->SetTextVerticalAlignment(textVerticalAlignment);
+                            textBlockLuaProxy->SetRectangleColor_FromGameThread(rectangleColor);
+                            textBlockLuaProxy->SetRectangleOpacity_FromGameThread(rectangleOpacity);
+                            textBlockLuaProxy->SetRectangleBorderRadius_FromGameThread(rectangleBorderRadius);
+                            textBlockLuaProxy->SetBorderColor_FromGameThread(borderColor);
+                            textBlockLuaProxy->SetBorderRadius_FromGameThread(borderRadius);
+                            textBlockLuaProxy->SetBorderOpacity_FromGameThread(borderOpacity);
                         }
                     });
             }

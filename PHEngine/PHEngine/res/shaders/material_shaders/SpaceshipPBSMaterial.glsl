@@ -33,7 +33,7 @@ float GetDamageEffectForCurrentInstance(in MATERIAL_VS_OUTPUT materialIn)
 
 vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn);
 
-float CalculateFresnel(in vec3 viewDir, in MATERIAL_VS_OUTPUT materialIn)
+float calculateFresnel(in vec3 viewDir, in MATERIAL_VS_OUTPUT materialIn)
 {
     float fresnel = clamp(0.0, 1.0, 1.0 - dot(viewDir, GetMaterialWorldNormal(materialIn)));
     return pow(fresnel, 1.5);
@@ -86,7 +86,7 @@ vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
 {
     vec3 viewDir = normalize(cameraPosition - materialIn.WorldCoordinates.xyz);
-    float fresnel = CalculateFresnel(viewDir, materialIn);
+    float fresnel = calculateFresnel(viewDir, materialIn);
     float emissionPrct = smoothstep(0.0, 0.5, GetDamageEffectForCurrentInstance(materialIn));
     vec3 outlineColor = vec3(1.0, 0.0, 0.0);
     return vec4(outlineColor, fresnel * emissionPrct);

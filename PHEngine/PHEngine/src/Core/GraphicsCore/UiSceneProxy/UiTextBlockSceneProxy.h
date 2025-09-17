@@ -2,8 +2,9 @@
 
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "Core/GameCore/ShaderImplementation/FontRenderingShader.h"
+#include "Core/GameCore/ShaderImplementation/UiRectangleShader.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
-#include "Core/GraphicsCore/UiSceneProxy/UiRectangleSceneProxy.h"
+#include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "UiSceneProxyBase.h"
 
 #include <glm/vec2.hpp>
@@ -18,9 +19,11 @@ using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Texture;
 
 namespace Graphics::Proxy {
-class UiTextBlockSceneProxy : public UiRectangleSceneProxy {
+class UiTextBlockSceneProxy : public UiSceneProxyBase {
 
     std::shared_ptr<FontRenderingShader> mUiLabelShader;
+
+    std::shared_ptr<UiRectangleShader> mUiRectangleShader;
 
     std::string mText;
 
@@ -44,6 +47,22 @@ class UiTextBlockSceneProxy : public UiRectangleSceneProxy {
 
     glm::vec2 mTextAlignmentOffset;
 
+    glm::vec3 mRectangleColor;
+
+    float mRectangleOpacity;
+
+    float mRectangleRadius;
+
+    glm::vec3 mBorderColor;
+
+    float mBorderRadius;
+
+    float mBorderOpacity;
+
+    glm::vec2 mBoundariesScaleToFitText;
+
+    glm::vec2 mBorderAspectRatioFactor;
+
 public:
     UiTextBlockSceneProxy(const ::EngineCore::GUI::UiTextBlock* uiTextBlock);
 
@@ -65,6 +84,18 @@ public:
 
     void SetTextColor(const glm::vec3& textColor);
 
+    void SetRectangleColor(const glm::vec3& rectangleColor);
+
+    void SetRectangleOpacity(const float rectangleOpacity);
+
+    void SetRectangleRadius(const float rectangleBorderRadius);
+
+    void SetBorderColor(const glm::vec3& borderColor);
+
+    void SetBorderRadius(const float borderRadius);
+
+    void SetBorderOpacity(const float borderOpacity);
+
     void CleanUp() override;
 
     void OnSceneProxyRegistered() override;
@@ -73,5 +104,20 @@ private:
     void Initialize();
 
     void CalculateTextAlignmentOffset();
+
+    /**
+     * @brief Calculates and updates the scale of the text block boundaries to fit the rendered text.
+     *
+     * This method adjusts the `mScale` member variable so that the text block's boundaries
+     * are scaled to precisely fit the size of the text as rendered on the screen.
+     *
+     * The resulting scale ensures that the text block visually matches the size of the text,
+     * preventing overflow or excessive padding.
+     */
+    void CalculateBoundariesScaleToFitText();
+
+    void RenderText();
+
+    void RenderRectangle(const glm::vec2& scale, const glm::vec3& color, const float opacity, const float borderRadius);
 };
 } // namespace Graphics::Proxy

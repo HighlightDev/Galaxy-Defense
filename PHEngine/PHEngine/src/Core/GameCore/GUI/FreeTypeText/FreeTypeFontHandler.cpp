@@ -120,10 +120,10 @@ void FreeTypeFontBatcher::FontBufferSubData(
     textFieldProxy->SetTextureCoordinatesChunkOffset(texCoordinatesOffset);
     textFieldProxy->SetTextureCoordinatesChunkSize(texCoordinatesSizeUpdate);
     const glm::ivec2 textWidthHeightScreenSpace = textMeshCreator.CalcTextScreenSpaceSize(textFieldProxy, mTextFontAtlas);
-    textFieldProxy->SetCreatedMeshTextWidthTextureSpace(
-        static_cast<float>(textWidthHeightScreenSpace.x) / static_cast<float>(displayDeviceProvider->GetWindowWidth()));
-    textFieldProxy->SetCreatedMeshTextHeightTextureSpace(
-        static_cast<float>(textWidthHeightScreenSpace.y) / static_cast<float>(displayDeviceProvider->GetWindowHeight()));
+    textFieldProxy->SetCreatedMeshTextWidthHeightScreenSpace(textWidthHeightScreenSpace);
+    textFieldProxy->SetCreatedMeshTextWidthHeightNormalized(glm::vec2(
+        static_cast<float>(textWidthHeightScreenSpace.x) / static_cast<float>(displayDeviceProvider->GetWindowWidth()),
+        static_cast<float>(textWidthHeightScreenSpace.y) / static_cast<float>(displayDeviceProvider->GetWindowHeight())));
 }
 
 void FreeTypeFontBatcher::AllocateTextSpace(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy)
@@ -327,18 +327,18 @@ void FreeTypeFontHandler::FontSizeChanged(const std::shared_ptr<FreeTypeTextFiel
     RegisterText(textFieldProxy);
 }
 
-float FreeTypeFontHandler::GetTextWidth(const int32_t textFieldProxyId) const
+float FreeTypeFontHandler::GetTextNormalizedWidth(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
     assert(batcherSp != nullptr);
-    return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidthTextureSpace();
+    return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidthHeightNormalized().x;
 }
 
-float FreeTypeFontHandler::GetTextHeight(const int32_t textFieldProxyId) const
+float FreeTypeFontHandler::GetTextNormalizedHeight(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
     assert(batcherSp != nullptr);
-    return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextHeightTextureSpace();
+    return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidthHeightNormalized().y;
 }
 
 bool FreeTypeFontHandler::IsTextSubscribedOnSizeChangeUpdate(const int32_t textFieldProxyId) const
@@ -348,12 +348,20 @@ bool FreeTypeFontHandler::IsTextSubscribedOnSizeChangeUpdate(const int32_t textF
     return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetIsSubscribedOnTextScreenSpaceSizeUpdate();
 }
 
-glm::vec2 FreeTypeFontHandler::GetTextScreenSpaceSize(const int32_t textFieldProxyId) const
+glm::vec2 FreeTypeFontHandler::GetTextSizeNormalized(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
     assert(batcherSp != nullptr);
     const auto textFiledSp = batcherSp->GetFreeTypeTextFieldById(textFieldProxyId);
-    return glm::vec2(textFiledSp->GetCreatedMeshTextWidthTextureSpace(), textFiledSp->GetCreatedMeshTextHeightTextureSpace());
+    return glm::vec2(textFiledSp->GetCreatedMeshTextWidthHeightNormalized());
+}
+
+glm::ivec2 FreeTypeFontHandler::GetTextScreenSpaceSize(const int32_t textFieldProxyId) const
+{
+    const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
+    assert(batcherSp != nullptr);
+    const auto textFiledSp = batcherSp->GetFreeTypeTextFieldById(textFieldProxyId);
+    return glm::vec2(textFiledSp->GetCreatedMeshTextWidthHeightScreenSpace());
 }
 
 std::shared_ptr<FreeTypeFontBatcher> FreeTypeFontHandler::FindFontBatcherByTextFieldProxyId(const int32_t proxyId) const

@@ -43,7 +43,7 @@ void UiRectangleSceneProxy::Render()
 {
     mUiRectangleShader->ExecuteShader();
     const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
-    mUiRectangleShader->SetTransform(mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * glm::vec2(mScale));
+    mUiRectangleShader->SetTransform(mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * mScale);
     mUiRectangleShader->SetColor(mColor);
     mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
     mUiRectangleShader->SetBorderRadius(mBorderRadius);

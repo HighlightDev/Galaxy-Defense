@@ -24,7 +24,7 @@ HudTextField::HudTextField(
     , mLineMaxWidthHeight(lineMaxWidthHeight)
     , mTextHorizontalAlignment(textHorizontalAlignment)
     , mTextVerticalAlignment(textVericalAlignment)
-    , mScreenSpaceSize(0.0f, 0.0f)
+    , mNormalizedSize(0.0f, 0.0f)
 {
 }
 
@@ -118,12 +118,22 @@ void HudTextField::SetPosition(const glm::vec2& position)
     mPosition = position;
 }
 
-void HudTextField::SetTextScreenSpaceSize(const glm::vec2& screenSpaceSize)
+void HudTextField::SetTextNormalizedSize(const glm::vec2& normalizedSize)
+{
+    mNormalizedSize = normalizedSize;
+}
+
+glm::vec2 HudTextField::GetNormalizedSize() const
+{
+    return mNormalizedSize;
+}
+
+void HudTextField::SetTextScreenSpaceSize(const glm::ivec2& screenSpaceSize)
 {
     mScreenSpaceSize = screenSpaceSize;
 }
 
-glm::vec2 HudTextField::GetScreenSpaceSize() const
+glm::ivec2 HudTextField::GetTextScreenSpaceSize() const
 {
     return mScreenSpaceSize;
 }

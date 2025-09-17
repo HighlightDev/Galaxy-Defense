@@ -60,8 +60,11 @@ void FreeTypeTextMeshCreator::calculateVertices(
     }
 
     // Add the last line to lines
-    if (curLine != "")
+    if (widthRemaining >= 0 && curLine != "") {
         lines.push_back(curLine);
+    } else {
+        lines.emplace_back("container.width < line.width");
+    }
 
     // Print each line, increasing the y value as we go
     float startY = y - (ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6);
@@ -220,8 +223,10 @@ glm::ivec2 FreeTypeTextMeshCreator::CalcTextScreenSpaceSize(
             }
         }
 
-        if (curLine != "") {
+        if (widthRemaining >= 0 && curLine != "") {
             lineWidths.emplace_back(CalcWidth(curLine, ftFontAtlas));
+        } else {
+            lineWidths.emplace_back(CalcWidth("container.width < line.width", ftFontAtlas));
         }
 
         const auto maxWidthIt

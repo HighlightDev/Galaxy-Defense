@@ -4,7 +4,7 @@
 #include "Core/GameCore/GUI/UiElements/UiTextBlock.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/UiRectangleLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiItemBaseLuaProxy.h"
 
 #include <json/json.hpp>
 
@@ -14,7 +14,7 @@ using namespace EngineCore::GUI;
 namespace EngineCore {
 namespace Scripts {
 UiTextBlockLuaProxy::UiTextBlockLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiTextBlock>& ownerTextBlock)
-    : UiRectangleLuaProxy(ownerTextBlock)
+    : UiItemBaseLuaProxy(ownerTextBlock)
     , mFontName(ownerTextBlock->GetFontName())
     , mFontSize(ownerTextBlock->GetFontSize())
     , mTextLineWidthHeight(ownerTextBlock->GetTextLineWidthHeight())
@@ -22,6 +22,9 @@ UiTextBlockLuaProxy::UiTextBlockLuaProxy(const std::shared_ptr<::EngineCore::GUI
     , mTextHorizontalAlignment(ownerTextBlock->GetTextHorizontalAlignment())
     , mTextVerticalAlignment(ownerTextBlock->GetTextVerticalAlignment())
     , mOpacity(ownerTextBlock->GetOpacity())
+    , mRectangleColor(ownerTextBlock->GetRectangleColor())
+    , mRectangleOpacity(ownerTextBlock->GetRectangleOpacity())
+    , mRectangleRadius(ownerTextBlock->GetRectangleRadius())
 {
 }
 
@@ -58,6 +61,12 @@ std::string UiTextBlockLuaProxy::GetGameThreadData()
     jsonObj["text_color"] = textColor;
     jsonObj["text_horizontal_alignment"] = mTextHorizontalAlignment;
     jsonObj["text_vertical_alignment"] = mTextVerticalAlignment;
+    jsonObj["rectangle_color"] = std::vector<float>({mRectangleColor.r, mRectangleColor.g, mRectangleColor.b});
+    jsonObj["rectangle_opacity"] = mRectangleOpacity;
+    jsonObj["rectangle_radius"] = mRectangleRadius;
+    jsonObj["border_color"] = std::vector<float>({mBorderColor.r, mBorderColor.g, mBorderColor.b});
+    jsonObj["border_radius"] = mBorderRadius;
+    jsonObj["border_opacity"] = mBorderOpacity;
     return jsonObj.dump();
 }
 
@@ -113,6 +122,53 @@ void UiTextBlockLuaProxy::SetOpacity_FromGameThread(const float opacity)
 {
     if (!EngineMath::FloatsNearEqual(mOpacity, opacity)) {
         mOpacity = opacity;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetRectangleColor_FromGameThread(const glm::vec3& color)
+{
+    if (!EngineMath::CheckSimilarityVec3(mRectangleColor, color)) {
+        mRectangleColor = color;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetRectangleOpacity_FromGameThread(const float opacity)
+{
+    if (!EngineMath::FloatsNearEqual(mRectangleOpacity, opacity)) {
+        mRectangleOpacity = opacity;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetRectangleBorderRadius_FromGameThread(const float borderRadius)
+{
+    if (!EngineMath::FloatsNearEqual(mRectangleRadius, borderRadius)) {
+        mRectangleRadius = borderRadius;
+        mIsLuaDataDirty = true;
+    }
+}
+void UiTextBlockLuaProxy::SetBorderColor_FromGameThread(const glm::vec3& color)
+{
+    if (!EngineMath::CheckSimilarityVec3(mBorderColor, color)) {
+        mBorderColor = color;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetBorderRadius_FromGameThread(const float borderRadius)
+{
+    if (!EngineMath::FloatsNearEqual(mBorderRadius, borderRadius)) {
+        mBorderRadius = borderRadius;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetBorderOpacity_FromGameThread(const float opacity)
+{
+    if (!EngineMath::FloatsNearEqual(mBorderOpacity, opacity)) {
+        mBorderOpacity = opacity;
         mIsLuaDataDirty = true;
     }
 }
