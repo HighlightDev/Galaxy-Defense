@@ -30,22 +30,22 @@ SoundDevice::SoundDevice()
     if (!name || alcGetError(m_alcDevice) != AL_NO_ERROR)
         name = alcGetString(m_alcDevice, ALC_DEVICE_SPECIFIER);
 
-    LogInfo("SoundDevice::ctor => Opened device ", name);
+    LogInfo("SoundDevice::ctor: Opened device ", name);
 }
 
 void SoundDevice::CleanUp()
 {
     if (!alcMakeContextCurrent(nullptr)) {
-        LogInfo("SoundDevice::CleanUp => failed to set context to nullptr");
+        LogInfo("SoundDevice::CleanUp: failed to set context to nullptr");
     }
 
     alcDestroyContext(m_alcContext);
     if (m_alcContext) {
-        LogInfo("SoundDevice::CleanUp => failed to unset during close");
+        LogInfo("SoundDevice::CleanUp: failed to unset during close");
     }
 
     if (!alcCloseDevice(m_alcDevice)) {
-        LogInfo("SoundDevice::CleanUp => failed to close sound device");
+        LogInfo("SoundDevice::CleanUp: failed to close sound device");
     }
 
     mIsCleanedUp = true;

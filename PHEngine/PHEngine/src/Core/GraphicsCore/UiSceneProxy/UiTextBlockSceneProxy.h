@@ -59,9 +59,11 @@ class UiTextBlockSceneProxy : public UiSceneProxyBase {
 
     float mBorderOpacity;
 
-    glm::vec2 mBoundariesScaleToFitText;
+    glm::vec2 mSchrinkScaleToFitText;
 
     glm::vec2 mBorderAspectRatioFactor;
+
+    int32_t mBorderThickness;
 
 public:
     UiTextBlockSceneProxy(const ::EngineCore::GUI::UiTextBlock* uiTextBlock);
@@ -96,6 +98,8 @@ public:
 
     void SetBorderOpacity(const float borderOpacity);
 
+    void SetBorderThickness(const int32_t borderThickness);
+
     void CleanUp() override;
 
     void OnSceneProxyRegistered() override;
@@ -114,7 +118,7 @@ private:
      * The resulting scale ensures that the text block visually matches the size of the text,
      * preventing overflow or excessive padding.
      */
-    void CalculateBoundariesScaleToFitText();
+    void SchrinkToFitText();
 
     void RenderText();
 

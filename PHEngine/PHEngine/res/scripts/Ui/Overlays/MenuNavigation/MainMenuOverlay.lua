@@ -115,7 +115,7 @@ function MainMenuOverlay:new(host)
     end)
 
     mainMenuOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
-        print("mainMenuOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
+        print("mainMenuOverlay:OnAllWidgetLuaProxiesReady: name: " .. tostring(sender.overlayName))
 
         backgroundRect:setParent(host, mainMenuOverlayCanvas.widgetName, mainMenuOverlayCanvas.widgetName)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,

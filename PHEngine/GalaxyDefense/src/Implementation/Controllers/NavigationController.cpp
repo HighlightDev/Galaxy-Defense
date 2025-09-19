@@ -130,7 +130,7 @@ void NavigationController::Tick(const float deltaTime)
             eMissileActivityState::IDLE != missile->GetMissileActivityState()
             && eMissileActivityState::OUT_OF_LEVEL != missile->GetMissileActivityState()) {
             if (!missile->IsInsideLevel(mLevelBounds)) {
-                LogInfo("NavigationController::Tick => missile ", missile->GetName(), " is out of level.");
+                LogInfo("NavigationController::Tick: missile ", missile->GetName(), " is out of level.");
                 missile->SetMissileActivityState(eMissileActivityState::OUT_OF_LEVEL);
             }
         }

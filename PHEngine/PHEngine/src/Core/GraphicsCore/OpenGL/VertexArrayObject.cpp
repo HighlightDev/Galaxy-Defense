@@ -41,7 +41,7 @@ void VertexArrayObject::GenVAO()
 {
     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     glGenVertexArrays(1, &m_descriptor);
-    LogInfo("VertexArrayObject::GenVAO => descriptor = ", m_descriptor);
+    LogInfo("VertexArrayObject::GenVAO: descriptor = ", m_descriptor);
 }
 
 void VertexArrayObject::RenderVAO(const int32_t primitiveMode)
@@ -83,13 +83,13 @@ void VertexArrayObject::RenderInstanced(const int32_t primitiveMode, const size_
 
 void VertexArrayObject::AddIndexBuffer(IndexBufferObject* ibo)
 {
-    LogInfo("VertexArrayObject::AddIndexBuffer => descriptor = ", m_descriptor, "IBO descriptor = ", ibo->GetDescriptor());
+    LogInfo("VertexArrayObject::AddIndexBuffer: descriptor = ", m_descriptor, "IBO descriptor = ", ibo->GetDescriptor());
     m_ibo = ibo;
 }
 
 void VertexArrayObject::BindBuffersToVao()
 {
-    LogInfo("VertexArrayObject::BindBuffersToVao => descriptor = ", m_descriptor);
+    LogInfo("VertexArrayObject::BindBuffersToVao: descriptor = ", m_descriptor);
 
     glBindVertexArray(m_descriptor);
 
@@ -114,7 +114,7 @@ void VertexArrayObject::DisableVertexAttribArrays()
 
 void VertexArrayObject::CleanUp()
 {
-    LogInfo("VertexArrayObject::CleanUp => descriptor = ", m_descriptor);
+    LogInfo("VertexArrayObject::CleanUp: descriptor = ", m_descriptor);
 
     glBindVertexArray(0);
 

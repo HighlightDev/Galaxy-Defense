@@ -12,8 +12,10 @@ class MissedSpaceshipsTracker : public ILevelRequirementTracker {
 
     int32_t mLastMissedSpaceshipsCount{0};
 
+    std::string mRequirementHint;
+
 public:
-    explicit MissedSpaceshipsTracker(const int32_t missSpaceshipsCountToFailTracker);
+    explicit MissedSpaceshipsTracker(const int32_t missSpaceshipsCountToFailTracker, const std::string& requirementHint);
 
     void Tick(const float deltaTime) override;
 

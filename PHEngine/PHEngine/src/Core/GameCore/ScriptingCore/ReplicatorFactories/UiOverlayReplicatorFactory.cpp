@@ -56,7 +56,7 @@ int32_t UiOverlayReplicatorFactory::CreateReplicator(
                 uiOverlay->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiOverlayReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+        LogInfo("UiOverlayReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
         return -1;
     }
 

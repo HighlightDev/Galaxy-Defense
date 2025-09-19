@@ -10,23 +10,23 @@ void CheckAlErrors()
     if (error != AL_NO_ERROR) {
         switch (error) {
         case AL_INVALID_NAME:
-            LogInfo("OpenAL::CheckAlErrors => AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function");
+            LogInfo("OpenAL::CheckAlErrors: AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function");
             break;
         case AL_INVALID_ENUM:
-            LogInfo("OpenAL::CheckAlErrors => AL_INVALID_ENUM: an invalid enum value was passed to an OpenAL function");
+            LogInfo("OpenAL::CheckAlErrors: AL_INVALID_ENUM: an invalid enum value was passed to an OpenAL function");
             break;
         case AL_INVALID_VALUE:
-            LogInfo("OpenAL::CheckAlErrors => AL_INVALID_VALUE: an invalid value was passed to an OpenAL function");
+            LogInfo("OpenAL::CheckAlErrors: AL_INVALID_VALUE: an invalid value was passed to an OpenAL function");
             break;
         case AL_INVALID_OPERATION:
-            LogInfo("OpenAL::CheckAlErrors => AL_INVALID_OPERATION: the requested operation is not valid");
+            LogInfo("OpenAL::CheckAlErrors: AL_INVALID_OPERATION: the requested operation is not valid");
             break;
         case AL_OUT_OF_MEMORY:
             LogInfo(
-                "OpenAL::CheckAlErrors => AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory");
+                "OpenAL::CheckAlErrors: AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory");
             break;
         default:
-            LogInfo("OpenAL::CheckAlErrors => UNKNOWN AL ERROR: ", error);
+            LogInfo("OpenAL::CheckAlErrors: UNKNOWN AL ERROR: ", error);
         }
     }
 }

@@ -44,6 +44,10 @@ protected:
 
     float mBorderOpacity;
 
+    std::string mAttachTargetUiItemName;
+
+    int32_t mBorderThickness;
+
 public:
     explicit UiTextBlockLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiTextBlock>& ownerTextBlock);
 
@@ -76,6 +80,10 @@ public:
     void SetBorderRadius_FromGameThread(const float borderRadius);
 
     void SetBorderOpacity_FromGameThread(const float opacity);
+
+    void SetAttachTargetUiItemName_FromGameThread(const std::string& uiItemName);
+
+    void SetBorderThickness_FromGameThread(const int32_t thickness);
 };
 } // namespace Scripts
 } // namespace EngineCore

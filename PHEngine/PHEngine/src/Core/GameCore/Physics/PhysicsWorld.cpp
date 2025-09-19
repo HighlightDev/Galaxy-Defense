@@ -62,7 +62,7 @@ void PhysicsWorld::Initialize()
 
 void PhysicsWorld::UnloadExistingPhysicsSimulation()
 {
-    LogInfo("PhysicsWorld::UnloadExistingPhysicsSimulation => descriptors count: ", mPhysicsDescriptors.size());
+    LogInfo("PhysicsWorld::UnloadExistingPhysicsSimulation: descriptors count: ", mPhysicsDescriptors.size());
     mActiveCollisions.clear();
     mPhysicsDescriptors.clear();
 }
@@ -74,14 +74,14 @@ btDiscreteDynamicsWorld* PhysicsWorld::GetWorld() const
 
 void PhysicsWorld::AddPhysDescriptor(const std::shared_ptr<PhysicsDescriptor>& inDescriptor)
 {
-    LogInfo("PhysicsWorld::AddPhysDescriptor => descriptor id = ", inDescriptor->GetId());
+    LogInfo("PhysicsWorld::AddPhysDescriptor: descriptor id = ", inDescriptor->GetId());
 
     mPhysicsDescriptors.emplace_back(inDescriptor);
 }
 
 void PhysicsWorld::RemovePhysDescriptorFromSimulation(const std::shared_ptr<PhysicsDescriptor>& descriptor)
 {
-    LogInfo("PhysicsWorld::RemovePhysDescriptorFromSimulation => descriptor id = ", descriptor->GetId());
+    LogInfo("PhysicsWorld::RemovePhysDescriptorFromSimulation: descriptor id = ", descriptor->GetId());
     auto removedDescriptorIt = std::remove_if(
         mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [id = descriptor->GetId()](const auto& physDesc) {
             return physDesc->GetId() == id;

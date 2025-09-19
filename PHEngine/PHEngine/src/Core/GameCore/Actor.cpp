@@ -33,7 +33,7 @@ Actor::Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore
 
 Actor::~Actor()
 {
-    LogInfo("Actor::dctor => id: ", GetObjectId(), ", name: ", GetName());
+    LogInfo("Actor::dctor: id: ", GetObjectId(), ", name: ", GetName());
 }
 
 void Actor::PostPhysicsInitialize()
@@ -49,7 +49,7 @@ void Actor::PostPlayLevelFinished()
 
 void Actor::CleanUp()
 {
-    LogInfo("Actor::CleanUp => id: ", GetObjectId(), ", name: ", GetName());
+    LogInfo("Actor::CleanUp: id: ", GetObjectId(), ", name: ", GetName());
     for (const auto& tweener : mTweeners) {
         tweener->CleanUp();
     }

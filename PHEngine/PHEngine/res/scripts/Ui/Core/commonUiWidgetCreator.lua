@@ -49,7 +49,7 @@ function CommonUiWidgetCreator:createUiWidget(host, commonUiWidgetType, jsonPara
     assert(host ~= nil and commonUiWidgetType ~= nil)
     jsonParameters = jsonParameters and jsonParameters or ""
     local widgetLuaProxyId = _CreateCommonUiWidget(host, commonUiWidgetType, jsonParameters)
-    print("CommonUiWidgetCreator::createUiWidget => commonUiWidgetType: " ..
+    print("CommonUiWidgetCreator::createUiWidget: commonUiWidgetType: " ..
         tostring(getTypeToString(commonUiWidgetType)) ..
         " jsonParameters: " ..
         tostring(jsonParameters) ..
@@ -62,7 +62,7 @@ end
 function CommonUiWidgetCreator:destroyUiWidget(host, luaProxyId)
     assert(host ~= nil)
     assert(luaProxyId ~= nil and type(luaProxyId) == "number" and luaProxyId > -1)
-    --print("CommonUiWidgetCreator::destroyUiWidget => luaProxyId: " .. tostring(luaProxyId))
+    --print("CommonUiWidgetCreator::destroyUiWidget: luaProxyId: " .. tostring(luaProxyId))
     -- invocation of this function leads to exception, memory is already deallocated
     -- _DestroyCommonUiWidget(host, luaProxyId)
 end

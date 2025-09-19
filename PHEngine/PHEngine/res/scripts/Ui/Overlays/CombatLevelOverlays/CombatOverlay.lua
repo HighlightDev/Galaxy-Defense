@@ -42,8 +42,10 @@ CombatOverlay = {
     levelProgressRowLayout = nil
 }
 
-RequirementTrackers = {}
-RequirementTrackersIdle = {}
+local RequirementTrackers = {}
+local RequirementTrackersIdle = {}
+
+local RequirementTrackerHint = nil
 
 local function showTileRequirementAchived(requirementTile)
     requirementTile:setTextureSource("check.png")
@@ -91,6 +93,8 @@ local function updateRequirementTileData(host, levelProgressTile, trackerJson)
     else
         assert(false, "Not supported requirement: " .. name)
     end
+    local hintText = tostring(trackerJson["hint"])
+    levelProgressTile.hintText = hintText
 end
 
 local function fillRequirementTilesPool(host, combatOverlay, count)
@@ -108,6 +112,16 @@ local function fillRequirementTilesPool(host, combatOverlay, count)
             levelProgressTile:setBackgroundTileOpacity(1.0)
             levelProgressTile:setIsVisible(false)
             levelProgressTile:setBackgroundTileColorHexValue(Styles.Colors.panelColor)
+            levelProgressTile:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+                if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+                    RequirementTrackerHint:setIsVisible(true)
+                    RequirementTrackerHint:setAttachTargetUiItemName(levelProgressTile.widgetName)
+                    RequirementTrackerHint:setText(levelProgressTile.hintText)
+                else
+                    RequirementTrackerHint:setIsVisible(false)
+                    RequirementTrackerHint:setAttachTargetUiItemName("")
+                end
+            end)
         end)
     end
 end
@@ -160,8 +174,8 @@ function CombatOverlay:new(host)
     combatOverlay:addWidget(levelProgressRowLayout)
     combatOverlay.levelProgressRowLayout = levelProgressRowLayout
 
-    local testTextBlock = UiTextBlock:new(host, "Lora-VariableFont_wght", "TestTextBlock")
-    combatOverlay:addWidget(testTextBlock)
+    RequirementTrackerHint = UiTextBlock:new(host, "Lora-VariableFont_wght", "TestTextBlock")
+    combatOverlay:addWidget(RequirementTrackerHint)
 
     fillRequirementTilesPool(host, combatOverlay, 10)
 
@@ -354,25 +368,23 @@ function CombatOverlay:new(host)
         levelProgressRowLayout:setSpacing(35)
         levelProgressRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
 
-        testTextBlock:setParent(host, combatOverlayCanvas.widgetName, levelProgressContainer.widgetName)
-        testTextBlock:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+        RequirementTrackerHint:setParent(host, combatOverlayCanvas.widgetName, levelProgressContainer.widgetName)
+        RequirementTrackerHint:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
             levelProgressRowLayout.widgetName, 20)
-        testTextBlock:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            levelProgressRowLayout.widgetName, 20)
-        testTextBlock:setWidth(levelProgressContainerWidth)
-        testTextBlock:setHeight(levelProgressContainerWidth)
-        testTextBlock:setText(
-            "Hello my dear friend! How are you today? I hope you are doing well. This is a test text block for the combat overlay.")
-        testTextBlock:setFontSize(15)
-        testTextBlock:setRectangleOpacity(1.0)
-        testTextBlock:setRectangleColor(0.6, 0.6, 0.6)
-        testTextBlock:setTextColorHexValue(0x000000)
-        testTextBlock:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
-        testTextBlock:setTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
-        testTextBlock:setRectangleRadius(6)
-        testTextBlock:setBorderColorHexValue(0xFFFFFF)
-        testTextBlock:setBorderRadius(6)
-        testTextBlock:setBorderOpacity(1.0)
+        RequirementTrackerHint:setWidth(levelProgressContainerWidth)
+        RequirementTrackerHint:setHeight(levelProgressContainerWidth)
+        RequirementTrackerHint:setFontSize(15)
+        RequirementTrackerHint:setRectangleOpacity(1.0)
+        RequirementTrackerHint:setRectangleColor(0.6, 0.6, 0.6)
+        RequirementTrackerHint:setTextColorHexValue(0x000000)
+        RequirementTrackerHint:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        RequirementTrackerHint:setTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
+        RequirementTrackerHint:setRectangleRadius(6)
+        RequirementTrackerHint:setBorderColorHexValue(0xFFFFFF)
+        RequirementTrackerHint:setBorderRadius(0)
+        RequirementTrackerHint:setBorderOpacity(1.0)
+        RequirementTrackerHint:setIsVisible(false)
+        RequirementTrackerHint:setBorderThickness(40)
 
         backgroundRect:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,

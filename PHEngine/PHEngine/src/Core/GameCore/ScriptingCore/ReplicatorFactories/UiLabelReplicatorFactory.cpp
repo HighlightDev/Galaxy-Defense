@@ -47,7 +47,7 @@ int32_t UiLabelReplicatorFactory::CreateReplicator(
                 createdUiLabel->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiLabelReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+        LogInfo("UiLabelReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
         return -1;
     }
 

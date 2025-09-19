@@ -23,7 +23,7 @@ SoundSource::SoundSource()
 
 SoundSource::~SoundSource()
 {
-    LogInfo("SoundSource::dctor => mSourceDesc = ", mSourceDesc);
+    LogInfo("SoundSource::dctor: mSourceDesc = ", mSourceDesc);
     alDeleteSources(1, &mSourceDesc);
 }
 
@@ -131,6 +131,6 @@ void SoundSource::Init()
     alCall(alSource3f, mSourceDesc, AL_VELOCITY, mVelocity.x, mVelocity.y, mVelocity.z);
     alCall(alSourcei, mSourceDesc, AL_LOOPING, mIsLoopSound);
 
-    LogInfo("SoundSource::Init => mSourceDesc = ", mSourceDesc);
+    LogInfo("SoundSource::Init: mSourceDesc = ", mSourceDesc);
 }
 } // namespace EngineCore

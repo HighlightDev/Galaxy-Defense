@@ -109,7 +109,7 @@ void MainMenuLevel::InitLevel()
                 const auto& fileName = path.substr(beforeFileNameBeginIndex + 1);
                 const auto& fileExtension = fileName.substr(EngineUtility::IndexOf(fileName, ".") + 1);
                 if ("lua" == fileExtension) {
-                    LogInfo("MainMenuLevel::FileWatcher::fileSatusChanged => fileName: ", fileName, " modified. Reload scripts.");
+                    LogInfo("MainMenuLevel::FileWatcher::fileSatusChanged: fileName: ", fileName, " modified. Reload scripts.");
                     RestartLuaScripts();
                 }
             }

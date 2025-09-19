@@ -53,7 +53,7 @@ int32_t UiTextBlockReplicatorFactory::CreateReplicator(
                 createdUiTextBlock->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiTextBlockReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+        LogInfo("UiTextBlockReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
         return -1;
     }
 

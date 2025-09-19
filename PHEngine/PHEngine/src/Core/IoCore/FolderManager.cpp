@@ -65,7 +65,7 @@ void FolderManager::CreateFilePathMap(const std::string& absolutePathToDirectory
 
 std::string FolderManager::GetDirectoryRelativePathByFileName(const std::string& fileName) const
 {
-    EngineCore::LogInfo("FolderManager::GetDirectoryRelativePathByFileName => file: ", fileName);
+    EngineCore::LogInfo("FolderManager::GetDirectoryRelativePathByFileName: file: ", fileName);
     ext_assert(mFilesPathMap.count(fileName), "Missing file: " + fileName);
     return mFilesPathMap.at(fileName) + fileName;
 }

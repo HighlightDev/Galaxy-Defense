@@ -24,7 +24,7 @@ bool SoundBuffer::operator==(const SoundBuffer& right) const
 
 void SoundBuffer::CleanUp()
 {
-    LogInfo("SoundBuffer::CleanUp => BufferDesc = ", mBufferDesc);
+    LogInfo("SoundBuffer::CleanUp: BufferDesc = ", mBufferDesc);
     alDeleteBuffers, 1, &mBufferDesc;
 }
 

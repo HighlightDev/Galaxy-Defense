@@ -51,7 +51,7 @@ public:
                 uniform.LoadUniform(slot);
             } else {
                 LogInfo(
-                    "DeferredTextureMaterialProperty::SetValueToUniform => property { ",
+                    "DeferredTextureMaterialProperty::SetValueToUniform: property { ",
                     GetPropertyName(),
                     " } is not ready yet.");
             }

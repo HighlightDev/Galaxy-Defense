@@ -123,7 +123,7 @@ function PauseOverlay:new(host)
     end)
 
     pauseMenuOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
-        print("pauseMenuOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
+        print("pauseMenuOverlay:OnAllWidgetLuaProxiesReady: name: " .. tostring(sender.overlayName))
 
         backgroundRect:setParent(host, pauseMenuOverlayCanvas.widgetName, pauseMenuOverlayCanvas.widgetName)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,

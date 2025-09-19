@@ -48,7 +48,7 @@ int32_t UiToggleButtonReplicatorFactory::CreateReplicator(
                 createdUiToggleButton->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiToggleButtonReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+        LogInfo("UiToggleButtonReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
         return -1;
     }
 

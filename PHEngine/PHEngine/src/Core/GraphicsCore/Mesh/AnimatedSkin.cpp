@@ -17,7 +17,7 @@ AnimatedSkin::AnimatedSkin(
     : Skin(vao, boundingBox, meshName)
     , m_animatedMeshData(animatedMeshData)
 {
-    LogInfo("AnimatedSkin::ctor => RootNode name=", animatedMeshData->RootNode->Name);
+    LogInfo("AnimatedSkin::ctor: RootNode name=", animatedMeshData->RootNode->Name);
 }
 
 AnimatedSkin::~AnimatedSkin()

@@ -36,7 +36,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, bool arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -52,7 +52,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, float arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -67,7 +67,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, int32_t arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -82,7 +82,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, const glm::vec2& arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -97,7 +97,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, glm::vec2&& arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -112,7 +112,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, const glm::vec3& arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -127,7 +127,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, glm::vec3&& arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -142,7 +142,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, const glm::vec4& arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -157,7 +157,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, glm::vec4&& arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -172,7 +172,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, const glm::mat2& arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -187,7 +187,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, const glm::mat3& arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif
@@ -203,7 +203,7 @@ void UniformArray::LoadUniform(size_t uniformIndex, const glm::mat4& arg) const
 {
 #if DEBUG
     if (uniformIndex >= m_uniformLocations.size()) {
-        LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+        LogInfo("UniformArray::LoadUniform: Out of uniform array bounds. Uniform name is : " + m_uniformName);
         return;
     }
 #endif

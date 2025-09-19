@@ -47,7 +47,7 @@ std::string UiOverlay::GetOverlayName() const
 
 void UiOverlay::OpenOverlay()
 {
-    LogInfo("UiOverlay::OpenOverlay => overlay: ", mOverlayName);
+    LogInfo("UiOverlay::OpenOverlay: overlay: ", mOverlayName);
     assert(mCanvas);
     mCanvas->SetIsVisible(true);
     const auto& animator = mCanvas->GetAnimator();
@@ -58,7 +58,7 @@ void UiOverlay::OpenOverlay()
 
 void UiOverlay::CloseOverlay()
 {
-    LogInfo("UiOverlay::OpenOverlay => overlay: ", mOverlayName);
+    LogInfo("UiOverlay::OpenOverlay: overlay: ", mOverlayName);
     assert(mCanvas);
     const auto& animator = mCanvas->GetAnimator();
     if (animator->HasAnimation("FadeOut")) {

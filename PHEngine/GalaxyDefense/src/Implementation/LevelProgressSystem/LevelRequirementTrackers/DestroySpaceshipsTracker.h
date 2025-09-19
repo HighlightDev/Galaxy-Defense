@@ -16,8 +16,10 @@ class DestroySpaceshipsTracker : public ILevelRequirementTracker {
 
     int32_t mLastDestroyedEnemySpaceshipsValue{0};
 
+    std::string mRequirementHint;
+
 public:
-    explicit DestroySpaceshipsTracker(const int32_t enemySpaceshipsCount);
+    explicit DestroySpaceshipsTracker(const int32_t enemySpaceshipsCount, const std::string& requirementHint);
 
     void Init() override;
 

@@ -26,7 +26,7 @@ WeakSpaceshipActor::WeakSpaceshipActor(
 void WeakSpaceshipActor::AttachTweener(std::shared_ptr<Tweener> tweener)
 {
     assert(tweener);
-    LogInfo("WeakSpaceshipActor::AttachTweener => Path to tweener", tweener->GetRelPathTweener());
+    LogInfo("WeakSpaceshipActor::AttachTweener: Path to tweener", tweener->GetRelPathTweener());
 
     Actor::AttachTweener(tweener);
     mWeakSpaceshipTweener = tweener;

@@ -48,7 +48,7 @@ PhysicsDescriptor::PhysicsDescriptor(
     , mMotionModifier(motionModifier)
     , mIsCollisionEnabled(true)
 {
-    LogInfo("PhysicsDescriptor::ctor => my descriptor id=", mCurrentId);
+    LogInfo("PhysicsDescriptor::ctor: my descriptor id=", mCurrentId);
 
     if (!FloatsNearEqual(mass, 0.0f)) {
         mShape->GetCollisionShape()->calculateLocalInertia(mass, mInertia);
@@ -57,7 +57,7 @@ PhysicsDescriptor::PhysicsDescriptor(
 
 PhysicsDescriptor::~PhysicsDescriptor()
 {
-    LogInfo("PhysicsDescriptor::dctor => my descriptor id=", mCurrentId);
+    LogInfo("PhysicsDescriptor::dctor: my descriptor id=", mCurrentId);
 
     CleanUp();
 }
@@ -183,7 +183,7 @@ bool PhysicsDescriptor::GetIsCollisionEnabled() const
 void PhysicsDescriptor::SetOwnerComponentEngineObjectId(const int32_t ownerComponentEngineObjectId)
 {
     LogInfo(
-        "PhysicsDescriptor::SetOwnerComponentEngineObjectId => my descriptor id=",
+        "PhysicsDescriptor::SetOwnerComponentEngineObjectId: my descriptor id=",
         mCurrentId,
         "owner id=",
         ownerComponentEngineObjectId);
@@ -198,7 +198,7 @@ int32_t PhysicsDescriptor::GetOwnerComponentEngineObjectId() const
 void PhysicsDescriptor::SetOwnerActorEngineObjectId(const int32_t ownerActorEngineObjectId)
 {
     LogInfo(
-        "PhysicsDescriptor::SetOwnerActorEngineObjectId => my descriptor id=", mCurrentId, "owner id=", ownerActorEngineObjectId);
+        "PhysicsDescriptor::SetOwnerActorEngineObjectId: my descriptor id=", mCurrentId, "owner id=", ownerActorEngineObjectId);
     mOwnerActorEngineObjectId = ownerActorEngineObjectId;
 }
 

@@ -223,7 +223,7 @@ function CombatPreparationOverlay:new(host)
     end)
 
     combatPreparationOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
-        print("combatPreparationOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
+        print("combatPreparationOverlay:OnAllWidgetLuaProxiesReady: name: " .. tostring(sender.overlayName))
 
         backgroundRect:setParent(host, combatPreparationOverlayCanvas.widgetName,
             combatPreparationOverlayCanvas.widgetName)

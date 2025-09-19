@@ -24,7 +24,7 @@ StreamingSoundSource::StreamingSoundSource(const std::string& soundName)
 
 StreamingSoundSource::~StreamingSoundSource()
 {
-    LogInfo("StreamingSoundSource::dctor => mSourceDesc = ", mSourceDesc);
+    LogInfo("StreamingSoundSource::dctor: mSourceDesc = ", mSourceDesc);
     alDeleteSources(1, &mSourceDesc);
 }
 
@@ -140,6 +140,6 @@ void StreamingSoundSource::Init(const std::string& soundName)
 
     mStreamingBufferBundle = std::make_shared<StreamingSoundBufferBundle>(soundName, mSourceDesc);
 
-    LogInfo("StreamingSoundSource::Init => mSourceDesc = ", mSourceDesc);
+    LogInfo("StreamingSoundSource::Init: mSourceDesc = ", mSourceDesc);
 }
 } // namespace EngineCore

@@ -34,7 +34,7 @@ void BlackHoleExplosionVisitor::StartExplosionForSpaceship(
                 const auto gravityModifier = std::make_shared<GravityModifier>(spaceship, ownerSp, gravityCenterPosition);
                 gravityModifier->SetGravityPower(15.0f);
                 LogInfo(
-                    "BlackHoleExplosionVisitor::StartExplosionForSpaceship => |+| gravity from missile ", ownerSp->GetObjectId());
+                    "BlackHoleExplosionVisitor::StartExplosionForSpaceship: |+| gravity from missile ", ownerSp->GetObjectId());
                 spaceship->AddModifier(gravityModifier);
             }
         }
@@ -60,7 +60,7 @@ void BlackHoleExplosionVisitor::EndExplosionForSpaceship(
             } else if (spaceship->HasModifier(eModifierType::Gravity, ownerSp->GetObjectId())) {
                 spaceship->RemoveModifier(eModifierType::Gravity, ownerSp->GetObjectId());
                 LogInfo(
-                    "BlackHoleExplosionVisitor::EndExplosionForSpaceship => |-| gravity from missile ", ownerSp->GetObjectId());
+                    "BlackHoleExplosionVisitor::EndExplosionForSpaceship: |-| gravity from missile ", ownerSp->GetObjectId());
             }
         }
     }

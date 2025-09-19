@@ -29,7 +29,7 @@ PrimitiveSceneProxy::PrimitiveSceneProxy(
 
 void PrimitiveSceneProxy::CleanUp()
 {
-    LogInfo("PrimitiveSceneProxy::CleanUp => proxyId: ", mSceneProxyId, ", gameObjectId: ", mGameObjectId);
+    LogInfo("PrimitiveSceneProxy::CleanUp: proxyId: ", mSceneProxyId, ", gameObjectId: ", mGameObjectId);
 
     if (m_skin) {
         MeshPool::GetInstance()->TryToFreeMemory(m_skin);

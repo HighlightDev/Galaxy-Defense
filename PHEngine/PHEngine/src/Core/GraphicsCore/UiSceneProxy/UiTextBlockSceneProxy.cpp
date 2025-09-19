@@ -37,6 +37,9 @@ UiTextBlockSceneProxy::UiTextBlockSceneProxy(const UiTextBlock* uiTextBlock)
     , mBorderColor(uiTextBlock->GetBorderColor())
     , mBorderRadius(uiTextBlock->GetBorderRadius())
     , mBorderOpacity(uiTextBlock->GetBorderOpacity())
+    , mBorderThickness(uiTextBlock->GetBorderThickness())
+    , mBorderAspectRatioFactor(1.0f)
+    , mSchrinkScaleToFitText(1.0f)
 {
 }
 
@@ -93,19 +96,19 @@ void UiTextBlockSceneProxy::Initialize()
             fontHandlerSp->RegisterText(mTextFieldProxy);
             mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
         } else {
-            LogInfo("UiTextBlockSceneProxy::Initialize => CRIT: FreeTypeFontHandler is null");
+            LogInfo("UiTextBlockSceneProxy::Initialize: CRIT: FreeTypeFontHandler is null");
         }
     } else {
-        LogInfo("UiTextBlockSceneProxy::Initialize => CRIT: CanvasProxy is null");
+        LogInfo("UiTextBlockSceneProxy::Initialize: CRIT: CanvasProxy is null");
     }
 }
 
 void UiTextBlockSceneProxy::Render()
 {
-    constexpr float boundariesPaddingFactor = 0.9f;
+    const glm::vec2 boundariesPaddingFactor = glm::vec2(1.0f) - (glm::vec2(mBorderThickness) / glm::vec2(mWidthHeightPixels));
+
     // Render borders
-    RenderRectangle(
-        glm::vec2(1.0f) * mBorderAspectRatioFactor, mBorderColor, mBorderOpacity, mBorderRadius);
+    RenderRectangle(mBorderAspectRatioFactor, mBorderColor, mBorderOpacity, mBorderRadius);
     // Render background rectangle
     RenderRectangle(glm::vec2(boundariesPaddingFactor), mRectangleColor, mRectangleOpacity, mRectangleRadius);
     // Render text
@@ -123,7 +126,7 @@ void UiTextBlockSceneProxy::SetText(const std::string& text)
             }
         }
         CalculateTextAlignmentOffset();
-        CalculateBoundariesScaleToFitText();
+        SchrinkToFitText();
     }
 }
 
@@ -138,7 +141,7 @@ void UiTextBlockSceneProxy::SetTextLineWidthHeight(const glm::ivec2& textLineWid
             }
         }
         CalculateTextAlignmentOffset();
-        CalculateBoundariesScaleToFitText();
+        SchrinkToFitText();
     }
 }
 
@@ -156,7 +159,7 @@ void UiTextBlockSceneProxy::SetFontSize(const int32_t fontSize)
             }
         }
         CalculateTextAlignmentOffset();
-        CalculateBoundariesScaleToFitText();
+        SchrinkToFitText();
     }
 }
 
@@ -177,7 +180,7 @@ void UiTextBlockSceneProxy::SetTextHorizontalAlignment(const eTextHorizontalAlig
             }
         }
         CalculateTextAlignmentOffset();
-        CalculateBoundariesScaleToFitText();
+        SchrinkToFitText();
     }
 }
 
@@ -187,7 +190,7 @@ void UiTextBlockSceneProxy::SetTextVerticalAlignment(const eTextVerticalAlignmen
         mTextVerticalAlignment = textVerticalAlignment;
         mTextFieldProxy->SetTextVerticalAlignment(textVerticalAlignment);
         CalculateTextAlignmentOffset();
-        CalculateBoundariesScaleToFitText();
+        SchrinkToFitText();
     }
 }
 
@@ -226,6 +229,11 @@ void UiTextBlockSceneProxy::SetBorderOpacity(const float borderOpacity)
     mBorderOpacity = borderOpacity;
 }
 
+void UiTextBlockSceneProxy::SetBorderThickness(const int32_t borderThickness)
+{
+    mBorderThickness = borderThickness;
+}
+
 void UiTextBlockSceneProxy::CleanUp()
 {
     ShaderPool::GetInstance()->TryToFreeMemory(mUiLabelShader);
@@ -260,22 +268,23 @@ void UiTextBlockSceneProxy::CalculateTextAlignmentOffset()
     }
 }
 
-void UiTextBlockSceneProxy::CalculateBoundariesScaleToFitText()
+void UiTextBlockSceneProxy::SchrinkToFitText()
 {
-    constexpr float boundariesPadding = 1.3f;
-    mBoundariesScaleToFitText = (glm::vec2(mTextFieldProxy->GetCreatedMeshTextWidthHeightScreenSpace()) * boundariesPadding)
+    const glm::vec2 boundariesPaddingFactor = glm::vec2(1.0f) - (glm::vec2(mBorderThickness) / glm::vec2(mWidthHeightPixels));
+
+    mSchrinkScaleToFitText = (glm::vec2(mTextFieldProxy->GetCreatedMeshTextWidthHeightScreenSpace()) + glm::vec2(mBorderThickness))
         / glm::vec2(mWidthHeightPixels);
 
-    constexpr float boundariesPaddingFactor = 0.9f;
+
     mBorderAspectRatioFactor = glm::vec2(1.0f);
-    if (mBoundariesScaleToFitText.x > mBoundariesScaleToFitText.y) {
-        float diff = mBoundariesScaleToFitText.x - mBoundariesScaleToFitText.y;
-        diff -= diff * boundariesPaddingFactor;
-        mBorderAspectRatioFactor.x -= (diff / (float)mBoundariesScaleToFitText.x);
-    } else if (mBoundariesScaleToFitText.x < mBoundariesScaleToFitText.y) {
-        float diff = mBoundariesScaleToFitText.y - mBoundariesScaleToFitText.x;
-        diff -= diff * boundariesPaddingFactor;
-        mBorderAspectRatioFactor.y -= (diff / (float)mBoundariesScaleToFitText.y);
+    if (mSchrinkScaleToFitText.x > mSchrinkScaleToFitText.y) {
+        float diff = mSchrinkScaleToFitText.x - mSchrinkScaleToFitText.y;
+        diff -= diff * boundariesPaddingFactor.x;
+        mBorderAspectRatioFactor.x -= (diff / (float)mSchrinkScaleToFitText.x);
+    } else if (mSchrinkScaleToFitText.x < mSchrinkScaleToFitText.y) {
+        float diff = mSchrinkScaleToFitText.y - mSchrinkScaleToFitText.x;
+        diff -= diff * boundariesPaddingFactor.y;
+        mBorderAspectRatioFactor.y -= (diff / (float)mSchrinkScaleToFitText.y);
     }
 }
 
@@ -304,9 +313,9 @@ void UiTextBlockSceneProxy::RenderRectangle(
     const glm::vec2& scale, const glm::vec3& color, const float opacity, const float borderRadius)
 {
     mUiRectangleShader->ExecuteShader();
-    const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * scale * mBoundariesScaleToFitText)) * 0.5f);
+    const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * scale * mSchrinkScaleToFitText)) * 0.5f);
     mUiRectangleShader->SetTransform(
-        mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * scale * mBoundariesScaleToFitText);
+        mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * scale * mSchrinkScaleToFitText);
     mUiRectangleShader->SetColor(color);
     mUiRectangleShader->SetOpacity(opacity * mOverlayOpacity);
     mUiRectangleShader->SetBorderRadius(borderRadius);

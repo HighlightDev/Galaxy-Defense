@@ -53,7 +53,7 @@ int32_t UiCanvasReplicatorFactory::CreateReplicator(
                 createdUiCanvas->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiCanvasReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+        LogInfo("UiCanvasReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
         return -1;
     }
 

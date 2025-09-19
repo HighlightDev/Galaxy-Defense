@@ -119,7 +119,7 @@ function System_OnStart(host)
 end
 
 function System_OnUpdate(host, deltaTime)
-	print("LUA => deltaTime:", deltaTime)
+	print("LUA: deltaTime:", deltaTime)
 end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)

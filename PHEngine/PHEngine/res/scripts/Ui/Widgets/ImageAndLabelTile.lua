@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -28,8 +27,7 @@ local UiRectangle = require("Ui/Core/uiRectangle")
 local UiImage = require("Ui/Core/uiImage")
 local UiLabel = require("Ui/Core/uiLabel")
 
-ImageAndLabelTile = {
-}
+ImageAndLabelTile = {}
 
 function ImageAndLabelTile:new(host, overlay)
     assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
@@ -49,7 +47,7 @@ function ImageAndLabelTile:new(host, overlay)
             left = 0,
             right = 0,
             bottom = 0,
-            top = 0,
+            top = 0
         },
         luaProxiesReadyCallback = nil
     }
@@ -89,8 +87,8 @@ function ImageAndLabelTile:setHeight(height)
 end
 
 function ImageAndLabelTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
-    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
-        srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchor >
+               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
     anchorMargin = nil == anchorMargin and 0 or anchorMargin
     if srcAnchor == UiItemBase.UiAnchorType.LEFT then
@@ -108,25 +106,21 @@ function ImageAndLabelTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, 
 end
 
 function ImageAndLabelTile:addAnimation(host, onlyForTile, animationName, animationFunctionType, animationDuration,
-                                        animatedPropertyName,
-                                        animatedPropertyType, propertySrcValue, propertyDstValue)
+    animatedPropertyName, animatedPropertyType, propertySrcValue, propertyDstValue)
     assert(host ~= nil and type(host) == "userdata")
     assert(onlyForTile ~= nil and type(onlyForTile) == "boolean")
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
-        type(animationFunctionType) == "number" and animationDuration ~= nil and
-        type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
-        animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
+               type(animationFunctionType) == "number" and animationDuration ~= nil and type(animationDuration) ==
+               "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
+               animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
     assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
 
     self.backgroundTile:addAnimation(host, animationName, animationFunctionType, animationDuration,
-        animatedPropertyName,
-        animatedPropertyType, propertySrcValue, propertyDstValue)
+        animatedPropertyName, animatedPropertyType, propertySrcValue, propertyDstValue)
     if onlyForTile ~= true then
-        self.image:addAnimation(host, animationName, animationFunctionType, animationDuration,
-            animatedPropertyName,
+        self.image:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
             animatedPropertyType, propertySrcValue, propertyDstValue)
-        self.label:addAnimation(host, animationName, animationFunctionType, animationDuration,
-            animatedPropertyName,
+        self.label:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
             animatedPropertyType, propertySrcValue, propertyDstValue)
     end
 end
@@ -204,7 +198,7 @@ end
 function ImageAndLabelTile:setParent(host, overlayCanvasName, parentName)
     assert(
         host ~= nil and type(host) == "userdata" and type(overlayCanvasName) == "string" and overlayCanvasName ~= "" and
-        type(parentName) == "string" and parentName ~= "", debug.traceback())
+            type(parentName) == "string" and parentName ~= "", debug.traceback())
 
     self.overlayCanvasName = overlayCanvasName
     self.parentName = parentName
@@ -230,8 +224,7 @@ function ImageAndLabelTile:onCompoundWidgetInitialize()
     self.backgroundTile:setBorderRadius(8)
     self.backgroundTile:enableMouseInputReceiverBase(self.host)
 
-    self.image:setParent(self.host, self.overlayCanvasName,
-        self.backgroundTile.widgetName)
+    self.image:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.image:setZOrder(4);
     self.image:setRotationDegrees(180)
     self.image:setHeight(imageSize);
@@ -241,25 +234,28 @@ function ImageAndLabelTile:onCompoundWidgetInitialize()
     self.image:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
         self.backgroundTile.widgetName);
 
-    self.label:setParent(self.host, self.overlayCanvasName,
+    self.label:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
+    self.label:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, self.backgroundTile.widgetName, 6)
+    self.label:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
         self.backgroundTile.widgetName)
-    self.label:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-        self.backgroundTile.widgetName, 6)
-    self.label:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-        self.backgroundTile.widgetName, 0)
-    self.label:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-        self.backgroundTile.widgetName, 6)
-    self.label:setVerticalCenterOffset(-8)
-    self.label:setHeight(imageSize / 15)
+    self.label:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, self.backgroundTile.widgetName)
+    self.label:setVerticalCenterOffset(0)
+    self.label:setHeight(imageSize)
+    self.label:setWidth(self.tileWidth)
     self.label:setTextColorHexValue(0xFFFFFF)
-    self.label:setFontSize(10.0)
-    self.label:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
+    self.label:setFontSize(14.0)
+    self.label:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
     self.label:setZOrder(5)
 end
 
 function ImageAndLabelTile:subscribeOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
     self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
+end
+
+function ImageAndLabelTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
+    assert(callback ~= nil and type(callback) == "function")
+    self.backgroundTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
 end
 
 return ImageAndLabelTile

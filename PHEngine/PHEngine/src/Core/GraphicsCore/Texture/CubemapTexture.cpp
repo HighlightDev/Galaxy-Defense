@@ -18,14 +18,14 @@ namespace Texture {
 CubemapTexture::CubemapTexture(const std::vector<std::string>& pathToTextures)
 {
     m_texDescriptor = CreateCubemapTexture(pathToTextures);
-    LogInfo("CubemapTexture::ctor(const std::vector<std::string> &) => m_texDescriptor = ", m_texDescriptor);
+    LogInfo("CubemapTexture::ctor(const std::vector<std::string> &): m_texDescriptor = ", m_texDescriptor);
 }
 
 CubemapTexture::CubemapTexture(TexParams cubemapTexParams)
     : m_texParams({cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams})
 {
     m_texDescriptor = CreateEmptyCubemapTexture();
-    LogInfo("CubemapTexture::ctor(TexParams) => m_texDescriptor = ", m_texDescriptor);
+    LogInfo("CubemapTexture::ctor(TexParams): m_texDescriptor = ", m_texDescriptor);
 }
 
 CubemapTexture::~CubemapTexture()
@@ -142,7 +142,7 @@ void CubemapTexture::UnbindTexture(uint32_t textureSlot) const
 
 void CubemapTexture::CleanUp()
 {
-    LogInfo("CubemapTexture::CleanUp => m_texDescriptor = ", m_texDescriptor);
+    LogInfo("CubemapTexture::CleanUp: m_texDescriptor = ", m_texDescriptor);
     glDeleteTextures(1, &m_texDescriptor);
 }
 

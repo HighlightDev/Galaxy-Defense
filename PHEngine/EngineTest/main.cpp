@@ -188,7 +188,7 @@ int32_t main(int32_t argc, char** argv)
     }
 
     window = glfwCreateWindow(width, height, "PHEngine", "windowed" == windowMode ? nullptr : activeMonitor, NULL);
-    LogInfo("main => glfwWindow create with size: width = ", width, " height = ", height);
+    LogInfo("main : glfwWindow create with size: width = ", width, " height = ", height);
 
     if (!window) {
         glfwTerminate();
@@ -210,7 +210,7 @@ int32_t main(int32_t argc, char** argv)
     GLenum initResult = glewInit();
 
     if (initResult != GLEW_OK) {
-        LogInfo("main => GLEW is NOK");
+        LogInfo("main: GLEW is NOK");
         glfwTerminate();
     }
 

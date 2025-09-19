@@ -88,7 +88,7 @@ void ResourceMap::UnloadResource(const std::string& key)
 void ResourceMap::AllocateAsync(const std::string& key)
 {
     if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0) {
-        LogInfo("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);
+        LogInfo("ResourceMap::AllocateAsync: WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);
         return;
     }
 
@@ -120,13 +120,13 @@ void ResourceMap::AllocateAsync(const std::string& key)
         break;
     }
 
-    LogInfo("ResourceMap::AllocateAsync => resource type: ", (uint8_t)resType, ", file: ", fileFullPath);
+    LogInfo("ResourceMap::AllocateAsync: resource type: ", (uint8_t)resType, ", file: ", fileFullPath);
 }
 
 void ResourceMap::AllocateSync(const std::string& key)
 {
     if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0) {
-        LogInfo("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
+        LogInfo("ResourceMap::AllocateAsync: WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
         return;
     }
 
@@ -163,7 +163,7 @@ void ResourceMap::AllocateSync(const std::string& key)
 void ResourceMap::OpenAudioStream(const std::string& key)
 {
     if (AudioStreamResources.count(key) > 0) {
-        LogInfo("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
+        LogInfo("ResourceMap::AllocateAsync: WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
         return;
     }
 

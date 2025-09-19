@@ -39,7 +39,7 @@ UiCanvas::UiCanvas(const ViewPortInfo& canvasScreenProperties, const std::string
     , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
           1.0f, "Opacity", [this](const float opacity) { UpdateOpacityProperty(); }))
 {
-    LogInfo("UiCanvas::ctor => ", mUId);
+    LogInfo("UiCanvas::ctor: ", mUId);
 
     mName = name != "" ? (name + "_" + std::to_string(mUId)) : ("UiCanvas_" + std::to_string(mUId));
     mProperties.emplace("Opacity", mOpacityProperty);

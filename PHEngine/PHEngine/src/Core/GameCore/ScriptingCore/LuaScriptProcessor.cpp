@@ -67,7 +67,7 @@ std::shared_ptr<LuaProxy> LuaScriptProcessor::GetLuaProxy(const size_t luaProxyI
             return luaProxy;
         }
     }
-    LogInfo("LuaScriptProcessor::GetLuaProxy => Error: luaProxy: ", luaProxyId, " doesn't exist");
+    LogInfo("LuaScriptProcessor::GetLuaProxy: Error: luaProxy: ", luaProxyId, " doesn't exist");
     return nullptr;
 }
 

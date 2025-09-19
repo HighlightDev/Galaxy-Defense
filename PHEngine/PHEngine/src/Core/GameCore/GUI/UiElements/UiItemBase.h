@@ -226,13 +226,15 @@ protected:
 
     virtual void UpdateAnchorTransform();
 
+    virtual void RecalculateAnchorPositions();
+
     std::shared_ptr<IUiTransformable> TryFindAncestryUiItem(const std::string& name) const;
 
-private:
     void RebuildBoundingArea();
+
     void RebuildNormalizedTransform();
 
-    void RecalculateAnchorPositions();
+private:
     void CalculateHorizontalAnchorPositions();
     void CalculateVerticalAnchorPositions();
 

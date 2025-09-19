@@ -95,7 +95,7 @@ std::vector<eMissileType> PlayerDataProvider::GetAvailableMissileTypes() const
 
 void PlayerDataProvider::SetDestroyedEnemySpaceshipsCount(const int32_t enemySpaceshipsCount)
 {
-    LogInfo("PlayerDataProvider::SetDestroyedEnemySpaceshipsCount => enemySpaceshipsCount: ", enemySpaceshipsCount);
+    LogInfo("PlayerDataProvider::SetDestroyedEnemySpaceshipsCount: enemySpaceshipsCount: ", enemySpaceshipsCount);
     mDestroyedEnemySpaceshipsCount = enemySpaceshipsCount;
 }
 

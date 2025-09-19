@@ -178,10 +178,10 @@ std::string LuaCommonUiFunctions::GetCurrentOverlayName(const std::tuple<>& data
 {
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto overlayName = luaProcessorSp->GetOverlayManagerLuaProxy()->GetCurrentOverlayName();
-        LogInfo("LuaCommonUiFunctions::GetCurrentOverlayName => overlayName:", overlayName);
+        LogInfo("LuaCommonUiFunctions::GetCurrentOverlayName: overlayName:", overlayName);
         return overlayName;
     }
-    LogInfo("LuaCommonUiFunctions::GetCurrentOverlayName => FAILED!");
+    LogInfo("LuaCommonUiFunctions::GetCurrentOverlayName: FAILED!");
 
     return "";
 }
@@ -235,7 +235,7 @@ int32_t LuaCommonUiFunctions::CreateCommonUiWidget(const std::tuple<int32_t, std
     const auto& replicatorFactory = factoryCreator.GetReplicatorFactory(commonUiWidgetType);
     const int32_t luaProxyId = replicatorFactory->CreateReplicator(mSceneWp, mLuaScriptProcessor, jsonParametersStr);
     LogInfo(
-        "LuaCommonUiFunctions::CreateCommonUiWidget => widgetType: ",
+        "LuaCommonUiFunctions::CreateCommonUiWidget: widgetType: ",
         static_cast<uint8_t>(commonUiWidgetType),
         ", luaProxyId: ",
         luaProxyId);

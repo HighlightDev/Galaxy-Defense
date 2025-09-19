@@ -96,7 +96,7 @@ function LevelFailedOverlay:new(host)
     end)
 
     levelFailedOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
-        print("levelFailedOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
+        print("levelFailedOverlay:OnAllWidgetLuaProxiesReady: name: " .. tostring(sender.overlayName))
 
         backgroundRect:setParent(host, levelFailedOverlayCanvas.widgetName, levelFailedOverlayCanvas.widgetName)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,

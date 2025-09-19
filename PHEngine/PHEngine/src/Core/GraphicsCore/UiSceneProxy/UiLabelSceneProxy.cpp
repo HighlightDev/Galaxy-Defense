@@ -76,10 +76,10 @@ void UiLabelSceneProxy::Initialize()
 
             mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
         } else {
-            LogInfo("UiLabelSceneProxy::Initialize => CRIT: FreeTypeFontHandler is null");
+            LogInfo("UiLabelSceneProxy::Initialize: CRIT: FreeTypeFontHandler is null");
         }
     } else {
-        LogInfo("UiLabelSceneProxy::Initialize => CRIT: CanvasProxy is null");
+        LogInfo("UiLabelSceneProxy::Initialize: CRIT: CanvasProxy is null");
     }
 }
 

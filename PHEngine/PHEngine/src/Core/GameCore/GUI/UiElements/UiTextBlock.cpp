@@ -1,5 +1,6 @@
 #include "UiTextBlock.h"
 
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiTextBlockLuaProxy.h"
@@ -12,6 +13,7 @@
 #include <json/json.hpp>
 
 using namespace EngineCore;
+using namespace EngineCore::DataProviders;
 using namespace EngineCore::Scripts;
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
@@ -244,6 +246,34 @@ void UiTextBlock::SetBorderOpacity(const float opacity)
     }
 }
 
+void UiTextBlock::SetAttachTargetUiItemName(const std::string& uiItemName)
+{
+    if (mAttachTargetUiItemName != uiItemName) {
+        mAttachTargetUiItemName = uiItemName;
+        RecalculateAnchorPositions();
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+std::string UiTextBlock::GetAttachTargetUiItemName() const
+{
+    return mAttachTargetUiItemName;
+}
+
+void UiTextBlock::SetBorderThickness(const int32_t thickness)
+{
+    if (mBorderThickness != thickness) {
+        mBorderThickness = thickness;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+int32_t UiTextBlock::GetBorderThickness() const
+{
+    return mBorderThickness;
+}
+
 std::shared_ptr<UiSceneProxyBase> UiTextBlock::CreateUiSceneProxy() const
 {
     return std::make_shared<UiTextBlockSceneProxy>(this);
@@ -252,6 +282,36 @@ std::shared_ptr<UiSceneProxyBase> UiTextBlock::CreateUiSceneProxy() const
 std::shared_ptr<LuaProxy> UiTextBlock::ReplicateLuaProxy()
 {
     return std::make_shared<UiTextBlockLuaProxy>(std::static_pointer_cast<UiTextBlock>(shared_from_this()));
+}
+
+void UiTextBlock::RecalculateAnchorPositions()
+{
+    if (mAttachTargetUiItemName.empty()) {
+        UiItemBase::RecalculateAnchorPositions();
+        return;
+    }
+    // If attach target is set, recalculate absolute position according to it
+    RecalculatePositionAccordingToAttachTarget();
+    RebuildBoundingArea();
+    RebuildNormalizedTransform();
+}
+
+void UiTextBlock::RecalculatePositionAccordingToAttachTarget()
+{
+    if (const auto& parentCanvasSp = mParentCanvas.lock()) {
+        if (const auto targetUiItemSp = parentCanvasSp->TryFindHierarchyChildByName(mAttachTargetUiItemName)) {
+            const glm::ivec2 windowSize = glm::ivec2(
+                GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+                GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight());
+            const auto targetAbsoluteOrigin = targetUiItemSp->GetAbsoluteOrigin();
+            const auto& targetCenter
+                = targetAbsoluteOrigin + glm::ivec2(targetUiItemSp->GetWidth() / 2, targetUiItemSp->GetHeight() / 2);
+            const auto& thisHalfExtent = GetBoundingArea().GetHalfExtent();
+            // todo: take into account shrinking of size to text size
+            const glm::ivec2 newOrigin = targetCenter - glm::ivec2(GetWidth(), GetHeight());
+            SetAbsoluteOrigin(newOrigin);
+        }
+    }
 }
 
 void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
@@ -347,6 +407,20 @@ void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             bShouldUpdatePropertiesOnRT = true;
         }
     }
+    if (jsonObj.contains("attach_target_ui_item_name")) {
+        const auto attach_target_ui_item_name = jsonObj["attach_target_ui_item_name"].get<std::string>();
+        if (mAttachTargetUiItemName != attach_target_ui_item_name) {
+            mAttachTargetUiItemName = attach_target_ui_item_name;
+            RecalculateAnchorPositions();
+        }
+    }
+    if (jsonObj.contains("border_thickness")) {
+        const auto border_thickness = jsonObj["border_thickness"].get<int32_t>();
+        if (mBorderThickness != border_thickness) {
+            mBorderThickness = border_thickness;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
 
     if (bShouldUpdatePropertiesOnRT) {
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
@@ -380,7 +454,8 @@ void UiTextBlock::SyncDataOnRenderThread()
                          rectangleBorderRadius = mRectangleRadius,
                          borderColor = mBorderColor,
                          borderRadius = mBorderRadius,
-                         borderOpacity = mBorderOpacity](
+                         borderOpacity = mBorderOpacity,
+                         borderThickness = mBorderThickness](
                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                             std::weak_ptr<EngineCore::Scene> sceneWp,
                             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -400,6 +475,7 @@ void UiTextBlock::SyncDataOnRenderThread()
                                 textBlockSceneProxy->SetBorderColor(borderColor);
                                 textBlockSceneProxy->SetBorderRadius(borderRadius);
                                 textBlockSceneProxy->SetBorderOpacity(borderOpacity);
+                                textBlockSceneProxy->SetBorderThickness(borderThickness);
                             }
                         });
                 }
@@ -435,7 +511,9 @@ void UiTextBlock::SyncDataOnLuaThread()
                      rectangleBorderRadius = mRectangleRadius,
                      borderColor = mBorderColor,
                      borderRadius = mBorderRadius,
-                     borderOpacity = mBorderOpacity](
+                     borderOpacity = mBorderOpacity,
+                     attachTargetUiItemName = mAttachTargetUiItemName,
+                     borderThickness = mBorderThickness](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -454,6 +532,8 @@ void UiTextBlock::SyncDataOnLuaThread()
                             textBlockLuaProxy->SetBorderColor_FromGameThread(borderColor);
                             textBlockLuaProxy->SetBorderRadius_FromGameThread(borderRadius);
                             textBlockLuaProxy->SetBorderOpacity_FromGameThread(borderOpacity);
+                            textBlockLuaProxy->SetAttachTargetUiItemName_FromGameThread(attachTargetUiItemName);
+                            textBlockLuaProxy->SetBorderThickness_FromGameThread(borderThickness);
                         }
                     });
             }

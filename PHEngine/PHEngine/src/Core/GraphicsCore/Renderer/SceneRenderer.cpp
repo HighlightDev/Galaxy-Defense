@@ -1245,7 +1245,7 @@ void SceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<Mate
             if (const auto& sceneRenderer = weak.lock()) {
                 assert(!sceneRenderer->GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
                 LogInfo(
-                    "SceneRenderer::MaterialProxyAdded_OnRenderThread => material name = ",
+                    "SceneRenderer::MaterialProxyAdded_OnRenderThread: material name = ",
                     materialProxy->MaterialName,
                     "proxyId = ",
                     materialProxy->GetSceneProxyId());
@@ -1488,7 +1488,7 @@ void SceneRenderer::LightSceneProxiesUpdated_OnRenderThread()
 void SceneRenderer::CameraSceneProxyAdded_OnRenderThread(
     const std::shared_ptr<ACamera>& camera, const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy)
 {
-    LogInfo("SceneRenderer::CameraSceneProxyAdded_OnRenderThread => camera proxyId: ", cameraSceneProxy->GetSceneProxyId());
+    LogInfo("SceneRenderer::CameraSceneProxyAdded_OnRenderThread: camera proxyId: ", cameraSceneProxy->GetSceneProxyId());
     static const uint64_t functionId = Hash("SceneRenderer::CameraSceneProxyAdded_OnRenderThread");
 
     m_interThreadMgr.ExecuteOnRenderThread(
@@ -1509,7 +1509,7 @@ void SceneRenderer::CameraSceneProxyAdded_OnRenderThread(
 
 void SceneRenderer::RemoveCameraSceneProxy_OnRenderThread(const int32_t cameraSceneProxyId)
 {
-    LogInfo("SceneRenderer::RemoveCameraSceneProxy_OnRenderThread => camera proxyId: ", cameraSceneProxyId);
+    LogInfo("SceneRenderer::RemoveCameraSceneProxy_OnRenderThread: camera proxyId: ", cameraSceneProxyId);
     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     assert(std::any_of(SceneViewsVector.cbegin(), SceneViewsVector.cend(), [cameraSceneProxyId](const auto& sceneViewSp) {
         return sceneViewSp->GetCameraProxy()->GetSceneProxyId() == cameraSceneProxyId;
@@ -1573,7 +1573,7 @@ void SceneRenderer::RegisterText_OnRenderThread(
     const std::shared_ptr<HudTextField>& textField, const bool subscribeOnTextScreenSpaceSizeUpdate)
 {
     LogInfo(
-        "SceneRenderer::RegisterText_OnRenderThread => font name = ",
+        "SceneRenderer::RegisterText_OnRenderThread: font name = ",
         textField->GetFontName(),
         " textFieldId = ",
         textField->GetTextFieldId());
@@ -1612,7 +1612,7 @@ void SceneRenderer::RegisterText_OnRenderThread(
 void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField>& textField)
 {
     LogInfo(
-        "SceneRenderer::UnregisterText_OnRenderThread => font name = ",
+        "SceneRenderer::UnregisterText_OnRenderThread: font name = ",
         textField->GetFontName(),
         " textFieldId = ",
         textField->GetTextFieldId());
@@ -1637,7 +1637,7 @@ void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextF
 void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(
     const std::shared_ptr<::EngineCore::GUI::UiCanvas>& uiCanvas, const std::shared_ptr<UiCanvasSceneProxy>& uiCanvasProxy)
 {
-    LogInfo("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
+    LogInfo("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread: UId = ", uiCanvasProxy->GetUiItemUId());
 
     static constexpr int32_t creatorObjectId = 0;
     static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
@@ -1659,7 +1659,7 @@ void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(
 
 void SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUiId)
 {
-    LogInfo("SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread => UId = ", canvasUiId);
+    LogInfo("SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread: UId = ", canvasUiId);
     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     UnregisterUiCanvasProxy(canvasUiId);
 }
@@ -1668,7 +1668,7 @@ void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
     const std::shared_ptr<UiItemBase>& uiItem, const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
 {
     LogInfo(
-        "SceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
+        "SceneRenderer::RegisterUiSceneProxy_OnRenderThread: UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
 
     static constexpr int32_t creatorObjectId = 0;
     static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiSceneProxy_OnRenderThread");
@@ -1690,7 +1690,7 @@ void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
 
 void SceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId)
 {
-    LogInfo("SceneRenderer::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiItemUId, " canvasUId = ", canvasUId);
+    LogInfo("SceneRenderer::UnregisterUiSceneProxy_OnRenderThread: UId = ", uiItemUId, " canvasUId = ", canvasUId);
     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     UnregisterUiSceneProxy(uiItemUId, canvasUId);
 }
@@ -1775,7 +1775,7 @@ void SceneRenderer::MaterialPropertiesUpdated_OnRenderThread(
                     materialProxySp->UpdateProperties(std::move(properties));
                 } else {
                     LogInfo(
-                        "SceneRenderer::MaterialPropertiesUpdated_OnRenderThread => "
+                        "SceneRenderer::MaterialPropertiesUpdated_OnRenderThread: "
                         "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                         materialProxyIndex);
                 }
@@ -1824,7 +1824,7 @@ void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
                     planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
                 } else {
                     LogInfo(
-                        "SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => "
+                        "SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread: "
                         "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                         cameraSceneProxyId);
                 }

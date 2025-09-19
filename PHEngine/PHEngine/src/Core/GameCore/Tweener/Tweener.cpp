@@ -192,7 +192,7 @@ void Tweener::NotifyStateChangedObservers()
 
 void Tweener::CleanUp()
 {
-    LogInfo("Tweener::CleanUp => name: ", mTweenerName);
+    LogInfo("Tweener::CleanUp: name: ", mTweenerName);
     mMyAllStates.clear();
     mPropertyBindings.clear();
     CurrentActiveTransitionControllers.clear();

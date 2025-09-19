@@ -44,7 +44,7 @@ void Shader::ShaderInit()
         AccessAllUniformLocations(m_shaderProgramID);
         AccessAllSubroutineIndices(m_shaderProgramID);
     } else {
-        LogInfo("Shader::ShaderInit => Shader source loading failed");
+        LogInfo("Shader::ShaderInit: Shader source loading failed");
     }
 }
 
@@ -140,7 +140,7 @@ uint32_t Shader::GetSubroutineIndex(const int32_t shaderType, const std::string&
 {
     const auto result = glGetSubroutineIndex(m_shaderProgramID, (GLenum)shaderType, subroutineName.c_str());
     if (result == GL_INVALID_INDEX) {
-        LogInfo("Shader::GetSubroutineIndex => subroutine " + subroutineName + " not found in shader " + m_shaderParams.ShaderName);
+        LogInfo("Shader::GetSubroutineIndex: subroutine " + subroutineName + " not found in shader " + m_shaderParams.ShaderName);
     }
     return result;
 }
@@ -165,7 +165,7 @@ void Shader::RecompileShader()
 
     const bool bCompiledSuccesfully = IsShaderCompiled();
     LogInfo(
-        "Shader::RecompileShader => shader " + m_shaderParams.ShaderName
+        "Shader::RecompileShader: shader " + m_shaderParams.ShaderName
         + (bCompiledSuccesfully ? " has recompiled successfully " : "has not recompiled"));
 }
 

@@ -34,7 +34,7 @@ std::shared_ptr<UiCanvas> UiHandler::CreateDebugCanvas(const ViewPortInfo& canva
         const auto& ownerSp = mOwner.lock();
         assert(ownerSp);
         mDebugUiCanvas = std::make_shared<UiCanvas>(canvasScreenSize, "DebugCanvas");
-        LogInfo("UiHandler::CreateDebugCanvas => uid = ", mDebugUiCanvas->GetUId());
+        LogInfo("UiHandler::CreateDebugCanvas: uid = ", mDebugUiCanvas->GetUId());
         mDebugUiCanvas->Initialize();
         const auto& canvasSceneProxy = mDebugUiCanvas->CreateUiCanvasSceneProxy();
         if (const auto& sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -52,7 +52,7 @@ std::shared_ptr<UiCanvas> UiHandler::CreateCanvas(const ViewPortInfo& canvasScre
     const auto& ownerSp = mOwner.lock();
     assert(ownerSp);
     const auto& newCanvas = std::make_shared<UiCanvas>(canvasScreenSize, name);
-    LogInfo("UiHandler::CreateCanvas => uid = ", newCanvas->GetUId());
+    LogInfo("UiHandler::CreateCanvas: uid = ", newCanvas->GetUId());
     newCanvas->Initialize();
     const auto& canvasSceneProxy = newCanvas->CreateUiCanvasSceneProxy();
     if (const auto& sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
@@ -121,7 +121,7 @@ bool UiHandler::CheckIfUiInterceptsMouseEvent(const glm::ivec2& currentMousePosi
 
 void UiHandler::CleanUp()
 {
-    LogInfo("UiHandler::CleanUp => canvases count: ", mUiCanvases.size());
+    LogInfo("UiHandler::CleanUp: canvases count: ", mUiCanvases.size());
 
     for (const auto& canvas : mUiCanvases) {
         canvas->CleanUp();

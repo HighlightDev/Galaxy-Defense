@@ -3,8 +3,9 @@
 #include "Implementation/DataProviders/LevelDataProvider.h"
 
 namespace Game {
-MissedSpaceshipsTracker::MissedSpaceshipsTracker(const int32_t missSpaceshipsCountToFailTracker)
+MissedSpaceshipsTracker::MissedSpaceshipsTracker(const int32_t missSpaceshipsCountToFailTracker, const std::string& requirementHint)
     : mMissSpaceshipsCountToFailTracker(missSpaceshipsCountToFailTracker)
+    , mRequirementHint(requirementHint)
 {
 }
 
@@ -53,6 +54,7 @@ std::unordered_map<std::string, std::string> MissedSpaceshipsTracker::SerializeP
     result["name"] = GetName();
     result["not_to_miss_spaceships_count"] = std::to_string(mMissSpaceshipsCountToFailTracker);
     result["missed_spaceships_count"] = std::to_string(mMissedSpaceshipsCount);
+    result["hint"] = mRequirementHint;
     return result;
 }
 

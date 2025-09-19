@@ -50,7 +50,7 @@ int32_t UiRectangleReplicatorFactory::CreateReplicator(
                 createdUiRectangle->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiRectangleReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+        LogInfo("UiRectangleReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
         return -1;
     }
 

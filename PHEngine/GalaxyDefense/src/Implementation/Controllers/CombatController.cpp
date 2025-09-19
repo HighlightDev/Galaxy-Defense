@@ -255,7 +255,7 @@ void CombatController::ProcessEvent(
             : ownerEnemyShipActor->GetChildByObjectId(spaceshipActor_id);
 
         LogInfo(
-            "CombatController::PhysicsCollisionGameThreadEvent =>",
+            "CombatController::PhysicsCollisionGameThreadEvent:",
             collisionType,
             "missile with spaceship, this_actor = ",
             concreteMissileActor->GetName(),
@@ -277,7 +277,7 @@ void CombatController::ProcessEvent(
             : mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(that_actor_id);
 
         LogInfo(
-            "CombatController::PhysicsCollisionGameThreadEvent =>",
+            "CombatController::PhysicsCollisionGameThreadEvent:",
             collisionType,
             "spaceship with space object, this_actor = ",
             ownerEnemyShipActor->GetName(),
@@ -301,7 +301,7 @@ void CombatController::ProcessEvent(
             : ownerMissileActor->GetChildByObjectId(missileActor_id);
 
         LogInfo(
-            "CombatController::PhysicsCollisionGameThreadEvent => ",
+            "CombatController::PhysicsCollisionGameThreadEvent: ",
             collisionType,
             "missile with space object, this_actor = ",
             concreteMissileActor->GetName(),
@@ -481,7 +481,7 @@ void CombatController::LaunchMisile(
         missile->TriggerSpawn(missileStartPosition, missileDirection, yawDeg, eDamageDealerType::MAIN_PLAYER, missileOwner);
         mNavigationController->PutMissileToNavigate(missile);
     } else {
-        LogInfo("CombatController::LaunchMisile => No free missiles!");
+        LogInfo("CombatController::LaunchMisile: No free missiles!");
     }
 }
 
@@ -499,7 +499,7 @@ void CombatController::ValidatePoolObjects()
             }
         }
         if (returnedToPoolSpaceships) {
-            LogInfo("CombatController::ValidatePoolObjects => returnedToPoolSpaceships: ", returnedToPoolSpaceships);
+            LogInfo("CombatController::ValidatePoolObjects: returnedToPoolSpaceships: ", returnedToPoolSpaceships);
         }
     }
 
@@ -517,7 +517,7 @@ void CombatController::ValidatePoolObjects()
             }
         }
         if (returnedToPoolMissiles) {
-            LogInfo("CombatController::ValidatePoolObjects => returnedToPoolMissiles: ", returnedToPoolMissiles);
+            LogInfo("CombatController::ValidatePoolObjects: returnedToPoolMissiles: ", returnedToPoolMissiles);
         }
     }
 }

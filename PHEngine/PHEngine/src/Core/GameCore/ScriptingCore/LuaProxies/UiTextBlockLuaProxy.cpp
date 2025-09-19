@@ -11,8 +11,7 @@
 using namespace EngineCore;
 using namespace EngineCore::GUI;
 
-namespace EngineCore {
-namespace Scripts {
+namespace EngineCore::Scripts {
 UiTextBlockLuaProxy::UiTextBlockLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiTextBlock>& ownerTextBlock)
     : UiItemBaseLuaProxy(ownerTextBlock)
     , mFontName(ownerTextBlock->GetFontName())
@@ -25,6 +24,11 @@ UiTextBlockLuaProxy::UiTextBlockLuaProxy(const std::shared_ptr<::EngineCore::GUI
     , mRectangleColor(ownerTextBlock->GetRectangleColor())
     , mRectangleOpacity(ownerTextBlock->GetRectangleOpacity())
     , mRectangleRadius(ownerTextBlock->GetRectangleRadius())
+    , mBorderColor(ownerTextBlock->GetBorderColor())
+    , mBorderRadius(ownerTextBlock->GetBorderRadius())
+    , mBorderOpacity(ownerTextBlock->GetBorderOpacity())
+    , mAttachTargetUiItemName(ownerTextBlock->GetAttachTargetUiItemName())
+    , mBorderThickness(ownerTextBlock->GetBorderThickness())
 {
 }
 
@@ -67,6 +71,8 @@ std::string UiTextBlockLuaProxy::GetGameThreadData()
     jsonObj["border_color"] = std::vector<float>({mBorderColor.r, mBorderColor.g, mBorderColor.b});
     jsonObj["border_radius"] = mBorderRadius;
     jsonObj["border_opacity"] = mBorderOpacity;
+    jsonObj["attach_target_ui_item_name"] = mAttachTargetUiItemName;
+    jsonObj["border_thickness"] = mBorderThickness;
     return jsonObj.dump();
 }
 
@@ -172,5 +178,20 @@ void UiTextBlockLuaProxy::SetBorderOpacity_FromGameThread(const float opacity)
         mIsLuaDataDirty = true;
     }
 }
-} // namespace Scripts
-} // namespace EngineCore
+
+void UiTextBlockLuaProxy::SetAttachTargetUiItemName_FromGameThread(const std::string& uiItemName)
+{
+    if (mAttachTargetUiItemName != uiItemName) {
+        mAttachTargetUiItemName = uiItemName;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiTextBlockLuaProxy::SetBorderThickness_FromGameThread(const int32_t thickness)
+{
+    if (mBorderThickness != thickness) {
+        mBorderThickness = thickness;
+        mIsLuaDataDirty = true;
+    }
+}
+} // namespace EngineCore::Scripts

@@ -5,8 +5,9 @@
 
 namespace Game {
 
-DestroySpaceshipsTracker::DestroySpaceshipsTracker(const int32_t enemySpaceshipsCount)
+DestroySpaceshipsTracker::DestroySpaceshipsTracker(const int32_t enemySpaceshipsCount, const std::string& requirementHint)
     : mEnemySpaceshipsToDestroyCount(enemySpaceshipsCount)
+    , mRequirementHint(requirementHint)
 {
 }
 
@@ -61,6 +62,7 @@ std::unordered_map<std::string, std::string> DestroySpaceshipsTracker::Serialize
     result["to_destroy_spaceships_count"] = std::to_string(mEnemySpaceshipsToDestroyCount);
     result["left_to_destroy_spaceships_count"]
         = std::to_string(std::max(mEnemySpaceshipsToDestroyCount - mDestroyedEnemySpaceships, 0));
+    result["hint"] = mRequirementHint;
     return result;
 }
 

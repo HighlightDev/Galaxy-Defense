@@ -39,6 +39,10 @@ class UiTextBlock : public UiItemBase {
 
     float mBorderOpacity{1.0f};
 
+    std::string mAttachTargetUiItemName;
+
+    int32_t mBorderThickness{1};
+
 public:
     explicit UiTextBlock(const std::string& fontName, const std::string& name = std::string(""));
 
@@ -98,6 +102,14 @@ public:
 
     float GetBorderRadius() const;
 
+    void SetAttachTargetUiItemName(const std::string& uiItemName);
+
+    std::string GetAttachTargetUiItemName() const;
+
+    void SetBorderThickness(const int32_t thickness);
+
+    int32_t GetBorderThickness() const;
+
     std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const override;
 
     std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
@@ -115,10 +127,14 @@ protected:
 
     void OnUnregistered() override;
 
+    void RecalculateAnchorPositions() override;
+
 private:
     void SyncDataOnRenderThread();
 
     void SyncDataOnLuaThread();
+
+    void RecalculatePositionAccordingToAttachTarget();
 };
 } // namespace GUI
 } // namespace EngineCore

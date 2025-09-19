@@ -49,7 +49,7 @@ int32_t UiProgressBarReplicatorFactory::CreateReplicator(
                 createdUiProgressBar->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiProgressBarReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+        LogInfo("UiProgressBarReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
         return -1;
     }
 

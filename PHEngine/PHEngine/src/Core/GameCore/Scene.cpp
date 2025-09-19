@@ -136,7 +136,7 @@ void Scene::PostPlayLevelFinished()
 
 void Scene::RegisterMainCamera(const std::shared_ptr<ACamera>& camera)
 {
-    LogInfo("Scene::RegisterMainCamera => name = ", camera->GetCameraName());
+    LogInfo("Scene::RegisterMainCamera: name = ", camera->GetCameraName());
 
     assert(!mMainCamera);
     mMainCamera = camera;
@@ -154,7 +154,7 @@ void Scene::RegisterCamera(const std::shared_ptr<ACamera>& camera)
     mActiveCameras.emplace_back(camera);
     RegisterEngineObject(camera);
     const auto cameraProxyPtr = camera->CreateSceneProxy();
-    LogInfo("Scene::RegisterCamera => id = ", camera->GetObjectId(), ", cameraSceneProxyId: ", cameraProxyPtr->GetSceneProxyId());
+    LogInfo("Scene::RegisterCamera: id = ", camera->GetObjectId(), ", cameraSceneProxyId: ", cameraProxyPtr->GetSceneProxyId());
     camera->SetCameraProxyId(cameraProxyPtr->GetSceneProxyId());
 
     if (const auto& sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock()) {
@@ -164,7 +164,7 @@ void Scene::RegisterCamera(const std::shared_ptr<ACamera>& camera)
 
 void Scene::UnregisterCamera(const int32_t objectId)
 {
-    LogInfo("Scene::UnregisterCamera => id = ", objectId);
+    LogInfo("Scene::UnregisterCamera: id = ", objectId);
     auto foundCameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [objectId](const auto& camera) {
         return camera->GetObjectId() == objectId;
     });
@@ -192,7 +192,7 @@ void Scene::UnregisterAllCameras()
 
 void Scene::RegisterMaterialInstance(const std::shared_ptr<IMaterial>& material)
 {
-    LogInfo("Scene::RegisterMaterialInstance => name = ", material->MaterialName);
+    LogInfo("Scene::RegisterMaterialInstance: name = ", material->MaterialName);
 
     mMaterials.push_back(material);
 
@@ -328,7 +328,7 @@ std::weak_ptr<IDeferredResourceCreator> Scene::GetDeferredResourceCreatorByName(
         return mDeferredResourceCreators.at(name);
     }
 
-    LogInfo("Scene::GetDeferredResourceCreatorByName => missing resource creator with such name: ", name);
+    LogInfo("Scene::GetDeferredResourceCreatorByName: missing resource creator with such name: ", name);
     return std::weak_ptr<IDeferredResourceCreator>();
 }
 
@@ -523,7 +523,7 @@ void Scene::RemoveComponent(std::shared_ptr<Component> component)
 
 void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& componentSp)
 {
-    LogInfo("Scene::RegisterComponentSceneProxy => componentName = ", componentSp->GetEngineObjectName());
+    LogInfo("Scene::RegisterComponentSceneProxy: componentName = ", componentSp->GetEngineObjectName());
 
     const eComponentType type = componentSp->GetComponentType();
     if ((type & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT) {
@@ -537,7 +537,7 @@ void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& compon
                 sceneRendererSp->PrimitiveSceneProxyAdded_OnRenderThread(primitiveComponentSp, sceneProxySp);
             }
             LogInfo(
-                "Scene::RegisterComponentSceneProxy => primitive proxy added, sceneProxyId =",
+                "Scene::RegisterComponentSceneProxy: primitive proxy added, sceneProxyId =",
                 primitiveComponentSp->GetSceneProxyId());
         } else if ((type & eComponentType::LIGHT_COMPONENT) == eComponentType::LIGHT_COMPONENT) {
             const auto lightComponentSp = std::static_pointer_cast<LightComponent>(componentSp);
@@ -547,7 +547,7 @@ void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& compon
                 sceneRendererSp->LightSceneProxyAdded_OnRenderThread(lightComponentSp, sceneProxySp);
             }
             LogInfo(
-                "Scene::RegisterComponentSceneProxy => ligth proxy added, sceneProxyId =",
+                "Scene::RegisterComponentSceneProxy: ligth proxy added, sceneProxyId =",
                 lightComponentSp->GetLightSceneProxyId());
         } else if ((type & eComponentType::PLANAR_REFLECTION_COMPONENT) == eComponentType::PLANAR_REFLECTION_COMPONENT) {
             const auto planarComponentSp = std::static_pointer_cast<PlanarReflectionComponent>(componentSp);
@@ -561,7 +561,7 @@ void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& compon
                 sceneRendererSp->PlanarReflectionSceneProxyAdded_OnRenderThread(planarComponentSp, sceneProxySp);
             }
             LogInfo(
-                "Scene::RegisterComponentSceneProxy => planar reflection proxy added, sceneProxyId =",
+                "Scene::RegisterComponentSceneProxy: planar reflection proxy added, sceneProxyId =",
                 planarComponentSp->GetSceneProxyId());
         }
     }
@@ -679,7 +679,7 @@ glm::vec4 Scene::GetConvertedToClippedSpacePosition(const size_t cameraProxyId, 
             result = projectionMatrix * viewMatrix * result;
         } else {
             LogInfo(
-                "Scene::GetConvertedToClippedSpacePosition => "
+                "Scene::GetConvertedToClippedSpacePosition: "
                 "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                 cameraProxyId);
         }
@@ -693,7 +693,7 @@ glm::vec3 Scene::GetConvertedToNDCSpacePosition(const size_t cameraProxyId, cons
     const glm::vec4 clippedSpacePosition = GetConvertedToClippedSpacePosition(cameraProxyId, worldPosition);
     if (EngineMath::FloatsNearEqual(clippedSpacePosition.w, 0.0f)) {
         LogInfo(
-            "Scene::GetConvertedToNDCSpacePosition => "
+            "Scene::GetConvertedToNDCSpacePosition: "
             "Error! W is equal to zero. Potential zero division!",
             cameraProxyId);
         return glm::vec3();
@@ -719,13 +719,13 @@ std::optional<CameraFrustum> Scene::GetCameraFrustum(const size_t cameraProxyId)
                 result = sceneViewSp->GetCameraProxy()->GetCameraFrustum();
             } else {
                 LogInfo(
-                    "Scene::GetCameraFrustum => "
+                    "Scene::GetCameraFrustum: "
                     "Error! Camera Frustum wasn't built yet. Proxy index = ",
                     cameraProxyId);
             }
         } else {
             LogInfo(
-                "Scene::GetCameraFrustum => "
+                "Scene::GetCameraFrustum: "
                 "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                 cameraProxyId);
         }

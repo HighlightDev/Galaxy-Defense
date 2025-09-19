@@ -108,6 +108,14 @@ function UiTextBlock:new(host, fontName, name)
         text_vertical_alignment = {
             value = UiLabel.TextVerticalAlignmentType.TOP,
             dirty = false
+        },
+        attach_target_ui_item_name = {
+            value = "",
+            dirty = false
+        },
+        border_thickness = {
+            value = 1,
+            dirty = false
         }
     }
 
@@ -173,6 +181,13 @@ function UiTextBlock:updateFromReplicatorData(host)
             end
             if parsedJson["text_vertical_alignment"] ~= nil then
                 self.textBlockProperties.text_vertical_alignment.value = tonumber(parsedJson["text_vertical_alignment"])
+            end
+            if parsedJson["attach_target_ui_item_name"] ~= nil then
+                self.textBlockProperties.attach_target_ui_item_name.value = tostring(
+                    parsedJson["attach_target_ui_item_name"])
+            end
+            if parsedJson["border_thickness"] ~= nil then
+                self.textBlockProperties.border_thickness.value = tonumber(parsedJson["border_thickness"])
             end
         end
     end
@@ -350,6 +365,22 @@ function UiTextBlock:setTextVerticalAlignment(textVerticalAlignment)
     if self.textBlockProperties.text_vertical_alignment.value ~= textVerticalAlignment then
         self.textBlockProperties.text_vertical_alignment.value = textVerticalAlignment
         self.textBlockProperties.text_vertical_alignment.dirty = true
+    end
+end
+
+function UiTextBlock:setAttachTargetUiItemName(uiItemName)
+    assert(uiItemName ~= nil and type(uiItemName) == "string")
+    if self.textBlockProperties.attach_target_ui_item_name.value ~= uiItemName then
+        self.textBlockProperties.attach_target_ui_item_name.value = uiItemName
+        self.textBlockProperties.attach_target_ui_item_name.dirty = true
+    end
+end
+
+function UiTextBlock:setBorderThickness(thickness)
+    assert(thickness ~= nil and type(thickness) == "number")
+    if self.textBlockProperties.border_thickness.value ~= thickness then
+        self.textBlockProperties.border_thickness.value = thickness
+        self.textBlockProperties.border_thickness.dirty = true
     end
 end
 

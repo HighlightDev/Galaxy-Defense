@@ -34,7 +34,7 @@ ElectroRayChainActor::ElectroRayChainActor(
 void ElectroRayChainActor::AttachTweener(std::shared_ptr<Tweener> tweener)
 {
     assert(tweener);
-    LogInfo("ElectroRayChainActor::AttachTweener => Path to tweener", tweener->GetRelPathTweener());
+    LogInfo("ElectroRayChainActor::AttachTweener: Path to tweener", tweener->GetRelPathTweener());
 
     MissileActor::AttachTweener(tweener);
     mFadeoutTweener = tweener;
@@ -164,7 +164,7 @@ void ElectroRayChainActor::DropState()
 
 void ElectroRayChainActor::OnTweenStateChanged(const std::string& stateName)
 {
-    LogInfo("ElectroRayChainActor::OnTweenStateChanged => stateName: ", stateName);
+    LogInfo("ElectroRayChainActor::OnTweenStateChanged: stateName: ", stateName);
     if ("s_OnFadeOutFinished" == stateName) {
         mIsPendingDisable = true;
     }

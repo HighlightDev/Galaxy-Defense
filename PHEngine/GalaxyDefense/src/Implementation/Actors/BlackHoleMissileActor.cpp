@@ -23,7 +23,7 @@ BlackHoleMissileActor::BlackHoleMissileActor(
 void BlackHoleMissileActor::AttachTweener(std::shared_ptr<Tweener> tweener)
 {
     assert(tweener);
-    LogInfo("BlackHoleMissileActor::AttachTweener => Path to tweener", tweener->GetRelPathTweener());
+    LogInfo("BlackHoleMissileActor::AttachTweener: Path to tweener", tweener->GetRelPathTweener());
 
     Actor::AttachTweener(tweener);
     mBlackMissileTweener = tweener;

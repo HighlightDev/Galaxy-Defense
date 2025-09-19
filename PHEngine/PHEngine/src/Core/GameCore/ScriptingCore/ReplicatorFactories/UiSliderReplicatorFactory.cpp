@@ -49,7 +49,7 @@ int32_t UiSliderReplicatorFactory::CreateReplicator(
                 createdSlider->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiSliderReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+        LogInfo("UiSliderReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
         return -1;
     }
 

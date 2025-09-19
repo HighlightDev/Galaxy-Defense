@@ -98,13 +98,13 @@ void UiItemBase::SetParents(const std::string& uiCanvasName, const std::string& 
 
 void UiItemBase::SetIsSceneProxyReady(const bool isSceneProxyReady)
 {
-    LogInfo("UiItemBase::SetIsSceneProxyReady => name: ", mName, ", readiness value: ", isSceneProxyReady);
+    LogInfo("UiItemBase::SetIsSceneProxyReady: name: ", mName, ", readiness value: ", isSceneProxyReady);
     mIsSceneProxyReady.store(isSceneProxyReady, std::memory_order::seq_cst);
 }
 
 void UiItemBase::SetIsLuaProxyReady(const bool isLuaProxyReady)
 {
-    LogInfo("UiItemBase::SetIsLuaProxyReady => name: ", mName, ", readiness value: ", isLuaProxyReady);
+    LogInfo("UiItemBase::SetIsLuaProxyReady: name: ", mName, ", readiness value: ", isLuaProxyReady);
     mIsLuaProxyReady.store(isLuaProxyReady, std::memory_order::seq_cst);
 }
 
@@ -431,7 +431,7 @@ void UiItemBase::RebuildNormalizedTransform()
             static_cast<float>(mHeight) / static_cast<float>(rootHeight));
 
         LogInfo(
-            "UiItemBase::RebuildNormalizedTransform => uid: ",
+            "UiItemBase::RebuildNormalizedTransform: uid: ",
             mUId,
             " mAbsoluteOrigin: ",
             mAbsoluteOrigin,
@@ -453,7 +453,7 @@ void UiItemBase::RebuildBoundingArea()
 {
     const auto halfExtent = glm::ivec2(mWidth / 2, mHeight / 2);
     mBoundingArea = BoundingBox2D(mAbsoluteOrigin + halfExtent, halfExtent);
-    LogInfo("UiItemBase::RebuildBoundingArea => uid: ", mUId, " bounding box: ", mBoundingArea);
+    LogInfo("UiItemBase::RebuildBoundingArea: uid: ", mUId, " bounding box: ", mBoundingArea);
 }
 
 void UiItemBase::RecalculateAnchorPositions()
@@ -535,7 +535,7 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
         }
     }
     LogInfo(
-        "UiItemBase::CalculateHorizontalAnchorPositions => uid: ",
+        "UiItemBase::CalculateHorizontalAnchorPositions: uid: ",
         mUId,
         " mAbsoluteOrigin: ",
         mAbsoluteOrigin,
@@ -611,7 +611,7 @@ void UiItemBase::CalculateVerticalAnchorPositions()
         }
     }
     LogInfo(
-        "UiItemBase::CalculateVerticalAnchorPositions => uid: ",
+        "UiItemBase::CalculateVerticalAnchorPositions: uid: ",
         mUId,
         " mAbsoluteOrigin: ",
         mAbsoluteOrigin,
@@ -742,7 +742,7 @@ bool UiItemBase::CheckIfInterceptsMouseEvent(const glm::ivec2& currentMousePosit
 
 void UiItemBase::UpdateDependentChildrenAnchorTransform()
 {
-    LogInfo("UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name: ", GetName());
+    LogInfo("UiItemBase::UpdateDependentChildrenAnchorTransform: UiItem name: ", GetName());
     UpdateAnchorTransform();
 }
 

@@ -44,7 +44,7 @@ void IndexBufferObject::SendDataToGPU()
     BindIndexBuffer();
     m_allocatedBufferSize = sizeof(uint32_t) * m_countOfIndices;
 
-    LogInfo("IndexBufferObject::SendDataToGPU => bufferSize = ", m_allocatedBufferSize);
+    LogInfo("IndexBufferObject::SendDataToGPU: bufferSize = ", m_allocatedBufferSize);
     glBufferData(m_bufferTarget, m_allocatedBufferSize, m_data.data(), GL_STATIC_DRAW);
 
     // If data on CPU is unnecessary
@@ -60,7 +60,7 @@ void IndexBufferObject::UnbindIndexBuffer()
 
 void IndexBufferObject::CleanUp()
 {
-    LogInfo("IndexBufferObject::CleanUp => descriptor = ", m_descriptor);
+    LogInfo("IndexBufferObject::CleanUp: descriptor = ", m_descriptor);
     glDeleteBuffers(1, &m_descriptor);
 }
 

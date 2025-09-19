@@ -130,7 +130,7 @@ function UiItemBase:new()
 end
 
 function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
-    print("UiItemBase:setParent => host :" ..
+    print("UiItemBase:setParent: host :" ..
         tostring(host) ..
         ", canvas name: " .. tostring(canvasName) ..
         ", uiWidgetParentName: " ..
