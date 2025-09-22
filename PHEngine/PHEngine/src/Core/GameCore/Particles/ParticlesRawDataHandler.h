@@ -8,11 +8,11 @@
 
 namespace EngineCore {
 class ParticlesRawDataHandler {
-    size_t mTranslationDataSize;
+    const size_t mTranslationDataSize;
     size_t mTranslationActiveDataChunkSize;
-    size_t mRotationSizeDataSize;
+    const size_t mRotationSizeDataSize;
     size_t mRotationSizeActiveDataChunkSize;
-    size_t mColorDataSize;
+    const size_t mColorDataSize;
     size_t mColorActiveDataChunkSize;
 
     void* mTranslationData;
@@ -56,17 +56,17 @@ public:
     void ResetRotationSizeData();
     void ResetColorData();
 
-    inline static size_t GetTranslationVectorByteDataOffset()
+    inline static constexpr size_t GetTranslationVectorByteDataOffset()
     {
         return sizeof(float) * 3;
     }
 
-    inline static size_t GetRotationSizeByteDataOffset()
+    inline static constexpr size_t GetRotationSizeByteDataOffset()
     {
         return sizeof(float) * 2;
     }
 
-    inline static size_t GetColorByteDataOffset()
+    inline static constexpr size_t GetColorByteDataOffset()
     {
         return sizeof(float) * 4;
     }

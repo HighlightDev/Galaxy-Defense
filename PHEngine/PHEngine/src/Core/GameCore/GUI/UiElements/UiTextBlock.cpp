@@ -300,18 +300,77 @@ void UiTextBlock::RecalculatePositionAccordingToAttachTarget()
 {
     if (const auto& parentCanvasSp = mParentCanvas.lock()) {
         if (const auto targetUiItemSp = parentCanvasSp->TryFindHierarchyChildByName(mAttachTargetUiItemName)) {
-            const glm::ivec2 windowSize = glm::ivec2(
-                GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-                GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight());
-            const auto targetAbsoluteOrigin = targetUiItemSp->GetAbsoluteOrigin();
-            const auto& targetCenter
-                = targetAbsoluteOrigin + glm::ivec2(targetUiItemSp->GetWidth() / 2, targetUiItemSp->GetHeight() / 2);
-            const auto& thisHalfExtent = GetBoundingArea().GetHalfExtent();
-            // todo: take into account shrinking of size to text size
-            const glm::ivec2 newOrigin = targetCenter - glm::ivec2(GetWidth(), GetHeight());
+            const glm::ivec2 newOrigin = FindFreeAttachPosition(targetUiItemSp->GetBoundingArea());
             SetAbsoluteOrigin(newOrigin);
         }
     }
+}
+
+glm::ivec2 UiTextBlock::FindFreeAttachPosition(const BoundingBox2D<glm::ivec2>& targetUiBoundingArea) const
+{
+    glm::ivec2 result(0);
+
+    if (const auto& parentCanvasSp = mParentCanvas.lock()) {
+        const glm::ivec2 spaceSize = glm::ivec2(parentCanvasSp->GetWidth(), parentCanvasSp->GetHeight());
+        enum eCandidatePosition { TOP = 0, BOTTOM = 1, LEFT = 2, RIGHT = 3 };
+        std::array<BoundingBox2D<glm::ivec2>, 4> candidatePositionAreas;
+        const int32_t topAreaHeight = (spaceSize.y - targetUiBoundingArea.GetMax().y);
+        candidatePositionAreas[eCandidatePosition::TOP] = BoundingBox2D<glm::ivec2>(
+            glm::ivec2(spaceSize.x / 2, targetUiBoundingArea.GetMax().y + (topAreaHeight / 2)),
+            glm::ivec2(spaceSize.x / 2, topAreaHeight / 2));
+        const int32_t bottomAreaHeight = targetUiBoundingArea.GetMin().y;
+        candidatePositionAreas[eCandidatePosition::BOTTOM] = BoundingBox2D<glm::ivec2>(
+            glm::ivec2(spaceSize.x / 2, bottomAreaHeight / 2), glm::ivec2(spaceSize.x / 2, bottomAreaHeight / 2));
+        const int32_t leftAreaWidth = targetUiBoundingArea.GetMin().x;
+        candidatePositionAreas[eCandidatePosition::LEFT] = BoundingBox2D<glm::ivec2>(
+            glm::ivec2(leftAreaWidth / 2, spaceSize.y / 2), glm::ivec2(leftAreaWidth / 2, spaceSize.y / 2));
+        const int32_t rightAreaWidth = spaceSize.x - targetUiBoundingArea.GetMax().x;
+        candidatePositionAreas[eCandidatePosition::RIGHT] = BoundingBox2D<glm::ivec2>(
+            glm::ivec2(targetUiBoundingArea.GetMax().x + (rightAreaWidth / 2), spaceSize.y / 2),
+            glm::ivec2(rightAreaWidth / 2, spaceSize.y / 2));
+
+        int32_t bestAreaIndex = -1;
+        for (size_t i = 0; i < candidatePositionAreas.size(); ++i) {
+            const auto& candidateArea = candidatePositionAreas[i];
+            if (candidateArea.GetHalfExtent().x >= GetBoundingArea().GetHalfExtent().x
+                && candidateArea.GetHalfExtent().y >= GetBoundingArea().GetHalfExtent().y) {
+                bestAreaIndex = static_cast<int32_t>(i);
+                break; // take first found
+            }
+        }
+
+        if (bestAreaIndex != -1) {
+            const auto& bestArea = candidatePositionAreas[bestAreaIndex];
+            if (eCandidatePosition::TOP == bestAreaIndex) {
+                result = glm::ivec2(targetUiBoundingArea.GetOrigin().x, targetUiBoundingArea.GetMax().y);
+            } else if (eCandidatePosition::BOTTOM == bestAreaIndex) {
+                result = glm::ivec2(targetUiBoundingArea.GetOrigin().x, targetUiBoundingArea.GetMin().y - GetHeight());
+            } else if (eCandidatePosition::LEFT == bestAreaIndex) {
+                result = glm::ivec2(targetUiBoundingArea.GetMin().x - GetWidth(), targetUiBoundingArea.GetOrigin().y);
+
+            } else if (eCandidatePosition::RIGHT == bestAreaIndex) {
+                result = glm::ivec2(targetUiBoundingArea.GetMax().x, targetUiBoundingArea.GetOrigin().y);
+            }
+
+            if (result.x + GetWidth() > spaceSize.x) {
+                result.x = spaceSize.x - GetWidth();
+            }
+            if (result.x < 0) {
+                result.x = 0;
+            }
+            if (result.y + GetHeight() > spaceSize.y) {
+                result.y = spaceSize.y - GetHeight();
+            }
+            if (result.y < 0) {
+                result.y = 0;
+            }
+        } else {
+            result = glm::ivec2(spaceSize) / 2; // center
+            LogInfo("UiTextBlock::FindFreeAttachPosition: no free space found, placing in center");
+        }
+    }
+
+    return result;
 }
 
 void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)

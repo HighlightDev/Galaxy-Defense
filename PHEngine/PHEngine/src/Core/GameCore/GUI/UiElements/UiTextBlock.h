@@ -135,6 +135,8 @@ private:
     void SyncDataOnLuaThread();
 
     void RecalculatePositionAccordingToAttachTarget();
+
+    glm::ivec2 FindFreeAttachPosition(const BoundingBox2D<glm::ivec2>& targetUiBoundingArea) const;
 };
 } // namespace GUI
 } // namespace EngineCore
