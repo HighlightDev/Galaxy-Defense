@@ -143,9 +143,9 @@ void CombatLevel::CreateScene()
     const auto& levelBoundary = BoundingBox3D(
         glm::vec3(0.0f),
         glm::vec3(
-            std::abs(levelData.LevelBoundaryMax.x - levelData.LevelBoundaryMin.x),
+            std::abs(levelData.LevelBoundaryMax.x - levelData.LevelBoundaryMin.x) * 0.5f,
             50.0f,
-            std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y)));
+            std::abs(levelData.LevelBoundaryMax.y - levelData.LevelBoundaryMin.y) * 0.5f));
     spaceCamera->SetMinDistanceFromTargetToCamera(20.0f);
     spaceCamera->InitializeMaxDistanceToCamera(levelBoundary, glm::radians(60.0f));
     spaceCamera->SetDistanceFromTargetToCamera(spaceCamera->GetMaxDistanceFromTargetToCamera());
