@@ -430,20 +430,6 @@ void UiItemBase::RebuildNormalizedTransform()
             static_cast<float>(mWidth) / static_cast<float>(rootWidth),
             static_cast<float>(mHeight) / static_cast<float>(rootHeight));
 
-        LogInfo(
-            "UiItemBase::RebuildNormalizedTransform: uid: ",
-            mUId,
-            " mAbsoluteOrigin: ",
-            mAbsoluteOrigin,
-            " mWidth: ",
-            mWidth,
-            " mHeight: ",
-            mHeight,
-            " rootWidth: ",
-            rootWidth,
-            " rootHeight: ",
-            rootHeight);
-
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
@@ -453,7 +439,6 @@ void UiItemBase::RebuildBoundingArea()
 {
     const auto halfExtent = glm::ivec2(mWidth / 2, mHeight / 2);
     mBoundingArea = BoundingBox2D(mAbsoluteOrigin + halfExtent, halfExtent);
-    LogInfo("UiItemBase::RebuildBoundingArea: uid: ", mUId, " bounding box: ", mBoundingArea);
 }
 
 void UiItemBase::RecalculateAnchorPositions()
@@ -534,15 +519,6 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
             mAbsoluteOrigin.x = anchorOriginX - mWidth - rightAnchor.GetSrcAnchorMargin() + mHorizontalCenterOffset;
         }
     }
-    LogInfo(
-        "UiItemBase::CalculateHorizontalAnchorPositions: uid: ",
-        mUId,
-        " mAbsoluteOrigin: ",
-        mAbsoluteOrigin,
-        " mWidth: ",
-        mWidth,
-        " mHeight: ",
-        mHeight);
 }
 
 void UiItemBase::CalculateVerticalAnchorPositions()
@@ -610,15 +586,6 @@ void UiItemBase::CalculateVerticalAnchorPositions()
             mAbsoluteOrigin.y = anchorOriginY - mHeight - topAnchor.GetSrcAnchorMargin() + mVerticalCenterOffset;
         }
     }
-    LogInfo(
-        "UiItemBase::CalculateVerticalAnchorPositions: uid: ",
-        mUId,
-        " mAbsoluteOrigin: ",
-        mAbsoluteOrigin,
-        " mWidth: ",
-        mWidth,
-        " mHeight: ",
-        mHeight);
 }
 
 void UiItemBase::AddUiItem(const std::shared_ptr<UiItemBase>& uiItem)
@@ -742,7 +709,6 @@ bool UiItemBase::CheckIfInterceptsMouseEvent(const glm::ivec2& currentMousePosit
 
 void UiItemBase::UpdateDependentChildrenAnchorTransform()
 {
-    LogInfo("UiItemBase::UpdateDependentChildrenAnchorTransform: UiItem name: ", GetName());
     UpdateAnchorTransform();
 }
 

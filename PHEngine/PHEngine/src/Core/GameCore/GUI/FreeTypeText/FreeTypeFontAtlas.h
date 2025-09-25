@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontParams.h"
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 
@@ -53,6 +54,16 @@ public:
         return mFontTextureAtlas;
     }
 
+    inline int32_t GetFontSize() const
+    {
+        return mFontParams.PixelSize;
+    }
+
+    inline std::string GetFontName() const
+    {
+        return mFontParams.FontName;
+    }
+
 private:
     std::shared_ptr<ITexture> mFontTextureAtlas;
 
@@ -60,19 +71,19 @@ private:
 
     std::shared_ptr<FreeTypeFont> mFont;
 
-    int32_t mFontSize;
-
     glm::ivec2 mWidthHeightTexture;
 
     std::unordered_map<uint32_t, Character> mChars;
 
     FT_GlyphSlot mSlot;
 
+    FreeTypeFontParams mFontParams;
+
 private:
     void InitializeFontAtlas();
 
 public:
-    FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const int32_t pixelSize);
+    FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const FreeTypeFontParams& fontParams);
 
     bool operator==(const FreeTypeFontAtlas& right) const;
 

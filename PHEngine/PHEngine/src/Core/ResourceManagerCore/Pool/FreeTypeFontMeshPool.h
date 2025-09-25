@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFont.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontAtlas.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontParams.h"
 #include "Core/ResourceManagerCore/Policy/FreeTypeFontMeshAllocationPolicy.h"
@@ -14,6 +15,11 @@ class FreeTypeFontMeshPool : public PoolBase<FreeTypeFontAtlas, FreeTypeFontPara
 
 public:
     using poolType_t = PoolBase<FreeTypeFontAtlas, FreeTypeFontParams, FreeTypeFontMeshAllocationPolicy>;
+
+    FreeTypeFontMeshPool()
+        : poolType_t([]() { FreeTypeFont::UnloadFreeTypeFontLibrary(); })
+    {
+    }
 
     std::string ToString() const override;
 

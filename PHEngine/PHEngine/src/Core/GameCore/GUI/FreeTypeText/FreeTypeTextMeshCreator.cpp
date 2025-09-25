@@ -235,7 +235,6 @@ glm::ivec2 FreeTypeTextMeshCreator::CalcTextScreenSpaceSize(
               });
         const int32_t textWidth = maxWidthIt != lineWidths.cend() ? *maxWidthIt : 0;
         const int32_t textHeight = ftFontAtlas->GetFontFace()->getFaceHandle()->size->metrics.height >> 6;
-
         return {textWidth, static_cast<int32_t>(lineWidths.size()) * textHeight};
     }
     return {0, 0};

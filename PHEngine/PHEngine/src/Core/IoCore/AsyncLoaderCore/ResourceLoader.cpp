@@ -56,7 +56,8 @@ Resource* TextureResourceLoader::LoadResource(const std::string& key)
 #ifdef DEBUG
     const auto& resObs = ResourceUsageObserver::GetInstance();
     resObs->CollectResourceConsumptionInfo();
-    LogInfo("TextureResourceLoader::LoadResource: ", key, ", memAfterAllocation: ", resObs->GetLastMemoryUsageMegabytes());
+    LogInfo(
+        "TextureResourceLoader::LoadResource: ", key, ", memory mb after allocation: ", resObs->GetLastMemoryUsageMegabytes());
 #else
     LogInfo("TextureResourceLoader::LoadResource: ", key);
 #endif
@@ -88,7 +89,7 @@ Resource* MeshResourceLoader::LoadResource(const std::string& key)
 #ifdef DEBUG
     const auto& resObs = ResourceUsageObserver::GetInstance();
     resObs->CollectResourceConsumptionInfo();
-    LogInfo("MeshResourceLoader::LoadResource: ", key, ", memAfterAllocation: ", resObs->GetLastMemoryUsageMegabytes());
+    LogInfo("MeshResourceLoader::LoadResource: ", key, ", memory mb after allocation: ", resObs->GetLastMemoryUsageMegabytes());
 #else
     LogInfo("MeshResourceLoader::LoadResource: ", key);
 #endif
@@ -122,7 +123,7 @@ Resource* AudioResourceLoader::LoadResource(const std::string& key)
 #ifdef DEBUG
     const auto& resObs = ResourceUsageObserver::GetInstance();
     resObs->CollectResourceConsumptionInfo();
-    LogInfo("AudioResourceLoader::LoadResource: ", key, ", memAfterAllocation: ", resObs->GetLastMemoryUsageMegabytes());
+    LogInfo("AudioResourceLoader::LoadResource: ", key, ", memory mb after allocation: ", resObs->GetLastMemoryUsageMegabytes());
 #else
     LogInfo("AudioResourceLoader::LoadResource: ", key);
 #endif
@@ -140,7 +141,7 @@ Resource* AudioResourceLoader::GetStreamResource(const std::string& key)
 #ifdef DEBUG
     const auto& resObs = ResourceUsageObserver::GetInstance();
     resObs->CollectResourceConsumptionInfo();
-    LogInfo("AudioResourceLoader::GetStreamResource: ", key, ", memAfterAllocation: ", resObs->GetLastMemoryUsageMegabytes());
+    LogInfo("AudioResourceLoader::GetStreamResource: ", key, ", memory mb after allocation: ", resObs->GetLastMemoryUsageMegabytes());
 #else
     LogInfo("AudioResourceLoader::GetStreamResource: ", key);
 #endif

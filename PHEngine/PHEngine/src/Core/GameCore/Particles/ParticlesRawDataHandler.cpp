@@ -25,7 +25,6 @@ ParticlesRawDataHandler::ParticlesRawDataHandler(const size_t particlesCount)
 
 ParticlesRawDataHandler::~ParticlesRawDataHandler()
 {
-    LogInfo("ParticlesRawDataHandler::dctor");
     DeallocatePoolMemory();
 }
 

@@ -39,8 +39,10 @@ class FreeTypeFontBatcher {
 
     std::vector<std::shared_ptr<FreeTypeTextFieldProxy>> mTextFields;
 
+    FreeTypeFontParams mFontParams;
+
 public:
-    FreeTypeFontBatcher(const std::shared_ptr<FreeTypeFontAtlas>& fontAtlas);
+    FreeTypeFontBatcher(const std::shared_ptr<FreeTypeFontAtlas>& fontAtlas, const FreeTypeFontParams& fontParams);
 
     void RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
 
@@ -67,6 +69,8 @@ public:
     std::shared_ptr<FreeTypeTextFieldProxy> GetFreeTypeTextFieldById(const int32_t textFieldId) const;
 
     std::shared_ptr<ITexture> GetFontTextureAtlas() const;
+
+    const FreeTypeFontParams& GetFontParams() const;
 
 private:
     void AllocateTextSpace(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);

@@ -2,6 +2,7 @@
 
 #include "AsyncDataProxy.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/ResourceUsageObserver.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/IoCore/AsyncLoaderCore/AsyncJob.h"
 #include "Core/IoCore/FolderManager.h"
@@ -38,6 +39,7 @@ ResourceMap* ResourceMap::GetInstance()
 
 void ResourceMap::CleanUp()
 {
+    const double beforeCleanUpMemoryMb = ResourceUsageObserver::GetInstance()->GetLastMemoryUsageMegabytes();
     const bool bResourceWasntLoaded
         = std::any_of(ReadyToReadResources.begin(), ReadyToReadResources.end(), [this](const auto& resourcePair) {
               return !mAsyncDataProxy->ResourcesMap.count(resourcePair.first);
@@ -58,6 +60,12 @@ void ResourceMap::CleanUp()
     ReadyToReadResources.clear();
     AudioStreamResources.clear();
     mAsyncDataProxy->ResourcesMap.clear();
+
+    LogInfo(
+        "ResourceMap::CleanUp: before cleanup memory mb: ",
+        beforeCleanUpMemoryMb,
+        ", after cleanup memory mb: ",
+        ResourceUsageObserver::GetInstance()->GetLastMemoryUsageMegabytes());
 }
 
 ResourceMap::~ResourceMap()

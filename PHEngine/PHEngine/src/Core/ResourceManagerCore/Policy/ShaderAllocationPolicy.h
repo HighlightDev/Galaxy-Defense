@@ -30,7 +30,7 @@ struct ShaderAllocationPolicy {
 
     static void DeallocateMemory(std::shared_ptr<Shader> arg)
     {
-        LogInfo("ShaderAllocationPolicy::AllocateMemory");
+        LogInfo("ShaderAllocationPolicy::DeallocateMemory: ", arg->GetShaderName());
         arg->CleanUp(true);
     }
 };

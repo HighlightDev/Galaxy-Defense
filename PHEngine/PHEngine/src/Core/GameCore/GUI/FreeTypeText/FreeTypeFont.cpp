@@ -30,12 +30,26 @@ FreeTypeFont::~FreeTypeFont()
 {
 }
 
-void FreeTypeFont::CleanUp()
+void FreeTypeFont::UnloadFreeTypeFontLibrary()
 {
     if (s_initFlag.load(std::memory_order::seq_cst)) {
         FT_Done_FreeType(mFt);
         s_initFlag.store(false, std::memory_order::seq_cst);
     }
+}
+
+void FreeTypeFont::CleanUp()
+{
+    // Clean up previous face if it exists
+    if (mFaceInitialized) {
+        FT_Done_Face(mFace);
+        mFaceInitialized = false;
+    }
+}
+
+const std::string& FreeTypeFont::GetFontFileName() const
+{
+    return mFontFile;
 }
 
 const std::unordered_map<std::string, std::vector<uint32_t>>& FreeTypeFont::getLanguageCharMap()
@@ -81,6 +95,8 @@ void FreeTypeFont::setFontFile(const std::string& fontFile)
         FT_Done_Face(mFace);
         mFaceInitialized = false;
     }
+
+    mFontFile = fontFile;
 
     // Create a new font
     const auto error = FT_New_Face(

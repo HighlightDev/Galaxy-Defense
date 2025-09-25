@@ -33,84 +33,19 @@ CompressMessage(const char* arg)
     return std::string(arg);
 }
 
-struct FalseType {
-    enum { value = false };
-};
-
-struct TrueType {
-    enum { value = true };
-};
-
-template<typename T>
 struct ToString {
+
     template<typename U>
-    static std::string Value(U unknownType)
+    static std::string Value(const U& value)
     {
+        if constexpr ((std::is_integral_v<U>) || (std::is_floating_point_v<U>)) {
+            return std::to_string(value);
+        } else if constexpr (std::is_same_v<U, std::string>) {
+            return value;
+        } else if constexpr (std::is_same_v<U, const char*>) {
+            return std::string(value);
+        }
         return "Unknown argument type";
-    }
-};
-
-template<>
-struct ToString<bool> {
-    static std::string Value(bool simpleType)
-    {
-        return std::to_string(simpleType);
-    }
-};
-
-template<>
-struct ToString<int64_t> {
-    static std::string Value(int64_t simpleType)
-    {
-        return std::to_string(simpleType);
-    }
-};
-
-template<>
-struct ToString<int32_t> {
-    static std::string Value(int32_t simpleType)
-    {
-        return std::to_string(simpleType);
-    }
-};
-
-template<>
-struct ToString<int8_t> {
-    static std::string Value(int8_t simpleType)
-    {
-        return std::to_string(simpleType);
-    }
-};
-
-template<>
-struct ToString<uint64_t> {
-    static std::string Value(uint64_t simpleType)
-    {
-        return std::to_string(simpleType);
-    }
-};
-
-template<>
-struct ToString<uint32_t> {
-    static std::string Value(uint32_t simpleType)
-    {
-        return std::to_string(simpleType);
-    }
-};
-
-template<>
-struct ToString<uint8_t> {
-    static std::string Value(uint8_t simpleType)
-    {
-        return std::to_string(simpleType);
-    }
-};
-
-template<>
-struct ToString<float> {
-    static std::string Value(float simpleType)
-    {
-        return std::to_string(simpleType);
     }
 };
 
@@ -118,7 +53,7 @@ template<typename T>
 struct CastTypeToString {
     static std::string Do(T notStr)
     {
-        return ToString<T>::Value(notStr);
+        return ToString::Value<T>(notStr);
     }
 };
 

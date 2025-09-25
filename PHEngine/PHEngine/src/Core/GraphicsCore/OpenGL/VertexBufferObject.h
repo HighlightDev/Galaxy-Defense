@@ -43,7 +43,6 @@ public:
         , m_glType(glType)
         , m_dataCarryFlag(flag)
     {
-        LogInfo("VertexBufferObject::ctor");
     }
 
     VertexBufferObject(
@@ -61,7 +60,6 @@ public:
         , m_glType(glType)
         , m_dataCarryFlag(eDataCarryFlag::INVALIDATE)
     {
-        LogInfo("VertexBufferObject::ctor: for empty VBO");
     }
 
     virtual ~VertexBufferObject()
@@ -110,7 +108,7 @@ public:
         GenBuffer();
         BindVBO();
 
-        LogInfo("VertexBufferObject::SendDataToGPU: descriptor = ", m_descriptor, " bufferSize = ", m_allocatedBufferSize);
+        LogInfo("VertexBufferObject::SendDataToGPU: descriptor: ", m_descriptor, " bufferSize: ", m_allocatedBufferSize);
 
         glBufferData(m_bufferTarget, m_allocatedBufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
         glEnableVertexAttribArray(m_vertexAttribIndex);
@@ -150,7 +148,7 @@ public:
 
     void CleanUp() override
     {
-        LogInfo("VertexBufferObject::CleanUp: descriptor = ", m_descriptor);
+        LogInfo("VertexBufferObject::CleanUp: descriptor: ", m_descriptor);
         UnbindVBO();
         glDeleteBuffers(1, &m_descriptor);
     }

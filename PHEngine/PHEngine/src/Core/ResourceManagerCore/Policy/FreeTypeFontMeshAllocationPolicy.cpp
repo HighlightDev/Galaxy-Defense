@@ -1,11 +1,12 @@
 #include "FreeTypeFontMeshAllocationPolicy.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFont.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
-#include "Core/ResourceManagerCore/Pool/FreeTypeFontPool.h"
+#include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 
 #include <gl/glew.h>
@@ -46,13 +47,18 @@ std::shared_ptr<FreeTypeFontAtlas> FreeTypeFontMeshAllocationPolicy::AllocateMem
         vao.BindBuffersToVao();
     }
 
-    return std::make_shared<FreeTypeFontAtlas>(
-        vao, FreeTypeFontPool::GetInstance()->GetOrAllocateResource(arg.FontName), arg.PixelSize);
+    const auto fontFullPathToFile = IO::FolderManager::GetInstance()->GetFontsPath() + arg.FontName + ".ttf";
+    const auto& font = std::make_shared<FreeTypeFont>(fontFullPathToFile);
+    return std::make_shared<FreeTypeFontAtlas>(vao, font, arg);
 }
 
 void FreeTypeFontMeshAllocationPolicy::DeallocateMemory(const std::shared_ptr<FreeTypeFontAtlas>& arg)
 {
-    LogInfo("FreeTypeFontMeshAllocationPolicy::DeallocateMemory: ", arg->GetBuffer()->GetDescriptor());
+    LogInfo(
+        "FreeTypeFontMeshAllocationPolicy::DeallocateMemory: descriptor: ",
+        arg->GetBuffer()->GetDescriptor(),
+        " FontSize: ",
+        arg->GetFontSize());
     arg->CleanUp();
 }
 

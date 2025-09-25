@@ -29,8 +29,8 @@ template<>
 struct CastTypeToString<glm::vec2> {
     static std::string Do(const glm::vec2& value)
     {
-        return "vec2:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x)
-            + " y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "}";
+        return "vec2:{x=" + TinyLogger::LogHelp::ToString::Value<float>(value.x)
+            + " y=" + TinyLogger::LogHelp::ToString::Value<float>(value.y) + "}";
     }
 };
 
@@ -38,8 +38,8 @@ template<>
 struct CastTypeToString<glm::ivec2> {
     static std::string Do(const glm::ivec2& value)
     {
-        return "ivec2:{x=" + TinyLogger::LogHelp::ToString<int32_t>::Value(value.x)
-            + " y=" + TinyLogger::LogHelp::ToString<int32_t>::Value(value.y) + "}";
+        return "ivec2:{x=" + TinyLogger::LogHelp::ToString::Value<int32_t>(value.x)
+            + " y=" + TinyLogger::LogHelp::ToString::Value<int32_t>(value.y) + "}";
     }
 };
 
@@ -47,9 +47,9 @@ template<>
 struct CastTypeToString<glm::vec3> {
     static std::string Do(const glm::vec3& value)
     {
-        return "vec3:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x)
-            + " y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y)
-            + " z=" + TinyLogger::LogHelp::ToString<float>::Value(value.z) + "}";
+        return "vec3:{x=" + TinyLogger::LogHelp::ToString::Value<float>(value.x)
+            + " y=" + TinyLogger::LogHelp::ToString::Value<float>(value.y)
+            + " z=" + TinyLogger::LogHelp::ToString::Value<float>(value.z) + "}";
     }
 };
 
@@ -57,9 +57,9 @@ template<>
 struct CastTypeToString<glm::vec4> {
     static std::string Do(const glm::vec4& value)
     {
-        return "vec4:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + " y="
-            + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "z=" + TinyLogger::LogHelp::ToString<float>::Value(value.z)
-            + "w=" + TinyLogger::LogHelp::ToString<float>::Value(value.w) + "}";
+        return "vec4:{x=" + TinyLogger::LogHelp::ToString::Value<float>(value.x) + " y="
+            + TinyLogger::LogHelp::ToString::Value<float>(value.y) + " z=" + TinyLogger::LogHelp::ToString::Value<float>(value.z)
+            + " w=" + TinyLogger::LogHelp::ToString::Value<float>(value.w) + "}";
     }
 };
 
@@ -67,10 +67,10 @@ template<>
 struct CastTypeToString<glm::quat> {
     static std::string Do(const glm::quat& value)
     {
-        return "quat:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x)
-            + " y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + ","
-            + "z=" + TinyLogger::LogHelp::ToString<float>::Value(value.z)
-            + "w=" + TinyLogger::LogHelp::ToString<float>::Value(value.w) + "}";
+        return "quat:{x=" + TinyLogger::LogHelp::ToString::Value<float>(value.x)
+            + " y=" + TinyLogger::LogHelp::ToString::Value<float>(value.y) + ","
+            + " z=" + TinyLogger::LogHelp::ToString::Value<float>(value.z)
+            + " w=" + TinyLogger::LogHelp::ToString::Value<float>(value.w) + "}";
     }
 };
 
@@ -78,52 +78,52 @@ template<>
 struct CastTypeToString<glm::mat4> {
     static std::string Do(const glm::mat4& value)
     {
-        return "mat4:{[0][0]=" + TinyLogger::LogHelp::ToString<float>::Value(value[0][0])
+        return "mat4:{[0][0]=" + TinyLogger::LogHelp::ToString::Value<float>(value[0][0])
             + ","
               "[0][1]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[0][1])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[0][1])
             + ","
               "[0][2]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[0][2])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[0][2])
             + ","
               "[0][3]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[0][3])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[0][3])
             + ","
               "[1][0]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[1][0])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[1][0])
             + ","
               "[1][1]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[1][1])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[1][1])
             + ","
               "[1][2]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[1][2])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[1][2])
             + ","
               "[1][3]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[1][3])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[1][3])
             + ","
               "[2][0]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[2][0])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[2][0])
             + ","
               "[2][1]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[2][1])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[2][1])
             + ","
               "[2][2]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[2][2])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[2][2])
             + ","
               "[2][3]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[2][3])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[2][3])
             + ","
               "[3][0]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[3][0])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[3][0])
             + ","
               "[3][1]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[3][1])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[3][1])
             + ","
               "[3][2]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[3][2])
+            + TinyLogger::LogHelp::ToString::Value<float>(value[3][2])
             + ","
               "[3][3]="
-            + TinyLogger::LogHelp::ToString<float>::Value(value[3][3]) + "}";
+            + TinyLogger::LogHelp::ToString::Value<float>(value[3][3]) + "}";
     }
 };
 

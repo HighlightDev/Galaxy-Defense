@@ -7,10 +7,10 @@
 #include <gl/glew.h>
 
 namespace EngineCore::GUI {
-FreeTypeFontAtlas::FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const int32_t pixelSize)
+FreeTypeFontAtlas::FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const FreeTypeFontParams& fontParams)
     : m_buffer(vao)
     , mFont(font)
-    , mFontSize(pixelSize)
+    , mFontParams(fontParams)
     , mWidthHeightTexture(0, 0)
 {
     InitializeFontAtlas();
@@ -29,16 +29,24 @@ VertexArrayObject* FreeTypeFontAtlas::GetBuffer()
 void FreeTypeFontAtlas::CleanUp()
 {
     m_buffer.CleanUp();
+    mFontTextureAtlas->CleanUp();
+    mFont->CleanUp();
 }
 
 void FreeTypeFontAtlas::InitializeFontAtlas()
 {
+    LogInfo(
+        "FreeTypeFontAtlas::InitializeFontAtlas: Initializing font atlas for font '",
+        mFont->GetFontFileName(),
+        "' with size ",
+        mFontParams.PixelSize);
+
     const auto face = mFont->getFaceHandle();
     mSlot = face->glyph;
     FT_Set_Pixel_Sizes(
         face, // Font face handle
         0, // Pixel width  (0 defaults to pixel height)
-        mFontSize); // Pixel height (0 defaults to pixel width)
+        mFontParams.PixelSize); // Pixel height (0 defaults to pixel width)
 
     // Map language codes to sets of UTF-8 character codes
     const std::unordered_map<std::string, std::vector<uint32_t>>& languageCharMap = FreeTypeFont::getLanguageCharMap();

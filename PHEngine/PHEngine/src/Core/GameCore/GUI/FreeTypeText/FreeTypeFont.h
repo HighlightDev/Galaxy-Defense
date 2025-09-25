@@ -18,9 +18,13 @@ public:
 
     FT_Face getFaceHandle();
 
-    static void CleanUp();
+    void CleanUp();
+
+    static void UnloadFreeTypeFontLibrary();
 
     static const std::unordered_map<std::string, std::vector<uint32_t>>& getLanguageCharMap();
+
+    const std::string& GetFontFileName() const;
 
 private:
     static std::atomic_bool s_initFlag;
@@ -32,5 +36,7 @@ private:
     bool mFaceInitialized = false;
 
     static bool mLanguageMapInitialized;
+
+    std::string mFontFile;
 };
 } // namespace EngineCore::GUI

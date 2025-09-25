@@ -23,11 +23,14 @@ FreeTypeTextVertexChunkData::FreeTypeTextVertexChunkData()
 {
 }
 
-FreeTypeFontBatcher::FreeTypeFontBatcher(const std::shared_ptr<FreeTypeFontAtlas>& fontAtlas)
+FreeTypeFontBatcher::FreeTypeFontBatcher(
+    const std::shared_ptr<FreeTypeFontAtlas>& fontAtlas, const FreeTypeFontParams& fontParams)
     : mPositionChunkData()
     , mTextureCoordinatesChunkData()
     , mVerticesCount(0)
     , mTextFontAtlas(fontAtlas)
+    , mTextFields()
+    , mFontParams(fontParams)
 {
 }
 
@@ -93,8 +96,12 @@ void FreeTypeFontBatcher::FontBufferSubData(
     VertexBufferObjectBase* const textureCoordinatesVBO)
 {
     const auto displayDeviceProvider = EngineCore::DataProviders::GeneralSystemSettingsDataProvider::GetInstance();
-
     FreeTypeTextMeshCreator textMeshCreator;
+    ext_assert(
+        textFieldProxy->GetFontSize() == mTextFontAtlas->GetFontSize(),
+        "Font size mismatch! Expected: " + std::to_string(mTextFontAtlas->GetFontSize())
+            + ", got: " + std::to_string(textFieldProxy->GetFontSize()));
+
     const auto& [vertexPositions, textCoordinates] = textMeshCreator.CreateTextMesh(textFieldProxy, mTextFontAtlas);
     assert(vertexPositions.size() == textCoordinates.size());
     // positions
@@ -239,6 +246,11 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeFontBatcher::GetFreeTypeTextFiel
     return it != mTextFields.end() ? *it : nullptr;
 }
 
+const FreeTypeFontParams& FreeTypeFontBatcher::GetFontParams() const
+{
+    return mFontParams;
+}
+
 FreeTypeFontHandler::FreeTypeFontHandler()
     : mFontBatcherMap()
 {
@@ -249,7 +261,7 @@ void FreeTypeFontHandler::RegisterFont(const FreeTypeFontParams& fontParams) con
     assert(mFontBatcherMap.count(fontParams) == 0);
     const auto& fontTextureAtlas = FreeTypeFontMeshPool::GetInstance()->GetOrAllocateResource(fontParams);
     assert(fontTextureAtlas);
-    mFontBatcherMap.emplace(fontParams, std::make_shared<FreeTypeFontBatcher>(fontTextureAtlas));
+    mFontBatcherMap.emplace(fontParams, std::make_shared<FreeTypeFontBatcher>(fontTextureAtlas, fontParams));
 
     const size_t maxFontCharactersCount = EngineConfigHolder::GetInstance()->GetEngineConfig().MaxFontCharactersCount;
     constexpr size_t verticesPerCharacter = 6;
@@ -289,6 +301,10 @@ void FreeTypeFontHandler::UnregisterText(const int32_t textFieldProxyId)
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
     assert(batcherSp != nullptr);
     batcherSp->UnregisterText(textFieldProxyId);
+    if (batcherSp->GetFreeTypeTextFieldProxies().empty()) {
+        FreeTypeFontMeshPool::GetInstance()->TryToFreeMemory(batcherSp->GetFontParams());
+        mFontBatcherMap.erase(batcherSp->GetFontParams());
+    }
 }
 
 void FreeTypeFontHandler::TextPositionChanged(const int32_t textFieldProxyId, const glm::vec2& position)
