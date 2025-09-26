@@ -4,9 +4,12 @@
 #include "Implementation/Levels/Editor/EditorLevel.h"
 #include "Implementation/Levels/MainMenu/MainMenuLevel.h"
 
+#include "Core/GameCore/LoggerExtension.h"
+
 namespace Game {
 std::shared_ptr<Level> GameLevelFactory::CreateLevel(const std::string& levelName) const
 {
+    LogInfo("GameLevelFactory::CreateLevel: ", levelName);
     if ("MainMenuLevel" == levelName) {
         return std::make_shared<MainMenuLevel>();
     } else if ("CombatLevel" == levelName) {

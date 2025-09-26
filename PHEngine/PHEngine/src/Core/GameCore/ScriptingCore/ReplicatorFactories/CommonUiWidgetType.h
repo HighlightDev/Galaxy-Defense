@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace EngineCore {
 namespace Scripts {
 enum class eCommonUiWidgetType {
@@ -16,5 +18,7 @@ enum class eCommonUiWidgetType {
     UI_SLIDER_BAR = 10,
     UI_TEXT_BLOCK = 11
 };
-}
+
+std::string CommonUiWidgetTypeToString(const eCommonUiWidgetType type);
+} // namespace Scripts
 } // namespace EngineCore

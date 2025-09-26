@@ -22,7 +22,7 @@ void GameThreadTimersHolder::RegisterTimerInstance(std::shared_ptr<GameThreadTim
 {
     LogInfo(
         "GameThreadTimersHolder::RegisterTimerInstance: instanceID: ",
-        instance,
+        instance->GetInstanceId(),
         ", threadName: ",
         ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads());
     mTimerInstances.emplace_back(instance);

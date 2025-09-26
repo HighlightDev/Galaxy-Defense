@@ -29,6 +29,7 @@ Actor::Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore
 
     AddEngineProperty(mIsVisible);
     AddEngineProperty(mIsEnabled);
+    LogInfo("Actor::ctor: id: ", GetObjectId(), ", name: ", GetName());
 }
 
 Actor::~Actor()
@@ -215,7 +216,7 @@ void Actor::ChangeTweenerState(const std::string& tweenerName, const std::string
         } else {
             if (bLastTweenerChangeWasValid) {
                 bLastTweenerChangeWasValid = false;
-                LogInfo("Actor::ChangeTweenerState: missing tweener ", tweenerName);
+                LogInfo("Actor::ChangeTweenerState: Warning: missing tweener ", tweenerName);
             }
         }
     }

@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/CommonCore/ThreadHelper.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/EnginePropertyType.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationInterpolationFunctionType.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -16,7 +17,6 @@
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetFactoryCreator.h"
 #include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetType.h"
-#include  "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 
 #include <json/json.hpp>
 
@@ -236,7 +236,7 @@ int32_t LuaCommonUiFunctions::CreateCommonUiWidget(const std::tuple<int32_t, std
     const int32_t luaProxyId = replicatorFactory->CreateReplicator(mSceneWp, mLuaScriptProcessor, jsonParametersStr);
     LogInfo(
         "LuaCommonUiFunctions::CreateCommonUiWidget: widgetType: ",
-        static_cast<uint8_t>(commonUiWidgetType),
+        CommonUiWidgetTypeToString(commonUiWidgetType),
         ", luaProxyId: ",
         luaProxyId);
     return luaProxyId;

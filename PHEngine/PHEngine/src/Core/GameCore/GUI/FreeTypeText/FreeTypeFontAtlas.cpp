@@ -7,7 +7,8 @@
 #include <gl/glew.h>
 
 namespace EngineCore::GUI {
-FreeTypeFontAtlas::FreeTypeFontAtlas(const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const FreeTypeFontParams& fontParams)
+FreeTypeFontAtlas::FreeTypeFontAtlas(
+    const VertexArrayObject& vao, std::shared_ptr<FreeTypeFont> font, const FreeTypeFontParams& fontParams)
     : m_buffer(vao)
     , mFont(font)
     , mFontParams(fontParams)
@@ -118,7 +119,7 @@ void FreeTypeFontAtlas::InitializeFontAtlas()
         }
     }
 
-    mFontTextureAtlas = std::make_shared<Texture2d>(texID, mWidthHeightTexture);
+    mFontTextureAtlas = std::make_shared<Texture2d>(texID, mWidthHeightTexture, "font_" + mFont->GetFontFileName());
 }
 
 } // namespace EngineCore::GUI

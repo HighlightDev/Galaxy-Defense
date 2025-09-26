@@ -66,7 +66,7 @@ void PlanarReflectionFramebuffer::SetRenderbuffers()
 {
     mReflectionRenderTargetSurface.BindFramebuffer(GL_FRAMEBUFFER, true);
     mReflectionRenderTargetSurface.CreateRenderBuffer(
-        GL_DEPTH_COMPONENT24, GL_DEPTH_ATTACHMENT, mReflectionTexture->GetTextureRezolution());
+        GL_DEPTH_COMPONENT24, GL_DEPTH_ATTACHMENT, mReflectionTexture->GetTextureResolution());
 }
 
 void PlanarReflectionFramebuffer::RenderToTexture()
@@ -87,7 +87,7 @@ void PlanarReflectionFramebuffer::CleanUp()
 
 void PlanarReflectionFramebuffer::ResolveReflectionRenderTargetSurfaceData()
 {
-    auto rezolution = mReflectionTexture->GetTextureRezolution();
+    auto rezolution = mReflectionTexture->GetTextureResolution();
     mReflectionRenderTargetSurface.BindFramebuffer(GL_READ_FRAMEBUFFER, true, false);
     mReflectionTextureSurface.BindFramebuffer(GL_DRAW_FRAMEBUFFER, true, false);
 

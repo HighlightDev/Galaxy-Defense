@@ -476,7 +476,6 @@ void Scene::ProcessEvent(const MouseButtonDownRootEvent* sender, const MouseButt
 
     auto recieverType = eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS;
     if (mUiHandler->CheckIfUiInterceptsMouseEvent(glm::ivec2(currentMousePosition.x, invertedScreenYPosition))) {
-        LogInfo("Scene::MouseButtonDownRootEvent: Mouse press events will be propagated only to UI input system");
         recieverType
             = eMouseEventTargetReceiverType::UI_INPUT_SYSTEM; // Mouse press events will be propagated only to UI input system
     }
@@ -536,9 +535,6 @@ void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& compon
             if (const auto& sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock()) {
                 sceneRendererSp->PrimitiveSceneProxyAdded_OnRenderThread(primitiveComponentSp, sceneProxySp);
             }
-            LogInfo(
-                "Scene::RegisterComponentSceneProxy: primitive proxy added, sceneProxyId =",
-                primitiveComponentSp->GetSceneProxyId());
         } else if ((type & eComponentType::LIGHT_COMPONENT) == eComponentType::LIGHT_COMPONENT) {
             const auto lightComponentSp = std::static_pointer_cast<LightComponent>(componentSp);
             const auto sceneProxySp = lightComponentSp->CreateSceneProxy();
@@ -546,9 +542,6 @@ void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& compon
             if (const auto& sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock()) {
                 sceneRendererSp->LightSceneProxyAdded_OnRenderThread(lightComponentSp, sceneProxySp);
             }
-            LogInfo(
-                "Scene::RegisterComponentSceneProxy: ligth proxy added, sceneProxyId =",
-                lightComponentSp->GetLightSceneProxyId());
         } else if ((type & eComponentType::PLANAR_REFLECTION_COMPONENT) == eComponentType::PLANAR_REFLECTION_COMPONENT) {
             const auto planarComponentSp = std::static_pointer_cast<PlanarReflectionComponent>(componentSp);
             const auto sceneProxySp = planarComponentSp->CreatePlanarReflectionProxy();
@@ -560,9 +553,8 @@ void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& compon
                     sceneProxySp, ownerCameraSp->GetCameraProxyId());
                 sceneRendererSp->PlanarReflectionSceneProxyAdded_OnRenderThread(planarComponentSp, sceneProxySp);
             }
-            LogInfo(
-                "Scene::RegisterComponentSceneProxy: planar reflection proxy added, sceneProxyId =",
-                planarComponentSp->GetSceneProxyId());
+        } else {
+            LogInfo("Scene::RegisterComponentSceneProxy: Warning: unsupported scene component type");
         }
     }
 }

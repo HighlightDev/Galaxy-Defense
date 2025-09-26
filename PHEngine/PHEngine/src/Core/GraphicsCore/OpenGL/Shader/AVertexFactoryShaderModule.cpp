@@ -25,14 +25,12 @@ void AVertexFactoryShaderModule::AccessAllUniformLocations(uint32_t shaderProgra
 
 void AVertexFactoryShaderModule::ProcessAllPredefines()
 {
-    LogInfo("AVertexFactoryShaderModule::ProcessAllPredefines");
     mVertexFactoryShader->ProcessAllPredefines();
     GetBaseShader()->ProcessAllPredefines();
 }
 
 bool AVertexFactoryShaderModule::AssembleShaderSource()
 {
-    LogInfo("AVertexFactoryShaderModule::AssembleShaderSource");
     const std::string vertexFactoryShaderSource = mVertexFactoryShader->GetShaderSource();
 
     ShaderParams shaderParams = GetBaseShader()->GetShaderParams();
@@ -59,7 +57,6 @@ bool AVertexFactoryShaderModule::AssembleShaderSource()
 
 void AVertexFactoryShaderModule::Init()
 {
-    LogInfo("AVertexFactoryShaderModul::Init");
     ProcessAllPredefines();
 
     const bool bShaderLoadedSuccessfully = AssembleShaderSource();
@@ -76,7 +73,6 @@ void AVertexFactoryShaderModule::Init()
 
 void AVertexFactoryShaderModule::RecompileShader()
 {
-    LogInfo("AVertexFactoryShaderModul::RecompileShader");
     CleanUp(false);
     Init();
 }

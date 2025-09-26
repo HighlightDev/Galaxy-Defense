@@ -35,8 +35,6 @@ void PhysicsComponent::CleanUp()
 
 void PhysicsComponent::SetOwner(const std::weak_ptr<Actor>& ownerActor)
 {
-    LogInfo("PhysicsComponent::SetOwner");
-
     Component::SetOwner(ownerActor);
     const auto& ownerActorSp = ownerActor.lock();
     assert(ownerActorSp);

@@ -22,7 +22,6 @@ IShader::IShader(const std::string& shaderName)
     , m_shaderProgramID(-1)
     , mShaderName(shaderName)
 {
-    LogInfo("IShader::ctor: shaderName = ", shaderName);
 }
 
 IShader::~IShader()
@@ -45,12 +44,7 @@ Uniform IShader::GetUniform(const std::string& uniformName, uint32_t shaderProgr
     try {
         return Uniform(shaderProgramID, uniformName);
     } catch (std::invalid_argument innerEx) {
-        LogInfo(
-            "IShader::GetUniform: shaderName = ",
-            mShaderName,
-            " could not bind uniform. Inner exception message : \n",
-            innerEx.what());
-        throw std::invalid_argument("IShader::GetUniform could not bind uniform");
+        ext_assert(false, "IShader::GetUniform: shaderName = " + mShaderName + " could not bind uniform");
     }
 }
 
@@ -148,7 +142,6 @@ bool IShader::ProcessShaderIncludes(std::string& shaderSource)
 
 bool IShader::SendToGpuSingleShaderSource(int32_t shaderId, const std::string& shaderSource) const
 {
-    LogInfo("IShader::SendToGpuSingleShaderSource: shaderId = ", shaderId);
     bool bLoadResult = false;
 
     try {
@@ -499,7 +492,6 @@ void IShader::AccessAllUniformLocations(uint32_t shaderProgramId)
 #if DEBUG
     const auto compileErrorString = GetCompileLogInfo();
     const auto linkErrorString = GetLinkLogInfo();
-    LogInfo("IShader::AccessAllUniformLocations: shaderProgramId = ", shaderProgramId);
     if (compileErrorString != "" || linkErrorString != "") {
         LogInfo("ERROR: Shader compilation errors: ", compileErrorString);
         LogInfo("ERROR: Shader linkage errors: ", linkErrorString);
@@ -513,7 +505,7 @@ void IShader::AccessAllSubroutineIndices(uint32_t shaderProgramID)
 
 void IShader::CleanUp(bool bDeleteShaderProgram)
 {
-    LogInfo("IShader::CleanUp: shaderProgramID = ", m_shaderProgramID, " bDeleteShaderProgram = ", bDeleteShaderProgram);
+    LogInfo("IShader::CleanUp: shaderName: ", mShaderName, " bDeleteShaderProgram: ", bDeleteShaderProgram);
     StopShader();
     glDetachShader(m_shaderProgramID, m_vertexShaderID);
     glDetachShader(m_shaderProgramID, m_fragmentShaderID);

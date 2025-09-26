@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/Components/AudioComponents/StreamingSoundComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
@@ -33,6 +34,7 @@ MainMenuLevel::~MainMenuLevel()
 
 void MainMenuLevel::PreLevelInit()
 {
+    LogInfo("MainMenuLevel::PreLevelInit");
     Base::PreLevelInit();
     const auto sceneSp = mSceneWp.lock();
     assert(sceneSp);
@@ -47,6 +49,7 @@ void MainMenuLevel::CreateScene()
 
 void MainMenuLevel::RunLuaBuildLevelScript()
 {
+    LogInfo("MainMenuLevel::RunLuaBuildLevelScript");
     const auto sceneSp = mSceneWp.lock();
     assert(sceneSp);
     LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("MainMenuLvl.lua");
@@ -59,6 +62,7 @@ void MainMenuLevel::RunLuaBuildLevelScript()
 
 void MainMenuLevel::PostLevelInit()
 {
+    LogInfo("MainMenuLevel::PostLevelInit");
     Base::PostLevelInit();
 
 #ifdef DEBUG
@@ -82,6 +86,7 @@ void MainMenuLevel::PostLevelInit()
 
 void MainMenuLevel::PostPlayLevelFinished()
 {
+    LogInfo("MainMenuLevel::PostPlayLevelFinished");
     Base::PostPlayLevelFinished();
     mUiController->PostPlayLevelFinished();
 
@@ -94,30 +99,32 @@ void MainMenuLevel::PostPlayLevelFinished()
 
 void MainMenuLevel::InitLevel()
 {
+    LogInfo("MainMenuLevel::InitLevel");
     Base::InitLevel();
     CreateScene();
     mUiController->OnLevelInit();
 
     using namespace std::literals::chrono_literals;
-    mFileWatcher = std::make_unique<FileWatcher>(
-        "./res/scripts/", 1000ms, [this](const std::string& path, const FileStatus fileStatus) {
-            if (FileStatus::MODIFIED != fileStatus) {
-                return;
-            }
-            const auto beforeFileNameBeginIndex = EngineUtility::LastIndexOf(path, std::string(1, SLASH));
-            if (beforeFileNameBeginIndex != std::string::npos) {
-                const auto& fileName = path.substr(beforeFileNameBeginIndex + 1);
-                const auto& fileExtension = fileName.substr(EngineUtility::IndexOf(fileName, ".") + 1);
-                if ("lua" == fileExtension) {
-                    LogInfo("MainMenuLevel::FileWatcher::fileSatusChanged: fileName: ", fileName, " modified. Reload scripts.");
-                    RestartLuaScripts();
-                }
-            }
-        });
+    mFileWatcher
+        = std::make_unique<FileWatcher>("./res/scripts/", 1000ms, [this](const std::string& path, const FileStatus fileStatus) {
+              if (FileStatus::MODIFIED != fileStatus) {
+                  return;
+              }
+              const auto beforeFileNameBeginIndex = EngineUtility::LastIndexOf(path, std::string(1, SLASH));
+              if (beforeFileNameBeginIndex != std::string::npos) {
+                  const auto& fileName = path.substr(beforeFileNameBeginIndex + 1);
+                  const auto& fileExtension = fileName.substr(EngineUtility::IndexOf(fileName, ".") + 1);
+                  if ("lua" == fileExtension) {
+                      LogInfo("MainMenuLevel::FileWatcher::fileSatusChanged: fileName: ", fileName, " modified. Reload scripts.");
+                      RestartLuaScripts();
+                  }
+              }
+          });
 }
 
 void MainMenuLevel::UnloadLevel()
 {
+    LogInfo("MainMenuLevel::UnloadLevel");
     mUiController->CleanUp();
     mUiController.reset();
 }

@@ -12,11 +12,11 @@ class CubemapTexture : public ITexture {
     std::vector<TexParams> m_texParams;
 
 public:
-    CubemapTexture(const std::vector<std::string>& pathToTextures);
+    CubemapTexture(const std::vector<std::string>& pathToTextures, const std::string& textureName);
 
-    CubemapTexture(TexParams cubemapTexParams);
+    CubemapTexture(TexParams cubemapTexParams, const std::string& textureName);
 
-    virtual ~CubemapTexture();
+    ~CubemapTexture() override = default;
 
     void BindTexture(uint32_t textureSlot) const override;
 
@@ -26,7 +26,7 @@ public:
 
     uint32_t GetTextureDescriptor() const override;
 
-    glm::ivec2 GetTextureRezolution() const override;
+    glm::ivec2 GetTextureResolution() const override;
 
     TexParams GetTextureParameters() const override;
 

@@ -55,9 +55,9 @@ std::shared_ptr<FreeTypeFontAtlas> FreeTypeFontMeshAllocationPolicy::AllocateMem
 void FreeTypeFontMeshAllocationPolicy::DeallocateMemory(const std::shared_ptr<FreeTypeFontAtlas>& arg)
 {
     LogInfo(
-        "FreeTypeFontMeshAllocationPolicy::DeallocateMemory: descriptor: ",
-        arg->GetBuffer()->GetDescriptor(),
-        " FontSize: ",
+        "FreeTypeFontMeshAllocationPolicy::DeallocateMemory: font: ",
+        arg->GetFontFace()->GetFontFileName(),
+        " font size: ",
         arg->GetFontSize());
     arg->CleanUp();
 }

@@ -38,7 +38,7 @@ void ProjectedPointLightShadowInfo::BindShadowFramebuffer(bool bBindFramebuffer,
 {
     ProjectedShadowInfo::BindShadowFramebuffer(bBindFramebuffer, clearDepthBuffer);
 
-    auto rezolution = mShadowmapHandler->GetAtlasResource()->GetTextureRezolution();
+    auto rezolution = mShadowmapHandler->GetAtlasResource()->GetTextureResolution();
     const GLbitfield clearDepthFlag = GL_DEPTH_BUFFER_BIT;
     m_shadowFramebuffer->RenderToTexture(bBindFramebuffer, 0, 0, rezolution.x, rezolution.y, clearDepthFlag);
 }

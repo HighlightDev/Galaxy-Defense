@@ -49,7 +49,7 @@ void ResolvedSceneFramebuffer::SetRenderbuffers()
 {
     mFramebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
     mFramebuffer->CreateRenderBuffer(
-        GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_resolvedSceneColorBuffer->GetTextureRezolution());
+        GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_resolvedSceneColorBuffer->GetTextureResolution());
 }
 
 void ResolvedSceneFramebuffer::CleanUp()
@@ -138,7 +138,7 @@ void ResolvedSceneFramebuffer::ResizeRenderTargets(const ViewPortInfo& viewPortI
     mFramebuffer->RebindFramebufferTextures();
 
     mFramebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
-    mFramebuffer->ResizeRenderBufferStorage(GL_DEPTH24_STENCIL8, m_resolvedSceneColorBuffer->GetTextureRezolution());
+    mFramebuffer->ResizeRenderBufferStorage(GL_DEPTH24_STENCIL8, m_resolvedSceneColorBuffer->GetTextureResolution());
 }
 
 void ResolvedSceneFramebuffer::TryToFreeRenderTargetTextures()

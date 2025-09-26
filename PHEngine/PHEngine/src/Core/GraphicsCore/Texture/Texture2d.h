@@ -17,11 +17,11 @@ private:
     ITextureMipMapState* m_mipmapState;
 
 public:
-    Texture2d(const std::string& pathToTex, ITextureMipMapState* mipmapState);
+    Texture2d(const std::string& pathToTex, ITextureMipMapState* mipmapState, const std::string& textureName);
 
-    Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH);
+    Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH, const std::string& textureName);
 
-    Texture2d(const TexParams& textureParameters);
+    Texture2d(const TexParams& textureParameters, const std::string& textureName);
 
     virtual ~Texture2d();
 
@@ -36,7 +36,7 @@ public:
         return m_texDescriptor;
     }
 
-    inline glm::ivec2 GetTextureRezolution() const
+    inline glm::ivec2 GetTextureResolution() const
     {
         return glm::ivec2(m_textureParams.TexBufferWidth, m_textureParams.TexBufferHeight);
     }

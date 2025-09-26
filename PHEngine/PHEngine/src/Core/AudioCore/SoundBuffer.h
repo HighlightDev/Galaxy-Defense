@@ -5,14 +5,18 @@
 #include <AL/al.h>
 #include <AL/alext.h>
 
+#include <string>
+
 using namespace IO::Audio;
 
 namespace EngineCore {
 class SoundBuffer {
     ALuint mBufferDesc;
 
+    std::string mSoundName;
+
 public:
-    SoundBuffer(const ALvoid* soundData, const AudioResourceInfo& audioInfo);
+    SoundBuffer(const ALvoid* soundData, const AudioResourceInfo& audioInfo, const std::string& soundName);
 
     ~SoundBuffer();
 
@@ -21,6 +25,8 @@ public:
     void CleanUp();
 
     ALuint GetBufferDesc() const;
+
+    std::string GetSoundName() const;
 
 private:
     void Init(const ALvoid* soundData, const AudioResourceInfo& audioInfo);

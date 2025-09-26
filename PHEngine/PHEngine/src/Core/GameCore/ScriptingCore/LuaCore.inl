@@ -539,9 +539,7 @@ struct LuaFunctionInvoker<void(Args...)> {
 #ifdef DEBUG
         const auto& errorMsg = instanceWrapper.GetErrorMessageAt(-1);
         if (errorMsg.size() > 1) {
-            std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
-            LogInfo("ERROR: Lua script execution failed:", errorMsg);
-            assert(false);
+            ext_assert(false, "ERROR: Lua script execution failed:" + errorMsg);
         }
 #endif
     }

@@ -15,22 +15,18 @@ using namespace IO;
 namespace Graphics {
 namespace Texture {
 
-CubemapTexture::CubemapTexture(const std::vector<std::string>& pathToTextures)
+CubemapTexture::CubemapTexture(const std::vector<std::string>& pathToTextures, const std::string& textureName)
+    : ITexture(textureName)
+    , m_texParams()
 {
     m_texDescriptor = CreateCubemapTexture(pathToTextures);
-    LogInfo("CubemapTexture::ctor(const std::vector<std::string> &): m_texDescriptor = ", m_texDescriptor);
 }
 
-CubemapTexture::CubemapTexture(TexParams cubemapTexParams)
-    : m_texParams({cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams})
+CubemapTexture::CubemapTexture(TexParams cubemapTexParams, const std::string& textureName)
+    : ITexture(textureName)
+    , m_texParams({cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams})
 {
     m_texDescriptor = CreateEmptyCubemapTexture();
-    LogInfo("CubemapTexture::ctor(TexParams): m_texDescriptor = ", m_texDescriptor);
-}
-
-CubemapTexture::~CubemapTexture()
-{
-    LogInfo("CubemapTexture::dctor");
 }
 
 uint32_t CubemapTexture::CreateEmptyCubemapTexture()
@@ -142,7 +138,6 @@ void CubemapTexture::UnbindTexture(uint32_t textureSlot) const
 
 void CubemapTexture::CleanUp()
 {
-    LogInfo("CubemapTexture::CleanUp: m_texDescriptor = ", m_texDescriptor);
     glDeleteTextures(1, &m_texDescriptor);
 }
 
@@ -151,7 +146,7 @@ uint32_t CubemapTexture::GetTextureDescriptor() const
     return m_texDescriptor;
 }
 
-glm::ivec2 CubemapTexture::GetTextureRezolution() const
+glm::ivec2 CubemapTexture::GetTextureResolution() const
 {
     return glm::ivec2(m_texParams[0].TexBufferWidth, m_texParams[0].TexBufferHeight);
 }

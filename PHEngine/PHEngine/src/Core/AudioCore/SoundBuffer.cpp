@@ -5,8 +5,9 @@
 #include "Core/GameCore/LoggerExtension.h"
 
 namespace EngineCore {
-SoundBuffer::SoundBuffer(const ALvoid* soundData, const AudioResourceInfo& audioInfo)
+SoundBuffer::SoundBuffer(const ALvoid* soundData, const AudioResourceInfo& audioInfo, const std::string& soundName)
     : mBufferDesc(0)
+    , mSoundName(soundName)
 {
     LogInfo("SoundBuffer::ctor");
     Init(soundData, audioInfo);
@@ -37,5 +38,10 @@ void SoundBuffer::Init(const ALvoid* soundData, const AudioResourceInfo& audioIn
 ALuint SoundBuffer::GetBufferDesc() const
 {
     return mBufferDesc;
+}
+
+std::string SoundBuffer::GetSoundName() const
+{
+    return mSoundName;
 }
 } // namespace EngineCore

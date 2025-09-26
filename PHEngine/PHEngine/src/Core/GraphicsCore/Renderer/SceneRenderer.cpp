@@ -1667,9 +1667,6 @@ void SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUi
 void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
     const std::shared_ptr<UiItemBase>& uiItem, const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
 {
-    LogInfo(
-        "SceneRenderer::RegisterUiSceneProxy_OnRenderThread: UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
-
     static constexpr int32_t creatorObjectId = 0;
     static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiSceneProxy_OnRenderThread");
 
@@ -1690,7 +1687,6 @@ void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
 
 void SceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId)
 {
-    LogInfo("SceneRenderer::UnregisterUiSceneProxy_OnRenderThread: UId = ", uiItemUId, " canvasUId = ", canvasUId);
     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     UnregisterUiSceneProxy(uiItemUId, canvasUId);
 }

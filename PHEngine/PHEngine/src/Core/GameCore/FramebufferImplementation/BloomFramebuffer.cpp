@@ -56,10 +56,10 @@ void BloomFramebuffer::SetFramebuffers()
 void BloomFramebuffer::SetRenderbuffers()
 {
     mColor1Framebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
-    mColor1Framebuffer->CreateRenderBuffer(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_color1->GetTextureRezolution());
+    mColor1Framebuffer->CreateRenderBuffer(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_color1->GetTextureResolution());
     mResolvedBloomColorFramebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
     mResolvedBloomColorFramebuffer->CreateRenderBuffer(
-        GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_resolvedBloomColor->GetTextureRezolution());
+        GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_resolvedBloomColor->GetTextureResolution());
 }
 
 void BloomFramebuffer::CleanUp()
@@ -177,10 +177,10 @@ void BloomFramebuffer::ResizeRenderTargets(const ViewPortInfo& viewPortInfo)
     mResolvedBloomColorFramebuffer->RebindFramebufferTextures();
 
     mColor1Framebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
-    mColor1Framebuffer->ResizeRenderBufferStorage(GL_DEPTH24_STENCIL8, m_color1->GetTextureRezolution());
+    mColor1Framebuffer->ResizeRenderBufferStorage(GL_DEPTH24_STENCIL8, m_color1->GetTextureResolution());
 
     mResolvedBloomColorFramebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
-    mResolvedBloomColorFramebuffer->ResizeRenderBufferStorage(GL_DEPTH24_STENCIL8, m_resolvedBloomColor->GetTextureRezolution());
+    mResolvedBloomColorFramebuffer->ResizeRenderBufferStorage(GL_DEPTH24_STENCIL8, m_resolvedBloomColor->GetTextureResolution());
     mResolvedBloomColorFramebuffer->UnbindFramebuffer();
 }
 

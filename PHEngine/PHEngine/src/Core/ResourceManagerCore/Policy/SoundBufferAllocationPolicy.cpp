@@ -23,12 +23,12 @@ std::shared_ptr<SoundBuffer> SoundBufferAllocationPolicy::AllocateMemory(const s
     const AudioResource* audioResource = static_cast<AudioResource*>(outResource);
     assert(audioResource);
 
-    const auto& buffer = std::make_shared<SoundBuffer>(audioResource->mData, audioResource->AudioInfo);
+    const auto& buffer = std::make_shared<SoundBuffer>(audioResource->mData, audioResource->AudioInfo, arg);
     return buffer;
 }
 void SoundBufferAllocationPolicy::DeallocateMemory(const std::shared_ptr<SoundBuffer>& arg)
 {
-    LogInfo("SoundBufferAllocationPolicy::DeallocateMemory: ", arg->GetBufferDesc());
+    LogInfo("SoundBufferAllocationPolicy::DeallocateMemory: ", arg->GetSoundName());
     arg->CleanUp();
 }
 

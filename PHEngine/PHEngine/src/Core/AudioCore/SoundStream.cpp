@@ -6,9 +6,11 @@
 #include <stdlib.h>
 
 namespace EngineCore {
-SoundStream::SoundStream(const std::shared_ptr<StbSoundStream>& stream, const AudioResourceInfo& audioInfo)
+SoundStream::SoundStream(
+    const std::shared_ptr<StbSoundStream>& stream, const AudioResourceInfo& audioInfo, const std::string& streamName)
     : mStream(stream)
     , mAudioInfo(audioInfo)
+    , mStreamName(streamName)
 {
 }
 
@@ -43,6 +45,11 @@ bool SoundStream::operator==(const SoundStream& right) const
 const AudioResourceInfo& SoundStream::GetAudioInfo() const
 {
     return mAudioInfo;
+}
+
+std::string SoundStream::GetStreamName() const
+{
+    return mStreamName;
 }
 
 void SoundStream::CleanUp()

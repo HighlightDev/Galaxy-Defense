@@ -98,13 +98,13 @@ void UiItemBase::SetParents(const std::string& uiCanvasName, const std::string& 
 
 void UiItemBase::SetIsSceneProxyReady(const bool isSceneProxyReady)
 {
-    LogInfo("UiItemBase::SetIsSceneProxyReady: name: ", mName, ", readiness value: ", isSceneProxyReady);
+    LogInfo("UiItemBase::SetIsSceneProxyReady: name: ", mName, ", isSceneProxyReady: ", isSceneProxyReady);
     mIsSceneProxyReady.store(isSceneProxyReady, std::memory_order::seq_cst);
 }
 
 void UiItemBase::SetIsLuaProxyReady(const bool isLuaProxyReady)
 {
-    LogInfo("UiItemBase::SetIsLuaProxyReady: name: ", mName, ", readiness value: ", isLuaProxyReady);
+    LogInfo("UiItemBase::SetIsLuaProxyReady: name: ", mName, ", isLuaProxyReady: ", isLuaProxyReady);
     mIsLuaProxyReady.store(isLuaProxyReady, std::memory_order::seq_cst);
 }
 

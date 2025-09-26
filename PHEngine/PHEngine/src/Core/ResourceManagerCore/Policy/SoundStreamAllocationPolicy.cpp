@@ -24,12 +24,12 @@ std::shared_ptr<SoundStream> SoundStreamAllocationPolicy::AllocateMemory(const s
     const AudioStreamResource* audioResource = dynamic_cast<AudioStreamResource*>(outResource);
     assert(audioResource);
 
-    return std::make_shared<SoundStream>(audioResource->mStream, audioResource->AudioInfo);
+    return std::make_shared<SoundStream>(audioResource->mStream, audioResource->AudioInfo, arg);
 }
 
 void SoundStreamAllocationPolicy::DeallocateMemory(const std::shared_ptr<SoundStream>& arg)
 {
-    LogInfo("SoundStreamAllocationPolicy::DeallocateMemory");
+    LogInfo("SoundStreamAllocationPolicy::DeallocateMemory: ", arg->GetStreamName());
     arg->CleanUp();
 }
 

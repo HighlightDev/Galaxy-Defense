@@ -12,12 +12,15 @@ class StbSoundStream;
 
 namespace EngineCore {
 class SoundStream {
+
+    std::string mStreamName;
+
     std::shared_ptr<StbSoundStream> mStream;
 
     AudioResourceInfo mAudioInfo;
 
 public:
-    SoundStream(const std::shared_ptr<StbSoundStream>& stream, const AudioResourceInfo& audioInfo);
+    SoundStream(const std::shared_ptr<StbSoundStream>& stream, const AudioResourceInfo& audioInfo, const std::string& streamName);
 
     bool operator==(const SoundStream& right) const;
 
@@ -30,6 +33,8 @@ public:
     void ReadStreamFromStart() const;
 
     const AudioResourceInfo& GetAudioInfo() const;
+
+    std::string GetStreamName() const;
 
     void CleanUp();
 };

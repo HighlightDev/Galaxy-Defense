@@ -44,6 +44,7 @@ struct TexParams {
         const std::unordered_map<GLint, std::string> internalFormatToStrMap
             = {{GL_RG, "RG"},
                {GL_RGB, "RGB"},
+               {GL_RGBA, "RGBA"},
                {GL_RGB8, "RGB8"},
                {GL_RGBA8, "RGBA8"},
                {GL_RGB16, "RGB16"},

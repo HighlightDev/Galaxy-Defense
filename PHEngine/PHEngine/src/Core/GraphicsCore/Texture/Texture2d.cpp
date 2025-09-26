@@ -17,31 +17,28 @@ using namespace IO;
 namespace Graphics {
 namespace Texture {
 
-Texture2d::Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH)
-    : ITexture()
+Texture2d::Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH, const std::string& textureName)
+    : ITexture(textureName)
     , m_mipmapState(nullptr)
 {
-    LogInfo("Texture2d::ctor(uint32_t, glm::ivec2): texDescriptor = ", texDescriptor);
     m_texDescriptor = texDescriptor;
     m_textureParams.TexBufferWidth = texBufferWH.x;
     m_textureParams.TexBufferHeight = texBufferWH.y;
 }
 
-Texture2d::Texture2d(const std::string& pathToTex, ITextureMipMapState* mipmapState)
-    : ITexture()
+Texture2d::Texture2d(const std::string& pathToTex, ITextureMipMapState* mipmapState, const std::string& textureName)
+    : ITexture(textureName)
     , m_mipmapState(mipmapState)
 {
     m_texDescriptor = GetTextureResource(pathToTex);
-    LogInfo("Texture2d::ctor(const std::string&, ITextureMipMapState*): texDescriptor = ", m_texDescriptor);
 }
 
-Texture2d::Texture2d(const TexParams& textureParameters)
-    : ITexture()
+Texture2d::Texture2d(const TexParams& textureParameters, const std::string& textureName)
+    : ITexture(textureName)
     , m_textureParams(textureParameters)
     , m_mipmapState(nullptr)
 {
     InitEmptyTexture();
-    LogInfo("Texture2d::ctor(const TexParams &): texDescriptor = ", m_texDescriptor);
 }
 
 Texture2d::~Texture2d()
@@ -151,7 +148,6 @@ uint32_t Texture2d::CreateTexture(const void* pixelsData)
 
 void Texture2d::CleanUp()
 {
-    LogInfo("Texture2d::CleanUp: texDescriptor = ", m_texDescriptor);
     glDeleteTextures(1, &m_texDescriptor);
 }
 

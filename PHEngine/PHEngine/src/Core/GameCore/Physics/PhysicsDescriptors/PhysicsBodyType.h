@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace EnginePhysics {
 enum class ePhysicsBodyType {
     STATIC = 0, // deactivates when velocity is 0
@@ -9,4 +11,7 @@ enum class ePhysicsBodyType {
 };
 
 enum class ePhysicsDescriptorType { UNDEFINED, RIGID_BODY_CONTROLLER, DYNAMIC_CHARACTER_CONTROLLER, GHOST_CONTROLLER };
+
+std::string ToString(const ePhysicsBodyType bodyType);
+std::string ToString(const ePhysicsDescriptorType descriptorType);
 } // namespace EnginePhysics
