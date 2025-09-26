@@ -19,7 +19,7 @@ class PortalActor : public Actor {
 
     std::weak_ptr<NavigationController> mNavigationControllerWp;
 
-    std::string mPathName;
+    std::vector<std::string> mPathNames;
 
     float mAccumulatedDeltaTime{0.0f};
 

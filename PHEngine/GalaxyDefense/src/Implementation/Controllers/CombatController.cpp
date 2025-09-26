@@ -11,6 +11,7 @@
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/BlackHoleMissileActor.h"
 #include "Implementation/Actors/PortalActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
@@ -188,13 +189,19 @@ void CombatController::OnCombatPreparationCompleted()
 {
     const auto& spawnPortals = mCombatActorsPoolHandler->GetPortalActors();
     const auto& pathNames = mNavigationController->GetPathNames();
-    assert(pathNames.size() == spawnPortals.size());
+    assert(pathNames.size() >= spawnPortals.size());
     for (int i = 0; i < pathNames.size(); ++i) {
-
         const auto& pathName = pathNames[i];
+        const Path& path = mNavigationController->GetPath(pathName);
         const auto& spawnPortal = spawnPortals[i];
-        spawnPortal->SetupSpaceshipSpawn(pathName, 1500UL);
+        spawnPortal->SetupSpaceshipSpawn(pathName, Game::Constants::c_spawnSpaceshipTimeoutMs);
         spawnPortal->StartSpawn();
+        const auto& extendedPaths = mNavigationController->GetExtendedPaths();
+        const auto& [extendedPathsBegin, extendedPathsEnd] = extendedPaths.equal_range(pathName);
+        std::for_each(extendedPathsBegin, extendedPathsEnd, [&](const auto& extPath) {
+            spawnPortal->SetupSpaceshipSpawn(extPath.second.first, Game::Constants::c_spawnSpaceshipTimeoutMs);
+            spawnPortal->StartSpawn();
+        });
     }
 }
 

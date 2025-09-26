@@ -15,6 +15,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/LevelDataProvider.h"
 #include "Implementation/Navigation/Path.h"
 #include "Implementation/Navigation/PathSegment.h"
@@ -54,7 +55,17 @@ void NavigationController::InitializePathDebugRendering()
     MaterialPropertySetter::SetMaterialPropertyValue(splineMaterial, "color", glm::vec3(0.5f, 0.7f, 0.2f));
 
     const auto& paths = mNavPathBuilder.GetPaths();
-    for (const auto& [pathName, path] : paths) {
+    const auto& extendedPaths = mNavPathBuilder.GetExtendedPaths();
+    std::unordered_map<std::string, Path> allPaths;
+    std::transform(paths.cbegin(), paths.cend(), std::inserter(allPaths, allPaths.end()), [](const auto& pathPair) {
+        return std::make_pair(pathPair.first, pathPair.second);
+    });
+    std::transform(
+        extendedPaths.cbegin(), extendedPaths.cend(), std::inserter(allPaths, allPaths.end()), [](const auto& extendedPathPair) {
+            return std::make_pair(extendedPathPair.second.first, extendedPathPair.second.second);
+        });
+
+    for (const auto& [pathName, path] : allPaths) {
         const auto pathSegments = path.GetPathSegments();
         for (int i = 0; i < pathSegments.size(); ++i) {
             const auto bezierControlPoints = pathSegments.at(i).GetQuadraticBezierControlPoints();
@@ -85,6 +96,7 @@ void NavigationController::SetPathRoutes(const std::unordered_map<std::string, P
 {
     for (const auto& [pathName, pathSegment] : paths) {
         mNavPathBuilder.AddPath(pathName, pathSegment);
+        mNavPathBuilder.ExtendPath(pathName, Game::Constants::c_extraPathPerSideCount);
     }
 }
 
@@ -101,7 +113,7 @@ void NavigationController::OnLevelInit()
 {
     assert(mNavPathBuilder.GetPaths().size());
     Initialize();
-    if (false) {
+    if (cEnableDebugPathRendering) {
         InitializePathDebugRendering(); // for debug visualisation purpose
     }
 }
@@ -167,18 +179,41 @@ std::vector<std::string> NavigationController::GetPathNames() const
     return pathNames;
 }
 
+const Path& NavigationController::GetPath(const std::string& pathName) const
+{
+    const auto& spacePaths = mNavPathBuilder.GetPaths();
+    assert(spacePaths.count(pathName));
+    return spacePaths.at(pathName);
+}
+
+const std::unordered_multimap<std::string, std::pair<std::string, Path>>& NavigationController::GetExtendedPaths() const
+{
+    return mNavPathBuilder.GetExtendedPaths();
+}
+
 void NavigationController::PutSpaceshipOnRoute(const std::string& routeName, const std::shared_ptr<SpaceshipActor>& spaceship)
 {
-    auto& spacePaths = mNavPathBuilder.GetPaths();
-    assert(spacePaths.count(routeName));
-    auto& spacePath = spacePaths[routeName];
+    const auto& spacePaths = mNavPathBuilder.GetPaths();
+    const auto& extendedSpacePaths = mNavPathBuilder.GetExtendedPaths();
+    std::optional<Path> spacePath;
+    if (spacePaths.count(routeName)) {
+        spacePath = spacePaths.at(routeName);
+    } else {
+        for (const auto& [originalPathName, extendedPathPair] : extendedSpacePaths) {
+            if (extendedPathPair.first == routeName) {
+                spacePath = extendedPathPair.second;
+                break;
+            }
+        }
+    }
 
+    assert(spacePath.has_value());
     const auto enemyMovementComponent = spaceship->GetOnRouteMovementComponent();
     assert(enemyMovementComponent);
     enemyMovementComponent->ResetStates();
     enemyMovementComponent->SetIsMovementOnRouteAllowed(true);
-    enemyMovementComponent->SetRoutePoints(spacePath.GetRoutePoints());
-    spaceship->TriggerSpawn(spacePath.GetRouteFirstPoint());
+    enemyMovementComponent->SetRoutePoints(spacePath->GetRoutePoints());
+    spaceship->TriggerSpawn(spacePath->GetRouteFirstPoint());
     mEnemies.emplace_back(spaceship);
 }
 

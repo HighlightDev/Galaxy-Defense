@@ -11,6 +11,7 @@
 #include "Implementation/Actors/PortalActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/Factories/BarrierFactory.h"
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
@@ -87,12 +88,10 @@ std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor() c
 {
     const auto& sceneSp = mSceneWp.lock();
     assert(sceneSp);
-    constexpr float c_spaceshipSize = 2.5f;
-    constexpr int32_t c_spaceshipFontSize = 25;
     WeakSpaceShipFactory spaceShipFactory;
 
-    return mEnemySpaceships.emplace_back(
-        spaceShipFactory.CreateSpaceShip(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(c_spaceshipSize), c_spaceshipFontSize));
+    return mEnemySpaceships.emplace_back(spaceShipFactory.CreateSpaceShip(
+        sceneSp, glm::vec3(), glm::vec3(), glm::vec3(Game::Constants::s_spaceshipSize), Game::Constants::c_spaceshipFontSize));
 }
 
 std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor() const

@@ -33,6 +33,8 @@ class NavigationController : public ITickable, public ILevelController {
 
     BoundingBox3D mLevelBounds;
 
+    static constexpr bool cEnableDebugPathRendering{false};
+
 public:
     explicit NavigationController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
@@ -53,6 +55,10 @@ public:
     void UnpausableTick(const float deltaTime) override;
 
     std::vector<std::string> GetPathNames() const;
+
+    const Path& GetPath(const std::string& pathName) const;
+
+    const std::unordered_multimap<std::string, std::pair<std::string, Path>>& GetExtendedPaths() const;
 
     void SetLevelBounds(const BoundingBox3D& levelBounds);
 
