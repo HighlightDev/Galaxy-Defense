@@ -50,6 +50,40 @@ void LevelEditorUiController::PostPlayLevelFinished()
     mOverlayManager->Initialize();
 }
 
+void LevelEditorUiController::RestartLuaScripts()
+{
+    if (const auto& sceneSp = mSceneWp.lock()) {
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+            0,
+            Hash64_CT("LevelEditorUiController::RestartLuaScripts"),
+            [this, sceneSp](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& luaScriptProcessorSp
+                    = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
+                    const auto& luaScriptExecutor = std::dynamic_pointer_cast<LuaUiControllerExecutor>(
+                        luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
+                    assert(luaScriptExecutor);
+                    luaScriptExecutor->SetIsEnabled(false);
+                    mOverlayManager->CleanUp();
+                    static constexpr uint64_t functionId = Hash64_CT("LevelEditorUiController::RestartLuaScripts");
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+                        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+                        0,
+                        functionId,
+                        [luaScriptProcessorSp, luaScriptExecutor](
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                            luaScriptExecutor->RestartScript();
+                        });
+                }
+            });
+    }
+}
+
 void LevelEditorUiController::CleanUp()
 {
     if (const auto& sceneSp = mSceneWp.lock()) {

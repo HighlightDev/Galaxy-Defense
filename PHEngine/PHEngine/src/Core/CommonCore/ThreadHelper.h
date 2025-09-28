@@ -30,6 +30,14 @@ public:
         mKnownThreads.emplace(thisThreadId, threadName);
     }
 
+    void UnregisterThread(const std::string& threadName)
+    {
+        auto removeIt = std::find_if(
+            mKnownThreads.begin(), mKnownThreads.end(), [&](const auto& pair) { return pair.second == threadName; });
+        assert(removeIt != mKnownThreads.end());
+        mKnownThreads.erase(removeIt->first);
+    }
+
     std::string GetCurrentThreadNameFromRegisteredThreads() const
     {
         const size_t thisThreadId = mHasher(std::this_thread::get_id());

@@ -1075,10 +1075,12 @@ void UiItemBase::AddSequenceAnimation(const std::string& animationName, const An
 
 void UiItemBase::CleanUp()
 {
+    RemoveSceneProxy();
+    RemoveLuaProxy();
+    RemoveFromReplicators();
     for (const auto& child : mChildren) {
         child->CleanUp();
     }
-    RemoveLuaProxy();
     mChildren.clear();
 }
 
@@ -1089,8 +1091,24 @@ void UiItemBase::RemoveFromReplicators()
     }
 }
 
+void UiItemBase::RemoveSceneProxy()
+{
+    static constexpr uint64_t functionId = Hash64_CT("UiItemBase::RemoveSceneProxy");
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
+        if (const auto& canvasSp = mParentCanvas.lock()) {
+            if (const auto& sceneSp = GetScene().lock()) {
+                if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
+                    sceneRendererSp->UnregisterUiSceneProxy_OnRenderThread(GetUId(), canvasSp->GetUId());
+                    SetIsSceneProxyReady(false);
+                }
+            }
+        }
+    }
+}
+
 void UiItemBase::RemoveLuaProxy()
 {
+    static constexpr uint64_t functionId = Hash64_CT("UiItemBase::RemoveLuaProxy");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& luaProcessorSp = GetLuaScriptProcessorWp().lock()) {
             luaProcessorSp->RemoveLuaProxy(GetLuaProxyId());

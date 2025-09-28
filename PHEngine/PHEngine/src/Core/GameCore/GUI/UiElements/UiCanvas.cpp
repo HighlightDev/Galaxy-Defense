@@ -677,6 +677,9 @@ void UiCanvas::CleanUp()
         child->CleanUp();
     }
     mChildren.clear();
+    RemoveSceneProxy();
+    RemoveLuaProxy();
+    RemoveFromReplicators();
 }
 
 void UiCanvas::RemoveSceneProxy()
@@ -684,12 +687,6 @@ void UiCanvas::RemoveSceneProxy()
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = mScene.lock()) {
             if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-                // Clear all children scene proxies, because all of them relate to current canvas
-                for (const auto& uiItemChild : mChildren) {
-                    sceneRendererSp->UnregisterUiSceneProxy_OnRenderThread(uiItemChild->GetUId(), GetUId());
-                    uiItemChild->SetIsSceneProxyReady(false);
-                }
-
                 sceneRendererSp->UnregisterUiCanvasProxy_OnRenderThread(GetUId());
                 SetIsSceneProxyReady(false);
             }

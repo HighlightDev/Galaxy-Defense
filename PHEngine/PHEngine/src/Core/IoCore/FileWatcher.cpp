@@ -7,11 +7,15 @@
 using namespace EngineCore;
 
 namespace IO {
+
+std::atomic<int32_t> FileWatcher::sInstanceCount = 0;
+
 FileWatcher::FileWatcher(
     std::string _path_to_watch,
     std::chrono::duration<int, std::milli> _delay,
     std::function<void(std::string, FileStatus)> callback)
-    : mPathToWatch(_path_to_watch)
+    : mInstanceId(sInstanceCount++)
+    , mPathToWatch(_path_to_watch)
     , mDelay(_delay)
     , mCallback(callback)
 {
@@ -37,6 +41,7 @@ FileWatcher::~FileWatcher()
 {
     LogInfo("FileWatcher::dctor");
     mIsRunning = false;
+    ThreadHelper::GetInstance()->UnregisterThread("FileWatcherThread_" + std::to_string(mInstanceId));
     if (mListenerThread.joinable()) {
         mListenerThread.join();
     }
@@ -49,7 +54,7 @@ bool FileWatcher::contains(const std::string& key) const
 
 void FileWatcher::start()
 {
-    ThreadHelper::GetInstance()->RegisterThread("FileWatcher");
+    ThreadHelper::GetInstance()->RegisterThread("FileWatcherThread_" + std::to_string(mInstanceId));
     while (mIsRunning) {
         // Wait for "mDelay" milliseconds
         std::this_thread::sleep_for(mDelay);

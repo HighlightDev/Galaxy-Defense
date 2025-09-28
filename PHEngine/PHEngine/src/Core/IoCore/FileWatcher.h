@@ -5,6 +5,7 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include <atomic>
 
 namespace IO {
 enum class FileStatus { CREATED, MODIFIED, ERASED };
@@ -26,6 +27,8 @@ private:
     bool contains(const std::string& key) const;
 
 private:
+    static std::atomic<int32_t> sInstanceCount;
+    int32_t mInstanceId;
     std::thread mListenerThread;
     std::string mPathToWatch;
     std::chrono::duration<int, std::milli> mDelay;

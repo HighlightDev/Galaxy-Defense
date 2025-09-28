@@ -233,10 +233,11 @@ function LevelEditorOverlay:new(host)
         editorContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, canvas.widgetName, 0)
         editorContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, canvas.widgetName, 0)
         editorContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, canvas.widgetName, 0)
-        editorContainer:setHeight(windowHeight * 0.25)
+        editorContainer:setHeight(windowHeight * 0.35)
         editorContainer:setZOrder(1)
         editorContainer:setOpacity(0.0)
         editorContainer:setIfCanInterceptMouseInputEvent(false)
+        editorContainer:setColorHexValue(0x000000)
 
         levelWidthLabel:setParent(host, canvas.widgetName, editorContainer.widgetName)
         levelWidthLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -316,8 +317,8 @@ function LevelEditorOverlay:new(host)
                 }))
         end)
 
-        local buttonWidth = editorContainer:getHeight() * 0.35
-        local buttonHeight = editorContainer:getHeight() * 0.35
+        local buttonWidth = editorContainer:getHeight() * 0.3
+        local buttonHeight = editorContainer:getHeight() * 0.3
 
         changeContainerStateButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,

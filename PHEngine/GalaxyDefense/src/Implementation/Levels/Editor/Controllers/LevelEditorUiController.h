@@ -38,6 +38,8 @@ public:
 
     void CleanUp() override;
 
+    void RestartLuaScripts();
+
 private:
     void Initialize();
 };

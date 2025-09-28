@@ -161,32 +161,6 @@ void SceneRenderer::CleanUp()
 {
     SceneViewsVector.clear();
 
-#if DEBUG
-    for (const auto& canvasProxy : mUiCanvasProxies) {
-        if (canvasProxy->GetUiItemUId() != mDebugUiCanvasId) {
-            canvasProxy->CleanUp();
-        }
-    }
-
-    if (mDebugUiCanvasId != -1) {
-        mUiCanvasProxies.erase(
-            std::remove_if(
-                mUiCanvasProxies.begin(),
-                mUiCanvasProxies.end(),
-                [debugUiCanvasId = mDebugUiCanvasId](const auto& canvasProxy) {
-                    return canvasProxy->GetUiItemUId() != debugUiCanvasId;
-                }),
-            mUiCanvasProxies.end());
-    } else {
-        mUiCanvasProxies.clear();
-    }
-#else
-    for (const auto& canvasProxy : mUiCanvasProxies) {
-        canvasProxy->CleanUp();
-    }
-    mUiCanvasProxies.clear();
-#endif
-
     mInstancedGeometryBatchRenderer->CleanUp();
 
     for (const auto& planarReflectionProxy : PlanarReflectionProxiesVector) {
@@ -1207,6 +1181,16 @@ std::shared_ptr<UiCanvasSceneProxy> SceneRenderer::GetCanvasSceneProxyByProxyId(
     return canvasIt != mUiCanvasProxies.end() ? *canvasIt : nullptr;
 }
 
+void SceneRenderer::RemoveUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId)
+{
+    auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto& canvasProxy) {
+        return canvasId == canvasProxy->GetUiItemUId();
+    });
+    if (canvasIt != mUiCanvasProxies.end()) {
+        (*canvasIt)->RemoveUiSceneProxy(proxyId);
+    }
+}
+
 void SceneRenderer::RemovePrimitiveProxyByProxyId(const int32_t proxyId)
 {
     PrimitiveProxiesVector.erase(
@@ -1660,8 +1644,22 @@ void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(
 void SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUiId)
 {
     LogInfo("SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread: UId = ", canvasUiId);
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
-    UnregisterUiCanvasProxy(canvasUiId);
+
+    static constexpr int32_t creatorObjectId = 0;
+    static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread");
+
+    m_interThreadMgr.ExecuteOnRenderThread(
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), canvasUiId](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->UnregisterUiCanvasProxy(canvasUiId);
+            }
+        });
 }
 
 void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
@@ -1687,8 +1685,21 @@ void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
 
 void SceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId)
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
-    UnregisterUiSceneProxy(uiItemUId, canvasUId);
+    static constexpr int32_t creatorObjectId = 0;
+    static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::UnregisterUiSceneProxy_OnRenderThread");
+
+    m_interThreadMgr.ExecuteOnRenderThread(
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        creatorObjectId,
+        functionId,
+        [weak = weak_from_this(), uiItemUId, canvasUId](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+            if (const auto& sceneRenderer = weak.lock()) {
+                sceneRenderer->UnregisterUiSceneProxy(uiItemUId, canvasUId);
+            }
+        });
 }
 
 void SceneRenderer::TextDataChanged_OnRenderThread(
@@ -1893,6 +1904,7 @@ void SceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasScenePro
 
 void SceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)
 {
+    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     mUiCanvasProxies.erase(
         std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [canvasUiId](const auto& canvasProxy) {
             return canvasUiId == canvasProxy->GetUiItemUId();
@@ -1901,6 +1913,7 @@ void SceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)
 
 void SceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>& sceneProxy, const size_t canvasUId)
 {
+    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     assert(sceneProxy);
     auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto& canvasProxy) {
         return canvasUId == canvasProxy->GetUiItemUId();
@@ -1913,6 +1926,7 @@ void SceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>
 
 void SceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t canvasUId)
 {
+    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto& canvasProxy) {
         return canvasUId == canvasProxy->GetUiItemUId();
     });

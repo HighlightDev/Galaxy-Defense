@@ -14,6 +14,8 @@
 
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <string>
 #include <thread>
 
@@ -79,6 +81,13 @@ class Engine : public PauseGameThreadEvent,
     float sumGtSeconds{0.0f};
     float sumLtSeconds{0.0f};
 #endif
+
+    std::condition_variable mUnloadLevelCv;
+    std::mutex mUnloadLevelMutex;
+
+    bool mIsLevelUnloading{false};
+    bool mIsGameThreadIdle{false};
+    bool mIsLuaThreadIdle{false};
 
 public:
     Engine();

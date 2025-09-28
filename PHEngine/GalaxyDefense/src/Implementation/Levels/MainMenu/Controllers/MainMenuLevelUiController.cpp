@@ -76,7 +76,7 @@ void MainMenuLevelUiController::RestartLuaScripts()
             assert(luaScriptExecutor);
             luaScriptExecutor->SetIsEnabled(false);
             mOverlayManager->CleanUp();
-            static constexpr uint64_t functionId = Hash64_CT("MainMenuLevelUiController::Initialize");
+            static constexpr uint64_t functionId = Hash64_CT("MainMenuLevelUiController::RestartLuaScripts");
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
                 eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
                 0,

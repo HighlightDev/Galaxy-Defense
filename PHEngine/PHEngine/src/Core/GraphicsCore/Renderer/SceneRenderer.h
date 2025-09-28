@@ -133,6 +133,7 @@ public:
     std::shared_ptr<PlanarReflectionProxy> GetPlanarReflectionProxyByProxyId(const int32_t proxyId) const;
     std::shared_ptr<UiSceneProxyBase> GetUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId) const;
     std::shared_ptr<UiCanvasSceneProxy> GetCanvasSceneProxyByProxyId(const size_t proxyId) const;
+    void RemoveUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId);
 
     std::vector<std::shared_ptr<PrimitiveSceneProxy>>& GetPrimitiveProxies();
 

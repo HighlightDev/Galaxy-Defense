@@ -248,6 +248,7 @@ void LuaCommonUiFunctions::DestroyCommonUiWidget(const std::tuple<int32_t>& data
     if (const auto& sceneSp = mSceneWp.lock()) {
         const auto& replicatorSp = sceneSp->GetEngineToLuaReplicatorByLuaProxyId(luaProxyId);
         sceneSp->UnregisterEngineToLuaReplicator(replicatorSp->GetReplicatorId());
+        replicatorSp->CleanUp();
     }
 }
 

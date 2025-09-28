@@ -21,7 +21,6 @@ set(HEADERS
     src/Implementation/Levels/Editor/TowersHandler.h
     src/Implementation/Levels/Editor/BarriersHandler.h
     src/Implementation/GalaxySceneCamera.h
-    src/Implementation/AiBrain.h
     src/Implementation/GameObjectsType.h
     src/Implementation/GameObjectsCollisionType.h
     src/Implementation/StatusTypes.h
@@ -124,7 +123,6 @@ set(SOURCES
     src/Implementation/Levels/Editor/BarriersHandler.cpp
     src/Implementation/GalaxySceneCamera.cpp
     src/Implementation/Controllers/CombatController.cpp
-    src/Implementation/AiBrain.cpp
     src/Implementation/Controllers/AiActorController.cpp
     src/Implementation/Controllers/AiSpaceshipActorController.cpp
     src/Implementation/Controllers/UserInteractionController.cpp

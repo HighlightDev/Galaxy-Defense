@@ -56,11 +56,13 @@ Engine::Engine()
     , mRenderThreadDeltaTimeSeconds()
     , mGameThreadDeltaTimeSeconds()
 {
+    LogInfo("Engine::ctor");
     m_scene->Initialize();
 }
 
 Engine::~Engine()
 {
+    LogInfo("Engine::dctor");
     PauseGameThreadEvent::GetInstance()->RemoveListener(PauseGameThreadEvent::GetInstanceId());
     ExitGameThreadEvent::GetInstance()->RemoveListener(ExitGameThreadEvent::GetInstanceId());
     LoadLevelGameThreadEvent::GetInstance()->RemoveListener(LoadLevelGameThreadEvent::GetInstanceId());
@@ -69,6 +71,7 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
+    LogInfo("Engine::Initialize");
     GameThreadEventDispatcher::GetInstance()
         ->RegisterEventsByType<
             CameraTransformChangedGameThreadEvent,
@@ -131,6 +134,7 @@ void Engine::Initialize()
 
 void Engine::CleanUp()
 {
+    LogInfo("Engine::CleanUp");
     StopGameThreadExecution();
     StopLuaThreadExecution();
     m_gameThread.join();
@@ -179,17 +183,22 @@ void Engine::StopLuaThreadExecution()
 
 void Engine::UnloadCurrentLevel()
 {
-#ifdef DEBUG
     const auto& resObserver = ResourceUsageObserver::GetInstance();
     resObserver->CollectResourceConsumptionInfo();
     LogInfo("Engine::UnloadCurrentLevel: mem before lvl unload: ", resObserver->GetLastMemoryUsageMegabytes());
-#endif
     // Clear jobs for game and lua threads
     m_interThreadMgr.SetIsAllowedPushGameThreadJobs(false);
     m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(false);
     m_interThreadMgr.ClearGameThreadJobs();
     m_interThreadMgr.ClearLuaThreadJobs();
-    std::this_thread::sleep_for(1000ms); // wait until the lua thread or game thread can still run
+
+    // Wait until game and lua threads are idle
+    mIsLevelUnloading = true;
+    std::unique_lock<std::mutex> lk(mUnloadLevelMutex);
+    mUnloadLevelCv.wait(lk, [this] { return mIsGameThreadIdle && mIsLuaThreadIdle; });
+    mIsLevelUnloading = false;
+    mIsGameThreadIdle = false;
+    mIsLuaThreadIdle = false;
     m_level->UnloadLevel();
     m_scene->UnloadScene();
     m_luaScriptProcessor->CleanUp();
@@ -199,14 +208,13 @@ void Engine::UnloadCurrentLevel()
     m_interThreadMgr.SetIsAllowedPushGameThreadJobs(true);
     m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(true);
     m_sceneRenderer->Initialize();
-#ifdef DEBUG
     resObserver->CollectResourceConsumptionInfo();
     LogInfo("Engine::UnloadCurrentLevel: mem after lvl unload: ", resObserver->GetLastMemoryUsageMegabytes());
-#endif
 }
 
 void Engine::PlayLevel(const std::string& levelName)
 {
+    LogInfo("Engine::PlayLevel: ", levelName);
     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     assert(m_levelFactory);
 
@@ -234,6 +242,7 @@ void Engine::PlayLevel(const std::string& levelName)
 
 void Engine::RestartLevel()
 {
+    LogInfo("Engine::RestartLevel");
     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
     assert(m_levelFactory);
     assert(m_level);
@@ -259,17 +268,20 @@ void Engine::RestartLevel()
 
 void Engine::PreLevelInit()
 {
+    LogInfo("Engine::PreLevelInit");
     m_level->PreLevelInit();
 }
 
 void Engine::OnLevelInit()
 {
+    LogInfo("Engine::OnLevelInit");
     m_scene->OnLevelInit();
     m_level->InitLevel();
 }
 
 void Engine::PostLevelInit()
 {
+    LogInfo("Engine::PostLevelInit");
     m_level->PostLevelInit();
     m_scene->PostLevelInit();
     TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
@@ -278,23 +290,27 @@ void Engine::PostLevelInit()
 
 void Engine::PostPhysicsInitialize()
 {
+    LogInfo("Engine::PostPhysicsInitialize");
     m_level->PostPhysicsInitialize();
     m_scene->PostPhysicsInitialize();
 }
 
 void Engine::PostPlayLevelFinished()
 {
+    LogInfo("Engine::PostPlayLevelFinished");
     m_level->PostPlayLevelFinished();
     m_scene->PostPlayLevelFinished();
 }
 
 void Engine::ProcessEvent(const PauseGameThreadEvent* sender, const PauseGameThreadEvent::EventData_t& data)
 {
+    LogInfo("Engine::ProcessEvent::PauseGameThreadEvent: ", std::get<0>(data) ? "PAUSE" : "UNPAUSE");
     bPauseGameThreadExecution.store(std::get<0>(data));
 }
 
 void Engine::ProcessEvent(const ExitGameThreadEvent* sender, const ExitGameThreadEvent::EventData_t& data)
 {
+    LogInfo("Engine::ProcessEvent::ExitGameThreadEvent");
     bExitGame = true;
     StopGameThreadExecution();
     StopLuaThreadExecution();
@@ -303,6 +319,7 @@ void Engine::ProcessEvent(const ExitGameThreadEvent* sender, const ExitGameThrea
 void Engine::ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLevelGameThreadEvent::EventData_t& data)
 {
     const auto lvlName = std::get<0>(data);
+    LogInfo("Engine::ProcessEvent::LoadLevelGameThreadEvent: ", lvlName);
     static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::LoadLevelGameThreadEvent");
     m_interThreadMgr.ExecuteOnRenderThread(
         Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
@@ -320,6 +337,7 @@ void Engine::ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLeve
 
 void Engine::ProcessEvent(const RestartLevelGameThreadEvent* sender, const RestartLevelGameThreadEvent::EventData_t& data)
 {
+    LogInfo("Engine::ProcessEvent::RestartLevelGameThreadEvent");
     static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::RestartLevelGameThreadEvent");
     m_interThreadMgr.ExecuteOnRenderThread(
         Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
@@ -362,6 +380,10 @@ void Engine::LuaThreadPulse()
         sumLtSeconds += mLuaThreadDeltaTimeSeconds;
         ++ltCounter;
 #endif
+        if (mIsLevelUnloading) {
+            mIsLuaThreadIdle = true;
+            mUnloadLevelCv.notify_all(); // notify all waiting threads to resume
+        }
     }
 }
 
@@ -404,6 +426,11 @@ void Engine::GameThreadPulse()
         sumGtSeconds += mGameThreadDeltaTimeSeconds;
         ++gtCounter;
 #endif
+
+        if (mIsLevelUnloading) {
+            mIsGameThreadIdle = true;
+            mUnloadLevelCv.notify_all(); // notify all waiting threads to resume
+        }
     }
 }
 

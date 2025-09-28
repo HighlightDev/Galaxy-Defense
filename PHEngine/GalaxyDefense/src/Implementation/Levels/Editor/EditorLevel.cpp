@@ -14,6 +14,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Implementation/DataProviders/LevelDataProvider.h"
 #include "Implementation/Events/ChangeEditModeEvent.h"
 #include "Implementation/Events/LevelAreaBBChangedEvent.h"
@@ -66,6 +67,25 @@ void EditorLevel::PreLevelInit()
 
     mUiController = std::make_unique<LevelEditorUiController>(sceneSp);
     mUiController->OnPreLevelInit();
+
+#ifdef DEBUG
+    using namespace std::literals::chrono_literals;
+    mFileWatcher
+        = std::make_unique<FileWatcher>("./res/scripts/", 1000ms, [this](const std::string& path, const FileStatus fileStatus) {
+              if (FileStatus::MODIFIED != fileStatus) {
+                  return;
+              }
+              const auto beforeFileNameBeginIndex = EngineUtility::LastIndexOf(path, std::string(1, SLASH));
+              if (beforeFileNameBeginIndex != std::string::npos) {
+                  const auto& fileName = path.substr(beforeFileNameBeginIndex + 1);
+                  const auto& fileExtension = fileName.substr(EngineUtility::IndexOf(fileName, ".") + 1);
+                  if ("lua" == fileExtension) {
+                      LogInfo("EditorLevel::FileWatcher::fileSatusChanged: fileName: ", fileName, " modified. Reload scripts.");
+                      RestartLuaScripts();
+                  }
+              }
+          });
+#endif
 }
 
 void EditorLevel::CreateScene()
@@ -187,6 +207,14 @@ void EditorLevel::UnpausableTick(const float deltaTime)
 
     if (mUiController) {
         mUiController->UnpausableTick(deltaTime);
+    }
+}
+
+void EditorLevel::RestartLuaScripts()
+{
+    LogInfo("EditorLevel::RestartLuaScripts");
+    if (mUiController) {
+        mUiController->RestartLuaScripts();
     }
 }
 } // namespace Game

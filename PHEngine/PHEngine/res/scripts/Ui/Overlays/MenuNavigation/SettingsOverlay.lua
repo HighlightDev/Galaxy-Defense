@@ -58,7 +58,7 @@ function SettingsOverlay:new(host)
 
     local rowButtonsCount = 2.0;
     local backgroundRectWidth = windowWidth - (menuHorizontalMargin * 2.0)
-    local buttonHorizontalMargin = backgroundRectWidth / 10.0;
+    local buttonHorizontalMargin = backgroundRectWidth / 8.0;
     local buttonWidth = (backgroundRectWidth - (buttonHorizontalMargin * (rowButtonsCount + 1.0))) / rowButtonsCount;
 
     local backgroundRect = UiRectangle:new(host)
@@ -125,8 +125,8 @@ function SettingsOverlay:new(host)
         soundLabel:setWidth(buttonWidth * 2.0)
         soundLabel:setText("Sound effects")
         soundLabel:setTextColorHexValue(0xFFFFFF)
-        soundLabel:setFontSize(8.0)
-        soundLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.RIGHT)
+        soundLabel:setFontSize(20.0)
+        soundLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
         soundLabel:setZOrder(2)
 
         soundSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
@@ -163,8 +163,8 @@ function SettingsOverlay:new(host)
         musicLabel:setWidth(buttonWidth * 2.0)
         musicLabel:setText("Music")
         musicLabel:setTextColorHexValue(0xFFFFFF)
-        musicLabel:setFontSize(8.0)
-        musicLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.RIGHT)
+        musicLabel:setFontSize(20.0)
+        musicLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
         musicLabel:setZOrder(2)
 
         musicSlider:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
@@ -199,13 +199,13 @@ function SettingsOverlay:new(host)
         applyButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, backgroundRect.widgetName,
             50)
         applyButton:setWidth(buttonWidth)
-        applyButton:setHeight(100)
+        applyButton:setHeight(buttonWidth * 0.5)
         applyButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         applyButton:setZOrder(2)
         applyButton:setButtonBorderRadius(SettingsOverlay.buttonRadius)
         applyButton:setLabelText("Apply")
         applyButton:setLabelTextColorHexValue(0xFFFFFF)
-        applyButton:setLabelFontSize(20.0)
+        applyButton:setLabelFontSize(36.0)
         applyButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
 
         cancelButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
@@ -214,13 +214,13 @@ function SettingsOverlay:new(host)
         cancelButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             backgroundRect.widgetName, 50)
         cancelButton:setWidth(buttonWidth)
-        cancelButton:setHeight(100)
+        cancelButton:setHeight(buttonWidth * 0.5)
         cancelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         cancelButton:setZOrder(2)
         cancelButton:setButtonBorderRadius(SettingsOverlay.buttonRadius)
         cancelButton:setLabelText("Cancel")
         cancelButton:setLabelTextColorHexValue(0xFFFFFF)
-        cancelButton:setLabelFontSize(20.0)
+        cancelButton:setLabelFontSize(36.0)
         cancelButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
     end)
 

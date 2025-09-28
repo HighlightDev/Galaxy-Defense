@@ -249,6 +249,8 @@ private:
     void RemoveFromReplicators();
 
     void RemoveLuaProxy();
+
+    void RemoveSceneProxy();
 };
 } // namespace GUI
 } // namespace EngineCore
