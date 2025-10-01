@@ -151,7 +151,7 @@ public:
 
     void SetPlanarReflectionProxiesAreDirty(const bool bDirty);
 
-    void MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy);
+    void AddMaterialProxy_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy);
 
     void UpdatePrimitiveComponentEnable_OnRenderThread(
         const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled);
@@ -185,24 +185,24 @@ public:
         const uint64_t functionId,
         const glm::mat4& newRelativeMatrix);
 
-    void PrimitiveSceneProxyDeleted_OnRenderThread(const int32_t primitiveSceneProxyIndex);
+    void RemovePrimitiveSceneProxy_OnRenderThread(const int32_t primitiveSceneProxyIndex);
 
-    void PrimitiveSceneProxiesUpdated_OnRenderThread();
+    void UpdatePrimitiveSceneProxies_OnRenderThread();
 
-    void LightSceneProxyDeleted_OnRenderThread(const int32_t lightSceneProxyIndex);
+    void DeleteLightSceneProxy_OnRenderThread(const int32_t lightSceneProxyIndex);
 
-    void LightSceneProxiesUpdated_OnRenderThread();
+    void UpdateLightSceneProxies_OnRenderThread();
 
-    void CameraSceneProxyAdded_OnRenderThread(
+    void AddCameraSceneProxy_OnRenderThread(
         const std::shared_ptr<::EngineCore::ACamera>& camera, const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy);
 
     void RemoveCameraSceneProxy_OnRenderThread(const int32_t cameraSceneProxyId);
 
-    void PrimitiveSceneProxyAdded_OnRenderThread(
+    void AddPrimitiveSceneProxy_OnRenderThread(
         const std::shared_ptr<::EngineCore::PrimitiveComponent>& primitiveComponent,
         const std::shared_ptr<PrimitiveSceneProxy>& primitiveSceneProxy);
 
-    void LightSceneProxyAdded_OnRenderThread(
+    void AddLightSceneProxy_OnRenderThread(
         const std::shared_ptr<::EngineCore::LightComponent>& lightComponent,
         const std::shared_ptr<LightSceneProxy>& lightSceneProxy);
 
@@ -229,9 +229,11 @@ public:
     void MaterialPropertiesUpdated_OnRenderThread(
         const int32_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>>&& properties);
 
-    void PlanarReflectionSceneProxyAdded_OnRenderThread(
+    void AddPlanarReflectionSceneProxy_OnRenderThread(
         const std::shared_ptr<::EngineCore::PlanarReflectionComponent>& planarReflectionComponent,
         const std::shared_ptr<PlanarReflectionProxy>& proxy);
+
+    void RemovePlanarReflectionSceneProxy_OnRenderThread(const int32_t planarReflectionProxyIndex);
 
     void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
         const std::shared_ptr<PlanarReflectionProxy>& planarReflectionProxy, const int32_t cameraSceneProxyId);

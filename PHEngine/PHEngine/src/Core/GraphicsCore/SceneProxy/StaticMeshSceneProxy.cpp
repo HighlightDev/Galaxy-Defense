@@ -21,11 +21,6 @@ StaticMeshSceneProxy::~StaticMeshSceneProxy()
 {
 }
 
-void StaticMeshSceneProxy::CleanUp()
-{
-    PrimitiveSceneProxy::CleanUp();
-}
-
 void StaticMeshSceneProxy::PostConstructorInitialize()
 {
     PrimitiveSceneProxy::PostConstructorInitialize();
@@ -140,6 +135,9 @@ void StaticMeshSceneProxy::RenderOutlineStencil(
     const glm::mat4& projectionMatrix,
     ActiveBindedState& activeBindedState)
 {
+    if (!m_outlineShader) {
+        return;
+    }
     const auto& outlineShader = std::static_pointer_cast<StaticMeshSceneProxy::OutlineShaderType>(m_outlineShader);
 
     if (mIsOutlineApplied) {
@@ -159,6 +157,9 @@ void StaticMeshSceneProxy::RenderOutline(
     const glm::mat4& projectionMatrix,
     ActiveBindedState& activeBindedState)
 {
+    if (!m_outlineShader) {
+        return;
+    }
     const auto& outlineShader = std::static_pointer_cast<StaticMeshSceneProxy::OutlineShaderType>(m_outlineShader);
 
     if (mIsOutlineApplied) {

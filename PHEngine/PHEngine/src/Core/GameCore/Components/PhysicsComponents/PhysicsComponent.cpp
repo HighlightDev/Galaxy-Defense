@@ -31,6 +31,7 @@ PhysicsComponent::~PhysicsComponent()
 
 void PhysicsComponent::CleanUp()
 {
+    mDescriptor->CleanUp();
 }
 
 void PhysicsComponent::SetOwner(const std::weak_ptr<Actor>& ownerActor)

@@ -42,8 +42,6 @@ protected:
 
     bool mDepthWriteMaskEnabled{true};
 
-    bool mIsOutlineApplied{false};
-
 public:
     PrimitiveComponent(
         const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);

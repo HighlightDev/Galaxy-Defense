@@ -29,6 +29,8 @@ protected:
 
     bool bIsRootComponent{false};
 
+    bool mIsOutlineApplied{false};
+
     float mOutlineThickness{0.0f};
 public:
 

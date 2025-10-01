@@ -20,20 +20,17 @@ StaticMeshVertexFactory::StaticMeshVertexFactory()
 
 void StaticMeshVertexFactory::AccessAllUniformLocations(uint32_t shaderProgramID)
 {
-    u_transformMatricesBuffer = UniformBufferPool::GetInstance()->GetOrAllocateResource(UniformBufferParameters{
-        "StaticMeshVertexFactory_" + std::to_string(s_instanceId++), "Matrices", 0, sizeof(glm::mat4) * 3, shaderProgramID});
+    mWorldMatrix = GetUniform("worldMatrix", shaderProgramID);
+    mViewMatrix = GetUniform("viewMatrix", shaderProgramID);
+    mProjectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
 }
 
 void StaticMeshVertexFactory::SetMatrices(
     const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 {
-    struct MatricesInternal {
-        glm::mat4 worldMatrix;
-        glm::mat4 viewMatrix;
-        glm::mat4 projectionMatrix;
-    };
-    MatricesInternal matrices{worldMatrix, viewMatrix, projectionMatrix};
-    u_transformMatricesBuffer->SetData(matrices);
+    mWorldMatrix.LoadUniform(worldMatrix);
+    mViewMatrix.LoadUniform(viewMatrix);
+    mProjectionMatrix.LoadUniform(projectionMatrix);
 }
 
 std::vector<std::shared_ptr<AttributeDataBase>> StaticMeshVertexFactory::GetVertexAttributes(const int32_t shaderProgramId)

@@ -17,16 +17,14 @@ SceneComponent::SceneComponent(
     const glm::vec3& rotation = glm::vec3(0.0f),
     const glm::vec3& scale = glm::vec3(0.0f))
     : Component(gameObjectName)
-    , m_TransformScale(
-          std::make_shared<EngineObjectProperty<glm::vec3>>(scale, "p_scale", [this](const glm::vec3& scale) { SyncScale(scale); }))
+    , m_TransformScale(std::make_shared<EngineObjectProperty<glm::vec3>>(
+          scale, "p_scale", [this](const glm::vec3& scale) { SyncScale(scale); }))
     , m_TransformTranslation(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_translation"))
     , bTransformationDirty(true)
-    , mTransform(
-          std::make_shared<Transform>(
-              translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
-    , m_additionalRotationEuler(
-          std::make_shared<EngineObjectProperty<glm::vec3>>(
-              glm::vec3(0.0f), "p_rotator", [this](const glm::vec3& rotator) { SetIsTransformationDirty(true); }))
+    , mTransform(std::make_shared<Transform>(
+          translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
+    , m_additionalRotationEuler(std::make_shared<EngineObjectProperty<glm::vec3>>(
+          glm::vec3(0.0f), "p_rotator", [this](const glm::vec3& rotator) { SetIsTransformationDirty(true); }))
     , m_relativeMatrix(1)
     , m_outlineMatrix(1)
 {
@@ -110,7 +108,9 @@ void SceneComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
     if (!mIsEnabled)
         return;
 
-    UpdateOutlineMatrix(parentRelativeMatrix);
+    if (mIsOutlineApplied) {
+        UpdateOutlineMatrix(parentRelativeMatrix);
+    }
 
     // Update current relative matrix
 

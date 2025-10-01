@@ -5,11 +5,9 @@
 layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-layout(std140) uniform Matrices {
-    mat4 worldMatrix;
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-};
+uniform mat4 worldMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 uniform float extent;
 uniform vec2 screenResolution;

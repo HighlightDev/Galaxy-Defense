@@ -68,9 +68,10 @@ void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMat
                      relativeMatrix = m_relativeMatrix,
                      outlineMatrix = m_outlineMatrix,
                      boundingBox = mBoundingBox,
-                     newTransformedBoundingBox = GetTransformedBoundingBox()]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                     newTransformedBoundingBox = GetTransformedBoundingBox()](
+                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                        std::weak_ptr<EngineCore::Scene> sceneWp,
+                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                             const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
@@ -168,6 +169,7 @@ void PrimitiveComponent::SetIsOutlineApplied(const bool value)
 {
     if (mIsOutlineApplied != value) {
         mIsOutlineApplied = value;
+        SetIsTransformationDirty(true);
         bIsOutlineStateDirty = true;
         SyncRenderData();
     }
@@ -227,9 +229,9 @@ void PrimitiveComponent::SyncRenderData()
                         GetObjectId(),
                         functionId,
                         [sceneProxyId = mSceneProxyId, sceneRendererSp, canBloomBeApplied = mCanBloomBeApplied](
-                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
                                 primitiveSp->SetCanBloomBeApplied(canBloomBeApplied);
@@ -245,9 +247,9 @@ void PrimitiveComponent::SyncRenderData()
                         GetObjectId(),
                         functionId,
                         [sceneProxyId = mSceneProxyId, sceneRendererSp, isDepthTestEnabled = mDepthWriteMaskEnabled](
-                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
                                 primitiveSp->SetDepthWriteMaskEnabled(isDepthTestEnabled);
@@ -263,9 +265,9 @@ void PrimitiveComponent::SyncRenderData()
                         GetObjectId(),
                         functionId,
                         [sceneProxyId = mSceneProxyId, isOutlineApplied = mIsOutlineApplied, sceneRendererSp](
-                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                             const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
                                 primitiveSp->SetIsOutlineApplied(isOutlineApplied);

@@ -104,6 +104,7 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
 
 void SceneRenderer::Initialize()
 {
+    LogInfo("SceneRenderer::Initialize");
     InitializeCoreShaders();
 #ifdef DEBUG
     bRenderDebugPhysicsData = EngineConfigHolder::GetInstance()->GetEngineConfig().RenderDebugPhysicsData;
@@ -149,16 +150,29 @@ void SceneRenderer::InitializeCoreShaders()
 SceneRenderer::~SceneRenderer()
 {
     LogInfo("SceneRenderer::dctor");
-    mDepthCollectShaderNonSkeletal->CleanUp(true);
-    mDepthCollectShaderSkeletal->CleanUp(true);
-    mDepthCollectPointLightShaderSkeletal->CleanUp(true);
-    mDepthCollectPointLightShaderNonSkeletal->CleanUp(true);
-    m_deferredLightShader->CleanUp(true);
-    m_fontShader->CleanUp(true);
+    if (mDepthCollectPointLightShaderNonSkeletal) {
+        mDepthCollectPointLightShaderNonSkeletal->CleanUp(true);
+    }
+    if (mDepthCollectPointLightShaderSkeletal) {
+        mDepthCollectPointLightShaderSkeletal->CleanUp(true);
+    }
+    if (mDepthCollectShaderSkeletal) {
+        mDepthCollectShaderSkeletal->CleanUp(true);
+    }
+    if (mDepthCollectShaderNonSkeletal) {
+        mDepthCollectShaderNonSkeletal->CleanUp(true);
+    }
+    if (m_deferredLightShader) {
+        m_deferredLightShader->CleanUp(true);
+    }
+    if (m_fontShader) {
+        m_fontShader->CleanUp(true);
+    }
 }
 
 void SceneRenderer::CleanUp()
 {
+    LogInfo("SceneRenderer::CleanUp");
     SceneViewsVector.clear();
 
     mInstancedGeometryBatchRenderer->CleanUp();
@@ -178,10 +192,14 @@ void SceneRenderer::CleanUp()
     }
     PrimitiveProxiesVector.clear();
 
-    for (const auto& materialProxy : MaterialProxiesVector) {
-        materialProxy->CleanUp();
-    }
-    MaterialProxiesVector.clear();
+    std::for_each(
+        MaterialProxiesVector.begin(), MaterialProxiesVector.end(), [](const auto& materialProxy) { materialProxy->CleanUp(); });
+    MaterialProxiesVector.erase(
+        std::remove_if(
+            MaterialProxiesVector.begin(),
+            MaterialProxiesVector.end(),
+            [](const auto& materialProxy) { return "OutlineMaterial" != materialProxy->MaterialName; }),
+        MaterialProxiesVector.end());
 
     mForwardRenderingProxiesVec.clear();
     mSkeletalProxiesVec.clear();
@@ -638,7 +656,7 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
         screenHeight,
         GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    static constexpr int NoClearFlag = 0;
+    constexpr int NoClearFlag = 0;
     m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(NoClearFlag);
 
     RenderState renderState;
@@ -1214,108 +1232,146 @@ void SceneRenderer::RemovePlanarReflectionSceneProxyByProxyId(const int32_t prox
         }));
 }
 
-void SceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy)
+void SceneRenderer::AddMaterialProxy_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy)
 {
-    static const uint64_t functionId = Hash("SceneRenderer::MaterialProxyAdded_OnRenderThread");
+    static const uint64_t functionId = Hash64_CT("SceneRenderer::AddMaterialProxy_OnRenderThread");
 
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-        materialProxy->GetSceneProxyId(),
-        functionId,
-        [weak = weak_from_this(), materialProxy](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                assert(!sceneRenderer->GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
-                LogInfo(
-                    "SceneRenderer::MaterialProxyAdded_OnRenderThread: material name = ",
-                    materialProxy->MaterialName,
-                    "proxyId = ",
-                    materialProxy->GetSceneProxyId());
-                sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy);
-            }
-        });
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        assert(!GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
+        MaterialProxiesVector.emplace_back(materialProxy);
+        LogInfo(
+            "SceneRenderer::AddMaterialProxy_OnRenderThread: material name: ",
+            materialProxy->MaterialName,
+            "proxyId: ",
+            materialProxy->GetSceneProxyId());
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            materialProxy->GetSceneProxyId(),
+            functionId,
+            [weak = weak_from_this(), materialProxy](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    assert(!sceneRenderer->GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
+                    sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy);
+                    LogInfo(
+                        "SceneRenderer::AddMaterialProxy_OnRenderThread: material name: ",
+                        materialProxy->MaterialName,
+                        "proxyId: ",
+                        materialProxy->GetSceneProxyId());
+                }
+            });
+    }
 }
 
 void SceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(
     const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
 {
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), primitiveSceneProxyIndex, bEnabled](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                if (primitiveSp) {
-                    primitiveSp->SetEnabled(bEnabled);
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+        if (primitiveSp) {
+            primitiveSp->SetEnabled(bEnabled);
+        }
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), primitiveSceneProxyIndex, bEnabled](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                    if (primitiveSp) {
+                        primitiveSp->SetEnabled(bEnabled);
+                    }
                 }
-            }
-        });
+            });
+    }
 }
 
 void SceneRenderer::UpdateLightComponentEnable_OnRenderThread(
     const int32_t lightSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
 {
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), lightSceneProxyIndex, bEnabled](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& lightSp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
-                if (lightSp) {
-                    lightSp->SetEnabled(bEnabled);
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
+        if (lightSp) {
+            lightSp->SetEnabled(bEnabled);
+        }
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), lightSceneProxyIndex, bEnabled](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& lightSp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
+                    if (lightSp) {
+                        lightSp->SetEnabled(bEnabled);
+                    }
                 }
-            }
-        });
+            });
+    }
 }
 
 void SceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(
     const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool visibility)
 {
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), primitiveSceneProxyIndex, visibility](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                if (primitiveSp) {
-                    primitiveSp->SetVisibility(visibility);
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+        if (primitiveSp) {
+            primitiveSp->SetVisibility(visibility);
+        }
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), primitiveSceneProxyIndex, visibility](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                    if (primitiveSp) {
+                        primitiveSp->SetVisibility(visibility);
+                    }
                 }
-            }
-        });
+            });
+    }
 }
 
 void SceneRenderer::UpdateLightComponentIsVisible_OnRenderThread(
     const int32_t lightSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool visibility)
 {
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), lightSceneProxyIndex, visibility](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& lightSp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
-                if (lightSp) {
-                    lightSp->SetIsVisible(visibility);
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
+        if (lightSp) {
+            lightSp->SetIsVisible(visibility);
+        }
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), lightSceneProxyIndex, visibility](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& lightSp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
+                    if (lightSp) {
+                        lightSp->SetIsVisible(visibility);
+                    }
                 }
-            }
-        });
+            });
+    }
 }
 
 void SceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(
@@ -1324,21 +1380,28 @@ void SceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(
     const uint64_t functionId,
     const int32_t sortOrderValue)
 {
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), sortOrderValue, primitiveSceneProxyIndex](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                if (primitiveSp) {
-                    primitiveSp->SetSortOrderValue(sortOrderValue);
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+        if (primitiveSp) {
+            primitiveSp->SetSortOrderValue(sortOrderValue);
+        }
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), sortOrderValue, primitiveSceneProxyIndex](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                    if (primitiveSp) {
+                        primitiveSp->SetSortOrderValue(sortOrderValue);
+                    }
                 }
-            }
-        });
+            });
+    }
 }
 
 void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
@@ -1349,23 +1412,32 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
     const glm::mat4& newOutlineMatrix,
     const BoundingBox3D& newTransformedBoundingBox)
 {
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), primitiveSceneProxyIndex, newRelativeMatrix, newOutlineMatrix, newTransformedBoundingBox](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                if (primitiveSp) {
-                    primitiveSp->SetTransformationMatrix(newRelativeMatrix);
-                    primitiveSp->SetOutlineMatrix(newOutlineMatrix);
-                    primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+        if (primitiveSp) {
+            primitiveSp->SetTransformationMatrix(newRelativeMatrix);
+            primitiveSp->SetOutlineMatrix(newOutlineMatrix);
+            primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+        }
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), primitiveSceneProxyIndex, newRelativeMatrix, newOutlineMatrix, newTransformedBoundingBox](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                    if (primitiveSp) {
+                        primitiveSp->SetTransformationMatrix(newRelativeMatrix);
+                        primitiveSp->SetOutlineMatrix(newOutlineMatrix);
+                        primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+                    }
                 }
-            }
-        });
+            });
+    }
 }
 
 void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
@@ -1374,183 +1446,241 @@ void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
     const uint64_t functionId,
     const glm::mat4& newRelativeMatrix)
 {
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), newRelativeMatrix, lightSceneProxyIndex](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
-                if (lightProxySp) {
-                    lightProxySp->SetTransformationMatrix(newRelativeMatrix);
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
+        if (lightSp) {
+            lightSp->SetTransformationMatrix(newRelativeMatrix);
+        }
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), newRelativeMatrix, lightSceneProxyIndex](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
+                    if (lightProxySp) {
+                        lightProxySp->SetTransformationMatrix(newRelativeMatrix);
+                    }
                 }
-            }
-        });
+            });
+    }
 }
 
-void SceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const int32_t primitiveSceneProxyIndex)
+void SceneRenderer::RemovePrimitiveSceneProxy_OnRenderThread(const int32_t primitiveSceneProxyIndex)
 {
-    static constexpr int32_t creatorObjectId = 0;
-    static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread");
-
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        primitiveSceneProxyIndex,
-        functionId,
-        [weak = weak_from_this(), primitiveSceneProxyIndex](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                sceneRenderer->SetProxiesAreDirty(true);
-            }
-        });
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+        SetProxiesAreDirty(true);
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            primitiveSceneProxyIndex,
+            Hash64_CT("SceneRenderer::RemovePrimitiveSceneProxy_OnRenderThread"),
+            [weak = weak_from_this(), primitiveSceneProxyIndex](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                    sceneRenderer->SetProxiesAreDirty(true);
+                }
+            });
+    }
 }
 
-void SceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread()
+void SceneRenderer::UpdatePrimitiveSceneProxies_OnRenderThread()
 {
-    static constexpr int32_t creatorObjectId = 0;
-    static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread");
-
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this()](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->SetProxiesAreDirty(true);
-            }
-        });
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        SetProxiesAreDirty(true);
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+            0,
+            Hash64_CT("SceneRenderer::UpdatePrimitiveSceneProxies_OnRenderThread"),
+            [weak = weak_from_this()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->SetProxiesAreDirty(true);
+                }
+            });
+    }
 }
 
-void SceneRenderer::LightSceneProxyDeleted_OnRenderThread(const int32_t lightSceneProxyIndex)
+void SceneRenderer::DeleteLightSceneProxy_OnRenderThread(const int32_t lightSceneProxyIndex)
 {
-    static constexpr int32_t creatorObjectId = 0;
-    static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxyDeleted_OnRenderThread");
-
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), lightSceneProxyIndex](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->RemoveLightProxyByProxyId(lightSceneProxyIndex);
-                sceneRenderer->SetLightProxiesAreDirty(true);
-            }
-        });
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        RemoveLightProxyByProxyId(lightSceneProxyIndex);
+        SetLightProxiesAreDirty(true);
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            0,
+            Hash64_CT("SceneRenderer::DeleteLightSceneProxy_OnRenderThread"),
+            [weak = weak_from_this(), lightSceneProxyIndex](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->RemoveLightProxyByProxyId(lightSceneProxyIndex);
+                    sceneRenderer->SetLightProxiesAreDirty(true);
+                }
+            });
+    }
 }
 
-void SceneRenderer::LightSceneProxiesUpdated_OnRenderThread()
+void SceneRenderer::UpdateLightSceneProxies_OnRenderThread()
 {
-    static constexpr int32_t creatorObjectId = 0;
-    static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxiesUpdated_OnRenderThread");
-
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this()](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->SetLightProxiesAreDirty(true);
-            }
-        });
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        SetLightProxiesAreDirty(true);
+    } else {
+        constexpr int32_t creatorObjectId = 0;
+        const uint64_t functionId = Hash64_CT("SceneRenderer::UpdateLightSceneProxies_OnRenderThread");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->SetLightProxiesAreDirty(true);
+                }
+            });
+    }
 }
 
-void SceneRenderer::CameraSceneProxyAdded_OnRenderThread(
+void SceneRenderer::AddCameraSceneProxy_OnRenderThread(
     const std::shared_ptr<ACamera>& camera, const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy)
 {
-    LogInfo("SceneRenderer::CameraSceneProxyAdded_OnRenderThread: camera proxyId: ", cameraSceneProxy->GetSceneProxyId());
-    static const uint64_t functionId = Hash("SceneRenderer::CameraSceneProxyAdded_OnRenderThread");
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, GetPrimitiveProxies()));
+        camera->SetIsCameraProxyReady(true);
+    } else {
+        LogInfo("SceneRenderer::AddCameraSceneProxy_OnRenderThread: camera proxyId: ", cameraSceneProxy->GetSceneProxyId());
+        const uint64_t functionId = Hash64_CT("SceneRenderer::AddCameraSceneProxy_OnRenderThread");
 
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-        cameraSceneProxy->GetSceneProxyId(),
-        functionId,
-        [weak = weak_from_this(), camera, cameraSceneProxy](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->SceneViewsVector.emplace_back(
-                    std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->GetPrimitiveProxies()));
-                camera->SetIsCameraProxyReady(true);
-            }
-        });
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+            cameraSceneProxy->GetSceneProxyId(),
+            functionId,
+            [weak = weak_from_this(), camera, cameraSceneProxy](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->SceneViewsVector.emplace_back(
+                        std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->GetPrimitiveProxies()));
+                    camera->SetIsCameraProxyReady(true);
+                }
+            });
+    }
 }
 
 void SceneRenderer::RemoveCameraSceneProxy_OnRenderThread(const int32_t cameraSceneProxyId)
 {
     LogInfo("SceneRenderer::RemoveCameraSceneProxy_OnRenderThread: camera proxyId: ", cameraSceneProxyId);
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
-    assert(std::any_of(SceneViewsVector.cbegin(), SceneViewsVector.cend(), [cameraSceneProxyId](const auto& sceneViewSp) {
-        return sceneViewSp->GetCameraProxy()->GetSceneProxyId() == cameraSceneProxyId;
-    }));
-    SceneViewsVector.erase(
-        std::remove_if(SceneViewsVector.begin(), SceneViewsVector.end(), [cameraSceneProxyId](const auto& sceneViewSp) {
-            return sceneViewSp->GetCameraProxy()->GetSceneProxyId() == cameraSceneProxyId;
-        }));
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        SceneViewsVector.erase(
+            std::remove_if(
+                SceneViewsVector.begin(),
+                SceneViewsVector.end(),
+                [cameraSceneProxyId](const auto& sceneViewSp) {
+                    return sceneViewSp->GetCameraProxy()->GetSceneProxyId() == cameraSceneProxyId;
+                }),
+            SceneViewsVector.end());
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            0,
+            Hash64_CT("SceneRenderer::RemoveCameraSceneProxy_OnRenderThread"),
+            [weak = weak_from_this(), cameraSceneProxyId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->SceneViewsVector.erase(
+                        std::remove_if(
+                            sceneRenderer->SceneViewsVector.begin(),
+                            sceneRenderer->SceneViewsVector.end(),
+                            [cameraSceneProxyId](const auto& sceneViewSp) {
+                                return sceneViewSp->GetCameraProxy()->GetSceneProxyId() == cameraSceneProxyId;
+                            }),
+                        sceneRenderer->SceneViewsVector.end());
+                }
+            });
+    }
 }
 
-void SceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread(
+void SceneRenderer::AddPrimitiveSceneProxy_OnRenderThread(
     const std::shared_ptr<PrimitiveComponent>& primitiveComponent,
     const std::shared_ptr<PrimitiveSceneProxy>& primitiveSceneProxy)
 {
-    static constexpr int32_t creatorObjectId = 0;
-    static const uint64_t functionId = Hash("SceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread");
+    constexpr int32_t creatorObjectId = 0;
+    static const uint64_t functionId = Hash64_CT("SceneRenderer::AddPrimitiveSceneProxy_OnRenderThread");
 
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), primitiveComponent, primitiveSceneProxy](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                assert(!sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
-                primitiveSceneProxy->PostConstructorInitialize();
-                sceneRenderer->GetPrimitiveProxies().emplace_back(primitiveSceneProxy);
-                sceneRenderer->SetProxiesAreDirty(true);
-                primitiveComponent->SetIsSceneProxyReady(true);
-            }
-        });
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        assert(!GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
+        primitiveSceneProxy->PostConstructorInitialize();
+        PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
+        SetProxiesAreDirty(true);
+        primitiveComponent->SetIsSceneProxyReady(true);
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), primitiveComponent, primitiveSceneProxy](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    assert(!sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
+                    primitiveSceneProxy->PostConstructorInitialize();
+                    sceneRenderer->GetPrimitiveProxies().emplace_back(primitiveSceneProxy);
+                    sceneRenderer->SetProxiesAreDirty(true);
+                    primitiveComponent->SetIsSceneProxyReady(true);
+                }
+            });
+    }
 }
 
-void SceneRenderer::LightSceneProxyAdded_OnRenderThread(
+void SceneRenderer::AddLightSceneProxy_OnRenderThread(
     const std::shared_ptr<LightComponent>& lightComponent, const std::shared_ptr<LightSceneProxy>& lightSceneProxy)
 {
-    static constexpr int32_t creatorObjectId = 0;
-    static const uint64_t functionId = Hash("SceneRenderer::LightSceneProxyAdded_OnRenderThread");
+    constexpr int32_t creatorObjectId = 0;
+    static const uint64_t functionId = Hash64_CT("SceneRenderer::AddLightSceneProxy_OnRenderThread");
 
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), lightComponent, lightSceneProxy](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                assert(!sceneRenderer->GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
-                sceneRenderer->LightProxiesVector.emplace_back(lightSceneProxy);
-                sceneRenderer->SetLightProxiesAreDirty(true);
-                lightComponent->SetIsSceneProxyReady(true);
-                lightSceneProxy->PostInitialize();
-            }
-        });
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        assert(!GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
+        LightProxiesVector.emplace_back(lightSceneProxy);
+        SetLightProxiesAreDirty(true);
+        lightComponent->SetIsSceneProxyReady(true);
+        lightSceneProxy->PostInitialize();
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), lightComponent, lightSceneProxy](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    assert(!sceneRenderer->GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
+                    sceneRenderer->LightProxiesVector.emplace_back(lightSceneProxy);
+                    sceneRenderer->SetLightProxiesAreDirty(true);
+                    lightComponent->SetIsSceneProxyReady(true);
+                    lightSceneProxy->PostInitialize();
+                }
+            });
+    }
 }
 
 void SceneRenderer::RegisterText_OnRenderThread(
@@ -1562,8 +1692,8 @@ void SceneRenderer::RegisterText_OnRenderThread(
         " textFieldId = ",
         textField->GetTextFieldId());
 
-    static constexpr int32_t creatorObjectId = 0;
-    static const uint64_t functionId = Hash("SceneRenderer::RegisterText_OnRenderThread");
+    constexpr int32_t creatorObjectId = 0;
+    static const uint64_t functionId = Hash64_CT("SceneRenderer::RegisterText_OnRenderThread");
 
     const auto textFieldProxy = FreeTypeTextFieldProxy::CreateTextFieldProxyInstance(
         textField->GetTextFieldId(),
@@ -1579,18 +1709,23 @@ void SceneRenderer::RegisterText_OnRenderThread(
         textField->GetTextVerticalAlignment(),
         textField->GetLineMaxWidthHeight(),
         subscribeOnTextScreenSpaceSizeUpdate);
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), textFieldProxy](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->RegisterText(textFieldProxy);
-            }
-        });
+
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        RegisterText(textFieldProxy);
+    } else {
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), textFieldProxy](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->RegisterText(textFieldProxy);
+                }
+            });
+    }
 }
 
 void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField>& textField)
@@ -1601,21 +1736,24 @@ void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextF
         " textFieldId = ",
         textField->GetTextFieldId());
 
-    static constexpr int32_t creatorObjectId = 0;
-    static const uint64_t functionId = Hash("SceneRenderer::UnregisterText_OnRenderThread");
-
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), textFieldId = textField->GetTextFieldId()](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->UnregisterText(textFieldId);
-            }
-        });
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        UnregisterText(textField->GetTextFieldId());
+    } else {
+        constexpr int32_t creatorObjectId = 0;
+        const uint64_t functionId = Hash64_CT("SceneRenderer::UnregisterText_OnRenderThread");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), textFieldId = textField->GetTextFieldId()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->UnregisterText(textFieldId);
+                }
+            });
+    }
 }
 
 void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(
@@ -1623,142 +1761,143 @@ void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(
 {
     LogInfo("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread: UId = ", uiCanvasProxy->GetUiItemUId());
 
-    static constexpr int32_t creatorObjectId = 0;
-    static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        RegisterUiCanvasProxy(uiCanvasProxy);
+        uiCanvas->SetIsSceneProxyReady(true);
+    } else {
+        constexpr int32_t creatorObjectId = 0;
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
 
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), uiCanvas, uiCanvasProxy](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->RegisterUiCanvasProxy(uiCanvasProxy);
-                uiCanvas->SetIsSceneProxyReady(true);
-            }
-        });
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), uiCanvas, uiCanvasProxy](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->RegisterUiCanvasProxy(uiCanvasProxy);
+                    uiCanvas->SetIsSceneProxyReady(true);
+                }
+            });
+    }
 }
 
 void SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUiId)
 {
     LogInfo("SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread: UId = ", canvasUiId);
 
-    static constexpr int32_t creatorObjectId = 0;
-    static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread");
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        UnregisterUiCanvasProxy(canvasUiId);
+    } else {
+        constexpr int32_t creatorObjectId = 0;
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread");
 
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), canvasUiId](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->UnregisterUiCanvasProxy(canvasUiId);
-            }
-        });
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), canvasUiId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->UnregisterUiCanvasProxy(canvasUiId);
+                }
+            });
+    }
 }
 
 void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
     const std::shared_ptr<UiItemBase>& uiItem, const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
 {
-    static constexpr int32_t creatorObjectId = 0;
-    static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiSceneProxy_OnRenderThread");
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        RegisterUiSceneProxy(uiSceneProxy, canvasUId);
+        uiItem->SetIsSceneProxyReady(true);
+    } else {
+        constexpr int32_t creatorObjectId = 0;
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RegisterUiSceneProxy_OnRenderThread");
 
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), uiItem, uiSceneProxy, canvasUId](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->RegisterUiSceneProxy(uiSceneProxy, canvasUId);
-                uiItem->SetIsSceneProxyReady(true);
-            }
-        });
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), uiItem, uiSceneProxy, canvasUId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->RegisterUiSceneProxy(uiSceneProxy, canvasUId);
+                    uiItem->SetIsSceneProxyReady(true);
+                }
+            });
+    }
 }
 
 void SceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId)
 {
-    static constexpr int32_t creatorObjectId = 0;
-    static constexpr uint64_t functionId = Hash64_CT("SceneRenderer::UnregisterUiSceneProxy_OnRenderThread");
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        UnregisterUiSceneProxy(uiItemUId, canvasUId);
+    } else {
+        constexpr int32_t creatorObjectId = 0;
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::UnregisterUiSceneProxy_OnRenderThread");
 
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        creatorObjectId,
-        functionId,
-        [weak = weak_from_this(), uiItemUId, canvasUId](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                sceneRenderer->UnregisterUiSceneProxy(uiItemUId, canvasUId);
-            }
-        });
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            creatorObjectId,
+            functionId,
+            [weak = weak_from_this(), uiItemUId, canvasUId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->UnregisterUiSceneProxy(uiItemUId, canvasUId);
+                }
+            });
+    }
 }
 
 void SceneRenderer::TextDataChanged_OnRenderThread(
     const std::shared_ptr<HudTextField>& textField, const eTextChangedDataType textChangedDataType)
 {
-    static const uint64_t functionId = Hash("SceneRenderer::TextDataChanged_OnRenderThread");
-
     const auto textFontName = textField->GetFontName();
     const auto textFieldId = textField->GetTextFieldId();
-    if (eTextChangedDataType::OFFSET == textChangedDataType) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        if (eTextChangedDataType::OFFSET == textChangedDataType) {
+            TextPositionChanged(textFieldId, textField->GetPosition());
+        } else if (eTextChangedDataType::COLOR == textChangedDataType) {
+            TextColorChanged(textFieldId, textField->GetColor());
+        } else if (eTextChangedDataType::TEXT == textChangedDataType) {
+            TextChanged(textFieldId, textField->GetText());
+        } else if (eTextChangedDataType::VISIBILITY == textChangedDataType) {
+            TextVisibilityChanged(textFieldId, textField->GetIsVisible());
+        }
+    } else {
         m_interThreadMgr.ExecuteOnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
             textFieldId,
-            functionId,
-            [weak = weak_from_this(), textFieldId, textPosition = textField->GetPosition()](
+            Hash64_CT("SceneRenderer::TextDataChanged_OnRenderThread"),
+            [weak = weak_from_this(),
+             textFieldId,
+             textChangedDataType,
+             textPosition = textField->GetPosition(),
+             textColor = textField->GetColor(),
+             text = textField->GetText(),
+             isVisible = textField->GetIsVisible()](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->TextPositionChanged(textFieldId, textPosition);
-                }
-            });
-    } else if (eTextChangedDataType::COLOR == textChangedDataType) {
-        m_interThreadMgr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY,
-            textFieldId,
-            functionId,
-            [weak = weak_from_this(), textFieldId, textColor = textField->GetColor()](
-                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->TextColorChanged(textFieldId, textColor);
-                }
-            });
-    } else if (eTextChangedDataType::TEXT == textChangedDataType) {
-        m_interThreadMgr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY,
-            textFieldId,
-            functionId,
-            [weak = weak_from_this(), textFieldId, text = textField->GetText()](
-                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->TextChanged(textFieldId, text);
-                }
-            });
-    } else if (eTextChangedDataType::VISIBILITY == textChangedDataType) {
-        m_interThreadMgr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY,
-            textFieldId,
-            functionId,
-            [weak = weak_from_this(), textFieldId, isVisible = textField->GetIsVisible()](
-                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->TextVisibilityChanged(textFieldId, isVisible);
+                    if (eTextChangedDataType::OFFSET == textChangedDataType) {
+                        sceneRenderer->TextPositionChanged(textFieldId, textPosition);
+                    } else if (eTextChangedDataType::COLOR == textChangedDataType) {
+                        sceneRenderer->TextColorChanged(textFieldId, textColor);
+                    } else if (eTextChangedDataType::TEXT == textChangedDataType) {
+                        sceneRenderer->TextChanged(textFieldId, text);
+                    } else if (eTextChangedDataType::VISIBILITY == textChangedDataType) {
+                        sceneRenderer->TextVisibilityChanged(textFieldId, isVisible);
+                    }
                 }
             });
     }
@@ -1767,76 +1906,131 @@ void SceneRenderer::TextDataChanged_OnRenderThread(
 void SceneRenderer::MaterialPropertiesUpdated_OnRenderThread(
     const int32_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>>&& properties)
 {
-    static const uint64_t functionId = Hash("SceneRenderer::MaterialPropertiesUpdated_OnRenderThread");
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-        0,
-        functionId,
-        [weak = weak_from_this(), materialProxyIndex, properties = std::move(properties)](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) mutable {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
-                if (materialProxySp) {
-                    materialProxySp->UpdateProperties(std::move(properties));
-                } else {
-                    LogInfo(
-                        "SceneRenderer::MaterialPropertiesUpdated_OnRenderThread: "
-                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                        materialProxyIndex);
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& materialProxySp = GetMaterialProxyByProxyId(materialProxyIndex);
+        if (materialProxySp) {
+            materialProxySp->UpdateProperties(std::move(properties));
+        } else {
+            LogInfo(
+                "SceneRenderer::MaterialPropertiesUpdated_OnRenderThread: "
+                "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                materialProxyIndex);
+        }
+    } else {
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::MaterialPropertiesUpdated_OnRenderThread");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            0,
+            functionId,
+            [weak = weak_from_this(), materialProxyIndex, properties = std::move(properties)](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) mutable {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
+                    if (materialProxySp) {
+                        materialProxySp->UpdateProperties(std::move(properties));
+                    } else {
+                        LogInfo(
+                            "SceneRenderer::MaterialPropertiesUpdated_OnRenderThread: "
+                            "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                            materialProxyIndex);
+                    }
                 }
-            }
-        });
+            });
+    }
 }
 
-void SceneRenderer::PlanarReflectionSceneProxyAdded_OnRenderThread(
+void SceneRenderer::AddPlanarReflectionSceneProxy_OnRenderThread(
     const std::shared_ptr<PlanarReflectionComponent>& planarReflectionComponent,
     const std::shared_ptr<PlanarReflectionProxy>& proxy)
 {
-    static const uint64_t functionId = Hash("SceneRenderer::PlanarReflectionSceneProxyAdded");
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        proxy->GetSceneProxyId(),
-        functionId,
-        [proxy, planarReflectionComponent, weak = weak_from_this()](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& reflectionProxySp = sceneRenderer->GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
-                assert(!reflectionProxySp);
-                sceneRenderer->PlanarReflectionProxiesVector.emplace_back(proxy);
-                sceneRenderer->SetPlanarReflectionProxiesAreDirty(true);
-                planarReflectionComponent->SetIsSceneProxyReady(true);
-            }
-        });
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& reflectionProxySp = GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
+        assert(!reflectionProxySp);
+        PlanarReflectionProxiesVector.emplace_back(proxy);
+        SetPlanarReflectionProxiesAreDirty(true);
+        planarReflectionComponent->SetIsSceneProxyReady(true);
+    } else {
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::AddPlanarReflectionSceneProxy_OnRenderThread");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            proxy->GetSceneProxyId(),
+            functionId,
+            [proxy, planarReflectionComponent, weak = weak_from_this()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& reflectionProxySp = sceneRenderer->GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
+                    assert(!reflectionProxySp);
+                    sceneRenderer->PlanarReflectionProxiesVector.emplace_back(proxy);
+                    sceneRenderer->SetPlanarReflectionProxiesAreDirty(true);
+                    planarReflectionComponent->SetIsSceneProxyReady(true);
+                }
+            });
+    }
+}
+
+void SceneRenderer::RemovePlanarReflectionSceneProxy_OnRenderThread(const int32_t planarReflectionProxyIndex)
+{
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        RemovePlanarReflectionSceneProxyByProxyId(planarReflectionProxyIndex);
+        SetPlanarReflectionProxiesAreDirty(true);
+    } else {
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RemovePlanarReflectionSceneProxy_OnRenderThread");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            planarReflectionProxyIndex,
+            functionId,
+            [weak = weak_from_this(), planarReflectionProxyIndex](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    sceneRenderer->RemovePlanarReflectionSceneProxyByProxyId(planarReflectionProxyIndex);
+                    sceneRenderer->SetPlanarReflectionProxiesAreDirty(true);
+                }
+            });
+    }
 }
 
 void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
     const std::shared_ptr<PlanarReflectionProxy>& planarReflectionProxy, const int32_t cameraSceneProxyId)
 {
-    static const uint64_t functionId = Hash("SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        cameraSceneProxyId,
-        functionId,
-        [weak = weak_from_this(), cameraSceneProxyId, planarReflectionProxy](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            if (const auto& sceneRenderer = weak.lock()) {
-                const auto& sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraSceneProxyId);
-                if (sceneViewSp) {
-                    planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
-                } else {
-                    LogInfo(
-                        "SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread: "
-                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                        cameraSceneProxyId);
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& sceneViewSp = GetSceneViewByProxyId(cameraSceneProxyId);
+        if (sceneViewSp) {
+            planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
+        } else {
+            LogInfo(
+                "SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread: "
+                "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                cameraSceneProxyId);
+        }
+    } else {
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            cameraSceneProxyId,
+            functionId,
+            [weak = weak_from_this(), cameraSceneProxyId, planarReflectionProxy](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = weak.lock()) {
+                    const auto& sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraSceneProxyId);
+                    if (sceneViewSp) {
+                        planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
+                    } else {
+                        LogInfo(
+                            "SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread: "
+                            "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                            cameraSceneProxyId);
+                    }
                 }
-            }
-        });
+            });
+    }
 }
 
 void SceneRenderer::RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy)
@@ -1864,8 +2058,8 @@ void SceneRenderer::TextChanged(const int32_t textFieldProxyId, const std::strin
     mFreeTypeFontHandler->TextChanged(textFieldProxyId, text);
 
     if (mFreeTypeFontHandler->IsTextSubscribedOnSizeChangeUpdate(textFieldProxyId)) {
-        static constexpr int32_t creatorObjectId = 0;
-        static const uint64_t functionId = Hash("SceneRenderer::TextChanged");
+        constexpr int32_t creatorObjectId = 0;
+        static const uint64_t functionId = Hash64_CT("SceneRenderer::TextChanged");
 
         if (const auto& sceneSp = m_interThreadMgr.GetSceneWP().lock()) {
             m_interThreadMgr.ExecuteOnGameThread(

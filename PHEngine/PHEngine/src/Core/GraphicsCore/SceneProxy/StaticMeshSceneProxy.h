@@ -36,8 +36,6 @@ public:
 
     ~StaticMeshSceneProxy() override;
 
-    void CleanUp() override;
-
     void PostConstructorInitialize() override;
 
     void Render(
