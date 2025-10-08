@@ -2,13 +2,17 @@
 
 #include "materialCommon.incl.glsl"
 
+// Max number of instances that can be rendered in a single draw call with one instance buffer
+const int MaxInstancesPerInstanceBatch = 200;
+
 uniform sampler2D albedo;
 uniform sampler2D normalMap;
 uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D ambientOcclusionMap;
 uniform float uvScale;
-uniform float freezingBlendValue[200];
+
+uniform float freezingBlendValue[MaxInstancesPerInstanceBatch];
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {

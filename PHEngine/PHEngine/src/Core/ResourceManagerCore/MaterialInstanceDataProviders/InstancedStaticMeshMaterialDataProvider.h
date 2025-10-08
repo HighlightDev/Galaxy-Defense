@@ -8,7 +8,7 @@
 namespace Resources {
 class InstancedStaticMeshMaterialDataProvider : public MaterialInstanceDataProvider {
 protected:
-    void UpdateInstancedDataProvider(); // todo: for now
+    void UpdateInstancedDataProvider();
 
     virtual std::string GetBatchKey() const = 0;
 };

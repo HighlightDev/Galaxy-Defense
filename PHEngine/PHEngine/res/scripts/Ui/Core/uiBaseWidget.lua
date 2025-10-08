@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -31,7 +30,9 @@ UiBaseWidget = {
         Float = 1,
         Vec3 = 2,
         Boolean = 3,
-        Integer = 4
+        Integer = 4,
+        iVec2 = 5,
+        Vec2 = 6
     },
     AnimationInterpolationFunctionType = {
         LINEAR = 0
@@ -66,7 +67,7 @@ function UiBaseWidget:checkLuaProxyReady(host)
         self.luaProxyReady = _IsLuaProxyReady(host, self.luaProxyId)
         self.widgetName = _GetUiWidgetName(host, self.luaProxyId)
         if self.luaProxyReady == true then
-            --print("UiBaseWidget:checkLuaProxyReady: " .. tostring(self.widgetName) .. " is now ready.")
+            -- print("UiBaseWidget:checkLuaProxyReady: " .. tostring(self.widgetName) .. " is now ready.")
             if self.luaProxyReadyCallback ~= nil then
                 self.luaProxyReadyCallback(host)
             end

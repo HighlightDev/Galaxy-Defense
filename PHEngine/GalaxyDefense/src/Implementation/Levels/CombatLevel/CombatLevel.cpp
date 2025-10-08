@@ -185,7 +185,7 @@ void CombatLevel::CreateScene()
     }
     mUiController->OnLevelInit();
 
-    // todo: temprorary solution just to test InstancedStaticMeshComponent
+    // Asteroids field
     const std::shared_ptr<IMaterial>& asteroidPbs_mat = materialParser.ParseMaterialDescriptor("AsteroidMaterial.m");
     sceneSp->RegisterMaterialInstance(asteroidPbs_mat);
 
@@ -206,12 +206,16 @@ void CombatLevel::CreateScene()
     MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "metallicMap", metallic_tex);
     MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "uvScale", uvScale);
 
+    constexpr int32_t asteroidsCount = 64;
+    constexpr float asteroidsPerDimension = std::sqrt(static_cast<float>(asteroidsCount));
+    constexpr int32_t asteroidsPerDimensionInt = static_cast<int32_t>(asteroidsPerDimension);
+
     const auto& instancedMeshComponentCreator
         = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
     const auto lvlDiffVec = levelBoundary.GetMax() - levelBoundary.GetMin();
-    const float xStep = lvlDiffVec.x * (1.0f / 8.0f);
-    const float zStep = lvlDiffVec.z * (1.0f / 8.0f);
-    for (int i = 0; i < (8 * 8); ++i) {
+    const float xStep = lvlDiffVec.x * (1.0f / asteroidsPerDimension);
+    const float zStep = lvlDiffVec.z * (1.0f / asteroidsPerDimension);
+    for (int i = 0; i < asteroidsCount; ++i) {
         const auto d_ismesh = std::make_shared<InstancedMeshComponentData>(
             "c_instancedStaticMesh" + std::to_string(i),
             "asteroid.fbx",
@@ -221,8 +225,8 @@ void CombatLevel::CreateScene()
             asteroidPbs_mat);
         const auto& c_ismesh = std::static_pointer_cast<InstancedStaticMeshComponent>(
             sceneSp->CreateComponent_GameThread(instancedMeshComponentCreator, d_ismesh));
-        const auto x = levelBoundary.GetMin().x + ((i % 8) * xStep);
-        const auto z = levelBoundary.GetMin().z + ((i / 8) * zStep);
+        const auto x = levelBoundary.GetMin().x + ((i % asteroidsPerDimensionInt) * xStep);
+        const auto z = levelBoundary.GetMin().z + ((i / asteroidsPerDimensionInt) * zStep);
         const auto y = levelBoundary.GetOrigin().y - (Random::Float() * 10.0f);
         c_ismesh->SetScale(glm::vec3(35));
         c_ismesh->SetTranslation(glm::vec3(x, y, z));

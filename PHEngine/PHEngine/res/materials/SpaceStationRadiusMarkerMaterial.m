@@ -8,10 +8,18 @@
 		name: "color"
 		type: "vec3"
 	</property>
-	<property>
+	<dynamic_property>
 		name: "radius"
 		type: "float"
-	</property>
+		<operation>
+			<no_op>
+				<property>
+					name: "b_ShootRadius"
+					type: "binding_float"
+				</property>
+			</no_op>
+		</operation>
+	</dynamic_property>
 	<dynamic_property>
 		name: "world_spacestation_position"
 		type: "vec3"

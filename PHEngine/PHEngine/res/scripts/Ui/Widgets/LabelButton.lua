@@ -101,16 +101,16 @@ function LabelButton:onCompoundWidgetInitialize()
         animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
         animationDuration = 0.1,
         animatedPropertyName = "Scale",
-        animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
-        propertySrcValue = 0.0,
-        propertyDstValue = 1.0
+        animatedPropertyType = UiBaseWidget.EnginePropertyType.Vec2,
+        propertySrcValue = { x = 0.0, y = 0.0 },
+        propertyDstValue = { x = 1.0, y = 1.0 }
     }, {
         animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
         animationDuration = 0.1,
         animatedPropertyName = "Scale",
-        animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
-        propertySrcValue = 1.0,
-        propertyDstValue = 0.0
+        animatedPropertyType = UiBaseWidget.EnginePropertyType.Vec2,
+        propertySrcValue = { x = 1.0, y = 1.0 },
+        propertyDstValue = { x = 0.0, y = 0.0 }
     }});
     self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick", {{
         animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,

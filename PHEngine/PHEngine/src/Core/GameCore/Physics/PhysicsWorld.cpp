@@ -93,7 +93,7 @@ void PhysicsWorld::RemovePhysDescriptorFromSimulation(const std::shared_ptr<Phys
 void PhysicsWorld::Tick(const float deltaTime)
 {
     if (mPhysicsDescriptors.size()) {
-        mWorld->stepSimulation(deltaTime * 10.0f); // todo: something bad....
+        mWorld->stepSimulation(deltaTime * 10.0f);
 
         PostPhysicsSimulationUpdate(deltaTime);
 

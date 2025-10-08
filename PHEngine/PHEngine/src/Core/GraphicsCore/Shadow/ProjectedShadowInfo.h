@@ -33,6 +33,8 @@ protected:
 
     std::shared_ptr<TextureAtlasHandler> mShadowmapHandler;
 
+    std::function <void()> mOnShadowMapUpdatedCallback;
+
 public:
     ProjectedShadowInfo(const TextureAtlasSpaceRequest& shadowmapAtlasRequest);
 
@@ -50,11 +52,15 @@ public:
 
     LightType GetLightType() const;
 
+    std::string GetLightTypeAsString() const;
+
     glm::vec3 GetPlayerPositionOffset() const;
 
     bool IsShadowMapDirty() const;
 
     TextureAtlasSpaceRequest GetTextureAtlasSpaceRequest() const;
+
+    void SetOnShadowMapUpdatedCallback(const std::function<void()>& callback);
 
     void CleanUp();
 

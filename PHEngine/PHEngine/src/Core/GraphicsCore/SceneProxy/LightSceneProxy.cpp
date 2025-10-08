@@ -19,6 +19,9 @@ LightSceneProxy::LightSceneProxy(
     , DiffuseColor(diffuseColor)
     , SpecularColor(specularColor)
 {
+    if (m_shadowInfo) {
+        m_shadowInfo->SetOnShadowMapUpdatedCallback(std::bind(&LightSceneProxy::PostInitialize, this));
+    }
 }
 
 LightSceneProxy::~LightSceneProxy()

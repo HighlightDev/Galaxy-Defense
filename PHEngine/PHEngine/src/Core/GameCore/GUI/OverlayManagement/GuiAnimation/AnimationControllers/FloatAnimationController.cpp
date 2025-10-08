@@ -15,6 +15,8 @@ void FloatAnimationController::ProcessAnimation(
     const auto propertyType = engineProperty->GetPropertyType();
     assert(eEnginePropertyType::Float == propertyType);
     const auto floatProperty = std::static_pointer_cast<EngineObjectProperty<float>>(engineProperty);
+    assert(data.GetSrcValue().type() == typeid(float));
+    assert(data.GetDstValue().type() == typeid(float));
 
     if (animationTimePassed >= data.GetAnimationDuration()) {
         mIsAnimationFinished = true;
@@ -38,6 +40,7 @@ void FloatAnimationController::ForceFinishAnimation(const AnimationData& data, c
     assert(engineProperty);
     const auto propertyType = engineProperty->GetPropertyType();
     assert(eEnginePropertyType::Float == propertyType);
+    assert(data.GetDstValue().type() == typeid(float));
     const auto floatProperty = std::static_pointer_cast<EngineObjectProperty<float>>(engineProperty);
 
     mIsAnimationFinished = true;
@@ -50,6 +53,7 @@ void FloatAnimationController::InitWithSrcValues(const AnimationData& data, cons
     assert(engineProperty);
     const auto propertyType = engineProperty->GetPropertyType();
     assert(eEnginePropertyType::Float == propertyType);
+    assert(data.GetDstValue().type() == typeid(float));
     const auto floatProperty = std::static_pointer_cast<EngineObjectProperty<float>>(engineProperty);
     floatProperty->SetValue(std::any_cast<float>(data.GetSrcValue()));
     mIsAnimationFinished = false;

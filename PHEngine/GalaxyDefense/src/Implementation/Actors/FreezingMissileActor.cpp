@@ -16,7 +16,7 @@ FreezingMissileActor::FreezingMissileActor(
     const std::shared_ptr<CombatActorsPoolHandler>& poolHandler)
     : MissileActor(gameObjectName, rootComponent, poolHandler)
 {
-    mMissileType = eMissileType::FREEZING;
+    mMissileType = eMissileType::FREEZING_BOMB;
 }
 
 void FreezingMissileActor::TriggerSpawn(

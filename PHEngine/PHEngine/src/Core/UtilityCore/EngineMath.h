@@ -47,6 +47,8 @@ int32_t LerpInt(const float x, const float x1, const float x2, const int32_t y1,
 
 glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec3& position1, const glm::vec3& position2);
 
+glm::vec2 LerpVec2(const float t, const float t1, const float t2, const glm::vec2& position1, const glm::vec2& position2);
+
 glm::vec4 LerpVec4(const float t, const float t1, const float t2, const glm::vec4& position1, const glm::vec4& position2);
 
 glm::quat SLerpQuat(float t, const glm::quat& src, const glm::quat& dst);

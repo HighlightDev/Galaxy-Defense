@@ -1,5 +1,6 @@
 #include "MaterialShader.h"
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialProperty.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringStreamWrapper.h"
@@ -23,6 +24,16 @@ MaterialShader::MaterialShader(std::shared_ptr<MaterialProxy> materialProxy)
 
 MaterialShader::~MaterialShader()
 {
+}
+
+void MaterialShader::ProcessAllPredefines()
+{
+    if (mConstantDefines.size() > 0 || mDefines.size() > 0) {
+        if ("" != mShaderSource) {
+            std::vector<ShaderGenericConstantArray> defineConstantArrays;
+            ProcessPredefineToSource(mShaderSource, mConstantDefines, mDefines, defineConstantArrays);
+        }
+    }
 }
 
 void MaterialShader::InitMaterialShader(const std::string& relativePathToMaterialShader)
@@ -55,9 +66,9 @@ void MaterialShader::AccessAllUniformLocations(uint32_t shaderProgramID)
     for (const auto& name : mUniformNames) {
         Uniforms.emplace_back(GetUniform(name, shaderProgramID));
     }
-    static constexpr auto s_maxUniformArraySize = 200; // todo: for now
     for (const auto& name : mUniformArrayNames) {
-        UniformArrays.emplace_back(GetUniformArray(name, s_maxUniformArraySize, shaderProgramID, eShaderType::FragmentShader));
+        UniformArrays.emplace_back(
+            GetUniformArray(name, EngineConstants::c_maxInstancesPerInstanceBatch, shaderProgramID, eShaderType::FragmentShader));
     }
 }
 

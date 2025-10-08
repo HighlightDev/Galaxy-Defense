@@ -205,11 +205,11 @@ void Engine::UnloadCurrentLevel()
     m_sceneRenderer->CleanUp();
     ResourceMap::GetInstance()->CleanUp();
     UniformBufferPool::GetInstance()->CleanUp();
+    resObserver->CollectResourceConsumptionInfo();
+    LogInfo("Engine::UnloadCurrentLevel: mem after lvl unload: ", resObserver->GetLastMemoryUsageMegabytes());
     m_interThreadMgr.SetIsAllowedPushGameThreadJobs(true);
     m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(true);
     m_sceneRenderer->Initialize();
-    resObserver->CollectResourceConsumptionInfo();
-    LogInfo("Engine::UnloadCurrentLevel: mem after lvl unload: ", resObserver->GetLastMemoryUsageMegabytes());
 }
 
 void Engine::PlayLevel(const std::string& levelName)

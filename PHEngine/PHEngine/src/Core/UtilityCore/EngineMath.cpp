@@ -35,7 +35,7 @@ float LerpFloat(const float x, const float x1, const float x2, const float y1, c
 
 float CosineInterpolation(const float x, const float y1, const float y2)
 {
-    const float angle = x * PI; 
+    const float angle = x * PI;
     const float mu2 = (1.0f - std::cos(angle)) * 0.5f;
     return LerpNormalizedFloat(y1, y2, mu2);
 }
@@ -56,6 +56,19 @@ glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec
     resultPosition.x = ((position2.x - position1.x) / x_delta) * x_zero_offset + position1.x;
     resultPosition.y = ((position2.y - position1.y) / x_delta) * x_zero_offset + position1.y;
     resultPosition.z = ((position2.z - position1.z) / x_delta) * x_zero_offset + position1.z;
+
+    return resultPosition;
+}
+
+glm::vec2 LerpVec2(const float t, const float t1, const float t2, const glm::vec2& position1, const glm::vec2& position2)
+{
+    glm::vec2 resultPosition;
+
+    float x_delta = t2 - t1;
+    float x_zero_offset = t - t1;
+
+    resultPosition.x = ((position2.x - position1.x) / x_delta) * x_zero_offset + position1.x;
+    resultPosition.y = ((position2.y - position1.y) / x_delta) * x_zero_offset + position1.y;
 
     return resultPosition;
 }

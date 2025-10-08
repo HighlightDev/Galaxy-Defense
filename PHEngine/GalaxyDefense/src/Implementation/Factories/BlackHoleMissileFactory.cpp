@@ -44,8 +44,7 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
     const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler,
     const glm::vec3& translation,
     const glm::vec3& rotation,
-    const glm::vec3& scale,
-    const float hitRadius)
+    const glm::vec3& scale)
 {
     const auto& missileIndexStr = std::to_string(s_blackHoleMissileCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(

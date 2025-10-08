@@ -50,8 +50,8 @@ UiItemBase::UiItemBase(const std::string& name)
     , mIsTransformDirty(false)
     , mIsPropertiesShouldBeUpdatedOnRenderThread(false)
     , mIsPropertiesShouldBeUpdatedOnLuaThread(false)
-    , mScaleProperty(std::make_shared<EngineObjectProperty<float>>(
-          1.0f, "Scale", [this](const float newScaleValue) { UpdateScaleProperty(); }))
+    , mScaleProperty(std::make_shared<EngineObjectProperty<glm::vec2>>(
+          glm::vec2(1.0f), "Scale", [this](const glm::vec2& newScaleValue) { UpdateScaleProperty(); }))
     , mVerticalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
           0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
     , mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
@@ -104,7 +104,8 @@ void UiItemBase::SetIsSceneProxyReady(const bool isSceneProxyReady)
 
 void UiItemBase::SetIsLuaProxyReady(const bool isLuaProxyReady)
 {
-    LogInfo("UiItemBase::SetIsLuaProxyReady: name: ", mName, ", isLuaProxyReady: ", isLuaProxyReady);
+    LogInfo(
+        "UiItemBase::SetIsLuaProxyReady: name: ", mName, ", luaProxy:", GetLuaProxyId(), ", isLuaProxyReady: ", isLuaProxyReady);
     mIsLuaProxyReady.store(isLuaProxyReady, std::memory_order::seq_cst);
 }
 
@@ -772,7 +773,6 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     const auto jsonObj = nlohmann::json::parse(luaJsonPropsStr);
     if (jsonObj.contains("visible")) {
         const auto isVisible = jsonObj["visible"].get<bool>();
-        // todo: maybe something better
         if (mIsVisible != isVisible) {
             mIsVisible = isVisible;
             SetIsVisibleDirty(true);
@@ -971,8 +971,7 @@ void UiItemBase::UpdateScaleProperty()
                             = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                             if (uiSceneProxy) {
-                                // todo: make scale vec2 instead of float
-                                uiSceneProxy->SetScale(glm::vec2(scale));
+                                uiSceneProxy->SetScale(scale);
                             }
                         }
                     });

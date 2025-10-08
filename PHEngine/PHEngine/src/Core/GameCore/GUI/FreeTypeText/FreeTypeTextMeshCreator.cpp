@@ -33,8 +33,7 @@ void FreeTypeTextMeshCreator::calculateVertices(
     int widthRemaining = width;
     const int spaceWidth = CalcWidth(" ", ftFontAtlas);
 
-    // todo
-    int _flags = eFontFlags::WordWrap;
+    const int _flags = eFontFlags::WordWrap;
     int indent = (_flags & eFontFlags::Indented) && alignment != eTextHorizontalAlignmentType::CENTER ? fontSize : 0;
 
     // Create lines from our text, each containing the maximum amount of words we can fit within the given width

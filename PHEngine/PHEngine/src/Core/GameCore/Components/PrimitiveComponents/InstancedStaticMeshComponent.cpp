@@ -1,5 +1,6 @@
 #include "InstancedStaticMeshComponent.h"
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/Components/ComponentData/InstancedMeshComponentData.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatch.h"
@@ -16,10 +17,10 @@ namespace EngineCore {
 InstancedStaticMeshComponent::InstancedStaticMeshComponent(
     const std::shared_ptr<InstancedMeshComponentData>& meshComponentData, const MeshRenderData renderData)
     : PrimitiveComponent(
-          meshComponentData->EngineObjectName,
-          meshComponentData->m_translation,
-          meshComponentData->m_eulerRotationDegrees,
-          meshComponentData->m_scale)
+        meshComponentData->EngineObjectName,
+        meshComponentData->m_translation,
+        meshComponentData->m_eulerRotationDegrees,
+        meshComponentData->m_scale)
     , m_renderData(renderData)
 {
 }
@@ -38,6 +39,9 @@ void InstancedStaticMeshComponent::OnPostInitialized()
         const auto& batchKey = GetBatchKey();
         if (batchHolderSp->CheckIfBatchExists(batchKey)) {
             const auto& batchSp = batchHolderSp->GetBatch(batchKey);
+            ext_assert(
+                batchSp->GetInstancesCount() <= EngineConstants::c_maxInstancesPerInstanceBatch,
+                "Exceeded max instances per batch, allowed: " + std::to_string(EngineConstants::c_maxInstancesPerInstanceBatch));
             batchSp->AddInstancedMeshComponent(thisSp);
         } else {
             const auto newBatchSp = std::make_shared<InstancedGeometryBatch>(batchKey);

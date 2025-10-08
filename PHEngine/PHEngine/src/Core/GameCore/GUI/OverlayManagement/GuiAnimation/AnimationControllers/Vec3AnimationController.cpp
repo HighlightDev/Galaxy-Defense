@@ -14,6 +14,8 @@ void Vec3AnimationController::ProcessAnimation(
     assert(engineProperty);
     const auto propertyType = engineProperty->GetPropertyType();
     assert(eEnginePropertyType::Vec3 == propertyType);
+    assert(data.GetSrcValue().type() == typeid(glm::vec3));
+    assert(data.GetDstValue().type() == typeid(glm::vec3));
     const auto vec3Property = std::static_pointer_cast<EngineObjectProperty<glm::vec3>>(engineProperty);
 
     if (animationTimePassed >= data.GetAnimationDuration()) {
@@ -38,6 +40,7 @@ void Vec3AnimationController::ForceFinishAnimation(const AnimationData& data, co
     assert(engineProperty);
     const auto propertyType = engineProperty->GetPropertyType();
     assert(eEnginePropertyType::Vec3 == propertyType);
+    assert(data.GetDstValue().type() == typeid(glm::vec3));
     const auto vec3Property = std::static_pointer_cast<EngineObjectProperty<glm::vec3>>(engineProperty);
 
     mIsAnimationFinished = true;
@@ -50,6 +53,7 @@ void Vec3AnimationController::InitWithSrcValues(const AnimationData& data, const
     assert(engineProperty);
     const auto propertyType = engineProperty->GetPropertyType();
     assert(eEnginePropertyType::Vec3 == propertyType);
+    assert(data.GetDstValue().type() == typeid(glm::vec3));
     const auto vec3Property = std::static_pointer_cast<EngineObjectProperty<glm::vec3>>(engineProperty);
     vec3Property->SetValue(std::any_cast<glm::vec3>(data.GetSrcValue()));
     mIsAnimationFinished = false;

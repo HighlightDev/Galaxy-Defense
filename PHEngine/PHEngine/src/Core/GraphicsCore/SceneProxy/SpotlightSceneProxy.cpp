@@ -22,7 +22,7 @@ SpotlightSceneProxy::~SpotlightSceneProxy()
 void SpotlightSceneProxy::PostInitialize()
 {
     const auto shadowInfo = GetProjectedSpotLightShadowInfo();
-    if (shadowInfo) {
+    if (shadowInfo && shadowInfo->GetAtlasResource()) {
         const float aspectRatio = shadowInfo->GetAtlasResource()->GetTextureAspectRatio();
         const auto shadowProjectionMatrix = glm::perspective<float>(DEG_TO_RAD(90.0f), aspectRatio, 1.0f, m_radianceRadius);
 

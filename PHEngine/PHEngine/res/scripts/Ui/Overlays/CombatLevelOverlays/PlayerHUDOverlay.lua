@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -46,14 +45,14 @@ PlayerStatusType = {
 MissileType = {
     NONE = 0,
     BOMB = 1,
-    FREEZING = 2,
+    FREEZING_BOMB = 2,
     ELECTRO_RAY = 3,
     BLACK_HOLE = 4
 }
 
 MissileWidgetsMap = {
     BOMB = nil,
-    FREEZING = nil,
+    FREEZING_BOMB = nil,
     BLACK_HOLE = nil,
     ELECTRO_RAY = nil
 }
@@ -61,9 +60,17 @@ MissileWidgetsMap = {
 PlayerHUDOverlay = {
     testAvailableHearts = 5,
     prevSelectedMissileType = MissileType.NONE,
-    inactiveTileColor = { x = 0.85, y = 0.58, z = 0.15 },
-    activeTileColor = { x = 1.0, y = 0.0, z = 0.0 },
-    missilesCountLabelColor = 0xFFFFFF,
+    inactiveTileColor = {
+        x = 0.85,
+        y = 0.58,
+        z = 0.15
+    },
+    activeTileColor = {
+        x = 1.0,
+        y = 0.0,
+        z = 0.0
+    },
+    missilesCountLabelColor = 0xFFFFFF
 }
 
 local function invertTable(table)
@@ -93,7 +100,7 @@ end
 
 local function startAnimationForMissileWidget(host, missileType, animationName)
     assert(host ~= nil and type(host) == "userdata" and missileType ~= nil and animationName ~= nil and
-        type(animationName) == "string")
+               type(animationName) == "string")
     local currentMissileName = InvertedMissileTable[missileType]
     if currentMissileName ~= nil then
         if MissileWidgetsMap[tostring(currentMissileName)] ~= nil then
@@ -182,7 +189,7 @@ function PlayerHUDOverlay:new(host)
     playerHUDOverlay:addWidget(lifeImage5)
 
     MissileWidgetsMap.BOMB = weaponTile1
-    MissileWidgetsMap.FREEZING = weaponTile2
+    MissileWidgetsMap.FREEZING_BOMB = weaponTile2
     MissileWidgetsMap.ELECTRO_RAY = weaponTile3
     MissileWidgetsMap.BLACK_HOLE = weaponTile4
 
@@ -314,16 +321,28 @@ function PlayerHUDOverlay:new(host)
         weaponRootContainer:setHeight(lifeRootContainerHeight)
 
         weaponTile1:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
-        weaponTile1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, weaponRootContainer.widgetName,
-            weaponInterval)
+        weaponTile1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            weaponRootContainer.widgetName, weaponInterval)
         weaponTile1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponTile1:setWidth(weaponWidth)
         weaponTile1:setHeight(weaponWidth)
         weaponTile1:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
-            "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
+            "Scale", UiBaseWidget.EnginePropertyType.Vec2, {
+                x = 1.0,
+                y = 1.0
+            }, {
+                x = 1.25,
+                y = 1.25
+            })
         weaponTile1:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
-            "Scale", UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
+            "Scale", UiBaseWidget.EnginePropertyType.Vec2, {
+                x = 1.25,
+                y = 1.25
+            }, {
+                x = 1.0,
+                y = 1.0
+            })
         weaponTile1:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponTile1:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
@@ -336,16 +355,28 @@ function PlayerHUDOverlay:new(host)
             PlayerHUDOverlay.inactiveTileColor)
 
         weaponTile2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
-        weaponTile2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            weaponTile1.widgetName, weaponInterval)
+        weaponTile2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, weaponTile1.widgetName,
+            weaponInterval)
         weaponTile2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponTile2:setHeight(weaponWidth)
         weaponTile2:setWidth(weaponWidth)
         weaponTile2:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
-            "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
+            "Scale", UiBaseWidget.EnginePropertyType.Vec2, {
+                x = 1.0,
+                y = 1.0
+            }, {
+                x = 1.25,
+                y = 1.25
+            })
         weaponTile2:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
-            "Scale", UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
+            "Scale", UiBaseWidget.EnginePropertyType.Vec2, {
+                x = 1.25,
+                y = 1.25
+            }, {
+                x = 1.0,
+                y = 1.0
+            })
         weaponTile2:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponTile2:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
@@ -358,16 +389,28 @@ function PlayerHUDOverlay:new(host)
             PlayerHUDOverlay.inactiveTileColor)
 
         weaponTile3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
-        weaponTile3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            weaponTile2.widgetName, weaponInterval)
+        weaponTile3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, weaponTile2.widgetName,
+            weaponInterval)
         weaponTile3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponTile3:setHeight(weaponWidth)
         weaponTile3:setWidth(weaponWidth)
         weaponTile3:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
-            "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
+            "Scale", UiBaseWidget.EnginePropertyType.Vec2, {
+                x = 1.0,
+                y = 1.0
+            }, {
+                x = 1.25,
+                y = 1.25
+            })
         weaponTile3:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
-            "Scale", UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
+            "Scale", UiBaseWidget.EnginePropertyType.Vec2, {
+                x = 1.25,
+                y = 1.25
+            }, {
+                x = 1.0,
+                y = 1.0
+            })
         weaponTile3:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponTile3:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
@@ -380,16 +423,28 @@ function PlayerHUDOverlay:new(host)
             PlayerHUDOverlay.inactiveTileColor)
 
         weaponTile4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
-        weaponTile4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            weaponTile3.widgetName, weaponInterval)
+        weaponTile4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, weaponTile3.widgetName,
+            weaponInterval)
         weaponTile4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponTile4:setHeight(weaponWidth)
         weaponTile4:setWidth(weaponWidth)
         weaponTile4:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
-            "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
+            "Scale", UiBaseWidget.EnginePropertyType.Vec2, {
+                x = 1.0,
+                y = 1.0
+            }, {
+                x = 1.25,
+                y = 1.25
+            })
         weaponTile4:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
-            "Scale", UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
+            "Scale", UiBaseWidget.EnginePropertyType.Vec2, {
+                x = 1.25,
+                y = 1.25
+            }, {
+                x = 1.0,
+                y = 1.0
+            })
         weaponTile4:addAnimation(host, false, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponTile4:addAnimation(host, false, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
@@ -408,8 +463,8 @@ function PlayerHUDOverlay:new(host)
         lifeImage1:setHeight(heartWidth)
         lifeImage1:setWidth(heartWidth)
         lifeImage1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, lifeRootContainer.widgetName)
-        lifeImage1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName)
+        lifeImage1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            lifeRootContainer.widgetName)
 
         lifeImage2:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName)
         lifeImage2:setTextureSource("scaled_down_heart.png")
@@ -419,8 +474,8 @@ function PlayerHUDOverlay:new(host)
         lifeImage2:setWidth(heartWidth)
         lifeImage2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage1.widgetName,
             heartInterval)
-        lifeImage2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName)
+        lifeImage2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            lifeRootContainer.widgetName)
 
         lifeImage3:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName)
         lifeImage3:setTextureSource("scaled_down_heart.png")
@@ -430,8 +485,8 @@ function PlayerHUDOverlay:new(host)
         lifeImage3:setWidth(heartWidth)
         lifeImage3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage2.widgetName,
             heartInterval)
-        lifeImage3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName)
+        lifeImage3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            lifeRootContainer.widgetName)
 
         lifeImage4:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName)
         lifeImage4:setTextureSource("scaled_down_heart.png")
@@ -441,8 +496,8 @@ function PlayerHUDOverlay:new(host)
         lifeImage4:setWidth(heartWidth)
         lifeImage4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage3.widgetName,
             heartInterval)
-        lifeImage4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName)
+        lifeImage4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            lifeRootContainer.widgetName)
 
         lifeImage5:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName)
         lifeImage5:setTextureSource("scaled_down_heart.png")
@@ -452,10 +507,10 @@ function PlayerHUDOverlay:new(host)
         lifeImage5:setWidth(heartWidth)
         lifeImage5:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage4.widgetName,
             heartInterval)
-        lifeImage5:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
-            .widgetName)
+        lifeImage5:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            lifeRootContainer.widgetName)
 
-        playerHUDOverlay:onMissilesDataChanged()   -- initialize all data missiles widgets
+        playerHUDOverlay:onMissilesDataChanged() -- initialize all data missiles widgets
         playerHUDOverlay:onCurrentMissileChanged() -- initialize current missile widget
     end)
 

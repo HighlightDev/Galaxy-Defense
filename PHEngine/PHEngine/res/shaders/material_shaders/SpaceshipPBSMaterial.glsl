@@ -2,6 +2,9 @@
 
 #include "materialCommon.incl.glsl"
 
+// Max number of instances that can be rendered in a single draw call with one instance buffer
+const int MaxInstancesPerInstanceBatch = 200;
+
 uniform sampler2D albedo;
 uniform sampler2D normalMap;
 uniform sampler2D metallicMap;
@@ -16,8 +19,8 @@ uniform sampler2D roughnessMap_ice;
 uniform float uvScale;
 uniform vec3 cameraPosition;
 
-uniform float freezingEffect[200];
-uniform float damageEffect[200];
+uniform float freezingEffect[MaxInstancesPerInstanceBatch];
+uniform float damageEffect[MaxInstancesPerInstanceBatch];
 
 float GetFreezingEffectForCurrentInstance(in MATERIAL_VS_OUTPUT materialIn)
 {

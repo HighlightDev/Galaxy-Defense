@@ -17,6 +17,8 @@ public:
 
     const std::vector<glm::vec3>& GetRoutePoints() const;
 
+    void CalculateRoutePoints() const;
+
     glm::vec3 GetRouteFirstPoint() const;
 };
 } // namespace Game

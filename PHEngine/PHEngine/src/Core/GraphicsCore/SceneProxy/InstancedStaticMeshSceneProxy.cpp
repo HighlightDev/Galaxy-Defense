@@ -63,7 +63,8 @@ bool InstancedStaticMeshSceneProxy::IsDeferred() const
 
 bool InstancedStaticMeshSceneProxy::IsFrustumCullTestNeeded() const
 {
-    return false; // todo: right now it is not implemented, all proxies will be rendered as instanced geometry
+    // all proxies will be rendered as instanced geometry
+    return false;
 }
 
 ePrimitiveProxyType InstancedStaticMeshSceneProxy::GetPrimitiveProxyType() const

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Actor.h"
+#include "Implementation/ActorLeveling/SpaceStationLevel.h"
 
 using namespace EngineCore;
 
@@ -19,15 +20,16 @@ class SpaceStationActor : public Actor {
 
     eSpaceStationActivityState mSpacestationState{eSpaceStationActivityState::IDLE};
 
-    float mShootRadius{0.0f};
-
     std::shared_ptr<::EngineCore::StaticMeshComponent> mRadiusMarkerComponent;
+
+    std::shared_ptr<SpaceStationLevel> mSpaceStationLevel;
+
+    std::shared_ptr<EngineObjectProperty<float>> mShootRadiusProperty;
 
 public:
     SpaceStationActor(
         const std::string& gameObjectName,
-        const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
-        const float shootRadius);
+        const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
     void Tick(const float deltaTime) override;
 
@@ -39,9 +41,9 @@ public:
 
     eSpaceStationActivityState GetState() const;
 
-    void SetShootRadius(const float value);
+    void SetSpaceStationLevel(const std::shared_ptr<SpaceStationLevel>& spaceStationLevel);
 
-    float GetShootRadius() const;
+    const std::shared_ptr<SpaceStationLevel>& GetSpaceStationLevel() const;
 
     void SetIsRayActive(const bool value);
 

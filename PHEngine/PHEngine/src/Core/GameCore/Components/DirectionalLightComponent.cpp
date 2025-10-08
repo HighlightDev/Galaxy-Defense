@@ -107,8 +107,8 @@ void DirectionalLightComponent::SyncRenderData()
             functionId,
             [lightSceneProxyId = mLightSceneProxyId, playerTranslationOffset = mPlayerTranslationOffset](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-    std::weak_ptr<EngineCore::Scene> sceneWp,
-    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     const auto& lightProxySp = sceneRendererSp->GetLightProxyByProxyId(lightSceneProxyId);
                     assert(lightProxySp);

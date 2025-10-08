@@ -9,6 +9,7 @@
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/GameModeTypeEnum.h"
 #include "Implementation/Levels/Editor/LevelPlacementGrid.h"
+#include "Implementation/MissileType.h"
 #include "Implementation/StatusTypes.h"
 
 #include <glm/vec3.hpp>
@@ -85,6 +86,8 @@ class UserInteractionController : public ILevelController,
 
     eUserInteractionType mInteractionType{eUserInteractionType::IDLE};
 
+    eMissileType mTowerMissileType{eMissileType::NONE};
+
 public:
     UserInteractionController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
@@ -149,5 +152,7 @@ private:
     void ProcessCombatStage();
 
     void TriggerPlayerStatusChangedEvent(const eMainPlayerStatusType statusChanged, const std::string& jsonArgs);
+
+    eMissileType MissileTypeFromString(const std::string& typeStr) const;
 };
 } // namespace Game

@@ -6,10 +6,12 @@
 
 namespace Game {
 SpaceStationActor::SpaceStationActor(
-    const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent, const float shootRadius)
+    const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent)
     : Actor(gameObjectName, rootComponent)
-    , mShootRadius(shootRadius)
+    , mSpaceStationLevel()
+    , mShootRadiusProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_shootRadius"))
 {
+    AddEngineProperty(mShootRadiusProperty);
 }
 
 void SpaceStationActor::Tick(const float deltaTime)
@@ -44,7 +46,11 @@ void SpaceStationActor::SetState(const eSpaceStationActivityState spacestationSt
 {
     if (mSpacestationState != spacestationState) {
         mSpacestationState = spacestationState;
-        SetIsEnabled(!(spacestationState == eSpaceStationActivityState::IDLE));
+        if (mSpacestationState == eSpaceStationActivityState::IDLE) {
+            mSpaceStationLevel = nullptr;
+        }
+        // Disable spacestation if it is idle
+        SetIsEnabled(spacestationState == eSpaceStationActivityState::ACTIVE);
     }
 }
 
@@ -53,14 +59,19 @@ eSpaceStationActivityState SpaceStationActor::GetState() const
     return mSpacestationState;
 }
 
-void SpaceStationActor::SetShootRadius(const float value)
+void SpaceStationActor::SetSpaceStationLevel(const std::shared_ptr<SpaceStationLevel>& spaceStationLevel)
 {
-    mShootRadius = value;
+    assert(spaceStationLevel);
+    mSpaceStationLevel = spaceStationLevel;
+    const float shootRadius = mSpaceStationLevel->GetShootRadius();
+    mShootRadiusProperty->SetValue(shootRadius);
+    mRadiusMarkerComponent->SetScale(glm::vec3(shootRadius * 2.0f, 1.0f, shootRadius * 2.0f));
 }
 
-float SpaceStationActor::GetShootRadius() const
+const std::shared_ptr<SpaceStationLevel>& SpaceStationActor::GetSpaceStationLevel() const
 {
-    return mShootRadius;
+    assert(mSpaceStationLevel);
+    return mSpaceStationLevel;
 }
 
 void SpaceStationActor::SetRadiusMarkerComponent(const std::shared_ptr<StaticMeshComponent>& radiusMarkerComponent)

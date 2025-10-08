@@ -72,7 +72,7 @@ std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayCh
 
     ElectroRayChainFactory factory;
     const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(std::static_pointer_cast<ElectroRayChainActor>(
-        factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1), 0.0f)));
+        factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1))));
     spawnedActor->TriggerDisabled();
     return spawnedActor;
 }
@@ -122,7 +122,7 @@ const std::vector<std::shared_ptr<PortalActor>> CombatActorsPoolHandler::GetPort
     return mSpawnPortals;
 }
 
-void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count, const float hitRadius)
+void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count)
 {
     const auto& sceneSp = mSceneWp.lock();
     assert(sceneSp);
@@ -131,7 +131,7 @@ void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, cons
 
     for (int32_t i = 0; i < count; ++i) {
         const auto& missile = mMissilesPool.emplace_back(
-            missileFactory->CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1.0f), hitRadius));
+            missileFactory->CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
         assert(missile);
         missile->SetIsEnabled(false);
     }
@@ -215,7 +215,7 @@ std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByTyp
     switch (missileType) {
     case eMissileType::BOMB:
         return std::make_unique<BombMissileFactory>();
-    case eMissileType::FREEZING:
+    case eMissileType::FREEZING_BOMB:
         return std::make_unique<FreezingMissileFactory>();
     case eMissileType::ELECTRO_RAY:
         return std::make_unique<ElectroRayFactory>();

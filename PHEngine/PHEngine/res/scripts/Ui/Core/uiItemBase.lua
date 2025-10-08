@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -130,18 +129,12 @@ function UiItemBase:new()
 end
 
 function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
-    print("UiItemBase:setParent: host :" ..
-        tostring(host) ..
-        ", canvas name: " .. tostring(canvasName) ..
-        ", uiWidgetParentName: " ..
-        tostring(uiWidgetParentName) ..
-        ", myName: " .. tostring(self.widgetName) .. ", self.luaProxyReady: " .. tostring(self.luaProxyReady))
-    
-    assert(
-        self.luaProxyReady == true and host ~= nil and type(host) == "userdata" and type(canvasName) == "string" and
-        canvasName ~= "" and
-        type(uiWidgetParentName) == "string" and
-        uiWidgetParentName ~= "", debug.traceback())
+    print("UiItemBase:setParent: host :" .. tostring(host) .. ", canvas name: " .. tostring(canvasName) ..
+              ", uiWidgetParentName: " .. tostring(uiWidgetParentName) .. ", myName: " .. tostring(self.widgetName) ..
+              ", self.luaProxyReady: " .. tostring(self.luaProxyReady))
+
+    assert(self.luaProxyReady == true and host ~= nil and type(host) == "userdata" and type(canvasName) == "string" and
+               canvasName ~= "" and type(uiWidgetParentName) == "string" and uiWidgetParentName ~= "", debug.traceback())
     _SetUiWidgetParent(host, self.luaProxyId, canvasName, uiWidgetParentName)
 end
 
@@ -319,8 +312,8 @@ function UiItemBase:getHorizontalCenterOffset()
 end
 
 function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
-    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
-        srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchor >
+               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
     self.properties.anchors.dirty = true
     self.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
     self.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
@@ -339,8 +332,8 @@ function UiItemBase:fill(dstUiItemWidgetName)
 end
 
 function UiItemBase:setAnchorMargin(srcAnchor, anchorMargin)
-    assert(srcAnchor ~= nil and srcAnchor > UiItemBase.UiAnchorType.NONE and
-        srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER and anchorMargin ~= nil and type(anchorMargin) == "number")
+    assert(srcAnchor ~= nil and srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <=
+               UiItemBase.UiAnchorType.HORIZONTAL_CENTER and anchorMargin ~= nil and type(anchorMargin) == "number")
     self.properties.anchors.dirty = true
     self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
 end
@@ -366,12 +359,12 @@ function UiItemBase:subscribeOnMouseInputClickedCallback(callback)
 end
 
 function UiItemBase:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
-                                 animatedPropertyType, propertySrcValue, propertyDstValue)
+    animatedPropertyType, propertySrcValue, propertyDstValue)
     assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
-        type(animationFunctionType) == "number" and animationDuration ~= nil and
-        type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
-        animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
+               type(animationFunctionType) == "number" and animationDuration ~= nil and type(animationDuration) ==
+               "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
+               animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
     assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
 
     local animationJsonData = json.encode({
@@ -400,11 +393,12 @@ function UiItemBase:addSequenceAnimation(host, animationName, animationDataList)
         local propertySrcValue = animationData.propertySrcValue
         local propertyDstValue = animationData.propertyDstValue
 
-        assert(type(animationFunctionType) == "number" and animationDuration ~= nil and
-            type(animationDuration) == "number" and animatedPropertyName ~= nil and
-            type(animatedPropertyName) == "string" and
-            animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
-        assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+        assert(type(animationFunctionType) == "number", debug.traceback())
+        assert(animationDuration ~= nil and type(animationDuration) == "number", debug.traceback())
+        assert(animatedPropertyName ~= nil and type(animatedPropertyName) == "string", debug.traceback())
+        assert(animatedPropertyType ~= nil and type(animatedPropertyType) == "number", debug.traceback())
+        assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue),
+            debug.traceback())
     end
 
     _AddUiItemSequenceAnimation(host, self.luaProxyId, animationName, json.encode(animationDataList))

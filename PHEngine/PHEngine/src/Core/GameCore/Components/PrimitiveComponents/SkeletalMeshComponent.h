@@ -19,7 +19,6 @@ class SkeletalMeshComponent : public PrimitiveComponent {
     bool bIsRenderDataDirty{false};
 
 protected:
-    // todo: should do something with render data on game thread.....
     MeshRenderData m_renderData;
 
     std::string mLuaScriptAbsPath;

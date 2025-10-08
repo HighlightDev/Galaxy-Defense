@@ -79,7 +79,7 @@ void ElectroRayActor::Tick(const float deltaTime)
                 const auto& spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
                 const auto& bombMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BOMB);
                 const auto& freezeMissilePhysComponents
-                    = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING);
+                    = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING_BOMB);
                 const auto& blackHoleMissilePhysComponents
                     = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
                 excludeCollisionPhysComponents.insert(
@@ -114,12 +114,6 @@ void ElectroRayActor::Tick(const float deltaTime)
     } else if (const auto& collidedSpaceShipSp = mCollidedSpaceship.lock()) {
         mElectroLineEnd = collidedSpaceShipSp->GetRootComponent()->GetTranslation();
         electroLineDirection = glm::normalize(mElectroLineEnd - mElectroLineBegin);
-        // todo
-        /*if (mElectroLineOriginStartMovementDelayTimer.IsRunning())
-        {
-            mElectroLineOriginStartMovementDelayTimer.StopTimer();
-            bLineOriginStartMovement = true;
-        }*/
     }
 
     if (bLineOriginStartMovement) {

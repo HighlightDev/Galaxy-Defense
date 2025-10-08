@@ -32,5 +32,7 @@ public:
     bool IsValidInstance(const int32_t proxyId) const;
 
     int32_t GetRenderInstanceId(const int32_t proxyId) const;
+
+    int32_t GetInstancesCount() const;
 };
 } // namespace EngineCore

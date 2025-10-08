@@ -14,6 +14,8 @@ void IntegerAnimationController::ProcessAnimation(
     assert(engineProperty);
     const auto propertyType = engineProperty->GetPropertyType();
     assert(eEnginePropertyType::Integer == propertyType);
+    assert(data.GetSrcValue().type() == typeid(int32_t));
+    assert(data.GetDstValue().type() == typeid(int32_t));
     const auto intProperty = std::static_pointer_cast<EngineObjectProperty<int32_t>>(engineProperty);
 
     if (animationTimePassed >= data.GetAnimationDuration()) {
@@ -38,6 +40,7 @@ void IntegerAnimationController::ForceFinishAnimation(const AnimationData& data,
     assert(engineProperty);
     const auto propertyType = engineProperty->GetPropertyType();
     assert(eEnginePropertyType::Integer == propertyType);
+    assert(data.GetDstValue().type() == typeid(int32_t));
     const auto intProperty = std::static_pointer_cast<EngineObjectProperty<int32_t>>(engineProperty);
 
     mIsAnimationFinished = true;
@@ -50,6 +53,7 @@ void IntegerAnimationController::InitWithSrcValues(const AnimationData& data, co
     assert(engineProperty);
     const auto propertyType = engineProperty->GetPropertyType();
     assert(eEnginePropertyType::Integer == propertyType);
+    assert(data.GetDstValue().type() == typeid(int32_t));
     const auto intProperty = std::static_pointer_cast<EngineObjectProperty<int32_t>>(engineProperty);
     intProperty->SetValue(std::any_cast<int32_t>(data.GetSrcValue()));
     mIsAnimationFinished = false;

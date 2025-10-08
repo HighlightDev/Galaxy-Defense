@@ -38,8 +38,7 @@ std::shared_ptr<MissileActor> ElectroRayFactory::CreateMissile(
     const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler,
     const glm::vec3& translation,
     const glm::vec3& rotation,
-    const glm::vec3& scale,
-    const float hitRadius)
+    const glm::vec3& scale)
 {
     const auto& rayIndexStr = std::to_string(s_rayCounter++);
     const auto& rootComponent
@@ -74,13 +73,6 @@ std::shared_ptr<MissileActor> ElectroRayFactory::CreateMissile(
     a_electroRay->SetElectroLineDestinationSpeed(75.0f);
 
     c_mesh->SetLineWidth(8.0f);
-
-    // todo:
-    // ComponentData d_audio("c_bombMissileSound_" + rayChainIndexStr);
-    // const auto &soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
-    // const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator,
-    // d_audio)); c_sound->CreateSoundBuffer("explosion1.ogg", "explosion"); c_sound->GetSoundSource()->SetGain(0.2f);
-    // a_electroRayChain->AddComponent(c_sound);
 
     a_electroRay->SetScene(scene);
 

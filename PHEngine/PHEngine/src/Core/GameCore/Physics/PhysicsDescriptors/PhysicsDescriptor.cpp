@@ -39,7 +39,7 @@ PhysicsDescriptor::PhysicsDescriptor(
     , mShape(shape)
     , mMotionState(new btDefaultMotionState())
     , mMass(mass)
-    , mInertia()
+    , mInertia(0.0f, 0.0f, 0.0f)
     , mRigidBody(nullptr)
     , mRotator()
     , mTranslation()

@@ -30,6 +30,9 @@ void ProjectedSpotlightShadowInfo::ProcessEvent(
     if (eTextureType::TEXTURE_2D == std::get<0>(data)) {
         mShadowmapHandler
             = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(mShadowmapAtlasRequest.MyRequestId);
+        if (mOnShadowMapUpdatedCallback) {
+            mOnShadowMapUpdatedCallback();
+        }
     }
 }
 

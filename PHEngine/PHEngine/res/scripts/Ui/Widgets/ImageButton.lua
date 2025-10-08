@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -28,8 +27,7 @@ local UiRectangle = require("Ui/Core/uiRectangle")
 local UiImage = require("Ui/Core/uiImage")
 local Styles = require("Ui/Common/styles")
 
-ImageButton = {
-}
+ImageButton = {}
 
 function ImageButton:new(host, overlay, name)
     assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
@@ -77,7 +75,7 @@ end
 function ImageButton:setParent(host, overlayCanvasName, parentName)
     assert(
         host ~= nil and type(host) == "userdata" and type(overlayCanvasName) == "string" and overlayCanvasName ~= "" and
-        type(parentName) == "string" and parentName ~= "", debug.traceback())
+            type(parentName) == "string" and parentName ~= "", debug.traceback())
 
     self.overlayCanvasName = overlayCanvasName
     self.parentName = parentName
@@ -104,54 +102,56 @@ function ImageButton:onCompoundWidgetInitialize()
     self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setZOrder(4);
     self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        self.backgroundTile.widgetName);
+        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.backgroundTile.widgetName);
     self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.backgroundTile.widgetName);
+        UiItemBase.UiAnchorType.VERTICAL_CENTER, self.backgroundTile.widgetName);
     self.pressButtonStateContainer:setOpacity(0.0);
     self.pressButtonStateContainer:setHeight(self.buttonHeight);
     self.pressButtonStateContainer:setWidth(self.buttonWidth);
     self.pressButtonStateContainer:setBorderRadius(10)
     self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
-    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick",
-        {
-            {
-                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-                animationDuration = 0.1,
-                animatedPropertyName = "Scale",
-                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
-                propertySrcValue = 0.0,
-                propertyDstValue = 1.0
-            },
-            {
-                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-                animationDuration = 0.1,
-                animatedPropertyName = "Scale",
-                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
-                propertySrcValue = 1.0,
-                propertyDstValue = 0.0
-            },
-        });
-    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick",
-        {
-            {
-                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-                animationDuration = 0.1,
-                animatedPropertyName = "Opacity",
-                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
-                propertySrcValue = 0.0,
-                propertyDstValue = 1.0
-            },
-            {
-                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-                animationDuration = 0.1,
-                animatedPropertyName = "Opacity",
-                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
-                propertySrcValue = 1.0,
-                propertyDstValue = 0.0
-            },
-        });
+    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick", {{
+        animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+        animationDuration = 0.1,
+        animatedPropertyName = "Scale",
+        animatedPropertyType = UiBaseWidget.EnginePropertyType.Vec2,
+        propertySrcValue = {
+            x = 0.0,
+            y = 0.0
+        },
+        propertyDstValue = {
+            x = 1.0,
+            y = 1.0
+        }
+    }, {
+        animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+        animationDuration = 0.1,
+        animatedPropertyName = "Scale",
+        animatedPropertyType = UiBaseWidget.EnginePropertyType.Vec2,
+        propertySrcValue = {
+            x = 1.0,
+            y = 1.0
+        },
+        propertyDstValue = {
+            x = 0.0,
+            y = 0.0
+        }
+    }});
+    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick", {{
+        animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+        animationDuration = 0.1,
+        animatedPropertyName = "Opacity",
+        animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+        propertySrcValue = 0.0,
+        propertyDstValue = 1.0
+    }, {
+        animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+        animationDuration = 0.1,
+        animatedPropertyName = "Opacity",
+        animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+        propertySrcValue = 1.0,
+        propertyDstValue = 0.0
+    }});
     self.pressButtonStateContainer:subscribeOnMouseInputClickedCallback(function()
         self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonClick")
     end)
@@ -181,8 +181,8 @@ function ImageButton:setHeight(height)
 end
 
 function ImageButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
-    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
-        srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchor >
+               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
     self.backgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     self:resizeWidgets()
@@ -199,19 +199,17 @@ function ImageButton:subscribeOnMouseInputCursorHoverStateChangedCallback(callba
 end
 
 function ImageButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
-                                  animatedPropertyType, propertySrcValue, propertyDstValue)
+    animatedPropertyType, propertySrcValue, propertyDstValue)
     assert(host ~= nil and type(host) == "userdata")
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
-        type(animationFunctionType) == "number" and animationDuration ~= nil and
-        type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
-        animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
+               type(animationFunctionType) == "number" and animationDuration ~= nil and type(animationDuration) ==
+               "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
+               animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
     assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
 
     self.backgroundTile:addAnimation(host, animationName, animationFunctionType, animationDuration,
-        animatedPropertyName,
-        animatedPropertyType, propertySrcValue, propertyDstValue)
-    self.image:addAnimation(host, animationName, animationFunctionType, animationDuration,
-        animatedPropertyName,
+        animatedPropertyName, animatedPropertyType, propertySrcValue, propertyDstValue)
+    self.image:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
         animatedPropertyType, propertySrcValue, propertyDstValue)
 end
 

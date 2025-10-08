@@ -394,6 +394,14 @@ AnimationData LuaCommonUiFunctions::ParseAnimationDataFromJson(const nlohmann::j
         y = jsonObj["propertyDstValue"].at("y").get<float>();
         z = jsonObj["propertyDstValue"].at("z").get<float>();
         dstData = glm::vec3(x, y, z);
+    } else if (eEnginePropertyType::Vec2 == propType) {
+        auto x = jsonObj["propertySrcValue"].at("x").get<float>();
+        auto y = jsonObj["propertySrcValue"].at("y").get<float>();
+        srcData = glm::vec2(x, y);
+
+        x = jsonObj["propertyDstValue"].at("x").get<float>();
+        y = jsonObj["propertyDstValue"].at("y").get<float>();
+        dstData = glm::vec2(x, y);
     } else {
         assert(false); // Not supported yet
     }

@@ -96,9 +96,10 @@ void PointLightComponent::NotifySceneProxyThatShadowmapIsDirty(const uint64_t& f
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             GetObjectId(),
             functionId,
-            [weak = weak_from_this()](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-    std::weak_ptr<EngineCore::Scene> sceneWp,
-    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+            [weak = weak_from_this()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     if (const auto& componentPtr = weak.lock()) {
                         const auto pointLightComponentPtr = std::static_pointer_cast<PointLightComponent>(componentPtr);

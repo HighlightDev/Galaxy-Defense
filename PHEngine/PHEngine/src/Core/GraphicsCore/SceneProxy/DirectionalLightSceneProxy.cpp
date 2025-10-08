@@ -30,7 +30,7 @@ glm::vec3 DirectionalLightSceneProxy::GetDirection() const
 void DirectionalLightSceneProxy::PostInitialize()
 {
     const auto shadowInfoSp = std::static_pointer_cast<ProjectedDirectionalLightShadowInfo>(m_shadowInfo);
-    if (shadowInfoSp) {
+    if (shadowInfoSp && shadowInfoSp->GetAtlasResource()) {
         const float halfExtent = shadowInfoSp->GetShadowOrthoHalfExtent();
         shadowInfoSp->SetShadowProjectionMatrix(
             glm::ortho(-halfExtent, halfExtent, -halfExtent, halfExtent, 0.1f, halfExtent * 4));

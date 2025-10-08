@@ -91,7 +91,7 @@ protected:
 
     std::shared_ptr<::EngineCore::GUI::SequenceAnimator> mSequenceAnimator;
 
-    std::shared_ptr<EngineObjectProperty<float>> mScaleProperty;
+    std::shared_ptr<EngineObjectProperty<glm::vec2>> mScaleProperty;
 
     std::shared_ptr<EngineObjectProperty<int32_t>> mVerticalCenterOffsetProperty;
 

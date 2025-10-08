@@ -64,7 +64,7 @@ void FreezingExplosionVisitor::ProcessProjectileWithSpaceshipsCollision(const gl
             const auto& spaceStationsPhysComponents = combatActorsPoolHandlerSp->GetSpaceStationsPhysicsComponents();
             const auto& bombMissilePhysComponents = combatActorsPoolHandlerSp->GetMissilePhysicsComponents(eMissileType::BOMB);
             const auto& freezeMissilePhysComponents
-                = combatActorsPoolHandlerSp->GetMissilePhysicsComponents(eMissileType::FREEZING);
+                = combatActorsPoolHandlerSp->GetMissilePhysicsComponents(eMissileType::FREEZING_BOMB);
             const auto& blackHoleMissilePhysComponents
                 = combatActorsPoolHandlerSp->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
             excludedPhysicsComponents.reserve(spaceStations.size() + combatActorsPoolHandlerSp->GetMissileActors().size());

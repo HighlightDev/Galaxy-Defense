@@ -14,6 +14,9 @@ struct MeshResourceInfo {
     ~MeshResourceInfo()
     {
         delete meshAttributes;
+        if (meshAnimatedData) {
+            delete meshAnimatedData;
+        }
     }
 };
 } // namespace IO

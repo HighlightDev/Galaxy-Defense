@@ -67,4 +67,9 @@ int32_t InstancedGeometryBatch::GetRenderInstanceId(const int32_t proxyId) const
     return -1;
 }
 
+int32_t InstancedGeometryBatch::GetInstancesCount() const
+{
+    return static_cast<int32_t>(mInstancedStaticMeshComponents.size());
+}
+
 } // namespace EngineCore

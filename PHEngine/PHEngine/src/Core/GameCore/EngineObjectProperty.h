@@ -11,9 +11,7 @@
 #include <type_traits>
 namespace {
 template<typename T>
-struct ConvertTypeToEnginePropertyType {
-    static constexpr eEnginePropertyType value = eEnginePropertyType::Undefined;
-};
+struct ConvertTypeToEnginePropertyType;
 
 template<>
 struct ConvertTypeToEnginePropertyType<float> {
@@ -33,6 +31,11 @@ struct ConvertTypeToEnginePropertyType<glm::vec3> {
 template<>
 struct ConvertTypeToEnginePropertyType<glm::ivec2> {
     static constexpr eEnginePropertyType value = eEnginePropertyType::iVec2;
+};
+
+template<>
+struct ConvertTypeToEnginePropertyType<glm::vec2> {
+    static constexpr eEnginePropertyType value = eEnginePropertyType::Vec2;
 };
 
 template<>

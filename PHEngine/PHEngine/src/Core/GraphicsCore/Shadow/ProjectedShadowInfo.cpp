@@ -1,5 +1,7 @@
 #include "ProjectedShadowInfo.h"
 
+#include "Core/GameCore/LoggerExtension.h"
+
 namespace Graphics {
 
 ProjectedShadowInfo::ProjectedShadowInfo(const TextureAtlasSpaceRequest& shadowmapAtlasRequest)
@@ -28,6 +30,8 @@ void ProjectedShadowInfo::BindShadowFramebuffer(bool bBindFramebuffer, bool clea
 void ProjectedShadowInfo::AllocateFramebuffer() const
 {
     if (!m_shadowFramebuffer && mShadowmapHandler) {
+        EngineCore::LogInfo(
+            "ProjectedShadowInfo::AllocateFramebuffer: ", GetLightTypeAsString());
         m_shadowFramebuffer = std::make_shared<ShadowFramebuffer>(mShadowmapHandler->GetAtlasResource());
         m_shadowFramebuffer->UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     }
@@ -60,6 +64,20 @@ LightType ProjectedShadowInfo::GetLightType() const
     return m_lightType;
 }
 
+std::string ProjectedShadowInfo::GetLightTypeAsString() const
+{
+    switch (m_lightType) {
+    case LightType::DIRECTIONAL_LIGHT:
+        return "DIRECTIONAL_LIGHT";
+    case LightType::POINT_LIGHT:
+        return "POINT_LIGHT";
+    case LightType::SPOT_LIGHT:
+        return "SPOT_LIGHT";
+    default:
+        return "UNDEFINED";
+    }
+}
+
 void ProjectedShadowInfo::SetIsShadowMapDirty(const bool bDirty)
 {
     bShadowmapDirty = bDirty;
@@ -83,5 +101,10 @@ bool ProjectedShadowInfo::IsShadowMapDirty() const
 TextureAtlasSpaceRequest ProjectedShadowInfo::GetTextureAtlasSpaceRequest() const
 {
     return mShadowmapAtlasRequest;
+}
+
+void ProjectedShadowInfo::SetOnShadowMapUpdatedCallback(const std::function<void()>& callback)
+{
+    mOnShadowMapUpdatedCallback = callback;
 }
 } // namespace Graphics

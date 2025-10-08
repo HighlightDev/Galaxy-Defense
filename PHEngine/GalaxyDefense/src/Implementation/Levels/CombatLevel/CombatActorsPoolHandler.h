@@ -89,7 +89,7 @@ public:
 
     void SpawnEnemySpaceships(const int32_t count);
 
-    void SpawnMissiles(const eMissileType missileType, const int32_t count, const float hitRadius);
+    void SpawnMissiles(const eMissileType missileType, const int32_t count);
 
     void SpawnAsteroids(const int32_t count);
 

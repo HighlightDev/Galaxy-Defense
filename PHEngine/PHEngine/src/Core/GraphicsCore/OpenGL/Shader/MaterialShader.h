@@ -32,6 +32,8 @@ public:
 
     MaterialShader(std::shared_ptr<MaterialProxy> materialProxy);
 
+    void ProcessAllPredefines() override;
+
     std::string GetShaderSource() const;
 
     virtual void LoadUniformValues(const std::shared_ptr<MaterialProxy>& materialProxy, ActiveBindedState& activeBindedState);

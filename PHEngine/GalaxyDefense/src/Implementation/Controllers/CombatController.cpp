@@ -13,7 +13,6 @@
 #include "Implementation/Actors/PortalActor.h"
 #include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
-#include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 #include "Implementation/Modifiers/ElectroRayChainModifier.h"
@@ -95,18 +94,34 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
             path.AppendPathSegmentToTheEnd(segment);
         }
         pathRoutes.emplace(routeName, path);
+        pathRoutes[routeName].CalculateRoutePoints();
     }
     mNavigationController->SetPathRoutes(pathRoutes);
 
-    // todo: when create a new portal first check if another portals could be on the same point
-    // If more than one portal is on one start point - remove duplicated portals
-    mCombatActorsPoolHandler->SpawnPortals(pathRoutes.size(), 10.0f);
-    for (const auto& [pathName, pathData] : pathRoutes) {
+    assert(pathRoutes.size() > 0);
+    mCombatActorsPoolHandler->SpawnPortals(pathRoutes.size(), Game::Constants::c_portalSize);
+    std::vector<glm::vec3> realPortalPositions;
+    for (const auto& [pathName, pathRoute] : pathRoutes) {
+        if (realPortalPositions.empty()) {
+            realPortalPositions.emplace_back(pathRoute.GetRouteFirstPoint());
+        } else {
+            const auto& newPortalPos = pathRoute.GetRouteFirstPoint();
+            const bool bIsTooCloseToAnotherPortal
+                = std::any_of(realPortalPositions.cbegin(), realPortalPositions.cend(), [&](const auto& existingPortalPos) {
+                      return glm::distance2(existingPortalPos, newPortalPos)
+                          < (Game::Constants::c_portalSize * Game::Constants::c_portalSize);
+                  });
+            if (!bIsTooCloseToAnotherPortal) {
+                realPortalPositions.emplace_back(newPortalPos);
+            }
+        }
+    }
+
+    for (const auto& portalPos : realPortalPositions) {
         const auto& portalSp = mCombatActorsPoolHandler->GetFreePortalActor();
         assert(portalSp);
         portalSp->SetIsEnabled(true);
-        pathData.GetRoutePoints();
-        portalSp->GetRootComponent()->SetTranslation(pathData.GetRouteFirstPoint());
+        portalSp->GetRootComponent()->SetTranslation(portalPos);
         portalSp->SetNavigationController(mNavigationController);
         portalSp->SetCombatActorsPoolsHandler(mCombatActorsPoolHandler);
     }
@@ -129,19 +144,21 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
         spaceStationSp->SetIsEnabled(false);
     }
 
-    const float shootRadius = mCombatActorsPoolHandler->GetSpaceStationActors().front()->GetShootRadius();
     const int32_t c_bombMissilesCount = 5 * levelData.TowersData.size();
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, c_bombMissilesCount, shootRadius);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING, 2, shootRadius);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1, shootRadius);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1, shootRadius);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_RAY, 1, shootRadius);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, c_bombMissilesCount);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_BOMB, 2);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_RAY, 1);
 }
 
 void CombatController::OnLevelInit()
 {
     const std::unordered_map<eMissileType, size_t> availabeMissileTypes
-        = {{eMissileType::BOMB, 10}, {eMissileType::FREEZING, 3}, {eMissileType::ELECTRO_RAY, 1}, {eMissileType::BLACK_HOLE, 2}};
+        = {{eMissileType::BOMB, 10},
+           {eMissileType::FREEZING_BOMB, 3},
+           {eMissileType::ELECTRO_RAY, 1},
+           {eMissileType::BLACK_HOLE, 2}};
     PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 
     mCombatActorsPoolHandler->SpawnEnemySpaceships(10);
@@ -415,7 +432,7 @@ void CombatController::ProcessEvent(
                 const auto& buttonType = jsonObj.at("button_type").get<std::string>();
                 static std::unordered_map<std::string, eMissileType> missilesMap
                     = {{"Bomb", eMissileType::BOMB},
-                       {"Freezing", eMissileType::FREEZING},
+                       {"Freezing", eMissileType::FREEZING_BOMB},
                        {"Electro_Ray", eMissileType::ELECTRO_RAY},
                        {"Black_Hole", eMissileType::BLACK_HOLE}};
                 ext_assert(missilesMap.count(buttonType), "Unknown button type: " + buttonType);
@@ -558,7 +575,7 @@ void CombatController::ProcessAiAction()
     std::vector<std::shared_ptr<PhysicsComponent>> excludedPhysicsComponents;
     const auto& spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
     const auto& bombMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BOMB);
-    const auto& freezeMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING);
+    const auto& freezeMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING_BOMB);
     const auto& blackHoleMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
     excludedPhysicsComponents.reserve(spaceStations.size() + mCombatActorsPoolHandler->GetMissileActors().size());
     excludedPhysicsComponents.insert(
@@ -572,7 +589,8 @@ void CombatController::ProcessAiAction()
 
     for (const auto& spaceStation : spaceStations) {
         if (spaceStation->CanShoot()) {
-            SphereCollisionTestWithFilterAdapter collisionTest(spaceStation->GetShootRadius(), excludedPhysicsComponents);
+            SphereCollisionTestWithFilterAdapter collisionTest(
+                spaceStation->GetSpaceStationLevel()->GetShootRadius(), excludedPhysicsComponents);
             collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceStation->GetRootComponent()->GetTranslation());
             const auto& collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
             std::vector<int32_t> descriptorActorIds;
@@ -603,18 +621,11 @@ void CombatController::ProcessAiAction()
                     const auto& nearestEnemy = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
                     const auto& enemyPosition = nearestEnemy->GetRootComponent()->GetTranslation();
                     const auto& projectileShootDirection = glm::normalize(enemyPosition - spaceStationTranslation);
-
-                    const auto getRandomMissileType = [this]() {
-                        const auto missileValue = glm::clamp(static_cast<int32_t>(Random::Float() * 6.0), 1, 5);
-                        const auto missileType = static_cast<eMissileType>(missileValue);
-                        return mCombatActorsPoolHandler->GetFreeMissile(missileType) ? missileType : eMissileType::NONE;
-                    };
-                    eMissileType missileType = getRandomMissileType();
-                    if (eMissileType::NONE == missileType) {
-                        // No available missiles at the moment, wait until one will be free
-                        return;
-                    }
-                    LaunchMisile(spaceStation, spaceStationTranslation, projectileShootDirection, missileType);
+                    LaunchMisile(
+                        spaceStation,
+                        spaceStationTranslation,
+                        projectileShootDirection,
+                        spaceStation->GetSpaceStationLevel()->GetMissileType());
                     spaceStation->RestartTimerSinceLastShoot();
                 }
             }

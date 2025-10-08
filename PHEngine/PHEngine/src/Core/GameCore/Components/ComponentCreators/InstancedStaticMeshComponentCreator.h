@@ -18,7 +18,7 @@ class InstancedStaticMeshComponentCreator : public IComponentCreatable {
 
 public:
     InstancedStaticMeshComponentCreator()
-        : mIsDeferredShaderUsed(true) // todo: for now only deferred shading is supported for instanced geometry
+        : mIsDeferredShaderUsed(true) // for now only deferred shading is supported for instanced geometry
     {
     }
 

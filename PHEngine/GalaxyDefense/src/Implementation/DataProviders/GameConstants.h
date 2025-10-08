@@ -9,4 +9,5 @@ extern const float s_spaceshipSize;
 extern const int32_t c_spaceshipFontSize;
 extern const int32_t c_extraPathPerSideCount;
 extern const uint32_t c_spawnSpaceshipTimeoutMs;
+extern const float c_portalSize;
 } // namespace Game::Constants

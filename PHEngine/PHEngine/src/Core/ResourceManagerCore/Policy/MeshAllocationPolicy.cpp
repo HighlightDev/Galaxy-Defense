@@ -115,7 +115,7 @@ std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParamet
         vao->BindBuffersToVao();
 
         if (meshInfo->meshAnimatedData) {
-            // todo: this part will crash due to pointer deletion when resource will be deleted
+            // meshAnimatedData* will be deleted in MeshResourceInfo destructor when ResourceMap will be cleaned up
             resultSkin = std::make_shared<AnimatedSkin>(
                 vao, std::shared_ptr<AnimatedMeshData>(meshInfo->meshAnimatedData), boundingBox, arg.mModelPath);
         } else {

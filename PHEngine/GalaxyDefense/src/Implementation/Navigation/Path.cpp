@@ -32,6 +32,11 @@ const std::vector<glm::vec3>& Path::GetRoutePoints() const
     return mCachedRoutePoints;
 }
 
+void Path::CalculateRoutePoints() const
+{
+    GetRoutePoints();
+}
+
 glm::vec3 Path::GetRouteFirstPoint() const
 {
     return mCachedRoutePoints.size() ? mCachedRoutePoints[0] : glm::vec3();

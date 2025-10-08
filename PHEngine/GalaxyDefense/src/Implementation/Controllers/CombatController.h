@@ -93,7 +93,7 @@ protected:
     void ProcessEvent(const ChangeGameModeEvent* sender, const typename ChangeGameModeEvent::EventData_t& data) override;
 
 private:
-    void ProcessAiAction(); // todo: move this functionality to AI controller
+    void ProcessAiAction();
 
     void LaunchMisile(
         const std::shared_ptr<Actor>& missileOwner,

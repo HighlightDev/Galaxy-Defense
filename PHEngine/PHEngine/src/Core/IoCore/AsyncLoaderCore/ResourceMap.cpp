@@ -39,6 +39,7 @@ ResourceMap* ResourceMap::GetInstance()
 
 void ResourceMap::CleanUp()
 {
+    ResourceUsageObserver::GetInstance()->CollectResourceConsumptionInfo();
     const double beforeCleanUpMemoryMb = ResourceUsageObserver::GetInstance()->GetLastMemoryUsageMegabytes();
     const bool bResourceWasntLoaded
         = std::any_of(ReadyToReadResources.begin(), ReadyToReadResources.end(), [this](const auto& resourcePair) {
@@ -61,6 +62,7 @@ void ResourceMap::CleanUp()
     AudioStreamResources.clear();
     mAsyncDataProxy->ResourcesMap.clear();
 
+    ResourceUsageObserver::GetInstance()->CollectResourceConsumptionInfo();
     LogInfo(
         "ResourceMap::CleanUp: before cleanup memory mb: ",
         beforeCleanUpMemoryMb,

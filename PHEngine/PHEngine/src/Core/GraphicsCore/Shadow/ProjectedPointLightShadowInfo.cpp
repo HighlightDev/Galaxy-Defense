@@ -31,16 +31,20 @@ void ProjectedPointLightShadowInfo::ProcessEvent(
     if (eTextureType::TEXTURE_CUBE == std::get<0>(data)) {
         mShadowmapHandler
             = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(mShadowmapAtlasRequest.MyRequestId);
+        if (mOnShadowMapUpdatedCallback) {
+            mOnShadowMapUpdatedCallback();
+        }
     }
 }
 
 void ProjectedPointLightShadowInfo::BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const
 {
     ProjectedShadowInfo::BindShadowFramebuffer(bBindFramebuffer, clearDepthBuffer);
-
-    auto rezolution = mShadowmapHandler->GetAtlasResource()->GetTextureResolution();
-    const GLbitfield clearDepthFlag = GL_DEPTH_BUFFER_BIT;
-    m_shadowFramebuffer->RenderToTexture(bBindFramebuffer, 0, 0, rezolution.x, rezolution.y, clearDepthFlag);
+    if (m_shadowFramebuffer) {
+        const auto resolution = mShadowmapHandler->GetAtlasResource()->GetTextureResolution();
+        const GLbitfield clearDepthFlag = GL_DEPTH_BUFFER_BIT;
+        m_shadowFramebuffer->RenderToTexture(bBindFramebuffer, 0, 0, resolution.x, resolution.y, clearDepthFlag);
+    }
 }
 
 ProjectedPointLightShadowInfo::six_mat4x4 ProjectedPointLightShadowInfo::GetShadowViewMatrices() const

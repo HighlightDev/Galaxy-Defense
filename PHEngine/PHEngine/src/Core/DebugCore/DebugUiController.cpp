@@ -194,7 +194,7 @@ void DebugUiController::InitializeWidgets()
         mImage1Label->Initialize();
         mImage1Label->SetParents(mCanvas, mImage1Container);
         mImage1Label->SetTextColor(0xFFFFFF);
-        mImage1Label->SetFontSize(20);
+        mImage1Label->SetFontSize(15);
         mImage1Label->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
         mImage1Label->SetTextVerticalAlignment(eTextVerticalAlignmentType::TOP);
         mImage1Label->SetZOrder(2);
@@ -203,7 +203,7 @@ void DebugUiController::InitializeWidgets()
         mImage2Label->Initialize();
         mImage2Label->SetParents(mCanvas, mImage2Container);
         mImage2Label->SetTextColor(0xFFFFFF);
-        mImage2Label->SetFontSize(20);
+        mImage2Label->SetFontSize(15);
         mImage2Label->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
         mImage2Label->SetTextVerticalAlignment(eTextVerticalAlignmentType::TOP);
         mImage2Label->SetZOrder(2);

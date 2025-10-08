@@ -50,7 +50,6 @@ bool CameraFrustum::IsIntersectionWithBox(const glm::vec3& origin, const glm::ve
         float distanceOriginToPlane, absExtentProjectedOnPlaneNormal;
 
         EngineMath::TestAABBPlane(origin, extent, plane, distanceOriginToPlane, absExtentProjectedOnPlaneNormal);
-        // todo: if condition absExtentProjectedOnPlaneNormal >= glm::abs(distanceOriginToPlane) is true - stop for loop
         const bool bBoundingBoxCollidesWithFrustum
             = (distanceOriginToPlane >= 0.0f || // origin lays on plane or inside this camera frustum plane
                absExtentProjectedOnPlaneNormal >= glm::abs(distanceOriginToPlane)); // check if aabb intersects with plane

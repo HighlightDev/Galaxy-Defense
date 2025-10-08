@@ -65,7 +65,7 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     mReadyToShootTimer->SetIsPausable(true);
     mReadyToShootTimer->SetIsRepeat(false);
     mReadyToShootTimer->SetIntervalMs(500);
-    
+
     mReloadPlacementTower->Initialize();
     mReloadPlacementTower->SetIsPausable(true);
     mReloadPlacementTower->SetIsRepeat(false);
@@ -304,9 +304,11 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                 const auto cellPositionVec3 = glm::vec3(cellOriginPosition.x, 0.0f, cellOriginPosition.y);
 
                 if (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType && IsTowerPositionValid(cellPositionVec3)) {
+                    assert(mTowerMissileType != eMissileType::NONE);
                     const auto spaceStationSp = mCombatActorsPoolHandler->GetFreeSpaceStationActor();
                     assert(spaceStationSp);
                     spaceStationSp->GetRootComponent()->SetTranslation(cellPositionVec3);
+                    spaceStationSp->SetSpaceStationLevel(std::make_shared<SpaceStationLevel>(mTowerMissileType, 1, 50.0f));
                     spaceStationSp->SetState(eSpaceStationActivityState::ACTIVE);
                     SetUserInteractionType(eUserInteractionType::IDLE);
                 } else if (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
@@ -396,10 +398,15 @@ void UserInteractionController::ProcessEvent(
             mPlacementAllowedAreaActor->SetIsEnabled(isTowerGridVisible);
         } else if (jsonRoot.at("action").get<std::string>() == "ghost_tower_visibility") {
             const bool isGhostTowerVisible = jsonRoot.at("visible").get<bool>();
+            if (isGhostTowerVisible) {
+                const auto towerTypeStr = jsonRoot.at("tower_type").get<std::string>();
+                mTowerMissileType = MissileTypeFromString(towerTypeStr);
+            }
             SetUserInteractionType(
                 isGhostTowerVisible ? eUserInteractionType::TOWER_PLACE_SELECTION : eUserInteractionType::IDLE);
         } else if (jsonRoot.at("action").get<std::string>() == "remove_tower_marker_visibility") {
             const bool isTowerEraserMarkerVisible = jsonRoot.at("visible").get<bool>();
+            mTowerMissileType = eMissileType::NONE;
             SetUserInteractionType(
                 isTowerEraserMarkerVisible ? eUserInteractionType::TOWER_REMOVEMENT_SELECTION : eUserInteractionType::IDLE);
         }
@@ -636,5 +643,21 @@ void UserInteractionController::TriggerPlayerStatusChangedEvent(
             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, statusChanged, jsonArgs);
         });
+}
+
+eMissileType UserInteractionController::MissileTypeFromString(const std::string& typeStr) const
+{
+    if (typeStr == "BOMB") {
+        return eMissileType::BOMB;
+    } else if (typeStr == "FREEZING_BOMB") {
+        return eMissileType::FREEZING_BOMB;
+    } else if (typeStr == "ELECTRO_RAY") {
+        return eMissileType::ELECTRO_RAY;
+    } else if (typeStr == "FREEZING_RAY") {
+        return eMissileType::FREEZING_RAY;
+    } else if (typeStr == "BLACK_HOLE") {
+        return eMissileType::BLACK_HOLE;
+    }
+    return eMissileType::NONE;
 }
 } // namespace Game
