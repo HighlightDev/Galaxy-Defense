@@ -277,7 +277,7 @@ function CombatPreparationOverlay:new(host)
         createDropDownPanel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
             backgroundRect.widgetName)
         createDropDownPanel:setWidth((smallButtonSize * #createTowerButtons) +
-                                         ((smallButtonSize * #createTowerButtons) * 0.5))
+                                         ((smallButtonSize * #createTowerButtons) * 0.8))
         createDropDownPanel:setHeight(smallButtonSize)
         createDropDownPanel:setVerticalCenterOffset(panelHeight)
         createDropDownPanel:setIsVisible(false)
