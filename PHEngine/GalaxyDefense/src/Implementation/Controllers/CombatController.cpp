@@ -19,6 +19,8 @@
 #include "Implementation/Navigation/Path.h"
 #include "Implementation/Navigation/PathSegment.h"
 
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+
 #include <json/json.hpp>
 
 #include <array>
@@ -490,6 +492,23 @@ void CombatController::Tick(const float deltaTime)
     }
 
     mUserInteractionController->Tick(deltaTime);
+
+    static float timeAccumulator = 0.0f;
+    static bool bFirstRun = true;
+    timeAccumulator += deltaTime;
+
+    if (timeAccumulator >= 5.0f) {
+        const auto& spaceStationActors = mCombatActorsPoolHandler->GetSpaceStationActors();
+
+        for (const auto& spaceStation : spaceStationActors) {
+            const auto& staticMeshComponents = spaceStation->GetComponentsByType<StaticMeshComponent>();
+            for (const auto& staticMeshComponent : staticMeshComponents) {
+                staticMeshComponent->SetMeshModelPath(bFirstRun ? "sphere.obj" : "space_station.obj");
+            }
+        }
+        timeAccumulator = 0.0f;
+        bFirstRun = !bFirstRun;
+    }
 }
 
 void CombatController::LaunchMisile(

@@ -22,6 +22,7 @@
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/StaticMeshSceneProxy.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/IoCore/FolderManager.h"
@@ -1111,34 +1112,28 @@ std::shared_ptr<SceneView> SceneRenderer::GetSceneViewByProxyId(const int32_t pr
 
 std::shared_ptr<PrimitiveSceneProxy> SceneRenderer::GetPrimitiveProxyByProxyId(const int32_t proxyId) const
 {
-    std::shared_ptr<PrimitiveSceneProxy> result = nullptr;
-
     const auto foundPrimitiveProxyIt
         = std::find_if(PrimitiveProxiesVector.cbegin(), PrimitiveProxiesVector.cend(), [=](const auto& primitiveProxy) {
               return proxyId == primitiveProxy->GetSceneProxyId();
           });
 
     if (foundPrimitiveProxyIt != PrimitiveProxiesVector.cend()) {
-        result = *foundPrimitiveProxyIt;
+        return *foundPrimitiveProxyIt;
     }
-
-    return result;
+    return nullptr;
 }
 
 std::shared_ptr<LightSceneProxy> SceneRenderer::GetLightProxyByProxyId(const int32_t proxyId) const
 {
-    std::shared_ptr<LightSceneProxy> result = nullptr;
-
     const auto foundLightProxyIt
         = std::find_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto& lightProxy) {
               return proxyId == lightProxy->GetSceneProxyId();
           });
 
     if (foundLightProxyIt != LightProxiesVector.end()) {
-        result = *foundLightProxyIt;
+        return *foundLightProxyIt;
     }
-
-    return result;
+    return nullptr;
 }
 
 std::shared_ptr<MaterialProxy> SceneRenderer::GetMaterialProxyByProxyId(const int32_t proxyId) const
@@ -2027,6 +2022,70 @@ void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
                             "SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread: "
                             "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                             cameraSceneProxyId);
+                    }
+                }
+            });
+    }
+}
+
+void SceneRenderer::UpdateMeshModelPath_OnRenderThread(
+    const int32_t primitiveSceneProxyIndex, const ePrimitiveProxyType primitiveProxyType, const std::string& newModelPath)
+{
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+        const auto& primitiveProxy = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+        if (primitiveProxy) {
+            if (primitiveProxyType == ePrimitiveProxyType::STATIC_MESH_PROXY) {
+                const auto staticMeshProxy = std::static_pointer_cast<StaticMeshSceneProxy>(primitiveProxy);
+                staticMeshProxy->SetMeshModelPath(newModelPath);
+            } else if (primitiveProxyType == ePrimitiveProxyType::SKELETAL_MESH_PROXY) {
+                const auto skeletalMeshProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(primitiveProxy);
+                skeletalMeshProxy->SetMeshModelPath(newModelPath);
+            } else {
+                LogInfo(
+                    "SceneRenderer::UpdateMeshModelPath_OnRenderThread: "
+                    "Error! Current proxy is not a mesh proxy. Proxy index = ",
+                    primitiveSceneProxyIndex,
+                    "proxyType = ",
+                    static_cast<int32_t>(primitiveProxyType));
+            }
+        } else {
+            LogInfo(
+                "SceneRenderer::UpdateMeshModelPath_OnRenderThread: "
+                "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                primitiveSceneProxyIndex);
+        }
+    } else {
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::UpdateMeshModelPath_OnRenderThread");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            primitiveSceneProxyIndex,
+            functionId,
+            [weak = weak_from_this(), primitiveSceneProxyIndex, newModelPath, primitiveProxyType](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = sceneRendererWp.lock()) {
+                    const auto& primitiveProxy = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                    if (primitiveProxy) {
+                        if (primitiveProxyType == ePrimitiveProxyType::STATIC_MESH_PROXY) {
+                            const auto staticMeshProxy = std::static_pointer_cast<StaticMeshSceneProxy>(primitiveProxy);
+                            staticMeshProxy->SetMeshModelPath(newModelPath);
+                        } else if (primitiveProxyType == ePrimitiveProxyType::SKELETAL_MESH_PROXY) {
+                            const auto skeletalMeshProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(primitiveProxy);
+                            skeletalMeshProxy->SetMeshModelPath(newModelPath);
+                        } else {
+                            LogInfo(
+                                "SceneRenderer::UpdateMeshModelPath_OnRenderThread: "
+                                "Error! Current proxy is not a mesh proxy. Proxy index = ",
+                                primitiveSceneProxyIndex,
+                                "proxyType = ",
+                                static_cast<int32_t>(primitiveProxyType));
+                        }
+                    } else {
+                        LogInfo(
+                            "SceneRenderer::UpdateMeshModelPath_OnRenderThread: "
+                            "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                            primitiveSceneProxyIndex);
                     }
                 }
             });

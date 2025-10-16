@@ -54,6 +54,16 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
 
     if (const auto& deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock()) {
         if (const auto& sceneSp = deferredShadingSceneRendererSp->GetInterThreadCommunicationManager().GetSceneWP().lock()) {
+            if (const auto& outlineMatProxySp = sceneSp->GetOutlineMaterial()->GetMaterialProxyWp().lock()) {
+                mOutlineMaterialProxy = outlineMatProxySp;
+                const ShaderParams outlineShaderParams(
+                    "OutlineShader",
+                    FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
+                    FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
+                m_outlineShader = CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(
+                    "StaticMeshVertexFactory_OutlineShader_OutlineMaterial", outlineShaderParams, outlineMatProxySp);
+            }
+
             const auto boundingBox = m_skin->GetBoundingBox();
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
@@ -69,16 +79,6 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
                     assert(primitiveComponent);
                     primitiveComponent->SetBoundingBox(boundingBox);
                 });
-
-            if (const auto& outlineMatProxySp = sceneSp->GetOutlineMaterial()->GetMaterialProxyWp().lock()) {
-                mOutlineMaterialProxy = outlineMatProxySp;
-                const ShaderParams outlineShaderParams(
-                    "OutlineShader",
-                    FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
-                    FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
-                m_outlineShader = CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(
-                    "StaticMeshVertexFactory_OutlineShader_OutlineMaterial", outlineShaderParams, outlineMatProxySp);
-            }
         }
     }
 }
@@ -191,6 +191,39 @@ ePrimitiveProxyType StaticMeshSceneProxy::GetPrimitiveProxyType() const
 RenderInfo StaticMeshSceneProxy::GetRenderInfo() const
 {
     return RenderInfo{m_shader->GetShaderName()};
+}
+
+void StaticMeshSceneProxy::SetMeshModelPath(const std::string& modelPath)
+{
+    m_renderData.mModelPath = modelPath;
+    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+
+    MeshPoolParameters poolParameters;
+    poolParameters.mModelPath = modelPath;
+    poolParameters.mVertexAttributes = GetShader()->GetVertexAttributes();
+
+    m_skin = MeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
+
+    if (const auto& deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock()) {
+        if (const auto& sceneSp = deferredShadingSceneRendererSp->GetInterThreadCommunicationManager().GetSceneWP().lock()) {
+
+            const auto boundingBox = m_skin->GetBoundingBox();
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                mSceneProxyId,
+                Hash64_CT("SkeletalMeshSceneProxy::SetMeshModelPath"),
+                [sceneSp, boundingBox, goID = GetGameObjectId()](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                    const auto& engineObject = sceneSp->GetEngineObjectById(goID);
+                    assert(engineObject);
+                    const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
+                    assert(primitiveComponent);
+                    primitiveComponent->SetBoundingBox(boundingBox);
+                });
+        }
+    }
 }
 
 } // namespace Proxy

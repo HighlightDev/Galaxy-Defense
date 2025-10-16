@@ -70,6 +70,8 @@ public:
     ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
     RenderInfo GetRenderInfo() const override;
+
+    void SetMeshModelPath(const std::string& modelPath);
 };
 
 } // namespace Proxy

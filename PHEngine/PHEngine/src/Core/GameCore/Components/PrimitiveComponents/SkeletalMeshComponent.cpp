@@ -142,4 +142,17 @@ std::shared_ptr<PrimitiveSceneProxy> SkeletalMeshComponent::CreateSceneProxy() c
 {
     return std::make_shared<SkeletalMeshSceneProxy>(this);
 }
+
+void SkeletalMeshComponent::SetMeshModelPath(const std::string& modelPath)
+{
+    if (!modelPath.empty() && m_renderData.mModelPath != modelPath) {
+        m_renderData.mModelPath = modelPath;
+        if (const auto& sceneSp = m_sceneWP.lock()) {
+            if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
+                sceneRenderer->UpdateMeshModelPath_OnRenderThread(
+                    GetSceneProxyId(), ePrimitiveProxyType::SKELETAL_MESH_PROXY, modelPath);
+            }
+        }
+    }
+}
 } // namespace EngineCore

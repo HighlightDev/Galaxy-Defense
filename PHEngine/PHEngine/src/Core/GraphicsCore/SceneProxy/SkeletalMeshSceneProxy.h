@@ -23,7 +23,7 @@ class SkeletalMeshSceneProxy : public PrimitiveSceneProxy {
         = VertexFactoryMaterialCompositeShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>;
     using Base = PrimitiveSceneProxy;
 
-    MeshRenderData mRenderData;
+    MeshRenderData m_renderData;
 
 protected:
     mutable std::shared_ptr<AnimationPlayer> mAnimationPlayer;
@@ -83,6 +83,8 @@ public:
     eMeshFacing GetMeshFrontFace() const override;
 
     RenderInfo GetRenderInfo() const override;
+
+    void SetMeshModelPath(const std::string& modelPath);
 };
 
 } // namespace Proxy

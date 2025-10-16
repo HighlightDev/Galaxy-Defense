@@ -16,10 +16,10 @@ namespace EngineCore {
 StaticMeshComponent::StaticMeshComponent(
     const std::shared_ptr<MeshComponentData>& meshComponentData, const MeshRenderData renderData)
     : PrimitiveComponent(
-          meshComponentData->EngineObjectName,
-          meshComponentData->m_translation,
-          meshComponentData->m_eulerRotationDegrees,
-          meshComponentData->m_scale)
+        meshComponentData->EngineObjectName,
+        meshComponentData->m_translation,
+        meshComponentData->m_eulerRotationDegrees,
+        meshComponentData->m_scale)
     , m_renderData(renderData)
 {
 }
@@ -71,6 +71,19 @@ std::shared_ptr<PrimitiveSceneProxy> StaticMeshComponent::CreateSceneProxy() con
 eComponentType StaticMeshComponent::GetComponentType() const
 {
     return PRIMITIVE_COMPONENT;
+}
+
+void StaticMeshComponent::SetMeshModelPath(const std::string& modelPath)
+{
+    if (!modelPath.empty() && m_renderData.mModelPath != modelPath) {
+        m_renderData.mModelPath = modelPath;
+        if (const auto& sceneSp = m_sceneWP.lock()) {
+            if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
+                sceneRenderer->UpdateMeshModelPath_OnRenderThread(
+                    GetSceneProxyId(), ePrimitiveProxyType::STATIC_MESH_PROXY, modelPath);
+            }
+        }
+    }
 }
 
 } // namespace EngineCore

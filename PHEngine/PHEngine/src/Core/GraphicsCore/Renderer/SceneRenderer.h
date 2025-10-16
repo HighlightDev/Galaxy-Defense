@@ -238,6 +238,9 @@ public:
     void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
         const std::shared_ptr<PlanarReflectionProxy>& planarReflectionProxy, const int32_t cameraSceneProxyId);
 
+    void UpdateMeshModelPath_OnRenderThread(
+        const int32_t primitiveSceneProxyIndex, const ePrimitiveProxyType primitiveProxyType, const std::string& newModelPath);
+
     void RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
 
     void UnregisterText(const int32_t textFieldProxyId);

@@ -38,6 +38,8 @@ public:
     }
 
     std::shared_ptr<IMaterial> GetMaterial() const;
+
+    void SetMeshModelPath(const std::string& modelPath);
 };
 
 } // namespace EngineCore

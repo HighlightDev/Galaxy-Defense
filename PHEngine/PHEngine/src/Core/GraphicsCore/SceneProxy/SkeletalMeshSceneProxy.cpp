@@ -17,7 +17,7 @@ namespace Graphics {
 namespace Proxy {
 SkeletalMeshSceneProxy::SkeletalMeshSceneProxy(const SkeletalMeshComponent* component)
     : PrimitiveSceneProxy(component, component->GetRenderData().mMaterialProxy)
-    , mRenderData(component->GetRenderData())
+    , m_renderData(component->GetRenderData())
     , mAnimationPlayer(nullptr)
 {
 }
@@ -57,7 +57,7 @@ void SkeletalMeshSceneProxy::PostConstructorInitialize()
         mMaterialProxy);
 
     MeshPoolParameters poolParameters;
-    poolParameters.mModelPath = mRenderData.mModelPath;
+    poolParameters.mModelPath = m_renderData.mModelPath;
     poolParameters.mVertexAttributes = GetShader()->GetVertexAttributes();
 
     m_skin = MeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
@@ -196,6 +196,42 @@ eMeshFacing SkeletalMeshSceneProxy::GetMeshFrontFace() const
 RenderInfo SkeletalMeshSceneProxy::GetRenderInfo() const
 {
     return RenderInfo{m_shader->GetShaderName()};
+}
+
+void SkeletalMeshSceneProxy::SetMeshModelPath(const std::string& modelPath)
+{
+    m_renderData.mModelPath = modelPath;
+    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+
+    MeshPoolParameters poolParameters;
+    poolParameters.mModelPath = modelPath;
+    poolParameters.mVertexAttributes = GetShader()->GetVertexAttributes();
+
+    m_skin = MeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
+    std::shared_ptr<AnimatedSkin> animatedSkinSp = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
+    assert((animatedSkinSp));
+    mAnimationPlayer.reset();
+    mAnimationPlayer = std::make_shared<AnimationPlayer>(animatedSkinSp);
+
+    if (const auto& deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock()) {
+        if (const auto& sceneSp = deferredShadingSceneRendererSp->GetInterThreadCommunicationManager().GetSceneWP().lock()) {
+            const auto boundingBox = m_skin->GetBoundingBox();
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                mSceneProxyId,
+                Hash64_CT("SkeletalMeshSceneProxy::SetMeshModelPath"),
+                [sceneSp, boundingBox, goID = GetGameObjectId()](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                    const auto& engineObject = sceneSp->GetEngineObjectById(goID);
+                    assert(engineObject);
+                    const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
+                    assert(primitiveComponent);
+                    primitiveComponent->SetBoundingBox(boundingBox);
+                });
+        }
+    }
 }
 } // namespace Proxy
 } // namespace Graphics
