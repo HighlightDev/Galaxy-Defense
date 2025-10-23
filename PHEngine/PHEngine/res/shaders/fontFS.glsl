@@ -25,6 +25,6 @@ void main(void)
 
     // float overallAlpha = fontSmoothEdgeAlpha + (1.0 - fontSmoothEdgeAlpha) * shadowSmoothEdgeAlpha;
     // vec3 resultColor = mix((color * 0.5), color, fontSmoothEdgeAlpha / overallAlpha);
-    //FragColor = vec4(resultColor, overallAlpha * opacity);
-    FragColor = vec4(color, texture(fontAtlas, texCoords).r);
+    // FragColor = vec4(resultColor, overallAlpha * opacity);
+    FragColor = vec4(color, texture(fontAtlas, texCoords).r * opacity);
 }

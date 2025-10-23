@@ -15,7 +15,6 @@
 #include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
-#include "TextHandler.h"
 
 #include <glm/vec3.hpp>
 
@@ -54,6 +53,10 @@ class IComponentCreatable;
 struct ComponentData;
 class InstancedGeometryBatchHolder;
 
+namespace GUI {
+class UiCanvas;
+}
+
 class Scene : public EngineObject,
               public ITickable,
               public std::enable_shared_from_this<Scene>,
@@ -89,8 +92,6 @@ private:
     std::shared_ptr<Graphics::IMaterial> mOutlineMaterialSp;
 
     std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
-
-    std::shared_ptr<TextHandler> mTextHandler;
 
     std::shared_ptr<InstancedGeometryBatchHolder> mInstancedGeometryBatchHolder;
 
@@ -177,8 +178,6 @@ public:
 
     InterThreadCommunicationMgr& GetInterThreadCommunicationManager();
 
-    const std::shared_ptr<TextHandler>& GetTextHandler() const;
-
     const std::shared_ptr<InstancedGeometryBatchHolder>& GetInstancedGeometryBatchHolder() const;
 
     std::shared_ptr<UiHandler> GetUiHandler() const;
@@ -209,6 +208,8 @@ public:
     void UnloadScene();
 
     std::shared_ptr<Graphics::IMaterial> GetOutlineMaterial() const;
+
+    std::shared_ptr<EngineCore::GUI::UiCanvas> GetHudCanvas() const;
 
 #ifdef DEBUG
 

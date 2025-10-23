@@ -29,6 +29,8 @@ class UiProgressBar : public UiItemBase {
 
     float mFillPercentValue;
 
+    float mBorderRadius;
+
     std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
 
 public:
@@ -59,6 +61,10 @@ public:
     glm::vec3 GetEmptyColor() const;
 
     glm::vec3 GetFilledColor() const;
+
+    float GetBorderRadius() const;
+
+    void SetBorderRadius(const float radius);
 
     std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const override;
 

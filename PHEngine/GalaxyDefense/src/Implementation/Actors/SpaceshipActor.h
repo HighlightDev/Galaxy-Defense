@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/BoundingBox3D.h"
+#include "Implementation/ActorLeveling/SpaceshipLevel.h"
 #include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
 #include "Implementation/DamageDealerType.h"
 #include "Implementation/Modifiers/IModifiable.h"
@@ -14,24 +15,21 @@
 
 using namespace EngineCore;
 
-namespace EngineCore {
-class UiComponent;
-}
-
 enum class eSpaceshipActivityState { IDLE, ACTIVE, PENDING_DISABLE };
 
 namespace Game {
+
+class SpaceObjectUiComponent;
+
 class SpaceshipActor : public Actor {
 protected:
     eSpaceshipActivityState mActivityState{eSpaceshipActivityState::IDLE};
 
     std::unique_ptr<ModifiersHandler> mModifiersHandler;
 
-    size_t mLifePoints;
+    SpaceshipLevel mSpaceshipLevel;
 
-    std::shared_ptr<::EngineCore::UiComponent> mUiComponent;
-
-    int32_t mDamageTextFieldId{-1};
+    std::shared_ptr<SpaceObjectUiComponent> mUiComponent;
 
     std::shared_ptr<GameThreadTimer> mDamageMessageTimer;
 
@@ -44,13 +42,11 @@ protected:
     std::shared_ptr<EngineObjectProperty<float>> mDamageTimeProperty;
     std::shared_ptr<EngineObjectProperty<float>> mFreezingEffectProperty;
 
-    int32_t mTextFontSize{10};
-
 public:
     SpaceshipActor(
         const std::string& gameObjectName,
         const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
-        const int32_t textFontSize);
+        const SpaceshipLevel& spaceshipLevel);
 
     void Tick(const float deltaTime) override;
 
@@ -90,8 +86,6 @@ public:
 
     bool GetIsDamageReceived() const;
 
-    void RestoreLife();
-
     eSpaceshipActivityState GetSpaceshipActivityState() const;
 
     void SetSpaceshipActivityState(const eSpaceshipActivityState activityState);
@@ -99,12 +93,5 @@ public:
     void SetFreezingEffectValue(const float value);
 
     std::shared_ptr<OnRouteMovementComponent> GetOnRouteMovementComponent() const;
-
-    std::shared_ptr<::EngineCore::UiComponent> GetUiComponent() const;
-
-    int32_t GetDamageTextFieldId() const;
-
-protected:
-    virtual glm::vec2 CalculatePositionForDamageText() const;
 };
 } // namespace Game

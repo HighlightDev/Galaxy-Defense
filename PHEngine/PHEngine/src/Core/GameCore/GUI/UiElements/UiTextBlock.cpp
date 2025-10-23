@@ -274,6 +274,26 @@ int32_t UiTextBlock::GetBorderThickness() const
     return mBorderThickness;
 }
 
+void UiTextBlock::SetTextNormalizedSize(const glm::vec2& size)
+{
+    mTextNormalizedSize = size;
+}
+
+void UiTextBlock::SetTextScreenSpaceSize(const glm::ivec2& size)
+{
+    mTextScreenSpaceSize = size;
+}
+
+glm::vec2 UiTextBlock::GetTextNormalizedSize() const
+{
+    return mTextNormalizedSize;
+}
+
+glm::ivec2 UiTextBlock::GetTextScreenSpaceSize() const
+{
+    return mTextScreenSpaceSize;
+}
+
 std::shared_ptr<UiSceneProxyBase> UiTextBlock::CreateUiSceneProxy() const
 {
     return std::make_shared<UiTextBlockSceneProxy>(this);

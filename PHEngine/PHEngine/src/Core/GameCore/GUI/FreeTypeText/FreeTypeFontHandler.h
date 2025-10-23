@@ -115,8 +115,6 @@ public:
 
     float GetTextNormalizedHeight(const int32_t textFieldProxyId) const;
 
-    bool IsTextSubscribedOnSizeChangeUpdate(const int32_t textFieldProxyId) const;
-
     glm::vec2 GetTextSizeNormalized(const int32_t textFieldProxyId) const;
 
     glm::ivec2 GetTextScreenSpaceSize(const int32_t textFieldProxyId) const;

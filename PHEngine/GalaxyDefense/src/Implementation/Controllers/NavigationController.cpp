@@ -113,7 +113,7 @@ void NavigationController::OnLevelInit()
 {
     assert(mNavPathBuilder.GetPaths().size());
     Initialize();
-    if (cEnableDebugPathRendering) {
+    if (cEnableDebugPathRendering) { // todo: make it runtime configurable
         InitializePathDebugRendering(); // for debug visualisation purpose
     }
 }

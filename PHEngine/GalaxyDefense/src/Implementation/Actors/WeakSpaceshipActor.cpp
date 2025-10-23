@@ -4,11 +4,10 @@
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
-#include "Core/GameCore/Components/UiComponents/UiComponent.h"
-#include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Implementation/Components/UiComponents/SpaceObjectUiComponent.h"
 #include "Implementation/DamageDealerType.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 
@@ -16,8 +15,8 @@ namespace Game {
 WeakSpaceshipActor::WeakSpaceshipActor(
     const std::string& gameObjectName,
     const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
-    const int32_t textFontSize)
-    : SpaceshipActor(gameObjectName, rootComponent, textFontSize)
+    const SpaceshipLevel& spaceshipLevel)
+    : SpaceshipActor(gameObjectName, rootComponent, spaceshipLevel)
     , ITweenStateChangeNotifyable()
     , mWeakSpaceshipTweener()
 {
@@ -44,9 +43,10 @@ void WeakSpaceshipActor::TriggerDamageReceived(const size_t damage, const eDamag
         mIsDamageEffectActive = true;
         mDamageEffectTimePassed = 0.0f;
         mDamageMessageTimer->RestartTimer();
-        mUiComponent->SetText(mDamageTextFieldId, std::to_string(damage));
-        mUiComponent->SetVisibility(mDamageTextFieldId, true);
-        mUiComponent->SetPosition(mDamageTextFieldId, CalculatePositionForDamageText());
+        mUiComponent->SetLabelText(std::to_string(damage));
+        mUiComponent->SetHealthBarFillPercent(
+            static_cast<float>(mSpaceshipLevel.GetHealth()) / static_cast<float>(mSpaceshipLevel.GetNominalHealth()));
+        mUiComponent->FadeIn();
     } else {
         mWeakSpaceshipTweener->ChangeState("s_LifecycleExplosion");
         if (eDamageDealerType::MAIN_PLAYER == damageDealerType) {
@@ -73,7 +73,7 @@ void WeakSpaceshipActor::TriggerSpawn(const glm::vec3& position)
     SetIsEnabled(true);
     const auto& onRouteMovementComponent = GetOnRouteMovementComponent();
     onRouteMovementComponent->Teleport(position);
-    RestoreLife();
+    mSpaceshipLevel.RestoreHealth();
 
     const auto c_light = GetComponentsByType<LightComponent>().back();
     c_light->SetIsVisible(false);
@@ -94,6 +94,8 @@ void WeakSpaceshipActor::TriggerExplosion()
 
     const auto c_light = GetComponentsByType<LightComponent>().back();
     c_light->SetIsVisible(true);
+
+    mUiComponent->FadeOut();
     mWeakSpaceshipTweener->ChangeState("s_LifecycleDestroyed");
 }
 

@@ -24,7 +24,7 @@ void Vec2AnimationController::ProcessAnimation(
         vec2Property->SetValue(std::any_cast<glm::vec2>(data.GetDstValue()));
     } else {
         if (eAnimationInterpolationFunctionType::LINEAR == data.GetAnimationFunctionType()) {
-            const glm::vec2 srcValue = std::any_cast<glm::vec2>(data.GetSrcValue());
+            const glm::vec2 srcValue = vec2Property->GetValue();
             const glm::vec2 dstValue = std::any_cast<glm::vec2>(data.GetDstValue());
             const glm::vec2 resultValue
                 = EngineMath::LerpVec2(animationTimePassed, 0.0f, data.GetAnimationDuration(), srcValue, dstValue);

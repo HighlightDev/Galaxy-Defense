@@ -29,8 +29,12 @@ UiLabel::UiLabel(const std::string& fontName, const std::string& name)
     , mTextLineWidthHeight()
     , mFontSize(15)
     , mTextColor(glm::vec3())
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
+          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 {
     assert(mFontName.size());
+    assert(!mProperties.count("Opacity"));
+    mProperties.emplace("Opacity", mOpacityProperty);
 }
 
 UiLabel::~UiLabel()
@@ -141,7 +145,7 @@ std::string UiLabel::GetText() const
 
 void UiLabel::SetOpacity(const float opacity)
 {
-    if (glm::abs(mOpacity - opacity) > EngineMath::ENGINE_FLOAT_EPSILON) {
+    if (!EngineMath::FloatsNearEqual(opacity, mOpacity)) {
         mOpacity = opacity;
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
@@ -237,6 +241,26 @@ std::shared_ptr<LuaProxy> UiLabel::ReplicateLuaProxy()
 std::string UiLabel::GetUiTypeString() const
 {
     return "UiLabel";
+}
+
+void UiLabel::SetTextNormalizedSize(const glm::vec2& size)
+{
+    mTextNormalizedSize = size;
+}
+
+void UiLabel::SetTextScreenSpaceSize(const glm::ivec2& size)
+{
+    mTextScreenSpaceSize = size;
+}
+
+glm::vec2 UiLabel::GetTextNormalizedSize() const
+{
+    return mTextNormalizedSize;
+}
+
+glm::ivec2 UiLabel::GetTextScreenSpaceSize() const
+{
+    return mTextScreenSpaceSize;
 }
 
 void UiLabel::SyncDataOnRenderThread()

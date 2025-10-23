@@ -30,6 +30,8 @@ class UiCanvasSceneProxy {
 
     size_t mCanvasZOrder;
 
+    const std::string mName;
+
 public:
     UiCanvasSceneProxy(const ::EngineCore::GUI::UiCanvas* canvas);
 

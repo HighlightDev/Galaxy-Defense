@@ -40,6 +40,12 @@ class UiLabel : public UiItemBase {
 
     eTextVerticalAlignmentType mTextVerticalAlignment{eTextVerticalAlignmentType::TOP};
 
+    glm::vec2 mTextNormalizedSize;
+
+    glm::ivec2 mTextScreenSpaceSize;
+
+    std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
+
 public:
     explicit UiLabel(const std::string& fontName, const std::string& name = std::string(""));
 
@@ -86,6 +92,14 @@ public:
     void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
     std::string GetUiTypeString() const override;
+
+    void SetTextNormalizedSize(const glm::vec2& size);
+
+    void SetTextScreenSpaceSize(const glm::ivec2& size);
+
+    glm::vec2 GetTextNormalizedSize() const;
+
+    glm::ivec2 GetTextScreenSpaceSize() const;
 
 protected:
     void OnRegistered() override;

@@ -26,6 +26,7 @@ UiProgressBar::UiProgressBar(const std::string& name)
     , mFilledColor(glm::vec3(1.0f))
     , mOpacity(1.0f)
     , mFillPercentValue(0.0f)
+    , mBorderRadius(0.0f)
     , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
           mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 {
@@ -152,6 +153,20 @@ float UiProgressBar::GetFillPercentValue() const
     return mFillPercentValue;
 }
 
+float UiProgressBar::GetBorderRadius() const
+{
+    return mBorderRadius;
+}
+
+void UiProgressBar::SetBorderRadius(const float radius)
+{
+    if (!EngineMath::FloatsNearEqual(radius, mBorderRadius)) {
+        mBorderRadius = radius;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
 std::string UiProgressBar::GetUiTypeString() const
 {
     return "UiProgressBar";
@@ -200,6 +215,13 @@ void UiProgressBar::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
+    if (jsonObj.contains("border_radius")) {
+        const auto borderRadius = jsonObj["border_radius"].get<float>();
+        if (!EngineMath::FloatsNearEqual(mBorderRadius, borderRadius)) {
+            mBorderRadius = borderRadius;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
 }
 
 void UiProgressBar::SyncDataOnRenderThread()
@@ -220,7 +242,8 @@ void UiProgressBar::SyncDataOnRenderThread()
                          emptyColor = mEmptyColor,
                          filledColor = mFilledColor,
                          opacity = mOpacity,
-                         fillPercentValue = mFillPercentValue](
+                         fillPercentValue = mFillPercentValue,
+                         borderRadius = mBorderRadius](
                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                             std::weak_ptr<EngineCore::Scene> sceneWp,
                             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -231,6 +254,7 @@ void UiProgressBar::SyncDataOnRenderThread()
                                 statusBarSceneProxy->SetFilledColor(filledColor);
                                 statusBarSceneProxy->SetOpacity(opacity);
                                 statusBarSceneProxy->SetFillPercentValue(fillPercentValue);
+                                statusBarSceneProxy->SetBorderRadius(borderRadius);
                             }
                         });
                 }
@@ -257,16 +281,18 @@ void UiProgressBar::SyncDataOnLuaThread()
                      opacity = mOpacity,
                      emptyColor = mEmptyColor,
                      filledColor = mFilledColor,
-                     fillPercentValue = mFillPercentValue](
+                     fillPercentValue = mFillPercentValue,
+                     borderRadius = mBorderRadius](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                        if (const auto& rectangleLuaProxy
+                        if (const auto& progreessBarLuaProxy
                             = std::static_pointer_cast<UiProgressBarLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
-                            rectangleLuaProxy->SetOpacity_FromGameThread(opacity);
-                            rectangleLuaProxy->SetEmptyColor_FromGameThread(emptyColor);
-                            rectangleLuaProxy->SetFilledColor_FromGameThread(filledColor);
-                            rectangleLuaProxy->SetFillPercentValue_FromGrameThread(fillPercentValue);
+                            progreessBarLuaProxy->SetOpacity_FromGameThread(opacity);
+                            progreessBarLuaProxy->SetEmptyColor_FromGameThread(emptyColor);
+                            progreessBarLuaProxy->SetFilledColor_FromGameThread(filledColor);
+                            progreessBarLuaProxy->SetFillPercentValue_FromGrameThread(fillPercentValue);
+                            progreessBarLuaProxy->SetBorderRadius_FromGameThread(borderRadius);
                         }
                     });
             }

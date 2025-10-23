@@ -51,12 +51,9 @@ class FreeTypeTextFieldProxy {
 
     glm::ivec2 mCreatedMeshTextWidthHeightScreenSpace;
 
-    bool mIsSubscribedOnTextScreenSpaceSizeUpdate;
-
     eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
     eTextVerticalAlignmentType mTextVerticalAlignment{eTextVerticalAlignmentType::TOP};
-
 
 public:
     explicit FreeTypeTextFieldProxy();
@@ -73,8 +70,7 @@ public:
         const int32_t fontFlags,
         const eTextHorizontalAlignmentType textHorizontalAlignmentType,
         const eTextVerticalAlignmentType textVericalAlignmentType,
-        const glm::ivec2& lineWidthHeight,
-        const bool isSubscribedOnTextScreenSpaceSizeUpdate);
+        const glm::ivec2& lineWidthHeight);
 
     int32_t GetTextFieldId() const;
 
@@ -116,8 +112,6 @@ public:
 
     glm::ivec2 GetCreatedMeshTextWidthHeightScreenSpace() const;
 
-    bool GetIsSubscribedOnTextScreenSpaceSizeUpdate() const;
-
     void SetPositionChunkOffset(const size_t positionChunkOffset);
 
     void SetPositionChunkSize(const size_t positionChunkSize);
@@ -155,7 +149,5 @@ public:
     void SetCreatedMeshTextWidthHeightNormalized(const glm::vec2& createdMeshTextWidthHeightTextureSpace);
 
     void SetCreatedMeshTextWidthHeightScreenSpace(const glm::ivec2& createdMeshTextWidthHeightScreenSpace);
-
-    void SetIsSubscribedOnTextScreenSpaceSizeUpdate(const bool isSubscribedOnTextScreenSpaceSizeUpdate);
 };
 } // namespace EngineCore::GUI

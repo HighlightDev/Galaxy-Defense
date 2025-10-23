@@ -16,7 +16,7 @@ public:
     WeakSpaceshipActor(
         const std::string& gameObjectName,
         const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
-        const int32_t textFontSize);
+        const SpaceshipLevel& spaceshipLevel);
 
     void TriggerDamageReceived(const size_t damage, const eDamageDealerType damageDealerType) override;
 

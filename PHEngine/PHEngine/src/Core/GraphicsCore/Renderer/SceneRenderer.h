@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontHandler.h"
-#include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/DepthCollectShader.h"
@@ -89,7 +88,6 @@ class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
     ActiveBindedState mActiveBindedState;
 
 #if DEBUG
-    int32_t mDebugUiCanvasId{-1};
     bool bRenderDebugPhysicsData{false};
     DebugPhysicsRenderData mDebugPhysicsRenderData;
 #endif
@@ -206,11 +204,6 @@ public:
         const std::shared_ptr<::EngineCore::LightComponent>& lightComponent,
         const std::shared_ptr<LightSceneProxy>& lightSceneProxy);
 
-    void
-    RegisterText_OnRenderThread(const std::shared_ptr<HudTextField>& textField, const bool subscribeOnTextScreenSpaceSizeUpdate);
-
-    void UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField>& textField);
-
     void RegisterUiCanvasProxy_OnRenderThread(
         const std::shared_ptr<::EngineCore::GUI::UiCanvas>& uiCanvas, const std::shared_ptr<UiCanvasSceneProxy>& uiCanvasProxy);
 
@@ -222,9 +215,6 @@ public:
         const size_t canvasUId);
 
     void UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId);
-
-    void TextDataChanged_OnRenderThread(
-        const std::shared_ptr<HudTextField>& textField, const eTextChangedDataType textChangedDataType);
 
     void MaterialPropertiesUpdated_OnRenderThread(
         const int32_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>>&& properties);
@@ -249,8 +239,6 @@ public:
 
     void TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color);
 
-    void TextChanged(const int32_t textFieldProxyId, const std::string& text);
-
     void TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible);
 
     InterThreadCommunicationMgr& GetInterThreadCommunicationManager();
@@ -262,8 +250,6 @@ public:
     void Initialize();
 
 #if DEBUG
-
-    void SetDebugUiCanvasId(const int32_t debugCanvasProxyUId);
 
     void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);
 

@@ -74,6 +74,8 @@ private:
     void Initialize();
 
     void CalculateTextAlignmentOffset();
+
+    void onTextChanged();
 };
 } // namespace Proxy
 } // namespace Graphics

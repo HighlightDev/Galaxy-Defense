@@ -15,7 +15,6 @@
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/TextHandler.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
 #include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
@@ -1678,79 +1677,6 @@ void SceneRenderer::AddLightSceneProxy_OnRenderThread(
     }
 }
 
-void SceneRenderer::RegisterText_OnRenderThread(
-    const std::shared_ptr<HudTextField>& textField, const bool subscribeOnTextScreenSpaceSizeUpdate)
-{
-    LogInfo(
-        "SceneRenderer::RegisterText_OnRenderThread: font name = ",
-        textField->GetFontName(),
-        " textFieldId = ",
-        textField->GetTextFieldId());
-
-    constexpr int32_t creatorObjectId = 0;
-    static const uint64_t functionId = Hash64_CT("SceneRenderer::RegisterText_OnRenderThread");
-
-    const auto textFieldProxy = FreeTypeTextFieldProxy::CreateTextFieldProxyInstance(
-        textField->GetTextFieldId(),
-        eTextFieldProxyType::HUD_TEXT_FIELD,
-        textField->GetIsVisible(),
-        textField->GetText(),
-        textField->GetFontName(),
-        textField->GetPosition(),
-        textField->GetColor(),
-        textField->GetFontSize(),
-        0,
-        textField->GetTextHorizontalAlignment(),
-        textField->GetTextVerticalAlignment(),
-        textField->GetLineMaxWidthHeight(),
-        subscribeOnTextScreenSpaceSizeUpdate);
-
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
-        RegisterText(textFieldProxy);
-    } else {
-        m_interThreadMgr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY,
-            creatorObjectId,
-            functionId,
-            [weak = weak_from_this(), textFieldProxy](
-                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->RegisterText(textFieldProxy);
-                }
-            });
-    }
-}
-
-void SceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField>& textField)
-{
-    LogInfo(
-        "SceneRenderer::UnregisterText_OnRenderThread: font name = ",
-        textField->GetFontName(),
-        " textFieldId = ",
-        textField->GetTextFieldId());
-
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
-        UnregisterText(textField->GetTextFieldId());
-    } else {
-        constexpr int32_t creatorObjectId = 0;
-        const uint64_t functionId = Hash64_CT("SceneRenderer::UnregisterText_OnRenderThread");
-        m_interThreadMgr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY,
-            creatorObjectId,
-            functionId,
-            [weak = weak_from_this(), textFieldId = textField->GetTextFieldId()](
-                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->UnregisterText(textFieldId);
-                }
-            });
-    }
-}
-
 void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(
     const std::shared_ptr<::EngineCore::GUI::UiCanvas>& uiCanvas, const std::shared_ptr<UiCanvasSceneProxy>& uiCanvasProxy)
 {
@@ -1848,51 +1774,6 @@ void SceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     sceneRenderer->UnregisterUiSceneProxy(uiItemUId, canvasUId);
-                }
-            });
-    }
-}
-
-void SceneRenderer::TextDataChanged_OnRenderThread(
-    const std::shared_ptr<HudTextField>& textField, const eTextChangedDataType textChangedDataType)
-{
-    const auto textFontName = textField->GetFontName();
-    const auto textFieldId = textField->GetTextFieldId();
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
-        if (eTextChangedDataType::OFFSET == textChangedDataType) {
-            TextPositionChanged(textFieldId, textField->GetPosition());
-        } else if (eTextChangedDataType::COLOR == textChangedDataType) {
-            TextColorChanged(textFieldId, textField->GetColor());
-        } else if (eTextChangedDataType::TEXT == textChangedDataType) {
-            TextChanged(textFieldId, textField->GetText());
-        } else if (eTextChangedDataType::VISIBILITY == textChangedDataType) {
-            TextVisibilityChanged(textFieldId, textField->GetIsVisible());
-        }
-    } else {
-        m_interThreadMgr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::PUSH_ANYWAY,
-            textFieldId,
-            Hash64_CT("SceneRenderer::TextDataChanged_OnRenderThread"),
-            [weak = weak_from_this(),
-             textFieldId,
-             textChangedDataType,
-             textPosition = textField->GetPosition(),
-             textColor = textField->GetColor(),
-             text = textField->GetText(),
-             isVisible = textField->GetIsVisible()](
-                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                if (const auto& sceneRenderer = weak.lock()) {
-                    if (eTextChangedDataType::OFFSET == textChangedDataType) {
-                        sceneRenderer->TextPositionChanged(textFieldId, textPosition);
-                    } else if (eTextChangedDataType::COLOR == textChangedDataType) {
-                        sceneRenderer->TextColorChanged(textFieldId, textColor);
-                    } else if (eTextChangedDataType::TEXT == textChangedDataType) {
-                        sceneRenderer->TextChanged(textFieldId, text);
-                    } else if (eTextChangedDataType::VISIBILITY == textChangedDataType) {
-                        sceneRenderer->TextVisibilityChanged(textFieldId, isVisible);
-                    }
                 }
             });
     }
@@ -2112,33 +1993,6 @@ void SceneRenderer::TextColorChanged(const int32_t textFieldProxyId, const glm::
     mFreeTypeFontHandler->TextColorChanged(textFieldProxyId, color);
 }
 
-void SceneRenderer::TextChanged(const int32_t textFieldProxyId, const std::string& text)
-{
-    mFreeTypeFontHandler->TextChanged(textFieldProxyId, text);
-
-    if (mFreeTypeFontHandler->IsTextSubscribedOnSizeChangeUpdate(textFieldProxyId)) {
-        constexpr int32_t creatorObjectId = 0;
-        static const uint64_t functionId = Hash64_CT("SceneRenderer::TextChanged");
-
-        if (const auto& sceneSp = m_interThreadMgr.GetSceneWP().lock()) {
-            m_interThreadMgr.ExecuteOnGameThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                creatorObjectId,
-                functionId,
-                [weak = weak_from_this(), sceneSp, textFieldProxyId](
-                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                    std::weak_ptr<EngineCore::Scene> sceneWp,
-                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                    if (const auto& sceneRenderer = weak.lock()) {
-                        const auto textSp = sceneSp->GetTextHandler()->GetTextFieldById(textFieldProxyId);
-                        textSp->SetTextNormalizedSize(sceneRenderer->GetFontHandler()->GetTextSizeNormalized(textFieldProxyId));
-                        textSp->SetTextScreenSpaceSize(sceneRenderer->GetFontHandler()->GetTextScreenSpaceSize(textFieldProxyId));
-                    }
-                });
-        }
-    }
-}
-
 void SceneRenderer::TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible)
 {
     mFreeTypeFontHandler->TextVisibilityChanged(textFieldProxyId, bIsVisible);
@@ -2174,6 +2028,7 @@ void SceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>
     assert(canvasIt != mUiCanvasProxies.end());
     sceneProxy->SetCanvasSceneProxy((*canvasIt));
     (*canvasIt)->AddUiSceneProxy(sceneProxy);
+    sceneProxy->SetSceneRenderer(shared_from_this());
     sceneProxy->OnSceneProxyRegistered();
 }
 
@@ -2197,11 +2052,6 @@ void SceneRenderer::SortPrimitives(const std::shared_ptr<SceneView>& sceneView)
 }
 
 #if DEBUG
-
-void SceneRenderer::SetDebugUiCanvasId(const int32_t debugCanvasProxyUId)
-{
-    mDebugUiCanvasId = debugCanvasProxyUId;
-}
 
 void SceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData)
 {

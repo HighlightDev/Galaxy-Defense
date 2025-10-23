@@ -29,7 +29,8 @@ void ElectroRayExplosionVisitor::StartExplosionForSpaceship(
 {
     if (const auto& ownerSp = mOwnerWp.lock()) {
         if (eMissileActivityState::ACTIVE == ownerSp->GetMissileActivityState()) {
-            spaceship->TriggerDamageReceived(3U, ownerSp->GetDamageDealerType());
+            const uint32_t dmg = static_cast<uint32_t>(Random::Float() * 3.0f) + 7;
+            spaceship->TriggerDamageReceived(dmg, ownerSp->GetDamageDealerType());
             if (!spaceship->IsAlive()) {
                 ownerSp->TriggerDisabled();
             }

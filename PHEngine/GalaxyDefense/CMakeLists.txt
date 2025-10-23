@@ -3,6 +3,8 @@ include(Utility)
 
 set(HEADERS
     src/Implementation/Components/MovementComponents/OnRouteMovementComponent.h
+    src/Implementation/Components/UiComponents/SpaceObjectUiComponent.h
+    src/Implementation/Components/ComponentData/SpaceObjectUiComponentData.h
     src/Implementation/Levels/GameLevelFactory.h
     src/Implementation/Levels/LevelBase.h
     src/Implementation/Levels/LevelSerializationHelper.h
@@ -58,6 +60,7 @@ set(HEADERS
     src/Implementation/Factories/BarrierFactory.h
     src/Implementation/Factories/SpawnPortalFactory.h
     src/Implementation/ActorLeveling/SpaceStationLevel.h
+    src/Implementation/ActorLeveling/SpaceshipLevel.h
     src/Implementation/Modifiers/IModifiable.h
     src/Implementation/Modifiers/GravityModifier.h
     src/Implementation/Modifiers/FreezingModifier.h
@@ -105,6 +108,7 @@ set(HEADERS
 
 set(SOURCES
     src/Implementation/Components/MovementComponents/OnRouteMovementComponent.cpp
+    src/Implementation/Components/UiComponents/SpaceObjectUiComponent.cpp
     src/Implementation/Levels/GameLevelFactory.cpp
     src/Implementation/Levels/LevelBase.cpp
     src/Implementation/Levels/LevelSerializationHelper.cpp
@@ -147,6 +151,7 @@ set(SOURCES
     src/Implementation/Factories/BarrierFactory.cpp
     src/Implementation/Factories/SpawnPortalFactory.cpp
     src/Implementation/ActorLeveling/SpaceStationLevel.cpp
+    src/Implementation/ActorLeveling/SpaceshipLevel.cpp
     src/Implementation/Modifiers/GravityModifier.cpp
     src/Implementation/Modifiers/FreezingModifier.cpp
     src/Implementation/Modifiers/FreezingRayModifier.cpp

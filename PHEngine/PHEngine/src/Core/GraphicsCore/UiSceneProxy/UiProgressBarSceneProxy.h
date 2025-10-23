@@ -26,6 +26,8 @@ class UiProgressBarSceneProxy : public UiSceneProxyBase {
 
     float mFillPercentValue;
 
+    float mBorderRadius;
+
 public:
     UiProgressBarSceneProxy(const ::EngineCore::GUI::UiProgressBar* uiProgressBar);
 
@@ -40,6 +42,8 @@ public:
     void SetOpacity(const float opacity);
 
     void SetFillPercentValue(const float fillPercentValue);
+
+    void SetBorderRadius(const float borderRadius);
 
     void CleanUp() override;
 

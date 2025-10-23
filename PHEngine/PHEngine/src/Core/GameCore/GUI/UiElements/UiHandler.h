@@ -17,6 +17,8 @@ class UiHandler : public ITickable {
 
     std::vector<std::shared_ptr<UiCanvas>> mUiCanvases;
 
+    std::shared_ptr<UiCanvas> mHudCanvas;
+
 #ifdef DEBUG
     std::shared_ptr<UiCanvas> mDebugUiCanvas;
 #endif
@@ -31,6 +33,8 @@ public:
     std::shared_ptr<UiCanvas> CreateDebugCanvas(const ViewPortInfo& canvasScreenSize);
 #endif
 
+    std::shared_ptr<UiCanvas> CreateHudCanvas(const ViewPortInfo& canvasScreenSize);
+
     void Tick(const float deltaTime) override;
 
     void UnpausableTick(const float deltaTime) override;
@@ -42,6 +46,10 @@ public:
     bool CheckIfUiInterceptsMouseEvent(const glm::ivec2& currentMousePosition) const;
 
     void CleanUp();
+
+    std::shared_ptr<UiCanvas> GetHudCanvas() const;
+
+    std::shared_ptr<UiItemBase> GetUiItemByUId(const size_t uiItemUId) const;
 };
 } // namespace GUI
 } // namespace EngineCore

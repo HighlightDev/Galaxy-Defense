@@ -14,11 +14,17 @@ class UiItemBase;
 } // namespace EngineCore
 
 namespace Graphics {
+namespace Renderer {
+class SceneRenderer;
+} // namespace Renderer
+
 namespace Proxy {
 class UiCanvasSceneProxy;
 
 class UiSceneProxyBase {
 protected:
+    std::weak_ptr<Graphics::Renderer::SceneRenderer> mSceneRendererWp;
+
     size_t mUiItemUId;
 
     bool mIsVisible;
@@ -37,10 +43,14 @@ protected:
 
     glm::vec2 mCenterOffset;
 
+    const std::string mName;
+
 public:
     UiSceneProxyBase(const ::EngineCore::GUI::UiItemBase* uiItemBase);
 
     virtual ~UiSceneProxyBase() = default;
+
+    void SetSceneRenderer(const std::weak_ptr<Graphics::Renderer::SceneRenderer>& sceneRendererWp);
 
     void SetUiItemUid(const size_t UId);
 

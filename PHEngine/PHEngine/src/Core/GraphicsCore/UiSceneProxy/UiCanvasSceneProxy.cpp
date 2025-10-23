@@ -14,12 +14,13 @@ namespace Graphics {
 namespace Proxy {
 UiCanvasSceneProxy::UiCanvasSceneProxy(const UiCanvas* canvas)
     : mUiItemUId(canvas->GetUId())
-    , mIsVisible(false)
+    , mIsVisible(canvas->IsVisible())
     , mAbsoluteOrigin(canvas->GetAbsoluteOrigin())
     , mWidthHeight(glm::ivec2(canvas->GetWidth(), canvas->GetHeight()))
     , mFontHandlerWp()
     , mOverlayOpacity(1.0f)
     , mCanvasZOrder(canvas->GetZOrder())
+    , mName(canvas->GetName())
 {
 }
 

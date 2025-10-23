@@ -5,7 +5,6 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
-#include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
@@ -49,7 +48,6 @@ Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
     , mActorControllers()
     , mMaterials()
     , mDynamicMaterials()
-    , mTextHandler(std::make_shared<TextHandler>())
     , mInstancedGeometryBatchHolder(std::make_shared<InstancedGeometryBatchHolder>())
     ,
 #ifdef DEBUG
@@ -60,7 +58,6 @@ Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
 {
     LogInfo("Scene::ctor");
 
-    mTextHandler->Initialize();
     AddEngineProperty(mGameThreadDeltaSec);
     AddEngineProperty(mScreenResolutionProperty);
     mPhysicsWorld->Initialize();
@@ -91,18 +88,22 @@ void Scene::OnLevelInit()
     mOutlineMaterialSp = materialParser.ParseMaterialDescriptor("OutlineMaterial.m");
     MaterialPropertySetter::SetMaterialPropertyValue(mOutlineMaterialSp, "color", glm::vec3(0.8, 1.0, 0.2));
     RegisterMaterialInstance(mOutlineMaterialSp);
-}
 
-void Scene::PostLevelInit()
-{
-    LogInfo("Scene::PostLevelInit");
-
-    mTextHandler->SetScene(shared_from_this());
     mInstancedGeometryBatchHolder->SetScene(shared_from_this());
     mUiHandler->SetScene(shared_from_this());
 #ifdef DEBUG
     mDebugUiController->SetScene(shared_from_this());
 #endif
+    mUiHandler->CreateHudCanvas(ViewPortInfo(
+        0,
+        0,
+        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
+}
+
+void Scene::PostLevelInit()
+{
+    LogInfo("Scene::PostLevelInit");
 
     for (auto actor : mActors) {
         actor->SetScene(shared_from_this());
@@ -112,6 +113,8 @@ void Scene::PostLevelInit()
     for (auto camera : mActiveCameras) {
         camera->PostLevelInit();
     }
+
+    mUiHandler->GetHudCanvas()->SetIsVisible(true);
 }
 
 void Scene::PostPhysicsInitialize()
@@ -346,11 +349,6 @@ void Scene::AddActorController(std::shared_ptr<ActorController> actorController)
 
     actorController->Initialize();
     mActorControllers.emplace_back(actorController);
-}
-
-const std::shared_ptr<TextHandler>& Scene::GetTextHandler() const
-{
-    return mTextHandler;
 }
 
 const std::shared_ptr<InstancedGeometryBatchHolder>& Scene::GetInstancedGeometryBatchHolder() const
@@ -742,7 +740,6 @@ void Scene::UnloadScene()
 void Scene::UnloadUi()
 {
     mUiHandler->CleanUp();
-    mTextHandler->CleanUp();
     mInstancedGeometryBatchHolder->CleanUp();
 }
 
@@ -822,10 +819,14 @@ void Scene::SetLuaThreadFPSTextValue(const float fps)
     }
 }
 
+#endif
+
 std::shared_ptr<IMaterial> Scene::GetOutlineMaterial() const
 {
     return mOutlineMaterialSp;
 }
-
-#endif
+std::shared_ptr<EngineCore::GUI::UiCanvas> Scene::GetHudCanvas() const
+{
+    return mUiHandler->GetHudCanvas();
+}
 } // namespace EngineCore

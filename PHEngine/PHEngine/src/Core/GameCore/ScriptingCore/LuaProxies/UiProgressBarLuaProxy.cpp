@@ -10,8 +10,7 @@
 using namespace EngineCore;
 using namespace EngineCore::GUI;
 
-namespace EngineCore {
-namespace Scripts {
+namespace EngineCore::Scripts {
 UiProgressBarLuaProxy::UiProgressBarLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiProgressBar>& ownerProgressBar)
     : UiItemBaseLuaProxy(ownerProgressBar)
     , mEmptyColor(ownerProgressBar->GetEmptyColor())
@@ -53,6 +52,7 @@ std::string UiProgressBarLuaProxy::GetGameThreadData()
     jsonObj["filled_color"] = filledColorVec;
     jsonObj["opacity"] = mOpacity;
     jsonObj["fill_percent_value"] = mFillPercentValue;
+    jsonObj["border_radius"] = mBorderRadius;
     return jsonObj.dump();
 }
 
@@ -87,5 +87,12 @@ void UiProgressBarLuaProxy::SetFillPercentValue_FromGrameThread(const float fill
         mIsLuaDataDirty = true;
     }
 }
-} // namespace Scripts
-} // namespace EngineCore
+
+void UiProgressBarLuaProxy::SetBorderRadius_FromGameThread(const float borderRadius)
+{
+    if (!EngineMath::FloatsNearEqual(mBorderRadius, borderRadius)) {
+        mBorderRadius = borderRadius;
+        mIsLuaDataDirty = true;
+    }
+}
+} // namespace EngineCore::Scripts

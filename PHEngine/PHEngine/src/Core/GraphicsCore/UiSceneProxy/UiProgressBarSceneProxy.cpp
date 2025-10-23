@@ -13,7 +13,6 @@ using namespace EngineCore::GUI;
 
 namespace Graphics {
 namespace Proxy {
-static constexpr float s_borderRadius = 10.0f;
 
 UiProgressBarSceneProxy::UiProgressBarSceneProxy(const UiProgressBar* uiProgressBar)
     : UiSceneProxyBase(uiProgressBar)
@@ -52,7 +51,7 @@ void UiProgressBarSceneProxy::Render()
     mUiProgressBarShader->SetFilledColor(mFilledColor);
     mUiProgressBarShader->SetFillPercentValue(mFillPercentValue);
     mUiProgressBarShader->SetOpacity(mOpacity * mOverlayOpacity);
-    mUiProgressBarShader->SetBorderRadius(s_borderRadius);
+    mUiProgressBarShader->SetBorderRadius(mBorderRadius);
     mUiProgressBarShader->SetWidthHeightPixels(
         glm::vec2(static_cast<float>(mWidthHeightPixels.x), static_cast<float>(mWidthHeightPixels.y)));
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
@@ -77,6 +76,11 @@ void UiProgressBarSceneProxy::SetOpacity(const float opacity)
 void UiProgressBarSceneProxy::SetFillPercentValue(const float fillValue)
 {
     mFillPercentValue = fillValue;
+}
+
+void UiProgressBarSceneProxy::SetBorderRadius(const float borderRadius)
+{
+    mBorderRadius = borderRadius;
 }
 
 void UiProgressBarSceneProxy::CleanUp()

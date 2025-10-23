@@ -51,7 +51,7 @@ void ElectroRayChainModifier::Tick(const float deltaTime)
         if (eGameObjectsType::SPACESHIP == mChainDst.first) {
             if (const auto& chainDstSp = mChainDst.second.lock()) {
                 const auto& dstSpaceshipSp = std::static_pointer_cast<SpaceshipActor>(chainDstSp);
-                const size_t dmg = std::max((size_t)(Random::Float() * 2.0f), static_cast<size_t>(1));
+                 const uint32_t dmg = static_cast<uint32_t>(Random::Float() * 5.0f) + 3;
                 dstSpaceshipSp->TriggerDamageReceived(dmg, mElectroRayChainActor->GetDamageDealerType());
             }
         } else if (eGameObjectsType::NEUTRAL_SPACE_OBJECT == mChainDst.first) {

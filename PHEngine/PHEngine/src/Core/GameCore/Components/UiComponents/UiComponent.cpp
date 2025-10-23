@@ -1,9 +1,9 @@
 #include "UiComponent.h"
 
 #include "Core/CommonCore/Assertion.h"
-#include "Core/GameCore/Components/ComponentData/ComponentData.h"
+#include "Core/GameCore/Components/ComponentData/UiComponentData.h"
+#include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/TextHandler.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 
 #include <algorithm>
@@ -14,6 +14,9 @@ namespace EngineCore {
 UiComponent::UiComponent(const std::shared_ptr<ComponentData>& data)
     : Component(data->EngineObjectName)
 {
+    const auto uiData = std::dynamic_pointer_cast<UiComponentData>(data);
+    assert(uiData != nullptr);
+    mCanvas = uiData->Canvas;
 }
 
 UiComponent::~UiComponent()
@@ -25,107 +28,74 @@ eComponentType UiComponent::GetComponentType() const
     return eComponentType::UI_COMPONENT;
 }
 
-int32_t UiComponent::CreateTextField(
+void UiComponent::CreateUiElements(
     const std::string& fontName,
     const int32_t fontSize,
     const std::string& text,
     const glm::vec3& color,
-    const glm::vec2& position,
-    const bool receiveUpdateOnTextScreenSpaceSizeChanged,
     const glm::ivec2& lineMaxWidthHeight,
     const eTextHorizontalAlignmentType textHorizontalAlignment,
     const eTextVerticalAlignmentType textVericalAlignment)
 {
-    if (const auto& sceneSp = m_sceneWP.lock()) {
-        const auto& textHanderSp = sceneSp->GetTextHandler();
-        const auto& textFieldSp = textHanderSp->CreateTextField(
-            fontName,
-            fontSize,
-            text,
-            color,
-            position,
-            receiveUpdateOnTextScreenSpaceSizeChanged,
-            lineMaxWidthHeight,
-            textHorizontalAlignment,
-            textVericalAlignment);
-        return textFieldSp->GetTextFieldId();
-    }
-
-    return -1;
-}
-
-int32_t UiComponent::CreateEmptyTextField(
-    const std::string& fontName,
-    const int32_t fontSize,
-    const glm::vec3& color,
-    const bool receiveUpdateOnTextScreenSpaceSizeChanged,
-    const glm::ivec2& lineMaxWidthHeight,
-    const eTextHorizontalAlignmentType textHorizontalAlignment,
-    const eTextVerticalAlignmentType textVericalAlignment)
-{
-    if (const auto& sceneSp = m_sceneWP.lock()) {
-        const auto& textHanderSp = sceneSp->GetTextHandler();
-        const auto& textFieldSp = textHanderSp->CreateEmptyTextField(
-            fontName,
-            fontSize,
-            color,
-            receiveUpdateOnTextScreenSpaceSizeChanged,
-            lineMaxWidthHeight,
-            textHorizontalAlignment,
-            textVericalAlignment);
-        return textFieldSp->GetTextFieldId();
-    }
-
-    return -1;
-}
-
-void UiComponent::DeleteTextField(const int32_t textFieldId)
-{
-    if (const auto& sceneSp = m_sceneWP.lock()) {
-        const auto& textHanderSp = sceneSp->GetTextHandler();
-        textHanderSp->UnregisterText(textFieldId);
+    if (mLabel == nullptr) {
+        mLabel = std::make_shared<UiLabel>(fontName, "UiComponentLabel");
+        mLabel->Initialize();
+        mLabel->SetParents(mCanvas, mCanvas);
+        mLabel->SetTextColor(color);
+        mLabel->SetFontSize(fontSize);
+        mLabel->SetWidth(lineMaxWidthHeight.x);
+        mLabel->SetHeight(lineMaxWidthHeight.y);
+        mLabel->SetZOrder(50);
+        mLabel->SetText(text);
+        mLabel->SetTextColor(color);
+        mLabel->SetTextHorizontalAlignment(textHorizontalAlignment);
+        mLabel->SetTextVerticalAlignment(textVericalAlignment);
+    } else {
+        LogInfo("Warning: attempt to create SpaceObjectHealthBar while it is already created.");
     }
 }
 
-std::shared_ptr<HudTextField> UiComponent::GetTextFieldById(const int32_t textFieldId) const
+void UiComponent::SetLabelText(const std::string& text)
 {
-    if (const auto& sceneSp = m_sceneWP.lock()) {
-        const auto& textHanderSp = sceneSp->GetTextHandler();
-        return textHanderSp->GetTextFieldById(textFieldId);
-    }
-
-    return nullptr;
-}
-
-void UiComponent::SetText(const int32_t textFieldId, const std::string& text)
-{
-    if (const auto& sceneSp = m_sceneWP.lock()) {
-        const auto& textHanderSp = sceneSp->GetTextHandler();
-        textHanderSp->SetText(textFieldId, text);
+    if (mLabel) {
+        mLabel->SetText(text);
     }
 }
 
-void UiComponent::SetVisibility(const int32_t textFieldId, const bool isVisible)
+void UiComponent::SetLabelVisibility(const bool isVisible)
 {
-    if (const auto& sceneSp = m_sceneWP.lock()) {
-        const auto& textHanderSp = sceneSp->GetTextHandler();
-        textHanderSp->SetVisibility(textFieldId, isVisible);
+    if (mLabel) {
+        mLabel->SetIsVisible(isVisible);
     }
 }
 
-void UiComponent::SetColor(const int32_t textFieldId, const glm::vec3& color)
+void UiComponent::SetLabelTextColor(const glm::vec3& color)
 {
-    if (const auto& sceneSp = m_sceneWP.lock()) {
-        const auto& textHanderSp = sceneSp->GetTextHandler();
-        textHanderSp->SetColor(textFieldId, color);
+    if (mLabel) {
+        mLabel->SetTextColor(color);
     }
 }
 
-void UiComponent::SetPosition(const int32_t textFieldId, const glm::vec2& position)
+void UiComponent::SetLabelScreenSpacePosition(const glm::ivec2& position)
 {
-    if (const auto& sceneSp = m_sceneWP.lock()) {
-        const auto& textHanderSp = sceneSp->GetTextHandler();
-        textHanderSp->SetPosition(textFieldId, position);
+    if (mLabel) {
+        mLabel->SetAbsoluteOrigin(position);
     }
+}
+
+glm::vec2 UiComponent::GetLabelNormalizedSize() const
+{
+    if (mLabel) {
+        return mLabel->GetTextNormalizedSize();
+    }
+    return glm::vec2(0.0f);
+}
+
+glm::ivec2 UiComponent::GetLabelScreenSpaceSize() const
+{
+    if (mLabel) {
+        return mLabel->GetTextScreenSpaceSize();
+    }
+    return glm::ivec2(0);
 }
 } // namespace EngineCore

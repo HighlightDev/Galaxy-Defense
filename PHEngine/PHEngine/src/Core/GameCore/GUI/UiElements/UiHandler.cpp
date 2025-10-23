@@ -39,7 +39,6 @@ std::shared_ptr<UiCanvas> UiHandler::CreateDebugCanvas(const ViewPortInfo& canva
         const auto& canvasSceneProxy = mDebugUiCanvas->CreateUiCanvasSceneProxy();
         if (const auto& sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
             sceneRendererSp->RegisterUiCanvasProxy_OnRenderThread(mDebugUiCanvas, canvasSceneProxy);
-            sceneRendererSp->SetDebugUiCanvasId(canvasSceneProxy->GetUiItemUId());
         }
         mDebugUiCanvas->SetScene(mOwner);
     }
@@ -62,11 +61,33 @@ std::shared_ptr<UiCanvas> UiHandler::CreateCanvas(const ViewPortInfo& canvasScre
     return newCanvas;
 }
 
+std::shared_ptr<UiCanvas> UiHandler::CreateHudCanvas(const ViewPortInfo& canvasScreenSize)
+{
+    if (!mHudCanvas) {
+        const auto& ownerSp = mOwner.lock();
+        assert(ownerSp);
+        mHudCanvas = std::make_shared<UiCanvas>(canvasScreenSize, "HudCanvas");
+        LogInfo("UiHandler::CreateHudCanvas: uid = ", mHudCanvas->GetUId());
+        mHudCanvas->Initialize();
+        const auto& canvasSceneProxy = mHudCanvas->CreateUiCanvasSceneProxy();
+        if (const auto& sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
+            sceneRendererSp->RegisterUiCanvasProxy_OnRenderThread(mHudCanvas, canvasSceneProxy);
+        }
+        mHudCanvas->SetScene(mOwner);
+    }
+    return mHudCanvas;
+}
+
 void UiHandler::Tick(const float deltaTime)
 {
     for (const auto& canvas : mUiCanvases) {
         canvas->Tick(deltaTime);
     }
+
+    if (mHudCanvas) {
+        mHudCanvas->Tick(deltaTime);
+    }
+
 #ifdef DEBUG
     if (mDebugUiCanvas) {
         mDebugUiCanvas->Tick(deltaTime);
@@ -79,6 +100,11 @@ void UiHandler::UnpausableTick(const float deltaTime)
     for (const auto& canvas : mUiCanvases) {
         canvas->UnpausableTick(deltaTime);
     }
+
+    if (mHudCanvas) {
+        mHudCanvas->UnpausableTick(deltaTime);
+    }
+
 #ifdef DEBUG
     if (mDebugUiCanvas) {
         mDebugUiCanvas->UnpausableTick(deltaTime);
@@ -96,6 +122,16 @@ std::shared_ptr<UiCanvas> UiHandler::GetCanvasByName(const std::string& canvasNa
 
 std::shared_ptr<UiCanvas> UiHandler::GetCanvasByUId(const uint32_t canvasId) const
 {
+#ifdef DEBUG
+    if (mDebugUiCanvas && canvasId == mDebugUiCanvas->GetUId()) {
+        return mDebugUiCanvas;
+    }
+#endif
+
+    if (mHudCanvas && canvasId == mHudCanvas->GetUId()) {
+        return mHudCanvas;
+    }
+
     const auto foundResultIt = std::find_if(
         mUiCanvases.cbegin(), mUiCanvases.cend(), [canvasId](const auto& canvas) { return canvasId == canvas->GetUId(); });
 
@@ -128,6 +164,40 @@ void UiHandler::CleanUp()
     }
 
     mUiCanvases.clear();
+
+    if (mHudCanvas) {
+        mHudCanvas->CleanUp();
+        mHudCanvas = nullptr;
+    }
+}
+
+std::shared_ptr<UiCanvas> UiHandler::GetHudCanvas() const
+{
+    return mHudCanvas;
+}
+
+std::shared_ptr<UiItemBase> UiHandler::GetUiItemByUId(const size_t uiItemUId) const
+{
+    for (const auto& canvas : mUiCanvases) {
+        if (const auto foundItem = canvas->TryFindHierarchyChildByUId(uiItemUId)) {
+            return std::dynamic_pointer_cast<UiItemBase>(foundItem);
+        }
+    }
+
+    if (mHudCanvas) {
+        if (const auto foundItem = mHudCanvas->TryFindHierarchyChildByUId(uiItemUId)) {
+            return std::dynamic_pointer_cast<UiItemBase>(foundItem);
+        }
+    }
+
+#ifdef DEBUG
+    if (mDebugUiCanvas) {
+        if (const auto foundItem = mDebugUiCanvas->TryFindHierarchyChildByUId(uiItemUId)) {
+            return std::dynamic_pointer_cast<UiItemBase>(foundItem);
+        }
+    }
+#endif
+    return nullptr;
 }
 } // namespace GUI
 } // namespace EngineCore

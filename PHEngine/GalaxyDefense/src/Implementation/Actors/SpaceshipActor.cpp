@@ -3,54 +3,48 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
+#include "Core/GameCore/Components/ComponentData/UiComponentData.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
-#include "Core/GameCore/Components/UiComponents/UiComponent.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
-#include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
+#include "Implementation/Components/UiComponents/SpaceObjectUiComponent.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
+
+using namespace EngineCore::DataProviders;
 
 namespace Game {
 SpaceshipActor::SpaceshipActor(
     const std::string& gameObjectName,
     const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
-    const int32_t textFontSize)
+    const SpaceshipLevel& spaceshipLevel)
     : Actor(gameObjectName, rootComponent)
     , mModifiersHandler(std::make_unique<ModifiersHandler>())
-    , mLifePoints(30)
+    , mSpaceshipLevel(spaceshipLevel)
     , mDamageMessageTimer(std::make_shared<GameThreadTimer>())
     , mDamageEffectTimePassed(0.0f)
     , mDamageEffectDuration(0.5f)
     , mDamageTimeProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_damageEffect"))
     , mFreezingEffectProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_freezingEffect"))
     , mIsDamageEffectActive(false)
-    , mTextFontSize(textFontSize)
 {
     AddEngineProperty(mDamageTimeProperty);
     AddEngineProperty(mFreezingEffectProperty);
 
-    static constexpr size_t s_dmgTextShowDuration = 1500;
+    static constexpr size_t s_dmgTextShowDuration = 2500;
     mDamageMessageTimer->Initialize();
     mDamageMessageTimer->SetIntervalMs(s_dmgTextShowDuration);
     mDamageMessageTimer->SetIsRepeat(false);
     mDamageMessageTimer->SetIsPausable(true);
-    mDamageMessageTimer->SetCallback([this]() { mUiComponent->SetVisibility(mDamageTextFieldId, false); });
+    mDamageMessageTimer->SetCallback([this]() { mUiComponent->FadeOut(); });
 }
 
 void SpaceshipActor::OnSceneOwnerInitialized()
 {
-    mUiComponent = GetComponentsByType<UiComponent>().back();
-    mDamageTextFieldId = mUiComponent->CreateEmptyTextField(
-        "Lora-VariableFont_wght",
-        mTextFontSize,
-        glm::vec3(1.0f, 0.0f, 0.0f),
-        true,
-        glm::ivec2(50),
-        eTextHorizontalAlignmentType::CENTER,
-        eTextVerticalAlignmentType::CENTER);
+    mUiComponent = GetComponentsByType<SpaceObjectUiComponent>().back();
 }
 
 void SpaceshipActor::TriggerSpawn(const glm::vec3& position)
@@ -60,7 +54,7 @@ void SpaceshipActor::TriggerSpawn(const glm::vec3& position)
     const auto& onRouteMovementComponent = GetOnRouteMovementComponent();
     onRouteMovementComponent->ResetStates();
     onRouteMovementComponent->Teleport(position);
-    RestoreLife();
+    mSpaceshipLevel.RestoreHealth();
 }
 
 void SpaceshipActor::TriggerExplosion()
@@ -93,27 +87,6 @@ void SpaceshipActor::Tick(const float deltaTime)
             mDamageTimeProperty->SetValue(0.0f);
         }
     }
-
-    if (mDamageMessageTimer->IsRunning()) {
-        if (const auto& sceneSp = mSceneOwner.lock()) {
-            const auto& spaceShipTranslation = GetRootComponent()->GetTranslation();
-            const auto& mainCameraSp = sceneSp->GetMainCamera();
-            const glm::vec4 clippedSpaceTranslation
-                = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
-            const glm::vec3 ndcTranslation = glm::vec3(
-                clippedSpaceTranslation.x / clippedSpaceTranslation.w,
-                clippedSpaceTranslation.y / clippedSpaceTranslation.w,
-                clippedSpaceTranslation.z / clippedSpaceTranslation.w);
-
-            const glm::vec2 textureSpaceTranslation
-                = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
-            if (const auto& dmgTextFieldSp = mUiComponent->GetTextFieldById(mDamageTextFieldId)) {
-                mUiComponent->SetPosition(
-                    mDamageTextFieldId,
-                    textureSpaceTranslation - (dmgTextFieldSp->GetNormalizedSize().x * 0.5f) + glm::vec2(0.0f, -0.2f));
-            }
-        }
-    }
 }
 
 void SpaceshipActor::TriggerDamageReceived(const size_t dmg, const eDamageDealerType damageDealerType)
@@ -125,38 +98,14 @@ void SpaceshipActor::TriggerDamageReceived(const size_t dmg, const eDamageDealer
         const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
         c_particle->EmitParticles();
 
-        mUiComponent->SetPosition(mDamageTextFieldId, CalculatePositionForDamageText());
-        mUiComponent->SetText(mDamageTextFieldId, std::to_string(dmg));
-        mUiComponent->SetVisibility(mDamageTextFieldId, true);
+        mUiComponent->SetLabelText(std::to_string(dmg));
+        mUiComponent->FadeIn();
     } else if (eDamageDealerType::MAIN_PLAYER == damageDealerType) {
         const auto& playerDataProvider = PlayerDataProvider::GetInstance();
         playerDataProvider->SetDestroyedEnemySpaceshipsCount(playerDataProvider->GetDestroyedEnemySpaceshipsCount() + 1);
     }
 
     mDamageMessageTimer->RestartTimer();
-}
-
-glm::vec2 SpaceshipActor::CalculatePositionForDamageText() const
-{
-    const auto& spaceShipTranslation = GetRootComponent()->GetTranslation();
-
-    if (const auto& sceneSp = mSceneOwner.lock()) {
-        if (const auto& dmgTextFieldSp = mUiComponent->GetTextFieldById(mDamageTextFieldId)) {
-            const auto& mainCameraSp = sceneSp->GetMainCamera();
-            const glm::vec4 clippedSpaceTranslation
-                = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
-            const glm::vec3 ndcTranslation = glm::vec3(
-                clippedSpaceTranslation.x / clippedSpaceTranslation.w,
-                clippedSpaceTranslation.y / clippedSpaceTranslation.w,
-                clippedSpaceTranslation.z / clippedSpaceTranslation.w);
-
-            const glm::vec2 textureSpaceTranslation
-                = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
-            return (textureSpaceTranslation + glm::vec2(dmgTextFieldSp->GetNormalizedSize().x * -0.5f, -0.2f));
-        }
-    }
-
-    return glm::vec2(spaceShipTranslation.x, spaceShipTranslation.y);
 }
 
 glm::vec3 SpaceshipActor::GetWorldPosition() const
@@ -200,13 +149,13 @@ void SpaceshipActor::RemoveModifier(const eModifierType modifierType, const int3
 
 bool SpaceshipActor::CheckIsAliveAfterDamage(const size_t dmg)
 {
-    mLifePoints = mLifePoints >= dmg ? mLifePoints - dmg : 0;
-    return 0 != mLifePoints;
+    mSpaceshipLevel.DecreaseHealth(dmg);
+    return IsAlive();
 }
 
 bool SpaceshipActor::IsAlive() const
 {
-    return 0 != mLifePoints;
+    return mSpaceshipLevel.GetHealth() > 0;
 }
 
 void SpaceshipActor::SetDamageDeltaTime(const float deltaTime)
@@ -230,11 +179,6 @@ bool SpaceshipActor::GetIsDamageReceived() const
     return mIsDamageEffectActive;
 }
 
-void SpaceshipActor::RestoreLife()
-{
-    mLifePoints = 10;
-}
-
 eSpaceshipActivityState SpaceshipActor::GetSpaceshipActivityState() const
 {
     return mActivityState;
@@ -255,13 +199,4 @@ std::shared_ptr<OnRouteMovementComponent> SpaceshipActor::GetOnRouteMovementComp
     return std::dynamic_pointer_cast<OnRouteMovementComponent>(GetMovementComponent());
 }
 
-std::shared_ptr<::EngineCore::UiComponent> SpaceshipActor::GetUiComponent() const
-{
-    return mUiComponent;
-}
-
-int32_t SpaceshipActor::GetDamageTextFieldId() const
-{
-    return mDamageTextFieldId;
-}
 } // namespace Game

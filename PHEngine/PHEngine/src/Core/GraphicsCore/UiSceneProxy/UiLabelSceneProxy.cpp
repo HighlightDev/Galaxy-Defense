@@ -1,5 +1,6 @@
 #include "UiLabelSceneProxy.h"
 
+#include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/Common/UniqueFontTextIdGenerator.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontAtlas.h"
@@ -7,7 +8,9 @@
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeTextFieldProxy.h"
 #include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/UtilityCore/EngineMath.h"
@@ -20,6 +23,7 @@ using namespace IO;
 using namespace Graphics;
 using namespace EngineCore::GUI;
 using namespace EngineCore;
+using namespace Graphics::Renderer;
 
 namespace Graphics {
 namespace Proxy {
@@ -70,9 +74,9 @@ void UiLabelSceneProxy::Initialize()
                 0,
                 mTextHorizontalAlignment,
                 mTextVerticalAlignment,
-                mTextLineWidthHeight,
-                false);
+                mTextLineWidthHeight);
             fontHandlerSp->RegisterText(mTextFieldProxy);
+            onTextChanged();
 
             mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
         } else {
@@ -112,6 +116,7 @@ void UiLabelSceneProxy::SetText(const std::string& text)
         if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
             if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
                 fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
+                onTextChanged();
             }
         }
         CalculateTextAlignmentOffset();
@@ -126,6 +131,7 @@ void UiLabelSceneProxy::SetTextLineWidthHeight(const glm::ivec2& textLineWidthHe
         if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
             if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
                 fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
+                onTextChanged();
             }
         }
         CalculateTextAlignmentOffset();
@@ -141,6 +147,7 @@ void UiLabelSceneProxy::SetFontSize(const int32_t fontSize)
         if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
             if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
                 fontHandlerSp->FontSizeChanged(mTextFieldProxy);
+                onTextChanged();
                 // change texture according to new font
                 mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
             }
@@ -163,6 +170,7 @@ void UiLabelSceneProxy::SetTextHorizontalAlignment(const eTextHorizontalAlignmen
         if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
             if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
                 fontHandlerSp->TextChanged(mTextFieldProxy->GetTextFieldId(), mText);
+                onTextChanged();
             }
         }
         CalculateTextAlignmentOffset();
@@ -213,6 +221,32 @@ void UiLabelSceneProxy::CalculateTextAlignmentOffset()
             = (GetNormalizedWidthHeight().y * 0.5f) - (mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().y * 0.5f);
     } else if (mTextVerticalAlignment == eTextVerticalAlignmentType::TOP) {
         mTextAlignmentOffset.y = GetNormalizedWidthHeight().y - mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().y;
+    }
+}
+
+void UiLabelSceneProxy::onTextChanged()
+{
+    if (const auto& rendererSp = mSceneRendererWp.lock()) {
+        rendererSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            mUiItemUId,
+            Hash64_CT("UiLabelSceneProxy::onTextChanged"),
+            [rendererSp,
+             uiItemUId = mUiItemUId,
+             createdMeshTextWidthHeightNormalized = mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized(),
+             createdMeshTextWidthHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextWidthHeightScreenSpace()](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneSp = sceneWp.lock()) {
+                    const auto uiItem = sceneSp->GetUiHandler()->GetUiItemByUId(uiItemUId);
+                    assert(uiItem);
+                    const auto labelSp = std::dynamic_pointer_cast<UiLabel>(uiItem);
+                    assert(labelSp);
+                    labelSp->SetTextNormalizedSize(createdMeshTextWidthHeightNormalized);
+                    labelSp->SetTextScreenSpaceSize(createdMeshTextWidthHeightScreenSpace);
+                }
+            });
     }
 }
 } // namespace Proxy

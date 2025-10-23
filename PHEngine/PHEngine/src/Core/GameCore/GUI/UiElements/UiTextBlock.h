@@ -43,6 +43,10 @@ class UiTextBlock : public UiItemBase {
 
     int32_t mBorderThickness{1};
 
+    glm::vec2 mTextNormalizedSize;
+
+    glm::ivec2 mTextScreenSpaceSize;
+
 public:
     explicit UiTextBlock(const std::string& fontName, const std::string& name = std::string(""));
 
@@ -121,6 +125,14 @@ public:
     void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
     std::string GetUiTypeString() const override;
+
+    void SetTextNormalizedSize(const glm::vec2& size);
+
+    void SetTextScreenSpaceSize(const glm::ivec2& size);
+
+    glm::vec2 GetTextNormalizedSize() const;
+
+    glm::ivec2 GetTextScreenSpaceSize() const;
 
 protected:
     void OnRegistered() override;

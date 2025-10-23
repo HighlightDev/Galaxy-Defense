@@ -23,7 +23,7 @@ void IntegerAnimationController::ProcessAnimation(
         intProperty->SetValue(std::any_cast<int32_t>(data.GetDstValue()));
     } else {
         if (eAnimationInterpolationFunctionType::LINEAR == data.GetAnimationFunctionType()) {
-            const int32_t srcValue = std::any_cast<int32_t>(data.GetSrcValue());
+            const int32_t srcValue = intProperty->GetValue();
             const int32_t dstValue = std::any_cast<int32_t>(data.GetDstValue());
             const int32_t resultValue
                 = EngineMath::LerpInt(animationTimePassed, 0.0f, data.GetAnimationDuration(), srcValue, dstValue);

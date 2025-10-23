@@ -1,5 +1,6 @@
 #include "WeakSpaceShipFactory.h"
 
+#include "Core/CommonCore/Random.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/ComponentCreators/InstancedStaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/LightComponentCreator.h"
@@ -17,7 +18,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
-#include "Core/GameCore/Components/UiComponents/UiComponent.h"
+#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
 #include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
 #include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
@@ -34,9 +35,12 @@
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Implementation/ActorLeveling/SpaceshipLevel.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/WeakSpaceshipActor.h"
+#include "Implementation/Components/ComponentData/SpaceObjectUiComponentData.h"
 #include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
+#include "Implementation/Components/UiComponents/SpaceObjectUiComponent.h"
 #include "Implementation/Controllers/AiSpaceshipActorController.h"
 
 using namespace Resources;
@@ -53,11 +57,13 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     const glm::vec3& scale,
     const int32_t textFontSize)
 {
+    const uint32_t health = static_cast<uint32_t>(Random::Float() * 10) + 10;
+
     const auto& enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_enemyShip_rootComponent_" + enemyShipIndexStr, translation, glm::vec3(0), glm::vec3(1));
     const auto& a_enemySpaceship
-        = std::make_shared<WeakSpaceshipActor>("a_enemyShip_" + enemyShipIndexStr, rootComponent, textFontSize);
+        = std::make_shared<WeakSpaceshipActor>("a_enemyShip_" + enemyShipIndexStr, rootComponent, SpaceshipLevel(health));
     scene->AddActor(a_enemySpaceship);
 
     bool bAlreadyExists = false;
@@ -179,10 +185,21 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
 
     scene->AddActorController(std::make_shared<AiSpaceshipActorController>(a_enemySpaceship));
 
-    const auto& uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
-    const auto& c_uiComponent = scene->CreateComponent_GameThread(
-        uiComponentCreator, std::make_shared<ComponentData>("c_uiComponent_" + enemyShipIndexStr));
+    const auto& hudCanvas = scene->GetUiHandler()->GetHudCanvas();
+    assert(hudCanvas != nullptr);
+    const auto& uiComponentCreator = std::make_shared<UiComponentCreator<SpaceObjectUiComponent>>();
+    const auto& c_uiComponent = std::static_pointer_cast<SpaceObjectUiComponent>(scene->CreateComponent_GameThread(
+        uiComponentCreator,
+        std::make_shared<SpaceObjectUiComponentData>("c_uiComponent_" + enemyShipIndexStr, hudCanvas, rootComponent)));
     a_enemySpaceship->AddComponent(c_uiComponent);
+    c_uiComponent->CreateUiElements(
+        "Lora-VariableFont_wght",
+        textFontSize,
+        "",
+        glm::vec3(1.0f, 0.0f, 0.0f),
+        glm::ivec2(50),
+        eTextHorizontalAlignmentType::CENTER,
+        eTextVerticalAlignmentType::CENTER);
 
     auto tweenerParser = std::make_unique<TweenerParser>();
     const auto movementTweener = tweenerParser->ParseTweenerDescriptor("spaceshipMove.tween");
@@ -202,7 +219,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
 }
 
 std::shared_ptr<::Graphics::IMaterial>
-WeakSpaceShipFactory::GetMaterial(const std::shared_ptr<Scene>& scene, bool alreadyExists) const
+WeakSpaceShipFactory::GetMaterial(const std::shared_ptr<Scene>& scene, bool& alreadyExists) const
 {
     MaterialParser materialParser;
     const auto& materialName = materialParser.ReadMaterialNameFromMaterialDescriptor("SpaceshipPBS.m");

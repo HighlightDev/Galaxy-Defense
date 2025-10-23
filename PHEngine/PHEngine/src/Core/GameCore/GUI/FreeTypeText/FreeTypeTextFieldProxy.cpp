@@ -20,7 +20,6 @@ FreeTypeTextFieldProxy::FreeTypeTextFieldProxy()
     , mPosition()
     , mFontFlags(static_cast<int32_t>(eFontFlags::WordWrap | eFontFlags::LeftAligned))
     , mCreatedMeshTextWidthHeightNormalized()
-    , mIsSubscribedOnTextScreenSpaceSizeUpdate(false)
 {
 }
 
@@ -36,8 +35,7 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
     const int32_t fontFlags,
     const eTextHorizontalAlignmentType textHorizontalAlignment,
     const eTextVerticalAlignmentType textVericalAlignment,
-    const glm::ivec2& lineWidthHeight,
-    const bool isSubscribedOnTextScreenSpaceSizeUpdate)
+    const glm::ivec2& lineWidthHeight)
 {
     std::shared_ptr<FreeTypeTextFieldProxy> result = std::make_shared<FreeTypeTextFieldProxy>();
     result->mTextFieldProxyType = textFieldType;
@@ -51,7 +49,6 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
     result->mFontFlags = fontFlags;
     result->mTextHorizontalAlignment = textHorizontalAlignment;
     result->mTextVerticalAlignment = textVericalAlignment;
-    result->mIsSubscribedOnTextScreenSpaceSizeUpdate = isSubscribedOnTextScreenSpaceSizeUpdate;
     return result;
 }
 
@@ -140,11 +137,6 @@ glm::ivec2 FreeTypeTextFieldProxy::GetCreatedMeshTextWidthHeightScreenSpace() co
     return mCreatedMeshTextWidthHeightScreenSpace;
 }
 
-bool FreeTypeTextFieldProxy::GetIsSubscribedOnTextScreenSpaceSizeUpdate() const
-{
-    return mIsSubscribedOnTextScreenSpaceSizeUpdate;
-}
-
 void FreeTypeTextFieldProxy::SetPositionChunkOffset(const size_t positionChunkOffset)
 {
     mPositionChunkOffset = positionChunkOffset;
@@ -228,11 +220,6 @@ void FreeTypeTextFieldProxy::SetCreatedMeshTextWidthHeightScreenSpace(const glm:
 void FreeTypeTextFieldProxy::SetCreatedMeshTextWidthHeightNormalized(const glm::vec2& createdMeshTextWidthHeightTextureSpace)
 {
     mCreatedMeshTextWidthHeightNormalized = createdMeshTextWidthHeightTextureSpace;
-}
-
-void FreeTypeTextFieldProxy::SetIsSubscribedOnTextScreenSpaceSizeUpdate(const bool isSubscribedOnTextScreenSpaceSizeUpdate)
-{
-    mIsSubscribedOnTextScreenSpaceSizeUpdate = isSubscribedOnTextScreenSpaceSizeUpdate;
 }
 
 eTextHorizontalAlignmentType FreeTypeTextFieldProxy::GetTextHorizontalAlignment() const

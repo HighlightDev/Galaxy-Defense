@@ -357,13 +357,6 @@ float FreeTypeFontHandler::GetTextNormalizedHeight(const int32_t textFieldProxyI
     return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidthHeightNormalized().y;
 }
 
-bool FreeTypeFontHandler::IsTextSubscribedOnSizeChangeUpdate(const int32_t textFieldProxyId) const
-{
-    const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
-    return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetIsSubscribedOnTextScreenSpaceSizeUpdate();
-}
-
 glm::vec2 FreeTypeFontHandler::GetTextSizeNormalized(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);

@@ -11,7 +11,7 @@ namespace Graphics {
 namespace Proxy {
 UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
     : mUiItemUId(uiItemBase->GetUId())
-    , mIsVisible(false)
+    , mIsVisible(uiItemBase->IsVisible())
     , mZOrder(uiItemBase->GetZOrder())
     , mParentCanvasProxy()
     , mNormalizedTranslation(uiItemBase->GetNormalizedTranslation())
@@ -19,7 +19,13 @@ UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
     , mWidthHeightPixels(glm::ivec2(static_cast<int32_t>(uiItemBase->GetWidth()), static_cast<int32_t>(uiItemBase->GetHeight())))
     , mScale(1.0f)
     , mCenterOffset(0.0f)
+    , mName(uiItemBase->GetName())
 {
+}
+
+void UiSceneProxyBase::SetSceneRenderer(const std::weak_ptr<Graphics::Renderer::SceneRenderer>& sceneRendererWp)
+{
+    mSceneRendererWp = sceneRendererWp;
 }
 
 void UiSceneProxyBase::SetUiItemUid(const size_t UId)

@@ -19,8 +19,6 @@
 #include "Implementation/Navigation/Path.h"
 #include "Implementation/Navigation/PathSegment.h"
 
-#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
-
 #include <json/json.hpp>
 
 #include <array>
@@ -156,6 +154,17 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
 
 void CombatController::OnLevelInit()
 {
+    mNavigationController->OnLevelInit();
+    mUserInteractionController->SetActorsPoolHandler(mCombatActorsPoolHandler);
+    mUserInteractionController->SetOnShootCallback(std::bind(&CombatController::OnReadyToShoot, this));
+    mUserInteractionController->OnLevelInit();
+}
+
+void CombatController::OnPostLevelInit()
+{
+    mNavigationController->OnPostLevelInit();
+    mUserInteractionController->OnPostLevelInit();
+
     const std::unordered_map<eMissileType, size_t> availabeMissileTypes
         = {{eMissileType::BOMB, 10},
            {eMissileType::FREEZING_BOMB, 3},
@@ -184,16 +193,6 @@ void CombatController::OnLevelInit()
         a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(
             4, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
     }
-    mNavigationController->OnLevelInit();
-    mUserInteractionController->SetActorsPoolHandler(mCombatActorsPoolHandler);
-    mUserInteractionController->SetOnShootCallback(std::bind(&CombatController::OnReadyToShoot, this));
-    mUserInteractionController->OnLevelInit();
-}
-
-void CombatController::OnPostLevelInit()
-{
-    mNavigationController->OnPostLevelInit();
-    mUserInteractionController->OnPostLevelInit();
 }
 
 void CombatController::PostPlayLevelFinished()
@@ -492,23 +491,6 @@ void CombatController::Tick(const float deltaTime)
     }
 
     mUserInteractionController->Tick(deltaTime);
-
-    static float timeAccumulator = 0.0f;
-    static bool bFirstRun = true;
-    timeAccumulator += deltaTime;
-
-    if (timeAccumulator >= 5.0f) {
-        const auto& spaceStationActors = mCombatActorsPoolHandler->GetSpaceStationActors();
-
-        for (const auto& spaceStation : spaceStationActors) {
-            const auto& staticMeshComponents = spaceStation->GetComponentsByType<StaticMeshComponent>();
-            for (const auto& staticMeshComponent : staticMeshComponents) {
-                staticMeshComponent->SetMeshModelPath(bFirstRun ? "sphere.obj" : "space_station.obj");
-            }
-        }
-        timeAccumulator = 0.0f;
-        bFirstRun = !bFirstRun;
-    }
 }
 
 void CombatController::LaunchMisile(

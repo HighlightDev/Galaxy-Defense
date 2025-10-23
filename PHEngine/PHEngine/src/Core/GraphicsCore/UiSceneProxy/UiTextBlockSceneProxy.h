@@ -123,5 +123,7 @@ private:
     void RenderText();
 
     void RenderRectangle(const glm::vec2& scale, const glm::vec3& color, const float opacity, const float borderRadius);
+
+    void onTextChanged();
 };
 } // namespace Graphics::Proxy

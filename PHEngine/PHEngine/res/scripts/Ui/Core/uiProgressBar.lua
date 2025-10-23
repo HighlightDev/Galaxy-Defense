@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -35,12 +34,13 @@ function UiProgressBar:new(host, name)
     local jsonParameters = nil;
     if name ~= nil then
         assert(type(name) == "string" and name ~= "")
-        jsonParameters = json.encode({ name = name })
+        jsonParameters = json.encode({
+            name = name
+        })
     end
 
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-        CommonUiWidgetCreator.CommonUiWidgetType.UI_PROGRESS_BAR,
-        jsonParameters)
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_PROGRESS_BAR, jsonParameters)
 
     local progressBarProperties = {
         empty_color = {
@@ -64,6 +64,10 @@ function UiProgressBar:new(host, name)
             dirty = false
         },
         fill_percent_value = {
+            value = 0.0,
+            dirty = false
+        },
+        border_radius = {
             value = 0.0,
             dirty = false
         }
@@ -104,6 +108,9 @@ function UiProgressBar:updateFromReplicatorData(host)
             if parsedJson["fill_percent_value"] ~= nil then
                 self.progressBarProperties.fill_percent_value.value = parsedJson["fill_percent_value"]
             end
+            if parsedJson["border_radius"] ~= nil then
+                self.progressBarProperties.border_radius.value = parsedJson["border_radius"]
+            end
         end
     end
 end
@@ -143,8 +150,9 @@ function UiProgressBar:setEmptyColorHexValue(colorHex)
 end
 
 function UiProgressBar:setEmptyColor(r, g, b)
-    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
-        r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.progressBarProperties.empty_color.value.r = r
     self.progressBarProperties.empty_color.value.g = g
     self.progressBarProperties.empty_color.value.b = b
@@ -168,8 +176,9 @@ function UiProgressBar:setFilledColorHexValue(colorHex)
 end
 
 function UiProgressBar:setFilledColor(r, g, b)
-    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
-        r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.progressBarProperties.filled_color.value.r = r
     self.progressBarProperties.filled_color.value.g = g
     self.progressBarProperties.filled_color.value.b = b
@@ -190,6 +199,14 @@ function UiProgressBar:setFillPercentValue(fillPercentValue)
     if self.progressBarProperties.fill_percent_value.value ~= fillPercentValue then
         self.progressBarProperties.fill_percent_value.value = fillPercentValue
         self.progressBarProperties.fill_percent_value.dirty = true
+    end
+end
+
+function UiProgressBar:setBorderRadius(borderRadius)
+    assert(borderRadius ~= nil and type(borderRadius) == "number")
+    if self.progressBarProperties.border_radius.value ~= borderRadius then
+        self.progressBarProperties.border_radius.value = borderRadius
+        self.progressBarProperties.border_radius.dirty = true
     end
 end
 

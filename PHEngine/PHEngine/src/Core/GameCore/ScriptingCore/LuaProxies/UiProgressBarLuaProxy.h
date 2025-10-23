@@ -22,6 +22,8 @@ protected:
 
     float mFillPercentValue;
 
+    float mBorderRadius;
+
 public:
     explicit UiProgressBarLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiProgressBar>& ownerUiItem);
 
@@ -36,6 +38,8 @@ public:
     void SetOpacity_FromGameThread(const float opacity);
 
     void SetFillPercentValue_FromGrameThread(const float fillPercentValue);
+
+    void SetBorderRadius_FromGameThread(const float borderRadius);
 };
 } // namespace Scripts
 } // namespace EngineCore

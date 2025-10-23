@@ -24,7 +24,7 @@ void BombExplosionVisitor::StartExplosionForSpaceship(
 {
     if (const auto& ownerSp = mOwnerWp.lock()) {
         if (eMissileActivityState::ACTIVE == ownerSp->GetMissileActivityState()) {
-            const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), static_cast<size_t>(1));
+            const uint32_t dmg = static_cast<uint32_t>(Random::Float() * 7.0f) + 7;
             spaceship->TriggerDamageReceived(dmg, ownerSp->GetDamageDealerType());
             ownerSp->TriggerExplosion();
         }

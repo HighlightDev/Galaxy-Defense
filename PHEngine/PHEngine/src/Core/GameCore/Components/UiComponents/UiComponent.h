@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Core/GameCore/Components/Component.h"
+#include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
-#include "Core/GameCore/GUI/HudText/HudTextField.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -11,9 +11,19 @@
 #include <vector>
 
 namespace EngineCore {
-struct ComponentData;
+struct UiComponentData;
+
+namespace GUI {
+class UiCanvas;
+class UiLabel;
+} // namespace GUI
 
 class UiComponent : public Component {
+protected:
+    std::shared_ptr<::EngineCore::GUI::UiLabel> mLabel;
+
+    std::shared_ptr<::EngineCore::GUI::UiCanvas> mCanvas;
+
 public:
     UiComponent(const std::shared_ptr<ComponentData>& data);
 
@@ -21,36 +31,25 @@ public:
 
     eComponentType GetComponentType() const override;
 
-    int32_t CreateTextField(
+    virtual void CreateUiElements(
         const std::string& fontName,
         const int32_t fontSize,
         const std::string& text,
         const glm::vec3& color,
-        const glm::vec2& position,
-        const bool receiveUpdateOnTextScreenSpaceSizeChanged,
         const glm::ivec2& lineMaxWidthHeight,
         const eTextHorizontalAlignmentType textHorizontalAlignment,
         const eTextVerticalAlignmentType textVericalAlignment);
 
-    int32_t CreateEmptyTextField(
-        const std::string& fontName,
-        const int32_t fontSize,
-        const glm::vec3& color,
-        const bool receiveUpdateOnTextScreenSpaceSizeChanged,
-        const glm::ivec2& lineMaxWidthHeight,
-        const eTextHorizontalAlignmentType textHorizontalAlignment,
-        const eTextVerticalAlignmentType textVericalAlignment);
+    void SetLabelText(const std::string& text);
 
-    void DeleteTextField(const int32_t textFieldId);
+    void SetLabelVisibility(const bool isVisible);
 
-    std::shared_ptr<HudTextField> GetTextFieldById(const int32_t textFieldId) const;
+    void SetLabelTextColor(const glm::vec3& color);
 
-    void SetText(const int32_t textFieldId, const std::string& text);
+    void SetLabelScreenSpacePosition(const glm::ivec2& position);
 
-    void SetVisibility(const int32_t textFieldId, const bool isVisible);
+    glm::vec2 GetLabelNormalizedSize() const;
 
-    void SetColor(const int32_t textFieldId, const glm::vec3& color);
-
-    void SetPosition(const int32_t textFieldId, const glm::vec2& position);
+    glm::ivec2 GetLabelScreenSpaceSize() const;
 };
 } // namespace EngineCore

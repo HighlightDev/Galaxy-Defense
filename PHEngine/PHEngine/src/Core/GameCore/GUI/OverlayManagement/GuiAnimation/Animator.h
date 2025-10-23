@@ -29,6 +29,8 @@ class Animator : public ITickable {
 
     std::unordered_map<std::string, std::shared_ptr<::EngineCore::GUI::IAnimationController>> mAnimationControllers;
 
+    bool bFinishAnimationOnNewAnimationStart{true};
+
 public:
     explicit Animator(const std::shared_ptr<::EngineCore::GUI::IAnimatable>& animatable);
 
@@ -47,6 +49,12 @@ public:
     void StartAnimation(const std::string& newAnimationName);
 
     bool HasAnimation(const std::string& animationName) const;
+
+    std::string GetActiveAnimationName() const;
+
+    void SetFinishAnimationOnNewAnimationStart(const bool finishOnNewAnimationStart);
+
+    bool GetFinishAnimationOnNewAnimationStart() const;
 
 private:
     void CreateAnimationControllersForAnimation(const std::string& animationName);
