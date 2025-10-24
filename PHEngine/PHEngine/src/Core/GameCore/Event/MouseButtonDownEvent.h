@@ -14,11 +14,11 @@ namespace Event {
 struct MouseButtonDownRootEvent : public TEvent<
                                       MouseButtonDownRootEvent,
                                       eEventThreadType::GAME_THREAD,
-                                      SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>> {
+                                      MultipleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>> {
     using Type_t = TEvent<
         MouseButtonDownRootEvent,
         eEventThreadType::GAME_THREAD,
-        SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>::Type_t;
+        MultipleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>::Type_t;
 
     std::string ToString() const override
     {
@@ -29,12 +29,12 @@ struct MouseButtonDownRootEvent : public TEvent<
 struct MouseButtonDownGameThreadEvent : public TEvent<
                                             MouseButtonDownGameThreadEvent,
                                             eEventThreadType::GAME_THREAD,
-                                            SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>> {
+                                            MultipleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>> {
 public:
     using Type_t = TEvent<
         MouseButtonDownRootEvent,
         eEventThreadType::GAME_THREAD,
-        SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>::Type_t;
+        MultipleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>::Type_t;
 
     std::string ToString() const override
     {
@@ -45,10 +45,10 @@ public:
 struct MouseButtonDownLuaThreadEvent : public TEvent<
                                            MouseButtonDownLuaThreadEvent,
                                            eEventThreadType::LUA_THREAD,
-                                           SingleDataEventPolicy<std::vector<MouseKeysData>>> {
+                                           MultipleDataEventPolicy<std::vector<MouseKeysData>>> {
 public:
     using Type_t
-        = TEvent<MouseButtonDownLuaThreadEvent, eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>::
+        = TEvent<MouseButtonDownLuaThreadEvent, eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<std::vector<MouseKeysData>>>::
             Type_t;
 
     std::string ToString() const override

@@ -470,16 +470,31 @@ void Scene::ProcessEvent(const MouseButtonDownRootEvent* sender, const MouseButt
 {
     const auto& currentMousePosition = std::get<0>(data);
     const auto invertedScreenYPosition = static_cast<int32_t>(mScreenResolutionProperty->GetValue().y) - currentMousePosition.y;
-    const auto& mousePressedKeys = std::get<1>(data);
+    const std::vector<MouseKeysData>& mousePressedKeys = std::get<1>(data);
 
-    auto recieverType = eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS;
-    if (mUiHandler->CheckIfUiInterceptsMouseEvent(glm::ivec2(currentMousePosition.x, invertedScreenYPosition))) {
-        recieverType
-            = eMouseEventTargetReceiverType::UI_INPUT_SYSTEM; // Mouse press events will be propagated only to UI input system
+    const bool bContainsUnpressedKey
+        = std::any_of(mousePressedKeys.cbegin(), mousePressedKeys.cend(), [](const MouseKeysData& keyData) {
+              return keyData.State == KeyState::RELEASED;
+          });
+
+    std::vector<eMouseEventTargetReceiverType> receiverTypes;
+    receiverTypes.reserve(2);
+    if (bContainsUnpressedKey) {
+        receiverTypes.push_back(eMouseEventTargetReceiverType::UI_INPUT_SYSTEM);
+        receiverTypes.push_back(eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS);
+    } else {
+        if (mUiHandler->CheckIfUiInterceptsMouseEvent(glm::ivec2(currentMousePosition.x, invertedScreenYPosition))) {
+            receiverTypes.push_back(
+                eMouseEventTargetReceiverType::UI_INPUT_SYSTEM); // Mouse press events will be propagated only to UI input system
+        } else {
+            receiverTypes.push_back(eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS);
+        }
     }
 
-    MouseButtonDownGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, recieverType, mousePressedKeys);
-    MouseButtonDownLuaThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mousePressedKeys);
+    for (const auto& receiverType : receiverTypes) {
+        MouseButtonDownGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, receiverType, mousePressedKeys);
+        MouseButtonDownLuaThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mousePressedKeys);
+    }
 }
 
 void Scene::RemoveComponent(std::shared_ptr<Component> component)

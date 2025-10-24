@@ -69,6 +69,7 @@ void UiInputSystem::UnpausableTick(const float deltaTime)
                     ownerSp->OnMouseClicked(mMouseKeyPressedPosition);
                 } else {
                     ownerSp->OnMouseReleased(mMouseKeyPressedPosition);
+                    LogInfo("RELEASED CanvasID ", ownerSp->GetUId());
                 }
 
                 mIsMouseKeyPressed = false;
@@ -88,6 +89,7 @@ void UiInputSystem::OnMousePressedTimerTimeout()
     if (const auto& ownerSp = mOwnerWp.lock()) {
         if (ownerSp->IsVisible()) {
             ownerSp->OnMousePressed(mMouseKeyPressedPosition);
+            LogInfo("PRESSED CanvasID ", ownerSp->GetUId());
         }
     }
 }

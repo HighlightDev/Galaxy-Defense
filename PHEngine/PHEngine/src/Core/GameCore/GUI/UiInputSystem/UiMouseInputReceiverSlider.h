@@ -16,6 +16,12 @@ public:
     void SetSliderValueChangedCallback(std::function<void(std::weak_ptr<UiSlider>, float)> callback);
 
     void OnMousePositionChanged(const BoundingBox2D<glm::ivec2>& mouseInputArea, const glm::ivec2& mouseCursorPosition) override;
+
+    void OnMouseClicked(const BoundingBox2D<glm::ivec2>& mouseInputArea, const glm::ivec2& mouseCursorPosition) override;
+
+private:
+    BoundingBox2D<glm::ivec2> CalculateSimplifiedInputArea(
+        const BoundingBox2D<glm::ivec2>& mouseInputArea, const std::shared_ptr<UiSlider>& sliderSp) const;
 };
 } // namespace GUI
 } // namespace EngineCore

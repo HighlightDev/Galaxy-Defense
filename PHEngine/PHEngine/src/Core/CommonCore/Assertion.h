@@ -9,7 +9,7 @@
 
 #define ext_assert(condition, message)                                                                                           \
     do {                                                                                                                         \
-        if (!condition) {                                                                                                        \
+        if (!(condition)) {                                                                                                      \
             EngineCore::LogInfo("Assertion failed! ", message);                                                                  \
             TinyLogger::Logger::StopLogThread();                                                                                 \
         }                                                                                                                        \

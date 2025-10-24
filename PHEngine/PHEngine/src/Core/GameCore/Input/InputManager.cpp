@@ -85,6 +85,8 @@ void InputManager::SetMouseButtonKeyState(const MouseKeysData key)
 
     MouseButtonDownRootEvent::GetInstance()->SendEvent(
         eExecutionOrder::PRE_EXECUTION, glm::ivec2(mPrevMouseX, mPrevMouseY), mMouseButtonMaskVec);
+
+    mMouseButtonMaskVec.clear();
 }
 
 } // namespace EngineCore
