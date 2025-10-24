@@ -33,6 +33,10 @@ protected:
 
     std::shared_ptr<GameThreadTimer> mDamageMessageTimer;
 
+    std::shared_ptr<GameThreadTimer> mDmgShakeTimer;
+
+    float mShakeTimePassed{0.0f};
+
     float mDamageEffectTimePassed;
 
     float mDamageEffectDuration;

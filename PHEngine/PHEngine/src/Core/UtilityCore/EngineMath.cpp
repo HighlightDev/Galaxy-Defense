@@ -325,4 +325,35 @@ glm::vec3 QuadraticBezier(const glm::vec3& p1, const glm::vec3& p2, const glm::v
     const float z = (restTime * restTime) * p1.z + 2.0f * restTime * t * p2.z + (t * t) * p3.z;
     return glm::vec3(x, y, z);
 }
+
+float NormalizeAngleDegrees(float angleDegrees)
+{
+    while (angleDegrees > 180.0f) {
+        angleDegrees -= 360.0f;
+    }
+    while (angleDegrees < -180.0f) {
+        angleDegrees += 360.0f;
+    }
+    return angleDegrees;
+}
+
+float NormalizeAngleRadians(float angleRadians)
+{
+    while (angleRadians > PI) {
+        angleRadians -= 2.0f * PI;
+    }
+    while (angleRadians < -PI) {
+        angleRadians += 2.0f * PI;
+    }
+    return angleRadians;
+}
+
+float GetRollFromQuaternion(const glm::quat& quat)
+{
+    // Roll (x-axis rotation)
+    float sinr_cosp = 2.0f * (quat.w * quat.x + quat.y * quat.z);
+    float cosr_cosp = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
+    float roll = std::atan2(sinr_cosp, cosr_cosp);
+    return RAD_TO_DEG(roll);
+}
 } // namespace EngineMath

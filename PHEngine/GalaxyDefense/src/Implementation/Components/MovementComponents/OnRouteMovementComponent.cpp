@@ -114,5 +114,8 @@ void OnRouteMovementComponent::ResetStates()
     mIsMovementOnRouteAllowed = false;
     mMovementProgressOnRoute = 0.0f;
     mRouteTotalDistance = 0.0f;
+    if (const auto& actorRootComponentSp = m_actorRootComponent.lock()) {
+        actorRootComponentSp->SetRotator(glm::quat()); // reset rotation
+    }
 }
 } // namespace Game

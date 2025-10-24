@@ -12,6 +12,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
 #include "Implementation/Components/UiComponents/SpaceObjectUiComponent.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 
 using namespace EngineCore::DataProviders;
@@ -25,6 +26,7 @@ SpaceshipActor::SpaceshipActor(
     , mModifiersHandler(std::make_unique<ModifiersHandler>())
     , mSpaceshipLevel(spaceshipLevel)
     , mDamageMessageTimer(std::make_shared<GameThreadTimer>())
+    , mDmgShakeTimer(std::make_shared<GameThreadTimer>())
     , mDamageEffectTimePassed(0.0f)
     , mDamageEffectDuration(0.5f)
     , mDamageTimeProperty(std::make_shared<EngineObjectProperty<float>>(0.0f, "p_damageEffect"))
@@ -34,12 +36,22 @@ SpaceshipActor::SpaceshipActor(
     AddEngineProperty(mDamageTimeProperty);
     AddEngineProperty(mFreezingEffectProperty);
 
-    static constexpr size_t s_dmgTextShowDuration = 2500;
     mDamageMessageTimer->Initialize();
-    mDamageMessageTimer->SetIntervalMs(s_dmgTextShowDuration);
+    mDamageMessageTimer->SetIntervalMs(Game::Constants::c_dmgTextShowDuration);
     mDamageMessageTimer->SetIsRepeat(false);
     mDamageMessageTimer->SetIsPausable(true);
     mDamageMessageTimer->SetCallback([this]() { mUiComponent->FadeOut(); });
+
+    mDmgShakeTimer->Initialize();
+    mDmgShakeTimer->SetIntervalMs(Game::Constants::c_shakeDurationMs);
+    mDmgShakeTimer->SetIsRepeat(false);
+    mDmgShakeTimer->SetIsPausable(true);
+    mDmgShakeTimer->SetCallback([this]() {
+        const auto& rootComponent = GetRootComponent();
+        assert(rootComponent);
+        rootComponent->SetRotator(glm::quat()); // reset rotation
+        mShakeTimePassed = 0.0f;
+    });
 }
 
 void SpaceshipActor::OnSceneOwnerInitialized()
@@ -66,6 +78,9 @@ void SpaceshipActor::TriggerDisabled()
 {
     mModifiersHandler->RemoveAllModifiers();
     mActivityState = eSpaceshipActivityState::IDLE;
+    mShakeTimePassed = 0.0f;
+    mDmgShakeTimer->StopTimer();
+    mDamageMessageTimer->StopTimer();
     SetIsEnabled(false);
 }
 
@@ -87,6 +102,18 @@ void SpaceshipActor::Tick(const float deltaTime)
             mDamageTimeProperty->SetValue(0.0f);
         }
     }
+
+    // Shake Effect
+    if (mDmgShakeTimer->IsRunning()) {
+        mShakeTimePassed += deltaTime;
+        const auto& rootComponent = GetRootComponent();
+        constexpr float c_shakeSpeed = 30.0f;
+        constexpr float c_shakeAmplitudeDegrees = 10.0f;
+        const float shakeAmountMs = std::sin(mShakeTimePassed * c_shakeSpeed);
+        const float shakeRollClampRadians = DEG_TO_RAD(c_shakeAmplitudeDegrees);
+        const float resultNormalizedRollRadians = EngineMath::NormalizeAngleRadians(shakeAmountMs * shakeRollClampRadians);
+        rootComponent->SetRotator(glm::quat(glm::vec3(0.0f, 0.0f, resultNormalizedRollRadians)));
+    }
 }
 
 void SpaceshipActor::TriggerDamageReceived(const size_t dmg, const eDamageDealerType damageDealerType)
@@ -106,6 +133,7 @@ void SpaceshipActor::TriggerDamageReceived(const size_t dmg, const eDamageDealer
     }
 
     mDamageMessageTimer->RestartTimer();
+    mDmgShakeTimer->RestartTimer();
 }
 
 glm::vec3 SpaceshipActor::GetWorldPosition() const

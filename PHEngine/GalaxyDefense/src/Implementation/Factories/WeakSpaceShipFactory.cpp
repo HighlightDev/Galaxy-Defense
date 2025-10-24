@@ -57,7 +57,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     const glm::vec3& scale,
     const int32_t textFontSize)
 {
-    const uint32_t health = static_cast<uint32_t>(Random::Float() * 10) + 10;
+    const uint32_t health = static_cast<uint32_t>(Random::Float() * 10) + 20;
 
     const auto& enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(

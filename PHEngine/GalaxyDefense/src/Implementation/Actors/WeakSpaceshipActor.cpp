@@ -43,6 +43,7 @@ void WeakSpaceshipActor::TriggerDamageReceived(const size_t damage, const eDamag
         mIsDamageEffectActive = true;
         mDamageEffectTimePassed = 0.0f;
         mDamageMessageTimer->RestartTimer();
+        mDmgShakeTimer->RestartTimer();
         mUiComponent->SetLabelText(std::to_string(damage));
         mUiComponent->SetHealthBarFillPercent(
             static_cast<float>(mSpaceshipLevel.GetHealth()) / static_cast<float>(mSpaceshipLevel.GetNominalHealth()));

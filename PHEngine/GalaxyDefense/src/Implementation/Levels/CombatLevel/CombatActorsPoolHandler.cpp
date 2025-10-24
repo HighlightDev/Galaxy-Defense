@@ -91,7 +91,7 @@ std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor() c
     WeakSpaceShipFactory spaceShipFactory;
 
     return mEnemySpaceships.emplace_back(spaceShipFactory.CreateSpaceShip(
-        sceneSp, glm::vec3(), glm::vec3(), glm::vec3(Game::Constants::s_spaceshipSize), Game::Constants::c_spaceshipFontSize));
+        sceneSp, glm::vec3(), glm::vec3(), glm::vec3(Game::Constants::c_spaceshipSize), Game::Constants::c_spaceshipFontSize));
 }
 
 std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor() const

@@ -63,7 +63,7 @@ void NavigationPathBuilder::ExtendPath(const std::string& pathName, const int32_
             // positive normal side
             PathSegment positiveNormalSideExtraSegment;
             positiveNormalSideExtraSegment.SetSubdivisionsCount(segment.GetSubdivisionCount());
-            const float offsetFactor = (static_cast<float>(i) + 1.0f) * Game::Constants::s_spaceshipSize * 1.5f;
+            const float offsetFactor = (static_cast<float>(i) + 1.0f) * Game::Constants::c_spaceshipSize * 1.5f;
             positiveNormalSideExtraSegment.SetControlPoints({{
                 controlPoints[0] + normalToSegment * offsetFactor,
                 controlPoints[1] + normalToSegment * offsetFactor,

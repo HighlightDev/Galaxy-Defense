@@ -96,4 +96,10 @@ float ProjectVector3OnVector(const glm::vec3& projectedNonUnitVec, const glm::ve
 
 glm::vec3 QuadraticBezier(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, const float t);
 
+float NormalizeAngleDegrees(float angleDegrees);
+
+float NormalizeAngleRadians(float angleRadians);
+
+float GetRollFromQuaternion(const glm::quat& quat);
+
 } // namespace EngineMath
