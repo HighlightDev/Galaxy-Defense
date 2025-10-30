@@ -88,7 +88,7 @@ public:
 
     size_t GetVerticesCount() const;
 
-    bool GetIsVisible() const;
+    bool IsVisible() const;
 
     std::string GetText() const;
 

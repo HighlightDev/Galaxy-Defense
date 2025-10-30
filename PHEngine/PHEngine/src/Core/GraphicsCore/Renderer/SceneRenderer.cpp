@@ -895,7 +895,7 @@ void SceneRenderer::FontPass(const std::shared_ptr<SceneView>& sceneView)
             const auto& textFields = renderDataSp->GetFreeTypeTextFieldProxies();
             m_fontShader->SetFontAtlasSlot(0);
             for (const auto& textField : textFields) {
-                if (textField->GetIsVisible() && eTextFieldProxyType::HUD_TEXT_FIELD == textField->GetTextFieldProxyType()) {
+                if (textField->IsVisible() && eTextFieldProxyType::HUD_TEXT_FIELD == textField->GetTextFieldProxyType()) {
                     m_fontShader->SetPosition(textField->GetPosition());
                     m_fontShader->SetColor(textField->GetColor());
                     renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(

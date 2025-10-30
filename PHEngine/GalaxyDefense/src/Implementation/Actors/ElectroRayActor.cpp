@@ -112,8 +112,12 @@ void ElectroRayActor::Tick(const float deltaTime)
             }
         }
     } else if (const auto& collidedSpaceShipSp = mCollidedSpaceship.lock()) {
-        mElectroLineEnd = collidedSpaceShipSp->GetRootComponent()->GetTranslation();
-        electroLineDirection = glm::normalize(mElectroLineEnd - mElectroLineBegin);
+        if (collidedSpaceShipSp->IsEnabled() && collidedSpaceShipSp->IsVisible()) {
+            mElectroLineEnd = collidedSpaceShipSp->GetRootComponent()->GetTranslation();
+            electroLineDirection = glm::normalize(mElectroLineEnd - mElectroLineBegin);
+        } else {
+            mCollidedSpaceship.reset();
+        }
     }
 
     if (bLineOriginStartMovement) {
@@ -201,7 +205,13 @@ void ElectroRayActor::DropState()
     bLineOriginStartMovement = false;
     bElectroLineCollided = false;
     if (const auto& spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock()) {
-        mElectroLineEnd = mElectroLineBegin = spaceshipWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
+        const bool bSpaceshipIsEnabledAndVisible = spaceshipWhoSpawnedMeSp->IsEnabled() && spaceshipWhoSpawnedMeSp->IsVisible();
+        if (bSpaceshipIsEnabledAndVisible) {
+            mElectroLineEnd = mElectroLineBegin = spaceshipWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
+        } else {
+            mElectroLineEnd = mElectroLineBegin = glm::vec3(0.0f);
+            mSpaceshipWhoSpawnedMeWp.reset();
+        }
     }
 }
 } // namespace Game

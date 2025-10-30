@@ -92,7 +92,7 @@ size_t FreeTypeTextFieldProxy::GetVerticesCount() const
     return mVerticesCount;
 }
 
-bool FreeTypeTextFieldProxy::GetIsVisible() const
+bool FreeTypeTextFieldProxy::IsVisible() const
 {
     return mIsVisible;
 }

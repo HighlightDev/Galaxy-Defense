@@ -82,6 +82,10 @@ void SpaceshipActor::TriggerDisabled()
     mDmgShakeTimer->StopTimer();
     mDamageMessageTimer->StopTimer();
     SetIsEnabled(false);
+    mDamageTimeProperty->SetValue(0.0f);
+    mFreezingEffectProperty->SetValue(0.0f);
+    mUiComponent->SetHealthBarVisibility(false);
+    mUiComponent->SetLabelVisibility(false);
 }
 
 void SpaceshipActor::Tick(const float deltaTime)

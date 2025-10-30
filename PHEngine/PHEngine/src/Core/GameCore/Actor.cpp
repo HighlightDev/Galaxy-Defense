@@ -444,7 +444,7 @@ std::shared_ptr<Tweener> Actor::GetTweenerById(const int32_t id) const
     return it != mTweeners.cend() ? *it : nullptr;
 }
 
-bool Actor::GetIsVisible() const
+bool Actor::IsVisible() const
 {
     return mIsVisible->GetValue();
 }

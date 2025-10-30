@@ -86,7 +86,7 @@ public:
 
     void SetIsVisible(bool isVisible);
 
-    bool GetIsVisible() const;
+    bool IsVisible() const;
 
     bool IsEnabled() const;
 

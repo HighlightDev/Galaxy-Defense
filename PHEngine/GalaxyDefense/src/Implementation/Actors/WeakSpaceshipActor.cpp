@@ -102,10 +102,10 @@ void WeakSpaceshipActor::TriggerExplosion()
 
 void WeakSpaceshipActor::TriggerDisabled()
 {
-    mModifiersHandler->RemoveAllModifiers();
-    mActivityState = eSpaceshipActivityState::IDLE;
+    SpaceshipActor::TriggerDisabled();
     const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
     c_particle->ResetParticles();
     mWeakSpaceshipTweener->InitRootState();
+    mUiComponent->SetHealthBarFillPercent(1.0f);
 }
 } // namespace Game

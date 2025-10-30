@@ -129,7 +129,11 @@ void ElectroRayChainActor::SetLineComponent(const std::shared_ptr<RuntimeGenerat
 glm::vec3 ElectroRayChainActor::GetStartLinePosition()
 {
     if (const auto& startLineSpaceshipSp = mStartLineSpaceship.lock()) {
-        mElectroLineBegin = startLineSpaceshipSp->GetRootComponent()->GetTranslation();
+        if (startLineSpaceshipSp->IsEnabled() && startLineSpaceshipSp->IsVisible()) {
+            mElectroLineBegin = startLineSpaceshipSp->GetRootComponent()->GetTranslation();
+        } else {
+            mStartLineSpaceship.reset();
+        }
     }
 
     return mElectroLineBegin;
@@ -138,7 +142,11 @@ glm::vec3 ElectroRayChainActor::GetStartLinePosition()
 glm::vec3 ElectroRayChainActor::GetEndLinePosition()
 {
     if (const auto& endLineSpaceshipSp = mEndLineSpaceship.lock()) {
-        mElectroLineEnd = endLineSpaceshipSp->GetRootComponent()->GetTranslation();
+        if (endLineSpaceshipSp->IsEnabled() && endLineSpaceshipSp->IsVisible()) {
+            mElectroLineEnd = endLineSpaceshipSp->GetRootComponent()->GetTranslation();
+        } else {
+            mEndLineSpaceship.reset();
+        }
     }
 
     return mElectroLineEnd;
