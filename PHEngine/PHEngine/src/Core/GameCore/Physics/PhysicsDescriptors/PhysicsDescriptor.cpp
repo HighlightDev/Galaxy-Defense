@@ -175,11 +175,9 @@ void PhysicsDescriptor::SetIsCollisionEnabled(const bool isCollisionEnabled)
     assert(mRigidBody);
     if (mIsCollisionEnabled != isCollisionEnabled) {
         if (isCollisionEnabled) {
-            mPhysicsWorld->GetWorld()->addCollisionObject(mRigidBody);
-            mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
-        } else {
-            mPhysicsWorld->GetWorld()->removeCollisionObject(mRigidBody);
             mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+        } else {
+            mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
         }
         mIsCollisionEnabled = isCollisionEnabled;
     }

@@ -400,19 +400,23 @@ void CombatController::ProcessEvent(
             if (eGameObjectsType::UNDEFINED != gameObjectType) {
                 if (eGameObjectsType::SPACESHIP == gameObjectType) {
                     const auto& ownerEnemyShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(collidedActorId);
-                    const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(
-                        std::make_pair(gameObjectType, ownerEnemyShipActor),
-                        std::make_pair(srcActorGameObjectType, srcCollisionActor));
-                    electroRayChainModifier->Initialize(mCombatActorsPoolHandler->GetFreeElectroChainActor());
-                    ownerEnemyShipActor->AddModifier(electroRayChainModifier);
+                    if (ownerEnemyShipActor->IsEnabled() && ownerEnemyShipActor->IsVisible()) {
+                        const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(
+                            std::make_pair(gameObjectType, ownerEnemyShipActor),
+                            std::make_pair(srcActorGameObjectType, srcCollisionActor));
+                        electroRayChainModifier->Initialize(mCombatActorsPoolHandler->GetFreeElectroChainActor());
+                        ownerEnemyShipActor->AddModifier(electroRayChainModifier);
+                    }
                 } else if (eGameObjectsType::NEUTRAL_SPACE_OBJECT == gameObjectType) {
                     const auto& ownerSpaceObjectActor = mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(collidedActorId);
                     const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(
                         std::make_pair(gameObjectType, ownerSpaceObjectActor),
                         std::make_pair(srcActorGameObjectType, srcCollisionActor));
 
-                    electroRayChainModifier->Initialize(mCombatActorsPoolHandler->GetFreeElectroChainActor());
-                    ownerSpaceObjectActor->AddModifier(electroRayChainModifier);
+                    if (ownerSpaceObjectActor->IsEnabled() && ownerSpaceObjectActor->IsVisible()) {
+                        electroRayChainModifier->Initialize(mCombatActorsPoolHandler->GetFreeElectroChainActor());
+                        ownerSpaceObjectActor->AddModifier(electroRayChainModifier);
+                    }
                 }
             }
         }

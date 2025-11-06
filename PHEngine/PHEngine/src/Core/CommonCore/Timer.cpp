@@ -30,6 +30,13 @@ void GameThreadTimersHolder::RegisterTimerInstance(std::shared_ptr<GameThreadTim
 
 void GameThreadTimersHolder::Tick(const float deltaSeconds)
 {
+    mTimerInstances.erase(
+        std::remove_if(
+            mTimerInstances.begin(),
+            mTimerInstances.end(),
+            [](const std::weak_ptr<GameThreadTimer>& timerWp) { return timerWp.expired(); }),
+        mTimerInstances.end());
+
     const float deltaMilliseconds = deltaSeconds * 1000.0f;
     for (const auto& timerWp : mTimerInstances) {
         if (const auto& timerSp = timerWp.lock()) {
