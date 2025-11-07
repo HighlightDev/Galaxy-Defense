@@ -23,9 +23,9 @@ int32_t FreezingModifier::CreatorObjectId() const
     return ownerSp->GetObjectId();
 }
 
-void FreezingModifier::Tick(const float deltaTime)
+void FreezingModifier::Tick(const float deltaTimeSec)
 {
-    mFreezingTimer += deltaTime;
+    mFreezingTimer += deltaTimeSec;
 
     if (const auto& spaceshipSp = mOwnerWp.lock()) {
         const auto& movementComponent = spaceshipSp->GetMovementComponent();

@@ -28,7 +28,7 @@ public:
 
     ~SpaceObjectUiComponent() override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     void CreateUiElements(
         const std::string& fontName,

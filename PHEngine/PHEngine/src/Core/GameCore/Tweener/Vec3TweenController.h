@@ -20,7 +20,7 @@ public:
 
     void OnTransitionFinished() override;
 
-    void OnTransitionUpdate(const float deltaTime, const float transitionParameter) override;
+    void OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter) override;
 
     void InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty) override;
 

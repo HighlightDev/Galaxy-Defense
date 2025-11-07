@@ -77,9 +77,9 @@ glm::vec3 GalaxySceneCamera::GetEyeVector() const
     return GetTargetVector() + offset;
 }
 
-void GalaxySceneCamera::Tick(const float deltaTime)
+void GalaxySceneCamera::Tick(const float deltaTimeSec)
 {
-    ACamera::Tick(deltaTime);
+    ACamera::Tick(deltaTimeSec);
 
     const auto& mouseBindings = mInputComponent->GetMouseBindings();
     bool isUserMouseMoveIdle = true;
@@ -107,7 +107,7 @@ void GalaxySceneCamera::Tick(const float deltaTime)
             const auto& mousePosition = glm::vec2(static_cast<float>(mouseMoveEvent.x), static_cast<float>(mouseMoveEvent.y));
             const glm::vec2 nCameraMovementDir = glm::normalize(centerOfScreen - mousePosition);
 
-            const float s_movementPower = 100.0f * deltaTime;
+            const float s_movementPower = 100.0f * deltaTimeSec;
             const auto& newTargetVector = m_actualTargetVector
                 + glm::vec3(nCameraMovementDir.x * s_movementPower, 0, nCameraMovementDir.y * s_movementPower);
 
@@ -125,7 +125,7 @@ void GalaxySceneCamera::Tick(const float deltaTime)
                     newTargetVector);
                 SetTransformationDirty();
                 bFallbackToStartPositionFlag = false;
-                m_cameraMovementTime += deltaTime;
+                m_cameraMovementTime += deltaTimeSec;
             } else {
                 m_cameraMovementTime = 0.0f;
             }
@@ -143,14 +143,14 @@ void GalaxySceneCamera::Tick(const float deltaTime)
         Zoom(mouseZoomDirection, 8.0f);
     }
 
-    ProcessZoom(deltaTime);
+    ProcessZoom(deltaTimeSec);
 
     if (bFallbackToStartPositionFlag) {
         const auto& finalTargetVector = glm::vec3(0.0f);
         const auto& directionVector = finalTargetVector - m_actualTargetVector;
         const float distance = glm::length(directionVector);
         const auto nDirVec = directionVector * (1.0f / distance);
-        const float s_cameraMovementSpeedPerTick = 200.0f * deltaTime;
+        const float s_cameraMovementSpeedPerTick = 200.0f * deltaTimeSec;
         const float actualSpeed = distance <= s_cameraMovementSpeedPerTick ? distance : s_cameraMovementSpeedPerTick;
         m_actualTargetVector = m_actualTargetVector + nDirVec * actualSpeed;
         SetTransformationDirty();

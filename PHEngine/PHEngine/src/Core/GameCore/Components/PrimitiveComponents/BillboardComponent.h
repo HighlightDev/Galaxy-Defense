@@ -36,7 +36,7 @@ public:
 
     eComponentType GetComponentType() const override;
 
-    void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTimeSec) override;
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 

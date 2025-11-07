@@ -88,18 +88,18 @@ void SpaceshipActor::TriggerDisabled()
     mUiComponent->SetLabelVisibility(false);
 }
 
-void SpaceshipActor::Tick(const float deltaTime)
+void SpaceshipActor::Tick(const float deltaTimeSec)
 {
-    Actor::Tick(deltaTime);
+    Actor::Tick(deltaTimeSec);
 
-    mModifiersHandler->Tick(deltaTime);
+    mModifiersHandler->Tick(deltaTimeSec);
 
     if (mIsDamageEffectActive) {
         const float normDmgEffectTime = glm::clamp(mDamageEffectTimePassed / mDamageEffectDuration, 0.0f, 1.0f);
         mDamageTimeProperty->SetValue(normDmgEffectTime);
 
         if (mDamageEffectTimePassed < mDamageEffectDuration) {
-            mDamageEffectTimePassed += deltaTime;
+            mDamageEffectTimePassed += deltaTimeSec;
         } else {
             mIsDamageEffectActive = false;
             mDamageEffectTimePassed = 0.0f;
@@ -109,7 +109,7 @@ void SpaceshipActor::Tick(const float deltaTime)
 
     // Shake Effect
     if (mDmgShakeTimer->IsRunning()) {
-        mShakeTimePassed += deltaTime;
+        mShakeTimePassed += deltaTimeSec;
         const auto& rootComponent = GetRootComponent();
         constexpr float c_shakeSpeed = 30.0f;
         constexpr float c_shakeAmplitudeDegrees = 10.0f;
@@ -190,9 +190,9 @@ bool SpaceshipActor::IsAlive() const
     return mSpaceshipLevel.GetHealth() > 0;
 }
 
-void SpaceshipActor::SetDamageDeltaTime(const float deltaTime)
+void SpaceshipActor::SetDamageDeltaTime(const float deltaTimeSec)
 {
-    mDamageEffectTimePassed = deltaTime;
+    mDamageEffectTimePassed = deltaTimeSec;
 }
 
 float SpaceshipActor::GetDamageDeltaTime() const

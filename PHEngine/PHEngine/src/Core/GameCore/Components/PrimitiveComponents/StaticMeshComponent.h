@@ -28,7 +28,7 @@ public:
 
     void SetIsVisible(bool isVisible) override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 

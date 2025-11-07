@@ -21,7 +21,7 @@ public:
 
     virtual eParticleModuleType GetParticleModuleType() const = 0;
 
-    virtual void Update(Particle& particle, const float deltaTime) = 0;
+    virtual void Update(Particle& particle, const float deltaTimeSec) = 0;
 
     virtual void OnEmitParticles() = 0;
 

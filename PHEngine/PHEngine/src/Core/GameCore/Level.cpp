@@ -71,11 +71,11 @@ std::weak_ptr<Scene> Level::GetSceneWP() const
     return mSceneWp;
 }
 
-void Level::Tick(const float deltaTime)
+void Level::Tick(const float deltaTimeSec)
 {
 }
 
-void Level::UnpausableTick(const float deltaTime)
+void Level::UnpausableTick(const float deltaTimeSec)
 {
 }
 

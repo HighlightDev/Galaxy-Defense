@@ -188,25 +188,25 @@ void EditorLevel::UnloadLevel()
     }
 }
 
-void EditorLevel::Tick(const float deltaTime)
+void EditorLevel::Tick(const float deltaTimeSec)
 {
     if (mLevelEditorController) {
-        mLevelEditorController->Tick(deltaTime);
+        mLevelEditorController->Tick(deltaTimeSec);
     }
 
     if (mUiController) {
-        mUiController->Tick(deltaTime);
+        mUiController->Tick(deltaTimeSec);
     }
 }
 
-void EditorLevel::UnpausableTick(const float deltaTime)
+void EditorLevel::UnpausableTick(const float deltaTimeSec)
 {
     if (mLevelEditorController) {
-        mLevelEditorController->UnpausableTick(deltaTime);
+        mLevelEditorController->UnpausableTick(deltaTimeSec);
     }
 
     if (mUiController) {
-        mUiController->UnpausableTick(deltaTime);
+        mUiController->UnpausableTick(deltaTimeSec);
     }
 }
 

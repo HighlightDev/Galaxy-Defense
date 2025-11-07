@@ -90,12 +90,12 @@ void PhysicsWorld::RemovePhysDescriptorFromSimulation(const std::shared_ptr<Phys
     mPhysicsDescriptors.erase(removedDescriptorIt);
 }
 
-void PhysicsWorld::Tick(const float deltaTime)
+void PhysicsWorld::Tick(const float deltaTimeSec)
 {
     if (mPhysicsDescriptors.size()) {
-        mWorld->stepSimulation(deltaTime * 10.0f);
+        mWorld->stepSimulation(deltaTimeSec * 10.0f);
 
-        PostPhysicsSimulationUpdate(deltaTime);
+        PostPhysicsSimulationUpdate(deltaTimeSec);
 
 #if DEBUG
         mDebugRenderer->ClearLinesBuffer();
@@ -104,16 +104,16 @@ void PhysicsWorld::Tick(const float deltaTime)
     }
 }
 
-void PhysicsWorld::PostPhysicsSimulationUpdate(const float deltaTime)
+void PhysicsWorld::PostPhysicsSimulationUpdate(const float deltaTimeSec)
 {
     for (const auto& physicsDescriptor : mPhysicsDescriptors) {
         if (physicsDescriptor->GetIsCollisionEnabled()) {
-            physicsDescriptor->PostPhysicsSimulationUpdate(deltaTime);
+            physicsDescriptor->PostPhysicsSimulationUpdate(deltaTimeSec);
         }
     }
 
     for (auto& activeCollision : mActiveCollisions) {
-        activeCollision.Tick(deltaTime);
+        activeCollision.Tick(deltaTimeSec);
 
         if (activeCollision.IsCollisionExpired()) {
             PhysicsCollisionGameThreadEvent::GetInstance()->SendEvent(

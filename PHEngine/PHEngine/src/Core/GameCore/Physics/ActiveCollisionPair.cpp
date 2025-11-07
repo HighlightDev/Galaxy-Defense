@@ -79,9 +79,9 @@ void ActiveCollisionPair::SetActiveCollisionTimeout(const float timeout)
     mActiveCollisionTimeout = timeout;
 }
 
-void ActiveCollisionPair::Tick(const float deltaTime)
+void ActiveCollisionPair::Tick(const float deltaTimeSec)
 {
-    mActiveCollisionLefitime += deltaTime;
+    mActiveCollisionLefitime += deltaTimeSec;
 
     if (mActiveCollisionLefitime >= mActiveCollisionTimeout
         || (mFirstCollisionBody.expired() || mSecondCollisionBody.expired())) {

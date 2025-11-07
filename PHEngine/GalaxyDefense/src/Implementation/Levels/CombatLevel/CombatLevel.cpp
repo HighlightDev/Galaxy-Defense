@@ -278,29 +278,29 @@ void CombatLevel::UnloadLevel()
     }
 }
 
-void CombatLevel::Tick(const float deltaTime)
+void CombatLevel::Tick(const float deltaTimeSec)
 {
     if (mUiController) {
-        mUiController->Tick(deltaTime);
+        mUiController->Tick(deltaTimeSec);
     }
 
     if (mCombatController) {
-        mCombatController->Tick(deltaTime);
+        mCombatController->Tick(deltaTimeSec);
     }
 
     if (mLvlProgressController) {
-        mLvlProgressController->Tick(deltaTime);
+        mLvlProgressController->Tick(deltaTimeSec);
     }
 }
 
-void CombatLevel::UnpausableTick(const float deltaTime)
+void CombatLevel::UnpausableTick(const float deltaTimeSec)
 {
     if (mUiController) {
-        mUiController->UnpausableTick(deltaTime);
+        mUiController->UnpausableTick(deltaTimeSec);
     }
 
     if (mCombatController) {
-        mCombatController->UnpausableTick(deltaTime);
+        mCombatController->UnpausableTick(deltaTimeSec);
     }
 }
 

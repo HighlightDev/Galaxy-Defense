@@ -94,9 +94,9 @@ void DynamicCharacterController::CompletePhysicsDescriptorConstruction()
     // Specify filters manually, otherwise ghost doesn't collide with statics for some reason
 }
 
-void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime)
+void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTimeSec)
 {
-    mTimerMultiplier = deltaTime; // from ms to sec
+    mTimerMultiplier = deltaTimeSec; // from ms to sec
 
     // Sync ghost with actually object
     mGhostObject->setWorldTransform(mRigidBody->getWorldTransform());

@@ -139,7 +139,7 @@ function System_OnStart(host)
 	CreateLevelProgressStages(host)
 end
 
-function System_OnUpdate(host, deltaTime)
+function System_OnUpdate(host, deltaTimeSec)
 end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)

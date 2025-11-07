@@ -21,9 +21,9 @@ CharacterPhysicsComponent::~CharacterPhysicsComponent()
 {
 }
 
-void CharacterPhysicsComponent::Tick(const float deltaTime)
+void CharacterPhysicsComponent::Tick(const float deltaTimeSec)
 {
-    characterController->UpdateMotionWorldTransformLocalState(bIsTransformationDirty, deltaTime);
+    characterController->UpdateMotionWorldTransformLocalState(bIsTransformationDirty, deltaTimeSec);
 
     if (bIsTransformationDirty) {
         if (const auto& spOwner = GetOwner().lock()) {

@@ -36,7 +36,7 @@ void StreamingSoundComponent::CleanUp()
     }
 }
 
-void StreamingSoundComponent::Tick(const float deltaTime)
+void StreamingSoundComponent::Tick(const float deltaTimeSec)
 {
     mStreamingSoundSource->UpdateBufferStream();
 }

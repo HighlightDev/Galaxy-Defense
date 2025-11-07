@@ -95,10 +95,10 @@ eComponentType SkeletalMeshComponent::GetComponentType() const
     return PRIMITIVE_COMPONENT;
 }
 
-void SkeletalMeshComponent::Tick(const float deltaTime)
+void SkeletalMeshComponent::Tick(const float deltaTimeSec)
 {
-    SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTime * mTimeIncreaseMultiply));
-    mUpdateDataResetTimeCounter += deltaTime;
+    SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTimeSec * mTimeIncreaseMultiply));
+    mUpdateDataResetTimeCounter += deltaTimeSec;
     const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
     mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
 

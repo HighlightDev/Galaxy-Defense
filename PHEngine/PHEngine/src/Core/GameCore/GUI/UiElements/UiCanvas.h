@@ -149,9 +149,9 @@ public:
     void AddUiItem(const std::shared_ptr<UiItemBase>& uiItem) override;
     void RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem);
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTimeSec) override;
 
     std::shared_ptr<::Graphics::Proxy::UiCanvasSceneProxy> CreateUiCanvasSceneProxy() const;
 

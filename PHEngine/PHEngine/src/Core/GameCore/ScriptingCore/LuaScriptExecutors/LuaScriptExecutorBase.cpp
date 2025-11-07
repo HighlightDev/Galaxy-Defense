@@ -95,11 +95,11 @@ void LuaScriptExecutorBase::StopScript()
     mLuaInstance.StopExecution();
 }
 
-void LuaScriptExecutorBase::OnUpdate(const float deltaTime)
+void LuaScriptExecutorBase::OnUpdate(const float deltaTimeSec)
 {
     if (mHasOnUpdate) {
         assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
-        LuaFunctionInvoker<void(void*, float)>::Invoke(mLuaInstance, "System_OnUpdate", (void*)this, deltaTime);
+        LuaFunctionInvoker<void(void*, float)>::Invoke(mLuaInstance, "System_OnUpdate", (void*)this, deltaTimeSec);
     }
 }
 

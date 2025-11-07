@@ -69,9 +69,9 @@ public:
 
     std::string GetCurrentOpenedOverlayName() const;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTimeSec) override;
 
     void Initialize();
 

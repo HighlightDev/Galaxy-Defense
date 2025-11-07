@@ -22,14 +22,14 @@ MainMenuLevelUiController::MainMenuLevelUiController(const std::weak_ptr<Scene>&
 {
 }
 
-void MainMenuLevelUiController::UnpausableTick(const float deltaTime)
+void MainMenuLevelUiController::UnpausableTick(const float deltaTimeSec)
 {
-    mOverlayManager->UnpausableTick(deltaTime);
+    mOverlayManager->UnpausableTick(deltaTimeSec);
 }
 
-void MainMenuLevelUiController::Tick(const float deltaTime)
+void MainMenuLevelUiController::Tick(const float deltaTimeSec)
 {
-    mOverlayManager->Tick(deltaTime);
+    mOverlayManager->Tick(deltaTimeSec);
 }
 
 void MainMenuLevelUiController::OnPreLevelInit()

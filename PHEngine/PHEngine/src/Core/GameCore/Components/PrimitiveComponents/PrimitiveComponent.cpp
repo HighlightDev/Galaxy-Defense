@@ -41,9 +41,9 @@ eComponentType PrimitiveComponent::GetComponentType() const
     return PRIMITIVE_COMPONENT;
 }
 
-void PrimitiveComponent::UnpausableTick(const float deltaTime)
+void PrimitiveComponent::UnpausableTick(const float deltaTimeSec)
 {
-    SceneComponent::UnpausableTick(deltaTime);
+    SceneComponent::UnpausableTick(deltaTimeSec);
 
     if (bIsEnabledStateDirty || bIsVisibleStateDirty || bIsSortOrderStateDirty || bIsBloomStateDirty) {
         SyncRenderData();

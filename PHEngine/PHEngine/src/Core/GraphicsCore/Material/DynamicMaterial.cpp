@@ -64,7 +64,7 @@ void DynamicMaterial::SyncDataWithRenderThread()
     }
 }
 
-void DynamicMaterial::Tick(const float deltaTime)
+void DynamicMaterial::Tick(const float deltaTimeSec)
 {
     for (auto dynProp : mDynamicProperties) {
         const auto staticProperty = GetMaterialPropertyByName(dynProp->GetPropertyName());

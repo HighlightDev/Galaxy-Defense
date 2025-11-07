@@ -192,13 +192,18 @@ int32_t CombatActorsPoolHandler::GetSpaceStationsCount() const
     return mSpaceStations.size();
 }
 
-std::shared_ptr<MissileActor> CombatActorsPoolHandler::GetFreeMissile(const eMissileType missileType) const
+std::shared_ptr<MissileActor> CombatActorsPoolHandler::GetFreeMissile(const eMissileType missileType)
 {
     const auto idleBulletIt = std::find_if(mMissilesPool.cbegin(), mMissilesPool.cend(), [missileType](const auto& missile) {
         return (eMissileActivityState::IDLE == missile->GetMissileActivityState() && missileType == missile->GetMissileType());
     });
 
-    return idleBulletIt == mMissilesPool.cend() ? nullptr : *idleBulletIt;
+    if (idleBulletIt == mMissilesPool.cend()) {
+        SpawnMissiles(missileType, 1);
+        return GetFreeMissile(missileType);
+    } else {
+        return *idleBulletIt;
+    }
 }
 
 std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::GetFreeSpaceStationActor() const

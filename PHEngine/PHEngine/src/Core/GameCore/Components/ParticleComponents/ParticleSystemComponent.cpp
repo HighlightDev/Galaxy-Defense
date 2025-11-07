@@ -44,7 +44,7 @@ eComponentType ParticleSystemComponent::GetComponentType() const
     return PRIMITIVE_COMPONENT;
 }
 
-void ParticleSystemComponent::Tick(const float deltaTime)
+void ParticleSystemComponent::Tick(const float deltaTimeSec)
 {
     static constexpr float particleMoveSpeed = 15.0f;
 
@@ -53,7 +53,7 @@ void ParticleSystemComponent::Tick(const float deltaTime)
             continue;
 
         for (const auto& module : mParticleModules) {
-            module->Update(particle, deltaTime);
+            module->Update(particle, deltaTimeSec);
         }
     }
 
@@ -66,10 +66,10 @@ void ParticleSystemComponent::Tick(const float deltaTime)
         if (!particleIt->isActive)
             continue;
 
-        if ((particleIt->LifeRemaining - deltaTime) > 0.0f) {
+        if ((particleIt->LifeRemaining - deltaTimeSec) > 0.0f) {
             particleIt->Position
-                += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * deltaTime * particleMoveSpeed;
-            particleIt->LifeRemaining -= deltaTime;
+                += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * deltaTimeSec * particleMoveSpeed;
+            particleIt->LifeRemaining -= deltaTimeSec;
 
             mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particleIt->Position);
             particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();

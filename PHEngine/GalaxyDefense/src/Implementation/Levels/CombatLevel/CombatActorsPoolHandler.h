@@ -56,7 +56,7 @@ public:
 
     std::shared_ptr<ElectroRayChainActor> GetFreeElectroChainActor();
 
-    std::shared_ptr<MissileActor> GetFreeMissile(const eMissileType missileType) const;
+    std::shared_ptr<MissileActor> GetFreeMissile(const eMissileType missileType);
 
     std::shared_ptr<MissileActor> GetMissileOwnerActorById(const int32_t actorId) const;
 

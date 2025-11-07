@@ -148,10 +148,10 @@ void ThirdPersonCamera::SetDistanceFromTargetToCamera(float distanceFromTargetTo
     SetTransformationDirty();
 }
 
-void ThirdPersonCamera::ProcessZoom(const float deltaTime)
+void ThirdPersonCamera::ProcessZoom(const float deltaTimeSec)
 {
     if (bZoomDirty) {
-        m_ZoomTime = std::min(m_ZoomTime + deltaTime, m_timeForInterpolation);
+        m_ZoomTime = std::min(m_ZoomTime + deltaTimeSec, m_timeForInterpolation);
         const float diff = m_targetDistanceFromTargetToCamera - m_distanceFromTargetToCamera;
 
         const float lerpedDistance = EngineMath::LerpFloat(
@@ -165,10 +165,10 @@ void ThirdPersonCamera::ProcessZoom(const float deltaTime)
     }
 }
 
-void ThirdPersonCamera::ProcessTargetFollow(const float deltaTime)
+void ThirdPersonCamera::ProcessTargetFollow(const float deltaTimeSec)
 {
     if (m_bThirdPersonTargetTransformationDirty) {
-        const float clampedDeltaTime = std::max(deltaTime, 0.03f);
+        const float clampedDeltaTime = std::max(deltaTimeSec, 0.03f);
         m_lerpTimeElapsed = std::min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
 
         glm::vec3 finalTargetVector = m_thirdPersonTarget->GetRootComponent()->GetTranslation();

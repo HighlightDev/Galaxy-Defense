@@ -17,11 +17,11 @@ public:
 
     eComponentType GetComponentType() const override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
-    void Move(const float deltaTime) override;
+    void Move(const float deltaTimeSec) override;
 
-    void Move(const glm::vec3& direction, const float deltaTime) override;
+    void Move(const glm::vec3& direction, const float deltaTimeSec) override;
 
     void Jump() override;
 

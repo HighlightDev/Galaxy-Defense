@@ -27,7 +27,7 @@ int32_t GravityModifier::CreatorObjectId() const
     return ownerSp->GetObjectId();
 }
 
-void GravityModifier::Tick(const float deltaTime)
+void GravityModifier::Tick(const float deltaTimeSec)
 {
     const auto& spaceshipSp = mOwnerWp.lock();
     const auto& missileSp = mMissileWp.lock();
@@ -39,7 +39,7 @@ void GravityModifier::Tick(const float deltaTime)
         if (vecLength > 0.001f) // check if length of vector is not zero otherwise normalized vector will be NaN
         {
             const auto nToGravityCenter = toGravityCenterVec / vecLength;
-            spaceshipSp->GetMovementComponent()->Move(nToGravityCenter * mGravityPower, deltaTime);
+            spaceshipSp->GetMovementComponent()->Move(nToGravityCenter * mGravityPower, deltaTimeSec);
         }
     }
 }

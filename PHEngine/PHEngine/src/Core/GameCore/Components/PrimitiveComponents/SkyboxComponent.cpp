@@ -44,11 +44,11 @@ void SkyboxComponent::SetIsVisible(bool isVisible)
     }
 }
 
-void SkyboxComponent::Tick(const float deltaTime)
+void SkyboxComponent::Tick(const float deltaTimeSec)
 {
-    Base::Tick(deltaTime);
+    Base::Tick(deltaTimeSec);
 
-    SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * m_rotateSpeed), AXIS_UP));
+    SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTimeSec * m_rotateSpeed), AXIS_UP));
 }
 
 std::shared_ptr<PrimitiveSceneProxy> SkyboxComponent::CreateSceneProxy() const

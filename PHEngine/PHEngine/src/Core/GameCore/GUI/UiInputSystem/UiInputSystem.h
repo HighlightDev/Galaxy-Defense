@@ -45,9 +45,9 @@ public:
 
     void Initialize();
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTimeSec) override;
 
     void ProcessEvent(
         const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t& data) override;

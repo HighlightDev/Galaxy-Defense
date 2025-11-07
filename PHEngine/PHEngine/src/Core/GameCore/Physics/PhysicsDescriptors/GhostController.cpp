@@ -85,16 +85,16 @@ void GhostController::SetIsCollisionEnabled(const bool isCollisionEnabled)
     }
 }
 
-void GhostController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime)
+void GhostController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTimeSec)
 {
     // Sync ghost with actually object
     mGhostObject->setWorldTransform(mMotionTransform);
     bIsWorldTransformDiry = false;
 }
 
-void GhostController::PostPhysicsSimulationUpdate(const float deltaTime)
+void GhostController::PostPhysicsSimulationUpdate(const float deltaTimeSec)
 {
-    mCollisionCooldown += deltaTime;
+    mCollisionCooldown += deltaTimeSec;
     ParseGhostContacts();
 }
 

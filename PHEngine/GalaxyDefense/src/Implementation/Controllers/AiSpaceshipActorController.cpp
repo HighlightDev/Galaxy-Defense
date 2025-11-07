@@ -15,9 +15,9 @@ AiSpaceshipActorController::AiSpaceshipActorController(const std::shared_ptr<Act
 {
 }
 
-void AiSpaceshipActorController::Tick(const float deltaTime)
+void AiSpaceshipActorController::Tick(const float deltaTimeSec)
 {
-    AiActorController::Tick(deltaTime);
+    AiActorController::Tick(deltaTimeSec);
 
     /*if (const auto &actorSp = m_actorWp.lock())
     {

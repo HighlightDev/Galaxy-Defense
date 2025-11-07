@@ -30,16 +30,16 @@ void ModifiersHandler::RemoveExpiredModifiers()
     }
 }
 
-void ModifiersHandler::Tick(const float deltaTime)
+void ModifiersHandler::Tick(const float deltaTimeSec)
 {
     RemoveExpiredModifiers();
 
     for (const auto& modifier : mModifiers) {
-        modifier->Tick(deltaTime);
+        modifier->Tick(deltaTimeSec);
     }
 }
 
-void ModifiersHandler::UnpausableTick(const float deltaTime)
+void ModifiersHandler::UnpausableTick(const float deltaTimeSec)
 {
 }
 

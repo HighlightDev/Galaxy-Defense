@@ -19,7 +19,7 @@ public:
 
     ~GhostPhysicsComponent() override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
 private:
     void SyncHitBoxScale(const glm::vec3& scale);

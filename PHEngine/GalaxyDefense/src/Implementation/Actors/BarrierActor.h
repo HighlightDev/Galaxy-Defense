@@ -25,7 +25,7 @@ class BarrierActor : public Actor {
 public:
     BarrierActor(const std::string& gameObjectName, const std::shared_ptr<::EngineCore::SceneComponent>& rootComponent);
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     void AddBarrierPillarMesh(const std::shared_ptr<::EngineCore::StaticMeshComponent>& meshComponent);
 

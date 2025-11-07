@@ -19,12 +19,12 @@ std::shared_ptr<AnimationPropertyBinding> AnimationTweenController::GetAnimation
     return result;
 }
 
-void AnimationTweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
+void AnimationTweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
-    Base::OnTransitionUpdate(deltaTime, transitionParameter);
+    Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
     if (auto animBinding = GetAnimationPropertyBindingSP()) {
-        animBinding->SetDstTime(animBinding->GetDstTime() + deltaTime);
+        animBinding->SetDstTime(animBinding->GetDstTime() + deltaTimeSec);
         animBinding->SetIsTransitionEnabled(true);
         animBinding->SetTransitionValue(transitionParameter);
     }

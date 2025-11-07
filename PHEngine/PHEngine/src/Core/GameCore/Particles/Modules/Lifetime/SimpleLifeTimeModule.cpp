@@ -10,9 +10,9 @@ SimpleLifeTimeModule::SimpleLifeTimeModule()
 {
 }
 
-void SimpleLifeTimeModule::Update(Particle& particle, const float deltaTime)
+void SimpleLifeTimeModule::Update(Particle& particle, const float deltaTimeSec)
 {
-    particle.LifeRemaining -= deltaTime;
+    particle.LifeRemaining -= deltaTimeSec;
     if (particle.LifeRemaining <= 0.0f) {
         particle.isActive = false;
         particle.LifeRemaining = 0.0f;

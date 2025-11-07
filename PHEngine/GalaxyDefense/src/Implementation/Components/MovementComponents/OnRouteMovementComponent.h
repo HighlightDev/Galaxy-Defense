@@ -26,7 +26,7 @@ protected:
 public:
     explicit OnRouteMovementComponent(const std::shared_ptr<MovementComponentData>& movementComponentData);
 
-    void Move(const float deltaTime) override;
+    void Move(const float deltaTimeSec) override;
 
     void SetRoutePoints(const std::vector<glm::vec3>& routePoints);
 

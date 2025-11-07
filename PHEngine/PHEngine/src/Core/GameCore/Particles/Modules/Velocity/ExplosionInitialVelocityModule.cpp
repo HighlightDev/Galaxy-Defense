@@ -12,7 +12,7 @@ eParticleModuleType ExplosionInitialVelocityModule::GetParticleModuleType() cons
     return eParticleModuleType::INITIAL_VELOCITY;
 }
 
-void ExplosionInitialVelocityModule::Update(Particle& particle, const float deltaTime)
+void ExplosionInitialVelocityModule::Update(Particle& particle, const float deltaTimeSec)
 {
 }
 

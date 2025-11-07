@@ -11,7 +11,7 @@ class SimpleSizeModule : public ISizeModule {
 public:
     SimpleSizeModule();
 
-    void Update(Particle& particle, const float deltaTime) override;
+    void Update(Particle& particle, const float deltaTimeSec) override;
 
     void SetSizeBegin(const float sizeBegin);
 

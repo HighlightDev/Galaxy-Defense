@@ -81,17 +81,17 @@ void UiOverlay::Initialize()
 {
 }
 
-void UiOverlay::Tick(const float deltaTime)
+void UiOverlay::Tick(const float deltaTimeSec)
 {
     if (mCanvas) {
-        mCanvas->Tick(deltaTime);
+        mCanvas->Tick(deltaTimeSec);
     }
 }
 
-void UiOverlay::UnpausableTick(const float deltaTime)
+void UiOverlay::UnpausableTick(const float deltaTimeSec)
 {
     if (mCanvas) {
-        mCanvas->UnpausableTick(deltaTime);
+        mCanvas->UnpausableTick(deltaTimeSec);
     }
 }
 

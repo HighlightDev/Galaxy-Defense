@@ -25,12 +25,12 @@ void LevelProgressStage::AddLevelProgressRequirementTracker(const std::shared_pt
     mLevelProgressRequirementTrackers.emplace_back(lvlReqTracker);
 }
 
-void LevelProgressStage::Tick(const float deltaTime)
+void LevelProgressStage::Tick(const float deltaTimeSec)
 {
     mTotalAchivedReqTrackers = 0;
     bool requirementsUpdated = false;
     for (const auto& requirementTracker : mLevelProgressRequirementTrackers) {
-        requirementTracker->Tick(deltaTime);
+        requirementTracker->Tick(deltaTimeSec);
         mTotalAchivedReqTrackers += requirementTracker->IsRequirementAchived() ? 1 : 0;
         requirementsUpdated |= requirementTracker->CheckIfRequirementIsDirty(true);
     }
@@ -45,7 +45,7 @@ void LevelProgressStage::Tick(const float deltaTime)
     }
 }
 
-void LevelProgressStage::UnpausableTick(const float deltaTime)
+void LevelProgressStage::UnpausableTick(const float deltaTimeSec)
 {
 }
 

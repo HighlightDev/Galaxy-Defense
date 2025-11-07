@@ -485,16 +485,16 @@ void CombatController::ProcessEvent(const ChangeGameModeEvent* sender, const typ
     }
 }
 
-void CombatController::Tick(const float deltaTime)
+void CombatController::Tick(const float deltaTimeSec)
 {
     if (eGameModeType::COMBAT == mGameModeType) {
         ValidatePoolObjects();
         UpdateMissilesData();
         ProcessAiAction();
-        mNavigationController->Tick(deltaTime);
+        mNavigationController->Tick(deltaTimeSec);
     }
 
-    mUserInteractionController->Tick(deltaTime);
+    mUserInteractionController->Tick(deltaTimeSec);
 }
 
 void CombatController::LaunchMisile(
@@ -504,14 +504,11 @@ void CombatController::LaunchMisile(
     const eMissileType missileType)
 {
     const auto& missile = mCombatActorsPoolHandler->GetFreeMissile(missileType);
-    if (missile) {
-        const auto yawRad = std::atan2(missileDirection.x, missileDirection.z);
-        const auto yawDeg = RAD_TO_DEG(yawRad);
-        missile->TriggerSpawn(missileStartPosition, missileDirection, yawDeg, eDamageDealerType::MAIN_PLAYER, missileOwner);
-        mNavigationController->PutMissileToNavigate(missile);
-    } else {
-        LogInfo("CombatController::LaunchMisile: No free missiles!");
-    }
+    assert(missile);
+    const auto yawRad = std::atan2(missileDirection.x, missileDirection.z);
+    const auto yawDeg = RAD_TO_DEG(yawRad);
+    missile->TriggerSpawn(missileStartPosition, missileDirection, yawDeg, eDamageDealerType::MAIN_PLAYER, missileOwner);
+    mNavigationController->PutMissileToNavigate(missile);
 }
 
 void CombatController::ValidatePoolObjects()
@@ -593,7 +590,7 @@ void CombatController::ProcessAiAction()
         excludedPhysicsComponents.end(), blackHoleMissilePhysComponents.begin(), blackHoleMissilePhysComponents.end());
 
     for (const auto& spaceStation : spaceStations) {
-        if (spaceStation->CanShoot()) {
+        if (eSpaceStationActivityState::ACTIVE == spaceStation->GetState() && spaceStation->CanShoot()) {
             SphereCollisionTestWithFilterAdapter collisionTest(
                 spaceStation->GetSpaceStationLevel()->GetShootRadius(), excludedPhysicsComponents);
             collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceStation->GetRootComponent()->GetTranslation());

@@ -24,7 +24,7 @@ public:
 
     void Initialize() override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     void ProcessEvent(
         const PhysicsComponentUpdatedGameThreadEvent* sender,

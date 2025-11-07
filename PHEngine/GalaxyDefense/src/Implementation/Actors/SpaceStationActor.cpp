@@ -14,17 +14,17 @@ SpaceStationActor::SpaceStationActor(
     AddEngineProperty(mShootRadiusProperty);
 }
 
-void SpaceStationActor::Tick(const float deltaTime)
+void SpaceStationActor::Tick(const float deltaTimeSec)
 {
-    Actor::Tick(deltaTime);
+    Actor::Tick(deltaTimeSec);
 
-    mTimeSinceLastShoot += deltaTime;
+    mShootCooldown += deltaTimeSec;
 }
 
 bool SpaceStationActor::CanShoot() const
 {
-    constexpr float c_shootTimeout = 1.0f;
-    return !mIsRayActive && mTimeSinceLastShoot >= c_shootTimeout;
+    return !mIsRayActive && mSpaceStationLevel != nullptr
+        && std::floor(mShootCooldown * 1000.0f) >= mSpaceStationLevel->GetCooldownMs();
 }
 
 void SpaceStationActor::SetIsRayActive(const bool value)
@@ -39,7 +39,7 @@ bool SpaceStationActor::GetIsRayActive() const
 
 void SpaceStationActor::RestartTimerSinceLastShoot()
 {
-    mTimeSinceLastShoot = 0.0f;
+    mShootCooldown = 0.0f;
 }
 
 void SpaceStationActor::SetState(const eSpaceStationActivityState spacestationState)

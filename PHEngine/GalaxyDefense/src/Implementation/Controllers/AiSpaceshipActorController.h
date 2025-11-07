@@ -14,6 +14,6 @@ class AiSpaceshipActorController : public AiActorController {
 public:
     AiSpaceshipActorController(const std::shared_ptr<Actor>& actor);
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 };
 } // namespace Game

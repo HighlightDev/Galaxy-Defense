@@ -65,7 +65,7 @@ std::shared_ptr<MouseBindings> InputComponent::GetMouseBindings() const
     return m_mouseBindings;
 }
 
-void InputComponent::Tick(const float deltaTime)
+void InputComponent::Tick(const float deltaTimeSec)
 {
 }
 } // namespace EngineCore

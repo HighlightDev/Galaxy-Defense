@@ -14,7 +14,7 @@ class OrbitVelocityModule : public IVelocityModule {
 public:
     OrbitVelocityModule();
 
-    void Update(Particle& particle, const float deltaTime) override;
+    void Update(Particle& particle, const float deltaTimeSec) override;
 
     void OnEmitParticles() override;
 

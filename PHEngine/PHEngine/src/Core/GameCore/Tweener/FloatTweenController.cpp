@@ -25,9 +25,9 @@ std::shared_ptr<FloatPropertyBinding> FloatTweenController::GetFloatPropertyBind
     return result;
 }
 
-void FloatTweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
+void FloatTweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
-    Base::OnTransitionUpdate(deltaTime, transitionParameter);
+    Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
     if (auto floatBinding = GetFloatPropertyBindingSP()) {
         auto srcFloatProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);

@@ -22,7 +22,7 @@ void MissedSpaceshipsTracker::SetMissedSpaceshipsCount(const int32_t value)
     }
 }
 
-void MissedSpaceshipsTracker::Tick(const float deltaTime)
+void MissedSpaceshipsTracker::Tick(const float deltaTimeSec)
 {
     SetMissedSpaceshipsCount(
         LevelDataProvider::GetInstance()->GetCurrentStageSurvivedEnemySpaceshipsCount() - mInitialMissedSpaceshipsCount);

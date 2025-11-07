@@ -26,9 +26,9 @@ void AnimationSequence::SetPassedAnimationTime(const float animationTime)
     mAnimationTimePassed = animationTime;
 }
 
-void AnimationSequence::AddDeltaTimeToAnimationTime(const float deltaTime)
+void AnimationSequence::AddDeltaTimeToAnimationTime(const float deltaTimeSec)
 {
-    mAnimationTimePassed += deltaTime;
+    mAnimationTimePassed += deltaTimeSec;
 }
 
 float AnimationSequence::GetPassedAnimationTime() const

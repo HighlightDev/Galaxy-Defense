@@ -11,7 +11,7 @@ SimpleColorModule::SimpleColorModule()
 {
 }
 
-void SimpleColorModule::Update(Particle& particle, const float deltaTime)
+void SimpleColorModule::Update(Particle& particle, const float deltaTimeSec)
 {
     particle.Color = LerpVec4(particle.LifeTime - particle.LifeRemaining, 0.0f, particle.LifeTime, mColorBegin, mColorEnd);
 }

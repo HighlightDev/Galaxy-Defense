@@ -30,9 +30,9 @@ eComponentType WaterPlaneComponent::GetComponentType() const
     return PRIMITIVE_COMPONENT;
 }
 
-void WaterPlaneComponent::Tick(const float deltaTime)
+void WaterPlaneComponent::Tick(const float deltaTimeSec)
 {
-    PrimitiveComponent::Tick(deltaTime);
+    PrimitiveComponent::Tick(deltaTimeSec);
 
     if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         SyncRenderData();

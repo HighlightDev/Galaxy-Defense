@@ -56,16 +56,16 @@ bool ElectroRayActor::IsInsideLevel(const BoundingBox3D& boundingBox) const
         || EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mElectroLineBegin);
 }
 
-void ElectroRayActor::Tick(const float deltaTime)
+void ElectroRayActor::Tick(const float deltaTimeSec)
 {
-    MissileActor::Tick(deltaTime);
+    MissileActor::Tick(deltaTimeSec);
 
     assert(mLineComponent);
 
     glm::vec3 electroLineDirection = mElectroLineDirection;
 
     if (!bElectroLineCollided) {
-        mElectroLineEnd += mElectroLineDirection * mElectroLineDestinationSpeed * deltaTime;
+        mElectroLineEnd += mElectroLineDirection * mElectroLineDestinationSpeed * deltaTimeSec;
 
         if (const auto& sceneSp = mSceneOwner.lock()) {
             if (const auto& spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock()) {
@@ -121,7 +121,7 @@ void ElectroRayActor::Tick(const float deltaTime)
     }
 
     if (bLineOriginStartMovement) {
-        mElectroLineBegin += electroLineDirection * mElectroLineOriginSpeed * deltaTime;
+        mElectroLineBegin += electroLineDirection * mElectroLineOriginSpeed * deltaTimeSec;
         if (bElectroLineCollided
             && (EngineMath::CheckSimilarityVec3(mElectroLineBegin, mElectroLineEnd)
                 || (EngineMath::ProjectVector3OnVector(mElectroLineBegin, mElectroLineDirection)

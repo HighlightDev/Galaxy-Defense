@@ -19,7 +19,7 @@ public:
     eComponentType GetComponentType() const override;
 
     // Game thread tick
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     std::vector<eKeyActionType> GetReleasedKeyActions();
 

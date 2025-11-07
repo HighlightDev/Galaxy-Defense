@@ -27,9 +27,9 @@ std::shared_ptr<EulerAnglesRotationPropertyBinding> EulerAnglesRotationTweenCont
     return result;
 }
 
-void EulerAnglesRotationTweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
+void EulerAnglesRotationTweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
-    Base::OnTransitionUpdate(deltaTime, transitionParameter);
+    Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
     if (auto rotationBinding = GetRotationPropertyBindingSP()) {
         auto srcRotationProperty

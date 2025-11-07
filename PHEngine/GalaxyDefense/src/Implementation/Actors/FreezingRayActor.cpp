@@ -101,9 +101,9 @@ std::vector<std::shared_ptr<PhysicsComponent>> FreezingRayActor::CreateExcludedC
     return excludeCollisionPhysComponents;
 }
 
-void FreezingRayActor::Tick(const float deltaTime)
+void FreezingRayActor::Tick(const float deltaTimeSec)
 {
-    MissileActor::Tick(deltaTime);
+    MissileActor::Tick(deltaTimeSec);
     assert(mLineComponent);
 
     if (const auto& sceneSp = mSceneOwner.lock()) {

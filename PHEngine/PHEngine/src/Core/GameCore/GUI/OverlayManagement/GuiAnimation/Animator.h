@@ -36,9 +36,9 @@ public:
 
     ~Animator() = default;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTimeSec) override;
 
     void AddAnimation(const std::string& animationName, const AnimationData& animationData);
 

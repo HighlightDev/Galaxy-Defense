@@ -54,7 +54,7 @@ void HumanoidPlayerController::ProcessEvent(
     }
 }
 
-void HumanoidPlayerController::Tick(const float deltaTime)
+void HumanoidPlayerController::Tick(const float deltaTimeSec)
 {
     if (const auto& actorSp = m_actorWp.lock()) {
         if (!actorSp->IsEnabled())
@@ -75,7 +75,7 @@ void HumanoidPlayerController::Tick(const float deltaTime)
             if (keyboardBindings->HasPressedKeys()) {
                 if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD)) {
                     if (const auto& moveCompSp = m_movementComponentWp.lock()) {
-                        moveCompSp->Move(deltaTime);
+                        moveCompSp->Move(deltaTimeSec);
                     }
                 } else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT)) {
                 } else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT)) {

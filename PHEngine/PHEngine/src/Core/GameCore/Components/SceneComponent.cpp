@@ -42,9 +42,9 @@ void SceneComponent::SyncScale(const glm::vec3& scale)
     SetScale(scale);
 }
 
-void SceneComponent::Tick(const float deltaTime)
+void SceneComponent::Tick(const float deltaTimeSec)
 {
-    Component::Tick(deltaTime);
+    Component::Tick(deltaTimeSec);
 }
 
 eComponentType SceneComponent::GetComponentType() const

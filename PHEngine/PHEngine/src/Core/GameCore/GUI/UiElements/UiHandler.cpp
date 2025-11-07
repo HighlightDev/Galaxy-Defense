@@ -78,36 +78,36 @@ std::shared_ptr<UiCanvas> UiHandler::CreateHudCanvas(const ViewPortInfo& canvasS
     return mHudCanvas;
 }
 
-void UiHandler::Tick(const float deltaTime)
+void UiHandler::Tick(const float deltaTimeSec)
 {
     for (const auto& canvas : mUiCanvases) {
-        canvas->Tick(deltaTime);
+        canvas->Tick(deltaTimeSec);
     }
 
     if (mHudCanvas) {
-        mHudCanvas->Tick(deltaTime);
+        mHudCanvas->Tick(deltaTimeSec);
     }
 
 #ifdef DEBUG
     if (mDebugUiCanvas) {
-        mDebugUiCanvas->Tick(deltaTime);
+        mDebugUiCanvas->Tick(deltaTimeSec);
     }
 #endif
 }
 
-void UiHandler::UnpausableTick(const float deltaTime)
+void UiHandler::UnpausableTick(const float deltaTimeSec)
 {
     for (const auto& canvas : mUiCanvases) {
-        canvas->UnpausableTick(deltaTime);
+        canvas->UnpausableTick(deltaTimeSec);
     }
 
     if (mHudCanvas) {
-        mHudCanvas->UnpausableTick(deltaTime);
+        mHudCanvas->UnpausableTick(deltaTimeSec);
     }
 
 #ifdef DEBUG
     if (mDebugUiCanvas) {
-        mDebugUiCanvas->UnpausableTick(deltaTime);
+        mDebugUiCanvas->UnpausableTick(deltaTimeSec);
     }
 #endif
 }

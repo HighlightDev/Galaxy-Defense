@@ -22,15 +22,15 @@ void PortalActor::SetNavigationController(const std::weak_ptr<NavigationControll
     mNavigationControllerWp = navigationControllerWp;
 }
 
-void PortalActor::Tick(const float deltaTime)
+void PortalActor::Tick(const float deltaTimeSec)
 {
-    Actor::Tick(deltaTime);
+    Actor::Tick(deltaTimeSec);
 
     const auto poolSp = mCombatActorsPoolHandlerWp.lock();
     const auto navController = mNavigationControllerWp.lock();
     if (poolSp && navController) {
         if (mIsSpawnActive && mPathNames.size() > 0) {
-            mAccumulatedDeltaTime += deltaTime;
+            mAccumulatedDeltaTime += deltaTimeSec;
             if (mAccumulatedDeltaTime >= mSpawnInterval) {
                 if (const auto& freeShip = poolSp->GetFreeSpaceshipActor()) {
                     const auto randomIndex

@@ -19,7 +19,7 @@ void ITweenController::OnTransitionStarted(
     TranstionProperties[(int)StateType::DestinationState] = dstStateProperty;
 }
 
-void ITweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
+void ITweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
 }
 

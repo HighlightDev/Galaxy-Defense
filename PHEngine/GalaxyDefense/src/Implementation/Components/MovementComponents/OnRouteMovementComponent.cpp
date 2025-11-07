@@ -75,10 +75,10 @@ float OnRouteMovementComponent::GetMovementProgressOnRoute() const
     return mMovementProgressOnRoute;
 }
 
-void OnRouteMovementComponent::Move(const float deltaTime)
+void OnRouteMovementComponent::Move(const float deltaTimeSec)
 {
     if (mIsMovementOnRouteAllowed) {
-        const float distanceToBeDone = mCurrentSpeed * deltaTime;
+        const float distanceToBeDone = mCurrentSpeed * deltaTimeSec;
         float distanceAlreadyDone = mMovementProgressOnRoute * mRouteTotalDistance + distanceToBeDone;
         distanceAlreadyDone = std::fmod(distanceAlreadyDone, mRouteTotalDistance);
         const float prctDistanceDone

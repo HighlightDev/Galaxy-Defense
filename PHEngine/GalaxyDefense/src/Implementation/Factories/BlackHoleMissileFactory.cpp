@@ -140,7 +140,7 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
         const auto& albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoTextureName);
 
         MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "mul_coef", 2.5f);
-        MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, scene, "GT_DeltaSec", "deltaTime");
+        MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, scene, "GT_DeltaSec", "deltaTimeSec");
         MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "dudv", dudv_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "albedo", albedo_tex);
 

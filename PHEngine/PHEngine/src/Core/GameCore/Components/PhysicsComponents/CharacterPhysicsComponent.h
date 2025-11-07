@@ -15,7 +15,7 @@ public:
 
     ~CharacterPhysicsComponent() override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     void SetWalkVelocity(const glm::vec3& velocity);
 

@@ -50,7 +50,7 @@ eComponentType Component::GetComponentType() const
     return COMPONENT;
 }
 
-void Component::Tick(const float deltaTime)
+void Component::Tick(const float deltaTimeSec)
 {
 }
 

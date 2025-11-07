@@ -46,7 +46,7 @@ public:
 
     ~GalaxySceneCamera() override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     void Initialize() override;
 

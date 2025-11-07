@@ -21,7 +21,7 @@ int32_t FreezingRayModifier::CreatorObjectId() const
     return ownerSp->GetObjectId();
 }
 
-void FreezingRayModifier::Tick(const float deltaTime)
+void FreezingRayModifier::Tick(const float deltaTimeSec)
 {
     if (const auto& spaceshipSp = mOwnerWp.lock()) {
         const auto& movementComponent = spaceshipSp->GetMovementComponent();

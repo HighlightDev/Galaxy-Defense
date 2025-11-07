@@ -20,7 +20,7 @@ void InstancedGeometryBatchHolder::SetScene(const std::weak_ptr<Scene>& sceneWp)
     mSceneWp = sceneWp;
 }
 
-void InstancedGeometryBatchHolder::Tick(const float deltaTime)
+void InstancedGeometryBatchHolder::Tick(const float deltaTimeSec)
 {
     if (!mInstancedGeometryBatches.size())
         return;
@@ -31,7 +31,7 @@ void InstancedGeometryBatchHolder::Tick(const float deltaTime)
             std::unordered_map<std::string /*batch key*/, std::vector<int32_t> /*proxy ids with correct render order*/> batchData;
             batchData.reserve(mInstancedGeometryBatches.size());
             for (const auto& batchSp : mInstancedGeometryBatches) {
-                batchSp->Tick(deltaTime);
+                batchSp->Tick(deltaTimeSec);
                 batchData[batchSp->GetBatchKey()] = batchSp->GetValidInstances();
             }
 
@@ -50,7 +50,7 @@ void InstancedGeometryBatchHolder::Tick(const float deltaTime)
     }
 }
 
-void InstancedGeometryBatchHolder::UnpausableTick(const float deltaTime)
+void InstancedGeometryBatchHolder::UnpausableTick(const float deltaTimeSec)
 {
 }
 

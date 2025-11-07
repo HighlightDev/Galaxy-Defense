@@ -15,7 +15,7 @@ class SimpleVelocityModule : public IVelocityModule {
 public:
     SimpleVelocityModule();
 
-    void Update(Particle& particle, const float deltaTime) override;
+    void Update(Particle& particle, const float deltaTimeSec) override;
 
     void SetVelocityDirection(const glm::vec3& velocityDirection);
 

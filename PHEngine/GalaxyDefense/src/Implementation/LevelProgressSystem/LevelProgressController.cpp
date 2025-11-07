@@ -42,10 +42,10 @@ void LevelProgressController::AddLevelProgressStage(const std::shared_ptr<LevelP
     mLevelProgressStages.emplace(lvlProgressStage);
 }
 
-void LevelProgressController::Tick(const float deltaTime)
+void LevelProgressController::Tick(const float deltaTimeSec)
 {
     if (mCurrentStage) {
-        mCurrentStage->Tick(deltaTime);
+        mCurrentStage->Tick(deltaTimeSec);
 
         if (mCurrentStage->IsStageCompleted()) {
             LogInfo("LevelProgressController::Stage ", mCurrentStage->GetName(), " completed. Going to next stage.");
@@ -56,7 +56,7 @@ void LevelProgressController::Tick(const float deltaTime)
     }
 }
 
-void LevelProgressController::UnpausableTick(const float deltaTime)
+void LevelProgressController::UnpausableTick(const float deltaTimeSec)
 {
 }
 

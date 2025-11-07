@@ -22,9 +22,9 @@ public:
 
     virtual void Initialize();
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTimeSec) override;
 
     std::weak_ptr<Actor> GetBindedActor() const;
 

@@ -27,9 +27,9 @@ class TestFeaturesLevelUiController : public ITickable, public ILevelController 
 public:
     TestFeaturesLevelUiController(const std::weak_ptr<::EngineCore::Scene>& scene);
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTimeSec) override;
 
     void OnPreLevelInit() override;
 

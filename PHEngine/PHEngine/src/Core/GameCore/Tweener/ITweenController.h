@@ -25,7 +25,7 @@ public:
         const std::shared_ptr<BaseStateProperty>& dstStateProperty,
         const float transitionDuration);
 
-    virtual void OnTransitionUpdate(const float deltaTime, const float transitionParameter);
+    virtual void OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter);
 
     virtual void InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty);
 

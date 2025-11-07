@@ -25,9 +25,9 @@ std::shared_ptr<Vec3PropertyBinding> Vec3TweenController::GetVec3PropertyBinding
     return result;
 }
 
-void Vec3TweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
+void Vec3TweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
-    Base::OnTransitionUpdate(deltaTime, transitionParameter);
+    Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
     if (auto vec3Binding = GetVec3PropertyBindingSP()) {
         auto srcVec3Property = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);

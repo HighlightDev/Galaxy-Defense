@@ -24,7 +24,7 @@ public:
 
     virtual bool IsInsideLevel(const BoundingBox3D& boundingBox) const;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     virtual void TriggerSpawn(const glm::vec3& position);
 

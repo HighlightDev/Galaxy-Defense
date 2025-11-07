@@ -9,7 +9,7 @@ class SimpleLifeTimeModule : public ILifeTimeModule {
 public:
     SimpleLifeTimeModule();
 
-    void Update(Particle& particle, const float deltaTime) override;
+    void Update(Particle& particle, const float deltaTimeSec) override;
 
     void SetLifeTime(const float lifeTime);
 

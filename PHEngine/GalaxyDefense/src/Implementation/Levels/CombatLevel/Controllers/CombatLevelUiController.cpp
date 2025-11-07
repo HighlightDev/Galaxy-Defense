@@ -26,14 +26,14 @@ CombatLevelUiController::CombatLevelUiController(
 {
 }
 
-void CombatLevelUiController::UnpausableTick(const float deltaTime)
+void CombatLevelUiController::UnpausableTick(const float deltaTimeSec)
 {
-    mOverlayManager->UnpausableTick(deltaTime);
+    mOverlayManager->UnpausableTick(deltaTimeSec);
 }
 
-void CombatLevelUiController::Tick(const float deltaTime)
+void CombatLevelUiController::Tick(const float deltaTimeSec)
 {
-    mOverlayManager->Tick(deltaTime);
+    mOverlayManager->Tick(deltaTimeSec);
 }
 
 void CombatLevelUiController::OnPreLevelInit()

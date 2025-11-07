@@ -45,9 +45,9 @@ eComponentType LightComponent::GetComponentType() const
     return LIGHT_COMPONENT;
 }
 
-void LightComponent::UnpausableTick(const float deltaTime)
+void LightComponent::UnpausableTick(const float deltaTimeSec)
 {
-    SceneComponent::UnpausableTick(deltaTime);
+    SceneComponent::UnpausableTick(deltaTimeSec);
 
     if (bIsEnabledStateDirty || bIsVisibleStateDirty) {
         SyncRenderData();

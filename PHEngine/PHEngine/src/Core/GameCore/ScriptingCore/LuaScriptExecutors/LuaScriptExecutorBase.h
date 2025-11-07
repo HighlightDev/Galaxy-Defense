@@ -60,7 +60,7 @@ public:
 
     void StopScript() override;
 
-    void OnUpdate(const float deltaTime) override;
+    void OnUpdate(const float deltaTimeSec) override;
 
     void RestartScript() override;
 

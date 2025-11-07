@@ -9,13 +9,13 @@ class ITickable {
 public:
     /**
      * @brief Called every frame to update the object.
-     * @param deltaTime Time elapsed since the last tick, in seconds.
+     * @param deltaTimeSec Time elapsed since the last tick, in seconds.
      */
-    virtual void Tick(const float deltaTime) = 0;
+    virtual void Tick(const float deltaTimeSec) = 0;
 
     /**
      * @brief Called every frame to update the object, even when the game is paused.
-     * @param deltaTime Time elapsed since the last tick, in seconds.
+     * @param deltaTimeSec Time elapsed since the last tick, in seconds.
      */
-    virtual void UnpausableTick(const float deltaTime) = 0;
+    virtual void UnpausableTick(const float deltaTimeSec) = 0;
 };

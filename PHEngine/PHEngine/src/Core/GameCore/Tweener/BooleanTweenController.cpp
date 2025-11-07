@@ -25,9 +25,9 @@ std::shared_ptr<BooleanPropertyBinding> BooleanTweenController::GetBooleanProper
     return result;
 }
 
-void BooleanTweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
+void BooleanTweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
-    Base::OnTransitionUpdate(deltaTime, transitionParameter);
+    Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
     if (auto booleanBinding = GetBooleanPropertyBindingSP()) {
         auto srcBoolProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);

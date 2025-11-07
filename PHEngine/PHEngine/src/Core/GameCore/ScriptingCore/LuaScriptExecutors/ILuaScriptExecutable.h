@@ -15,7 +15,7 @@ public:
 
     virtual void StopScript() = 0;
 
-    virtual void OnUpdate(const float deltaTime) = 0;
+    virtual void OnUpdate(const float deltaTimeSec) = 0;
 
     virtual void RestartScript() = 0;
 

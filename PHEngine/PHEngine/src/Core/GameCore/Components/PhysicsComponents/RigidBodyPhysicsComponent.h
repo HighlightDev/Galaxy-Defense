@@ -17,7 +17,7 @@ public:
 
     ~RigidBodyPhysicsComponent() override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
 };
 } // namespace EnginePhysics

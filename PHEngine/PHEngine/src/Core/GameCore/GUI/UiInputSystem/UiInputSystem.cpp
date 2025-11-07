@@ -37,11 +37,11 @@ void UiInputSystem::Initialize()
     WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
 }
 
-void UiInputSystem::Tick(const float deltaTime)
+void UiInputSystem::Tick(const float deltaTimeSec)
 {
 }
 
-void UiInputSystem::UnpausableTick(const float deltaTime)
+void UiInputSystem::UnpausableTick(const float deltaTimeSec)
 {
     const auto& mouseBindings = mInputComponent->GetMouseBindings();
 

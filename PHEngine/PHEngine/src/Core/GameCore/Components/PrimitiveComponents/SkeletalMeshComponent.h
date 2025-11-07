@@ -63,7 +63,7 @@ public:
 
     eComponentType GetComponentType() const override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 

@@ -24,7 +24,7 @@
 					type: "float"
 				</property>
 				<property>
-					name: "deltaTime"
+					name: "deltaTimeSec"
 					type: "binding_float"
 				</property>
 			</mul>

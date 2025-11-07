@@ -62,9 +62,9 @@ void PlatformTraverseComponent::SetDestinationPointByIndex(const int32_t index)
     mBehaviorVisitor->CommitMovementStarted(transform);
 }
 
-void PlatformTraverseComponent::Move(const float deltaTime)
+void PlatformTraverseComponent::Move(const float deltaTimeSec)
 {
-    mTransitionTime += deltaTime;
+    mTransitionTime += deltaTimeSec;
 
     const float transitionTime = std::get<2>(mDestinationPoint.value());
 
@@ -78,12 +78,12 @@ void PlatformTraverseComponent::Move(const float deltaTime)
     mTransitionTime = fmod(mTransitionTime, transitionTime);
 }
 
-void PlatformTraverseComponent::Tick(const float deltaTime)
+void PlatformTraverseComponent::Tick(const float deltaTimeSec)
 {
-    Component::Tick(deltaTime);
+    Component::Tick(deltaTimeSec);
 
     if (mDestinationPoint) {
-        Move(deltaTime);
+        Move(deltaTimeSec);
 
         mBehaviorVisitor->CommitMove();
 

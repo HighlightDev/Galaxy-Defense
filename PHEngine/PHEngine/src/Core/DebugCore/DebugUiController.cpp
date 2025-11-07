@@ -239,11 +239,11 @@ void DebugUiController::InitializeWidgets()
     }
 }
 
-void DebugUiController::Tick(const float deltaTime)
+void DebugUiController::Tick(const float deltaTimeSec)
 {
 }
 
-void DebugUiController::UnpausableTick(const float deltaTime)
+void DebugUiController::UnpausableTick(const float deltaTimeSec)
 {
     const auto& keyboardBindings = mInputComponent->GetKeyboardBindings();
     static constexpr float buttonCooldown = 0.5f;
@@ -269,7 +269,7 @@ void DebugUiController::UnpausableTick(const float deltaTime)
         }
     }
 
-    mPressButtonCooldown += deltaTime;
+    mPressButtonCooldown += deltaTimeSec;
 }
 
 void DebugUiController::GoToNextTexture()

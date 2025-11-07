@@ -41,7 +41,7 @@ int32_t ElectroRayChainModifier::CreatorObjectId() const
     return chainDstSp->GetObjectId();
 }
 
-void ElectroRayChainModifier::Tick(const float deltaTime)
+void ElectroRayChainModifier::Tick(const float deltaTimeSec)
 {
     if (mElectroRayChainActor->IsPendingDisable()) {
         mElectroRayChainActor->SetIsPendingDisable(false);

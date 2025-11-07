@@ -19,7 +19,7 @@ public:
 
     void SetPassedAnimationTime(const float animationTime);
 
-    void AddDeltaTimeToAnimationTime(const float deltaTime);
+    void AddDeltaTimeToAnimationTime(const float deltaTimeSec);
 
     const std::vector<AnimationData>& GetAnimationDataInSequence() const;
 

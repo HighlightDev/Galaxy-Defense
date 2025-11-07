@@ -51,7 +51,7 @@ public:
 
     void CleanUp();
 
-    void Tick(const float deltaTime);
+    void Tick(const float deltaTimeSec);
 
     void RegisterLuaScriptExecutor(const std::shared_ptr<LuaScriptExecutorBase>& luaExecutor);
 

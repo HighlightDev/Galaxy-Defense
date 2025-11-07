@@ -81,9 +81,9 @@ public:
 
     void SetTimeForInterpolation(float timeForInterpolation);
 
-    virtual void ProcessZoom(const float deltaTime);
+    virtual void ProcessZoom(const float deltaTimeSec);
 
-    virtual void ProcessTargetFollow(const float deltaTime);
+    virtual void ProcessTargetFollow(const float deltaTimeSec);
 
     std::string GetCameraTypeName() const override;
 

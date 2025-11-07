@@ -118,8 +118,8 @@ function System_OnStart(host)
 	CreateTestLevel(host)
 end
 
-function System_OnUpdate(host, deltaTime)
-	print("LUA: deltaTime:", deltaTime)
+function System_OnUpdate(host, deltaTimeSec)
+	print("LUA: deltaTimeSec:", deltaTimeSec)
 end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)

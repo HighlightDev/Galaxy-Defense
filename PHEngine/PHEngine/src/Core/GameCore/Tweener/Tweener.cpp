@@ -211,14 +211,14 @@ void Tweener::AddPropertyBinding(const std::string& propBindingName, std::shared
     mPropertyBindings[propBindingName] = binding;
 }
 
-void Tweener::Tick(const float deltaTime)
+void Tweener::Tick(const float deltaTimeSec)
 {
     // process current transition
     if (bTransitionEnabled && mCurrentActiveStateTransition.has_value()) {
         if (auto spDestination = mCurrentActiveStateTransition->StateDestination.lock()) {
             std::shared_ptr<State> stateTo = spDestination;
 
-            mTransitionTime += deltaTime;
+            mTransitionTime += deltaTimeSec;
 
             if (mTransitionTime > mTransitionDuration) {
                 SetTransitionValuesFinished(stateTo);
@@ -228,7 +228,7 @@ void Tweener::Tick(const float deltaTime)
 
             for (const auto& controllerSp : CurrentActiveTransitionControllers) {
                 if (bTransitionEnabled) {
-                    controllerSp->OnTransitionUpdate(deltaTime, mTransitionParameter);
+                    controllerSp->OnTransitionUpdate(deltaTimeSec, mTransitionParameter);
                 } else {
                     controllerSp->OnTransitionFinished();
                 }

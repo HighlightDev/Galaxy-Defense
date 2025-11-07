@@ -36,11 +36,11 @@ public:
 
     void CompletePhysicsDescriptorConstruction() override;
 
-    void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
+    void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTimeSec) override;
 
     void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
 
-    void PostPhysicsSimulationUpdate(const float deltaTime) override;
+    void PostPhysicsSimulationUpdate(const float deltaTimeSec) override;
 
     void SetIsCollisionEnabled(const bool isCollisionEnabled) override;
 

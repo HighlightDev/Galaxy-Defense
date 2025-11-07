@@ -132,7 +132,7 @@ void NavigationController::CleanUp()
     mMissiles.clear();
 }
 
-void NavigationController::Tick(const float deltaTime)
+void NavigationController::Tick(const float deltaTimeSec)
 {
     bool needToValidateMissiles = false;
     for (auto& missile : mMissiles) {
@@ -163,7 +163,7 @@ void NavigationController::Tick(const float deltaTime)
     }
 }
 
-void NavigationController::UnpausableTick(const float deltaTime)
+void NavigationController::UnpausableTick(const float deltaTimeSec)
 {
 }
 

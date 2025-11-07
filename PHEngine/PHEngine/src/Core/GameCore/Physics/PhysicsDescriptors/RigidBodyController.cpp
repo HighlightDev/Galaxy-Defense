@@ -120,7 +120,7 @@ void RigidBodyController::ProcessEvent(
     }
 }
 
-void RigidBodyController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime)
+void RigidBodyController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTimeSec)
 {
     btTransform transform;
     mMotionState->getWorldTransform(transform);

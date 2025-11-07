@@ -97,7 +97,7 @@ function CreateTestLevel(host)
         "dayTexture")
     _SetTextureToMaterial(host, skyboxMat,
         "nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg", "nightTexture")
-    _SetBindingToMaterial(host, skyboxMat, "EngineScene", "GT_DeltaSec", "deltaTime")
+    _SetBindingToMaterial(host, skyboxMat, "EngineScene", "GT_DeltaSec", "deltaTimeSec")
     _SetFloatToMaterial(host, skyboxMat, 0.01, "mul_coef")
 
     _CreateAndAttachComponentToActor(host, a_spaceSkyboxId, "SkyboxComponent", Json.encode({
@@ -628,7 +628,7 @@ function CreateTestLevel(host)
     _SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComponent", "reflectionTexture")
     _SetTextureToMaterial(host, waterMat, "water_dudv.jpg", "dudv")
     _SetTextureToMaterial(host, waterMat, "brick_mid.jpg", "ground")
-    _SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTime")
+    _SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTimeSec")
     _SetFloatToMaterial(host, waterMat, 0.5, "mul_coef")
 
     _CreateAndAttachComponentToActor(host, a_water, "WaterPlaneComponent", Json.encode({

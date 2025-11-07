@@ -413,28 +413,28 @@ void Scene::Tick(const float delta)
     mUiHandler->Tick(delta);
 }
 
-void Scene::UnpausableTick(const float deltaTime)
+void Scene::UnpausableTick(const float deltaTimeSec)
 {
-    mPhysicsWorld->UnpausableTick(deltaTime);
+    mPhysicsWorld->UnpausableTick(deltaTimeSec);
 
     for (const auto cameraPtr : mActiveCameras) {
-        cameraPtr->UnpausableTick(deltaTime);
+        cameraPtr->UnpausableTick(deltaTimeSec);
     }
 
     for (auto actor : mActors) {
-        actor->UnpausableTick(deltaTime);
+        actor->UnpausableTick(deltaTimeSec);
     }
 
     for (const auto actorController : mActorControllers) {
-        actorController->UnpausableTick(deltaTime);
+        actorController->UnpausableTick(deltaTimeSec);
     }
 
     for (auto dynamicMaterial : mDynamicMaterials) {
-        dynamicMaterial->UnpausableTick(deltaTime);
+        dynamicMaterial->UnpausableTick(deltaTimeSec);
     }
 
 #if DEBUG
-    mDebugUiController->UnpausableTick(deltaTime);
+    mDebugUiController->UnpausableTick(deltaTimeSec);
 #endif
 
     if (mLuaReplicatorsDirty) {
@@ -446,7 +446,7 @@ void Scene::UnpausableTick(const float deltaTime)
         mLuaReplicatorsDirty = false;
     }
 
-    mUiHandler->UnpausableTick(deltaTime);
+    mUiHandler->UnpausableTick(deltaTimeSec);
 }
 
 void Scene::ProcessEvent(

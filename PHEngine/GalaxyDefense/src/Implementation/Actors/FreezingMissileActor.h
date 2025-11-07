@@ -36,7 +36,7 @@ public:
         const eDamageDealerType ownerType,
         const std::shared_ptr<Actor>& spawnerActor) override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     void TriggerExplosion() override;
 

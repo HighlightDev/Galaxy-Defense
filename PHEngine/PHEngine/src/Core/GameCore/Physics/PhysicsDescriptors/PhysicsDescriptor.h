@@ -74,11 +74,11 @@ public:
 
     virtual void CompletePhysicsDescriptorConstruction() = 0;
 
-    virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) = 0;
+    virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTimeSec) = 0;
 
     virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) = 0;
 
-    virtual void PostPhysicsSimulationUpdate(const float deltaTime);
+    virtual void PostPhysicsSimulationUpdate(const float deltaTimeSec);
 
     virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const = 0;
 

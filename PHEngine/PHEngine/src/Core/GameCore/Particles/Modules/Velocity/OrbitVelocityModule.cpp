@@ -15,13 +15,13 @@ OrbitVelocityModule::OrbitVelocityModule()
 {
 }
 
-void OrbitVelocityModule::Update(Particle& particle, const float deltaTime)
+void OrbitVelocityModule::Update(Particle& particle, const float deltaTimeSec)
 {
     if (auto ownerSp = mOwner.lock()) {
         const auto orbitOrigin = ownerSp->GetHierarchyAccumulatedTranslation();
         const auto& particlePosition = particle.Position;
         const auto nOrbitDir = glm::normalize(particlePosition - orbitOrigin);
-        const float rotationStepDeg = deltaTime * 100.0f;
+        const float rotationStepDeg = deltaTimeSec * 100.0f;
 
         glm::mat4 identityMatrix(1);
         const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(rotationStepDeg), AXIS_UP);
@@ -30,9 +30,9 @@ void OrbitVelocityModule::Update(Particle& particle, const float deltaTime)
         particle.Velocity = tangentVec;
 
         if (eOrbitExtraVelocityDirectionType::Inside == mExtraVelocityDirectionType) {
-            particle.Velocity = deltaTime * glm::normalize(particle.Velocity + (-nOrbitDir * mExtraVelocityPower));
+            particle.Velocity = deltaTimeSec * glm::normalize(particle.Velocity + (-nOrbitDir * mExtraVelocityPower));
         } else if (eOrbitExtraVelocityDirectionType::Outside == mExtraVelocityDirectionType) {
-            particle.Velocity = deltaTime * glm::normalize(particle.Velocity + (nOrbitDir * mExtraVelocityPower));
+            particle.Velocity = deltaTimeSec * glm::normalize(particle.Velocity + (nOrbitDir * mExtraVelocityPower));
         }
     }
 }

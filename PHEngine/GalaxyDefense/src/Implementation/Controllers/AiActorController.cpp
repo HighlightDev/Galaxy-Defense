@@ -14,7 +14,7 @@ AiActorController::AiActorController(const std::shared_ptr<Actor>& actor)
 {
 }
 
-void AiActorController::Tick(const float deltaTime)
+void AiActorController::Tick(const float deltaTimeSec)
 {
     if (const auto& actorSp = m_actorWp.lock()) {
         if (!actorSp->IsEnabled())
@@ -22,7 +22,7 @@ void AiActorController::Tick(const float deltaTime)
 
         if (const auto& moveCompSp = m_movementComponentWp.lock()) {
             if (moveCompSp->IsEnabled()) {
-                moveCompSp->Move(deltaTime);
+                moveCompSp->Move(deltaTimeSec);
             }
         }
     }

@@ -17,11 +17,11 @@ SequenceAnimator::SequenceAnimator(const std::shared_ptr<IAnimatable>& animatabl
     assert(mAnimatable);
 }
 
-void SequenceAnimator::Tick(const float deltaTime)
+void SequenceAnimator::Tick(const float deltaTimeSec)
 {
 }
 
-void SequenceAnimator::UnpausableTick(const float deltaTime)
+void SequenceAnimator::UnpausableTick(const float deltaTimeSec)
 {
     if (mAnimationInProgress) {
         assert(!mActiveAnimationSequenceName.empty());
@@ -33,7 +33,7 @@ void SequenceAnimator::UnpausableTick(const float deltaTime)
             if (animationDataIndex == -1) {
                 continue;
             }
-            animationSequence.AddDeltaTimeToAnimationTime(deltaTime);
+            animationSequence.AddDeltaTimeToAnimationTime(deltaTimeSec);
             const auto& animationDataList = animationSequence.GetAnimationDataInSequence();
             assert(animationDataIndex > -1 && animationDataIndex < animationDataList.size());
             const auto& animationData = animationDataList.at(animationDataIndex);

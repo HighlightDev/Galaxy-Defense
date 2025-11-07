@@ -44,7 +44,7 @@ public:
 
     int32_t GetLightSceneProxyId() const;
 
-    void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTimeSec) override;
 
     void SetIsEnabled(const bool value) override;
 

@@ -89,7 +89,7 @@ void PhysicsDescriptor::CleanUp()
     }
 }
 
-void PhysicsDescriptor::PostPhysicsSimulationUpdate(const float deltaTime)
+void PhysicsDescriptor::PostPhysicsSimulationUpdate(const float deltaTimeSec)
 {
 }
 

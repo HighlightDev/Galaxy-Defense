@@ -22,6 +22,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/ScreenRayCaster.h"
+#include "Implementation/ActorLeveling/LevelAttributeDataProvider.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
@@ -228,7 +229,7 @@ std::shared_ptr<SpaceStationActor> UserInteractionController::GetSpaceStationAtP
         : nullptr;
 }
 
-void UserInteractionController::Tick(const float deltaTime)
+void UserInteractionController::Tick(const float deltaTimeSec)
 {
     if (eGameModeType::SPACE_STATION_PLACEMENT == mCurrentGameModeType) {
         ProcessSpaceStationPlacementStage();
@@ -308,7 +309,11 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     const auto spaceStationSp = mCombatActorsPoolHandler->GetFreeSpaceStationActor();
                     assert(spaceStationSp);
                     spaceStationSp->GetRootComponent()->SetTranslation(cellPositionVec3);
-                    spaceStationSp->SetSpaceStationLevel(std::make_shared<SpaceStationLevel>(mTowerMissileType, 1, 50.0f));
+                    spaceStationSp->SetSpaceStationLevel(std::make_shared<SpaceStationLevel>(
+                        mTowerMissileType,
+                        1,
+                        LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(mTowerMissileType, 1),
+                        LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
                     spaceStationSp->SetState(eSpaceStationActivityState::ACTIVE);
                     SetUserInteractionType(eUserInteractionType::IDLE);
                 } else if (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {

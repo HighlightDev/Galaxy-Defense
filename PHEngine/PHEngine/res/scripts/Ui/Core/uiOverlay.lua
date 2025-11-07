@@ -166,8 +166,8 @@ function UiOverlay:subscribeOnAllWidgetLuaProxiesReady(callback)
     self.allWidgetLuaProxiesReadyCallbacks[#self.allWidgetLuaProxiesReadyCallbacks + 1] = callback
 end
 
-function UiOverlay:update(host, deltaTime)
-    self.overlayCanvas:update(host, deltaTime)
+function UiOverlay:update(host, deltaTimeSec)
+    self.overlayCanvas:update(host, deltaTimeSec)
 
     if self.allWidgetLuaProxiesReady ~= true then
         local allProxiesReady = true

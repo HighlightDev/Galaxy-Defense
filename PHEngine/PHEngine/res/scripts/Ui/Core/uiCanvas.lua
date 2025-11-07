@@ -173,7 +173,7 @@ function UiCanvas:addFadeOutAnimation(host, animationFunctionType, animationDura
     _AddCanvasFadeAnimation(host, self.luaProxyId, 1, animationJsonData)
 end
 
-function UiCanvas:update(host, deltaTime)
+function UiCanvas:update(host, deltaTimeSec)
 end
 
 return UiCanvas

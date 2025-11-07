@@ -36,11 +36,11 @@ std::string ActorController::GetBindedActorName() const
     return "";
 }
 
-void ActorController::Tick(const float deltaTime)
+void ActorController::Tick(const float deltaTimeSec)
 {
 }
 
-void ActorController::UnpausableTick(const float deltaTime)
+void ActorController::UnpausableTick(const float deltaTimeSec)
 {
 }
 

@@ -28,9 +28,9 @@ StaticMeshComponent::~StaticMeshComponent()
 {
 }
 
-void StaticMeshComponent::Tick(const float deltaTime)
+void StaticMeshComponent::Tick(const float deltaTimeSec)
 {
-    Base::Tick(deltaTime);
+    Base::Tick(deltaTimeSec);
 }
 
 void StaticMeshComponent::SetIsEnabled(const bool bEnabled)

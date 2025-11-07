@@ -37,9 +37,9 @@ std::shared_ptr<LightSceneProxy> SpotlightComponent::CreateSceneProxy() const
     return std::make_shared<SpotlightSceneProxy>(this);
 }
 
-void SpotlightComponent::Tick(const float deltaTime)
+void SpotlightComponent::Tick(const float deltaTimeSec)
 {
-    Base::Tick(deltaTime);
+    Base::Tick(deltaTimeSec);
 }
 
 } // namespace EngineCore

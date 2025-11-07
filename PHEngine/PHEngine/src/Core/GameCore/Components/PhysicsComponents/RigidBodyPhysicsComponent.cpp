@@ -19,14 +19,14 @@ RigidBodyPhysicsComponent::~RigidBodyPhysicsComponent()
 {
 }
 
-void RigidBodyPhysicsComponent::Tick(const float deltaTime)
+void RigidBodyPhysicsComponent::Tick(const float deltaTimeSec)
 {
-    Component::Tick(deltaTime);
+    Component::Tick(deltaTimeSec);
 
     if (mDescriptor->GetMotionState()) {
         bool bIsDirty;
 
-        mDescriptor->UpdateMotionWorldTransformLocalState(bIsDirty, deltaTime);
+        mDescriptor->UpdateMotionWorldTransformLocalState(bIsDirty, deltaTimeSec);
 
         bIsTransformationDirty = bIsDirty;
 

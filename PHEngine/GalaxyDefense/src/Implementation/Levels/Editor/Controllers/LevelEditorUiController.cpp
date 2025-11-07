@@ -22,14 +22,14 @@ LevelEditorUiController::LevelEditorUiController(const std::weak_ptr<Scene>& sce
 {
 }
 
-void LevelEditorUiController::UnpausableTick(const float deltaTime)
+void LevelEditorUiController::UnpausableTick(const float deltaTimeSec)
 {
-    mOverlayManager->UnpausableTick(deltaTime);
+    mOverlayManager->UnpausableTick(deltaTimeSec);
 }
 
-void LevelEditorUiController::Tick(const float deltaTime)
+void LevelEditorUiController::Tick(const float deltaTimeSec)
 {
-    mOverlayManager->Tick(deltaTime);
+    mOverlayManager->Tick(deltaTimeSec);
 }
 
 void LevelEditorUiController::OnPreLevelInit()

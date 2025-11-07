@@ -47,7 +47,7 @@ eComponentType HumanoidPhysicsMovementComponent::GetComponentType() const
     return CHARACTER_MOVEMENT_COMPONENT;
 }
 
-void HumanoidPhysicsMovementComponent::Tick(const float deltaTime)
+void HumanoidPhysicsMovementComponent::Tick(const float deltaTimeSec)
 {
     if (bIsCameraRotationDirty) {
         if (const auto& spOwner = GetOwner().lock()) {
@@ -75,17 +75,17 @@ void HumanoidPhysicsMovementComponent::ProcessEvent(
     }
 }
 
-void HumanoidPhysicsMovementComponent::Move(const float deltaTime)
+void HumanoidPhysicsMovementComponent::Move(const float deltaTimeSec)
 {
     if (const auto& playerPhysComponentSp = m_playerPhysicsComponent.lock()) {
-        playerPhysComponentSp->SetWalkVelocity(GetVelocity() * deltaTime);
+        playerPhysComponentSp->SetWalkVelocity(GetVelocity() * deltaTimeSec);
     }
 }
 
-void HumanoidPhysicsMovementComponent::Move(const glm::vec3& direction, const float deltaTime)
+void HumanoidPhysicsMovementComponent::Move(const glm::vec3& direction, const float deltaTimeSec)
 {
     if (const auto& playerPhysComponentSp = m_playerPhysicsComponent.lock()) {
-        playerPhysComponentSp->SetWalkVelocity(direction * deltaTime * mCurrentSpeed);
+        playerPhysComponentSp->SetWalkVelocity(direction * deltaTimeSec * mCurrentSpeed);
     }
 }
 

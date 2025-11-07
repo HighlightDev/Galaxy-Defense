@@ -15,14 +15,14 @@ Animator::Animator(const std::shared_ptr<IAnimatable>& animatable)
     assert(mAnimatable);
 }
 
-void Animator::Tick(const float deltaTime)
+void Animator::Tick(const float deltaTimeSec)
 {
 }
 
-void Animator::UnpausableTick(const float deltaTime)
+void Animator::UnpausableTick(const float deltaTimeSec)
 {
     if (mAnimationInProgress) {
-        mAnimationTimePassed += deltaTime;
+        mAnimationTimePassed += deltaTimeSec;
         assert(!mActiveAnimationName.empty());
         assert(mAnimations.count(mActiveAnimationName));
         bool isAnimationFinished = true;

@@ -11,7 +11,7 @@ SimpleSizeModule::SimpleSizeModule()
 {
 }
 
-void SimpleSizeModule::Update(Particle& particle, const float deltaTime)
+void SimpleSizeModule::Update(Particle& particle, const float deltaTimeSec)
 {
     particle.Size
         = EngineMath::LerpFloat(particle.LifeTime - particle.LifeRemaining, 0.0f, particle.LifeTime, mSizeBegin, mSizeEnd);

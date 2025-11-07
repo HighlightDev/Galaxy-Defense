@@ -61,6 +61,7 @@ set(HEADERS
     src/Implementation/Factories/SpawnPortalFactory.h
     src/Implementation/ActorLeveling/SpaceStationLevel.h
     src/Implementation/ActorLeveling/SpaceshipLevel.h
+    src/Implementation/ActorLeveling/LevelAttributeDataProvider.h
     src/Implementation/Modifiers/IModifiable.h
     src/Implementation/Modifiers/GravityModifier.h
     src/Implementation/Modifiers/FreezingModifier.h
@@ -152,6 +153,7 @@ set(SOURCES
     src/Implementation/Factories/SpawnPortalFactory.cpp
     src/Implementation/ActorLeveling/SpaceStationLevel.cpp
     src/Implementation/ActorLeveling/SpaceshipLevel.cpp
+    src/Implementation/ActorLeveling/LevelAttributeDataProvider.cpp
     src/Implementation/Modifiers/GravityModifier.cpp
     src/Implementation/Modifiers/FreezingModifier.cpp
     src/Implementation/Modifiers/FreezingRayModifier.cpp

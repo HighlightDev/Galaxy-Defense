@@ -22,9 +22,9 @@ GhostPhysicsComponent::~GhostPhysicsComponent()
 {
 }
 
-void GhostPhysicsComponent::Tick(const float deltaTime)
+void GhostPhysicsComponent::Tick(const float deltaTimeSec)
 {
-    Component::Tick(deltaTime);
+    Component::Tick(deltaTimeSec);
 
     if (const auto& spOwner = GetOwner().lock()) {
         const auto rootComponentSp = spOwner->GetRootComponent();
@@ -36,7 +36,7 @@ void GhostPhysicsComponent::Tick(const float deltaTime)
 
     bool bIsDirty;
 
-    mDescriptor->UpdateMotionWorldTransformLocalState(bIsDirty, deltaTime);
+    mDescriptor->UpdateMotionWorldTransformLocalState(bIsDirty, deltaTimeSec);
     bIsTransformationDirty = bIsDirty;
 }
 

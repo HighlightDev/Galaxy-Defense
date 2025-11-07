@@ -52,7 +52,7 @@ public:
         const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
         const SpaceshipLevel& spaceshipLevel);
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     void OnSceneOwnerInitialized() override;
 
@@ -82,7 +82,7 @@ public:
 
     bool IsAlive() const;
 
-    void SetDamageDeltaTime(const float deltaTime);
+    void SetDamageDeltaTime(const float deltaTimeSec);
 
     float GetDamageDeltaTime() const;
 

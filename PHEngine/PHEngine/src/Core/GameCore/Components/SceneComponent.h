@@ -39,7 +39,7 @@ public:
 
     ~SceneComponent() override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     eComponentType GetComponentType() const override;
 

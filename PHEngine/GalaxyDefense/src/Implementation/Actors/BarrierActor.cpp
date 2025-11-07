@@ -16,9 +16,9 @@ BarrierActor::BarrierActor(const std::string& gameObjectName, const std::shared_
 {
 }
 
-void BarrierActor::Tick(const float deltaTime)
+void BarrierActor::Tick(const float deltaTimeSec)
 {
-    Actor::Tick(deltaTime);
+    Actor::Tick(deltaTimeSec);
 }
 
 void BarrierActor::AddBarrierPillarMesh(const std::shared_ptr<StaticMeshComponent>& meshComponent)

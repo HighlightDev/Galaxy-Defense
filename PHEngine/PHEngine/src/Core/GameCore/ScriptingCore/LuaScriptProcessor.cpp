@@ -14,11 +14,11 @@ LuaScriptProcessor::LuaScriptProcessor(InterThreadCommunicationMgr& interThreadM
     Initialize();
 }
 
-void LuaScriptProcessor::Tick(const float deltaTime)
+void LuaScriptProcessor::Tick(const float deltaTimeSec)
 {
     for (const auto& luaScriptExecutor : mLuaScriptExecutors) {
         if (luaScriptExecutor->IsEnabled()) {
-            luaScriptExecutor->OnUpdate(deltaTime);
+            luaScriptExecutor->OnUpdate(deltaTimeSec);
         }
     }
 }

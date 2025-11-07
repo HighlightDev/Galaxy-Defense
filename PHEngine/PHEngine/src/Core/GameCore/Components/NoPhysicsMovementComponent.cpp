@@ -32,22 +32,22 @@ eComponentType NoPhysicsMovementComponent::GetComponentType() const
     return MOVEMENT_COMPONENT;
 }
 
-void NoPhysicsMovementComponent::Tick(const float deltaTime)
+void NoPhysicsMovementComponent::Tick(const float deltaTimeSec)
 {
-    MovementComponent::Tick(deltaTime);
+    MovementComponent::Tick(deltaTimeSec);
 }
 
-void NoPhysicsMovementComponent::Move(const float deltaTime)
+void NoPhysicsMovementComponent::Move(const float deltaTimeSec)
 {
     if (const auto& actorRootComponentSp = m_actorRootComponent.lock()) {
-        actorRootComponentSp->AddTranslation(GetVelocity() * deltaTime);
+        actorRootComponentSp->AddTranslation(GetVelocity() * deltaTimeSec);
     }
 }
 
-void NoPhysicsMovementComponent::Move(const glm::vec3& direction, const float deltaTime)
+void NoPhysicsMovementComponent::Move(const glm::vec3& direction, const float deltaTimeSec)
 {
     if (const auto& actorRootComponentSp = m_actorRootComponent.lock()) {
-        actorRootComponentSp->AddTranslation(direction * deltaTime);
+        actorRootComponentSp->AddTranslation(direction * deltaTimeSec);
     }
 }
 

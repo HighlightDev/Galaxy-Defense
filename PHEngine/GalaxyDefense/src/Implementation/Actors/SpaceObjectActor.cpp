@@ -16,11 +16,11 @@ bool SpaceObjectActor::IsInsideLevel(const BoundingBox3D& boundingBox) const
     return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), GetRootComponent()->GetTranslation());
 }
 
-void SpaceObjectActor::Tick(const float deltaTime)
+void SpaceObjectActor::Tick(const float deltaTimeSec)
 {
-    Actor::Tick(deltaTime);
+    Actor::Tick(deltaTimeSec);
 
-    mModifiersHandler->Tick(deltaTime);
+    mModifiersHandler->Tick(deltaTimeSec);
 }
 
 void SpaceObjectActor::TriggerSpawn(const glm::vec3& position)

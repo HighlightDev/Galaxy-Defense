@@ -41,9 +41,9 @@ void ElectroRayChainActor::AttachTweener(std::shared_ptr<Tweener> tweener)
     InitTweenerSubscriptions();
 }
 
-void ElectroRayChainActor::Tick(const float deltaTime)
+void ElectroRayChainActor::Tick(const float deltaTimeSec)
 {
-    MissileActor::Tick(deltaTime);
+    MissileActor::Tick(deltaTimeSec);
 
     assert(mLineComponent);
 
@@ -54,7 +54,7 @@ void ElectroRayChainActor::Tick(const float deltaTime)
         mChainingAnimationTime = mChainingAnimationTimeDuration;
         TriggerLifecycle_OnFadeOutStarted();
     } else {
-        mChainingAnimationTime += deltaTime;
+        mChainingAnimationTime += deltaTimeSec;
     }
 
     const auto& toEndLineVec = mElectroLineEnd - mElectroLineBegin;

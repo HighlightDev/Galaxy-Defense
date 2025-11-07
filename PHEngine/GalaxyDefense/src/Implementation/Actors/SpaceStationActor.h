@@ -14,7 +14,7 @@ enum class eSpaceStationActivityState { IDLE, ACTIVE };
 
 class SpaceStationActor : public Actor {
 
-    float mTimeSinceLastShoot{0.0f};
+    float mShootCooldown{0.0f};
 
     bool mIsRayActive{false};
 
@@ -31,7 +31,7 @@ public:
         const std::string& gameObjectName,
         const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     bool CanShoot() const;
 

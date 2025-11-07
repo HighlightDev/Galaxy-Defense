@@ -20,10 +20,10 @@ function System_OnStart(host)
 	OnStart(host)
 end
 
-function System_OnUpdate(host, deltaTime)
+function System_OnUpdate(host, deltaTimeSec)
 end
 
---function System_OnUpdate(host, deltaTime)
+--function System_OnUpdate(host, deltaTimeSec)
 --local status = coroutine.status(OnUpdateCoroutine)
 --	if coroutine.status(OnUpdateCoroutine) ~= 'dead' then
 --		coroutine.resume(OnUpdateCoroutine, host)

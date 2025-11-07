@@ -1,10 +1,12 @@
 #include "SpaceStationLevel.h"
 
 namespace Game {
-SpaceStationLevel::SpaceStationLevel(const eMissileType missileType, const int32_t lvl, const float shootRadius)
+SpaceStationLevel::SpaceStationLevel(
+    const eMissileType missileType, const int32_t lvl, const float shootRadius, const int32_t cooldownMs)
     : mMissileType(missileType)
     , mLvl(lvl)
     , mShootRadius(shootRadius)
+    , mCooldownMs(cooldownMs)
 {
 }
 
@@ -21,6 +23,11 @@ int32_t SpaceStationLevel::GetLvl() const
 float SpaceStationLevel::GetShootRadius() const
 {
     return mShootRadius;
+}
+
+int32_t SpaceStationLevel::GetCooldownMs() const
+{
+    return mCooldownMs;
 }
 
 } // namespace Game

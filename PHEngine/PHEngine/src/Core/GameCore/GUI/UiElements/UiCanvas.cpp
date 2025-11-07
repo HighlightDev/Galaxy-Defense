@@ -386,7 +386,7 @@ void UiCanvas::RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem)
     mChildren.erase(it);
 }
 
-void UiCanvas::UnpausableTick(const float deltaTime)
+void UiCanvas::UnpausableTick(const float deltaTimeSec)
 {
     if (mIsTransformDirty) {
         UpdateAnchorTransform();
@@ -405,19 +405,19 @@ void UiCanvas::UnpausableTick(const float deltaTime)
     }
 
     for (const auto& child : mChildren) {
-        child->UnpausableTick(deltaTime);
+        child->UnpausableTick(deltaTimeSec);
     }
 
     if (mInputSystem && mIsVisible) {
-        mInputSystem->UnpausableTick(deltaTime);
+        mInputSystem->UnpausableTick(deltaTimeSec);
     }
 
     if (mAnimator) {
-        mAnimator->UnpausableTick(deltaTime);
+        mAnimator->UnpausableTick(deltaTimeSec);
     }
 }
 
-void UiCanvas::Tick(const float deltaTime)
+void UiCanvas::Tick(const float deltaTimeSec)
 {
 }
 

@@ -29,14 +29,14 @@ public:
 
     eComponentType GetComponentType() const override;
 
-    void Tick(const float deltaTime) override;
+    void Tick(const float deltaTimeSec) override;
 
     void PostLevelInit() override;
 
     const std::vector<std::tuple<std::string, EulerAnglesTransform, float>>& GetMovementPoints() const;
 
 private:
-    void Move(const float deltaTime);
+    void Move(const float deltaTimeSec);
 
     void SetDestinationPointByIndex(const int32_t index);
 };

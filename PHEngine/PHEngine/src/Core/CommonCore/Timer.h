@@ -23,7 +23,7 @@ public:
 
     void Tick(const float deltaSeconds) override;
 
-    void UnpausableTick(const float deltaTime) override;
+    void UnpausableTick(const float deltaTimeSec) override;
 };
 
 class GameThreadTimer : public std::enable_shared_from_this<GameThreadTimer> {
