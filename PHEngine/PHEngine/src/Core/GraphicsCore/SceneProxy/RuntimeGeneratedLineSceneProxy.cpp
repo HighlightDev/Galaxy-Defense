@@ -34,7 +34,7 @@ void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
     const ShaderParams shaderParams(
         "RuntimeGeneratedMesh_BaseShader",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "runtimeGeneratedMeshVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardFS.glsl");
+        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 
     m_shader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
         "StaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
@@ -42,7 +42,7 @@ void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
     const ShaderParams planarReflectionParams(
         "PlanarReflectionShader",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "planarReflectionVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardFS.glsl");
+        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 
     m_planarReflectionShader = CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(
         "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName,

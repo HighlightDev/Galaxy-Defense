@@ -28,7 +28,7 @@ BarriersHandler::BarriersHandler(const std::weak_ptr<Scene>& sceneWp)
 
 void BarriersHandler::OnPostLevelInit()
 {
-    mNoiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise.png");
+    mNoiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise_128x128.png");
 }
 
 void BarriersHandler::SelectNewBarrier(const std::string& barrierName)

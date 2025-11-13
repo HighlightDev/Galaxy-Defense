@@ -4,6 +4,7 @@
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
@@ -86,6 +87,9 @@ void WeakSpaceshipActor::TriggerExplosion()
 {
     const auto c_spaceshipMesh = GetComponentsByType<InstancedStaticMeshComponent>().back();
     c_spaceshipMesh->SetIsEnabled(false);
+
+    const auto c_engineMesh = GetComponentsByType<StaticMeshComponent>().back();
+    c_engineMesh->SetIsEnabled(false);
 
     const auto& c_physics = GetPhysicsComponent();
     c_physics->SetIsEnabled(false);

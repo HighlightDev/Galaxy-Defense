@@ -41,6 +41,7 @@ void FolderManager::BuildSystemPathToFolders()
     CreateFilePathMap(GetUiTexturePath(), GetShortUiTexturePath());
     CreateFilePathMap(GetLandscapeTexturePath(), GetShortLandscapeTexturePath());
     CreateFilePathMap(GetEditorTexturePath(), GetShortEditorTexturePath());
+    CreateFilePathMap(GetNoiseTexturePath(), GetShortNoiseTexturePath());
 }
 
 void FolderManager::CreateFilePathMap(const std::string& absolutePathToDirectory, const std::string& relativePathToDirectory)
@@ -224,6 +225,11 @@ std::string FolderManager::GetShortTweenerPath() const
     return GetShortResPath() + "tweeners" + SLASH;
 }
 
+std::string FolderManager::GetShortNoiseTexturePath() const
+{
+    return GetShortTexturesPath() + "noise" + SLASH;
+}
+
 std::string FolderManager::GetModelPath() const
 {
     return GetResPath() + "model" + SLASH;
@@ -337,5 +343,10 @@ std::string FolderManager::GetMaterialPath() const
 std::string FolderManager::GetTweenerPath() const
 {
     return GetResPath() + "tweeners" + SLASH;
+}
+
+std::string FolderManager::GetNoiseTexturePath() const
+{
+    return GetTexturesPath() + "noise" + SLASH;
 }
 } // namespace IO

@@ -86,11 +86,10 @@ void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentRelativeMatrix)
     m_outlineMatrix *= glm::scale(identityMatrix, mTransform->Scale + thicknessScale);
 
     if (bIsRootComponent) {
-        const glm::mat4 pitchRotation
-            = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().x), AXIS_RIGHT);
-        const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().y), AXIS_UP);
-        const glm::mat4 rollRotation
-            = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().z), AXIS_FORWARD);
+        const auto& additionalRotation = m_additionalRotationEuler->GetValue();
+        const glm::mat4 pitchRotation = glm::rotate(identityMatrix, DEG_TO_RAD(additionalRotation.x), AXIS_RIGHT);
+        const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(additionalRotation.y), AXIS_UP);
+        const glm::mat4 rollRotation = glm::rotate(identityMatrix, DEG_TO_RAD(additionalRotation.z), AXIS_FORWARD);
 
         m_outlineMatrix *= pitchRotation;
         m_outlineMatrix *= yawRotation;
@@ -119,13 +118,12 @@ void SceneComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
     m_relativeMatrix *= parentRelativeMatrix;
     m_relativeMatrix *= glm::translate(identityMatrix, mTransform->Translation);
     m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
-
+    
     if (bIsRootComponent) {
-        const glm::mat4 pitchRotation
-            = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().x), AXIS_RIGHT);
-        const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().y), AXIS_UP);
-        const glm::mat4 rollRotation
-            = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().z), AXIS_FORWARD);
+        const auto& additionalRotation = m_additionalRotationEuler->GetValue();
+        const glm::mat4 pitchRotation = glm::rotate(identityMatrix, DEG_TO_RAD(additionalRotation.x), AXIS_RIGHT);
+        const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(additionalRotation.y), AXIS_UP);
+        const glm::mat4 rollRotation = glm::rotate(identityMatrix, DEG_TO_RAD(additionalRotation.z), AXIS_FORWARD);
 
         m_relativeMatrix *= pitchRotation;
         m_relativeMatrix *= yawRotation;

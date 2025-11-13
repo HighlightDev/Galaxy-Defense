@@ -19,7 +19,8 @@ EngineObjectCreator::EngineObjectCreator()
         = {"PointLightComponent",
            "DirectionalLightComponent",
            "SpotlightComponent",
-           "StaticMeshComponent",
+           "StaticMeshComponent_Deferred",
+           "StaticMeshComponent_Forward",
            "SkeletalMeshComponent",
            "RigidBodyPhysicsComponent",
            "CharacterPhysicsComponent",
@@ -28,7 +29,8 @@ EngineObjectCreator::EngineObjectCreator()
            "SkyboxComponent",
            "WaterPlaneComponent",
            "PlanarReflectionComponent",
-           "InputComponent"};
+           "InputComponent",
+           "BillboardComponent"};
 }
 
 void EngineObjectCreator::SetScene(const std::weak_ptr<Scene>& scene)
@@ -39,21 +41,24 @@ void EngineObjectCreator::SetScene(const std::weak_ptr<Scene>& scene)
 void EngineObjectCreator::RegisterActorCreatorFactory(
     const std::string& factoryKey, const std::shared_ptr<IEngineActorCreatorFactory>& creatorFactoryInstance)
 {
-    assert(!mActorCreatorFactoriesMap.count(factoryKey));
+    ext_assert(!mActorCreatorFactoriesMap.count(factoryKey), "Actor creator factory already registered for key: " + factoryKey);
     mActorCreatorFactoriesMap[factoryKey] = creatorFactoryInstance;
 }
 
 void EngineObjectCreator::RegisterComponentCreatorFactory(
     const std::string& factoryKey, const std::shared_ptr<IEngineComponentCreatorFactory>& creatorFactoryInstance)
 {
-    assert(!mComponentCreatorFactoriesMap.count(factoryKey));
+    ext_assert(
+        !mComponentCreatorFactoriesMap.count(factoryKey), "Component creator factory already registered for key: " + factoryKey);
     mComponentCreatorFactoriesMap[factoryKey] = creatorFactoryInstance;
 }
 
 void EngineObjectCreator::RegisterActorControllerCreatorFactory(
     const std::string& factoryKey, const std::shared_ptr<IEngineActorControllerCreatorFactory>& creatorFactoryInstance)
 {
-    assert(!mActorControllerCreatorFactoriesMap.count(factoryKey));
+    ext_assert(
+        !mActorControllerCreatorFactoriesMap.count(factoryKey),
+        "Actor controller creator factory already registered for key: " + factoryKey);
     mActorControllerCreatorFactoriesMap[factoryKey] = creatorFactoryInstance;
 }
 
@@ -66,7 +71,7 @@ int32_t EngineObjectCreator::CreateActor(
     const glm::vec3& rootScale,
     const std::string& jsonParamStr) const
 {
-    assert(mActorCreatorFactoriesMap.count(actorType));
+    ext_assert(mActorCreatorFactoriesMap.count(actorType), "Actor creator factory not found for actor type: " + actorType);
     return mActorCreatorFactoriesMap.at(actorType)->CreateActor(
         mSceneWp, actorName, rootTranslation, rootEulerRotation, rootScale, jsonParamStr);
 }
@@ -80,7 +85,9 @@ void EngineObjectCreator::CreateComponent(
     } else {
         factoryName = componentType;
     }
-    assert(mComponentCreatorFactoriesMap.count(factoryName));
+    ext_assert(
+        mComponentCreatorFactoriesMap.count(factoryName),
+        "Component creator factory not found for component type: " + componentType);
     mComponentCreatorFactoriesMap.at(factoryName)->CreateComponent(mSceneWp, actorObjectId, componentType, componentDataJsonStr);
 }
 
@@ -148,21 +155,21 @@ void EngineObjectCreator::CreateFirstPersonCamera(
 std::shared_ptr<ViewProjectionInfo> EngineObjectCreator::CreateViewProjectionInfo(const std::string& jsonArgs) const
 {
     const auto& jsonObj = nlohmann::json::parse(jsonArgs);
-    const auto& projectionType = nlohmann_utilities::GetStringFromJson(jsonObj["projectionType"]);
+    const auto& projectionType = nlohmann_utilities::GetStringFromJson(jsonObj, "projectionType");
 
     if ("Perspective" == projectionType) {
-        const float fov = nlohmann_utilities::GetFloatFromJson(jsonObj["FoV"]);
-        const float aspectRatio = nlohmann_utilities::GetFloatFromJson(jsonObj["AspectRatio"]);
-        const float nearPlane = nlohmann_utilities::GetFloatFromJson(jsonObj["NearPlane"]);
-        const float farPlane = nlohmann_utilities::GetFloatFromJson(jsonObj["FarPlane"]);
+        const float fov = nlohmann_utilities::GetFloatFromJson(jsonObj, "FoV");
+        const float aspectRatio = nlohmann_utilities::GetFloatFromJson(jsonObj, "AspectRatio");
+        const float nearPlane = nlohmann_utilities::GetFloatFromJson(jsonObj, "NearPlane");
+        const float farPlane = nlohmann_utilities::GetFloatFromJson(jsonObj, "FarPlane");
         return std::make_shared<ViewPerspectiveInfo>(fov, aspectRatio, nearPlane, farPlane);
     } else if ("Orthographic" == projectionType) {
-        const float left = nlohmann_utilities::GetFloatFromJson(jsonObj["left"]);
-        const float right = nlohmann_utilities::GetFloatFromJson(jsonObj["right"]);
-        const float bottom = nlohmann_utilities::GetFloatFromJson(jsonObj["bottom"]);
-        const float top = nlohmann_utilities::GetFloatFromJson(jsonObj["top"]);
-        const float zNear = nlohmann_utilities::GetFloatFromJson(jsonObj["zNear"]);
-        const float zFar = nlohmann_utilities::GetFloatFromJson(jsonObj["zFar"]);
+        const float left = nlohmann_utilities::GetFloatFromJson(jsonObj, "left");
+        const float right = nlohmann_utilities::GetFloatFromJson(jsonObj, "right");
+        const float bottom = nlohmann_utilities::GetFloatFromJson(jsonObj, "bottom");
+        const float top = nlohmann_utilities::GetFloatFromJson(jsonObj, "top");
+        const float zNear = nlohmann_utilities::GetFloatFromJson(jsonObj, "zNear");
+        const float zFar = nlohmann_utilities::GetFloatFromJson(jsonObj, "zFar");
         return std::make_shared<ViewOrthographicInfo>(left, right, bottom, top, zNear, zFar);
     }
 
@@ -176,7 +183,9 @@ void EngineObjectCreator::CreateActorController(
     const std::string& actorControllerTypeName,
     const std::string& jsonArgs)
 {
-    assert(mActorControllerCreatorFactoriesMap.count(factoryType) > 0);
+    ext_assert(
+        mActorControllerCreatorFactoriesMap.count(factoryType) > 0,
+        "Actor controller creator factory not found for factory type: " + factoryType);
     mActorControllerCreatorFactoriesMap.at(factoryType)
         ->CreateActorController(mSceneWp, actorName, actorControllerTypeName, jsonArgs);
 }

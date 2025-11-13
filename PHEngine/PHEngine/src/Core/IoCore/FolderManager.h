@@ -62,6 +62,7 @@ public:
     std::string GetScriptPath() const;
     std::string GetMaterialPath() const;
     std::string GetTweenerPath() const;
+    std::string GetNoiseTexturePath() const;
 
     std::string GetShortModelPath() const;
     std::string GetShortShadersPath() const;
@@ -86,6 +87,7 @@ public:
     std::string GetShortScriptPath() const;
     std::string GetShortMaterialPath() const;
     std::string GetShortTweenerPath() const;
+    std::string GetShortNoiseTexturePath() const;
 
     void CreateFilePathMap(const std::string& absolutePathToDirectory, const std::string& relativePathToDirectory);
     std::string GetDirectoryRelativePathByFileName(const std::string& fileName) const;

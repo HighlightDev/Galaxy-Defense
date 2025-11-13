@@ -169,7 +169,9 @@ void CombatLevel::CreateScene()
     const auto backgroundBillboardComponentData = std::make_shared<BillboardComponentData>(
         "c_spaceBackgroundBillboard",
         1.0f,
+        true,
         glm::vec3(0.0f, 0.0f, 1.0f),
+        0.0f,
         glm::vec3(1.0f),
         spaceStars_material,
         [](const glm::mat4& viewMatrix) { return glm::mat4(1); },

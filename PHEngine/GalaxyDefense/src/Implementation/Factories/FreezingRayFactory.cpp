@@ -51,7 +51,7 @@ std::shared_ptr<MissileActor> FreezingRayFactory::CreateMissile(
     const std::shared_ptr<IMaterial>& freezing_material = materialParser.ParseMaterialDescriptor("ElectroRayMaterial.m");
     scene->RegisterMaterialInstance(freezing_material);
 
-    const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise.png");
+    const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise_128x128.png");
 
     MaterialPropertySetter::SetMaterialPropertyValue(freezing_material, "noise", noiseTex);
     MaterialPropertySetter::SetMaterialPropertyValue(freezing_material, "rayColor", glm::vec3(0.8, 0.8, 2.0));

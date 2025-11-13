@@ -18,6 +18,7 @@
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/UtilityCore/JsonUtilities.h"
 
 using namespace Graphics;
 using namespace EngineUtility;
@@ -175,6 +176,14 @@ void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper& luaWr
             mOwnerPtr,
             std::bind(&LuaEngineObjectsCreatorFunctions::SetBindingToMaterial, this, std::placeholders::_1),
             "_SetBindingToMaterial");
+    LuaCallbackBindingHelper<
+        Hash64_CT("LuaEngineObjectsCreatorFunctions::SetVec3ToMaterial"),
+        void(int32_t, std::string, std::string)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaEngineObjectsCreatorFunctions::SetVec3ToMaterial, this, std::placeholders::_1),
+            "_SetVec3ToMaterial");
 
     LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateTweener"), int32_t(int32_t, std::string)>::Bind(
         luaWrapper,
@@ -403,6 +412,20 @@ void LuaEngineObjectsCreatorFunctions::SetBindingToMaterial(
 
     const auto& gameObject = sceneSp->GetEngineObjectByName(gameObjectName);
     MaterialPropertySetter::SetMaterialPropertyValue(materialSp, gameObject, gamePropertyName, bindingName);
+}
+
+void LuaEngineObjectsCreatorFunctions::SetVec3ToMaterial(
+    const std::tuple<int32_t /*material proxy id*/, std::string /*value*/, std::string /*property name*/>& setVec3ToMaterial)
+{
+    const auto materialId = std::get<0>(setVec3ToMaterial);
+    const auto sceneSp = mSceneWp.lock();
+    assert(sceneSp);
+    const auto materialSp = sceneSp->GetMaterialByProxyId(materialId);
+    assert(materialSp);
+    const auto& jsonObj = nlohmann::json::parse(std::get<1>(setVec3ToMaterial));
+    const glm::vec3 value = nlohmann_utilities::GetXyzFromJsonMap(jsonObj);
+    const std::string& propertyName = std::get<2>(setVec3ToMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(materialSp, propertyName, value);
 }
 
 /* -------------------  Create Tweener ----------------------------*/

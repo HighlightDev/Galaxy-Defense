@@ -41,7 +41,7 @@ std::shared_ptr<MissileActor> ElectroRayChainFactory::CreateMissile(
     MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& electro_material = materialParser.ParseMaterialDescriptor("ElectroRayMaterial.m");
     scene->RegisterMaterialInstance(electro_material);
-    const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise.png");
+    const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise_128x128.png");
 
     MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "noise", noiseTex);
     MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "rayColor", glm::vec3(1.0, 1.0, 0.0));

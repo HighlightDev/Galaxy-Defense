@@ -60,11 +60,17 @@ std::shared_ptr<BackgroundSpaceObjectActor> BackgroundPlanetsFactory::CreateSpac
     const auto albedo_texture = TexturePool::GetInstance()->GetOrAllocateResource(imageName);
 
     MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "albedo", albedo_texture);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "inverse_y", (int32_t)false);
+    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "inverse_y", (int32_t) false);
 
     auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
     const auto data = std::make_shared<BillboardComponentData>(
-        "c_billboard_" + backgroundPlanetIndexStr, billboardSize, glm::vec3(0.0f), glm::vec3(1.0f), billboard_material);
+        "c_billboard_" + backgroundPlanetIndexStr,
+        billboardSize,
+        true,
+        glm::vec3(0.0f),
+        0.0f,
+        glm::vec3(1.0f),
+        billboard_material);
     const auto& billboardComponent
         = std::static_pointer_cast<BillboardComponent>(scene->CreateComponent_GameThread(billboardComponentCreator, data));
     billboardComponent->SetSortOrderValue(-10000);

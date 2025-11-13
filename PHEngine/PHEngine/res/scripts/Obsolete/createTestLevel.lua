@@ -167,8 +167,8 @@ function CreateTestLevel(host)
             g = 0.4,
             b = 0.4
         },
-        is_enabled = 1,
-        is_visible = 1,
+        is_enabled = true,
+        is_visible = true,
         shadowAtlasSize = 512
     }))
 
@@ -188,8 +188,8 @@ function CreateTestLevel(host)
     -- 			diffuse = { r = 0.68, g = 0.5, b = 0.2 },
     -- 			specular = { r = 0.4, g = 0.4, b = 0.4 },
     -- 			attenuation = {x = 1, y = 1, z = 1},
-    -- 			is_enabled = 0,
-    -- 			is_visible = 0,
+    -- 			is_enabled = true,
+    -- 			is_visible = true,
     -- 			shadowAtlasSize = 256
     -- 		}
     -- 	))
@@ -230,8 +230,8 @@ function CreateTestLevel(host)
         },
         radianceRadius = 100.0,
         cutoff = 0.75,
-        is_enabled = 1,
-        is_visible = 1,
+        is_enabled = true,
+        is_visible = true,
         shadowAtlasSize = 256
     }))
 
@@ -245,7 +245,7 @@ function CreateTestLevel(host)
     _SetTextureToMaterial(host, groundMat, "dummy_metallic_roughness.png", "metallicMap")
     _SetFloatToMaterial(host, groundMat, 5.0, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_ground, "StaticMeshComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_ground, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "GroundMeshComponent",
         meshName = "cube.obj",
         translation = {
@@ -289,7 +289,7 @@ function CreateTestLevel(host)
     _SetTextureToMaterial(host, platformMat, "dummy_metallic_roughness.png", "metallicMap")
     _SetFloatToMaterial(host, platformMat, 1.0, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_platform, "StaticMeshComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_platform, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "PlatformdMeshComponent",
         meshName = "cube.obj",
         translation = {
@@ -412,7 +412,7 @@ function CreateTestLevel(host)
     _SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_metallic.jpg", "metallicMap")
     _SetFloatToMaterial(host, wallMaterial, 1, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_wall, "StaticMeshComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_wall, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "WallMeshComponent",
         meshName = "cube.obj",
         translation = {
@@ -456,7 +456,7 @@ function CreateTestLevel(host)
     _SetTextureToMaterial(host, houseMaterial, "dummy_metallic_roughness.png", "metallicMap")
     _SetFloatToMaterial(host, houseMaterial, 1, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_house, "StaticMeshComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_house, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "HosueMeshComponent",
         meshName = "italian_house_1.obj",
         translation = {
@@ -499,7 +499,7 @@ function CreateTestLevel(host)
     _SetTextureToMaterial(host, graveMat, "Brick_Medieval_metallic.jpg", "metallicMap")
     _SetFloatToMaterial(host, graveMat, 5.0, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_grave, "StaticMeshComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_grave, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "GraveMeshComponent",
         meshName = "witcher.obj",
         translation = {

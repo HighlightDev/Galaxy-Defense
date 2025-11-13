@@ -637,7 +637,7 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
 
-    // Resolve depth buffer from gBuffer to default frame buffer
+    // Resolve depth from gBuffer to default frame buffer
     auto cameraProxy = sceneView->GetCameraProxy();
     auto cameraViewPort = cameraProxy->GetViewPort();
 

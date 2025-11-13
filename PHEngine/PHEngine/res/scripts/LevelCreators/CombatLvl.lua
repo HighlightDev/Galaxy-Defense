@@ -33,7 +33,7 @@ function CreateLevel(host)
 		,scaled_down_heart.png
 		,background_shield.png
 		,weapon_missile.png
-		,perlin_noise.png
+		,perlin_noise_128x128.png
 		,nightLeft.jpg
 		,spaceship_albedo.jpg
 		,spaceship_normal.jpg

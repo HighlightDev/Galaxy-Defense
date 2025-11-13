@@ -11,13 +11,13 @@ std::unique_ptr<ILevelRequirementTracker> LevelRequirementsTrackerFactory::Creat
     const std::string& requirementTrackerType, const nlohmann::json& trackerRootJson) const
 {
     if ("DestroySpaceshipsTracker" == requirementTrackerType) {
-        const auto enemiesCount = nlohmann_utilities::GetIntFromJson(trackerRootJson.at("spaceships_count"));
+        const auto enemiesCount = nlohmann_utilities::GetIntFromJson(trackerRootJson, "spaceships_count");
         const std::string& hint = trackerRootJson.at("hint");
         auto destroySpaceShipsTracker = std::make_unique<DestroySpaceshipsTracker>(enemiesCount, hint);
         return destroySpaceShipsTracker;
     }
     if ("MissedSpaceshipsTracker" == requirementTrackerType) {
-        const auto doNotMissSpaceshipsCount = nlohmann_utilities::GetIntFromJson(trackerRootJson.at("spaceships_count"));
+        const auto doNotMissSpaceshipsCount = nlohmann_utilities::GetIntFromJson(trackerRootJson, "spaceships_count");
         const std::string& hint = trackerRootJson.at("hint");
         auto destroySpacehipsTracker = std::make_unique<MissedSpaceshipsTracker>(doNotMissSpaceshipsCount, hint);
         return destroySpacehipsTracker;

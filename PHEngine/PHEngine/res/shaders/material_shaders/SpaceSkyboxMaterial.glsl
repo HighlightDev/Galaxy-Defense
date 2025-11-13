@@ -9,14 +9,9 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
     return texture(spaceTexture, materialIn.TextureCoordinates.xyz).rgb;
 }
 
-float GetMaterialRoughness(in MATERIAL_VS_OUTPUT materialIn)
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
 {
-    return 0.0;
-}
-
-float GetMaterialMetallic(in MATERIAL_VS_OUTPUT materialIn)
-{
-    return 0.0;
+    return vec2(0.0);
 }
 
 float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)

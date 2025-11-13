@@ -141,14 +141,14 @@ void UiRowLayout::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 
     const auto& jsonObj = nlohmann::json::parse(luaJsonPropsStr);
     if (jsonObj.contains("spacing")) {
-        const auto spacing = nlohmann_utilities::GetIntFromJson(jsonObj["spacing"]);
+        const auto spacing = nlohmann_utilities::GetIntFromJson(jsonObj, "spacing");
         if (spacing != mSpacing) {
             mSpacing = spacing;
             SetIsTransformDirty(true);
         }
     }
     if (jsonObj.contains("alignment")) {
-        const auto alignmentType = static_cast<eUiRowAlignmentType>(nlohmann_utilities::GetIntFromJson(jsonObj["alignment"]));
+        const auto alignmentType = static_cast<eUiRowAlignmentType>(nlohmann_utilities::GetIntFromJson(jsonObj, "alignment"));
         if (mAlignmentType != alignmentType) {
             mAlignmentType = alignmentType;
             SetIsTransformDirty(true);

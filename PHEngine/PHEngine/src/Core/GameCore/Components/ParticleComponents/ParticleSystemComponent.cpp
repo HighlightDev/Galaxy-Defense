@@ -25,7 +25,8 @@ using namespace TinyLogger;
 namespace EngineCore {
 ParticleSystemComponent::ParticleSystemComponent(
     const std::shared_ptr<ParticleSystemComponentData>& meshComponentData, const ParticleSystemRenderData& renderData)
-    : PrimitiveComponent(meshComponentData->EngineObjectName, meshComponentData->m_translation, glm::vec3(), glm::vec3(1.0f))
+    : PrimitiveComponent(
+        meshComponentData->EngineObjectName, meshComponentData->m_translation, glm::vec3(), meshComponentData->m_scale)
     , mParticlesPool()
     , mParticlesRawDataHandler(meshComponentData->m_particlesCount)
     , mRenderData(renderData)
@@ -151,7 +152,7 @@ void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelati
         const glm::mat4 identityMatrix(1);
         m_relativeMatrix = identityMatrix;
         m_relativeMatrix *= glm::translate(identityMatrix, (mTransform->Translation + ownerTranslation));
-        m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale * ownerScale);
+        m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
 
         if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
             // Update primitives proxy transform
@@ -192,7 +193,7 @@ void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activePartic
             GetObjectId(),
             functionId,
             [weak = weak_from_this(), activeParticlesCount, sceneProxyId = mSceneProxyId](
-                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) mutable {
                 if (const auto& componentPtr = weak.lock()) {

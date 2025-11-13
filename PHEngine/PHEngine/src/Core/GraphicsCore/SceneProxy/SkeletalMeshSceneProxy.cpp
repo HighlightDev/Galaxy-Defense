@@ -49,7 +49,7 @@ void SkeletalMeshSceneProxy::PostConstructorInitialize()
     const ShaderParams planarReflectionParams(
         "PlanarReflectionShader",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "planarReflectionVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardFS.glsl");
+        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 
     m_planarReflectionShader = CreateMaterialShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>(
         "SkeletalMeshVertexFactory<4>_CapturePlanarReflectionShader" + mMaterialProxy->MaterialName,

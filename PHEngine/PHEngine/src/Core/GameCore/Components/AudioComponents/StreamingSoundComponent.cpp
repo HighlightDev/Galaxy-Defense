@@ -58,7 +58,7 @@ void StreamingSoundComponent::ProcessEvent(
             const auto& doneAction = jsonObj["action"].get<std::string>();
             if ("change_value" == doneAction) {
                 if (jsonObj.contains("gain")) {
-                    const float gain = nlohmann_utilities::GetFloatFromJson(jsonObj["gain"]);
+                    const float gain = nlohmann_utilities::GetFloatFromJson(jsonObj, "gain");
                     assert(gain >= 0.0f && gain <= 1.0f);
                     SetGain(gain);
                 }

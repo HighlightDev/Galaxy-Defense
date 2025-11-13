@@ -25,6 +25,10 @@ protected:
 
     float mBillboardExtent;
 
+    bool mApplyScreenAspectRatio;
+
+    float mRotationRadians;
+
     std::function<glm::mat4(const glm::mat4&)> mViewMatrixTransformer;
 
     std::function<glm::mat4(const glm::mat4&)> mProjectionMatrixTransformer;
@@ -51,6 +55,10 @@ public:
     void SetBillboardExtent(const float extent);
 
     RenderInfo GetRenderInfo() const override;
+
+    void SetApplyScreenAspectRatio(const bool applyScreenAspectRatio);
+
+    void SetRotationRadians(const float rotationRadians);
 
 protected:
     std::shared_ptr<Shader_t> GetShader() const;

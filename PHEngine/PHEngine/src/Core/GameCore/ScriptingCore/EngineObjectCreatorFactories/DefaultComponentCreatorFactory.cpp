@@ -24,6 +24,7 @@
 #include "Core/GameCore/Components/PhysicsComponents/RigidBodyPhysicsComponent.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/PlatformTraverseComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
@@ -66,7 +67,8 @@ void DefaultComponentCreatorFactory::CreateComponent(
         = {{"PointLightComponent", std::make_shared<LightComponentCreator<PointLightComponent>>()},
            {"DirectionalLightComponent", std::make_shared<LightComponentCreator<DirectionalLightComponent>>()},
            {"SpotlightComponent", std::make_shared<LightComponentCreator<SpotlightComponent>>()},
-           {"StaticMeshComponent", std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true)},
+           {"StaticMeshComponent_Deferred", std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true)},
+           {"StaticMeshComponent_Forward", std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false)},
            {"SkeletalMeshComponent", std::make_shared<SkeletalMeshComponentCreator<SkeletalMeshComponent>>()},
            {"RigidBodyPhysicsComponent", std::make_shared<PhysicsComponentCreator<RigidBodyPhysicsComponent>>()},
            {"CharacterPhysicsComponent", std::make_shared<PhysicsComponentCreator<CharacterPhysicsComponent>>()},
@@ -76,7 +78,8 @@ void DefaultComponentCreatorFactory::CreateComponent(
            {"SkyboxComponent", std::make_shared<SkyboxComponentCreator<SkyboxComponent>>()},
            {"WaterPlaneComponent", std::make_shared<StaticMeshComponentCreator<WaterPlaneComponent>>(false)},
            {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()},
-           {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()}};
+           {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()},
+           {"BillboardComponent", std::make_shared<BillboardComponentCreator<BillboardComponent>>()}};
 
     assert(creatorsMap.count(componentType));
 
@@ -90,18 +93,18 @@ void DefaultComponentCreatorFactory::CreatePlanarReflectionComponent(
     const auto& sceneSp = sceneWp.lock();
     assert(sceneSp);
     const auto& jsonObj = nlohmann::json::parse(componentDataJsonStr);
-    const std::string objectName = nlohmann_utilities::GetStringFromJson(jsonObj["gameObjectName"]);
+    const std::string objectName = nlohmann_utilities::GetStringFromJson(jsonObj, "gameObjectName");
     const auto& componentCreatorSp = std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>();
     const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
     const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
     const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
-    const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj["cameraName"]);
+    const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj, "cameraName");
     const auto ownerCameraSp = sceneSp->GetCamera(cameraName);
     assert(ownerCameraSp);
-    const auto viewPortX = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortX"]);
-    const auto viewPortY = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortY"]);
-    const auto viewPortWidth = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortWidth"]);
-    const auto viewPortHeight = nlohmann_utilities::GetIntFromJson(jsonObj["viewPortHeight"]);
+    const auto viewPortX = nlohmann_utilities::GetIntFromJson(jsonObj, "viewPortX");
+    const auto viewPortY = nlohmann_utilities::GetIntFromJson(jsonObj, "viewPortY");
+    const auto viewPortWidth = nlohmann_utilities::GetIntFromJson(jsonObj, "viewPortWidth");
+    const auto viewPortHeight = nlohmann_utilities::GetIntFromJson(jsonObj, "viewPortHeight");
     const auto& componentData = std::make_shared<PlanarReflectionComponentData>(
         objectName,
         translation,
@@ -119,7 +122,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
     const std::string& componentDataJsonStr) const
 {
     const auto& jsonObj = nlohmann::json::parse(componentDataJsonStr);
-    const std::string objectName = nlohmann_utilities::GetStringFromJson(jsonObj["gameObjectName"]);
+    const std::string objectName = nlohmann_utilities::GetStringFromJson(jsonObj, "gameObjectName");
 
     std::shared_ptr<ComponentData> componentData;
 
@@ -129,12 +132,12 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
         const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
         const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenuation"]);
-        const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["radianceRadius"]);
-        const bool isEnabled = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]));
-        const bool isVisible = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_visible"]));
+        const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj, "radianceRadius");
+        const bool isEnabled = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj, "is_enabled"));
+        const bool isVisible = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj, "is_visible"));
         std::shared_ptr<ProjectedShadowInfo> shadowInfo;
         if (jsonObj.contains("shadowAtlasSize")) {
-            const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
+            const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj, "shadowAtlasSize");
             const auto& pointLightTAR
                 = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(glm::ivec2(shadowAtlasSize));
             shadowInfo = std::make_shared<ProjectedPointLightShadowInfo>(pointLightTAR);
@@ -148,13 +151,13 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto ambient = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["ambient"]);
         const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
         const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
-        const bool isEnabled = (bool)nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]);
-        const bool isVisible = (bool)nlohmann_utilities::GetIntFromJson(jsonObj["is_visible"]);
+        const bool isEnabled = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_enabled");
+        const bool isVisible = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_visible");
         std::shared_ptr<ProjectedShadowInfo> shadowInfo;
         if (jsonObj.contains("shadowAtlasSize")) {
             const auto& cfg = EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig();
             const float orthoHalfExtent = cfg.ShadowOrthoProjectionHalfExtent;
-            const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
+            const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj, "shadowAtlasSize");
             const auto& directionalLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(
                 eShadowMapReservationType::DIRECTIONAL_LIGHT_SHADOW_MAP, glm::ivec2(shadowAtlasSize));
             shadowInfo = std::make_shared<ProjectedDirectionalLightShadowInfo>(directionalLightTAR, orthoHalfExtent);
@@ -169,13 +172,13 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto diffuse = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["diffuse"]);
         const auto specular = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["specular"]);
         const auto attenutation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["attenuation"]);
-        const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["radianceRadius"]);
-        const auto cutoff = nlohmann_utilities::GetFloatFromJson(jsonObj["cutoff"]);
-        const bool isEnabled = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_enabled"]));
-        const bool isVisible = static_cast<bool>(nlohmann_utilities::GetIntFromJson(jsonObj["is_visible"]));
+        const auto radianceRadius = nlohmann_utilities::GetFloatFromJson(jsonObj, "radianceRadius");
+        const auto cutoff = nlohmann_utilities::GetFloatFromJson(jsonObj, "cutoff");
+        const bool isEnabled = nlohmann_utilities::GetBoolFromJson(jsonObj, "is_enabled");
+        const bool isVisible = nlohmann_utilities::GetBoolFromJson(jsonObj, "is_visible");
         std::shared_ptr<ProjectedShadowInfo> shadowInfo;
         if (jsonObj.contains("shadowAtlasSize")) {
-            const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj["shadowAtlasSize"]);
+            const auto shadowAtlasSize = nlohmann_utilities::GetIntFromJson(jsonObj, "shadowAtlasSize");
             const auto& pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(
                 eShadowMapReservationType::SPOT_LIGHT_SHADOW_MAP, glm::ivec2(shadowAtlasSize));
             shadowInfo = std::make_shared<ProjectedSpotlightShadowInfo>(pointLightTAR);
@@ -194,13 +197,15 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             shadowInfo,
             isEnabled,
             isVisible);
-    } else if ("StaticMeshComponent" == componentType || "SkeletalMeshComponent" == componentType) {
-        const auto pathToMesh = nlohmann_utilities::GetStringFromJson(jsonObj["meshName"]);
+    } else if (
+        "StaticMeshComponent_Deferred" == componentType || "StaticMeshComponent_Forward" == componentType
+        || "SkeletalMeshComponent" == componentType) {
+        const auto pathToMesh = nlohmann_utilities::GetStringFromJson(jsonObj, "meshName");
         const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
         const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
-        const auto luaScriptRelPath = nlohmann_utilities::GetStringFromJson(jsonObj["luaScriptName"]);
-        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj["materialProxyId"]);
+        const auto luaScriptRelPath = nlohmann_utilities::GetStringFromJson(jsonObj, "luaScriptName");
+        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         assert(material);
 
@@ -209,13 +214,13 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
     } else if ("RigidBodyPhysicsComponent" == componentType || "GhostPhysicsComponent" == componentType) {
         std::shared_ptr<PhysicsDescriptor> descriptor;
         std::shared_ptr<CollisionShapeBase> collisionShape;
-        const auto collisionShapeStr = nlohmann_utilities::GetStringFromJson(jsonObj["collisionShape"]);
+        const auto collisionShapeStr = nlohmann_utilities::GetStringFromJson(jsonObj, "collisionShape");
         if ("compoundShape" == collisionShapeStr) {
             const auto& compoundCollisionShape = std::make_shared<CollisionCompoundShape>();
 
             const auto& compoundShapeRoot = jsonObj["subshapes"];
             for (auto it = compoundShapeRoot.cbegin(); it != compoundShapeRoot.cend(); ++it) {
-                const auto& subShapeRootName = nlohmann_utilities::GetStringFromJson(it->at("collisionShape"));
+                const auto& subShapeRootName = nlohmann_utilities::GetStringFromJson(*it, "collisionShape");
                 const auto& collisionSubShape = collisionShape = CreateCollisionShapeFromJson(*it, subShapeRootName);
                 const auto& subShapeTranslation = nlohmann_utilities::GetXyzFromJsonMap(it->at("translation"));
                 const auto& subShapeRotation = nlohmann_utilities::GetXyzFromJsonMap(it->at("rotation"));
@@ -227,10 +232,10 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             collisionShape = CreateCollisionShapeFromJson(jsonObj, collisionShapeStr);
         }
 
-        const auto mass = nlohmann_utilities::GetFloatFromJson(jsonObj["mass"]);
+        const auto mass = nlohmann_utilities::GetFloatFromJson(jsonObj, "mass");
         if ("RigidBodyPhysicsComponent" == componentType) {
             const auto physicsBodyType
-                = static_cast<ePhysicsBodyType>(nlohmann_utilities::GetIntFromJson(jsonObj["physicsBodyType"]));
+                = static_cast<ePhysicsBodyType>(nlohmann_utilities::GetIntFromJson(jsonObj, "physicsBodyType"));
             descriptor = std::make_shared<RigidBodyController>(sceneSp->GetPhysicsWorld(), collisionShape, physicsBodyType, mass);
         } else if ("GhostPhysicsComponent" == componentType) {
             descriptor = std::make_shared<GhostController>(sceneSp->GetPhysicsWorld(), collisionShape, mass);
@@ -238,19 +243,19 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
 
         componentData = std::make_shared<PhysicsComponentData>(objectName, descriptor);
     } else if ("CharacterPhysicsComponent" == componentType) {
-        const auto capsuleRadius = nlohmann_utilities::GetFloatFromJson(jsonObj["capsuleRadius"]);
-        const auto capsuleHeight = nlohmann_utilities::GetFloatFromJson(jsonObj["capsuleHeight"]);
-        const auto mass = nlohmann_utilities::GetFloatFromJson(jsonObj["mass"]);
-        const auto stepHeight = nlohmann_utilities::GetFloatFromJson(jsonObj["stepHeight"]);
+        const auto capsuleRadius = nlohmann_utilities::GetFloatFromJson(jsonObj, "capsuleRadius");
+        const auto capsuleHeight = nlohmann_utilities::GetFloatFromJson(jsonObj, "capsuleHeight");
+        const auto mass = nlohmann_utilities::GetFloatFromJson(jsonObj, "mass");
+        const auto stepHeight = nlohmann_utilities::GetFloatFromJson(jsonObj, "stepHeight");
         const auto& descriptor = std::make_shared<DynamicCharacterController>(
             sceneSp->GetPhysicsWorld(), capsuleRadius, capsuleHeight, mass, stepHeight);
         componentData = std::make_shared<PhysicsComponentData>(objectName, descriptor);
     } else if ("HumanoidPhysicsMovementComponent" == componentType) {
         const auto launchDirection = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["launchDirection"]);
-        const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj["cameraName"]);
+        const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj, "cameraName");
         componentData = std::make_shared<HumanoidMovementComponentData>(objectName, launchDirection, cameraName);
     } else if ("PlatformTraverseComponent" == componentType) {
-        const auto scriptName = nlohmann_utilities::GetStringFromJson(jsonObj["scriptName"]);
+        const auto scriptName = nlohmann_utilities::GetStringFromJson(jsonObj, "scriptName");
         std::vector<std::tuple<std::string, EulerAnglesTransform, float>> routePoints;
         const auto& routePointsRoot = jsonObj.at("routePoints");
         for (auto it = routePointsRoot.cbegin(); it != routePointsRoot.cend(); ++it) {
@@ -258,14 +263,14 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             const glm::vec3& translation = nlohmann_utilities::GetXyzFromJsonMap(it->at("translation"));
             const glm::vec3& rotation = nlohmann_utilities::GetXyzFromJsonMap(it->at("rotation"));
             const glm::vec3& scale = nlohmann_utilities::GetXyzFromJsonMap(it->at("scale"));
-            const float transitionTime = nlohmann_utilities::GetFloatFromJson(it->at("transitionTime"));
+            const float transitionTime = nlohmann_utilities::GetFloatFromJson(*it, "transitionTime");
             routePoints.emplace_back(
                 std::make_tuple(routeName, EulerAnglesTransform(translation, rotation, scale), transitionTime));
         }
         componentData = std::make_shared<PlatformTraverseComponentData>(objectName, routePoints);
     } else if ("SkyboxComponent" == componentType) {
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
-        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj["materialProxyId"]);
+        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         assert(material);
 
@@ -274,12 +279,31 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
         const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
-        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj["materialProxyId"]);
+        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         assert(material);
         componentData = std::make_shared<MeshComponentData>(objectName, "", translation, rotation, scale, "", material);
     } else if ("InputComponent" == componentType || "UiInputComponent" == componentType) {
         componentData = std::make_shared<ComponentData>(objectName);
+    } else if ("BillboardComponent" == componentType) {
+        const float billboardExtent = nlohmann_utilities::GetFloatFromJson(jsonObj, "billboardExtent");
+        const bool enableScreenAspectRatio = nlohmann_utilities::GetBoolFromJson(jsonObj, "enableScreenAspectRatio");
+        const float rotationRadians = nlohmann_utilities::GetFloatFromJson(jsonObj, "rotationRadians");
+        const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
+        const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
+        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
+        const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
+        assert(material);
+        componentData = std::make_shared<BillboardComponentData>(
+            objectName,
+            billboardExtent,
+            enableScreenAspectRatio,
+            translation,
+            rotationRadians,
+            scale,
+            material,
+            [](const glm::mat4& viewMatrix) { return viewMatrix; },
+            [](const glm::mat4& projectionMatrix) { return projectionMatrix; });
     }
 
     assert(componentData);
@@ -295,15 +319,15 @@ std::shared_ptr<CollisionShapeBase> DefaultComponentCreatorFactory::CreateCollis
         const auto halfExtent = nlohmann_utilities::GetXyzFromJsonMap(shapeRoot["halfExtent"]);
         collisionShape = std::make_shared<CollisionBoxShape>(halfExtent);
     } else if ("capsule" == collisionShapeName) {
-        const auto radius = nlohmann_utilities::GetFloatFromJson(shapeRoot["radius"]);
-        const auto height = nlohmann_utilities::GetFloatFromJson(shapeRoot["height"]);
+        const auto radius = nlohmann_utilities::GetFloatFromJson(shapeRoot, "radius");
+        const auto height = nlohmann_utilities::GetFloatFromJson(shapeRoot, "height");
         collisionShape = std::make_shared<CollisionCapsuleShape>(radius, height);
     } else if ("plane" == collisionShapeName) {
         const auto normal = nlohmann_utilities::GetXyzFromJsonMap(shapeRoot["normal"]);
-        const auto d = nlohmann_utilities::GetFloatFromJson(shapeRoot["d"]);
+        const auto d = nlohmann_utilities::GetFloatFromJson(shapeRoot, "d");
         collisionShape = std::make_shared<CollisionPlaneShape>(normal, d);
     } else if ("sphere" == collisionShapeName) {
-        const auto radius = nlohmann_utilities::GetFloatFromJson(shapeRoot["radius"]);
+        const auto radius = nlohmann_utilities::GetFloatFromJson(shapeRoot, "radius");
         collisionShape = std::make_shared<CollisionSphereShape>(radius);
     }
     return collisionShape;

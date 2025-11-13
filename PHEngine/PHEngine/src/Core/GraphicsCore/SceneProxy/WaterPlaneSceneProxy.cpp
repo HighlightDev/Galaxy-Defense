@@ -32,7 +32,7 @@ void WaterPlaneSceneProxy::PostConstructorInitialize()
     const ShaderParams shaderParams(
         shaderIdName,
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardFS.glsl");
+        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 
     m_shader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
         "StaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);

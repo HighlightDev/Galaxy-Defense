@@ -57,7 +57,7 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
         ++pillarIndex;
     }
 
-    const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise.png");
+    const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise_128x128.png");
     const std::shared_ptr<IMaterial>& electroRay_material = materialParser.ParseMaterialDescriptor("ElectroBarrierMaterial.m");
     scene->RegisterMaterialInstance(electroRay_material);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "noise", noiseTex);

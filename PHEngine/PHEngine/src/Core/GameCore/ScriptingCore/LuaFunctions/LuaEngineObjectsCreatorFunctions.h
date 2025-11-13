@@ -109,6 +109,10 @@ private:
                               /*gamePropertyName*/ std::string,
                               /*bindingName*/ std::string>& setBindingToMaterial);
 
+    /* -------------------  Set vec3 to material --------------------*/
+    void SetVec3ToMaterial(
+        const std::tuple<int32_t /*material proxy id*/, std::string /*value*/, std::string /*property name*/>& setVec3ToMaterial);
+
     /* -------------------  Create Tweener ----------------------------*/
     int32_t CreateTweener(const std::tuple<int32_t /*Actor id*/, std::string /*tweener name*/>& tweenerData);
 

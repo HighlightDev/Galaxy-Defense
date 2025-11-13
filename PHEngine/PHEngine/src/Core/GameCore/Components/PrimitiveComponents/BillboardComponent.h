@@ -20,10 +20,18 @@ protected:
 
     float mBillboardExtent;
 
+    bool mApplyScreenAspectRatio;
+
+    float mRotationRadians;
+
 private:
     BillboardRenderData m_renderData;
 
     bool bIsExtentDataDirty{false};
+
+    bool bIsApplyScreenAspectRatioDirty{false};
+
+    bool bIsRotationDirty{false};
 
     std::function<glm::mat4(const glm::mat4&)> mViewMatrixTransformer;
 
@@ -58,6 +66,14 @@ public:
     std::function<glm::mat4(const glm::mat4&)> GetViewMatrixTransformer() const;
 
     std::function<glm::mat4(const glm::mat4&)> GetProjectionMatrixTransformer() const;
+
+    void SetApplyScreenAspectRatio(const bool apply);
+
+    bool GetApplyScreenAspectRatio() const;
+
+    void SetRotationRadians(const float rotationRadians);
+
+    float GetRotationRadians() const;
 
 private:
     void SyncRenderData();

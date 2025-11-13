@@ -34,18 +34,15 @@ namespace Game {
 LevelEditorController::LevelEditorController(const std::weak_ptr<Scene>& sceneWp)
     : mSceneWp(sceneWp)
     , mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent")))
-    , mBezierCurvesActor(
-          std::make_shared<Actor>(
-              "BezierCurvesActor",
-              std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
-    , mTowersActor(
-          std::make_shared<Actor>(
-              "TowersActor",
-              std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
-    , mGhostTowerActor(
-          std::make_shared<Actor>(
-              "GhostTowerActor",
-              std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mBezierCurvesActor(std::make_shared<Actor>(
+          "BezierCurvesActor",
+          std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mTowersActor(std::make_shared<Actor>(
+          "TowersActor",
+          std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+    , mGhostTowerActor(std::make_shared<Actor>(
+          "GhostTowerActor",
+          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mRoutesHandler(mSceneWp, mBezierCurvesActor)
     , mTowersHandler(mSceneWp, mTowersActor)
@@ -247,7 +244,7 @@ void LevelEditorController::ProcessEvent(
                 }
             } else if ("new_route" == doneAction) {
                 if (jsonObj.contains("route_name")) {
-                    const auto& newRouteName = nlohmann_utilities::GetStringFromJson(jsonObj.at("route_name"));
+                    const auto& newRouteName = nlohmann_utilities::GetStringFromJson(jsonObj, "route_name");
                     mRoutesHandler.SelectNewRouteAsActive(newRouteName);
                 }
                 if (jsonObj.contains("route_color")) {
@@ -256,21 +253,18 @@ void LevelEditorController::ProcessEvent(
                 }
             } else if ("new_barrier" == doneAction) {
                 if (jsonObj.contains("barrier_name")) {
-                    const auto& newBarrierName = jsonObj.at("barrier_name").get<std::string>();
+                    const auto& newBarrierName = nlohmann_utilities::GetStringFromJson(jsonObj, "barrier_name");
                     mBarriersHandler.SelectNewBarrier(newBarrierName);
                 }
                 if (jsonObj.contains("barrier_color")) {
-                    const auto r = jsonObj["barrier_color"].at("r").get<float>();
-                    const auto g = jsonObj["barrier_color"].at("g").get<float>();
-                    const auto b = jsonObj["barrier_color"].at("b").get<float>();
-                    const glm::vec3 newBarrierColor = glm::vec3(r, g, b);
+                    const glm::vec3 newBarrierColor = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["barrier_color"]);
                     mBarriersHandler.SetBarrierColor(newBarrierColor);
                     mBarriersHandler.SetRayColor(newBarrierColor);
                 }
             } else if ("save" == doneAction) {
                 std::string lvlName = "unknown";
                 if (jsonObj.contains("name")) {
-                    lvlName = nlohmann_utilities::GetStringFromJson(jsonObj.at("name"));
+                    lvlName = nlohmann_utilities::GetStringFromJson(jsonObj, "name");
                 }
 
                 LevelData lvlData;
@@ -290,7 +284,7 @@ void LevelEditorController::ProcessEvent(
                 fileFacade.WriteToFile();
             } else if ("set_level_width" == doneAction) {
                 if (jsonObj.contains("width")) {
-                    const auto width = nlohmann_utilities::GetFloatFromJson(jsonObj.at("width"));
+                    const auto width = nlohmann_utilities::GetFloatFromJson(jsonObj, "width");
                     mLevelAreaBoundingBox.SetHalfExtentX(width * 0.5f);
                     LevelDataProvider::GetInstance()->SetEditorLevelAreaBoundingBox(mLevelAreaBoundingBox, true, false);
                     mLevelPlacementGrid->UpdateLevelAreaBoundingBox(mLevelAreaBoundingBox);
@@ -299,7 +293,7 @@ void LevelEditorController::ProcessEvent(
                 }
             } else if ("set_level_length" == doneAction) {
                 if (jsonObj.contains("length")) {
-                    const auto length = nlohmann_utilities::GetFloatFromJson(jsonObj.at("length"));
+                    const auto length = nlohmann_utilities::GetFloatFromJson(jsonObj, "length");
                     mLevelAreaBoundingBox.SetHalfExtentY(length * 0.5f);
                     LevelDataProvider::GetInstance()->SetEditorLevelAreaBoundingBox(mLevelAreaBoundingBox, true, false);
                     mLevelPlacementGrid->UpdateLevelAreaBoundingBox(mLevelAreaBoundingBox);

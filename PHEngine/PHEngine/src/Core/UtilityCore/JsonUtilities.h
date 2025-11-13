@@ -8,11 +8,11 @@ glm::vec3 GetRgbFromJsonMap(const nlohmann::json& root);
 
 glm::vec3 GetXyzFromJsonMap(const nlohmann::json& root);
 
-int32_t GetIntFromJson(const nlohmann::json& root);
+int32_t GetIntFromJson(const nlohmann::json& root, const std::string& key);
 
-std::string GetStringFromJson(const nlohmann::json& root);
+std::string GetStringFromJson(const nlohmann::json& root, const std::string& key);
 
-float GetFloatFromJson(const nlohmann::json& json);
+float GetFloatFromJson(const nlohmann::json& root, const std::string& key);
 
-bool GetBoolFromJson(const nlohmann::json& json);
+bool GetBoolFromJson(const nlohmann::json& root, const std::string& key);
 } // namespace nlohmann_utilities

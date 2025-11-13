@@ -16,8 +16,10 @@ BillboardSceneProxy::BillboardSceneProxy(const BillboardComponent* component)
     : PrimitiveSceneProxy(component, component->GetRenderData().mMaterialProxy)
     , mRenderData(component->GetRenderData())
     , mBillboardExtent(component->GetBillboardExtent())
+    , mApplyScreenAspectRatio(component->GetApplyScreenAspectRatio())
     , mViewMatrixTransformer(component->GetViewMatrixTransformer())
     , mProjectionMatrixTransformer(component->GetProjectionMatrixTransformer())
+    , mRotationRadians(component->GetRotationRadians())
 {
 }
 
@@ -91,6 +93,8 @@ void BillboardSceneProxy::Render(
         m_relativeMatrix, mViewMatrixTransformer(viewMatrix), mProjectionMatrixTransformer(projectionMatrix));
     billboardShader->GetShader()->SetExtent(mBillboardExtent);
     billboardShader->GetShader()->SetScreenResolution(screenResolution);
+    billboardShader->GetShader()->SetApplyScreenAspectRatio(mApplyScreenAspectRatio);
+    billboardShader->GetShader()->SetRotationRadians(mRotationRadians);
     m_skin->GetBuffer()->RenderVAO(GL_POINTS);
 }
 
@@ -117,6 +121,16 @@ void BillboardSceneProxy::SetBillboardExtent(const float extent)
 RenderInfo BillboardSceneProxy::GetRenderInfo() const
 {
     return RenderInfo{m_shader->GetShaderName()};
+}
+
+void BillboardSceneProxy::SetApplyScreenAspectRatio(const bool applyScreenAspectRatio)
+{
+    mApplyScreenAspectRatio = applyScreenAspectRatio;
+}
+
+void BillboardSceneProxy::SetRotationRadians(const float rotationRadians)
+{
+    mRotationRadians = rotationRadians;
 }
 
 } // namespace Proxy

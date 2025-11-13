@@ -225,10 +225,10 @@ void LuaEngineEventsFunctions::ProcessEvent(
     nlohmann::json jsonObj;
     jsonObj["settings_type"] = eventTypeToStringMap.at(eventType);
     if (parsedParameters.contains("action")) {
-        jsonObj["action"] = nlohmann_utilities::GetStringFromJson(parsedParameters["action"]);
+        jsonObj["action"] = nlohmann_utilities::GetStringFromJson(parsedParameters, "action");
     }
     if (parsedParameters.contains("gain")) {
-        jsonObj["gain"] = nlohmann_utilities::GetFloatFromJson(parsedParameters["gain"]);
+        jsonObj["gain"] = nlohmann_utilities::GetFloatFromJson(parsedParameters, "gain");
     }
     const auto& eventParams = jsonObj.dump();
     LuaFunctionInvoker<void(void*, std::string, std::string)>::Invoke(

@@ -24,7 +24,7 @@ void ActorControllerCreatorFactory::CreateActorController(
     assert(sceneSp);
     if ("HumanoidPlayerController" == actorControllerTypeName) {
         const auto& actorSp = sceneSp->GetActorByName(actorName);
-        const auto& cameraSp = sceneSp->GetCamera(nlohmann_utilities::GetStringFromJson(jsonRoot["cameraName"]));
+        const auto& cameraSp = sceneSp->GetCamera(nlohmann_utilities::GetStringFromJson(jsonRoot, "cameraName"));
         sceneSp->AddActorController(std::make_shared<HumanoidPlayerController>(cameraSp, actorSp));
     } else {
         assert(false); // not implemented type

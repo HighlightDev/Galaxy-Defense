@@ -1,5 +1,7 @@
 #include "JsonUtilities.h"
 
+#include "Core/CommonCore/Assertion.h"
+
 namespace nlohmann_utilities {
 glm::vec3 GetRgbFromJsonMap(const nlohmann::json& root)
 {
@@ -13,7 +15,7 @@ glm::vec3 GetRgbFromJsonMap(const nlohmann::json& root)
         } else if ("b" == key) {
             color.b = it->get<float>();
         } else {
-            assert(false);
+            ext_assert(false, "Missing r or g or b key in json object");
         }
     }
 
@@ -32,29 +34,33 @@ glm::vec3 GetXyzFromJsonMap(const nlohmann::json& root)
         } else if ("z" == key) {
             result.z = it->get<float>();
         } else {
-            assert(false);
+            ext_assert(false, "Missing x or y or z key in json object");
         }
     }
     return result;
 }
 
-int32_t GetIntFromJson(const nlohmann::json& root)
+int32_t GetIntFromJson(const nlohmann::json& root, const std::string& key)
 {
-    return root.get<int32_t>();
+    ext_assert(root.contains(key), "Missing key in json object: " + key);
+    return root.at(key).get<int32_t>();
 }
 
-std::string GetStringFromJson(const nlohmann::json& root)
+std::string GetStringFromJson(const nlohmann::json& root, const std::string& key)
 {
-    return root.get<std::string>();
+    ext_assert(root.contains(key), "Missing key in json object: " + key);
+    return root.at(key).get<std::string>();
 }
 
-float GetFloatFromJson(const nlohmann::json& root)
+float GetFloatFromJson(const nlohmann::json& root, const std::string& key)
 {
-    return root.get<float>();
+    ext_assert(root.contains(key), "Missing key in json object: " + key);
+    return root.at(key).get<float>();
 }
 
-bool GetBoolFromJson(const nlohmann::json& root)
+bool GetBoolFromJson(const nlohmann::json& root, const std::string& key)
 {
-    return root.get<bool>();
+    ext_assert(root.contains(key), "Missing key in json object: " + key);
+    return root.at(key).get<bool>();
 }
 } // namespace nlohmann_utilities

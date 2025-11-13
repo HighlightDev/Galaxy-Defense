@@ -25,7 +25,7 @@ public:
     {
         const auto mData = std::static_pointer_cast<BillboardComponentData>(data);
         const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
-        assert(materialProxy);
+        ext_assert(materialProxy, "Material proxy is null, must be forgot to register material instance in scene?");
         return std::make_shared<ComponentInstantiationType>(mData, BillboardRenderData(materialProxy));
     }
 };

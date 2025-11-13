@@ -42,11 +42,11 @@ void GeneralSystemSettingsDataProvider::ProcessEvent(
             const auto& doneAction = jsonObj["action"].get<std::string>();
             if ("change_sound" == doneAction) {
                 if (jsonObj.contains("gain")) {
-                    SetSoundGain(nlohmann_utilities::GetFloatFromJson(jsonObj["gain"]), false);
+                    SetSoundGain(nlohmann_utilities::GetFloatFromJson(jsonObj, "gain"), false);
                 }
             } else if ("change_music" == doneAction) {
                 if (jsonObj.contains("gain")) {
-                    SetMusicGain(nlohmann_utilities::GetFloatFromJson(jsonObj["gain"]), false);
+                    SetMusicGain(nlohmann_utilities::GetFloatFromJson(jsonObj, "gain"), false);
                 }
             }
         }

@@ -172,7 +172,11 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
         const auto& opacityMask_tex = TexturePool::GetInstance()->GetOrAllocateResource("circle_mask1.png");
         MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacityMask", opacityMask_tex);
         const auto d_particle = std::make_shared<ParticleSystemComponentData>(
-            "c_missileExplosionSecondPhase_particleSystemComponent_" + missileIndexStr, particles_mat, glm::vec3(0), 100);
+            "c_missileExplosionSecondPhase_particleSystemComponent_" + missileIndexStr,
+            particles_mat,
+            glm::vec3(0),
+            glm::vec3(1.0f),
+            100);
         const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
         const auto& c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(
             scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));

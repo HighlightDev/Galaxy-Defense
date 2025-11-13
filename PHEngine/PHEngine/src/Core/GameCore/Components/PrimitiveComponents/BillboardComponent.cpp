@@ -14,6 +14,8 @@ BillboardComponent::BillboardComponent(const std::shared_ptr<BillboardComponentD
     , m_renderData(renderData)
     , mViewMatrixTransformer(data->mViewMatrixTransformer)
     , mProjectionMatrixTransformer(data->mProjectionMatrixTransformer)
+    , mApplyScreenAspectRatio(data->mApplyScreenAspectRatio)
+    , mRotationRadians(data->m_rotationRadians)
 {
 }
 
@@ -30,9 +32,12 @@ void BillboardComponent::UnpausableTick(float deltaTimeSec)
 {
     PrimitiveComponent::UnpausableTick(deltaTimeSec);
 
-    if (bIsExtentDataDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)
+        && (bIsExtentDataDirty || bIsApplyScreenAspectRatioDirty || bIsRotationDirty)) {
         SyncRenderData();
         bIsExtentDataDirty = false;
+        bIsApplyScreenAspectRatioDirty = false;
+        bIsRotationDirty = false;
     }
 }
 
@@ -93,13 +98,18 @@ void BillboardComponent::SyncRenderData()
             GetObjectId(),
             functionId,
             [sceneProxyId = mSceneProxyId,
-             billboardExtent = mBillboardExtent](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-    std::weak_ptr<EngineCore::Scene> sceneWp,
-    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+             billboardExtent = mBillboardExtent,
+             applyScreenAspectRatio = mApplyScreenAspectRatio,
+             rotationRadians = mRotationRadians](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     if (const auto& billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(
                             sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         billboardProxySp->SetBillboardExtent(billboardExtent);
+                        billboardProxySp->SetApplyScreenAspectRatio(applyScreenAspectRatio);
+                        billboardProxySp->SetRotationRadians(rotationRadians);
                     }
                 }
             });
@@ -114,5 +124,31 @@ std::function<glm::mat4(const glm::mat4&)> BillboardComponent::GetViewMatrixTran
 std::function<glm::mat4(const glm::mat4&)> BillboardComponent::GetProjectionMatrixTransformer() const
 {
     return mProjectionMatrixTransformer;
+}
+
+void BillboardComponent::SetApplyScreenAspectRatio(const bool apply)
+{
+    if (mApplyScreenAspectRatio != apply) {
+        mApplyScreenAspectRatio = apply;
+        bIsApplyScreenAspectRatioDirty = true;
+    }
+}
+
+bool BillboardComponent::GetApplyScreenAspectRatio() const
+{
+    return mApplyScreenAspectRatio;
+}
+
+void BillboardComponent::SetRotationRadians(const float rotationRadians)
+{
+    if (!EngineMath::FloatsNearEqual(rotationRadians, mRotationRadians)) {
+        mRotationRadians = rotationRadians;
+        bIsRotationDirty = true;
+    }
+}
+
+float BillboardComponent::GetRotationRadians() const
+{
+    return mRotationRadians;
 }
 } // namespace EngineCore

@@ -2,6 +2,7 @@
 
 #include "Core/CommonCore/Random.h"
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/InstancedStaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/LightComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
@@ -9,12 +10,14 @@
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
+#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PointLightComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
@@ -61,7 +64,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
 
     const auto& enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
-        "c_enemyShip_rootComponent_" + enemyShipIndexStr, translation, glm::vec3(0), glm::vec3(1));
+        "c_enemyShip_rootComponent_" + enemyShipIndexStr, translation, rotation, scale);
     const auto& a_enemySpaceship
         = std::make_shared<WeakSpaceshipActor>("a_enemyShip_" + enemyShipIndexStr, rootComponent, SpaceshipLevel(health));
     scene->AddActor(a_enemySpaceship);
@@ -95,7 +98,12 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     }
 
     const auto d_mesh = std::make_shared<InstancedMeshComponentData>(
-        "WeakSpaceShipMesh_c_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0), rotation, scale, spaceshipPbs_mat);
+        "WeakSpaceShipMesh_c_" + enemyShipIndexStr,
+        "spaceship.obj",
+        glm::vec3(0),
+        glm::vec3(0),
+        glm::vec3(1.0),
+        spaceshipPbs_mat);
     const auto& meshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
     const auto& c_mesh
         = std::static_pointer_cast<InstancedStaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
@@ -129,7 +137,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacity", 1.0f);
 
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
-        "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), 100);
+        "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 100);
     const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
     const auto& c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(
         scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
@@ -200,6 +208,23 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         glm::ivec2(50),
         eTextHorizontalAlignmentType::CENTER,
         eTextVerticalAlignmentType::CENTER);
+
+    const auto& engineMaterial = materialParser.ParseMaterialDescriptor("BurnMaterial.m");
+    scene->RegisterMaterialInstance(engineMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(engineMaterial, scene, "GT_DeltaSec", "gt_timeSec");
+
+    auto engineComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
+    const auto data = std::make_shared<MeshComponentData>(
+        "c_mesh_engine" + enemyShipIndexStr,
+        "ufo.obj",
+        glm::vec3(0, -0.05f, 1.2f),
+        glm::vec3(90, 0, 0.0f),
+        glm::vec3(0.2f, 0.2f, 1.1f),
+        "",
+        engineMaterial);
+    const auto& engineComponent
+        = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(engineComponentCreator, data));
+    a_enemySpaceship->AddComponent(engineComponent);
 
     auto tweenerParser = std::make_unique<TweenerParser>();
     const auto movementTweener = tweenerParser->ParseTweenerDescriptor("spaceshipMove.tween");

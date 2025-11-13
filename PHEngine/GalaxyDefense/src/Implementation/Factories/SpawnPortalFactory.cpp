@@ -36,7 +36,7 @@ std::shared_ptr<PortalActor> SpawnPortalFactory::CreatePortal(
     MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, scene, "ScreenResolution", "screenResolution");
     auto portalComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
     const auto data = std::make_shared<BillboardComponentData>(
-        "c_billboard_portal", billboardSize, glm::vec3(), glm::vec3(1.0f), billboard_material);
+        "c_billboard_portal", billboardSize, true, glm::vec3(), 0.0f, glm::vec3(1.0f), billboard_material);
     const auto& portalComponent
         = std::static_pointer_cast<BillboardComponent>(scene->CreateComponent_GameThread(portalComponentCreator, data));
     portalComponent->SetSortOrderValue(-1000);
