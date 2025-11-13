@@ -929,10 +929,12 @@ void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
     });
 
     for (const auto& canvas : mUiCanvasProxies) {
-        const auto& canvasOrigin = canvas->GetAbsoluteOrigin();
-        const auto& widthHeight = canvas->GetWidthHeight();
-        glViewport(canvasOrigin.x, canvasOrigin.y, widthHeight.x, widthHeight.y);
-        canvas->Render();
+        if (canvas->IsVisible()) {
+            const auto& canvasOrigin = canvas->GetAbsoluteOrigin();
+            const auto& widthHeight = canvas->GetWidthHeight();
+            glViewport(canvasOrigin.x, canvasOrigin.y, widthHeight.x, widthHeight.y);
+            canvas->Render();
+        }
     }
 
     const auto& viewPortInfo = sceneView->GetCameraProxy()->GetViewPort();

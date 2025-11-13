@@ -24,7 +24,7 @@ private:
     int32_t mSliderThicknessPixels{20};
     int32_t mBlobThicknessPixels{40};
     glm::vec2 mSliderThicknessScale{1.0f};
-    glm::vec2 mBlobThicknessScale{1.0f};
+    glm::vec2 mBlobThicknessScale{0.0f};
 
     eUiSliderType mSliderType{eUiSliderType::Horizontal};
 

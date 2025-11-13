@@ -31,7 +31,7 @@ UiCanvas::UiCanvas(const ViewPortInfo& canvasScreenProperties, const std::string
     , mChildren()
     , mRegisteredUIds()
     , mRegisteredNames()
-    , mIsVisible(true)
+    , mIsVisible(false)
     , mCanInterceptMouseInputEvents(true)
     , mIsTransformDirty(true)
     , mInputSystem()
