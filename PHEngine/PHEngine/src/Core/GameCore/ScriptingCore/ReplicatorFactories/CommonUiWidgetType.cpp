@@ -29,6 +29,8 @@ std::string CommonUiWidgetTypeToString(const eCommonUiWidgetType type)
         return "UI_SLIDER_BAR";
     case eCommonUiWidgetType::UI_TEXT_BLOCK:
         return "UI_TEXT_BLOCK";
+    case eCommonUiWidgetType::UI_GRID_LAYOUT:
+        return "UI_GRID_LAYOUT";
     default:
         return "UNKNOWN_TYPE";
     }

@@ -4,6 +4,8 @@
 
 uniform float timeSec;
 
+uniform float randomNormSeed;
+
 #define iterations 15
 #define formuparam 0.53
 
@@ -58,7 +60,8 @@ vec3 getSpaceStarsColor(in MATERIAL_VS_OUTPUT materialIn)
 
         v += fade;
         float s_sqr = s * s;
-        v += vec3(s, s_sqr, s_sqr * s_sqr) * a * brightness * fade; // coloring based on distance
+        v += vec3(s * randomNormSeed, s_sqr * randomNormSeed, s_sqr * s_sqr * randomNormSeed) * a * brightness
+            * fade; // coloring based on distance
         fade *= distfading; // distance fading
         s += stepsize;
     }

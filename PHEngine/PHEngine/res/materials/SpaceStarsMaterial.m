@@ -17,4 +17,8 @@
 			</no_op>
 		</operation>
 	</dynamic_property>
+	<property>
+		name: "randomNormSeed"
+		type: "float"
+	</property>
 </properties>

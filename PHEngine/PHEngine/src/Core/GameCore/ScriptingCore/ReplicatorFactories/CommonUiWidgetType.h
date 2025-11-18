@@ -16,7 +16,8 @@ enum class eCommonUiWidgetType {
     UI_PROGRESS_BAR = 8,
     UI_ROW_LAYOUT = 9,
     UI_SLIDER_BAR = 10,
-    UI_TEXT_BLOCK = 11
+    UI_TEXT_BLOCK = 11,
+    UI_GRID_LAYOUT = 12
 };
 
 std::string CommonUiWidgetTypeToString(const eCommonUiWidgetType type);

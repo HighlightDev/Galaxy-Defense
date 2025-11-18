@@ -11,7 +11,8 @@ CommonUiWidgetCreator = {
         UI_PROGRESS_BAR = 8,
         UI_ROW_LAYOUT = 9,
         UI_SLIDER_BAR = 10,
-        UI_TEXT_BLOCK = 11
+        UI_TEXT_BLOCK = 11,
+        UI_GRID_LAYOUT = 12
     }
 }
 
@@ -40,6 +41,8 @@ local function getTypeToString(commonUiWidgetType)
         return "UI_SLIDER_BAR"
     elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_TEXT_BLOCK then
         return "UI_TEXT_BLOCK"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_GRID_LAYOUT then
+        return "UI_GRID_LAYOUT"
     else
         assert(false, "Wrong type of widget type: " .. tostring(commonUiWidgetType))
     end
@@ -49,12 +52,9 @@ function CommonUiWidgetCreator:createUiWidget(host, commonUiWidgetType, jsonPara
     assert(host ~= nil and commonUiWidgetType ~= nil)
     jsonParameters = jsonParameters and jsonParameters or ""
     local widgetLuaProxyId = _CreateCommonUiWidget(host, commonUiWidgetType, jsonParameters)
-    print("CommonUiWidgetCreator::createUiWidget: commonUiWidgetType: " ..
-        tostring(getTypeToString(commonUiWidgetType)) ..
-        " jsonParameters: " ..
-        tostring(jsonParameters) ..
-        " widgetLuaProxyId: " ..
-        tostring(widgetLuaProxyId))
+    print(
+        "CommonUiWidgetCreator::createUiWidget: commonUiWidgetType: " .. tostring(getTypeToString(commonUiWidgetType)) ..
+            " jsonParameters: " .. tostring(jsonParameters) .. " widgetLuaProxyId: " .. tostring(widgetLuaProxyId))
 
     return widgetLuaProxyId
 end
@@ -62,7 +62,7 @@ end
 function CommonUiWidgetCreator:destroyUiWidget(host, luaProxyId)
     assert(host ~= nil)
     assert(luaProxyId ~= nil and type(luaProxyId) == "number" and luaProxyId > -1)
-    --print("CommonUiWidgetCreator::destroyUiWidget: luaProxyId: " .. tostring(luaProxyId))
+    -- print("CommonUiWidgetCreator::destroyUiWidget: luaProxyId: " .. tostring(luaProxyId))
     -- invocation of this function leads to exception, memory is already deallocated
     -- _DestroyCommonUiWidget(host, luaProxyId)
 end

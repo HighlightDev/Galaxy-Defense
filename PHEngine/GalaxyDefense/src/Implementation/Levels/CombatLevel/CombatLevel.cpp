@@ -164,6 +164,7 @@ void CombatLevel::CreateScene()
     sceneSp->RegisterMaterialInstance(spaceStars_material);
 
     MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
+    MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, "randomNormSeed", Random::Float() * 0.5f + 0.5f);
 
     auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
     const auto backgroundBillboardComponentData = std::make_shared<BillboardComponentData>(

@@ -1,5 +1,6 @@
 #include "EditorLevel.h"
 
+#include "Core/CommonCore/Random.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
@@ -129,6 +130,7 @@ void EditorLevel::CreateScene()
     sceneSp->RegisterMaterialInstance(spaceStars_material);
 
     MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
+    MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, "randomNormSeed", Random::Float() * 0.5f + 0.5f);
 
     auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
     const auto backgroundBillboardComponentData = std::make_shared<BillboardComponentData>(

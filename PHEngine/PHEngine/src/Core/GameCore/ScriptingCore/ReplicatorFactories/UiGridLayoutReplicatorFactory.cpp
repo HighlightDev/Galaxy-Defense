@@ -1,8 +1,8 @@
-#include "UiRowLayoutReplicatorFactory.h"
+#include "UiGridLayoutReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/ThreadHelper.h"
-#include "Core/GameCore/GUI/UiElements/UiRowLayout.h"
+#include "Core/GameCore/GUI/UiElements/UiGridLayout.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
@@ -15,7 +15,7 @@ using namespace Graphics;
 
 namespace EngineCore {
 namespace Scripts {
-int32_t UiRowLayoutReplicatorFactory::CreateReplicator(
+int32_t UiGridLayoutReplicatorFactory::CreateReplicator(
     const std::weak_ptr<Scene>& sceneWp,
     const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp,
     const std::string& jsonParamsStr) const
@@ -32,7 +32,7 @@ int32_t UiRowLayoutReplicatorFactory::CreateReplicator(
     }
 
     if (const auto& sceneSp = sceneWp.lock()) {
-        static constexpr auto functionId = Hash64_CT("UiRowLayoutReplicatorFactory::CreateReplicator");
+        static constexpr auto functionId = Hash64_CT("UiGridLayoutReplicatorFactory::CreateReplicator");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
             eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             uiItemLuaProxyId,
@@ -42,7 +42,7 @@ int32_t UiRowLayoutReplicatorFactory::CreateReplicator(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
-                const auto& createdUiItem = std::make_shared<UiRowLayout>(name);
+                const auto& createdUiItem = std::make_shared<UiGridLayout>(name);
                 createdUiItem->Initialize();
                 createdUiItem->SetLuaProxyId(uiItemLuaProxyId);
                 createdUiItem->SetLuaScriptProcessor(luaScriptProcessorWp);
@@ -50,7 +50,7 @@ int32_t UiRowLayoutReplicatorFactory::CreateReplicator(
                 createdUiItem->SetPendingToCreateLuaProxy();
             });
     } else {
-        LogInfo("UiRowLayoutReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
+        LogInfo("UiGridLayoutReplicatorFactory::CreateReplicator: Scene weak_ptr lock failed");
         return -1;
     }
 

@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "UiBackgroundOverlayReplicatorFactory.h"
 #include "UiCanvasReplicatorFactory.h"
+#include "UiGridLayoutReplicatorFactory.h"
 #include "UiImageReplicatorFactory.h"
 #include "UiItemReplicatorFactory.h"
 #include "UiLabelReplicatorFactory.h"
@@ -43,6 +44,8 @@ std::unique_ptr<IReplicatorFactory> CommonUiWidgetFactoryCreator::GetReplicatorF
         return std::make_unique<UiSliderReplicatorFactory>();
     case eCommonUiWidgetType::UI_TEXT_BLOCK:
         return std::make_unique<UiTextBlockReplicatorFactory>();
+    case eCommonUiWidgetType::UI_GRID_LAYOUT:
+        return std::make_unique<UiGridLayoutReplicatorFactory>();
 
     default:
         assert(false);
