@@ -27,6 +27,17 @@ local CommonUiWidgetCreator = require("Ui/Core/commonUiWidgetCreator")
 local json = require("Ui/Core/3rdparty/json")
 
 UiGridLayout = UiItemBase:new()
+UiGridLayout.UiGridHorizontalAlignmentType = {
+    LEFT = 0,
+    CENTER = 1,
+    RIGHT = 2
+}
+
+UiGridLayout.UiGridVerticalAlignmentType = {
+    TOP = 0,
+    CENTER = 1,
+    BOTTOM = 2
+}
 
 function UiGridLayout:new(host, name)
     assert(host ~= nil)
@@ -58,6 +69,14 @@ function UiGridLayout:new(host, name)
         rows_count = {
             value = 1,
             dirty = false
+        },
+        horizontal_alignment = {
+            value = UiGridLayout.UiGridHorizontalAlignmentType.LEFT,
+            dirty = false
+        },
+        vertical_alignment = {
+            value = UiGridLayout.UiGridVerticalAlignmentType.TOP,
+            dirty = false
         }
     }
 
@@ -88,6 +107,12 @@ function UiGridLayout:updateFromReplicatorData(host)
             end
             if parsedJson["rows_count"] ~= nil then
                 self.gridLayoutProperties.rows_count.value = tonumber(parsedJson["rows_count"])
+            end
+            if parsedJson["horizontal_alignment"] ~= nil then
+                self.gridLayoutProperties.horizontal_alignment.value = tonumber(parsedJson["horizontal_alignment"])
+            end
+            if parsedJson["vertical_alignment"] ~= nil then
+                self.gridLayoutProperties.vertical_alignment.value = tonumber(parsedJson["vertical_alignment"])
             end
         end
     end
@@ -141,6 +166,25 @@ function UiGridLayout:setRowsCount(count)
     if self.gridLayoutProperties.rows_count.value ~= count then
         self.gridLayoutProperties.rows_count.value = count
         self.gridLayoutProperties.rows_count.dirty = true
+    end
+end
+
+function UiGridLayout:setAlignment(horizontalAlignment, verticalAlignment)
+    assert(horizontalAlignment ~= nil and type(horizontalAlignment) == "number")
+    assert(verticalAlignment ~= nil and type(verticalAlignment) == "number")
+    assert(horizontalAlignment >= UiGridLayout.UiGridHorizontalAlignmentType.LEFT and horizontalAlignment <=
+               UiGridLayout.UiGridHorizontalAlignmentType.RIGHT)
+    assert(verticalAlignment >= UiGridLayout.UiGridVerticalAlignmentType.TOP and verticalAlignment <=
+               UiGridLayout.UiGridVerticalAlignmentType.BOTTOM)
+
+    if self.gridLayoutProperties.horizontal_alignment.value ~= horizontalAlignment then
+        self.gridLayoutProperties.horizontal_alignment.value = horizontalAlignment
+        self.gridLayoutProperties.horizontal_alignment.dirty = true
+    end
+
+    if self.gridLayoutProperties.vertical_alignment.value ~= verticalAlignment then
+        self.gridLayoutProperties.vertical_alignment.value = verticalAlignment
+        self.gridLayoutProperties.vertical_alignment.dirty = true
     end
 end
 

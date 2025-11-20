@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/GameCore/GUI/Common/GridAlignment.h"
 #include "UiItem.h"
 
 #include <glm/mat4x4.hpp>
@@ -27,6 +28,10 @@ class UiGridLayout : public UiItem {
 
     uint32_t mRowsCount{1};
 
+    UiGridHorizontalAlignmentType mHorizontalAlignment{UiGridHorizontalAlignmentType::LEFT};
+
+    UiGridVerticalAlignmentType mVerticalAlignment{UiGridVerticalAlignmentType::TOP};
+
 public:
     UiGridLayout(const std::string& name = std::string(""));
 
@@ -49,6 +54,13 @@ public:
     void SetRowsCount(const uint32_t count);
 
     uint32_t GetRowsCount() const;
+
+    void
+    SetAlignment(const UiGridHorizontalAlignmentType horizontalAlignment, const UiGridVerticalAlignmentType verticalAlignment);
+
+    UiGridHorizontalAlignmentType GetHorizontalAlignment() const;
+
+    UiGridVerticalAlignmentType GetVerticalAlignment() const;
 
     void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 

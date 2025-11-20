@@ -93,7 +93,6 @@ void UiGridLayout::RecalculatePositionsForChildren()
         = std::count_if(mChildren.cbegin(), mChildren.cend(), [](const auto& child) { return child->IsVisible(); });
 
     const auto maxChildrenCount = mColumnsCount * mRowsCount;
-    const auto spacingsCount = visibleChildrenCount - 1;
 
     if (visibleChildrenCount && mWidth && mHeight) {
 
@@ -105,15 +104,35 @@ void UiGridLayout::RecalculatePositionsForChildren()
             return;
         }
 
-        const int32_t maxPotentialWidth = GetGridPotentialWidth() + (spacingsCount * mHorizontalSpacing);
-        const int32_t maxPotentialHeight = GetGridPotentialHeight() + (spacingsCount * mVerticalSpacing);
+        const int32_t maxPotentialWidth = GetGridPotentialWidth() + ((mColumnsCount - 1) * mHorizontalSpacing);
+        const int32_t maxPotentialHeight = GetGridPotentialHeight() + ((mRowsCount - 1) * mVerticalSpacing);
 
         const uint32_t normalizedChildWidth
-            = static_cast<uint32_t>((mWidth - (spacingsCount * mHorizontalSpacing)) / mColumnsCount);
-        const uint32_t normalizedChildHeight = static_cast<uint32_t>((mHeight - (spacingsCount * mVerticalSpacing)) / mRowsCount);
+            = static_cast<uint32_t>((mWidth - ((mColumnsCount - 1) * mHorizontalSpacing)) / mColumnsCount);
+        const uint32_t normalizedChildHeight
+            = static_cast<uint32_t>((mHeight - ((mRowsCount - 1) * mVerticalSpacing)) / mRowsCount);
 
         int32_t cursorX = mAbsoluteOrigin.x;
-        int32_t cursorY = mAbsoluteOrigin.y;
+        if (maxPotentialWidth < mWidth) {
+            if (mHorizontalAlignment == UiGridHorizontalAlignmentType::RIGHT) {
+                cursorX = mAbsoluteOrigin.x + (mWidth - maxPotentialWidth);
+            } else if (mHorizontalAlignment == UiGridHorizontalAlignmentType::CENTER) {
+                cursorX = (mAbsoluteOrigin.x + (mWidth - maxPotentialWidth) / 2);
+            }
+        }
+
+        int32_t cursorY = mAbsoluteOrigin.y + mHeight;
+        if (maxPotentialHeight < mHeight) {
+            if (mVerticalAlignment == UiGridVerticalAlignmentType::BOTTOM) {
+                cursorY = mAbsoluteOrigin.y + maxPotentialHeight;
+            } else if (mVerticalAlignment == UiGridVerticalAlignmentType::CENTER) {
+                cursorY = (mAbsoluteOrigin.y + maxPotentialHeight + ((mHeight - maxPotentialHeight) / 2));
+            }
+        }
+        cursorY -= GetRowHeight(0); // origin is bottom left corner so need to move down by first row height
+
+        const int32_t startCursorX = cursorX;
+
         int32_t childIndex = 0;
 
         int32_t prevRowIndex = 0;
@@ -134,11 +153,12 @@ void UiGridLayout::RecalculatePositionsForChildren()
             const auto childWidth = (maxPotentialWidth > mWidth) ? normalizedChildWidth : child->GetWidth();
             const auto childHeight = (maxPotentialHeight > mHeight) ? normalizedChildHeight : child->GetHeight();
 
-            cursorX = columnIndex != 0 ? cursorX + childWidth + mHorizontalSpacing : mAbsoluteOrigin.x;
+            cursorX = columnIndex != 0 ? cursorX + childWidth + mHorizontalSpacing : startCursorX;
 
+            const int32_t widgetHeight
+                = maxPotentialHeight > mAbsoluteOrigin.y ? normalizedChildHeight : GetRowHeight(prevRowIndex);
             if (rowIndex != 0 && rowIndex != prevRowIndex) {
-                cursorY += maxPotentialHeight > mHeight ? normalizedChildHeight + mVerticalSpacing
-                                                        : GetRowHeight(prevRowIndex) + mVerticalSpacing;
+                cursorY -= widgetHeight + mVerticalSpacing;
                 prevRowIndex = rowIndex;
             }
 
@@ -271,6 +291,22 @@ void UiGridLayout::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             SetIsTransformDirty(true);
         }
     }
+    if (jsonObj.contains("horizontal_alignment")) {
+        const auto alignment
+            = static_cast<UiGridHorizontalAlignmentType>(nlohmann_utilities::GetIntFromJson(jsonObj, "horizontal_alignment"));
+        if (mHorizontalAlignment != alignment) {
+            mHorizontalAlignment = alignment;
+            SetIsTransformDirty(true);
+        }
+    }
+    if (jsonObj.contains("vertical_alignment")) {
+        const auto alignment
+            = static_cast<UiGridVerticalAlignmentType>(nlohmann_utilities::GetIntFromJson(jsonObj, "vertical_alignment"));
+        if (mVerticalAlignment != alignment) {
+            mVerticalAlignment = alignment;
+            SetIsTransformDirty(true);
+        }
+    }
 }
 
 void UiGridLayout::OnPropertiesShouldBeUpdatedOnLuaThread()
@@ -296,7 +332,9 @@ void UiGridLayout::SyncDataOnLuaThread()
                      horizontalSpacing = mHorizontalSpacing,
                      verticalSpacing = mVerticalSpacing,
                      columnsCount = mColumnsCount,
-                     rowsCount = mRowsCount](
+                     rowsCount = mRowsCount,
+                     horizontalAlignment = mHorizontalAlignment,
+                     verticalAlignment = mVerticalAlignment](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -306,6 +344,7 @@ void UiGridLayout::SyncDataOnLuaThread()
                             layoutLuaProxy->SetVerticalSpacing_FromGameThread(verticalSpacing);
                             layoutLuaProxy->SetColumnsCount_FromGameThread(columnsCount);
                             layoutLuaProxy->SetRowsCount_FromGameThread(rowsCount);
+                            layoutLuaProxy->SetAlignment_FromGameThread(horizontalAlignment, verticalAlignment);
                         }
                     });
             }

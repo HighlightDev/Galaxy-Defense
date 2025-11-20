@@ -48,15 +48,13 @@ uniform sampler2D noise_2;
 //     return fireColor;
 // }
 
-float alpha = 0.0;
+// #define BLUE_FLAME
 
-#define BLUE_FLAME
-
-vec2 hash(vec2 p)
-{
-    p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
-    return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
-}
+// vec2 hash(vec2 p)
+// {
+//     p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+//     return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+// }
 
 // float noise(in vec2 p)
 // {
@@ -130,6 +128,8 @@ vec2 hash(vec2 p)
 //     return vec4(mix(vec3(0.), col, a), a);
 // }
 
+float alpha = 0.0;
+
 float snoise(vec3 uv, float res)
 {
     const vec3 s = vec3(1e0, 1e2, 1e3);
@@ -169,8 +169,8 @@ vec4 mainImage(in vec2 texCoords, in float deltaTimeSec)
     }
 
     float r = color;
-    float g =  pow(max(color, 0.), 2.) * 0.4;
-    float b =  pow(max(color, 0.), 3.) * 0.15;
+    float g = pow(max(color, 0.), 2.) * 0.4;
+    float b = pow(max(color, 0.), 3.) * 0.15;
 
     return vec4(b, g, r, 1.0);
 }

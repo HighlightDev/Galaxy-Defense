@@ -33,6 +33,7 @@ local ImageButton = require("Ui/Widgets/ImageButton")
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local Styles = require("Ui/Common/styles")
+local UiGridLayout = require("Ui/Core/uiGridLayout")
 
 CombatPreparationOverlay = {
     buttonRadius = 6,
@@ -80,8 +81,10 @@ function CombatPreparationOverlay:new(host)
 
     local panelHeight = windowHeight * 0.15
     local mainButtonSize = panelHeight * 0.8
-    local smallButtonSize = mainButtonSize * 0.7
+    local smallButtonSize = windowHeight * 0.07
     local panelWidth = (mainButtonSize * 2) + 70
+    local gridWidth = smallButtonSize * 3 + 90
+    local gridHeight = smallButtonSize * 2 + 60
 
     local backgroundRect = UiRectangle:new(host)
     combatPreparationOverlay:addWidget(backgroundRect)
@@ -92,17 +95,14 @@ function CombatPreparationOverlay:new(host)
     local createObjectButton = ImageButton:new(host, combatPreparationOverlay, "CreateObjectButton")
     combatPreparationOverlay:addCompoundWidget(createObjectButton)
 
-    local combatPreparationRowLayout = UiRowLayout:new(host, "CombatPreparationRowLayout")
-    combatPreparationOverlay:addWidget(combatPreparationRowLayout)
-
     local removeObjectButton = ImageButton:new(host, combatPreparationOverlay, "RemoveObjectButton")
     combatPreparationOverlay:addCompoundWidget(removeObjectButton)
 
-    local createDropDownPanel = UiItem:new(host)
-    combatPreparationOverlay:addWidget(createDropDownPanel)
+    local gridBackground = UiRectangle:new(host)
+    combatPreparationOverlay:addWidget(gridBackground)
 
-    local createMenuDropDownRowLayout = UiRowLayout:new(host, "CreateMenuDropDownRowLayout")
-    combatPreparationOverlay:addWidget(createMenuDropDownRowLayout)
+    local createMenuDropDownGridLayout = UiGridLayout:new(host, "CreateMenuDropDownGridLayout")
+    combatPreparationOverlay:addWidget(createMenuDropDownGridLayout)
 
     local removeDropDownPanel = UiItem:new(host, "RemoveDropDownPanel")
     combatPreparationOverlay:addWidget(removeDropDownPanel)
@@ -145,7 +145,7 @@ function CombatPreparationOverlay:new(host)
 
     local hideCreatePanel = function()
         discardCreateTowerButton:setIsVisible(false)
-        createDropDownPanel:setIsVisible(false)
+        gridBackground:setIsVisible(false)
     end
 
     local hideRemovePanel = function()
@@ -155,7 +155,7 @@ function CombatPreparationOverlay:new(host)
 
     createObjectButton:subscribeOnMouseInputClickedCallback(function()
         hideRemovePanel()
-        createDropDownPanel:setIsVisible(true)
+        gridBackground:setIsVisible(true)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
             json.encode({
                 action = "remove_tower_marker_visibility",
@@ -271,26 +271,31 @@ function CombatPreparationOverlay:new(host)
         createObjectButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
         createObjectButton:setImageTextureSource("plus.png")
 
-        createDropDownPanel:setParent(host, combatPreparationOverlayCanvas.widgetName, backgroundRect.widgetName)
-        createDropDownPanel:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-            UiItemBase.UiAnchorType.HORIZONTAL_CENTER, backgroundRect.widgetName)
-        createDropDownPanel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
+        gridBackground:setParent(host, combatPreparationOverlayCanvas.widgetName,
+            combatPreparationOverlayCanvas.widgetName)
+        gridBackground:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName,
+            50)
+        gridBackground:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
             backgroundRect.widgetName)
-        createDropDownPanel:setWidth((smallButtonSize * #createTowerButtons) +
-                                         ((smallButtonSize * #createTowerButtons) * 0.8))
-        createDropDownPanel:setHeight(smallButtonSize)
-        createDropDownPanel:setVerticalCenterOffset(panelHeight)
-        createDropDownPanel:setIsVisible(false)
+        gridBackground:setWidth(gridWidth)
+        gridBackground:setHeight(gridHeight)
+        gridBackground:setColorHexValue(Styles.Colors.panelColor)
+        gridBackground:setBorderRadius(CombatPreparationOverlay.buttonRadius)
+        gridBackground:setIsVisible(false)
 
-        createMenuDropDownRowLayout:setParent(host, combatPreparationOverlayCanvas.widgetName,
-            createDropDownPanel.widgetName)
-        createMenuDropDownRowLayout:fill(createDropDownPanel.widgetName)
-        createMenuDropDownRowLayout:setSpacing(smallButtonSize * 0.5)
-        createMenuDropDownRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
+        createMenuDropDownGridLayout:setParent(host, combatPreparationOverlayCanvas.widgetName,
+            gridBackground.widgetName)
+        createMenuDropDownGridLayout:fill(gridBackground.widgetName)
+        createMenuDropDownGridLayout:setHorizontalSpacing(smallButtonSize * 0.5)
+        createMenuDropDownGridLayout:setVerticalSpacing(smallButtonSize * 0.5)
+        createMenuDropDownGridLayout:setColumnsCount(3)
+        createMenuDropDownGridLayout:setRowsCount(2)
+        createMenuDropDownGridLayout:setAlignment(UiGridLayout.UiGridHorizontalAlignmentType.CENTER,
+            UiGridLayout.UiGridVerticalAlignmentType.CENTER)
 
         for i = 1, #createTowerButtons do
             createTowerButtons[i]:setParent(host, combatPreparationOverlayCanvas.widgetName,
-                createMenuDropDownRowLayout.widgetName)
+                createMenuDropDownGridLayout.widgetName)
             createTowerButtons[i]:setWidth(smallButtonSize)
             createTowerButtons[i]:setHeight(smallButtonSize)
             createTowerButtons[i]:setButtonColorHexValue(Styles.Colors.buttonColor)
@@ -300,7 +305,7 @@ function CombatPreparationOverlay:new(host)
         end
 
         discardCreateTowerButton:setParent(host, combatPreparationOverlayCanvas.widgetName,
-            createMenuDropDownRowLayout.widgetName)
+            createMenuDropDownGridLayout.widgetName)
         discardCreateTowerButton:setWidth(smallButtonSize)
         discardCreateTowerButton:setHeight(smallButtonSize)
         discardCreateTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)

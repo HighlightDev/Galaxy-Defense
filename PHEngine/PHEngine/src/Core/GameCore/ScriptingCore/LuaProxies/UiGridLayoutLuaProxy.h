@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/GameCore/GUI/Common/GridAlignment.h"
 #include "UiItemLuaProxy.h"
 
 namespace EngineCore {
@@ -22,6 +23,10 @@ protected:
 
     uint32_t mRowsCount{1};
 
+    UiGridHorizontalAlignmentType mHorizontalAlignment{UiGridHorizontalAlignmentType::LEFT};
+
+    UiGridVerticalAlignmentType mVerticalAlignment{UiGridVerticalAlignmentType::TOP};
+
 public:
     explicit UiGridLayoutLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiGridLayout>& ownerUiItem);
 
@@ -36,6 +41,9 @@ public:
     void SetColumnsCount_FromGameThread(const uint32_t count);
 
     void SetRowsCount_FromGameThread(const uint32_t count);
+
+    void SetAlignment_FromGameThread(
+        const UiGridHorizontalAlignmentType horizontalAlignment, const UiGridVerticalAlignmentType verticalAlignment);
 };
 } // namespace Scripts
 } // namespace EngineCore

@@ -53,6 +53,16 @@ void UiGridLayoutLuaProxy::SetRowsCount_FromGameThread(const uint32_t count)
     }
 }
 
+void UiGridLayoutLuaProxy::SetAlignment_FromGameThread(
+    const UiGridHorizontalAlignmentType horizontalAlignment, const UiGridVerticalAlignmentType verticalAlignment)
+{
+    if (mHorizontalAlignment != horizontalAlignment || mVerticalAlignment != verticalAlignment) {
+        mHorizontalAlignment = horizontalAlignment;
+        mVerticalAlignment = verticalAlignment;
+        mIsLuaDataDirty = true;
+    }
+}
+
 void UiGridLayoutLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameters)
 {
     static constexpr auto functionId = Hash64_CT("UiGridLayoutLuaProxy::OnLuaThreadDataUpdated");
@@ -83,6 +93,8 @@ std::string UiGridLayoutLuaProxy::GetGameThreadData()
     jsonObj["vertical_spacing"] = mVerticalSpacing;
     jsonObj["columns_count"] = mColumnsCount;
     jsonObj["rows_count"] = mRowsCount;
+    jsonObj["horizontal_alignment"] = static_cast<int32_t>(mHorizontalAlignment);
+    jsonObj["vertical_alignment"] = static_cast<int32_t>(mVerticalAlignment);
     return jsonObj.dump();
 }
 } // namespace Scripts
