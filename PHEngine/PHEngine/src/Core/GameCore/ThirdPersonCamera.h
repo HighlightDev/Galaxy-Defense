@@ -21,7 +21,7 @@ protected:
 
     float m_lerpTimeElapsed = 0.0f;
 
-    float m_timeForInterpolation = 0.55f;
+    float m_timeForInterpolation = 5e-1f;
 
     bool m_bThirdPersonTargetTransformationDirty = false;
 
@@ -43,6 +43,8 @@ protected:
     float m_ZoomTime{0.0f};
 
     bool bZoomDirty{false};
+
+    bool bZoomResetDirty{false};
 
 public:
     ThirdPersonCamera(

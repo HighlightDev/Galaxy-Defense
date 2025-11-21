@@ -151,6 +151,11 @@ void ThirdPersonCamera::SetDistanceFromTargetToCamera(float distanceFromTargetTo
 void ThirdPersonCamera::ProcessZoom(const float deltaTimeSec)
 {
     if (bZoomDirty) {
+        if (bZoomResetDirty) {
+            m_ZoomTime = 0.0f;
+            bZoomResetDirty = false;
+        }
+
         m_ZoomTime = std::min(m_ZoomTime + deltaTimeSec, m_timeForInterpolation);
         const float diff = m_targetDistanceFromTargetToCamera - m_distanceFromTargetToCamera;
 
@@ -191,11 +196,13 @@ void ThirdPersonCamera::Zoom(eMouseScrollDirection zoomDirection, float zoomPowe
     case eMouseScrollDirection::ZoomIn: {
         m_targetDistanceFromTargetToCamera = m_distanceFromTargetToCamera - zoomPower;
         bZoomDirty = true;
+        bZoomResetDirty = true;
         break;
     }
     case eMouseScrollDirection::ZoomOut: {
         m_targetDistanceFromTargetToCamera = m_distanceFromTargetToCamera + zoomPower;
         bZoomDirty = true;
+        bZoomResetDirty = true;
         break;
     }
 

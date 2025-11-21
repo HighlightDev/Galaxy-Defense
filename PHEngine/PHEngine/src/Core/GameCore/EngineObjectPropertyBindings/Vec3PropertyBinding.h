@@ -30,7 +30,12 @@ public:
 
     void SetValue(const glm::vec3& value)
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: Vec3PropertyBinding::SetValue: Property. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = mGoPropertyWp.lock()) {
             propertySp->SetValue(value);
         }
@@ -38,7 +43,12 @@ public:
 
     glm::vec3 GetValue() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: Vec3PropertyBinding::GetValue: Property. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = mGoPropertyWp.lock()) {
             return propertySp->GetValue();
         }

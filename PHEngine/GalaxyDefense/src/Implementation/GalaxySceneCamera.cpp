@@ -20,15 +20,15 @@ GalaxySceneCamera::GalaxySceneCamera(
     const float camDistanceToThirdPersonTarget,
     const glm::vec3& thirdPersonTargetOffset)
     : ThirdPersonCamera(
-          cameraName,
-          cameraType,
-          scene,
-          viewPort,
-          viewProjectionInfo,
-          initPitchDeg,
-          initYawDeg,
-          camDistanceToThirdPersonTarget,
-          thirdPersonTargetOffset)
+        cameraName,
+        cameraType,
+        scene,
+        viewPort,
+        viewProjectionInfo,
+        initPitchDeg,
+        initYawDeg,
+        camDistanceToThirdPersonTarget,
+        thirdPersonTargetOffset)
     , mFallbackToStartPositionTimer(std::make_shared<GameThreadTimer>())
 {
     mFallbackToStartPositionTimer->Initialize();

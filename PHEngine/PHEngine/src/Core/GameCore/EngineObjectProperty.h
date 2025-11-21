@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/GameCore/LoggerExtension.h"
 #include "EnginePropertyType.h"
 
 #include <glm/vec2.hpp>

@@ -31,7 +31,12 @@ public:
 
     void SetSrcName(const std::string& name)
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::SetSrcName: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = SrcNameWp.lock()) {
             propertySp->SetValue(name);
         }
@@ -39,7 +44,12 @@ public:
 
     void SetDstName(const std::string& name) const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::SetDstName: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = DstNameWp.lock()) {
             propertySp->SetValue(name);
         }
@@ -47,7 +57,12 @@ public:
 
     void SetSrcTime(const float value)
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::SetSrcTime: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = SrcTimeWp.lock()) {
             propertySp->SetValue(value);
         }
@@ -55,7 +70,12 @@ public:
 
     void SetDstTime(const float value)
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::SetDstTime: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = DstTimeWp.lock()) {
             propertySp->SetValue(value);
         }
@@ -63,7 +83,12 @@ public:
 
     void SetIsTransitionEnabled(bool bEnabled)
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::SetIsTransitionEnabled: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = bTranstitionEnabledWp.lock()) {
             propertySp->SetValue(bEnabled);
         }
@@ -71,7 +96,12 @@ public:
 
     void SetTransitionValue(float transitionValue)
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::SetTransitionValue: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = TransitionValueWp.lock()) {
             propertySp->SetValue(transitionValue);
         }
@@ -79,7 +109,12 @@ public:
 
     std::string GetSrcName() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::GetSrcName: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = SrcNameWp.lock()) {
             return propertySp->GetValue();
         }
@@ -88,7 +123,12 @@ public:
 
     std::string GetDstName() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::GetDstName: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = DstNameWp.lock()) {
             return propertySp->GetValue();
         }
@@ -97,7 +137,12 @@ public:
 
     float GetSrcTime() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::GetSrcTime: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = SrcTimeWp.lock()) {
             return propertySp->GetValue();
         }
@@ -106,7 +151,12 @@ public:
 
     float GetDstTime() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::GetDstTime: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = DstTimeWp.lock()) {
             return propertySp->GetValue();
         }
@@ -115,7 +165,12 @@ public:
 
     bool GetIsTransitionEnabled() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::GetIsTransitionEnabled: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = bTranstitionEnabledWp.lock()) {
             return propertySp->GetValue();
         }
@@ -124,7 +179,12 @@ public:
 
     float GetTransitionValue() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: AnimationPropertyBinding::GetTransitionValue: Property not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = TransitionValueWp.lock()) {
             return propertySp->GetValue();
         }

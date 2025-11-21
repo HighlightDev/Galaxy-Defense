@@ -21,14 +21,19 @@ public:
 
     void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<float>> gameObjectProperty)
     {
-        assert(gameObjectProperty);
+        ext_assert(gameObjectProperty, "FloatPropertyBinding::SetEngineObjectProperty: gameObjectProperty is nullptr");
         mGoPropertyWp = gameObjectProperty;
         bPropertyConnected = true;
     }
 
     void SetValue(float value)
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: FloatPropertyBinding::SetValue: Property is not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = mGoPropertyWp.lock()) {
             propertySp->SetValue(value);
         }
@@ -36,7 +41,12 @@ public:
 
     float GetValue() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: FloatPropertyBinding::GetValue: Property is not connected. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = mGoPropertyWp.lock()) {
             return propertySp->GetValue();
         }

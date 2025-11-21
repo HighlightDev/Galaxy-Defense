@@ -30,7 +30,12 @@ public:
 
     void SetValue(const glm::ivec2& value)
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: iVec2PropertyBinding::SetValue: Property. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = mGoPropertyWp.lock()) {
             propertySp->SetValue(value);
         }
@@ -38,7 +43,12 @@ public:
 
     glm::ivec2 GetValue() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: iVec2PropertyBinding::GetValue is used. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = mGoPropertyWp.lock()) {
             return propertySp->GetValue();
         }

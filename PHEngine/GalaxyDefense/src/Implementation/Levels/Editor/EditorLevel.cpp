@@ -121,6 +121,7 @@ void EditorLevel::CreateScene()
     spaceCamera->SetDistanceFromTargetToCamera(spaceCamera->GetMaxDistanceFromTargetToCamera());
     sceneSp->RegisterMainCamera(spaceCamera);
     spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);
+    spaceCamera->SetTimeForInterpolation(6e-1f);
 
     const auto& a_skybox = sceneSp->GetActorByName("SkyboxActor");
     assert(a_skybox);

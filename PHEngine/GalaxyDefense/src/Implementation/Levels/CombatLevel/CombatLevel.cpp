@@ -151,6 +151,7 @@ void CombatLevel::CreateScene()
     spaceCamera->SetDistanceFromTargetToCamera(spaceCamera->GetMaxDistanceFromTargetToCamera());
     sceneSp->RegisterMainCamera(spaceCamera);
     spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);
+    spaceCamera->SetTimeForInterpolation(6e-1f);
 
     const auto& a_light = sceneSp->GetActorByName("MainLightActor");
     assert(a_light);

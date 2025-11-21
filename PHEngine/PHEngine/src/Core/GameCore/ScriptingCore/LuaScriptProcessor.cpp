@@ -67,7 +67,6 @@ std::shared_ptr<LuaProxy> LuaScriptProcessor::GetLuaProxy(const size_t luaProxyI
             return luaProxy;
         }
     }
-    LogInfo("LuaScriptProcessor::GetLuaProxy: Warning: luaProxy: ", luaProxyId, " wasn't found.");
     return nullptr;
 }
 

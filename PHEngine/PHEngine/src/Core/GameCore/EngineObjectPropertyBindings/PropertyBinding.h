@@ -10,6 +10,7 @@ namespace EngineCore {
 struct PropertyBinding {
 protected:
     bool bPropertyConnected = false;
+    mutable bool bBindingInitialized = false;
 
 public:
     std::string BindingName;

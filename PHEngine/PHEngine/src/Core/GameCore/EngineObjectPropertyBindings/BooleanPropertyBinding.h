@@ -28,7 +28,12 @@ public:
 
     void SetValue(const bool value)
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: BooleanPropertyBinding::SetValue: Property. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = mGoPropertyWp.lock()) {
             propertySp->SetValue(value);
         }
@@ -36,7 +41,12 @@ public:
 
     bool GetValue() const
     {
-        assert(bPropertyConnected);
+        if (!bPropertyConnected && !bBindingInitialized) {
+            LogInfo(
+                "Warning: BooleanPropertyBinding::GetValue: Property. BindingName: " + BindingName
+                + ", EngineObjectName: " + EngineObjectName + ", EngineObjectPropertyName: " + EngineObjectPropertyName);
+        }
+        bBindingInitialized = true;
         if (const auto& propertySp = mGoPropertyWp.lock()) {
             return propertySp->GetValue();
         }
