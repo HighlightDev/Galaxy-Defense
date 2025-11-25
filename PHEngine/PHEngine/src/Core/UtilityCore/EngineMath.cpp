@@ -356,4 +356,24 @@ float GetRollFromQuaternion(const glm::quat& quat)
     float roll = std::atan2(sinr_cosp, cosr_cosp);
     return RAD_TO_DEG(roll);
 }
+
+glm::mat4 CreateRotationMatrixFromDirection(const glm::vec3& direction)
+{
+    // Find a vector, ref, not parallel to v
+    glm::vec3 vmag = glm::abs(direction);
+    glm::vec3 ref;
+    if (vmag.x <= vmag.y && vmag.x <= vmag.z) {
+        ref = glm::vec3(1.0, 0.0, 0.0);
+    } else if (vmag.y <= vmag.z) {
+        ref = glm::vec3(0.0, 1.0, 0.0);
+    } else {
+        ref = glm::vec3(0.0, 0.0, 1.0);
+    }
+    // Use ref to create two unit vectors, u1, u2, so {direction, u1, u2} are orthogonal
+    glm::vec3 utemp = glm::cross(direction, ref);
+    glm::vec3 u1 = glm::normalize(glm::cross(direction, utemp));
+    glm::vec3 u2 = glm::normalize(glm::cross(direction, u1));
+    return glm::mat4(glm::vec4(u1, 0.0f), glm::vec4(u2, 0.0f), glm::vec4(direction, 0.0f), glm::vec4(0, 0, 0, 1));
+}
+
 } // namespace EngineMath

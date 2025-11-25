@@ -442,25 +442,200 @@ Creates a component and attaches it to an actor.
 
 **Parameters:**
 - `actorId` (integer) - actor ID
-- `componentType` (string) - component type
+- `componentType` (string) - component type (see supported types below)
 - `componentDataJson` (string) - component parameters in JSON
 
-**Example:**
+**Supported Component Types:**
+
+#### StaticMeshComponent_Deferred / StaticMeshComponent_Forward / SkeletalMeshComponent
 ```lua
-_CreateAndAttachComponentToActor(
-    actorId,
-    "MeshComponent",
-    '{"mesh": "cube.obj", "material": "default"}'
-)
+_CreateAndAttachComponentToActor(actorId, "StaticMeshComponent_Deferred", Json.encode({
+    gameObjectName = "MeshComp",
+    meshName = "cube.obj",
+    translation = {x = 0, y = 0, z = 0},
+    rotation = {x = 0, y = 0, z = 0},
+    scale = {x = 1, y = 1, z = 1},
+    luaScriptName = "",
+    materialProxyId = materialId
+}))
+```
+
+#### RigidBodyPhysicsComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "RigidBodyPhysicsComponent", Json.encode({
+    gameObjectName = "PhysicsComp",
+    collisionShape = "box",  -- or "sphere", "capsule", "plane", "compoundShape"
+    halfExtent = {x = 1, y = 1, z = 1},  -- for box
+    -- radius = 1.0,  -- for sphere/capsule
+    -- height = 2.0,  -- for capsule
+    physicsBodyType = 0,  -- 0=STATIC, 1=DYNAMIC, 2=KINEMATIC
+    mass = 1.0
+}))
+```
+
+#### CharacterPhysicsComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "CharacterPhysicsComponent", Json.encode({
+    gameObjectName = "CharacterPhysics",
+    capsuleRadius = 0.5,
+    capsuleHeight = 1.8,
+    stepHeight = 0.3,
+    mass = 80.0
+}))
+```
+
+#### DirectionalLightComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "DirectionalLightComponent", Json.encode({
+    gameObjectName = "DirLight",
+    rotation = {x = 0, y = 0, z = 0},
+    direction = {x = -1, y = -1, z = 0},
+    ambient = {r = 0.1, g = 0.1, b = 0.1},
+    diffuse = {r = 1.0, g = 1.0, b = 1.0},
+    specular = {r = 0.5, g = 0.5, b = 0.5},
+    is_enabled = true,
+    is_visible = true,
+    shadowAtlasSize = 1024  -- optional
+}))
+```
+
+#### PointLightComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "PointLightComponent", Json.encode({
+    gameObjectName = "PointLight",
+    translation = {x = 0, y = 5, z = 0},
+    ambient = {r = 0.1, g = 0.1, b = 0.1},
+    diffuse = {r = 1.0, g = 0.5, b = 0.2},
+    specular = {r = 0.5, g = 0.5, b = 0.5},
+    attenuation = {x = 1, y = 0.09, z = 0.032},
+    radianceRadius = 50.0,
+    is_enabled = true,
+    is_visible = true,
+    shadowAtlasSize = 512  -- optional
+}))
+```
+
+#### SpotlightComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "SpotlightComponent", Json.encode({
+    gameObjectName = "Spotlight",
+    translation = {x = 0, y = 10, z = 0},
+    rotation = {x = -90, y = 0, z = 0},
+    ambient = {r = 0.0, g = 0.0, b = 0.0},
+    diffuse = {r = 1.0, g = 1.0, b = 1.0},
+    specular = {r = 1.0, g = 1.0, b = 1.0},
+    attenuation = {x = 1, y = 0.09, z = 0.032},
+    radianceRadius = 100.0,
+    cutoff = 0.85,  -- cosine of cutoff angle
+    is_enabled = true,
+    is_visible = true,
+    shadowAtlasSize = 512  -- optional
+}))
+```
+
+#### SkyboxComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "SkyboxComponent", Json.encode({
+    gameObjectName = "Skybox",
+    scale = {x = 100, y = 100, z = 100},
+    materialProxyId = skyboxMaterialId
+}))
+```
+
+#### WaterPlaneComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "WaterPlaneComponent", Json.encode({
+    gameObjectName = "Water",
+    translation = {x = 0, y = 0, z = 0},
+    rotation = {x = 0, y = 0, z = 0},
+    scale = {x = 50, y = 1, z = 50},
+    materialProxyId = waterMaterialId
+}))
+```
+
+#### HumanoidPhysicsMovementComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "HumanoidPhysicsMovementComponent", Json.encode({
+    gameObjectName = "Movement",
+    launchDirection = {x = 0, y = 0, z = 0},
+    cameraName = "MainCamera"
+}))
+```
+
+#### PlatformTraverseComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "PlatformTraverseComponent", Json.encode({
+    gameObjectName = "PlatformTraverse",
+    scriptName = "platformMovement.lua",
+    routePoints = {
+        point1 = {
+            translation = {x = 0, y = 0, z = 0},
+            rotation = {x = 0, y = 0, z = 0},
+            scale = {x = 1, y = 1, z = 1},
+            transitionTime = 2.0
+        },
+        point2 = {
+            translation = {x = 10, y = 0, z = 0},
+            rotation = {x = 0, y = 0, z = 0},
+            scale = {x = 1, y = 1, z = 1},
+            transitionTime = 2.0
+        }
+    }
+}))
+```
+
+#### BillboardComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "BillboardComponent", Json.encode({
+    gameObjectName = "Billboard",
+    billboardExtent = 1.0,
+    enableScreenAspectRatio = true,
+    rotationRadians = 0.0,
+    translation = {x = 0, y = 5, z = 0},
+    scale = {x = 1, y = 1, z = 1},
+    materialProxyId = billboardMaterialId
+}))
+```
+
+#### InputComponent / UiInputComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "InputComponent", Json.encode({
+    gameObjectName = "Input"
+}))
+```
+
+#### GhostPhysicsComponent
+```lua
+_CreateAndAttachComponentToActor(actorId, "GhostPhysicsComponent", Json.encode({
+    gameObjectName = "GhostPhysics",
+    collisionShape = "sphere",
+    radius = 1.0,
+    mass = 0.0
+}))
 ```
 
 ---
 
 ### `_CreatePlanarReflectionComponent(componentDataJson)`
-Creates a planar reflection component.
+Creates a planar reflection component for water/mirror reflections.
 
 **Parameters:**
 - `componentDataJson` (string) - component parameters in JSON
+
+**Example:**
+```lua
+_CreatePlanarReflectionComponent(Json.encode({
+    gameObjectName = "PlanarReflection",
+    cameraName = "MainCamera",
+    translation = {x = 0, y = 0, z = 0},
+    rotation = {x = 0, y = 0, z = 0},
+    scale = {x = 1, y = 1, z = 1},
+    viewPortX = 0,
+    viewPortY = 0,
+    viewPortWidth = 1920,
+    viewPortHeight = 1080
+}))
+```
 
 ---
 

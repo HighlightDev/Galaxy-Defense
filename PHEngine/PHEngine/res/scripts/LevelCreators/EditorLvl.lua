@@ -43,7 +43,10 @@ function CreateLevel(host)
         perlin_noise_128x128.png,
         plane.obj,
         sphere.obj,
-        ufo.obj
+        ufo.obj,
+        brick_mid.jpg,
+	    brick_nm_mid.jpg,
+        dummy_metallic_roughness.png,
 		]])
 
     _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
@@ -80,6 +83,35 @@ function CreateLevel(host)
         is_enabled = true,
         is_visible = true
     }))
+
+    -- local materialProxyId = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+    -- _SetTextureToMaterial(host, materialProxyId, "brick_mid.jpg", "albedo")
+    -- _SetTextureToMaterial(host, materialProxyId, "brick_nm_mid.jpg", "normalMap")
+    -- _SetTextureToMaterial(host, materialProxyId, "dummy_metallic_roughness.png", "roughnessMap")
+    -- _SetTextureToMaterial(host, materialProxyId, "dummy_metallic_roughness.png", "metallicMap")
+    -- _SetFloatToMaterial(host, materialProxyId, 1.0, "uvScale")
+
+    -- _CreateAndAttachComponentToActor(host, a_lightId, "StaticMeshComponent_Forward", Json.encode({
+    --     gameObjectName = "LightVisual",
+    --     meshName = "cylinder1.obj",
+    --     translation = {
+    --         x = 0,
+    --         y = 0,
+    --         z = 0
+    --     },
+    --     rotation = {
+    --         x = 0,
+    --         y = 0,
+    --         z = 0
+    --     },
+    --     scale = {
+    --         x = 1.0,
+    --         y = 1.0,
+    --         z = 1.0
+    --     },
+    --     materialProxyId = materialProxyId,
+    --     luaScriptName = ""
+    -- }))
 
     _CreateActor(host, "Actor", "SkyboxActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
 end
