@@ -10,13 +10,15 @@ in ivec4 VertexBlendIndex;
 
 #include "materialCommon.incl.glsl"
 
-layout(std140) uniform Matrices {
+layout(std140) uniform Matrices
+{
     mat4 worldMatrix;
     mat4 viewMatrix;
     mat4 projectionMatrix;
 };
 
-layout(std140) uniform SkinningMatrices {
+layout(std140) uniform SkinningMatrices
+{
     mat4 bonesMatrices[MaxBones];
 };
 

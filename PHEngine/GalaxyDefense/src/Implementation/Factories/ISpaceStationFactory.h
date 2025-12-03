@@ -19,7 +19,6 @@ public:
         const std::string& towerName,
         const glm::vec3& translation,
         const glm::vec3& rotation,
-        const glm::vec3& scale) const
-        = 0;
+        const glm::vec3& scale) const = 0;
 };
 } // namespace Game

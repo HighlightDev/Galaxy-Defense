@@ -36,46 +36,19 @@ UiItemBase.UiAnchorType = {
     HORIZONTAL_CENTER = 6
 }
 
-UiItemBase.UiMouseInputPressState = {
-    RELEASED = 0,
-    PRESSED = 1
-}
+UiItemBase.UiMouseInputPressState = {RELEASED = 0, PRESSED = 1}
 
-UiItemBase.UiMouseInputCursorHoverState = {
-    LEAVED = 0,
-    ENTERED = 1
-}
+UiItemBase.UiMouseInputCursorHoverState = {LEAVED = 0, ENTERED = 1}
 
 function UiItemBase:new()
     local uiItemBaseProperties = {
-        visible = {
-            value = false,
-            dirty = false
-        },
-        intercept_mouse_input_event = {
-            value = false,
-            dirty = false
-        },
-        z_order = {
-            value = 0,
-            dirty = false
-        },
-        width = {
-            value = 0,
-            dirty = false
-        },
-        height = {
-            value = 0,
-            dirty = false
-        },
-        horizontalCenterOffset = {
-            value = 0,
-            dirty = false
-        },
-        verticalCenterOffset = {
-            value = 0,
-            dirty = false
-        },
+        visible = {value = false, dirty = false},
+        intercept_mouse_input_event = {value = false, dirty = false},
+        z_order = {value = 0, dirty = false},
+        width = {value = 0, dirty = false},
+        height = {value = 0, dirty = false},
+        horizontalCenterOffset = {value = 0, dirty = false},
+        verticalCenterOffset = {value = 0, dirty = false},
         anchors = {
             value = {
                 [UiItemBase.UiAnchorType.LEFT] = {
@@ -117,8 +90,10 @@ function UiItemBase:new()
     uiItemBaseObj.typeName = "UiItemBase"
     uiItemBaseObj.uiItemBaseClass = self
     uiItemBaseObj.properties = uiItemBaseProperties
-    uiItemBaseObj.mouseInputPressState = UiItemBase.UiMouseInputPressState.RELEASED
-    uiItemBaseObj.mouseInputCursorHoverState = UiItemBase.UiMouseInputCursorHoverState.LEAVED
+    uiItemBaseObj.mouseInputPressState =
+        UiItemBase.UiMouseInputPressState.RELEASED
+    uiItemBaseObj.mouseInputCursorHoverState =
+        UiItemBase.UiMouseInputCursorHoverState.LEAVED
     uiItemBaseObj.mouseInputClicked = false
     uiItemBaseObj.onMouseInputPressStateChangedCallbacks = {}
     uiItemBaseObj.onMouseInputCursorHoverStateChangedCallback = nil
@@ -129,12 +104,17 @@ function UiItemBase:new()
 end
 
 function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
-    print("UiItemBase:setParent: host :" .. tostring(host) .. ", canvas name: " .. tostring(canvasName) ..
-              ", uiWidgetParentName: " .. tostring(uiWidgetParentName) .. ", myName: " .. tostring(self.widgetName) ..
-              ", self.luaProxyReady: " .. tostring(self.luaProxyReady))
+    print(
+        "UiItemBase:setParent: host :" .. tostring(host) .. ", canvas name: " ..
+            tostring(canvasName) .. ", uiWidgetParentName: " ..
+            tostring(uiWidgetParentName) .. ", myName: " ..
+            tostring(self.widgetName) .. ", self.luaProxyReady: " ..
+            tostring(self.luaProxyReady))
 
-    assert(self.luaProxyReady == true and host ~= nil and type(host) == "userdata" and type(canvasName) == "string" and
-               canvasName ~= "" and type(uiWidgetParentName) == "string" and uiWidgetParentName ~= "", debug.traceback())
+    assert(self.luaProxyReady == true and host ~= nil and type(host) ==
+               "userdata" and type(canvasName) == "string" and canvasName ~= "" and
+               type(uiWidgetParentName) == "string" and uiWidgetParentName ~= "",
+           debug.traceback())
     _SetUiWidgetParent(host, self.luaProxyId, canvasName, uiWidgetParentName)
 end
 
@@ -148,7 +128,8 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
         self.properties.visible.value = parsedJsonData["visible"]
     end
     if parsedJsonData["intercept_mouse_input_event"] ~= nil then
-        self.properties.intercept_mouse_input_event.value = parsedJsonData["intercept_mouse_input_event"]
+        self.properties.intercept_mouse_input_event.value =
+            parsedJsonData["intercept_mouse_input_event"]
     end
     if parsedJsonData["z_order"] ~= nil then
         self.properties.z_order.value = parsedJsonData["z_order"]
@@ -160,10 +141,12 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
         self.properties.height.value = parsedJsonData["height"]
     end
     if parsedJsonData["horizontalCenterOffset"] ~= nil then
-        self.properties.horizontalCenterOffset.value = parsedJsonData["horizontalCenterOffset"]
+        self.properties.horizontalCenterOffset.value =
+            parsedJsonData["horizontalCenterOffset"]
     end
     if parsedJsonData["verticalCenterOffset"] ~= nil then
-        self.properties.verticalCenterOffset.value = parsedJsonData["verticalCenterOffset"]
+        self.properties.verticalCenterOffset.value =
+            parsedJsonData["verticalCenterOffset"]
     end
     if parsedJsonData["anchors"] ~= nil then
         local anchorsTable = parsedJsonData["anchors"]
@@ -173,7 +156,8 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
             local dstUiItemWidgetName = tostring(value[2][2])
             local srcAnchorMargin = tonumber(value[2][3])
 
-            if srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchorMargin ~= nil then
+            if srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~=
+                nil and srcAnchorMargin ~= nil then
                 self.properties.anchors.value[srcAnchor] = {
                     dstAnchor = dstAnchor,
                     dstUiItemWidgetName = dstUiItemWidgetName,
@@ -201,24 +185,28 @@ end
 function UiItemBase:updateFromReplicatorMouseInputData(host)
     assert(host ~= nil and type(host) == "userdata")
     if self.luaProxyReady then
-        local replicatorMouseInputJsonData = _GetMouseInputData(host, self.luaProxyId)
+        local replicatorMouseInputJsonData =
+            _GetMouseInputData(host, self.luaProxyId)
         if self.isUiInputEnabled and replicatorMouseInputJsonData ~= "" then
             local parsedJson = json.decode(replicatorMouseInputJsonData)
             if parsedJson["input_press_state"] ~= nil then
                 local newState = tonumber(parsedJson["input_press_state"])
                 if newState ~= self.mouseInputPressState then
                     self.mouseInputPressState = newState
-                    for _, callback in pairs(self.onMouseInputPressStateChangedCallbacks) do
+                    for _, callback in pairs(
+                                           self.onMouseInputPressStateChangedCallbacks) do
                         callback(newState)
                     end
                 end
             end
             if parsedJson["input_cursor_hover_state"] ~= nil then
-                local newState = tonumber(parsedJson["input_cursor_hover_state"])
+                local newState =
+                    tonumber(parsedJson["input_cursor_hover_state"])
                 if newState ~= self.mouseInputCursorHoverState then
                     self.mouseInputCursorHoverState = newState
                     if self.onMouseInputCursorHoverStateChangedCallback ~= nil then
-                        self.onMouseInputCursorHoverStateChangedCallback(newState)
+                        self.onMouseInputCursorHoverStateChangedCallback(
+                            newState)
                     end
                 end
             end
@@ -241,9 +229,7 @@ function UiItemBase:setIsVisible(isVisible)
     end
 end
 
-function UiItemBase:getIsVisible()
-    return self.properties.visible.value
-end
+function UiItemBase:getIsVisible() return self.properties.visible.value end
 
 function UiItemBase:setIfCanInterceptMouseInputEvent(intercept)
     if self.properties.intercept_mouse_input_event.value ~= intercept then
@@ -263,9 +249,7 @@ function UiItemBase:setZOrder(z_order)
     end
 end
 
-function UiItemBase:getZOrder()
-    return self.properties.z_order.value
-end
+function UiItemBase:getZOrder() return self.properties.z_order.value end
 
 function UiItemBase:setWidth(width)
     if self.properties.width.value ~= width then
@@ -274,9 +258,7 @@ function UiItemBase:setWidth(width)
     end
 end
 
-function UiItemBase:getWidth()
-    return self.properties.width.value
-end
+function UiItemBase:getWidth() return self.properties.width.value end
 
 function UiItemBase:setHeight(height)
     if self.properties.height.value ~= height then
@@ -285,9 +267,7 @@ function UiItemBase:setHeight(height)
     end
 end
 
-function UiItemBase:getHeight()
-    return self.properties.height.value
-end
+function UiItemBase:getHeight() return self.properties.height.value end
 
 function UiItemBase:setVerticalCenterOffset(verticalCenterOffset)
     if self.properties.verticalCenterOffset.value ~= verticalCenterOffset then
@@ -311,13 +291,20 @@ function UiItemBase:getHorizontalCenterOffset()
     return self.properties.horizontalCenterOffset.value
 end
 
-function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
-    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchor >
-               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName,
+                              anchorMargin)
+    assert(
+        srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
+            srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <=
+            UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
     self.properties.anchors.dirty = true
     self.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
-    self.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
-    self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin ~= nil and anchorMargin or 0
+    self.properties.anchors.value[srcAnchor].dstUiItemWidgetName =
+        dstUiItemWidgetName
+    self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin ~=
+                                                                   nil and
+                                                                   anchorMargin or
+                                                                   0
 end
 
 function UiItemBase:fill(dstUiItemWidgetName)
@@ -325,47 +312,61 @@ function UiItemBase:fill(dstUiItemWidgetName)
     self.properties.anchors.dirty = true
     for anchor = UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.BOTTOM, 1 do
         self.properties.anchors.value[anchor].dstAnchor = anchor
-        self.properties.anchors.value[anchor].dstUiItemWidgetName = dstUiItemWidgetName
-        local existingMargin = self.properties.anchors.value[anchor].srcAnchorMargin
-        self.properties.anchors.value[anchor].srcAnchorMargin = existingMargin ~= nil and existingMargin or 0
+        self.properties.anchors.value[anchor].dstUiItemWidgetName =
+            dstUiItemWidgetName
+        local existingMargin = self.properties.anchors.value[anchor]
+                                   .srcAnchorMargin
+        self.properties.anchors.value[anchor].srcAnchorMargin =
+            existingMargin ~= nil and existingMargin or 0
     end
 end
 
 function UiItemBase:setAnchorMargin(srcAnchor, anchorMargin)
-    assert(srcAnchor ~= nil and srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <=
-               UiItemBase.UiAnchorType.HORIZONTAL_CENTER and anchorMargin ~= nil and type(anchorMargin) == "number")
+    assert(srcAnchor ~= nil and srcAnchor > UiItemBase.UiAnchorType.NONE and
+               srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER and
+               anchorMargin ~= nil and type(anchorMargin) == "number")
     self.properties.anchors.dirty = true
     self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
 end
 
 function UiItemBase:enableMouseInputReceiverBase(host)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady ==
+               true)
     _EnableMouseInputReceiverBase(host, self.luaProxyId)
 end
 
 function UiItemBase:subscribeOnMouseInputPressStateChanged(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.onMouseInputPressStateChangedCallbacks[#self.onMouseInputPressStateChangedCallbacks + 1] = callback
+    self.onMouseInputPressStateChangedCallbacks[#self.onMouseInputPressStateChangedCallbacks +
+        1] = callback
 end
 
-function UiItemBase:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
+function UiItemBase:subscribeOnMouseInputCursorHoverStateChangedCallback(
+    callback)
     assert(callback ~= nil and type(callback) == "function")
     self.onMouseInputCursorHoverStateChangedCallback = callback
 end
 
 function UiItemBase:subscribeOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.onMouseInputClickedCallbacks[#self.onMouseInputClickedCallbacks + 1] = callback
+    self.onMouseInputClickedCallbacks[#self.onMouseInputClickedCallbacks + 1] =
+        callback
 end
 
-function UiItemBase:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
-    animatedPropertyType, propertySrcValue, propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
-    assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
-               type(animationFunctionType) == "number" and animationDuration ~= nil and type(animationDuration) ==
-               "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
-               animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
-    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+function UiItemBase:addAnimation(host, animationName, animationFunctionType,
+                                 animationDuration, animatedPropertyName,
+                                 animatedPropertyType, propertySrcValue,
+                                 propertyDstValue)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady ==
+               true)
+    assert(animationName ~= nil and type(animationName) == "string" and
+               animationFunctionType ~= nil and type(animationFunctionType) ==
+               "number" and animationDuration ~= nil and type(animationDuration) ==
+               "number" and animatedPropertyName ~= nil and
+               type(animatedPropertyName) == "string" and animatedPropertyType ~=
+               nil and type(animatedPropertyType) == "number")
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and
+               type(propertySrcValue) == type(propertyDstValue))
 
     local animationJsonData = json.encode({
         animatedPropertyType = animatedPropertyType,
@@ -379,7 +380,8 @@ function UiItemBase:addAnimation(host, animationName, animationFunctionType, ani
 end
 
 function UiItemBase:addSequenceAnimation(host, animationName, animationDataList)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady ==
+               true)
     assert(animationName ~= nil and type(animationName) == "string")
     assert(animationDataList ~= nil and type(animationDataList) == "table")
 
@@ -394,26 +396,33 @@ function UiItemBase:addSequenceAnimation(host, animationName, animationDataList)
         local propertyDstValue = animationData.propertyDstValue
 
         assert(type(animationFunctionType) == "number", debug.traceback())
-        assert(animationDuration ~= nil and type(animationDuration) == "number", debug.traceback())
-        assert(animatedPropertyName ~= nil and type(animatedPropertyName) == "string", debug.traceback())
-        assert(animatedPropertyType ~= nil and type(animatedPropertyType) == "number", debug.traceback())
-        assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue),
-            debug.traceback())
+        assert(animationDuration ~= nil and type(animationDuration) == "number",
+               debug.traceback())
+        assert(animatedPropertyName ~= nil and type(animatedPropertyName) ==
+                   "string", debug.traceback())
+        assert(animatedPropertyType ~= nil and type(animatedPropertyType) ==
+                   "number", debug.traceback())
+        assert(propertySrcValue ~= nil and propertyDstValue ~= nil and
+                   type(propertySrcValue) == type(propertyDstValue),
+               debug.traceback())
     end
 
-    _AddUiItemSequenceAnimation(host, self.luaProxyId, animationName, json.encode(animationDataList))
+    _AddUiItemSequenceAnimation(host, self.luaProxyId, animationName,
+                                json.encode(animationDataList))
 end
 
 function UiItemBase:startAnimation(host, animationName)
     assert(host ~= nil and type(host) == "userdata")
-    assert(animationName ~= nil and type(animationName) == "string" and self.luaProxyReady == true)
+    assert(animationName ~= nil and type(animationName) == "string" and
+               self.luaProxyReady == true)
 
     _StartUiItemAnimation(host, self.luaProxyId, animationName)
 end
 
 function UiItemBase:startSequenceAnimation(host, animationSequenceName)
     assert(host ~= nil and type(host) == "userdata")
-    assert(animationSequenceName ~= nil and type(animationSequenceName) == "string" and self.luaProxyReady == true)
+    assert(animationSequenceName ~= nil and type(animationSequenceName) ==
+               "string" and self.luaProxyReady == true)
 
     _StartUiItemSequenceAnimation(host, self.luaProxyId, animationSequenceName)
 end

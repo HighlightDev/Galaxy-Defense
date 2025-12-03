@@ -13,8 +13,8 @@
 #include "Implementation/Controllers/NavigationController.h"
 #include "Implementation/Controllers/UserInteractionController.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
-#include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/Events/ElectroRaySphereContactCollisionEvent.h"
+#include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/GameModeTypeEnum.h"
 #include "Implementation/GameObjectsCollisionType.h"
 #include "Implementation/GameObjectsType.h"
@@ -69,7 +69,7 @@ public:
 
     void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTimeSec) override { };
+    void UnpausableTick(const float deltaTimeSec) override{};
 
     void CleanUp() override;
 
@@ -80,8 +80,7 @@ protected:
         const PhysicsCollisionGameThreadEvent* sender,
         const typename PhysicsCollisionGameThreadEvent::EventData_t& data) override;
 
-    void
-    ProcessEvent(const ShootRayCollisionEvent* sender, const typename ShootRayCollisionEvent::EventData_t& data) override;
+    void ProcessEvent(const ShootRayCollisionEvent* sender, const typename ShootRayCollisionEvent::EventData_t& data) override;
 
     void ProcessEvent(
         const ElectroRaySphereContactCollisionEvent* sender,

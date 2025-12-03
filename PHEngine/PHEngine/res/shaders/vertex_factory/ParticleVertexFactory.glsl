@@ -11,7 +11,8 @@ in vec4 ParticleColor;
 
 #include "materialCommon.incl.glsl"
 
-layout (std140) uniform Matrices {
+layout(std140) uniform Matrices
+{
     mat4 worldMatrix;
     mat4 viewMatrix;
     mat4 projectionMatrix;

@@ -27,9 +27,7 @@ class SpaceStationActor : public Actor {
     std::shared_ptr<EngineObjectProperty<float>> mShootRadiusProperty;
 
 public:
-    SpaceStationActor(
-        const std::string& gameObjectName,
-        const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
+    SpaceStationActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
     void Tick(const float deltaTimeSec) override;
 

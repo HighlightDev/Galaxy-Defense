@@ -1,10 +1,9 @@
 #include "GameLevelFactory.h"
 
+#include "Core/GameCore/LoggerExtension.h"
 #include "Implementation/Levels/CombatLevel/CombatLevel.h"
 #include "Implementation/Levels/Editor/EditorLevel.h"
 #include "Implementation/Levels/MainMenu/MainMenuLevel.h"
-
-#include "Core/GameCore/LoggerExtension.h"
 
 namespace Game {
 std::shared_ptr<Level> GameLevelFactory::CreateLevel(const std::string& levelName) const

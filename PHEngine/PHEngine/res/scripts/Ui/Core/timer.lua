@@ -6,8 +6,7 @@ TimerManager = {
 }
 
 function TimerManager:new()
-    local newObj = {
-    }
+    local newObj = {}
 
     self.__index = self
     return setmetatable(newObj, self)
@@ -21,8 +20,7 @@ function TimerManager:createTimer(action, oneshot, intervalInSec)
         id = TimerManager.timers_id_counter + 1,
         action = action,
         oneshot = oneshot,
-        intervalInSec =
-            intervalInSec,
+        intervalInSec = intervalInSec,
         isRunning = false,
         timePassed = 0.0
     }
@@ -32,17 +30,13 @@ end
 
 function TimerManager:startTimer(timer_id)
     for _, timer in pairs(TimerManager.timers) do
-        if timer.id == timer_id then
-            timer.isRunning = true
-        end
+        if timer.id == timer_id then timer.isRunning = true end
     end
 end
 
 function TimerManager:stopTimer(timer_id)
     for _, timer in pairs(TimerManager.timers) do
-        if timer.id == timer_id then
-            timer.isRunning = false
-        end
+        if timer.id == timer_id then timer.isRunning = false end
     end
 end
 

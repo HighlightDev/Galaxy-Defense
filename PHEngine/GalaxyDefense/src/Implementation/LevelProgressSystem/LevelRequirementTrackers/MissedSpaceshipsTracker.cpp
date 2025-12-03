@@ -3,7 +3,8 @@
 #include "Implementation/DataProviders/LevelDataProvider.h"
 
 namespace Game {
-MissedSpaceshipsTracker::MissedSpaceshipsTracker(const int32_t missSpaceshipsCountToFailTracker, const std::string& requirementHint)
+MissedSpaceshipsTracker::MissedSpaceshipsTracker(
+    const int32_t missSpaceshipsCountToFailTracker, const std::string& requirementHint)
     : mMissSpaceshipsCountToFailTracker(missSpaceshipsCountToFailTracker)
     , mRequirementHint(requirementHint)
 {

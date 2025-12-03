@@ -58,74 +58,49 @@ function CreateTestLevel(host)
 		,explosion1.ogg
 		]])
 
-    local a_lightId = _CreateActor(host, "Actor", "MainLightActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_lightId = _CreateActor(host, "Actor", "MainLightActor", 0, 0, 0, 0,
+                                   0, 0, 1, 1, 1, "")
 
-    _CreateAndAttachComponentToActor(host, a_lightId, "DirectionalLightComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_lightId,
+                                     "DirectionalLightComponent", Json.encode({
         gameObjectName = "MainLightComp",
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        direction = {
-            x = -0.2,
-            y = -0.5,
-            z = 0
-        },
-        ambient = {
-            r = 0.2,
-            g = 0.2,
-            b = 0.2
-        },
-        diffuse = {
-            r = 0.68,
-            g = 0.5,
-            b = 0.5
-        },
-        specular = {
-            r = 0.4,
-            g = 0.4,
-            b = 0.4
-        }
+        rotation = {x = 0, y = 0, z = 0},
+        direction = {x = -0.2, y = -0.5, z = 0},
+        ambient = {r = 0.2, g = 0.2, b = 0.2},
+        diffuse = {r = 0.68, g = 0.5, b = 0.5},
+        specular = {r = 0.4, g = 0.4, b = 0.4}
     }))
 
     _CreateActor(host, "Actor", "SkyboxActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
 
-    local spaceship_a = _CreateActor(host, "Actor", "SpaceshipActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
+    local spaceship_a = _CreateActor(host, "Actor", "SpaceshipActor", 0, 0, 0,
+                                     0, 0, 0, 1, 1, 1, "")
 
     local spaceshipMatProxyId = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-    _SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_albedo.jpg", "albedo")
-    _SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_normal.jpg", "normalMap")
-    _SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_roughness.jpg", "roughnessMap")
-    _SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_metallic.jpg", "metallicMap")
+    _SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_albedo.jpg",
+                          "albedo")
+    _SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_normal.jpg",
+                          "normalMap")
+    _SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_roughness.jpg",
+                          "roughnessMap")
+    _SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_metallic.jpg",
+                          "metallicMap")
     _SetFloatToMaterial(host, spaceshipMatProxyId, 1.0, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, spaceship_a, "StaticMeshComponent_Deferred", Json.encode({
+    _CreateAndAttachComponentToActor(host, spaceship_a,
+                                     "StaticMeshComponent_Deferred",
+                                     Json.encode({
         gameObjectName = "SpaceshipMeshComponent",
         meshName = "spaceship.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 180,
-            z = 0
-        },
-        scale = {
-            x = 5,
-            y = 5,
-            z = 5
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 180, z = 0},
+        scale = {x = 5, y = 5, z = 5},
         luaScriptName = "",
         materialProxyId = spaceshipMatProxyId
     }))
 end
 
-function System_OnStart(host)
-    CreateTestLevel(host)
-end
+function System_OnStart(host) CreateTestLevel(host) end
 
 function System_OnUpdate(host, deltaTimeSec)
     print("LUA: deltaTimeSec:", deltaTimeSec)

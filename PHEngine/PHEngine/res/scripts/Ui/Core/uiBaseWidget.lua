@@ -34,9 +34,7 @@ UiBaseWidget = {
         iVec2 = 5,
         Vec2 = 6
     },
-    AnimationInterpolationFunctionType = {
-        LINEAR = 0
-    }
+    AnimationInterpolationFunctionType = {LINEAR = 0}
 }
 
 function UiBaseWidget:new()

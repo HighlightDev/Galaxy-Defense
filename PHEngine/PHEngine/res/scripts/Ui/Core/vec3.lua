@@ -16,20 +16,14 @@ Vec3 = {
 }
 
 function Vec3:new(x, y, z)
-    local newObj = {
-        x = x,
-        y = y,
-        z = z
-    }
+    local newObj = {x = x, y = y, z = z}
     self.__index = self
     return setmetatable(newObj, self)
 end
 
 function Vec3:__len()
     local length = 0
-    for _, _ in pairs(self) do
-        length = length + 1
-    end
+    for _, _ in pairs(self) do length = length + 1 end
     return length
 end
 

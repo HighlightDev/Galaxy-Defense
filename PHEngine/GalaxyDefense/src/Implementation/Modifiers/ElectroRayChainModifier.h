@@ -36,7 +36,7 @@ public:
 
     void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTimeSec) override { };
+    void UnpausableTick(const float deltaTimeSec) override{};
 
     bool IsExpired() const override;
 

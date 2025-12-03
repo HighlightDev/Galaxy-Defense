@@ -41,6 +41,7 @@ public:
     void UnpausableTick(const float deltaTimeSec) override;
 
     void RestartLuaScripts() override;
+
 private:
     void CreateScene();
 };

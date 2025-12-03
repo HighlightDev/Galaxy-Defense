@@ -11,12 +11,29 @@ option(BUILD_GALAXY_DEFENSE "Build GalaxyDefense game." ON)
 option(BUILD_ENGINE_TEST "Build test scene." OFF)
 option(BUILD_UBO_TEST "Build test UBO." OFF)
 
-file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/PHEngine/src/*.cpp
-     ${PROJECT_SOURCE_DIR}/PHEngine/src/*.h)
+file(
+  GLOB_RECURSE
+  SOURCE_FILES
+  ${PROJECT_SOURCE_DIR}/PHEngine/src/*.cpp
+  ${PROJECT_SOURCE_DIR}/PHEngine/src/*.h
+  ${PROJECT_SOURCE_DIR}/Logger/TinyLogger/*.cpp
+  ${PROJECT_SOURCE_DIR}/Logger/TinyLogger/*.h
+  ${PROJECT_SOURCE_DIR}/GalaxyDefense/src/*.cpp
+  ${PROJECT_SOURCE_DIR}/GalaxyDefense/src/*.h
+  ${PROJECT_SOURCE_DIR}/EngineTest/src/*.cpp
+  ${PROJECT_SOURCE_DIR}/EngineTest/src/*.h
+  ${PROJECT_SOURCE_DIR}/TestUBO/src/*.cpp
+  ${PROJECT_SOURCE_DIR}/TestUBO/src/*.h
+  ${PROJECT_SOURCE_DIR}/UnwindTool/src/*.cpp
+  ${PROJECT_SOURCE_DIR}/UnwindTool/src/*.h
+  ${PROJECT_SOURCE_DIR}/PHEngine/res/shaders/*.glsl)
+
+file(GLOB_RECURSE LUA_FILES ${PROJECT_SOURCE_DIR}/PHEngine/res/scripts/*.lua)
 
 add_custom_target(
   codeformat
   COMMAND clang-format -i ${SOURCE_FILES}
+  COMMAND lua-format ${LUA_FILES} -i
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Formatting source files...")
 

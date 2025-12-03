@@ -781,9 +781,7 @@ local keyboardKeysMap = {
 
 local function table_invert(t)
     local s = {}
-    for k, v in pairs(t) do
-        s[v] = k
-    end
+    for k, v in pairs(t) do s[v] = k end
     return s
 end
 

@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet has to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet has to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -28,16 +27,20 @@ local json = require("Ui/Core/3rdparty/json")
 local ActionQueue = require("Ui/Core/actionQueue")
 local TimerManager = require("Ui/Core/timer")
 
-UiOverlay = {
-}
+UiOverlay = {}
 
 function UiOverlay:createOverlay(host, overlayName, overlayCanvas)
     print("UiOverlay::createOverlay")
     assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil)
 
-    local uiOverlayJsonParameters = json.encode({ overlayName = overlayName, canvasLuaProxyId = overlayCanvas.luaProxyId })
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_OVERLAY,
-        uiOverlayJsonParameters)
+    local uiOverlayJsonParameters = json.encode({
+        overlayName = overlayName,
+        canvasLuaProxyId = overlayCanvas.luaProxyId
+    })
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
+                                                            CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_OVERLAY,
+                                                            uiOverlayJsonParameters)
 
     local newObj = {
         luaProxyId = luaProxyId,
@@ -49,8 +52,7 @@ function UiOverlay:createOverlay(host, overlayName, overlayCanvas)
         allWidgetLuaProxiesReady = false,
         allWidgetLuaProxiesReadyCallbacks = {},
         actionQueue = nil,
-        derivedUpdateCallback = function()
-        end
+        derivedUpdateCallback = function() end
     }
 
     newObj.actionQueue = ActionQueue:new()
@@ -64,10 +66,14 @@ function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
     print("UiOverlay::createBackgroundOverlay")
     assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil)
 
-    local uiOverlayJsonParameters = json.encode({ overlayName = overlayName, canvasLuaProxyId = overlayCanvas.luaProxyId })
+    local uiOverlayJsonParameters = json.encode({
+        overlayName = overlayName,
+        canvasLuaProxyId = overlayCanvas.luaProxyId
+    })
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-        CommonUiWidgetCreator.CommonUiWidgetType.UI_BACKGROUND_OVERLAY,
-        uiOverlayJsonParameters)
+                                                            CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_BACKGROUND_OVERLAY,
+                                                            uiOverlayJsonParameters)
 
     local newObj = {
         luaProxyId = luaProxyId,
@@ -79,8 +85,7 @@ function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
         allWidgetLuaProxiesReady = false,
         allWidgetLuaProxiesReadyCallbacks = {},
         actionQueue = nil,
-        derivedUpdateCallback = function()
-        end
+        derivedUpdateCallback = function() end
     }
 
     newObj.actionQueue = ActionQueue:new()
@@ -96,16 +101,11 @@ function UiOverlay:addActionWithPredicate(action, predicate)
     self.actionQueue:addAction(action, predicate)
 end
 
-function UiOverlay:getTimerManager()
-    return self.timerManager
-end
+function UiOverlay:getTimerManager() return self.timerManager end
 
-function UiOverlay:__gc(self)
-end
+function UiOverlay:__gc(self) end
 
-function UiOverlay:getOverlayCanvas()
-    return self.overlayCanvas
-end
+function UiOverlay:getOverlayCanvas() return self.overlayCanvas end
 
 function UiOverlay:updateFromReplicatorData(host)
     self.overlayCanvas:updateFromReplicatorData(host)
@@ -121,20 +121,21 @@ end
 function UiOverlay:sendDataToReplicator(host)
     self.overlayCanvas:sendDataToReplicator(host)
 
-    for _, value in pairs(self.widgets) do
-        value:sendDataToReplicator(host)
-    end
+    for _, value in pairs(self.widgets) do value:sendDataToReplicator(host) end
 end
 
 function UiOverlay:addWidget(widget)
-    assert(widget ~= nil and type(widget) == "table" and widget.typeName ~= nil and type(widget.typeName) == "string")
+    assert(
+        widget ~= nil and type(widget) == "table" and widget.typeName ~= nil and
+            type(widget.typeName) == "string")
     self.widgets[#self.widgets + 1] = widget
 end
 
 function UiOverlay:addCompoundWidget(compoundWidget)
-    assert(compoundWidget ~= nil and type(compoundWidget) == "table" and compoundWidget.typeName == nil and
-        compoundWidget.onCompoundWidgetInitialize ~= nil and
-        type(compoundWidget.onCompoundWidgetInitialize) == "function")
+    assert(compoundWidget ~= nil and type(compoundWidget) == "table" and
+               compoundWidget.typeName == nil and
+               compoundWidget.onCompoundWidgetInitialize ~= nil and
+               type(compoundWidget.onCompoundWidgetInitialize) == "function")
     self.compoundWidgets[#self.compoundWidgets + 1] = compoundWidget
 end
 
@@ -153,7 +154,8 @@ function UiOverlay:removeWidget(widget)
         for index, iterate_widget in pairs(self.compoundWidgets) do
             if iterate_widget.backgroundTile ~= nil then
                 assert(widget.backgroundTile ~= nil, "backgroundTile is null")
-                if widget.backgroundTile.luaProxyId == iterate_widget.backgroundTile.luaProxyId then
+                if widget.backgroundTile.luaProxyId ==
+                    iterate_widget.backgroundTile.luaProxyId then
                     table.remove(self.compoundWidgets, index)
                     break
                 end
@@ -163,7 +165,8 @@ function UiOverlay:removeWidget(widget)
 end
 
 function UiOverlay:subscribeOnAllWidgetLuaProxiesReady(callback)
-    self.allWidgetLuaProxiesReadyCallbacks[#self.allWidgetLuaProxiesReadyCallbacks + 1] = callback
+    self.allWidgetLuaProxiesReadyCallbacks[#self.allWidgetLuaProxiesReadyCallbacks +
+        1] = callback
 end
 
 function UiOverlay:update(host, deltaTimeSec)
@@ -193,22 +196,16 @@ function UiOverlay:update(host, deltaTimeSec)
     end
 
     if self.allWidgetLuaProxiesReady and self.actionQueue:hasPendingActions() then
-        self.actionQueue:processActions() --process pending actions
+        self.actionQueue:processActions() -- process pending actions
     end
 
     self.timerManager:updateTimers()
 
-    for _, value in pairs(self.widgets) do
-        value:update(host)
-    end
+    for _, value in pairs(self.widgets) do value:update(host) end
 
-    for _, value in pairs(self.compoundWidgets) do
-        value:update(host)
-    end
+    for _, value in pairs(self.compoundWidgets) do value:update(host) end
 
-    if self.derivedUpdateCallback ~= nil then
-        self.derivedUpdateCallback()
-    end
+    if self.derivedUpdateCallback ~= nil then self.derivedUpdateCallback() end
 end
 
 return UiOverlay

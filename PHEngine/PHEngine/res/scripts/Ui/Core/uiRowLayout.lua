@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -28,11 +27,7 @@ local CommonUiWidgetCreator = require("Ui/Core/commonUiWidgetCreator")
 local json = require("Ui/Core/3rdparty/json")
 
 UiRowLayout = UiItemBase:new()
-UiRowLayout.UiRowAlignmentType = {
-    LEFT = 0,
-    RIGHT = 1,
-    CENTER = 2
-}
+UiRowLayout.UiRowAlignmentType = {LEFT = 0, RIGHT = 1, CENTER = 2}
 
 function UiRowLayout:new(host, name)
     assert(host ~= nil)
@@ -40,22 +35,17 @@ function UiRowLayout:new(host, name)
     local jsonParameters = nil;
     if name ~= nil then
         assert(type(name) == "string" and name ~= "")
-        jsonParameters = json.encode({ name = name })
+        jsonParameters = json.encode({name = name})
     end
 
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-        CommonUiWidgetCreator.CommonUiWidgetType.UI_ROW_LAYOUT,
-        jsonParameters)
+                                                            CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_ROW_LAYOUT,
+                                                            jsonParameters)
 
     local rowLayoutProperties = {
-        spacing = {
-            value = 0,
-            dirty = false
-        },
-        alignment = {
-            value = UiRowLayout.UiRowAlignmentType.LEFT,
-            dirty = false
-        }
+        spacing = {value = 0, dirty = false},
+        alignment = {value = UiRowLayout.UiRowAlignmentType.LEFT, dirty = false}
     }
 
     local uiRowLayoutObj = UiRowLayout.uiItemBaseClass.new(self)
@@ -76,10 +66,12 @@ function UiRowLayout:updateFromReplicatorData(host)
             self:extractUiItemBaseReplicatorData(parsedJson)
 
             if parsedJson["spacing"] ~= nil then
-                self.rowLayoutProperties.spacing.value = tonumber(parsedJson["spacing"])
+                self.rowLayoutProperties.spacing.value = tonumber(
+                                                             parsedJson["spacing"])
             end
             if parsedJson["alignment"] ~= nil then
-                self.rowLayoutProperties.alignment.value = tonumber(parsedJson["alignment"])
+                self.rowLayoutProperties.alignment.value = tonumber(
+                                                               parsedJson["alignment"])
             end
         end
     end
@@ -97,12 +89,12 @@ function UiRowLayout:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
+                                     json.encode(propertiesData))
     end
 end
 
-function UiRowLayout:update(host)
-end
+function UiRowLayout:update(host) end
 
 function UiRowLayout:setSpacing(spacing)
     assert(spacing ~= nil and type(spacing) == "number")
@@ -113,8 +105,9 @@ function UiRowLayout:setSpacing(spacing)
 end
 
 function UiRowLayout:setAlignment(alignment)
-    assert(alignment ~= nil and alignment >= UiRowLayout.UiRowAlignmentType.LEFT and
-        alignment <= UiRowLayout.UiRowAlignmentType.CENTER)
+    assert(
+        alignment ~= nil and alignment >= UiRowLayout.UiRowAlignmentType.LEFT and
+            alignment <= UiRowLayout.UiRowAlignmentType.CENTER)
     if self.rowLayoutProperties.alignment.value ~= alignment then
         self.rowLayoutProperties.alignment.value = alignment
         self.rowLayoutProperties.alignment.dirty = true

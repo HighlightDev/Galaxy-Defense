@@ -1,19 +1,13 @@
-ActionQueue = {
-    actions = {},
-    predicates = {}
-}
+ActionQueue = {actions = {}, predicates = {}}
 
 function ActionQueue:new()
-    local newObj = {
-    }
+    local newObj = {}
 
     self.__index = self
     return setmetatable(newObj, self)
 end
 
-function ActionQueue:hasPendingActions()
-    return #self.actions > 0
-end
+function ActionQueue:hasPendingActions() return #self.actions > 0 end
 
 function ActionQueue:addAction(action, predicate)
     assert(action ~= nil and type(action) == "function")

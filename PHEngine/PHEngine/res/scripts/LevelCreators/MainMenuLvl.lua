@@ -53,26 +53,23 @@ local function CreateLevel(host)
     1 -- is main camera on scene
     )
 
-    local a_spaceSkyboxId = _CreateActor(host, "Actor", "SpaceSkyboxActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_spaceSkyboxId = _CreateActor(host, "Actor", "SpaceSkyboxActor", 0,
+                                         0, 0, 0, 0, 0, 1, 1, 1, "")
 
     local skyboxMatProxyId = _CreateMaterial(host, "SpaceSkyboxMaterial.m")
     _SetTextureToMaterial(host, skyboxMatProxyId,
-        "nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg", "spaceTexture")
+                          "nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",
+                          "spaceTexture")
 
-    _CreateAndAttachComponentToActor(host, a_spaceSkyboxId, "SkyboxComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_spaceSkyboxId, "SkyboxComponent",
+                                     Json.encode({
         gameObjectName = "SpaceSkyboxComponent",
-        scale = {
-            x = 250,
-            y = 250,
-            z = 250
-        },
+        scale = {x = 250, y = 250, z = 250},
         materialProxyId = skyboxMatProxyId
     }))
 end
 
-function System_OnStart(host)
-    CreateLevel(host)
-end
+function System_OnStart(host) CreateLevel(host) end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)
 HasOnUpdate = (_G["System_OnUpdate"] ~= nil and 1 or 0)

@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -35,41 +34,21 @@ function UiImage:new(host, name)
     local jsonParameters = nil;
     if name ~= nil then
         assert(type(name) == "string" and name ~= "")
-        jsonParameters = json.encode({ name = name })
+        jsonParameters = json.encode({name = name})
     end
 
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_IMAGE,
-        jsonParameters)
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
+                                                            CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_IMAGE,
+                                                            jsonParameters)
 
     local imageProperties = {
-        texture_source = {
-            value = "",
-            dirty = false
-        },
-        is_custom_color = {
-            value = false,
-            dirty = false
-        },
-        color = {
-            value = {
-                r = 0.0,
-                g = 0.0,
-                b = 0.0
-            },
-            dirty = false
-        },
-        opacity = {
-            value = 1.0,
-            dirty = false
-        },
-        rotation_degrees = {
-            value = 0.0,
-            dirty = false
-        },
-        is_flipped = {
-            value = false,
-            dirty = false
-        }
+        texture_source = {value = "", dirty = false},
+        is_custom_color = {value = false, dirty = false},
+        color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
+        opacity = {value = 1.0, dirty = false},
+        rotation_degrees = {value = 0.0, dirty = false},
+        is_flipped = {value = false, dirty = false}
     }
 
     local uiImageObj = UiImage.uiItemBaseClass.new(self)
@@ -89,13 +68,15 @@ function UiImage:updateFromReplicatorData(host)
             local parsedJson = json.decode(replicatorJsonData)
             self:extractUiItemBaseReplicatorData(parsedJson)
             if parsedJson["texture_source"] ~= nil then
-                self.imageProperties.texture_source.value = parsedJson["texture_source"]
+                self.imageProperties.texture_source.value =
+                    parsedJson["texture_source"]
             end
             if parsedJson["opacity"] ~= nil then
                 self.imageProperties.opacity.value = parsedJson["opacity"]
             end
             if parsedJson["is_custom_color"] ~= nil then
-                self.imageProperties.is_custom_color.value = parsedJson["is_custom_color"]
+                self.imageProperties.is_custom_color.value =
+                    parsedJson["is_custom_color"]
             end
             if parsedJson["color"] ~= nil then
                 local colorArray = parsedJson["color"]
@@ -104,7 +85,8 @@ function UiImage:updateFromReplicatorData(host)
                 self.imageProperties.color.value.b = colorArray[3]
             end
             if parsedJson["rotation_degrees"] ~= nil then
-                self.imageProperties.rotation_degrees.value = parsedJson["rotation_degrees"]
+                self.imageProperties.rotation_degrees.value =
+                    parsedJson["rotation_degrees"]
             end
             if parsedJson["is_flipped"] ~= nil then
                 self.imageProperties.is_flipped.value = parsedJson["is_flipped"]
@@ -125,12 +107,12 @@ function UiImage:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
+                                     json.encode(propertiesData))
     end
 end
 
-function UiImage:update(host)
-end
+function UiImage:update(host) end
 
 function UiImage:setTextureSource(textureSource)
     assert(textureSource ~= nil and type(textureSource) == "string")
@@ -160,12 +142,15 @@ function UiImage:setColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE,
+                  b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiImage:setColor(r, g, b)
-    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
-        r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
+            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
+            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.imageProperties.color.value.r = r
     self.imageProperties.color.value.g = g
     self.imageProperties.color.value.b = b

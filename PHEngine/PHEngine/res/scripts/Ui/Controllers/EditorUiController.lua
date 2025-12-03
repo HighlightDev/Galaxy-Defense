@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -28,16 +27,14 @@ local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
-local LevelEditorOverlay = require("Ui/Overlays/EditorNavigation/LevelEditorOverlay")
+local LevelEditorOverlay = require(
+                               "Ui/Overlays/EditorNavigation/LevelEditorOverlay")
 
-GlobalContext = {
-}
+GlobalContext = {}
 
-UiOverlays = {
-}
+UiOverlays = {}
 
-UiBackgroundOverlays = {
-}
+UiBackgroundOverlays = {}
 
 local pressButtonCooldown = 0.0
 
@@ -47,16 +44,23 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
             if value == "Escape" then
                 if pressButtonCooldown >= 0.5 then
                     pressButtonCooldown = 0.0
-                    if "PauseMenuOverlay" == UiOverlayManager:getCurrentOverlayName(host) then
+                    if "PauseMenuOverlay" ==
+                        UiOverlayManager:getCurrentOverlayName(host) then
                         EventsHelper:sendPauseGameThreadEvent(host,
-                            EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
+                                                              EventsHelper.enqueueJobPolicy
+                                                                  .IF_DUPLICATE_NO_PUSH,
+                                                              false)
                         UiOverlayManager:closeCurrentOverlay(host)
-                        UiOverlayManager:openBackgroundOverlay(host, "LevelEditorOverlay")
+                        UiOverlayManager:openBackgroundOverlay(host,
+                                                               "LevelEditorOverlay")
                     else
                         EventsHelper:sendPauseGameThreadEvent(host,
-                            EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
+                                                              EventsHelper.enqueueJobPolicy
+                                                                  .IF_DUPLICATE_NO_PUSH,
+                                                              true)
                         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
-                        UiOverlayManager:closeBackgroundOverlay(host, "LevelEditorOverlay")
+                        UiOverlayManager:closeBackgroundOverlay(host,
+                                                                "LevelEditorOverlay")
                     end
                 end
             end
@@ -64,17 +68,12 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
     end
 end
 
-local function createLevelEditorOverlay(host)
-    return LevelEditorOverlay:new(host)
-end
+local function createLevelEditorOverlay(host) return
+    LevelEditorOverlay:new(host) end
 
-local function createPauseOverlay(host)
-    return PauseOverlay:new(host)
-end
+local function createPauseOverlay(host) return PauseOverlay:new(host) end
 
-local function createPauseSettingsOverlay(host)
-    return SettingsOverlay:new(host)
-end
+local function createPauseSettingsOverlay(host) return SettingsOverlay:new(host) end
 
 local function initialize(host)
     UiOverlays["PauseSettingsOverlay"] = createPauseSettingsOverlay(host)
@@ -92,19 +91,13 @@ function System_OnStart(host)
 end
 
 function System_OnUpdate(host, deltaTimeSec)
-    if math.abs(pressButtonCooldown) > 1 then
-        pressButtonCooldown = 0
-    end
+    if math.abs(pressButtonCooldown) > 1 then pressButtonCooldown = 0 end
 
     pressButtonCooldown = pressButtonCooldown + deltaTimeSec
 
-    for _, value in pairs(UiOverlays) do
-        value:updateFromReplicatorData(host)
-    end
+    for _, value in pairs(UiOverlays) do value:updateFromReplicatorData(host) end
 
-    for _, value in pairs(UiOverlays) do
-        value:update(host, deltaTimeSec)
-    end
+    for _, value in pairs(UiOverlays) do value:update(host, deltaTimeSec) end
 
     for _, value in pairs(UiBackgroundOverlays) do
         value:updateFromReplicatorData(host)
@@ -115,14 +108,10 @@ function System_OnUpdate(host, deltaTimeSec)
     end
 
     for _, value in pairs(GlobalContext) do
-        if value.canUpdate then
-            value:update(host)
-        end
+        if value.canUpdate then value:update(host) end
     end
 
-    for _, value in pairs(UiOverlays) do
-        value:sendDataToReplicator(host)
-    end
+    for _, value in pairs(UiOverlays) do value:sendDataToReplicator(host) end
 
     for _, value in pairs(UiBackgroundOverlays) do
         value:sendDataToReplicator(host)

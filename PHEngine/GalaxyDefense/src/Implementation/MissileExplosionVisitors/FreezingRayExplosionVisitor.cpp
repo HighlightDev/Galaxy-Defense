@@ -5,12 +5,12 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
+#include "Implementation/Actors/FreezingRayActor.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Modifiers/FreezingRayModifier.h"
-#include "Implementation/Actors/FreezingRayActor.h"
 
 #include <algorithm>
 

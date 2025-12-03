@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -30,11 +29,12 @@ local UiLabel = require("Ui/Core/uiLabel")
 
 WeaponTile = {
     weaponBackgroundTileColor = 0xdb9427,
-    missilesCountLabelColor = 0xFFFFFF,
+    missilesCountLabelColor = 0xFFFFFF
 }
 
 function WeaponTile:new(host, overlay)
-    assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
+    assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and
+               type(overlay) == "table")
 
     local newObj = {
         host = host,
@@ -46,12 +46,7 @@ function WeaponTile:new(host, overlay)
         tileWidth = 0,
         tileHeight = 0,
         widgetName = "",
-        anchorMargins = {
-            left = 0,
-            right = 0,
-            bottom = 0,
-            top = 0,
-        },
+        anchorMargins = {left = 0, right = 0, bottom = 0, top = 0},
         luaProxiesReadyCallback = nil
     }
 
@@ -71,8 +66,7 @@ function WeaponTile:subscribeOnLuaProxiesReady(callback)
     self.luaProxiesReadyCallback = callback
 end
 
-function WeaponTile:update(host)
-end
+function WeaponTile:update(host) end
 
 function WeaponTile:setWidth(width)
     assert(width ~= nil and type(width) == "number")
@@ -88,9 +82,12 @@ function WeaponTile:setHeight(height)
     self:resizeWidgets()
 end
 
-function WeaponTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
-    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
-        srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+function WeaponTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName,
+                              anchorMargin)
+    assert(
+        srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
+            srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <=
+            UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
     anchorMargin = nil == anchorMargin and 0 or anchorMargin
     if srcAnchor == UiItemBase.UiAnchorType.LEFT then
@@ -103,31 +100,41 @@ function WeaponTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
         self.anchorMargins.bottom = anchorMargin
     end
 
-    self.backgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
+    self.backgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName,
+                                  anchorMargin)
     self:resizeWidgets()
 end
 
-function WeaponTile:addAnimation(host, onlyForTile, animationName, animationFunctionType, animationDuration,
-                                 animatedPropertyName,
-                                 animatedPropertyType, propertySrcValue, propertyDstValue)
+function WeaponTile:addAnimation(host, onlyForTile, animationName,
+                                 animationFunctionType, animationDuration,
+                                 animatedPropertyName, animatedPropertyType,
+                                 propertySrcValue, propertyDstValue)
     assert(host ~= nil and type(host) == "userdata")
     assert(onlyForTile ~= nil and type(onlyForTile) == "boolean")
-    assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
-        type(animationFunctionType) == "number" and animationDuration ~= nil and
-        type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
-        animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
-    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+    assert(animationName ~= nil and type(animationName) == "string" and
+               animationFunctionType ~= nil and type(animationFunctionType) ==
+               "number" and animationDuration ~= nil and type(animationDuration) ==
+               "number" and animatedPropertyName ~= nil and
+               type(animatedPropertyName) == "string" and animatedPropertyType ~=
+               nil and type(animatedPropertyType) == "number")
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and
+               type(propertySrcValue) == type(propertyDstValue))
 
-    self.backgroundTile:addAnimation(host, animationName, animationFunctionType, animationDuration,
-        animatedPropertyName,
-        animatedPropertyType, propertySrcValue, propertyDstValue)
+    self.backgroundTile:addAnimation(host, animationName, animationFunctionType,
+                                     animationDuration, animatedPropertyName,
+                                     animatedPropertyType, propertySrcValue,
+                                     propertyDstValue)
     if onlyForTile ~= true then
-        self.weaponImage:addAnimation(host, animationName, animationFunctionType, animationDuration,
-            animatedPropertyName,
-            animatedPropertyType, propertySrcValue, propertyDstValue)
-        self.weaponLabel:addAnimation(host, animationName, animationFunctionType, animationDuration,
-            animatedPropertyName,
-            animatedPropertyType, propertySrcValue, propertyDstValue)
+        self.weaponImage:addAnimation(host, animationName,
+                                      animationFunctionType, animationDuration,
+                                      animatedPropertyName,
+                                      animatedPropertyType, propertySrcValue,
+                                      propertyDstValue)
+        self.weaponLabel:addAnimation(host, animationName,
+                                      animationFunctionType, animationDuration,
+                                      animatedPropertyName,
+                                      animatedPropertyType, propertySrcValue,
+                                      propertyDstValue)
     end
 end
 
@@ -150,10 +157,14 @@ function WeaponTile:resizeWidgets()
 
     self.backgroundTile:setHeight(self.tileHeight);
     self.backgroundTile:setWidth(self.tileWidth);
-    self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.LEFT, self.anchorMargins.left);
-    self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.RIGHT, self.anchorMargins.right);
-    self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.TOP, self.anchorMargins.top);
-    self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.BOTTOM, self.anchorMargins.bottom);
+    self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.LEFT,
+                                        self.anchorMargins.left);
+    self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.RIGHT,
+                                        self.anchorMargins.right);
+    self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.TOP,
+                                        self.anchorMargins.top);
+    self.backgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.BOTTOM,
+                                        self.anchorMargins.bottom);
     self.weaponImage:setHeight(weaponImageSize);
     self.weaponImage:setWidth(weaponImageSize);
     self.weaponLabel:setHeight(weaponImageSize / 15)
@@ -161,8 +172,9 @@ end
 
 function WeaponTile:setParent(host, overlayCanvasName, parentName)
     assert(
-        host ~= nil and type(host) == "userdata" and type(overlayCanvasName) == "string" and overlayCanvasName ~= "" and
-        type(parentName) == "string" and parentName ~= "", debug.traceback())
+        host ~= nil and type(host) == "userdata" and type(overlayCanvasName) ==
+            "string" and overlayCanvasName ~= "" and type(parentName) ==
+            "string" and parentName ~= "", debug.traceback())
 
     self.overlayCanvasName = overlayCanvasName
     self.parentName = parentName
@@ -179,7 +191,8 @@ end
 function WeaponTile:onCompoundWidgetInitialize()
     local weaponImageSize = self.tileWidth * 0.75
 
-    self.backgroundTile:setParent(self.host, self.overlayCanvasName, self.parentName)
+    self.backgroundTile:setParent(self.host, self.overlayCanvasName,
+                                  self.parentName)
     self.backgroundTile:setZOrder(3);
     self.backgroundTile:setHeight(self.tileHeight);
     self.backgroundTile:setWidth(self.tileWidth);
@@ -189,30 +202,36 @@ function WeaponTile:onCompoundWidgetInitialize()
     self.backgroundTile:enableMouseInputReceiverBase(self.host)
 
     self.weaponImage:setParent(self.host, self.overlayCanvasName,
-        self.backgroundTile.widgetName)
+                               self.backgroundTile.widgetName)
     self.weaponImage:setTextureSource("weapon_missile.png");
     self.weaponImage:setZOrder(4);
     self.weaponImage:setRotationDegrees(180)
     self.weaponImage:setHeight(weaponImageSize);
     self.weaponImage:setWidth(weaponImageSize);
-    self.weaponImage:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        self.backgroundTile.widgetName);
-    self.weaponImage:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.backgroundTile.widgetName);
+    self.weaponImage:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+                               UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+                               self.backgroundTile.widgetName);
+    self.weaponImage:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
+                               UiItemBase.UiAnchorType.VERTICAL_CENTER,
+                               self.backgroundTile.widgetName);
 
     self.weaponLabel:setParent(self.host, self.overlayCanvasName,
-        self.backgroundTile.widgetName)
-    self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-        self.backgroundTile.widgetName, 6)
-    self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-        self.backgroundTile.widgetName, 0)
-    self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-        self.backgroundTile.widgetName, 6)
+                               self.backgroundTile.widgetName)
+    self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.LEFT,
+                               UiItemBase.UiAnchorType.LEFT,
+                               self.backgroundTile.widgetName, 6)
+    self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT,
+                               UiItemBase.UiAnchorType.RIGHT,
+                               self.backgroundTile.widgetName, 0)
+    self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM,
+                               UiItemBase.UiAnchorType.BOTTOM,
+                               self.backgroundTile.widgetName, 6)
     self.weaponLabel:setVerticalCenterOffset(-8)
     self.weaponLabel:setHeight(weaponImageSize / 15)
     self.weaponLabel:setTextColorHexValue(WeaponTile.missilesCountLabelColor)
     self.weaponLabel:setFontSize(10.0)
-    self.weaponLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
+    self.weaponLabel:setTextHorizontalAlignment(
+        UiLabel.TextHorizontalAlignmentType.LEFT)
     self.weaponLabel:setZOrder(4)
 end
 

@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -35,11 +34,13 @@ function UiItem:new(host, name)
     local jsonParameters = nil;
     if name ~= nil then
         assert(type(name) == "string" and name ~= "")
-        jsonParameters = json.encode({ name = name })
+        jsonParameters = json.encode({name = name})
     end
 
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_ITEM,
-        jsonParameters)
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
+                                                            CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_ITEM,
+                                                            jsonParameters)
 
     local uiItemObj = UiItem.uiItemBaseClass.new(self)
     uiItemObj.luaProxyId = luaProxyId
@@ -60,13 +61,14 @@ function UiItem:updateFromReplicatorData(host)
 end
 
 function UiItem:sendDataToReplicator(host)
-    local basePropertiesData, isPropsDirty = self:getUiItemBaseDataToReplicator()
+    local basePropertiesData, isPropsDirty =
+        self:getUiItemBaseDataToReplicator()
     if isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(basePropertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
+                                     json.encode(basePropertiesData))
     end
 end
 
-function UiItem:update(host)
-end
+function UiItem:update(host) end
 
 return UiItem

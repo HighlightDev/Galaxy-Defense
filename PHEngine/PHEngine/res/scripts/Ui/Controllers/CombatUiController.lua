@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -28,26 +27,22 @@ local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
-local PlayerHUDOverlay = require("Ui/Overlays/CombatLevelOverlays/PlayerHUDOverlay")
+local PlayerHUDOverlay = require(
+                             "Ui/Overlays/CombatLevelOverlays/PlayerHUDOverlay")
 local CombatOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatOverlay")
-local LevelFailedOverlay = require("Ui/Overlays/CombatLevelOverlays/LevelFailedOverlay")
-local CombatPreparationOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatPreparationOverlay")
+local LevelFailedOverlay = require(
+                               "Ui/Overlays/CombatLevelOverlays/LevelFailedOverlay")
+local CombatPreparationOverlay = require(
+                                     "Ui/Overlays/CombatLevelOverlays/CombatPreparationOverlay")
 local json = require("Ui/Core/3rdparty/json")
 
-GameModeType = {
-    INIT = 0,
-    COMBAT = 1,
-    SPACE_STATION_PLACEMENT = 2
-}
+GameModeType = {INIT = 0, COMBAT = 1, SPACE_STATION_PLACEMENT = 2}
 
-GlobalContext = {
-}
+GlobalContext = {}
 
-UiOverlays = {
-}
+UiOverlays = {}
 
-UiBackgroundOverlays = {
-}
+UiBackgroundOverlays = {}
 
 local pressButtonCooldown = 0.0
 local gameModeType = GameModeType.INIT
@@ -58,15 +53,21 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
             if value == "Escape" then
                 if pressButtonCooldown >= 0.5 then
                     pressButtonCooldown = 0.0
-                    local currentOverlayName = UiOverlayManager:getCurrentOverlayName(host)
+                    local currentOverlayName =
+                        UiOverlayManager:getCurrentOverlayName(host)
                     if "PauseMenuOverlay" == currentOverlayName then
                         EventsHelper:sendPauseGameThreadEvent(host,
-                            EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
+                                                              EventsHelper.enqueueJobPolicy
+                                                                  .IF_DUPLICATE_NO_PUSH,
+                                                              false)
                         UiOverlayManager:closeCurrentOverlay(host)
                     elseif "LevelFailedOverlay" ~= currentOverlayName then
                         EventsHelper:sendPauseGameThreadEvent(host,
-                            EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
-                        print("UiOverlayManager:openOverlay(host, PauseMenuOverlay)")
+                                                              EventsHelper.enqueueJobPolicy
+                                                                  .IF_DUPLICATE_NO_PUSH,
+                                                              true)
+                        print(
+                            "UiOverlayManager:openOverlay(host, PauseMenuOverlay)")
                         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
                     end
                 end
@@ -75,25 +76,16 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
     end
 end
 
-local function createPlayerHUDOverlay(host)
-    return PlayerHUDOverlay:new(host)
-end
+local function createPlayerHUDOverlay(host) return PlayerHUDOverlay:new(host) end
 
-local function createPauseOverlay(host)
-    return PauseOverlay:new(host)
-end
+local function createPauseOverlay(host) return PauseOverlay:new(host) end
 
-local function createPauseSettingsOverlay(host)
-    return SettingsOverlay:new(host)
-end
+local function createPauseSettingsOverlay(host) return SettingsOverlay:new(host) end
 
-local function createLevelFailedOverlay(host)
-    return LevelFailedOverlay:new(host)
-end
+local function createLevelFailedOverlay(host) return
+    LevelFailedOverlay:new(host) end
 
-local function createCombatOverlay(host)
-    return CombatOverlay:new(host)
-end
+local function createCombatOverlay(host) return CombatOverlay:new(host) end
 
 local function createCombatPreparationOverlay(host)
     return CombatPreparationOverlay:new(host)
@@ -104,7 +96,8 @@ local function initialize(host)
     UiOverlays["PauseMenuOverlay"] = createPauseOverlay(host)
     UiOverlays["LevelFailedOverlay"] = createLevelFailedOverlay(host)
     UiOverlays["CombatOverlay"] = createCombatOverlay(host)
-    UiOverlays["CombatPreparationOverlay"] = createCombatPreparationOverlay(host)
+    UiOverlays["CombatPreparationOverlay"] =
+        createCombatPreparationOverlay(host)
     UiBackgroundOverlays["PlayerHUDOverlay"] = createPlayerHUDOverlay(host)
 end
 
@@ -117,19 +110,13 @@ function System_OnStart(host)
 end
 
 function System_OnUpdate(host, deltaTimeSec)
-    if math.abs(pressButtonCooldown) > 1 then
-        pressButtonCooldown = 0
-    end
+    if math.abs(pressButtonCooldown) > 1 then pressButtonCooldown = 0 end
 
     pressButtonCooldown = pressButtonCooldown + deltaTimeSec
 
-    for _, value in pairs(UiOverlays) do
-        value:updateFromReplicatorData(host)
-    end
+    for _, value in pairs(UiOverlays) do value:updateFromReplicatorData(host) end
 
-    for _, value in pairs(UiOverlays) do
-        value:update(host, deltaTimeSec)
-    end
+    for _, value in pairs(UiOverlays) do value:update(host, deltaTimeSec) end
 
     for _, value in pairs(UiBackgroundOverlays) do
         value:updateFromReplicatorData(host)
@@ -140,14 +127,10 @@ function System_OnUpdate(host, deltaTimeSec)
     end
 
     for _, value in pairs(GlobalContext) do
-        if value.canUpdate then
-            value:update(host)
-        end
+        if value.canUpdate then value:update(host) end
     end
 
-    for _, value in pairs(UiOverlays) do
-        value:sendDataToReplicator(host)
-    end
+    for _, value in pairs(UiOverlays) do value:sendDataToReplicator(host) end
 
     for _, value in pairs(UiBackgroundOverlays) do
         value:sendDataToReplicator(host)
@@ -176,9 +159,11 @@ function System_OnGameEventTriggered(host, eventName, jsonArgs)
             if statusType == PlayerStatusType.SELECTED_TOWER_CHANGED then
                 if parsedJson["has_selected_tower"] ~= nil then
                     if parsedJson["has_selected_tower"] == true then
-                        UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
+                        UiOverlayManager:openBackgroundOverlay(host,
+                                                               "PlayerHUDOverlay")
                     else
-                        UiOverlayManager:closeBackgroundOverlay(host, "PlayerHUDOverlay")
+                        UiOverlayManager:closeBackgroundOverlay(host,
+                                                                "PlayerHUDOverlay")
                     end
                 end
             end
@@ -190,7 +175,8 @@ function System_OnGameEventTriggered(host, eventName, jsonArgs)
         if newGameModeType ~= nil then
             if gameModeType ~= newGameModeType then
                 if GameModeType.SPACE_STATION_PLACEMENT == newGameModeType then
-                    UiOverlayManager:openOverlay(host, "CombatPreparationOverlay")
+                    UiOverlayManager:openOverlay(host,
+                                                 "CombatPreparationOverlay")
                 elseif GameModeType.COMBAT == newGameModeType then
                     UiOverlayManager:closeCurrentOverlay(host)
                     UiOverlayManager:openOverlay(host, "CombatOverlay")

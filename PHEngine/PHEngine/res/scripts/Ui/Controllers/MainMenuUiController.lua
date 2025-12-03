@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -26,18 +25,15 @@ setup()
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local MainMenuOverlay = require("Ui/Overlays/MenuNavigation/MainMenuOverlay")
 
-GlobalContext = {
-}
+GlobalContext = {}
 
-UiOverlays = {
-}
+UiOverlays = {}
 
 local function createMainMenuOverlay(host, overlayNumber)
-    assert(host ~= nil and type(host) == "userdata" and overlayNumber ~= nil and type(overlayNumber) == "number" and
-        overlayNumber > 0 and overlayNumber <= 1)
-    if overlayNumber == 1 then
-        return MainMenuOverlay:new(host)
-    end
+    assert(host ~= nil and type(host) == "userdata" and overlayNumber ~= nil and
+               type(overlayNumber) == "number" and overlayNumber > 0 and
+               overlayNumber <= 1)
+    if overlayNumber == 1 then return MainMenuOverlay:new(host) end
     return nil;
 end
 
@@ -51,23 +47,15 @@ function System_OnStart(host)
 end
 
 function System_OnUpdate(host, deltaTimeSec)
-    for _, value in pairs(UiOverlays) do
-        value:updateFromReplicatorData(host)
-    end
+    for _, value in pairs(UiOverlays) do value:updateFromReplicatorData(host) end
 
-    for _, value in pairs(UiOverlays) do
-        value:update(host, deltaTimeSec)
-    end
+    for _, value in pairs(UiOverlays) do value:update(host, deltaTimeSec) end
 
     for _, value in pairs(GlobalContext) do
-        if value.canUpdate then
-            value:update(host)
-        end
+        if value.canUpdate then value:update(host) end
     end
 
-    for _, value in pairs(UiOverlays) do
-        value:sendDataToReplicator(host)
-    end
+    for _, value in pairs(UiOverlays) do value:sendDataToReplicator(host) end
 end
 
 function System_OnEngineEventTriggered(host, eventName, jsonArgs)

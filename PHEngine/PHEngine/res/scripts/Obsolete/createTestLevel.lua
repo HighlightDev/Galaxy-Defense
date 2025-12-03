@@ -25,12 +25,7 @@ setup()
 
 local Json = require("Ui/Core/3rdparty/json")
 
-local PhysicsBodyType = {
-    STATIC = 0,
-    DYNAMIC = 1,
-    KINEMATIC = 2,
-    GHOST = 3
-}
+local PhysicsBodyType = {STATIC = 0, DYNAMIC = 1, KINEMATIC = 2, GHOST = 3}
 
 function CreateTestLevel(host)
     _LazyLoadResourcesAsync(host, [[brick_mid.jpg
@@ -78,7 +73,8 @@ function CreateTestLevel(host)
         ]])
 
     -- *********************************CREATE MAIN CAMERA******************************** --
-    _CreateThirdPersonCamera(host, "MainCamera", 0, 0, _GetWindowWidth(host), _GetWindowHeight(host), Json.encode({
+    _CreateThirdPersonCamera(host, "MainCamera", 0, 0, _GetWindowWidth(host),
+                             _GetWindowHeight(host), Json.encode({
         projectionType = "Perspective",
         FoV = math.rad(60.0),
         AspectRatio = 16.0 / 9.0,
@@ -90,23 +86,24 @@ function CreateTestLevel(host)
     _SetCameraThirdPersonTarget(host, "MainCamera", "SkeletActor")
 
     -- ****************************SKYBOX***************************** --
-    local a_spaceSkyboxId = _CreateActor(host, "Actor", "SkyboxActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_spaceSkyboxId = _CreateActor(host, "Actor", "SkyboxActor", 0, 0, 0,
+                                         0, 0, 0, 1, 1, 1, "")
 
     local skyboxMat = _CreateMaterial(host, "SkyboxMaterial.m")
-    _SetTextureToMaterial(host, skyboxMat, "dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg",
-        "dayTexture")
     _SetTextureToMaterial(host, skyboxMat,
-        "nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg", "nightTexture")
-    _SetBindingToMaterial(host, skyboxMat, "EngineScene", "GT_DeltaSec", "deltaTimeSec")
+                          "dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg",
+                          "dayTexture")
+    _SetTextureToMaterial(host, skyboxMat,
+                          "nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",
+                          "nightTexture")
+    _SetBindingToMaterial(host, skyboxMat, "EngineScene", "GT_DeltaSec",
+                          "deltaTimeSec")
     _SetFloatToMaterial(host, skyboxMat, 0.01, "mul_coef")
 
-    _CreateAndAttachComponentToActor(host, a_spaceSkyboxId, "SkyboxComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_spaceSkyboxId, "SkyboxComponent",
+                                     Json.encode({
         gameObjectName = "SpaceSkyboxComponent",
-        scale = {
-            x = 250,
-            y = 250,
-            z = 250
-        },
+        scale = {x = 250, y = 250, z = 250},
         materialProxyId = skyboxMat
     }))
 
@@ -115,21 +112,9 @@ function CreateTestLevel(host)
     _CreatePlanarReflectionComponent(host, Json.encode({
         gameObjectName = "PlanarReflectionComponent",
         cameraName = "MainCamera",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 1,
-            y = 1,
-            z = 1
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 1, y = 1, z = 1},
         viewPortX = 0,
         viewPortY = 0,
         viewPortWidth = _GetWindowWidth(host),
@@ -138,35 +123,17 @@ function CreateTestLevel(host)
 
     -- -- ****************************LIGHT***************************** --
 
-    local a_dirLightId = _CreateActor(host, "Actor", "DirectionalLightActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_dirLightId = _CreateActor(host, "Actor", "DirectionalLightActor", 0,
+                                      0, 0, 0, 0, 0, 1, 1, 1, "")
 
-    _CreateAndAttachComponentToActor(host, a_dirLightId, "DirectionalLightComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_dirLightId,
+                                     "DirectionalLightComponent", Json.encode({
         gameObjectName = "MainLightComp",
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        direction = {
-            x = -0.5,
-            y = -0.5,
-            z = 0
-        },
-        ambient = {
-            r = 0.02,
-            g = 0.02,
-            b = 0.02
-        },
-        diffuse = {
-            r = 1.68,
-            g = 1.5,
-            b = 1.5
-        },
-        specular = {
-            r = 0.4,
-            g = 0.4,
-            b = 0.4
-        },
+        rotation = {x = 0, y = 0, z = 0},
+        direction = {x = -0.5, y = -0.5, z = 0},
+        ambient = {r = 0.02, g = 0.02, b = 0.02},
+        diffuse = {r = 1.68, g = 1.5, b = 1.5},
+        specular = {r = 0.4, g = 0.4, b = 0.4},
         is_enabled = true,
         is_visible = true,
         shadowAtlasSize = 512
@@ -194,40 +161,18 @@ function CreateTestLevel(host)
     -- 		}
     -- 	))
 
-    local a_spotLightId = _CreateActor(host, "Actor", "SpotPointlLightActor", 10, 10, 10, 0, 0, 0, 1, 1, 1, "")
+    local a_spotLightId = _CreateActor(host, "Actor", "SpotPointlLightActor",
+                                       10, 10, 10, 0, 0, 0, 1, 1, 1, "")
 
-    _CreateAndAttachComponentToActor(host, a_spotLightId, "SpotlightComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_spotLightId, "SpotlightComponent",
+                                     Json.encode({
         gameObjectName = "SpotlightComp",
-        translation = {
-            x = 0,
-            y = 5,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        ambient = {
-            r = 0.0,
-            g = 0.0,
-            b = 1.0
-        },
-        diffuse = {
-            r = 1.0,
-            g = 0.0,
-            b = 0.0
-        },
-        specular = {
-            r = 0.4,
-            g = 0.0,
-            b = 0.0
-        },
-        attenuation = {
-            x = 1,
-            y = 1,
-            z = 1
-        },
+        translation = {x = 0, y = 5, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        ambient = {r = 0.0, g = 0.0, b = 1.0},
+        diffuse = {r = 1.0, g = 0.0, b = 0.0},
+        specular = {r = 0.4, g = 0.0, b = 0.0},
+        attenuation = {x = 1, y = 1, z = 1},
         radianceRadius = 100.0,
         cutoff = 0.75,
         is_enabled = true,
@@ -236,292 +181,203 @@ function CreateTestLevel(host)
     }))
 
     -- **************************** GROUND ***************************** --
-    local a_ground = _CreateActor(host, "Actor", "Ground", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_ground = _CreateActor(host, "Actor", "Ground", 0, 0, 0, 0, 0, 0, 1,
+                                  1, 1, "")
 
     local groundMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
     _SetTextureToMaterial(host, groundMat, "brick_mid.jpg", "albedo")
     _SetTextureToMaterial(host, groundMat, "brick_nm_mid.jpg", "normalMap")
-    _SetTextureToMaterial(host, groundMat, "dummy_metallic_roughness.png", "roughnessMap")
-    _SetTextureToMaterial(host, groundMat, "dummy_metallic_roughness.png", "metallicMap")
+    _SetTextureToMaterial(host, groundMat, "dummy_metallic_roughness.png",
+                          "roughnessMap")
+    _SetTextureToMaterial(host, groundMat, "dummy_metallic_roughness.png",
+                          "metallicMap")
     _SetFloatToMaterial(host, groundMat, 5.0, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_ground, "StaticMeshComponent_Deferred", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_ground,
+                                     "StaticMeshComponent_Deferred",
+                                     Json.encode({
         gameObjectName = "GroundMeshComponent",
         meshName = "cube.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 50,
-            y = 1,
-            z = 50
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 50, y = 1, z = 50},
         luaScriptName = "",
         materialProxyId = groundMat
     }))
 
-    _CreateAndAttachComponentToActor(host, a_ground, "RigidBodyPhysicsComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_ground,
+                                     "RigidBodyPhysicsComponent", Json.encode({
         gameObjectName = "GroundPhysicsComponent",
         collisionShape = "box",
-        halfExtent = {
-            x = 50,
-            y = 1,
-            z = 50
-        },
+        halfExtent = {x = 50, y = 1, z = 50},
         physicsBodyType = PhysicsBodyType.STATIC,
         mass = 0.0
     }))
 
     -- **************************** Platform ***************************** --
-    local a_platform = _CreateActor(host, "Actor", "Platform", 0, 10, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_platform = _CreateActor(host, "Actor", "Platform", 0, 10, 0, 0, 0,
+                                    0, 1, 1, 1, "")
 
     local platformMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
     _SetTextureToMaterial(host, platformMat, "brick_mid.jpg", "albedo")
     _SetTextureToMaterial(host, platformMat, "brick_nm_mid.jpg", "normalMap")
-    _SetTextureToMaterial(host, platformMat, "dummy_metallic_roughness.png", "roughnessMap")
-    _SetTextureToMaterial(host, platformMat, "dummy_metallic_roughness.png", "metallicMap")
+    _SetTextureToMaterial(host, platformMat, "dummy_metallic_roughness.png",
+                          "roughnessMap")
+    _SetTextureToMaterial(host, platformMat, "dummy_metallic_roughness.png",
+                          "metallicMap")
     _SetFloatToMaterial(host, platformMat, 1.0, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_platform, "StaticMeshComponent_Deferred", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_platform,
+                                     "StaticMeshComponent_Deferred",
+                                     Json.encode({
         gameObjectName = "PlatformdMeshComponent",
         meshName = "cube.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 8,
-            y = 1,
-            z = 8
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 8, y = 1, z = 8},
         luaScriptName = "",
         materialProxyId = platformMat
     }))
 
-    _CreateAndAttachComponentToActor(host, a_platform, "PlatformTraverseComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_platform,
+                                     "PlatformTraverseComponent", Json.encode({
         gameObjectName = "PlatformTraverseComponent",
         scriptName = "platformMovementComponentAction.lua",
         routePoints = {
             a1 = {
-                translation = {
-                    x = 0,
-                    y = 0,
-                    z = 0
-                },
-                rotation = {
-                    x = 0,
-                    y = 90,
-                    z = 0
-                },
-                scale = {
-                    x = 1,
-                    y = 1,
-                    z = 1
-                },
+                translation = {x = 0, y = 0, z = 0},
+                rotation = {x = 0, y = 90, z = 0},
+                scale = {x = 1, y = 1, z = 1},
                 transitionTime = 1.8
             },
             a2 = {
-                translation = {
-                    x = 10,
-                    y = 0,
-                    z = 0
-                },
-                rotation = {
-                    x = 0,
-                    y = 90,
-                    z = 0
-                },
-                scale = {
-                    x = 1,
-                    y = 1,
-                    z = 1
-                },
+                translation = {x = 10, y = 0, z = 0},
+                rotation = {x = 0, y = 90, z = 0},
+                scale = {x = 1, y = 1, z = 1},
                 transitionTime = 1.8
             },
             a3 = {
-                translation = {
-                    x = 0,
-                    y = 0,
-                    z = 10
-                },
-                rotation = {
-                    x = 0,
-                    y = 90,
-                    z = 0
-                },
-                scale = {
-                    x = 1,
-                    y = 1,
-                    z = 1
-                },
+                translation = {x = 0, y = 0, z = 10},
+                rotation = {x = 0, y = 90, z = 0},
+                scale = {x = 1, y = 1, z = 1},
                 transitionTime = 1.8
             },
             a4 = {
-                translation = {
-                    x = -10,
-                    y = 0,
-                    z = -10
-                },
-                rotation = {
-                    x = 0,
-                    y = 90,
-                    z = 0
-                },
-                scale = {
-                    x = 1,
-                    y = 1,
-                    z = 1
-                },
+                translation = {x = -10, y = 0, z = -10},
+                rotation = {x = 0, y = 90, z = 0},
+                scale = {x = 1, y = 1, z = 1},
                 transitionTime = 1.8
             }
         }
     }))
 
-    _CreateAndAttachComponentToActor(host, a_platform, "RigidBodyPhysicsComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_platform,
+                                     "RigidBodyPhysicsComponent", Json.encode({
         gameObjectName = "PlatformPhysicsComponent",
         collisionShape = "box",
-        halfExtent = {
-            x = 8,
-            y = 1,
-            z = 8
-        },
+        halfExtent = {x = 8, y = 1, z = 8},
         physicsBodyType = PhysicsBodyType.STATIC,
         mass = 0.0
     }))
 
     -- **************************** Wall ***************************** --
-    local a_wall = _CreateActor(host, "Actor", "WallActor", 35, 8, 0, 0, 0, 90, 1, 1, 1, "")
+    local a_wall = _CreateActor(host, "Actor", "WallActor", 35, 8, 0, 0, 0, 90,
+                                1, 1, 1, "")
 
     local wallMaterial = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-    _SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_albedo.jpg", "albedo")
-    _SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_normal.jpg", "normalMap")
-    _SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_roughness.jpg", "roughnessMap")
-    _SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_metallic.jpg", "metallicMap")
+    _SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_albedo.jpg",
+                          "albedo")
+    _SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_normal.jpg",
+                          "normalMap")
+    _SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_roughness.jpg",
+                          "roughnessMap")
+    _SetTextureToMaterial(host, wallMaterial, "Brick_Medieval_metallic.jpg",
+                          "metallicMap")
     _SetFloatToMaterial(host, wallMaterial, 1, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_wall, "StaticMeshComponent_Deferred", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_wall,
+                                     "StaticMeshComponent_Deferred",
+                                     Json.encode({
         gameObjectName = "WallMeshComponent",
         meshName = "cube.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 8,
-            y = 1,
-            z = 8
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 8, y = 1, z = 8},
         luaScriptName = "",
         materialProxyId = wallMaterial
     }))
 
-    _CreateAndAttachComponentToActor(host, a_wall, "RigidBodyPhysicsComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_wall, "RigidBodyPhysicsComponent",
+                                     Json.encode({
         gameObjectName = "WallPhysicsComponent",
         collisionShape = "box",
-        halfExtent = {
-            x = 8,
-            y = 1,
-            z = 8
-        },
+        halfExtent = {x = 8, y = 1, z = 8},
         physicsBodyType = PhysicsBodyType.STATIC,
         mass = 0.0
     }))
 
     -- ***************************HOUSE******************** --
-    local a_house = _CreateActor(host, "Actor", "House", 0, 10, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_house = _CreateActor(host, "Actor", "House", 0, 10, 0, 0, 0, 0, 1,
+                                 1, 1, "")
 
     local houseMaterial = _CreateMaterial(host, "PhysicalBasedMaterial.m")
     _SetTextureToMaterial(host, houseMaterial, "city_house_2_Col.jpg", "albedo")
-    _SetTextureToMaterial(host, houseMaterial, "city_house_2_Nor.jpg", "normalMap")
-    _SetTextureToMaterial(host, houseMaterial, "city_house_2_Spec.png", "roughnessMap")
-    _SetTextureToMaterial(host, houseMaterial, "dummy_metallic_roughness.png", "metallicMap")
+    _SetTextureToMaterial(host, houseMaterial, "city_house_2_Nor.jpg",
+                          "normalMap")
+    _SetTextureToMaterial(host, houseMaterial, "city_house_2_Spec.png",
+                          "roughnessMap")
+    _SetTextureToMaterial(host, houseMaterial, "dummy_metallic_roughness.png",
+                          "metallicMap")
     _SetFloatToMaterial(host, houseMaterial, 1, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_house, "StaticMeshComponent_Deferred", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_house,
+                                     "StaticMeshComponent_Deferred",
+                                     Json.encode({
         gameObjectName = "HosueMeshComponent",
         meshName = "italian_house_1.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 15,
-            y = 15,
-            z = 15
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 15, y = 15, z = 15},
         luaScriptName = "",
         materialProxyId = houseMaterial
     }))
 
-    _CreateAndAttachComponentToActor(host, a_house, "RigidBodyPhysicsComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_house, "RigidBodyPhysicsComponent",
+                                     Json.encode({
         gameObjectName = "HousePhysicsComponent",
         collisionShape = "box",
-        halfExtent = {
-            x = 7.5,
-            y = 7.5,
-            z = 7.5
-        },
+        halfExtent = {x = 7.5, y = 7.5, z = 7.5},
         physicsBodyType = PhysicsBodyType.DYNAMIC,
         mass = 500.0
     }))
 
-    local a_grave = _CreateActor(host, "Actor", "Grave", 15, 5, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_grave = _CreateActor(host, "Actor", "Grave", 15, 5, 0, 0, 0, 0, 1,
+                                 1, 1, "")
 
     local graveMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
     _SetTextureToMaterial(host, graveMat, "Brick_Medieval_albedo.jpg", "albedo")
-    _SetTextureToMaterial(host, graveMat, "Brick_Medieval_normal.jpg", "normalMap")
-    _SetTextureToMaterial(host, graveMat, "Brick_Medieval_roughness.jpg", "roughnessMap")
-    _SetTextureToMaterial(host, graveMat, "Brick_Medieval_metallic.jpg", "metallicMap")
+    _SetTextureToMaterial(host, graveMat, "Brick_Medieval_normal.jpg",
+                          "normalMap")
+    _SetTextureToMaterial(host, graveMat, "Brick_Medieval_roughness.jpg",
+                          "roughnessMap")
+    _SetTextureToMaterial(host, graveMat, "Brick_Medieval_metallic.jpg",
+                          "metallicMap")
     _SetFloatToMaterial(host, graveMat, 5.0, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_grave, "StaticMeshComponent_Deferred", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_grave,
+                                     "StaticMeshComponent_Deferred",
+                                     Json.encode({
         gameObjectName = "GraveMeshComponent",
         meshName = "witcher.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 1.5,
-            y = 1.5,
-            z = 1.5
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 1.5, y = 1.5, z = 1.5},
         luaScriptName = "",
         materialProxyId = graveMat
     }))
 
-    _CreateAndAttachComponentToActor(host, a_grave, "RigidBodyPhysicsComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_grave, "RigidBodyPhysicsComponent",
+                                     Json.encode({
         gameObjectName = "HousePhysicsComponent",
         physicsBodyType = PhysicsBodyType.DYNAMIC,
         mass = 1000.0,
@@ -530,46 +386,34 @@ function CreateTestLevel(host)
             leftSphere = {
                 collisionShape = "sphere",
                 radius = 5,
-                translation = {
-                    x = -4,
-                    y = 0,
-                    z = 0
-                },
-                rotation = {
-                    x = 0,
-                    y = 0,
-                    z = 0
-                }
+                translation = {x = -4, y = 0, z = 0},
+                rotation = {x = 0, y = 0, z = 0}
             },
             rightSphere = {
                 collisionShape = "sphere",
                 radius = 5,
-                translation = {
-                    x = 4,
-                    y = 0,
-                    z = 0
-                },
-                rotation = {
-                    x = 0,
-                    y = 0,
-                    z = 0
-                }
+                translation = {x = 4, y = 0, z = 0},
+                rotation = {x = 0, y = 0, z = 0}
             }
         }
     }))
 
     -- ***************************SKELET******************** --
 
-    local a_skelet = _CreateActor(host, "Actor", "SkeletActor", 10, 50, 10, 0, 0, 0, 1, 1, 1, "")
+    local a_skelet = _CreateActor(host, "Actor", "SkeletActor", 10, 50, 10, 0,
+                                  0, 0, 1, 1, 1, "")
 
     local skeletMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
     _SetTextureToMaterial(host, skeletMat, "dummy_nm.png", "albedo")
     _SetTextureToMaterial(host, skeletMat, "dummy_nm.png", "normalMap")
-    _SetTextureToMaterial(host, skeletMat, "dummy_metallic_roughness.png", "roughnessMap")
-    _SetTextureToMaterial(host, skeletMat, "dummy_metallic_roughness.png", "metallicMap")
+    _SetTextureToMaterial(host, skeletMat, "dummy_metallic_roughness.png",
+                          "roughnessMap")
+    _SetTextureToMaterial(host, skeletMat, "dummy_metallic_roughness.png",
+                          "metallicMap")
     _SetFloatToMaterial(host, skeletMat, 1.0, "uvScale")
 
-    _CreateAndAttachComponentToActor(host, a_skelet, "CharacterPhysicsComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_skelet,
+                                     "CharacterPhysicsComponent", Json.encode({
         gameObjectName = "HousePhysicsComponent",
         capsuleRadius = 2.5,
         capsuleHeight = 10,
@@ -577,84 +421,62 @@ function CreateTestLevel(host)
         mass = 500
     }))
 
-    _CreateAndAttachComponentToActor(host, a_skelet, "HumanoidPhysicsMovementComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_skelet,
+                                     "HumanoidPhysicsMovementComponent",
+                                     Json.encode({
         gameObjectName = "SkeletMovementComponent",
-        launchDirection = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
+        launchDirection = {x = 0, y = 0, z = 0},
         cameraName = "MainCamera"
     }))
 
-    _CreateAndAttachComponentToActor(host, a_skelet, "SkeletalMeshComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_skelet, "SkeletalMeshComponent",
+                                     Json.encode({
         gameObjectName = "SkeletMeshComponent",
         meshName = "tina.fbx",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 90
-        },
-        scale = {
-            x = 8,
-            y = 8,
-            z = 8
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 90},
+        scale = {x = 8, y = 8, z = 8},
         luaScriptName = "",
         materialProxyId = skeletMat
     }))
 
-    _CreateAndAttachComponentToActor(host, a_skelet, "InputComponent", Json.encode({
-        gameObjectName = "SkeletInputComponent"
-    }))
-
-    _CreateActorController(host, "DefaultActorControllerCreatorFactory", "SkeletActor", "HumanoidPlayerController",
-        Json.encode({
-            cameraName = "MainCamera"
+    _CreateAndAttachComponentToActor(host, a_skelet, "InputComponent",
+                                     Json.encode(
+                                         {
+            gameObjectName = "SkeletInputComponent"
         }))
+
+    _CreateActorController(host, "DefaultActorControllerCreatorFactory",
+                           "SkeletActor", "HumanoidPlayerController",
+                           Json.encode({cameraName = "MainCamera"}))
 
     -- local skeletAnimationTweener = _CreateTweener(host, a_skelet, "playerAnimation.tween")
     -- _SetTweenerBinding(host, a_skelet, skeletAnimationTweener, "SkeletMeshComponent", "animationBinding", "")
 
     -- -- ****************************WATER***************************** --
-    local a_water = _CreateActor(host, "Actor", "WaterActor", 20, 2, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_water = _CreateActor(host, "Actor", "WaterActor", 20, 2, 0, 0, 0, 0,
+                                 1, 1, 1, "")
 
     local waterMat = _CreateMaterial(host, "WaterMaterial.m")
-    _SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComponent", "reflectionTexture")
+    _SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComponent",
+                                  "reflectionTexture")
     _SetTextureToMaterial(host, waterMat, "water_dudv.jpg", "dudv")
     _SetTextureToMaterial(host, waterMat, "brick_mid.jpg", "ground")
-    _SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTimeSec")
+    _SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec",
+                          "deltaTimeSec")
     _SetFloatToMaterial(host, waterMat, 0.5, "mul_coef")
 
-    _CreateAndAttachComponentToActor(host, a_water, "WaterPlaneComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_water, "WaterPlaneComponent",
+                                     Json.encode({
         gameObjectName = "WaterMeshComponent",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 20,
-            y = 1,
-            z = 20
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 20, y = 1, z = 20},
         materialProxyId = waterMat
     }))
 end
 
-function System_OnStart(host)
-    CreateTestLevel(host)
-end
+function System_OnStart(host) CreateTestLevel(host) end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)
 HasOnUpdate = (_G["System_OnUpdate"] ~= nil and 1 or 0)

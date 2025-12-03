@@ -59,8 +59,7 @@ void BlackHoleExplosionVisitor::EndExplosionForSpaceship(
                 spaceship->TriggerDamageReceived(std::numeric_limits<uint32_t>::max(), ownerSp->GetDamageDealerType());
             } else if (spaceship->HasModifier(eModifierType::Gravity, ownerSp->GetObjectId())) {
                 spaceship->RemoveModifier(eModifierType::Gravity, ownerSp->GetObjectId());
-                LogInfo(
-                    "BlackHoleExplosionVisitor::EndExplosionForSpaceship: |-| gravity from missile ", ownerSp->GetObjectId());
+                LogInfo("BlackHoleExplosionVisitor::EndExplosionForSpaceship: |-| gravity from missile ", ownerSp->GetObjectId());
             }
         }
     }

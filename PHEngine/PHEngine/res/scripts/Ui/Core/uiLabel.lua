@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -28,53 +27,32 @@ local CommonUiWidgetCreator = require("Ui/Core/commonUiWidgetCreator")
 local json = require("Ui/Core/3rdparty/json")
 
 UiLabel = UiItemBase:new()
-UiLabel.TextHorizontalAlignmentType = {
-    LEFT = 0,
-    CENTER = 1,
-    RIGHT = 2
-}
+UiLabel.TextHorizontalAlignmentType = {LEFT = 0, CENTER = 1, RIGHT = 2}
 
-UiLabel.TextVerticalAlignmentType = {
-    TOP = 0,
-    CENTER = 1,
-    BOTTOM = 2
-}
+UiLabel.TextVerticalAlignmentType = {TOP = 0, CENTER = 1, BOTTOM = 2}
 
 function UiLabel:new(host, fontName, name)
-    assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and fontName ~= "")
+    assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and
+               fontName ~= "")
 
     local jsonParameters = nil;
     if name ~= nil then
         assert(type(name) == "string" and name ~= "")
-        jsonParameters = json.encode({ font_name = fontName, name = name })
+        jsonParameters = json.encode({font_name = fontName, name = name})
     else
-        jsonParameters = json.encode({ font_name = fontName })
+        jsonParameters = json.encode({font_name = fontName})
     end
 
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_LABEL,
-        jsonParameters)
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
+                                                            CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_LABEL,
+                                                            jsonParameters)
 
     local labelProperties = {
-        text = {
-            value = "",
-            dirty = false
-        },
-        text_opacity = {
-            value = 1.0,
-            dirty = false
-        },
-        text_color = {
-            value = {
-                r = 0.0,
-                g = 0.0,
-                b = 0.0
-            },
-            dirty = false
-        },
-        font_size = {
-            value = 5.0,
-            dirty = false
-        },
+        text = {value = "", dirty = false},
+        text_opacity = {value = 1.0, dirty = false},
+        text_color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
+        font_size = {value = 5.0, dirty = false},
         text_horizontal_alignment = {
             value = UiLabel.TextHorizontalAlignmentType.LEFT,
             dirty = false
@@ -111,16 +89,20 @@ function UiLabel:updateFromReplicatorData(host)
                 self.labelProperties.text_color.value.b = colorArray[3]
             end
             if parsedJson["text_opacity"] ~= nil then
-                self.labelProperties.text_opacity.value = tonumber(parsedJson["text_opacity"])
+                self.labelProperties.text_opacity.value = tonumber(
+                                                              parsedJson["text_opacity"])
             end
             if parsedJson["font_size"] ~= nil then
-                self.labelProperties.font_size.value = tonumber(parsedJson["font_size"])
+                self.labelProperties.font_size.value = tonumber(
+                                                           parsedJson["font_size"])
             end
             if parsedJson["text_horizontal_alignment"] ~= nil then
-                self.labelProperties.text_horizontal_alignment.value = tonumber(parsedJson["text_horizontal_alignment"])
+                self.labelProperties.text_horizontal_alignment.value = tonumber(
+                                                                           parsedJson["text_horizontal_alignment"])
             end
             if parsedJson["text_vertical_alignment"] ~= nil then
-                self.labelProperties.text_vertical_alignment.value = tonumber(parsedJson["text_vertical_alignment"])
+                self.labelProperties.text_vertical_alignment.value = tonumber(
+                                                                         parsedJson["text_vertical_alignment"])
             end
         end
     end
@@ -138,12 +120,12 @@ function UiLabel:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
+                                     json.encode(propertiesData))
     end
 end
 
-function UiLabel:update(host)
-end
+function UiLabel:update(host) end
 
 function UiLabel:setText(text)
     assert(text ~= nil and type(text) == "string")
@@ -173,12 +155,15 @@ function UiLabel:setTextColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setTextColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setTextColor(r * INV_COLOR_MAX_BYTE_VALUE,
+                      g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiLabel:setTextColor(r, g, b)
-    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
-        r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
+            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
+            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
 
     self.labelProperties.text_color.value.r = r
     self.labelProperties.text_color.value.g = g
@@ -196,21 +181,28 @@ function UiLabel:setFontSize(fontSize)
 end
 
 function UiLabel:setTextHorizontalAlignment(textHorizontalAlignment)
-    assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) == "number" and
-        textHorizontalAlignment >= UiLabel.TextHorizontalAlignmentType.LEFT and
-        textHorizontalAlignment <= UiLabel.TextHorizontalAlignmentType.RIGHT)
-    if self.labelProperties.text_horizontal_alignment.value ~= textHorizontalAlignment then
-        self.labelProperties.text_horizontal_alignment.value = textHorizontalAlignment
+    assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) ==
+               "number" and textHorizontalAlignment >=
+               UiLabel.TextHorizontalAlignmentType.LEFT and
+               textHorizontalAlignment <=
+               UiLabel.TextHorizontalAlignmentType.RIGHT)
+    if self.labelProperties.text_horizontal_alignment.value ~=
+        textHorizontalAlignment then
+        self.labelProperties.text_horizontal_alignment.value =
+            textHorizontalAlignment
         self.labelProperties.text_horizontal_alignment.dirty = true
     end
 end
 
 function UiLabel:setTextVerticalAlignment(textVerticalAlignment)
-    assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) == "number" and
-        textVerticalAlignment >= UiLabel.TextVerticalAlignmentType.TOP and
-        textVerticalAlignment <= UiLabel.TextVerticalAlignmentType.BOTTOM)
-    if self.labelProperties.text_vertical_alignment.value ~= textVerticalAlignment then
-        self.labelProperties.text_vertical_alignment.value = textVerticalAlignment
+    assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) ==
+               "number" and textVerticalAlignment >=
+               UiLabel.TextVerticalAlignmentType.TOP and textVerticalAlignment <=
+               UiLabel.TextVerticalAlignmentType.BOTTOM)
+    if self.labelProperties.text_vertical_alignment.value ~=
+        textVerticalAlignment then
+        self.labelProperties.text_vertical_alignment.value =
+            textVerticalAlignment
         self.labelProperties.text_vertical_alignment.dirty = true
     end
 end

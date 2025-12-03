@@ -29,7 +29,8 @@ local UiLabel = require("Ui/Core/uiLabel")
 LabelButton = {}
 
 function LabelButton:new(host, overlay, labelFontName, name)
-    assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
+    assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and
+               type(overlay) == "table")
 
     local newObj = {
         host = host,
@@ -45,8 +46,10 @@ function LabelButton:new(host, overlay, labelFontName, name)
         luaProxiesReadyCallback = nil
     }
 
-    local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
-    local containerName = debugName ~= nil and "LabelButton_" .. debugName or nil
+    local debugName =
+        (name ~= nil and type(name) == "string" and name ~= "") and name or nil
+    local containerName = debugName ~= nil and "LabelButton_" .. debugName or
+                              nil
     local labelName = debugName ~= nil and "LabelButton_" .. debugName or nil
     newObj.backgroundTile = UiRectangle:new(host, containerName)
     newObj.label = UiLabel:new(host, labelFontName, labelName)
@@ -64,13 +67,13 @@ function LabelButton:subscribeOnLuaProxiesReady(callback)
     self.luaProxiesReadyCallback = callback
 end
 
-function LabelButton:update(host)
-end
+function LabelButton:update(host) end
 
 function LabelButton:setParent(host, overlayCanvasName, parentName)
     assert(
-        host ~= nil and type(host) == "userdata" and type(overlayCanvasName) == "string" and overlayCanvasName ~= "" and
-            type(parentName) == "string" and parentName ~= "", debug.traceback())
+        host ~= nil and type(host) == "userdata" and type(overlayCanvasName) ==
+            "string" and overlayCanvasName ~= "" and type(parentName) ==
+            "string" and parentName ~= "", debug.traceback())
 
     self.overlayCanvasName = overlayCanvasName
     self.parentName = parentName
@@ -85,67 +88,85 @@ function LabelButton:onPreCompoundWidgetInitialize()
 end
 
 function LabelButton:onCompoundWidgetInitialize()
-    self.backgroundTile:setParent(self.host, self.overlayCanvasName, self.parentName)
+    self.backgroundTile:setParent(self.host, self.overlayCanvasName,
+                                  self.parentName)
     self.backgroundTile:setZOrder(3);
     self.backgroundTile:setHeight(self.buttonHeight);
     self.backgroundTile:setWidth(self.buttonWidth);
     self.backgroundTile:setColorHexValue(self.containerColor)
     self.backgroundTile:enableMouseInputReceiverBase(self.host)
 
-    self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
+    self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName,
+                                             self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setZOrder(4);
     self.pressButtonStateContainer:fill(self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setOpacity(0.0);
     self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
-    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick", {{
-        animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-        animationDuration = 0.1,
-        animatedPropertyName = "Scale",
-        animatedPropertyType = UiBaseWidget.EnginePropertyType.Vec2,
-        propertySrcValue = { x = 0.0, y = 0.0 },
-        propertyDstValue = { x = 1.0, y = 1.0 }
-    }, {
-        animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-        animationDuration = 0.1,
-        animatedPropertyName = "Scale",
-        animatedPropertyType = UiBaseWidget.EnginePropertyType.Vec2,
-        propertySrcValue = { x = 1.0, y = 1.0 },
-        propertyDstValue = { x = 0.0, y = 0.0 }
-    }});
-    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick", {{
-        animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-        animationDuration = 0.1,
-        animatedPropertyName = "Opacity",
-        animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
-        propertySrcValue = 0.0,
-        propertyDstValue = 1.0
-    }, {
-        animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-        animationDuration = 0.1,
-        animatedPropertyName = "Opacity",
-        animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
-        propertySrcValue = 1.0,
-        propertyDstValue = 0.0
-    }});
-    self.pressButtonStateContainer:subscribeOnMouseInputClickedCallback(function()
-        self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonClick")
-    end)
+    self.pressButtonStateContainer:addSequenceAnimation(self.host,
+                                                        "ButtonClick", {
+        {
+            animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType
+                .LINEAR,
+            animationDuration = 0.1,
+            animatedPropertyName = "Scale",
+            animatedPropertyType = UiBaseWidget.EnginePropertyType.Vec2,
+            propertySrcValue = {x = 0.0, y = 0.0},
+            propertyDstValue = {x = 1.0, y = 1.0}
+        }, {
+            animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType
+                .LINEAR,
+            animationDuration = 0.1,
+            animatedPropertyName = "Scale",
+            animatedPropertyType = UiBaseWidget.EnginePropertyType.Vec2,
+            propertySrcValue = {x = 1.0, y = 1.0},
+            propertyDstValue = {x = 0.0, y = 0.0}
+        }
+    });
+    self.pressButtonStateContainer:addSequenceAnimation(self.host,
+                                                        "ButtonClick", {
+        {
+            animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType
+                .LINEAR,
+            animationDuration = 0.1,
+            animatedPropertyName = "Opacity",
+            animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+            propertySrcValue = 0.0,
+            propertyDstValue = 1.0
+        }, {
+            animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType
+                .LINEAR,
+            animationDuration = 0.1,
+            animatedPropertyName = "Opacity",
+            animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+            propertySrcValue = 1.0,
+            propertyDstValue = 0.0
+        }
+    });
+    self.pressButtonStateContainer:subscribeOnMouseInputClickedCallback(
+        function()
+            self.pressButtonStateContainer:startSequenceAnimation(self.host,
+                                                                  "ButtonClick")
+        end)
 
-    self.label:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
+    self.label:setParent(self.host, self.overlayCanvasName,
+                         self.backgroundTile.widgetName)
     self.label:setZOrder(4);
     self.label:fill(self.backgroundTile.widgetName)
 end
 
 function LabelButton:setLabelTextHorizontalAlignment(textHorizontalAlignment)
-    assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) == "number" and textHorizontalAlignment >=
-               UiLabel.TextHorizontalAlignmentType.LEFT and textHorizontalAlignment <=
+    assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) ==
+               "number" and textHorizontalAlignment >=
+               UiLabel.TextHorizontalAlignmentType.LEFT and
+               textHorizontalAlignment <=
                UiLabel.TextHorizontalAlignmentType.RIGHT)
 
     self.label:setTextHorizontalAlignment(textHorizontalAlignment)
 end
 
 function LabelButton:setLabelTextVerticalAlignment(textVerticalAlignment)
-    assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) == "number" and textVerticalAlignment >=
+    assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) ==
+               "number" and textVerticalAlignment >=
                UiLabel.TextVerticalAlignmentType.TOP and textVerticalAlignment <=
                UiLabel.TextVerticalAlignmentType.BOTTOM)
 
@@ -166,11 +187,15 @@ function LabelButton:setHeight(height)
     self:resizeWidgets()
 end
 
-function LabelButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
-    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchor >
-               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+function LabelButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName,
+                               anchorMargin)
+    assert(
+        srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
+            srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <=
+            UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
-    self.backgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
+    self.backgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName,
+                                  anchorMargin)
     self:resizeWidgets()
 end
 
@@ -179,24 +204,35 @@ function LabelButton:subscribeOnMouseInputClickedCallback(callback)
     self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
 end
 
-function LabelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
+function LabelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(
+    callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.backgroundTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
+    self.backgroundTile:subscribeOnMouseInputCursorHoverStateChangedCallback(
+        callback)
 end
 
-function LabelButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
-    animatedPropertyType, propertySrcValue, propertyDstValue)
+function LabelButton:addAnimation(host, animationName, animationFunctionType,
+                                  animationDuration, animatedPropertyName,
+                                  animatedPropertyType, propertySrcValue,
+                                  propertyDstValue)
     assert(host ~= nil and type(host) == "userdata")
-    assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
-               type(animationFunctionType) == "number" and animationDuration ~= nil and type(animationDuration) ==
-               "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
-               animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
-    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+    assert(animationName ~= nil and type(animationName) == "string" and
+               animationFunctionType ~= nil and type(animationFunctionType) ==
+               "number" and animationDuration ~= nil and type(animationDuration) ==
+               "number" and animatedPropertyName ~= nil and
+               type(animatedPropertyName) == "string" and animatedPropertyType ~=
+               nil and type(animatedPropertyType) == "number")
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and
+               type(propertySrcValue) == type(propertyDstValue))
 
-    self.backgroundTile:addAnimation(host, animationName, animationFunctionType, animationDuration,
-        animatedPropertyName, animatedPropertyType, propertySrcValue, propertyDstValue)
-    self.label:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
-        animatedPropertyType, propertySrcValue, propertyDstValue)
+    self.backgroundTile:addAnimation(host, animationName, animationFunctionType,
+                                     animationDuration, animatedPropertyName,
+                                     animatedPropertyType, propertySrcValue,
+                                     propertyDstValue)
+    self.label:addAnimation(host, animationName, animationFunctionType,
+                            animationDuration, animatedPropertyName,
+                            animatedPropertyType, propertySrcValue,
+                            propertyDstValue)
 end
 
 function LabelButton:startAnimation(host, animationName)
@@ -255,9 +291,7 @@ function LabelButton:setIsVisible(isVisible)
     self.label:setIsVisible(isVisible)
 end
 
-function LabelButton:setLabelFontSize(fontSize)
-    self.label:setFontSize(fontSize)
-end
+function LabelButton:setLabelFontSize(fontSize) self.label:setFontSize(fontSize) end
 
 function LabelButton:setPressStateButtonColorHexValues(colorHex)
     self.pressButtonStateContainer:setColorHexValue(colorHex)

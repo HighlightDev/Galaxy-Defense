@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -35,29 +34,18 @@ function UiRectangle:new(host, name)
     local jsonParameters = nil;
     if name ~= nil then
         assert(type(name) == "string" and name ~= "")
-        jsonParameters = json.encode({ name = name })
+        jsonParameters = json.encode({name = name})
     end
 
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_RECTANGLE,
-        jsonParameters)
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
+                                                            CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_RECTANGLE,
+                                                            jsonParameters)
 
     local rectangleProperties = {
-        color = {
-            value = {
-                r = 0.0,
-                g = 0.0,
-                b = 0.0
-            },
-            dirty = false
-        },
-        opacity = {
-            value = 1.0,
-            dirty = false
-        },
-        border_radius = {
-            value = 0.0,
-            dirty = false
-        }
+        color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
+        opacity = {value = 1.0, dirty = false},
+        border_radius = {value = 0.0, dirty = false}
     }
 
     local uiRectangleObj = UiRectangle.uiItemBaseClass.new(self)
@@ -87,7 +75,8 @@ function UiRectangle:updateFromReplicatorData(host)
                 self.rectangleProperties.opacity.value = parsedJson["opacity"]
             end
             if parsedJson["border_radius"] ~= nil then
-                self.rectangleProperties.border_radius.value = parsedJson["border_radius"]
+                self.rectangleProperties.border_radius.value =
+                    parsedJson["border_radius"]
             end
         end
     end
@@ -105,12 +94,12 @@ function UiRectangle:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
+                                     json.encode(propertiesData))
     end
 end
 
-function UiRectangle:update(host)
-end
+function UiRectangle:update(host) end
 
 function UiRectangle:setColorHexValue(colorHex)
     assert(colorHex ~= nil and type(colorHex) == "number")
@@ -124,12 +113,15 @@ function UiRectangle:setColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE,
+                  b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiRectangle:setColor(r, g, b)
-    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
-        r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
+            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
+            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.rectangleProperties.color.value.r = r
     self.rectangleProperties.color.value.g = g
     self.rectangleProperties.color.value.b = b

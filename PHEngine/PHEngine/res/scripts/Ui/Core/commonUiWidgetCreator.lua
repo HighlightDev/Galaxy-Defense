@@ -19,49 +19,66 @@ CommonUiWidgetCreator = {
 local function getTypeToString(commonUiWidgetType)
     if commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_OVERLAY then
         return "UI_OVERLAY"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_CANVAS then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_CANVAS then
         return "UI_CANVAS"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_ITEM then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_ITEM then
         return "UI_ITEM"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_RECTANGLE then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_RECTANGLE then
         return "UI_RECTANGLE"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_IMAGE then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_IMAGE then
         return "UI_IMAGE"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_LABEL then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_LABEL then
         return "UI_LABEL"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_TOGGLE_BUTTON then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_TOGGLE_BUTTON then
         return "UI_TOGGLE_BUTTON"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_BACKGROUND_OVERLAY then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_BACKGROUND_OVERLAY then
         return "UI_BACKGROUND_OVERLAY"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_PROGRESS_BAR then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_PROGRESS_BAR then
         return "UI_PROGRESS_BAR"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_ROW_LAYOUT then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_ROW_LAYOUT then
         return "UI_ROW_LAYOUT"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_SLIDER_BAR then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_SLIDER_BAR then
         return "UI_SLIDER_BAR"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_TEXT_BLOCK then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_TEXT_BLOCK then
         return "UI_TEXT_BLOCK"
-    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_GRID_LAYOUT then
+    elseif commonUiWidgetType ==
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_GRID_LAYOUT then
         return "UI_GRID_LAYOUT"
     else
-        assert(false, "Wrong type of widget type: " .. tostring(commonUiWidgetType))
+        assert(false,
+               "Wrong type of widget type: " .. tostring(commonUiWidgetType))
     end
 end
 
-function CommonUiWidgetCreator:createUiWidget(host, commonUiWidgetType, jsonParameters)
+function CommonUiWidgetCreator:createUiWidget(host, commonUiWidgetType,
+                                              jsonParameters)
     assert(host ~= nil and commonUiWidgetType ~= nil)
     jsonParameters = jsonParameters and jsonParameters or ""
-    local widgetLuaProxyId = _CreateCommonUiWidget(host, commonUiWidgetType, jsonParameters)
-    print(
-        "CommonUiWidgetCreator::createUiWidget: commonUiWidgetType: " .. tostring(getTypeToString(commonUiWidgetType)) ..
-            " jsonParameters: " .. tostring(jsonParameters) .. " widgetLuaProxyId: " .. tostring(widgetLuaProxyId))
+    local widgetLuaProxyId = _CreateCommonUiWidget(host, commonUiWidgetType,
+                                                   jsonParameters)
+    print("CommonUiWidgetCreator::createUiWidget: commonUiWidgetType: " ..
+              tostring(getTypeToString(commonUiWidgetType)) ..
+              " jsonParameters: " .. tostring(jsonParameters) ..
+              " widgetLuaProxyId: " .. tostring(widgetLuaProxyId))
 
     return widgetLuaProxyId
 end
 
 function CommonUiWidgetCreator:destroyUiWidget(host, luaProxyId)
     assert(host ~= nil)
-    assert(luaProxyId ~= nil and type(luaProxyId) == "number" and luaProxyId > -1)
+    assert(luaProxyId ~= nil and type(luaProxyId) == "number" and luaProxyId >
+               -1)
     -- print("CommonUiWidgetCreator::destroyUiWidget: luaProxyId: " .. tostring(luaProxyId))
     -- invocation of this function leads to exception, memory is already deallocated
     -- _DestroyCommonUiWidget(host, luaProxyId)

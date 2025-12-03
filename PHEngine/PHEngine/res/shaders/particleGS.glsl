@@ -5,7 +5,8 @@
 layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-layout (std140) uniform Matrices {
+layout(std140) uniform Matrices
+{
     mat4 worldMatrix;
     mat4 viewMatrix;
     mat4 projectionMatrix;

@@ -30,77 +30,33 @@ local UiLabel = require("Ui/Core/uiLabel")
 UiTextBlock = UiItemBase:new()
 
 function UiTextBlock:new(host, fontName, name)
-    assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and fontName ~= "")
+    assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and
+               fontName ~= "")
 
     local jsonParameters = nil;
     if name ~= nil then
         assert(type(name) == "string" and name ~= "")
-        jsonParameters = json.encode({
-            font_name = fontName,
-            name = name
-        })
+        jsonParameters = json.encode({font_name = fontName, name = name})
     else
-        jsonParameters = json.encode({
-            font_name = fontName
-        })
+        jsonParameters = json.encode({font_name = fontName})
     end
 
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-        CommonUiWidgetCreator.CommonUiWidgetType.UI_TEXT_BLOCK, jsonParameters)
+                                                            CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_TEXT_BLOCK,
+                                                            jsonParameters)
 
     local textBlockProperties = {
-        rectangle_color = {
-            value = {
-                r = 0.0,
-                g = 0.0,
-                b = 0.0
-            },
-            dirty = false
-        },
-        rectangle_opacity = {
-            value = 1.0,
-            dirty = false
-        },
-        rectangle_radius = {
-            value = 0.0,
-            dirty = false
-        },
-        border_color = {
-            value = {
-                r = 0.0,
-                g = 0.0,
-                b = 0.0
-            },
-            dirty = false
-        },
-        border_opacity = {
-            value = 1.0,
-            dirty = false
-        },
-        border_radius = {
-            value = 0.0,
-            dirty = false
-        },
-        text = {
-            value = "",
-            dirty = false
-        },
-        text_opacity = {
-            value = 1.0,
-            dirty = false
-        },
-        text_color = {
-            value = {
-                r = 0.0,
-                g = 0.0,
-                b = 0.0
-            },
-            dirty = false
-        },
-        font_size = {
-            value = 5.0,
-            dirty = false
-        },
+        rectangle_color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
+        rectangle_opacity = {value = 1.0, dirty = false},
+        rectangle_radius = {value = 0.0, dirty = false},
+        border_color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
+        border_opacity = {value = 1.0, dirty = false},
+        border_radius = {value = 0.0, dirty = false},
+        text = {value = "", dirty = false},
+        text_opacity = {value = 1.0, dirty = false},
+        text_color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
+        font_size = {value = 5.0, dirty = false},
         text_horizontal_alignment = {
             value = UiLabel.TextHorizontalAlignmentType.LEFT,
             dirty = false
@@ -109,14 +65,8 @@ function UiTextBlock:new(host, fontName, name)
             value = UiLabel.TextVerticalAlignmentType.TOP,
             dirty = false
         },
-        attach_target_ui_item_name = {
-            value = "",
-            dirty = false
-        },
-        border_thickness = {
-            value = 1,
-            dirty = false
-        }
+        attach_target_ui_item_name = {value = "", dirty = false},
+        border_thickness = {value = 1, dirty = false}
     }
 
     local uiRectangleObj = UiTextBlock.uiItemBaseClass.new(self)
@@ -143,10 +93,12 @@ function UiTextBlock:updateFromReplicatorData(host)
                 self.textBlockProperties.rectangle_color.value.b = colorArray[3]
             end
             if parsedJson["rectangle_opacity"] ~= nil then
-                self.textBlockProperties.rectangle_opacity.value = parsedJson["rectangle_opacity"]
+                self.textBlockProperties.rectangle_opacity.value =
+                    parsedJson["rectangle_opacity"]
             end
             if parsedJson["rectangle_radius"] ~= nil then
-                self.textBlockProperties.rectangle_radius.value = parsedJson["rectangle_radius"]
+                self.textBlockProperties.rectangle_radius.value =
+                    parsedJson["rectangle_radius"]
             end
             if parsedJson["border_color"] ~= nil then
                 local colorArray = parsedJson["border_color"]
@@ -155,10 +107,12 @@ function UiTextBlock:updateFromReplicatorData(host)
                 self.textBlockProperties.border_color.value.b = colorArray[3]
             end
             if parsedJson["border_opacity"] ~= nil then
-                self.textBlockProperties.border_opacity.value = parsedJson["border_opacity"]
+                self.textBlockProperties.border_opacity.value =
+                    parsedJson["border_opacity"]
             end
             if parsedJson["border_radius"] ~= nil then
-                self.textBlockProperties.border_radius.value = parsedJson["border_radius"]
+                self.textBlockProperties.border_radius.value =
+                    parsedJson["border_radius"]
             end
             if parsedJson["text"] ~= nil then
                 self.textBlockProperties.text.value = parsedJson["text"]
@@ -170,24 +124,28 @@ function UiTextBlock:updateFromReplicatorData(host)
                 self.textBlockProperties.text_color.value.b = colorArray[3]
             end
             if parsedJson["text_opacity"] ~= nil then
-                self.textBlockProperties.text_opacity.value = tonumber(parsedJson["text_opacity"])
+                self.textBlockProperties.text_opacity.value = tonumber(
+                                                                  parsedJson["text_opacity"])
             end
             if parsedJson["font_size"] ~= nil then
-                self.textBlockProperties.font_size.value = tonumber(parsedJson["font_size"])
+                self.textBlockProperties.font_size.value = tonumber(
+                                                               parsedJson["font_size"])
             end
             if parsedJson["text_horizontal_alignment"] ~= nil then
-                self.textBlockProperties.text_horizontal_alignment.value = tonumber(
-                    parsedJson["text_horizontal_alignment"])
+                self.textBlockProperties.text_horizontal_alignment.value =
+                    tonumber(parsedJson["text_horizontal_alignment"])
             end
             if parsedJson["text_vertical_alignment"] ~= nil then
-                self.textBlockProperties.text_vertical_alignment.value = tonumber(parsedJson["text_vertical_alignment"])
+                self.textBlockProperties.text_vertical_alignment.value =
+                    tonumber(parsedJson["text_vertical_alignment"])
             end
             if parsedJson["attach_target_ui_item_name"] ~= nil then
-                self.textBlockProperties.attach_target_ui_item_name.value = tostring(
-                    parsedJson["attach_target_ui_item_name"])
+                self.textBlockProperties.attach_target_ui_item_name.value =
+                    tostring(parsedJson["attach_target_ui_item_name"])
             end
             if parsedJson["border_thickness"] ~= nil then
-                self.textBlockProperties.border_thickness.value = tonumber(parsedJson["border_thickness"])
+                self.textBlockProperties.border_thickness.value = tonumber(
+                                                                      parsedJson["border_thickness"])
             end
         end
     end
@@ -205,12 +163,12 @@ function UiTextBlock:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
+                                     json.encode(propertiesData))
     end
 end
 
-function UiTextBlock:update(host)
-end
+function UiTextBlock:update(host) end
 
 function UiTextBlock:setRectangleColorHexValue(colorHex)
     assert(colorHex ~= nil and type(colorHex) == "number")
@@ -224,13 +182,16 @@ function UiTextBlock:setRectangleColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setRectangleColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setRectangleColor(r * INV_COLOR_MAX_BYTE_VALUE,
+                           g * INV_COLOR_MAX_BYTE_VALUE,
+                           b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiTextBlock:setRectangleColor(r, g, b)
     assert(
-        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
+            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
+            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.textBlockProperties.rectangle_color.value.r = r
     self.textBlockProperties.rectangle_color.value.g = g
     self.textBlockProperties.rectangle_color.value.b = b
@@ -256,8 +217,9 @@ end
 
 function UiTextBlock:setBorderColor(r, g, b)
     assert(
-        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
+            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
+            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
 
     self.textBlockProperties.border_color.value.r = r
     self.textBlockProperties.border_color.value.g = g
@@ -278,7 +240,9 @@ function UiTextBlock:setBorderColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setBorderColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setBorderColor(r * INV_COLOR_MAX_BYTE_VALUE,
+                        g * INV_COLOR_MAX_BYTE_VALUE,
+                        b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiTextBlock:setBorderRadius(borderRadius)
@@ -325,13 +289,15 @@ function UiTextBlock:setTextColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setTextColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setTextColor(r * INV_COLOR_MAX_BYTE_VALUE,
+                      g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiTextBlock:setTextColor(r, g, b)
     assert(
-        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
+            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
+            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
 
     self.textBlockProperties.text_color.value.r = r
     self.textBlockProperties.text_color.value.g = g
@@ -349,21 +315,28 @@ function UiTextBlock:setFontSize(fontSize)
 end
 
 function UiTextBlock:setTextHorizontalAlignment(textHorizontalAlignment)
-    assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) == "number" and textHorizontalAlignment >=
-               UiLabel.TextHorizontalAlignmentType.LEFT and textHorizontalAlignment <=
+    assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) ==
+               "number" and textHorizontalAlignment >=
+               UiLabel.TextHorizontalAlignmentType.LEFT and
+               textHorizontalAlignment <=
                UiLabel.TextHorizontalAlignmentType.RIGHT)
-    if self.textBlockProperties.text_horizontal_alignment.value ~= textHorizontalAlignment then
-        self.textBlockProperties.text_horizontal_alignment.value = textHorizontalAlignment
+    if self.textBlockProperties.text_horizontal_alignment.value ~=
+        textHorizontalAlignment then
+        self.textBlockProperties.text_horizontal_alignment.value =
+            textHorizontalAlignment
         self.textBlockProperties.text_horizontal_alignment.dirty = true
     end
 end
 
 function UiTextBlock:setTextVerticalAlignment(textVerticalAlignment)
-    assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) == "number" and textVerticalAlignment >=
+    assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) ==
+               "number" and textVerticalAlignment >=
                UiLabel.TextVerticalAlignmentType.TOP and textVerticalAlignment <=
                UiLabel.TextVerticalAlignmentType.BOTTOM)
-    if self.textBlockProperties.text_vertical_alignment.value ~= textVerticalAlignment then
-        self.textBlockProperties.text_vertical_alignment.value = textVerticalAlignment
+    if self.textBlockProperties.text_vertical_alignment.value ~=
+        textVerticalAlignment then
+        self.textBlockProperties.text_vertical_alignment.value =
+            textVerticalAlignment
         self.textBlockProperties.text_vertical_alignment.dirty = true
     end
 end

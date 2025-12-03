@@ -1,5 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
---
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -35,39 +34,21 @@ function UiToggleButton:new(host, isStateOn, name)
     local jsonParameters = nil;
     if name ~= nil then
         assert(type(name) == "string" and name ~= "")
-        jsonParameters = json.encode({ is_state_on = isStateOn, name = name })
+        jsonParameters = json.encode({is_state_on = isStateOn, name = name})
     else
-        jsonParameters = json.encode({ is_state_on = isStateOn })
+        jsonParameters = json.encode({is_state_on = isStateOn})
     end
 
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-        CommonUiWidgetCreator.CommonUiWidgetType.UI_TOGGLE_BUTTON, jsonParameters)
+                                                            CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_TOGGLE_BUTTON,
+                                                            jsonParameters)
 
     local toggleButtonProperties = {
-        is_state_on = {
-            value = isStateOn,
-            dirty = false
-        },
-        opacity = {
-            value = 1.0,
-            dirty = false
-        },
-        toggle_on_color = {
-            value = {
-                r = 0.0,
-                g = 0.0,
-                b = 0.0
-            },
-            dirty = false
-        },
-        toggle_off_color = {
-            value = {
-                r = 0.0,
-                g = 0.0,
-                b = 0.0
-            },
-            dirty = false
-        }
+        is_state_on = {value = isStateOn, dirty = false},
+        opacity = {value = 1.0, dirty = false},
+        toggle_on_color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
+        toggle_off_color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false}
     }
 
     local uiToggleObj = UiToggleButton.uiItemBaseClass.new(self)
@@ -104,18 +85,25 @@ function UiToggleButton:updateFromReplicatorData(host)
             end
             if parsedJson["toggle_on_color"] ~= nil then
                 local colorArray = parsedJson["toggle_on_color"]
-                self.toggleButtonProperties.toggle_on_color.value.r = colorArray[1]
-                self.toggleButtonProperties.toggle_on_color.value.g = colorArray[2]
-                self.toggleButtonProperties.toggle_on_color.value.b = colorArray[3]
+                self.toggleButtonProperties.toggle_on_color.value.r =
+                    colorArray[1]
+                self.toggleButtonProperties.toggle_on_color.value.g =
+                    colorArray[2]
+                self.toggleButtonProperties.toggle_on_color.value.b =
+                    colorArray[3]
             end
             if parsedJson["toggle_off_color"] ~= nil then
                 local colorArray = parsedJson["toggle_off_color"]
-                self.toggleButtonProperties.toggle_off_color.value.r = colorArray[1]
-                self.toggleButtonProperties.toggle_off_color.value.g = colorArray[2]
-                self.toggleButtonProperties.toggle_off_color.value.b = colorArray[3]
+                self.toggleButtonProperties.toggle_off_color.value.r =
+                    colorArray[1]
+                self.toggleButtonProperties.toggle_off_color.value.g =
+                    colorArray[2]
+                self.toggleButtonProperties.toggle_off_color.value.b =
+                    colorArray[3]
             end
             if parsedJson["opacity"] ~= nil then
-                self.toggleButtonProperties.opacity.value = tonumber(parsedJson["opacity"])
+                self.toggleButtonProperties.opacity.value = tonumber(
+                                                                parsedJson["opacity"])
             end
         end
     end
@@ -133,12 +121,12 @@ function UiToggleButton:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
+                                     json.encode(propertiesData))
     end
 end
 
-function UiToggleButton:update(host)
-end
+function UiToggleButton:update(host) end
 
 function UiToggleButton:setIsStateOn(isStateOn)
     assert(isStateOn ~= nil and type(isStateOn) == "boolean")
@@ -168,12 +156,16 @@ function UiToggleButton:setToggleOnColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setToggleOnColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setToggleOnColor(r * INV_COLOR_MAX_BYTE_VALUE,
+                          g * INV_COLOR_MAX_BYTE_VALUE,
+                          b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiToggleButton:setToggleOnColor(r, g, b)
-    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
-        r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
+            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
+            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
 
     self.toggleButtonProperties.toggle_on_color.value.r = r
     self.toggleButtonProperties.toggle_on_color.value.g = g
@@ -194,12 +186,16 @@ function UiToggleButton:setToggleOffColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setToggleOffColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setToggleOffColor(r * INV_COLOR_MAX_BYTE_VALUE,
+                           g * INV_COLOR_MAX_BYTE_VALUE,
+                           b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiToggleButton:setToggleOffColor(r, g, b)
-    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
-        r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
+            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
+            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
 
     self.toggleButtonProperties.toggle_off_color.value.r = r
     self.toggleButtonProperties.toggle_off_color.value.g = g

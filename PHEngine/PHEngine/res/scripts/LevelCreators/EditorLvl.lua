@@ -49,37 +49,20 @@ function CreateLevel(host)
         dummy_metallic_roughness.png,
 		]])
 
-    _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
+    _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1,
+                 1, "")
 
-    local a_lightId = _CreateActor(host, "Actor", "MainLightActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_lightId = _CreateActor(host, "Actor", "MainLightActor", 0, 0, 0, 0,
+                                   0, 0, 1, 1, 1, "")
 
-    _CreateAndAttachComponentToActor(host, a_lightId, "DirectionalLightComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_lightId,
+                                     "DirectionalLightComponent", Json.encode({
         gameObjectName = "MainLightComp",
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        direction = {
-            x = -0.2,
-            y = -0.5,
-            z = 0
-        },
-        ambient = {
-            r = 0.2,
-            g = 0.2,
-            b = 0.2
-        },
-        diffuse = {
-            r = 0.68,
-            g = 0.5,
-            b = 0.5
-        },
-        specular = {
-            r = 0.4,
-            g = 0.4,
-            b = 0.4
-        },
+        rotation = {x = 0, y = 0, z = 0},
+        direction = {x = -0.2, y = -0.5, z = 0},
+        ambient = {r = 0.2, g = 0.2, b = 0.2},
+        diffuse = {r = 0.68, g = 0.5, b = 0.5},
+        specular = {r = 0.4, g = 0.4, b = 0.4},
         is_enabled = true,
         is_visible = true
     }))
@@ -116,12 +99,9 @@ function CreateLevel(host)
     _CreateActor(host, "Actor", "SkyboxActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
 end
 
-function System_OnStart(host)
-    CreateLevel(host)
-end
+function System_OnStart(host) CreateLevel(host) end
 
-function System_OnUpdate(host, deltaTimeSec)
-end
+function System_OnUpdate(host, deltaTimeSec) end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)
 HasOnUpdate = (_G["System_OnUpdate"] ~= nil and 1 or 0)

@@ -10,6 +10,7 @@ class SpaceshipLevel {
     uint32_t mNominalHealth;
 
     uint32_t mCurrentHealth;
+
 public:
     SpaceshipLevel() = delete;
 
