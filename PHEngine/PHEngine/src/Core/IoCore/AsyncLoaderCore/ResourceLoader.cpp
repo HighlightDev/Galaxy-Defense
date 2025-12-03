@@ -141,7 +141,8 @@ Resource* AudioResourceLoader::GetStreamResource(const std::string& key)
 #ifdef DEBUG
     const auto& resObs = ResourceUsageObserver::GetInstance();
     resObs->CollectResourceConsumptionInfo();
-    LogInfo("AudioResourceLoader::GetStreamResource: ", key, ", memory mb after allocation: ", resObs->GetLastMemoryUsageMegabytes());
+    LogInfo(
+        "AudioResourceLoader::GetStreamResource: ", key, ", memory mb after allocation: ", resObs->GetLastMemoryUsageMegabytes());
 #else
     LogInfo("AudioResourceLoader::GetStreamResource: ", key);
 #endif

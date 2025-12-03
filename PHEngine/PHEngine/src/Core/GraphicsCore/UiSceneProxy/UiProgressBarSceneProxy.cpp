@@ -45,8 +45,7 @@ void UiProgressBarSceneProxy::Render()
 {
     mUiProgressBarShader->ExecuteShader();
     const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
-    mUiProgressBarShader->SetTransform(
-        mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * mScale);
+    mUiProgressBarShader->SetTransform(mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * mScale);
     mUiProgressBarShader->SetEmptyColor(mEmptyColor);
     mUiProgressBarShader->SetFilledColor(mFilledColor);
     mUiProgressBarShader->SetFillPercentValue(mFillPercentValue);

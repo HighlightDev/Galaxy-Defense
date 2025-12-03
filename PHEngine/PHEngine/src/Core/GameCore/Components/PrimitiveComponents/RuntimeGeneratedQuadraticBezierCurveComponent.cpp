@@ -61,9 +61,10 @@ void RuntimeGeneratedQuadraticBezierCurveComponent::SyncRenderData()
                  curveSegmentsCount = mCurveSegmentsCount,
                  lineBeginWorldSpacePosition = GetLineBeginWorldSpacePosition(),
                  lineEndWorldSpacePosition = GetLineEndWorldSpacePosition(),
-                 lineWidth = GetLineWidth()](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-    std::weak_ptr<EngineCore::Scene> sceneWp,
-    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                 lineWidth = GetLineWidth()](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& lineProxySp = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveSceneProxy>(
                             sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         lineProxySp->SetBezierControlPointWorldSpacePosition(bezierControlPosition);

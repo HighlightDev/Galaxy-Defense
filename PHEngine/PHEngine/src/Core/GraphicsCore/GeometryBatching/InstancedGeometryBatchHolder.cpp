@@ -40,9 +40,10 @@ void InstancedGeometryBatchHolder::Tick(const float deltaTimeSec)
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                 0,
                 functionId,
-                [sceneRendererSp, data = std::move(batchData)]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                [sceneRendererSp, data = std::move(batchData)](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     const auto& geometryBatcherRenderer = sceneRendererSp->GetInstancedGeometryBatchRenderer();
                     geometryBatcherRenderer->UpdateBatchInstancesData(data);
                 });

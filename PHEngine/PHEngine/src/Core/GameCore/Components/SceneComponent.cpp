@@ -118,7 +118,7 @@ void SceneComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
     m_relativeMatrix *= parentRelativeMatrix;
     m_relativeMatrix *= glm::translate(identityMatrix, mTransform->Translation);
     m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
-    
+
     if (bIsRootComponent) {
         const auto& additionalRotation = m_additionalRotationEuler->GetValue();
         const glm::mat4 pitchRotation = glm::rotate(identityMatrix, DEG_TO_RAD(additionalRotation.x), AXIS_RIGHT);

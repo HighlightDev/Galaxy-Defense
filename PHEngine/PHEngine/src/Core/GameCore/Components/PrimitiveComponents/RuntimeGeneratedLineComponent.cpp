@@ -103,9 +103,10 @@ void RuntimeGeneratedLineComponent::SyncRenderData()
                  sceneProxyId = mSceneProxyId,
                  lineBeginWorldSpacePosition = mLineBeginWorldSpacePosition,
                  lineEndWorldSpacePosition = mLineEndWorldSpacePosition,
-                 lineWidth = mLineWidth]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                 lineWidth = mLineWidth](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& lineProxySp = std::static_pointer_cast<RuntimeGeneratedLineSceneProxy>(
                             sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         lineProxySp->SetLineBeginWorldSpacePosition(lineBeginWorldSpacePosition);

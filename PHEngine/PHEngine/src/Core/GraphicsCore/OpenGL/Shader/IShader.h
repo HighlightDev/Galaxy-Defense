@@ -52,14 +52,14 @@ public:
 
     virtual void AccessAllUniformLocations(uint32_t shaderProgramID);
     virtual void AccessAllSubroutineIndices(uint32_t shaderProgramID);
-    virtual void SetShaderPredefine() { };
-    virtual void ProcessAllPredefines() { };
+    virtual void SetShaderPredefine(){};
+    virtual void ProcessAllPredefines(){};
     virtual void BindAttributeLocations(const int32_t shaderProgramId)
     {
     }
 
 #if DEBUG
-    virtual void RecompileShader() { };
+    virtual void RecompileShader(){};
 #endif
 
     void ProcessPredefineToFile(

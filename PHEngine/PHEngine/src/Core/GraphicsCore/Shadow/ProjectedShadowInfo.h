@@ -33,7 +33,7 @@ protected:
 
     std::shared_ptr<TextureAtlasHandler> mShadowmapHandler;
 
-    std::function <void()> mOnShadowMapUpdatedCallback;
+    std::function<void()> mOnShadowMapUpdatedCallback;
 
 public:
     ProjectedShadowInfo(const TextureAtlasSpaceRequest& shadowmapAtlasRequest);

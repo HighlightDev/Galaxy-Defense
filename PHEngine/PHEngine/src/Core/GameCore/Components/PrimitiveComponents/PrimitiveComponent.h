@@ -18,7 +18,7 @@ using namespace Graphics::Proxy;
 
 namespace EngineCore {
 // Base class of all drawing components
-class PrimitiveComponent : public SceneComponent {
+class PrimitiveComponent : public ScenInitializeeComponent {
 protected:
     using Base = SceneComponent;
 

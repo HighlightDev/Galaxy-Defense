@@ -4,6 +4,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/CubemapComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/LightComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
@@ -15,6 +16,7 @@
 #include "Core/GameCore/Components/ComponentCreators/SkyboxComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
+#include "Core/GameCore/Components/ComponentData/ElectricBeamComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
@@ -79,7 +81,8 @@ void DefaultComponentCreatorFactory::CreateComponent(
            {"WaterPlaneComponent", std::make_shared<StaticMeshComponentCreator<WaterPlaneComponent>>(false)},
            {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()},
            {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()},
-           {"BillboardComponent", std::make_shared<BillboardComponentCreator<BillboardComponent>>()}};
+           {"BillboardComponent", std::make_shared<BillboardComponentCreator<BillboardComponent>>()},
+           {"ElectricBeamComponent", std::make_shared<ElectricBeamComponentCreator>()}};
 
     assert(creatorsMap.count(componentType));
 
@@ -304,6 +307,18 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             material,
             [](const glm::mat4& viewMatrix) { return viewMatrix; },
             [](const glm::mat4& projectionMatrix) { return projectionMatrix; });
+    } else if ("ElectricBeamComponent" == componentType) {
+        const auto startPoint = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["startPoint"]);
+        const auto endPoint = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["endPoint"]);
+        const auto beamColor = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["beamColor"]);
+        const float beamThickness = nlohmann_utilities::GetFloatFromJson(jsonObj, "beamThickness");
+        const int beamCount = nlohmann_utilities::GetIntFromJson(jsonObj, "beamCount");
+        const float jitterAmount = nlohmann_utilities::GetFloatFromJson(jsonObj, "jitterAmount");
+        const float updateFrequency = nlohmann_utilities::GetFloatFromJson(jsonObj, "updateFrequency");
+        const bool isActive = nlohmann_utilities::GetBoolFromJson(jsonObj, "isActive");
+
+        componentData = std::make_shared<ElectricBeamComponentData>(
+            objectName, startPoint, endPoint, beamColor, beamThickness, beamCount, jitterAmount, updateFrequency, isActive);
     }
 
     assert(componentData);

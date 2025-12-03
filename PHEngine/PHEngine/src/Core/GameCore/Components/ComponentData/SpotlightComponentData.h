@@ -21,16 +21,16 @@ struct SpotlightComponentData : public PointLightComponentData {
         const bool isEnabled = true,
         const bool isVisible = false)
         : PointLightComponentData(
-              gameObjectName,
-              translation,
-              attenuation,
-              radianceRadius,
-              ambient,
-              diffuse,
-              specular,
-              shadowInfo,
-              isEnabled,
-              isVisible)
+            gameObjectName,
+            translation,
+            attenuation,
+            radianceRadius,
+            ambient,
+            diffuse,
+            specular,
+            shadowInfo,
+            isEnabled,
+            isVisible)
         , Cutoff(cutoff)
     {
         Rotation = rotation;

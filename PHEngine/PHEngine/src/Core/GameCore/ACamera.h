@@ -102,7 +102,7 @@ public:
 
     void Tick(const float DeltaTime) override;
 
-    void UnpausableTick(const float deltaTimeSec) override { };
+    void UnpausableTick(const float deltaTimeSec) override{};
 
     void ProcessEvent(
         const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t& data) override;

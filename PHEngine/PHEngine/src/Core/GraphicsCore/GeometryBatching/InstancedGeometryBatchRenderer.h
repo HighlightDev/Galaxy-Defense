@@ -10,7 +10,7 @@
 namespace Graphics {
 class CameraSceneProxy;
 class ActiveBindedState;
-}
+} // namespace Graphics
 
 namespace Graphics::GeometryBatching {
 class InstancedGeometryBatchProxy;

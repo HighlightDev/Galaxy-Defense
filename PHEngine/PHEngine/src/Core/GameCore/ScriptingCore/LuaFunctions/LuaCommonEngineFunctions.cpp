@@ -73,10 +73,7 @@ void LuaCommonEngineFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
         luaWrapper, mOwnerPtr, std::bind(&LuaCommonEngineFunctions::GetMusicGain, this, std::placeholders::_1), "_GetMusicGain");
 
     LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetSoundGain"), float(void)>::Bind(
-        luaWrapper,
-        mOwnerPtr,
-        std::bind(&LuaCommonEngineFunctions::GetSoundGain, this, std::placeholders::_1),
-        "_GetSoundGain");
+        luaWrapper, mOwnerPtr, std::bind(&LuaCommonEngineFunctions::GetSoundGain, this, std::placeholders::_1), "_GetSoundGain");
 }
 
 int32_t LuaCommonEngineFunctions::GetWindowHeight(const std::tuple<>& data) const

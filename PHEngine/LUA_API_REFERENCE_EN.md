@@ -614,6 +614,42 @@ _CreateAndAttachComponentToActor(actorId, "GhostPhysicsComponent", Json.encode({
 }))
 ```
 
+#### ElectricBeamComponent
+Component for creating electric beam effects between two points.
+
+**Render Modes:**
+- `Lines` (0) - Uses RuntimeGeneratedLineComponent (fast, simple)
+- `ProceduralMesh` (1) - Uses procedural geometry (realistic, volumetric)
+- `ProceduralElectric` (2) - Procedural geometry with jittered segments (most realistic)
+
+```lua
+-- Simple line-based mode (default)
+_CreateAndAttachComponentToActor(actorId, "ElectricBeamComponent", Json.encode({
+    gameObjectName = "ElectricBeam",
+    startPoint = {x = 0, y = 0, z = 0},
+    endPoint = {x = 10, y = 0, z = 0},
+    beamColor = {r = 0.3, g = 0.5, b = 1.0},
+    beamThickness = 2.0,
+    beamCount = 3,
+    jitterAmount = 0.2,
+    updateFrequency = 0.05,
+    isActive = true
+}))
+
+-- Control render mode programmatically:
+-- beam:SetRenderMode(0) -- Lines
+-- beam:SetRenderMode(1) -- ProceduralMesh
+-- beam:SetRenderMode(2) -- ProceduralElectric (with smooth animation)
+-- beam:SetGeometrySegments(8, 10) -- radialSegments, lengthSegments
+-- beam:SetAnimationSpeed(2.0) -- Jitter animation speed (0 = static)
+```
+
+**Jitter Animation:**
+- In `ProceduralElectric` mode, jitter is smoothly animated using noise functions
+- Animation happens every frame in the `Tick()` method
+- Animation speed controlled via `SetAnimationSpeed()` (default 2.0)
+- Each beam in `beamCount` has phase offset for variety
+
 ---
 
 ### `_CreatePlanarReflectionComponent(componentDataJson)`

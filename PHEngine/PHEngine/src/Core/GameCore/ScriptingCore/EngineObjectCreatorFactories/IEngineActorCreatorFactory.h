@@ -18,8 +18,7 @@ public:
         const glm::vec3& rootTranslation,
         const glm::vec3& rootEulerRotationAngles,
         const glm::vec3& rootScale,
-        const std::string& jsonParamStr) const
-        = 0;
+        const std::string& jsonParamStr) const = 0;
 };
 } // namespace Scripts
 } // namespace EngineCore

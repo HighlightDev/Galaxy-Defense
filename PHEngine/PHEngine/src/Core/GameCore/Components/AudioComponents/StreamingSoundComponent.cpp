@@ -23,7 +23,7 @@ StreamingSoundComponent::~StreamingSoundComponent()
 void StreamingSoundComponent::Initialize()
 {
     Component::Initialize();
-    
+
     Event::GeneralSystemSettingsChangedGameThreadEvent::GetInstance()->AddListener(
         std::dynamic_pointer_cast<Event::GeneralSystemSettingsChangedGameThreadEvent>(shared_from_this()));
 }

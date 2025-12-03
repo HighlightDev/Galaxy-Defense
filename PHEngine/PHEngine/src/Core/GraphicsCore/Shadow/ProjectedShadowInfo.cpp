@@ -30,8 +30,7 @@ void ProjectedShadowInfo::BindShadowFramebuffer(bool bBindFramebuffer, bool clea
 void ProjectedShadowInfo::AllocateFramebuffer() const
 {
     if (!m_shadowFramebuffer && mShadowmapHandler) {
-        EngineCore::LogInfo(
-            "ProjectedShadowInfo::AllocateFramebuffer: ", GetLightTypeAsString());
+        EngineCore::LogInfo("ProjectedShadowInfo::AllocateFramebuffer: ", GetLightTypeAsString());
         m_shadowFramebuffer = std::make_shared<ShadowFramebuffer>(mShadowmapHandler->GetAtlasResource());
         m_shadowFramebuffer->UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     }

@@ -111,9 +111,10 @@ void WaterPlaneComponent::SyncRenderData()
                  farClipPlane = m_farClipPlane,
                  nearClipPlane = m_nearClipPlane,
                  transparencyDepth = m_transparencyDepth,
-                 waveStrength = m_waveStrength]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                 waveStrength = m_waveStrength](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& primitiveProxySp = std::static_pointer_cast<WaterPlaneSceneProxy>(
                             sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         primitiveProxySp->SetFarClipPlane(farClipPlane);

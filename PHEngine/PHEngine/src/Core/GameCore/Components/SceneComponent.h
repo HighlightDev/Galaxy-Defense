@@ -32,8 +32,8 @@ protected:
     bool mIsOutlineApplied{false};
 
     float mOutlineThickness{0.0f};
-public:
 
+public:
     SceneComponent(
         const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);
 

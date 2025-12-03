@@ -43,17 +43,14 @@ public:
             const bool bHasResource = m_value->TryGetResource(outResource);
             if (bHasResource) {
                 int32_t slot = activeBindedState.GetBindedSlotIndexByTextureId(outResource->GetTextureDescriptor());
-                if (slot == -1)
-                {
+                if (slot == -1) {
                     slot = activeBindedState.OccupyTextureSlot(outResource->GetTextureDescriptor());
                     outResource->BindTexture(slot);
                 }
                 uniform.LoadUniform(slot);
             } else {
                 LogInfo(
-                    "DeferredTextureMaterialProperty::SetValueToUniform: property { ",
-                    GetPropertyName(),
-                    " } is not ready yet.");
+                    "DeferredTextureMaterialProperty::SetValueToUniform: property { ", GetPropertyName(), " } is not ready yet.");
             }
         }
     }

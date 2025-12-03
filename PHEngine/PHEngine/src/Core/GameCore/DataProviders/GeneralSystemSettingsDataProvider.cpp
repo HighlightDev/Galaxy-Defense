@@ -26,7 +26,8 @@ GeneralSystemSettingsDataProvider::~GeneralSystemSettingsDataProvider()
 
 const std::shared_ptr<GeneralSystemSettingsDataProvider>& GeneralSystemSettingsDataProvider::GetInstance()
 {
-    static const std::shared_ptr<GeneralSystemSettingsDataProvider>& settings = std::make_shared<GeneralSystemSettingsDataProvider>();
+    static const std::shared_ptr<GeneralSystemSettingsDataProvider>& settings
+        = std::make_shared<GeneralSystemSettingsDataProvider>();
     std::call_once(settings->m_initFlag, [_settings = settings]() { settings->Initialize(); });
     return settings;
 }

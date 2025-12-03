@@ -47,7 +47,7 @@ public:
 
     void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTimeSec) override { };
+    void UnpausableTick(const float deltaTimeSec) override{};
 
     virtual void SetIsEnabled(const bool bEnabled);
 
@@ -56,7 +56,6 @@ public:
     virtual void OnPostOwnerInitialized();
 
     virtual void PostLevelInit();
-
 };
 
 } // namespace EngineCore

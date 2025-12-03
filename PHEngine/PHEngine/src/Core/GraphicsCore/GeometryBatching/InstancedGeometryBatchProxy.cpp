@@ -56,8 +56,7 @@ void InstancedGeometryBatchProxy::Render(
     const auto& shader = GetShader();
 
     const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
-    if (needToRebindShader)
-    {
+    if (needToRebindShader) {
         shader->ExecuteShader();
     }
 

@@ -18,16 +18,7 @@ struct PointLightComponentData : public LightComponentData {
         const bool isEnabled = true,
         const bool isVisible = false)
         : LightComponentData(
-              gameObjectName,
-              ambient,
-              diffuse,
-              specular,
-              shadowInfo,
-              translation,
-              glm::vec3(0),
-              glm::vec3(1),
-              isEnabled,
-              isVisible)
+            gameObjectName, ambient, diffuse, specular, shadowInfo, translation, glm::vec3(0), glm::vec3(1), isEnabled, isVisible)
         , Attenuation(attenuation)
         , RadianceRadius(radianceRadius)
     {

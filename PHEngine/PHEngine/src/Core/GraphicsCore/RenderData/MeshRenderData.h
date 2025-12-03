@@ -19,7 +19,8 @@ struct MeshRenderData {
     std::shared_ptr<::Graphics::MaterialProxy> mMaterialProxy;
     bool mIsDeferredShaded;
 
-    MeshRenderData(const std::string& modelPath, std::shared_ptr<::Graphics::MaterialProxy> materialProxy, const bool isDeferredShaded)
+    MeshRenderData(
+        const std::string& modelPath, std::shared_ptr<::Graphics::MaterialProxy> materialProxy, const bool isDeferredShaded)
         : mModelPath(modelPath)
         , mMaterialProxy(materialProxy)
         , mIsDeferredShaded(isDeferredShaded)

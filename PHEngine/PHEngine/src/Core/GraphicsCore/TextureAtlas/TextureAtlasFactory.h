@@ -26,11 +26,10 @@ class TextureAtlasFactory {
     std::array<std::vector<std::pair<size_t, glm::ivec2>>, 2> Reservations;
 
     std::vector<std::pair<size_t, glm::ivec2>> CubemapReservations;
-    
+
     int32_t mShadowMapSize;
 
 public:
-
     TextureAtlasFactory();
 
     ~TextureAtlasFactory();

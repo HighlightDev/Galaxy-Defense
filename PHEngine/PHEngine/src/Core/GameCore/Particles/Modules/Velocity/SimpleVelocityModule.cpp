@@ -12,7 +12,8 @@ SimpleVelocityModule::SimpleVelocityModule()
 
 void SimpleVelocityModule::Update(Particle& particle, const float deltaTimeSec)
 {
-    particle.Velocity = (mVelocityDirection * deltaTimeSec * mExtraVelocityPower) + (mCurrentSpawnVelocityDeviation * deltaTimeSec);
+    particle.Velocity
+        = (mVelocityDirection * deltaTimeSec * mExtraVelocityPower) + (mCurrentSpawnVelocityDeviation * deltaTimeSec);
 }
 
 void SimpleVelocityModule::SetVelocityDirection(const glm::vec3& velocityDirection)

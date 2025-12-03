@@ -614,6 +614,42 @@ _CreateAndAttachComponentToActor(actorId, "GhostPhysicsComponent", Json.encode({
 }))
 ```
 
+#### ElectricBeamComponent
+Компонент для создания эффектов электрических лучей между двумя точками.
+
+**Режимы рендеринга:**
+- `Lines` (0) - Использует RuntimeGeneratedLineComponent (быстро, просто)
+- `ProceduralMesh` (1) - Использует процедурную геометрию (реалистично, объемно)
+- `ProceduralElectric` (2) - Процедурная геометрия с джиттером сегментов (максимально реалистично)
+
+```lua
+-- Простой режим с линиями (по умолчанию)
+_CreateAndAttachComponentToActor(actorId, "ElectricBeamComponent", Json.encode({
+    gameObjectName = "ElectricBeam",
+    startPoint = {x = 0, y = 0, z = 0},
+    endPoint = {x = 10, y = 0, z = 0},
+    beamColor = {r = 0.3, g = 0.5, b = 1.0},
+    beamThickness = 2.0,
+    beamCount = 3,
+    jitterAmount = 0.2,
+    updateFrequency = 0.05,
+    isActive = true
+}))
+
+-- Управление режимом рендеринга через код:
+-- beam:SetRenderMode(0) -- Lines
+-- beam:SetRenderMode(1) -- ProceduralMesh
+-- beam:SetRenderMode(2) -- ProceduralElectric (с плавной анимацией)
+-- beam:SetGeometrySegments(8, 10) -- radialSegments, lengthSegments
+-- beam:SetAnimationSpeed(2.0) -- Скорость анимации джиттера (0 = статично)
+```
+
+**Анимация джиттера:**
+- В режиме `ProceduralElectric` джиттер анимируется плавно используя шумовую функцию
+- Анимация происходит каждый кадр в методе `Tick()`
+- Скорость анимации управляется через `SetAnimationSpeed()` (по умолчанию 2.0)
+- Каждый луч в `beamCount` имеет смещение по фазе для разнообразия
+
 ---
 
 ### `_CreatePlanarReflectionComponent(componentDataJson)`

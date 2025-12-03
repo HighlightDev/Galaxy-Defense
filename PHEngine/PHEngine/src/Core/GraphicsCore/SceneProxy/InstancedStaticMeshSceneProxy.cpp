@@ -41,7 +41,9 @@ void InstancedStaticMeshSceneProxy::PostConstructorInitialize()
 }
 
 void InstancedStaticMeshSceneProxy::Render(
-    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
     ActiveBindedState& activeBindedState)
 {
     // this code should not be invoked
@@ -49,7 +51,10 @@ void InstancedStaticMeshSceneProxy::Render(
 }
 
 void InstancedStaticMeshSceneProxy::RenderPlanarReflection(
-    const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+    const glm::vec4& plane,
+    const glm::mat4& mirrorMatrix,
+    const glm::mat4& viewMatrix,
+    const glm::mat4& projectionMatrix,
     ActiveBindedState& activeBindedState)
 {
     // this code should not be invoked

@@ -17,7 +17,7 @@ struct DirectionalLightComponentData : public LightComponentData {
         const bool isEnabled = true,
         const bool isVisible = false)
         : LightComponentData(
-              gameObjectName, ambient, diffuse, specular, shadowInfo, glm::vec3(), rotation, glm::vec3(1), isEnabled, isVisible)
+            gameObjectName, ambient, diffuse, specular, shadowInfo, glm::vec3(), rotation, glm::vec3(1), isEnabled, isVisible)
         , Direction(direction)
     {
     }

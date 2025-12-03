@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
-#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/UniformBuffer.h"
+#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
 
 using namespace Graphics::OpenGL;
 

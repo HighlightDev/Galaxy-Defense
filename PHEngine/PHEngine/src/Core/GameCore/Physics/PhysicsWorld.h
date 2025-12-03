@@ -41,7 +41,7 @@ public:
 
     void Tick(const float deltaTimeSec);
 
-    void UnpausableTick(const float deltaTimeSec) override { };
+    void UnpausableTick(const float deltaTimeSec) override{};
 
     void PostPhysicsSimulationUpdate(const float deltaTimeSec);
 

@@ -50,7 +50,7 @@ private:
 
     /*Getters for scene properties*/
     float GetMusicGain(const std::tuple<>& data) const;
-    
+
     float GetSoundGain(const std::tuple<>& data) const;
 
     /*Input callbacks*/

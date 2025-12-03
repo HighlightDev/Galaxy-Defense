@@ -27,9 +27,11 @@ public:
     }
 };
 
-class GeneralSystemSettingsChangedLuaThreadEvent : public TEvent < GeneralSystemSettingsChangedLuaThreadEvent,
-    eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<eSystemSettingsEventType /*event type*/,
-    std::string /*json parameters*/ >> {
+class GeneralSystemSettingsChangedLuaThreadEvent
+    : public TEvent<
+          GeneralSystemSettingsChangedLuaThreadEvent,
+          eEventThreadType::LUA_THREAD,
+          MultipleDataEventPolicy<eSystemSettingsEventType /*event type*/, std::string /*json parameters*/>> {
 public:
     using Type_t = TEvent<
         GeneralSystemSettingsChangedLuaThreadEvent,

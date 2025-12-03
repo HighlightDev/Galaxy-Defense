@@ -1,5 +1,6 @@
 #pragma once
 
 namespace Common {
-struct NullType { };
+struct NullType {
+};
 } // namespace Common

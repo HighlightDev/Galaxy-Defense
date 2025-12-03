@@ -11,13 +11,13 @@ namespace Proxy {
 
 PointLightSceneProxy::PointLightSceneProxy(const PointLightComponent* component)
     : LightSceneProxy(
-          component->IsEnabled(),
-          component->IsVisible(),
-          component->GetRelativeMatrix(),
-          component->GetRenderData()->Ambient,
-          component->GetRenderData()->Diffuse,
-          component->GetRenderData()->Specular,
-          component->GetRenderData()->ShadowInfo)
+        component->IsEnabled(),
+        component->IsVisible(),
+        component->GetRelativeMatrix(),
+        component->GetRenderData()->Ambient,
+        component->GetRenderData()->Diffuse,
+        component->GetRenderData()->Specular,
+        component->GetRenderData()->ShadowInfo)
     , m_attenuation(component->GetRenderData()->Attenuation)
     , m_radianceRadius(component->GetRenderData()->RadianceRadius)
 {

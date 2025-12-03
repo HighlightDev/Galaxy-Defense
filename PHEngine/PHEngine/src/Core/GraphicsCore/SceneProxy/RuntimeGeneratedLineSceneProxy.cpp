@@ -58,9 +58,10 @@ void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                 mSceneProxyId,
                 functionId,
-                [sceneSp, boundingBox, goID = GetGameObjectId()]( std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                [sceneSp, boundingBox, goID = GetGameObjectId()](
+                    std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                    std::weak_ptr<EngineCore::Scene> sceneWp,
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     const auto& engineObject = sceneSp->GetEngineObjectById(goID);
                     assert(engineObject);
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);

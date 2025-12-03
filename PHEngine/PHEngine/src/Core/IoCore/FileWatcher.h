@@ -1,11 +1,11 @@
 #pragma once
+#include <atomic>
 #include <chrono>
 #include <filesystem>
 #include <functional>
 #include <string>
 #include <thread>
 #include <unordered_map>
-#include <atomic>
 
 namespace IO {
 enum class FileStatus { CREATED, MODIFIED, ERASED };

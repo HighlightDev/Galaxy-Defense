@@ -16,8 +16,7 @@ public:
         const std::weak_ptr<::EngineCore::Scene>& sceneWp,
         const std::string& actorName,
         const std::string& actorControllerTypeName,
-        const std::string& jsonParamStr) const
-        = 0;
+        const std::string& jsonParamStr) const = 0;
 };
 } // namespace Scripts
 } // namespace EngineCore

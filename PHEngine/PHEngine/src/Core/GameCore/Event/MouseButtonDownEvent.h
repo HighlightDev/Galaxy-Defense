@@ -47,9 +47,10 @@ struct MouseButtonDownLuaThreadEvent : public TEvent<
                                            eEventThreadType::LUA_THREAD,
                                            MultipleDataEventPolicy<std::vector<MouseKeysData>>> {
 public:
-    using Type_t
-        = TEvent<MouseButtonDownLuaThreadEvent, eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<std::vector<MouseKeysData>>>::
-            Type_t;
+    using Type_t = TEvent<
+        MouseButtonDownLuaThreadEvent,
+        eEventThreadType::LUA_THREAD,
+        MultipleDataEventPolicy<std::vector<MouseKeysData>>>::Type_t;
 
     std::string ToString() const override
     {

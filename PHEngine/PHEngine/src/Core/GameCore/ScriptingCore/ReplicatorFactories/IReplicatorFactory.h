@@ -21,8 +21,7 @@ public:
     virtual int32_t CreateReplicator(
         const std::weak_ptr<::EngineCore::Scene>& sceneWp,
         const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp,
-        const std::string& jsonParamsStr) const
-        = 0;
+        const std::string& jsonParamsStr) const = 0;
 };
 } // namespace Scripts
 } // namespace EngineCore

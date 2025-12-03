@@ -22,8 +22,7 @@ void CheckAlErrors()
             LogInfo("OpenAL::CheckAlErrors: AL_INVALID_OPERATION: the requested operation is not valid");
             break;
         case AL_OUT_OF_MEMORY:
-            LogInfo(
-                "OpenAL::CheckAlErrors: AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory");
+            LogInfo("OpenAL::CheckAlErrors: AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory");
             break;
         default:
             LogInfo("OpenAL::CheckAlErrors: UNKNOWN AL ERROR: ", error);

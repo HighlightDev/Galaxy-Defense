@@ -16,11 +16,11 @@ protected:
 public:
     VertexFactoryMaterialCompositeShader(const CompositeShaderParams& compositeShaderParams)
         : AVertexFactoryMaterialShaderModule(
-              compositeShaderParams,
-              std::make_shared<VertexFactoryShaderType>(),
-              std::make_shared<MaterialShader>(
-                  static_cast<CompositeMaterialShaderParams&>(const_cast<CompositeShaderParams&>(compositeShaderParams))
-                      .mMaterialProxy))
+            compositeShaderParams,
+            std::make_shared<VertexFactoryShaderType>(),
+            std::make_shared<MaterialShader>(
+                static_cast<CompositeMaterialShaderParams&>(const_cast<CompositeShaderParams&>(compositeShaderParams))
+                    .mMaterialProxy))
         , mBaseShader(std::make_shared<ShaderType>(compositeShaderParams.mShaderParams))
     {
         Init();

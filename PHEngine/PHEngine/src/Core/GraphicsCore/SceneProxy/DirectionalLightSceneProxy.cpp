@@ -7,13 +7,13 @@ namespace Proxy {
 
 DirectionalLightSceneProxy::DirectionalLightSceneProxy(const DirectionalLightComponent* component)
     : LightSceneProxy(
-          component->IsEnabled(),
-          component->IsVisible(),
-          component->GetRelativeMatrix(),
-          component->GetRenderData()->Ambient,
-          component->GetRenderData()->Diffuse,
-          component->GetRenderData()->Specular,
-          component->GetRenderData()->ShadowInfo)
+        component->IsEnabled(),
+        component->IsVisible(),
+        component->GetRelativeMatrix(),
+        component->GetRenderData()->Ambient,
+        component->GetRenderData()->Diffuse,
+        component->GetRenderData()->Specular,
+        component->GetRenderData()->ShadowInfo)
     , m_direction(component->GetRenderData()->Direction)
 {
 }
