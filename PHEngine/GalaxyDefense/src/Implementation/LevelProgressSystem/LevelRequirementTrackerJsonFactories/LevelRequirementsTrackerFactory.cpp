@@ -22,7 +22,7 @@ std::unique_ptr<ILevelRequirementTracker> LevelRequirementsTrackerFactory::Creat
         auto destroySpacehipsTracker = std::make_unique<MissedSpaceshipsTracker>(doNotMissSpaceshipsCount, hint);
         return destroySpacehipsTracker;
     } else {
-        assert(false);
+        ext_assert(false, "Unknown level requirement tracker type: " + requirementTrackerType);
     }
 
     return nullptr;

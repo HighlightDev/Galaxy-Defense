@@ -31,12 +31,12 @@ void* SndFileLoader::AllocateMemoryForAudioSource(const std::string& pathToFile,
 
     // Open the audio file and check that it's usable.
     sndfile = sf_open(pathToFile.c_str(), SFM_READ, &sfinfo);
-    assert(sndfile);
+    ext_assert(sndfile, "SndFileLoader::AllocateMemoryForAudioSource: Failed to open audio file: " + pathToFile);
 
     const bool isBadSample
         = (sfinfo.frames < 1
            || sfinfo.frames > (sf_count_t)(std::numeric_limits<int64_t>::max() / sizeof(short)) / sfinfo.channels);
-    assert(!isBadSample);
+    ext_assert(!isBadSample, "SndFileLoader::AllocateMemoryForAudioSource: Bad sample in audio file: " + pathToFile);
 
     // Get the sound format, and figure out the OpenAL format
 
@@ -59,7 +59,8 @@ void* SndFileLoader::AllocateMemoryForAudioSource(const std::string& pathToFile,
         break;
     }
     default:
-        assert(false); // Unsupported channel count
+        ext_assert(
+            false, "SndFileLoader::AllocateMemoryForAudioSource: Unsupported channel count: " + std::to_string(sfinfo.channels));
     }
 
     outAudioInfo.mSampleRate = sfinfo.samplerate;
@@ -69,7 +70,8 @@ void* SndFileLoader::AllocateMemoryForAudioSource(const std::string& pathToFile,
     membuf = static_cast<short*>(malloc((size_t)(sfinfo.frames * sfinfo.channels) * sizeof(short)));
 
     num_frames = sf_readf_short(sndfile, membuf, sfinfo.frames);
-    assert(num_frames >= 1); // Failed to read samples
+    ext_assert(
+        num_frames >= 1, "SndFileLoader::AllocateMemoryForAudioSource: Failed to read samples from audio file: " + pathToFile);
     outAudioInfo.mNumBytes = (ALsizei)(num_frames * sfinfo.channels) * (ALsizei)sizeof(short);
 
     sf_close(sndfile);

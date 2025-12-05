@@ -50,7 +50,7 @@ std::shared_ptr<Skin> ParticlesAllocationPolicy::AllocateMemory(const ParticlePo
             }
         }
 
-        assert(vertexVBO);
+        ext_assert(vertexVBO, "ParticlesAllocationPolicy::AllocateMemory: Vertex position VBO is required");
         vao->AddVBO(vertexVBO);
         vao->BindBuffersToVao();
 

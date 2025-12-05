@@ -18,7 +18,7 @@ EngineConfigHolder::EngineConfigHolder()
 
 void EngineConfigHolder::LoadSettings(const std::string& pathToSettings)
 {
-    assert(!bSettingsLoaded);
+    ext_assert(!bSettingsLoaded, "EngineConfigHolder::LoadSettings: Settings already loaded");
     FileFacade fileLoader;
     fileLoader.OpenAndReadFile(pathToSettings);
     const auto& configFileLines = fileLoader.GetFileSrc();
@@ -41,7 +41,7 @@ void EngineConfigHolder::FillEngineConfig(const std::list<std::string>& configLi
 
     const auto parseStringVector = [](const std::string& valueStr) -> std::vector<std::string> {
         auto vectorItems = Split(valueStr, ';');
-        assert(vectorItems.size());
+        ext_assert(vectorItems.size(), "EngineConfigHolder::FillEngineConfig: Empty string vector");
         std::transform(vectorItems.begin(), vectorItems.end(), vectorItems.begin(), [](const auto& item) -> std::string {
             return Trim(item);
         });
@@ -143,13 +143,13 @@ void EngineConfigHolder::FillEngineConfig(const std::list<std::string>& configLi
 std::pair<std::string, std::string> EngineConfigHolder::GetKeyValueConfigFromLine(const std::string& line) const
 {
     const auto& splitKeyValue = Split(line, ':');
-    assert(splitKeyValue.size() == 2);
+    ext_assert(splitKeyValue.size() == 2, "EngineConfigHolder::GetKeyValueConfigFromLine: Invalid config line: " + line);
     return std::make_pair(Trim(splitKeyValue[0]), Trim(splitKeyValue[1]));
 }
 
 const EngineConfig& EngineConfigHolder::GetEngineConfig() const
 {
-    assert(bSettingsLoaded);
+    ext_assert(bSettingsLoaded, "EngineConfigHolder::GetEngineConfig: Settings not loaded");
     return mEngineConfig;
 }
 } // namespace EngineUtility

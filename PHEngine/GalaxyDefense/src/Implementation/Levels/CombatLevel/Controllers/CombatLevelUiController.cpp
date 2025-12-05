@@ -60,7 +60,7 @@ void CombatLevelUiController::CleanUp()
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             const auto& luaScriptExecutor = std::dynamic_pointer_cast<LuaCombatLevelUiControllerExecutor>(
                 luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
-            assert(luaScriptExecutor);
+            ext_assert(luaScriptExecutor, "CombatLevelUiController lua script executor is null in CleanUp");
             luaScriptExecutor->StopScript();
             luaScriptProcessorSp->UnregisterLuaScriptExecutor(mExecutorId);
         }
@@ -71,13 +71,15 @@ void CombatLevelUiController::CleanUp()
 
 void CombatLevelUiController::RestartLuaScripts()
 {
-    assert(!ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+    ext_assert(
+        !ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        "CombatLevelUiController::RestartLuaScripts cannot be called from Lua thread");
 
     if (const auto& sceneSp = mSceneWp.lock()) {
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             const auto& luaScriptExecutor = std::dynamic_pointer_cast<LuaCombatLevelUiControllerExecutor>(
                 luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
-            assert(luaScriptExecutor);
+            ext_assert(luaScriptExecutor, "CombatLevelUiController lua script executor is null in RestartLuaScripts");
             luaScriptExecutor->SetIsEnabled(false);
             mOverlayManager->CleanUp();
             static constexpr uint64_t functionId = Hash64_CT("CombatLevelUiController::RestartLuaScripts");

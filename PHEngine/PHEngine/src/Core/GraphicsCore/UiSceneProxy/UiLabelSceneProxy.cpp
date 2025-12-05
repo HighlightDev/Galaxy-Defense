@@ -1,5 +1,6 @@
 #include "UiLabelSceneProxy.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/Common/UniqueFontTextIdGenerator.h"
@@ -240,9 +241,13 @@ void UiLabelSceneProxy::onTextChanged()
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneSp = sceneWp.lock()) {
                     const auto uiItem = sceneSp->GetUiHandler()->GetUiItemByUId(uiItemUId);
-                    assert(uiItem);
+                    ext_assert(
+                        uiItem, "UiLabelSceneProxy::onTextChanged: UiItem not found for UId: " + std::to_string(uiItemUId));
                     const auto labelSp = std::dynamic_pointer_cast<UiLabel>(uiItem);
-                    assert(labelSp);
+                    ext_assert(
+                        labelSp,
+                        "UiLabelSceneProxy::onTextChanged: Failed to cast UiItem to UiLabel for UId: "
+                            + std::to_string(uiItemUId));
                     labelSp->SetTextNormalizedSize(createdMeshTextWidthHeightNormalized);
                     labelSp->SetTextScreenSpaceSize(createdMeshTextWidthHeightScreenSpace);
                 }

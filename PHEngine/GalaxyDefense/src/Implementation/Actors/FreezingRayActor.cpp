@@ -104,7 +104,7 @@ std::vector<std::shared_ptr<PhysicsComponent>> FreezingRayActor::CreateExcludedC
 void FreezingRayActor::Tick(const float deltaTimeSec)
 {
     MissileActor::Tick(deltaTimeSec);
-    assert(mLineComponent);
+    ext_assert(mLineComponent, "FreezingRayActor line component is null");
 
     if (const auto& sceneSp = mSceneOwner.lock()) {
         if (const auto& actorWhoSpawnedMeSp = mActorWhoSpawnedMeWp.lock()) {
@@ -130,7 +130,9 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                         [this](const auto& leftActorId, const auto& rightActorId) {
                             const auto& leftShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(leftActorId);
                             const auto& rightShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(rightActorId);
-                            assert(leftShipActor && rightShipActor);
+                            ext_assert(
+                                leftShipActor && rightShipActor,
+                                "FreezingRayActor left or right ship actor is null during distance comparison");
                             const auto sqrDistanceToLeft
                                 = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), mFreezingLineBegin);
                             const auto sqrDistanceToRight
@@ -139,13 +141,15 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                         });
                     if (foundNearestIt != descriptorActorIds.end()) {
                         const auto& collidedActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
-                        assert(collidedActor);
+                        ext_assert(collidedActor, "FreezingRayActor collided actor is null");
                         const bool mCollideWithOldActor
                             = mLastCollidedActorId == collidedActor->GetObjectId() || mSwitchTargetMinTimer->IsRunning();
                         if (mCollideWithOldActor) {
                             const auto& previousCollidedActor
                                 = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
-                            assert(previousCollidedActor);
+                            ext_assert(
+                                previousCollidedActor,
+                                "FreezingRayActor previous collided actor is null when colliding with old actor");
                             SendShootRayCollisionEvent(
                                 previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
                             mFreezingLineEnd = previousCollidedActor->GetRootComponent()->GetTranslation();
@@ -153,7 +157,9 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                             if (mLastCollidedActorId != -1) {
                                 const auto& previousCollidedActor
                                     = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
-                                assert(previousCollidedActor);
+                                ext_assert(
+                                    previousCollidedActor,
+                                    "FreezingRayActor previous collided actor is null when switching targets");
                                 SendShootRayCollisionEvent(
                                     previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
                             }
@@ -170,7 +176,8 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                     if (mLastCollidedActorId != -1) {
                         const auto& previousCollidedActor
                             = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
-                        assert(previousCollidedActor);
+                        ext_assert(
+                            previousCollidedActor, "FreezingRayActor previous collided actor is null when finishing collision");
                         SendShootRayCollisionEvent(
                             previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
                         mLastCollidedActorId = -1;

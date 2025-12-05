@@ -31,7 +31,9 @@ ScreenRayCaster::GetNormalizedScreenSpacePosition(const glm::ivec2& screenSpaceP
 
 glm::vec4 ScreenRayCaster::GetViewSpaceRay(const glm::vec4& clippedSpacePosition, const glm::mat4& projectionMatrix) const
 {
-    assert(!EngineMath::FloatsNearEqual(glm::determinant(projectionMatrix), 0.0f));
+    ext_assert(
+        !EngineMath::FloatsNearEqual(glm::determinant(projectionMatrix), 0.0f),
+        "ScreenRayCaster::GetViewSpaceRay: Projection matrix is singular");
     const auto& invProjectionMatrix = glm::inverse(projectionMatrix);
     const auto viewSpacePosition = invProjectionMatrix * clippedSpacePosition;
     return glm::vec4(viewSpacePosition.x, viewSpacePosition.y, -1.0f, 0.0f);
@@ -39,7 +41,9 @@ glm::vec4 ScreenRayCaster::GetViewSpaceRay(const glm::vec4& clippedSpacePosition
 
 glm::vec3 ScreenRayCaster::GetWorldSpaceRay(const glm::vec4& viewSpaceVec, const glm::mat4& viewMatrix) const
 {
-    assert(!EngineMath::FloatsNearEqual(glm::determinant(viewMatrix), 0.0f));
+    ext_assert(
+        !EngineMath::FloatsNearEqual(glm::determinant(viewMatrix), 0.0f),
+        "ScreenRayCaster::GetWorldSpaceRay: View matrix is singular");
     const auto& invViewMatrix = glm::transpose(viewMatrix); // instead of inverse do transpose because view matrix is orthogonal
     const auto& worldSpaceVec = invViewMatrix * viewSpaceVec;
     const auto& nWorldSpaceRay = glm::normalize(glm::vec3(worldSpaceVec.x, worldSpaceVec.y, worldSpaceVec.z));

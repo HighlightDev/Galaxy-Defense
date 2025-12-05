@@ -38,7 +38,7 @@ void RuntimeGeneratedQuadraticBezierCurveSceneProxy::UpdateGeometry(const glm::m
         auto* const verticesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
         auto* const textureCoordinatesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
 
-        assert(verticesVBO && textureCoordinatesVBO);
+        ext_assert(verticesVBO && textureCoordinatesVBO, "Failed to get VBOs for vertices and texture coordinates");
         const float halfWidth = mLineWidth * 0.5f;
 
         // Generate curve path with quadratic Bezier function

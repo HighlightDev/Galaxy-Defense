@@ -213,7 +213,8 @@ void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper& luaWr
 void LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync(const std::tuple<std::string>& dataNames)
 {
     const std::string& resourcesNamesStr = std::get<0>(dataNames);
-    assert(!resourcesNamesStr.empty());
+    ext_assert(
+        !resourcesNamesStr.empty(), "LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync: resourcesNamesStr is empty");
 
     const std::vector<std::string>& resourceNames = Split(resourcesNamesStr, ',');
 
@@ -228,7 +229,7 @@ void LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync(const std::tuple<s
 void LuaEngineObjectsCreatorFunctions::OpenAudioStreams(const std::tuple<std::string>& dataNames)
 {
     const std::string& audioNamesStr = std::get<0>(dataNames);
-    assert(!audioNamesStr.empty());
+    ext_assert(!audioNamesStr.empty(), "LuaEngineObjectsCreatorFunctions::OpenAudioStreams: audioNamesStr is empty");
 
     const std::vector<std::string>& audioNames = Split(audioNamesStr, ',');
     for (std::string audioName : audioNames) {
@@ -328,9 +329,9 @@ void LuaEngineObjectsCreatorFunctions::SetCameraThirdPersonTarget(
     const std::tuple<std::string /*camera name*/, std::string /*third person actor name*/>& cameraData)
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LuaEngineObjectsCreatorFunctions::SetCameraThirdPersonTarget: scene pointer is null");
     const auto& cameraSp = std::dynamic_pointer_cast<ThirdPersonCamera>(sceneSp->GetCamera(std::get<0>(cameraData)));
-    assert(cameraSp);
+    ext_assert(cameraSp, "LuaEngineObjectsCreatorFunctions::SetCameraThirdPersonTarget: camera pointer is null");
     cameraSp->SetThirdPersonTargetDeferred(std::get<1>(cameraData));
 }
 
@@ -341,7 +342,7 @@ int32_t LuaEngineObjectsCreatorFunctions::CreateMaterial(const std::tuple<std::s
     const std::string& materialName = std::get<0>(buildMaterial);
     const std::shared_ptr<IMaterial>& material = materialParser.ParseMaterialDescriptor(materialName);
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LuaEngineObjectsCreatorFunctions::CreateMaterial: scene pointer is null");
     sceneSp->RegisterMaterialInstance(material);
     return material->MaterialProxyId;
 }
@@ -352,9 +353,9 @@ void LuaEngineObjectsCreatorFunctions::SetTextureToMaterial(
 {
     const auto materialId = std::get<0>(setTextureToMaterial);
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LuaEngineObjectsCreatorFunctions::SetTextureToMaterial: scene pointer is null");
     const auto materialSp = sceneSp->GetMaterialByProxyId(materialId);
-    assert(materialSp);
+    ext_assert(materialSp, "LuaEngineObjectsCreatorFunctions::SetTextureToMaterial: material pointer is null");
     const std::string& textureNames = std::get<1>(setTextureToMaterial);
     const std::string& propertyName = std::get<2>(setTextureToMaterial);
     const auto& texture = TexturePool::GetInstance()->GetOrAllocateResource(textureNames);
@@ -369,9 +370,9 @@ void LuaEngineObjectsCreatorFunctions::SetDeferredTextureToMaterial(const std::t
 {
     const auto materialId = std::get<0>(data);
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LuaEngineObjectsCreatorFunctions::SetDeferredTextureToMaterial: scene pointer is null");
     const auto materialSp = sceneSp->GetMaterialByProxyId(materialId);
-    assert(materialSp);
+    ext_assert(materialSp, "LuaEngineObjectsCreatorFunctions::SetDeferredTextureToMaterial: material pointer is null");
     const std::string& resourceCreatorName = std::get<1>(data);
     const std::string& propertyName = std::get<2>(data);
 
@@ -389,9 +390,9 @@ void LuaEngineObjectsCreatorFunctions::SetFloatToMaterial(
 {
     const auto materialId = std::get<0>(setFloatValueToMaterial);
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LuaEngineObjectsCreatorFunctions::SetFloatToMaterial: scene pointer is null");
     const auto materialSp = sceneSp->GetMaterialByProxyId(materialId);
-    assert(materialSp);
+    ext_assert(materialSp, "LuaEngineObjectsCreatorFunctions::SetFloatToMaterial: material pointer is null");
     float value = std::get<1>(setFloatValueToMaterial);
     const std::string& propertyName = std::get<2>(setFloatValueToMaterial);
     MaterialPropertySetter::SetMaterialPropertyValue(materialSp, propertyName, value);
@@ -403,9 +404,9 @@ void LuaEngineObjectsCreatorFunctions::SetBindingToMaterial(
 {
     const auto materialId = std::get<0>(setBindingToMaterial);
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LuaEngineObjectsCreatorFunctions::SetBindingToMaterial: scene pointer is null");
     const auto materialSp = sceneSp->GetMaterialByProxyId(materialId);
-    assert(materialSp);
+    ext_assert(materialSp, "LuaEngineObjectsCreatorFunctions::SetBindingToMaterial: material pointer is null");
     const std::string& gameObjectName = std::get<1>(setBindingToMaterial);
     const std::string& gamePropertyName = std::get<2>(setBindingToMaterial);
     const std::string& bindingName = std::get<3>(setBindingToMaterial);
@@ -419,9 +420,9 @@ void LuaEngineObjectsCreatorFunctions::SetVec3ToMaterial(
 {
     const auto materialId = std::get<0>(setVec3ToMaterial);
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LuaEngineObjectsCreatorFunctions::SetVec3ToMaterial: scene pointer is null");
     const auto materialSp = sceneSp->GetMaterialByProxyId(materialId);
-    assert(materialSp);
+    ext_assert(materialSp, "LuaEngineObjectsCreatorFunctions::SetVec3ToMaterial: material pointer is null");
     const auto& jsonObj = nlohmann::json::parse(std::get<1>(setVec3ToMaterial));
     const glm::vec3 value = nlohmann_utilities::GetXyzFromJsonMap(jsonObj);
     const std::string& propertyName = std::get<2>(setVec3ToMaterial);
@@ -436,10 +437,10 @@ LuaEngineObjectsCreatorFunctions::CreateTweener(const std::tuple<int32_t /*Actor
 
     if (const auto& sceneSp = mSceneWp.lock()) {
         const auto actorSp = sceneSp->GetActorById(actorId);
-        assert(actorSp);
+        ext_assert(actorSp, "LuaEngineObjectsCreatorFunctions::CreateTweener: actor pointer is null");
         TweenerParser fsmParser;
         const auto& tweener = fsmParser.ParseTweenerDescriptor(std::get<1>(tweenerData));
-        assert(tweener);
+        ext_assert(tweener, "LuaEngineObjectsCreatorFunctions::CreateTweener: tweener pointer is null");
         actorSp->AttachTweener(tweener);
         return tweener->GetId();
     }
@@ -459,9 +460,9 @@ void LuaEngineObjectsCreatorFunctions::SetTweenerBinding(const std::tuple<
     const auto tweenerId = std::get<1>(tweenerData);
     if (const auto& sceneSp = mSceneWp.lock()) {
         const auto actorSp = sceneSp->GetActorById(actorId);
-        assert(actorSp);
+        ext_assert(actorSp, "LuaEngineObjectsCreatorFunctions::SetTweenerBinding: actor pointer is null");
         const auto tweenerSp = actorSp->GetTweenerById(tweenerId);
-        assert(tweenerSp);
+        ext_assert(tweenerSp, "LuaEngineObjectsCreatorFunctions::SetTweenerBinding: tweener pointer is null");
         const auto& gameObjectSp = sceneSp->GetEngineObjectByName(std::get<2>(tweenerData));
         const auto& bindingSp = tweenerSp->GetPropertyBindingByName(std::get<3>(tweenerData));
         BindingAttachmentBuilder::SetAttachment(gameObjectSp, bindingSp, std::get<4>(tweenerData));

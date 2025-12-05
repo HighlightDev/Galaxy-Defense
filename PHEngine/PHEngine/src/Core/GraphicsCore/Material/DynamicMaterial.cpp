@@ -68,7 +68,9 @@ void DynamicMaterial::Tick(const float deltaTimeSec)
 {
     for (auto dynProp : mDynamicProperties) {
         const auto staticProperty = GetMaterialPropertyByName(dynProp->GetPropertyName());
-        assert(staticProperty);
+        ext_assert(
+            staticProperty,
+            "DynamicMaterial::Tick: Static property not found for dynamic property: " + dynProp->GetPropertyName());
         dynProp->UpdateStaticPropertyWithDynamicValue(staticProperty);
         mDirtyProperties.push_back(staticProperty);
     }
@@ -87,7 +89,9 @@ void DynamicMaterial::PushDynamicProperty(const std::shared_ptr<DynamicMaterialP
         = std::any_of(mDynamicProperties.begin(), mDynamicProperties.end(), [&](const auto& dynamicProperty) {
               return propertyName == dynamicProperty->GetPropertyName();
           });
-    assert(!alreadyExistsWithSuchName);
+    ext_assert(
+        !alreadyExistsWithSuchName,
+        "DynamicMaterial::PushDynamicProperty: Dynamic property with such name already exists: " + propertyName);
 
     // Add static version of dynamic property
     std::shared_ptr<MaterialProperty> staticProperty;
@@ -104,7 +108,7 @@ void DynamicMaterial::PushDynamicProperty(const std::shared_ptr<DynamicMaterialP
         staticProperty = std::make_shared<InstancedFloatMaterialProperty>(propertyName);
     }
 
-    assert(staticProperty);
+    ext_assert(staticProperty, "DynamicMaterial::PushDynamicProperty: Unsupported dynamic property type: " + propertyName);
     PushMaterialProperty(staticProperty);
 
     mDynamicProperties.emplace_back(dynamicProperty);

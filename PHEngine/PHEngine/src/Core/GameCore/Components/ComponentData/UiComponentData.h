@@ -18,7 +18,7 @@ struct UiComponentData : public ComponentData {
         : ComponentData(gameObjectName)
         , Canvas(canvas)
     {
-        assert(canvas != nullptr);
+        ext_assert(canvas != nullptr, "UiComponentData::UiComponentData: canvas is null");
     }
 
     virtual ~UiComponentData()

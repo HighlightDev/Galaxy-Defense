@@ -38,7 +38,7 @@ void LevelProgressController::InitNextStage()
 
 void LevelProgressController::AddLevelProgressStage(const std::shared_ptr<LevelProgressStage>& lvlProgressStage)
 {
-    assert(!mCurrentStage);
+    ext_assert(!mCurrentStage, "Current stage already set when adding new level progress stage");
     mLevelProgressStages.emplace(lvlProgressStage);
 }
 

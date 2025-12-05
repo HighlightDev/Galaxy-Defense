@@ -3,17 +3,14 @@
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/EngineObjectProperty.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
 
 #include <glm/vec3.hpp>
 
 #include <memory>
 #include <vector>
 
-namespace EngineCore {
-class RuntimeGeneratedLineComponent;
-class StaticMeshComponent;
-struct BeamVertex;
-} // namespace EngineCore
+using namespace Graphics::Data;
 
 namespace EngineCore {
 
@@ -21,6 +18,10 @@ enum class BeamRenderMode {
     ProceduralMesh, // Use procedural geometry (more realistic, volumetric)
     ProceduralElectric // Use procedural geometry with jittered segments
 };
+
+class RuntimeGeneratedLineComponent;
+class StaticMeshComponent;
+struct BeamVertex;
 
 /**
  * Component for creating electric beam effects between two points
@@ -31,7 +32,7 @@ class ElectricBeamComponent : public PrimitiveComponent {
 
 private:
     // Mesh-based rendering
-    std::vector<std::shared_ptr<StaticMeshComponent>> mBeamMeshes;
+    std::vector<std::tuple<std::vector<BeamVertex>, std::vector<uint32_t>>> mBeamMeshes;
 
     glm::vec3 mStartPoint;
     glm::vec3 mEndPoint;
@@ -40,7 +41,6 @@ private:
     int mBeamCount;
     float mJitterAmount;
     float mUpdateFrequency;
-    bool mIsActive;
 
     BeamRenderMode mRenderMode;
     int mRadialSegments;
@@ -50,14 +50,22 @@ private:
 
     float mTimeSinceLastUpdate;
 
+    bool mIsRenderDataDirty{false};
+
+    const MeshRenderData& mRenderData;
+
 public:
-    ElectricBeamComponent(const std::string& gameObjectName);
+    ElectricBeamComponent(const std::string& gameObjectName, const MeshRenderData& renderData);
 
     ~ElectricBeamComponent() override;
 
     void Tick(const float deltaTime) override;
 
-    void Initialize() override;
+    void OnRegistered() override;
+
+    void OnUnregistered() override;
+
+    std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
     // Setters
     void SetStartPoint(const glm::vec3& point);
@@ -67,7 +75,6 @@ public:
     void SetBeamCount(int count);
     void SetJitterAmount(float amount);
     void SetUpdateFrequency(float frequency);
-    void SetActive(bool active);
     void SetGeometrySegments(int radialSegments, int lengthSegments);
     void SetAnimationSpeed(float speed);
     void SetRenderMode(BeamRenderMode mode);
@@ -80,13 +87,16 @@ public:
     int GetBeamCount() const;
     float GetJitterAmount() const;
     float GetUpdateFrequency() const;
-    bool IsActive() const;
     BeamRenderMode GetRenderMode() const;
     float GetAnimationSpeed() const;
+    int GetRadialSegments() const;
+    int GetLengthSegments() const;
+
+    const MeshRenderData& GetRenderData() const;
 
 private:
+    void SyncRenderData();
     void RegenerateBeams();
-    void UpdateBeamPositions();
     glm::vec3 GetJitteredPoint(const glm::vec3& basePoint, float jitterScale) const;
 
     // Mesh-based methods

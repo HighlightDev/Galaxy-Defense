@@ -23,7 +23,7 @@ eModifierType GravityModifier::GetModifierType() const
 int32_t GravityModifier::CreatorObjectId() const
 {
     const auto& ownerSp = mOwnerWp.lock();
-    assert(ownerSp);
+    ext_assert(ownerSp, "GravityModifier owner spaceship pointer is null");
     return ownerSp->GetObjectId();
 }
 

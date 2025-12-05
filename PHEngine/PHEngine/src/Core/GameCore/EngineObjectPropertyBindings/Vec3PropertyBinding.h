@@ -23,7 +23,7 @@ public:
 
     void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<glm::vec3>>& engineGoProperty)
     {
-        assert(engineGoProperty);
+        ext_assert(engineGoProperty, "EngineObjectProperty is null in Vec3PropertyBinding::SetEngineObjectProperty");
         mGoPropertyWp = engineGoProperty;
         bPropertyConnected = true;
     }

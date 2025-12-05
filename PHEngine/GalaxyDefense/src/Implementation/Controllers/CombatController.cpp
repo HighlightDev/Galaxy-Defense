@@ -67,7 +67,7 @@ void CombatController::OnPreLevelInit()
 void CombatController::InitFromLevelData(const LevelData& levelData)
 {
     const auto& sceneSp = mScene.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in CombatController::InitFromLevelData");
     if (!levelData.isDataValid()) {
         return;
     }
@@ -98,7 +98,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     }
     mNavigationController->SetPathRoutes(pathRoutes);
 
-    assert(pathRoutes.size() > 0);
+    ext_assert(pathRoutes.size() > 0, " No path routes found in level data in CombatController::InitFromLevelData");
     mCombatActorsPoolHandler->SpawnPortals(pathRoutes.size(), Game::Constants::c_portalSize);
     std::vector<glm::vec3> realPortalPositions;
     for (const auto& [pathName, pathRoute] : pathRoutes) {
@@ -119,7 +119,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
 
     for (const auto& portalPos : realPortalPositions) {
         const auto& portalSp = mCombatActorsPoolHandler->GetFreePortalActor();
-        assert(portalSp);
+        ext_assert(portalSp, "Failed to get free portal actor");
         portalSp->SetIsEnabled(true);
         portalSp->GetRootComponent()->SetTranslation(portalPos);
         portalSp->SetNavigationController(mNavigationController);
@@ -129,7 +129,9 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     for (const auto& [barrierName, barrierData] : levelData.BarriersData) {
         mCombatActorsPoolHandler->SpawnBarriers(1, barrierData.size());
         const auto& a_barrier = mCombatActorsPoolHandler->GetFreeBarrierActor();
-        assert(a_barrier && barrierData.size() == a_barrier->GetBarrierPillarsCount());
+        ext_assert(
+            a_barrier && barrierData.size() == a_barrier->GetBarrierPillarsCount(),
+            "Invalid barrier data in CombatController::InitFromLevelData");
         int32_t pillarIndex = 0;
         for (const auto& pillarPosition : barrierData) {
             a_barrier->TrySetBarrierPillarMeshRelativeTransform(
@@ -207,7 +209,9 @@ void CombatController::OnCombatPreparationCompleted()
 {
     const auto& spawnPortals = mCombatActorsPoolHandler->GetPortalActors();
     const auto& pathNames = mNavigationController->GetPathNames();
-    assert(pathNames.size() >= spawnPortals.size());
+    ext_assert(
+        pathNames.size() >= spawnPortals.size(),
+        "Not enough paths for spawn portals in CombatController::OnCombatPreparationCompleted");
     for (int i = 0; i < pathNames.size(); ++i) {
         const auto& pathName = pathNames[i];
         const Path& path = mNavigationController->GetPath(pathName);
@@ -229,7 +233,7 @@ void CombatController::OnReadyToShoot()
     const auto& projectileMarkerPosition = mUserInteractionController->GetProjectileMarkerPosition();
     const auto selectedSpaceStationId = mUserInteractionController->GetSelectedSpaceStationId();
     const auto& activeSpaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(selectedSpaceStationId);
-    assert(activeSpaceStationActor);
+    ext_assert(activeSpaceStationActor, "Active space station actor not found");
     const auto& activeSpaceStationPosition = activeSpaceStationActor->GetRootComponent()->GetTranslation();
     const auto& projectileShootDirection = glm::normalize(projectileMarkerPosition - activeSpaceStationPosition);
     const auto selectedMissileType = PlayerDataProvider::GetInstance()->GetSelectedMissileType();
@@ -394,7 +398,7 @@ void CombatController::ProcessEvent(
             : eGameObjectsType::NEUTRAL_SPACE_OBJECT == srcActorGameObjectType
                 ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
                 : nullptr;
-        assert(srcCollisionActor);
+        ext_assert(srcCollisionActor, "Source collision actor not found");
         for (const auto& collidedActorId : collidedActorIds) {
             const auto& gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedActorId);
             if (eGameObjectsType::UNDEFINED != gameObjectType) {
@@ -504,7 +508,7 @@ void CombatController::LaunchMisile(
     const eMissileType missileType)
 {
     const auto& missile = mCombatActorsPoolHandler->GetFreeMissile(missileType);
-    assert(missile);
+    ext_assert(missile, "Failed to get free missile from pool");
     const auto yawRad = std::atan2(missileDirection.x, missileDirection.z);
     const auto yawDeg = RAD_TO_DEG(yawRad);
     missile->TriggerSpawn(missileStartPosition, missileDirection, yawDeg, eDamageDealerType::MAIN_PLAYER, missileOwner);
@@ -610,7 +614,7 @@ void CombatController::ProcessAiAction()
                     [this, spaceStationTranslation](const auto& leftActorId, const auto& rightActorId) {
                         const auto& leftShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(leftActorId);
                         const auto& rightShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(rightActorId);
-                        assert(leftShipActor && rightShipActor);
+                        ext_assert(leftShipActor && rightShipActor, "Failed to find enemy ship actors for distance comparison");
                         const auto sqrDistanceToLeft
                             = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
                         const auto sqrDistanceToRight
@@ -619,7 +623,7 @@ void CombatController::ProcessAiAction()
                     });
                 if (foundNearestIt != descriptorActorIds.end()) {
                     const auto gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(*foundNearestIt);
-                    assert(eGameObjectsType::SPACESHIP == gameObjectType);
+                    ext_assert(eGameObjectsType::SPACESHIP == gameObjectType, "Expected game object type to be SPACESHIP");
                     const auto& nearestEnemy = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
                     const auto& enemyPosition = nearestEnemy->GetRootComponent()->GetTranslation();
                     const auto& projectileShootDirection = glm::normalize(enemyPosition - spaceStationTranslation);

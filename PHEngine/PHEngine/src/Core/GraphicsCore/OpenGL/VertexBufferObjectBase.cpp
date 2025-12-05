@@ -1,5 +1,6 @@
 #include "VertexBufferObjectBase.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/ThreadHelper.h"
 
 namespace Graphics {
@@ -16,7 +17,9 @@ VertexBufferObjectBase::~VertexBufferObjectBase()
 
 void VertexBufferObjectBase::GenBuffer()
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "GenBuffer must be called from Render thread");
     glGenBuffers(1, &m_descriptor);
 }
 
@@ -47,7 +50,7 @@ std::string VertexBufferObjectBase::GetAttribArrayIndexName() const
 
 void VertexBufferObjectBase::BufferSubData(const size_t offset, const size_t size, const void* data) const
 {
-    assert(m_allocatedBufferSize >= size);
+    ext_assert(m_allocatedBufferSize >= size, "Buffer size exceeds allocated buffer size");
     glBufferSubData(m_bufferTarget, offset, size, data);
 }
 

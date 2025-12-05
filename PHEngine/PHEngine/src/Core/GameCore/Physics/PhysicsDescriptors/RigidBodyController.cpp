@@ -72,7 +72,7 @@ void RigidBodyController::CompletePhysicsDescriptorConstruction()
         mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
         break;
     case ePhysicsBodyType::STATIC:
-        assert(EngineMath::FloatsNearEqual(mMass, 0.0f));
+        ext_assert(EngineMath::FloatsNearEqual(mMass, 0.0f), "Static body must have zero mass");
         break;
     }
 

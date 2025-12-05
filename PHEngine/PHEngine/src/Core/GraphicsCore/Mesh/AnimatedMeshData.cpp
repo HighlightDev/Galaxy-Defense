@@ -1,5 +1,6 @@
 #include "AnimatedMeshData.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/Transform.h"
 
 #include <glm/gtx/compatibility.hpp>
@@ -60,8 +61,12 @@ std::map<std::string, AnimatedMeshData::BoneData> AnimatedMeshData::GetBoneMappi
 {
     std::map<std::string, AnimatedMeshData::BoneData> animationBoneData;
 
-    assert(AnimationMapping.count(srcAnimationName));
-    assert(AnimationMapping.count(dstAnimationName));
+    ext_assert(
+        AnimationMapping.count(srcAnimationName),
+        "AnimatedMeshData::GetBoneMappingForBlendedAnimation: Source animation not found: " + srcAnimationName);
+    ext_assert(
+        AnimationMapping.count(dstAnimationName),
+        "AnimatedMeshData::GetBoneMappingForBlendedAnimation: Destination animation not found: " + dstAnimationName);
 
     const float srcTime = fmod(srcAnimationTime, AnimationMapping.at(srcAnimationName).AnimationDuration);
     const float dstTime = fmod(dstAnimationTime, AnimationMapping.at(dstAnimationName).AnimationDuration);
@@ -185,7 +190,7 @@ AnimatedMeshData::InterpolateScaling(float animationTime, const std::string& ani
     const std::vector<FrameScale>& scalingFrames
         = AnimationMapping.at(animationName).NodeAnimationBindings.at(nodeName).ScaleFrames;
 
-    assert(scalingFrames.size() > 0);
+    ext_assert(scalingFrames.size() > 0, "AnimatedMeshData::InterpolateScaling: No scaling frames found for node: " + nodeName);
 
     // we need at least two values to interpolate...
     if (scalingFrames.size() == 1) {
@@ -195,7 +200,9 @@ AnimatedMeshData::InterpolateScaling(float animationTime, const std::string& ani
     size_t scalingIndex = FindScalingIndex(animationTime, scalingFrames);
     size_t nextScalingIndex = scalingIndex + 1;
 
-    assert(nextScalingIndex < scalingFrames.size());
+    ext_assert(
+        nextScalingIndex < scalingFrames.size(),
+        "AnimatedMeshData::InterpolateScaling: Next scaling index out of range for node: " + nodeName);
 
     const float DeltaTime = scalingFrames[nextScalingIndex].Time - scalingFrames[scalingIndex].Time;
     const float Factor = (animationTime - scalingFrames[scalingIndex].Time) / DeltaTime;
@@ -208,7 +215,9 @@ AnimatedMeshData::InterpolateTranslation(float animationTime, const std::string&
     const std::vector<FrameTranslation>& translationFrames
         = AnimationMapping.at(animationName).NodeAnimationBindings.at(nodeName).TranslationFrames;
 
-    assert(translationFrames.size() > 0);
+    ext_assert(
+        translationFrames.size() > 0,
+        "AnimatedMeshData::InterpolateTranslation: No translation frames found for node: " + nodeName);
 
     // we need at least two values to interpolate...
     if (translationFrames.size() == 1) {
@@ -218,7 +227,9 @@ AnimatedMeshData::InterpolateTranslation(float animationTime, const std::string&
     size_t translationIndex = FindTranslationIndex(animationTime, translationFrames);
     size_t nextTranslationIndex = translationIndex + 1;
 
-    assert(nextTranslationIndex < translationFrames.size());
+    ext_assert(
+        nextTranslationIndex < translationFrames.size(),
+        "AnimatedMeshData::InterpolateTranslation: Next translation index out of range for node: " + nodeName);
 
     const float DeltaTime = translationFrames[nextTranslationIndex].Time - translationFrames[translationIndex].Time;
     const float Factor = (animationTime - translationFrames[translationIndex].Time) / DeltaTime;
@@ -232,7 +243,8 @@ AnimatedMeshData::InterpolateRotation(float animationTime, const std::string& an
     const std::vector<FrameRotation>& rotationFrames
         = AnimationMapping.at(animationName).NodeAnimationBindings.at(nodeName).RotationFrames;
 
-    assert(rotationFrames.size() > 0);
+    ext_assert(
+        rotationFrames.size() > 0, "AnimatedMeshData::InterpolateRotation: No rotation frames found for node: " + nodeName);
 
     // we need at least two values to interpolate...
     if (rotationFrames.size() == 1) {
@@ -242,7 +254,9 @@ AnimatedMeshData::InterpolateRotation(float animationTime, const std::string& an
     size_t rotationIndex = FindRotationIndex(animationTime, rotationFrames);
     size_t nextRotationIndex = rotationIndex + 1;
 
-    assert(nextRotationIndex < rotationFrames.size());
+    ext_assert(
+        nextRotationIndex < rotationFrames.size(),
+        "AnimatedMeshData::InterpolateRotation: Next rotation index out of range for node: " + nodeName);
 
     const float DeltaTime = rotationFrames[nextRotationIndex].Time - rotationFrames[rotationIndex].Time;
     const float Factor = (animationTime - rotationFrames[rotationIndex].Time) / DeltaTime;
@@ -257,7 +271,9 @@ size_t AnimatedMeshData::FindScalingIndex(const float animationTime, const std::
         }
     }
 
-    assert(0);
+    ext_assert(
+        0,
+        "AnimatedMeshData::FindScalingIndex: Could not find scaling index for animation time: " + std::to_string(animationTime));
     return 0;
 }
 
@@ -270,7 +286,10 @@ AnimatedMeshData::FindTranslationIndex(const float animationTime, const std::vec
         }
     }
 
-    assert(0);
+    ext_assert(
+        0,
+        "AnimatedMeshData::FindTranslationIndex: Could not find translation index for animation time: "
+            + std::to_string(animationTime));
     return 0;
 }
 

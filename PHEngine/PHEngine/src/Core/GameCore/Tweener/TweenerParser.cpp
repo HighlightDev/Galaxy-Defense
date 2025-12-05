@@ -62,7 +62,7 @@ GetPropertyAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHel
         } else if (EngineUtility::StartsWith(currentNodeStr, "state")) {
             property.State = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
         } else {
-            assert(false);
+            ext_assert(false, "GetPropertyAndAdvanceIt: Unknown property field: " + currentNodeStr);
         }
     }
 
@@ -89,7 +89,7 @@ GetBindingAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelp
         } else if (EngineUtility::StartsWith(currentNodeStr, "type")) {
             binding.Type = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
         } else {
-            assert(false);
+            ext_assert(false, "GetBindingAndAdvanceIt: Unknown binding field: " + currentNodeStr);
         }
     }
 
@@ -120,7 +120,7 @@ GetTransitionAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserH
         } else if (EngineUtility::StartsWith(currentNodeStr, "duration")) {
             transition.Duration = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
         } else {
-            assert(false);
+            ext_assert(false, "GetTransitionAndAdvanceIt: Unknown transition field: " + currentNodeStr);
         }
     }
 
@@ -142,7 +142,7 @@ std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string
     FileFacade fileWorker;
     fileWorker.OpenAndReadFile(absolutePath);
     const size_t sizeOfSrc = fileWorker.GetFileSourceLinesCount();
-    assert(sizeOfSrc > 0);
+    ext_assert(sizeOfSrc > 0, "ParseTweenerDescriptor: File is empty or could not be read: " + absolutePath);
 
     std::list<std::string> fileSource = fileWorker.GetFileSrc();
     std::string tweenerInnerName = "";
@@ -165,7 +165,7 @@ std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string
                 tweenerInnerName = name;
             }
         }
-        assert(tweenerInnerName != "");
+        ext_assert(tweenerInnerName != "", "ParseTweenerDescriptor: Tweener inner name is empty");
 
         auto statesStartNode = XMLParserHelper::GetItByNodeName(tweenStartNode, tweenEndNode, STATES_START_NODE_NAME);
         auto statesEndNode = XMLParserHelper::GetItByNodeName(tweenStartNode, tweenEndNode, STATES_END_NODE_NAME);
@@ -223,7 +223,7 @@ std::shared_ptr<PropertyBinding> CreatePropertyBinding(const TweenerParser::Twee
     } else if ("vec3" == binding.Type) {
         result = std::make_shared<Vec3PropertyBinding>(binding.BindingName);
     } else {
-        assert(false);
+        ext_assert(false, "CreatePropertyBinding: Unsupported binding type: " + binding.Type);
     }
 
     return result;
@@ -249,11 +249,11 @@ glm::vec3 ExtractVec3FromStrings(const std::vector<std::string>& valuesStr)
             result.z = GetTrivialValueAfterAssignOperator<float>(valueStr);
             b_zValueFound = true;
         } else {
-            assert(false);
+            ext_assert(false, "ExtractVec3FromStrings: Unknown vector component: " + trimmedValueStr);
         }
     }
 
-    assert(b_xValueFound && b_yValueFound && b_zValueFound);
+    ext_assert(b_xValueFound && b_yValueFound && b_zValueFound, "ExtractVec3FromStrings: Not all vector components were found");
 
     return result;
 }
@@ -264,7 +264,7 @@ std::unique_ptr<BaseStateProperty> CreateProperty(
 {
     std::unique_ptr<BaseStateProperty> result;
 
-    assert(bindings.count(property.BindingName));
+    ext_assert(bindings.count(property.BindingName), "CreateProperty: Binding not found: " + property.BindingName);
 
     if ("animation" == property.Type) {
         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Animation>>(
@@ -290,7 +290,7 @@ std::unique_ptr<BaseStateProperty> CreateProperty(
             vec3Value, std::static_pointer_cast<Vec3PropertyBinding>(bindings.at(property.BindingName)));
     }
 
-    assert(result);
+    ext_assert(result, "CreateProperty: Failed to create property for binding: " + property.BindingName);
 
     return result;
 }
@@ -309,7 +309,7 @@ std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string& relPathT
     auto tweener = std::make_shared<Tweener>(relPathTweener, tweenerInnerName, states[mStates[0].Name], std::move(allStates));
 
     for (const auto& item : mTransitions) {
-        assert(states.count(item.From));
+        ext_assert(states.count(item.From), "BuildTweener: Transition source state not found: " + item.From);
         auto transition = StateTransition(states.at(item.From), states.at(item.To), std::stof(item.Duration));
         states.at(item.From)->AddStateTransition(transition);
     }

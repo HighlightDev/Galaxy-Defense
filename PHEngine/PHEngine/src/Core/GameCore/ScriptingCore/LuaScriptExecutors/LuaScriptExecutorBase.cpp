@@ -24,7 +24,7 @@ LuaScriptExecutorBase::LuaScriptExecutorBase(const std::string& scriptName)
 
 void LuaScriptExecutorBase::SetScript(const std::string& scriptName)
 {
-    assert(mScriptName == "");
+    ext_assert(mScriptName == "", "LuaScriptExecutorBase::SetScript: Script name is already set");
     mScriptName = scriptName;
 }
 
@@ -40,13 +40,15 @@ size_t LuaScriptExecutorBase::GetUId() const
 
 const std::any& LuaScriptExecutorBase::GetFunctorAny(const uint64_t functionHash) const
 {
-    assert(mFunctors.count(functionHash));
+    ext_assert(mFunctors.count(functionHash), "LuaScriptExecutorBase::GetFunctorAny: Functor not found for given function hash");
     return mFunctors.at(functionHash);
 }
 
 const LuaWrapper& LuaScriptExecutorBase::GetLuaInstance() const
 {
-    assert(mLuaInstance.IsLuaScriptOpened() && mLuaInstance.GetState());
+    ext_assert(
+        mLuaInstance.IsLuaScriptOpened() && mLuaInstance.GetState(),
+        "LuaScriptExecutorBase::GetLuaInstance: Lua instance is not properly initialized");
     return mLuaInstance;
 }
 
@@ -77,10 +79,10 @@ void LuaScriptExecutorBase::AddFunctor(const uint64_t functorNameHash, const std
 
 void LuaScriptExecutorBase::RunScript()
 {
-    assert(mScriptName != "");
+    ext_assert(mScriptName != "", "LuaScriptExecutorBase::RunScript: Script name is not set");
     const auto& folderManager = FolderManager::GetInstance();
     const bool bScriptExecuted = mLuaInstance.ExecuteScript(folderManager->GetFileAbsPathByFileName(mScriptName));
-    assert(bScriptExecuted);
+    ext_assert(bScriptExecuted, "LuaScriptExecutorBase::RunScript: Script execution failed");
 
     mHasOnStart = GetLuaGlobalVariable::Value<int64_t>(mLuaInstance, "HasOnStart", -1);
     mHasOnUpdate = GetLuaGlobalVariable::Value<int64_t>(mLuaInstance, "HasOnUpdate", -1);
@@ -98,7 +100,9 @@ void LuaScriptExecutorBase::StopScript()
 void LuaScriptExecutorBase::OnUpdate(const float deltaTimeSec)
 {
     if (mHasOnUpdate) {
-        assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+        ext_assert(
+            ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+            "LuaScriptExecutorBase::OnUpdate: Current thread is not Lua thread");
         LuaFunctionInvoker<void(void*, float)>::Invoke(mLuaInstance, "System_OnUpdate", (void*)this, deltaTimeSec);
     }
 }

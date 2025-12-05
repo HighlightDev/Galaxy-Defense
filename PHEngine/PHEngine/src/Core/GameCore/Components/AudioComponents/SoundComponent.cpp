@@ -21,15 +21,13 @@ SoundComponent::SoundComponent(const std::shared_ptr<ComponentData>& data)
 
 SoundComponent::~SoundComponent()
 {
-    Component::Initialize();
-
     Event::GeneralSystemSettingsChangedGameThreadEvent::GetInstance()->RemoveListener(
         Event::GeneralSystemSettingsChangedGameThreadEvent::GetInstanceId());
 }
 
-void SoundComponent::Initialize()
+void SoundComponent::OnRegistered()
 {
-    Component::Initialize();
+    Component::OnRegistered();
 
     Event::GeneralSystemSettingsChangedGameThreadEvent::GetInstance()->AddListener(
         std::dynamic_pointer_cast<Event::GeneralSystemSettingsChangedGameThreadEvent>(shared_from_this()));
@@ -67,7 +65,7 @@ void SoundComponent::ProcessEvent(
             if ("change_value" == doneAction) {
                 if (jsonObj.contains("gain")) {
                     const float gain = nlohmann_utilities::GetFloatFromJson(jsonObj, "gain");
-                    assert(gain >= 0.0f && gain <= 1.0f);
+                    ext_assert(gain >= 0.0f && gain <= 1.0f, "Gain value out of range in SoundComponent::ProcessEvent");
                     SetGain(gain);
                 }
             }
@@ -77,7 +75,7 @@ void SoundComponent::ProcessEvent(
 
 void SoundComponent::CreateSoundBuffer(const std::string& soundFileName, const std::string& bufferName)
 {
-    assert(!mSoundBuffersMap.count(bufferName));
+    ext_assert(!mSoundBuffersMap.count(bufferName), "Sound buffer already exists with name in SoundComponent::CreateSoundBuffer");
     const auto& buffer = SoundBufferPool::GetInstance()->GetOrAllocateResource(soundFileName);
     mSoundBuffersMap.emplace(bufferName, buffer);
 }
@@ -94,13 +92,13 @@ std::shared_ptr<SoundSource> SoundComponent::GetSoundSource() const
 
 void SoundComponent::PlayBuffer(const std::string& soundName)
 {
-    assert(mSoundBuffersMap.count(soundName));
+    ext_assert(mSoundBuffersMap.count(soundName), "Sound buffer does not exist with name in SoundComponent::PlayBuffer");
     mSoundSource->Play(mSoundBuffersMap.at(soundName));
 }
 
 void SoundComponent::SetGain(const float gain)
 {
-    assert(gain >= 0.0f && gain <= 1.0f);
+    ext_assert(gain >= 0.0f && gain <= 1.0f, "Gain value out of range in SoundComponent::SetGain");
     mSoundSource->SetGain(gain);
 }
 } // namespace EngineCore

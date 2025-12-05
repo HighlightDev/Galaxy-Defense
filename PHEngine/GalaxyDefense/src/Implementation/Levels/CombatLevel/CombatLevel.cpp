@@ -81,7 +81,7 @@ CombatLevel::~CombatLevel()
 void CombatLevel::RunLuaBuildLevelScript()
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "CombatLevel scene pointer is null in RunLuaBuildLevelScript");
     LuaCombatLevelExecutor mLuaLevelBuilder = LuaCombatLevelExecutor("CombatLvl.lua", mLvlProgressController);
     mLuaLevelBuilder.SetScene(sceneSp);
     mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
@@ -93,7 +93,7 @@ void CombatLevel::RunLuaBuildLevelScript()
 void CombatLevel::PreLevelInit()
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "CombatLevel scene pointer is null in PreLevelInit");
     Base::PreLevelInit();
     mCombatController = std::make_shared<CombatController>(sceneSp);
     mUiController = std::make_unique<CombatLevelUiController>(sceneSp, mLvlProgressController);
@@ -106,13 +106,13 @@ void CombatLevel::PreLevelInit()
 LevelData CombatLevel::LoadLevelDataFromFile(const std::string& levelName) const
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "CombatLevel scene pointer is null in LoadLevelDataFromFile");
     FileFacade fileReader;
     if (fileReader.OpenAndReadFile(levelName)) {
         const auto& lvlJsonStr = fileReader.GetFileSrc().front();
         LevelSerializationHelper lvlSerializationHelper;
         const auto lvlData = lvlSerializationHelper.RestoreLevelFromJsonString(lvlJsonStr);
-        assert(lvlData.isDataValid());
+        ext_assert(lvlData.isDataValid(), "CombatLevel loaded level data is invalid");
         return lvlData;
     }
     return {};
@@ -121,12 +121,12 @@ LevelData CombatLevel::LoadLevelDataFromFile(const std::string& levelName) const
 void CombatLevel::CreateScene()
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "CombatLevel scene pointer is null in CreateScene");
 
     const auto levelData = LoadLevelDataFromFile("TestLevelName");
 
     const auto& a_sceneCenterActorDummy = sceneSp->GetActorByName("SceneCenterActorDummy");
-    assert(a_sceneCenterActorDummy);
+    ext_assert(a_sceneCenterActorDummy, "CombatLevel scene center actor dummy not found");
     const auto& spaceCamera = std::make_shared<GalaxySceneCamera>(
         "LevelMainCamera",
         eCameraType::MAIN_THIRD_PERSON_CAMERA,
@@ -154,11 +154,11 @@ void CombatLevel::CreateScene()
     spaceCamera->SetTimeForInterpolation(6e-1f);
 
     const auto& a_light = sceneSp->GetActorByName("MainLightActor");
-    assert(a_light);
+    ext_assert(a_light, "CombatLevel main light actor not found");
     std::static_pointer_cast<LightComponent>(a_light->GetComponentsByType<LightComponent>().front())->SetIsVisible(true);
 
     const auto& a_skybox = sceneSp->GetActorByName("SkyboxActor");
-    assert(a_skybox);
+    ext_assert(a_skybox, "CombatLevel skybox actor not found");
 
     MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& spaceStars_material = materialParser.ParseMaterialDescriptor("SpaceStarsMaterial.m");

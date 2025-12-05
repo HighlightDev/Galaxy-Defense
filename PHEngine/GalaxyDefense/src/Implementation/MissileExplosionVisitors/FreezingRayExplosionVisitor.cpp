@@ -59,14 +59,14 @@ void FreezingRayExplosionVisitor::StartExplosionForSpaceObject(
     const std::shared_ptr<SpaceObjectActor>& spaceObject, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
 {
     // this function should not be called, as freezing ray should not collide with space objects
-    assert(false);
+    ext_assert(false, "FreezingRay should not collide with space objects - invalid StartExplosion call");
 }
 
 void FreezingRayExplosionVisitor::EndExplosionForSpaceObject(
     const std::shared_ptr<SpaceObjectActor>& spaceObject, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
 {
     // this function should not be called, as freezing ray should not collide with space objects
-    assert(false);
+    ext_assert(false, "FreezingRay should not collide with space objects - invalid EndExplosion call");
 }
 
 void FreezingRayExplosionVisitor::AddFreezingModifier(const std::shared_ptr<SpaceshipActor>& spaceship)

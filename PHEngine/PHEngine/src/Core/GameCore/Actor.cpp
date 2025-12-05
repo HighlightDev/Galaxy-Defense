@@ -24,7 +24,7 @@ Actor::Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore
     , mTweeners()
     , m_parent()
 {
-    assert(m_rootComponent);
+    ext_assert(m_rootComponent, "Actor root component is null in Actor constructor");
     m_rootComponent->SetIsRootComponent(true);
 
     AddEngineProperty(mIsVisible);
@@ -122,7 +122,7 @@ bool Actor::HasEngineObjectIdInHierarchy(const int32_t id) const
 
 void Actor::UpdateTransform()
 {
-    assert(m_rootComponent);
+    ext_assert(m_rootComponent, "Actor root component is null in UpdateTransform");
 
     if (m_rootComponent->GetIsTransformationDirty()) {
         glm::mat4 parentRelativeMatrix(1);
@@ -143,7 +143,7 @@ void Actor::UpdateTransform()
 
 void Actor::UpdateComponentsTransform(const bool bForceUpdate)
 {
-    assert(m_rootComponent);
+    ext_assert(m_rootComponent, "Actor root component is null in UpdateComponentsTransform");
 
     if (m_allComponents.size()) {
         auto parentRelativeMatrix = m_rootComponent->GetRelativeMatrix();
@@ -419,7 +419,7 @@ void Actor::AttachTweener(std::shared_ptr<Tweener> newTweener)
     auto it = std::find_if(mTweeners.begin(), mTweeners.end(), [=](const auto& tweener) {
         return tweener->GetTweenerName() == newTweener->GetTweenerName();
     });
-    assert(it == mTweeners.end());
+    ext_assert(it == mTweeners.end(), "Tweener with the same name already attached to Actor");
     newTweener->SetParentActor(shared_from_this());
     mTweeners.emplace_back(newTweener);
 }

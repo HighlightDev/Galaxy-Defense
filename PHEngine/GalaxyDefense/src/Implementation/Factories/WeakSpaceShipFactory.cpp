@@ -194,7 +194,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     scene->AddActorController(std::make_shared<AiSpaceshipActorController>(a_enemySpaceship));
 
     const auto& hudCanvas = scene->GetUiHandler()->GetHudCanvas();
-    assert(hudCanvas != nullptr);
+    ext_assert(hudCanvas != nullptr, "HUD canvas is null in WeakSpaceShipFactory");
     const auto& uiComponentCreator = std::make_shared<UiComponentCreator<SpaceObjectUiComponent>>();
     const auto& c_uiComponent = std::static_pointer_cast<SpaceObjectUiComponent>(scene->CreateComponent_GameThread(
         uiComponentCreator,

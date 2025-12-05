@@ -31,10 +31,10 @@ void HumanoidPlayerController::Initialize()
 
     const auto& actorSp = m_actorWp.lock();
     const auto& rootComponent = actorSp->GetBaseRootComponent();
-    assert(rootComponent);
+    ext_assert(rootComponent, "HumanoidPlayerController::Initialize: rootComponent is null");
 
     m_inputComponent = actorSp->GetInputComponent();
-    assert(m_inputComponent);
+    ext_assert(m_inputComponent, "HumanoidPlayerController::Initialize: inputComponent is null");
 
     PlayerMovedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
 }

@@ -22,7 +22,7 @@ void FolderManager::BuildSystemPathToFolders()
 {
     // Root folder
     m_pathToExe = EngineUtility::GetExecutablePath();
-    assert(m_pathToExe != "");
+    ext_assert(m_pathToExe != "", "FolderManager::BuildSystemPathToFolders: m_pathToExe is empty");
 
     CreateFilePathMap(GetAlbedoTexturePath(), GetShortAlbedoTexturePath());
     CreateFilePathMap(GetNormalMapPath(), GetShortNormalMapPath());
@@ -79,7 +79,7 @@ std::string FolderManager::GetFileAbsPathByFileName(const std::string& fileName)
 
 std::string FolderManager::GetPathToExeFile() const
 {
-    assert(m_pathToExe != ""); // if assert has fired, maybe you forget to invoke BuildSystemPathToFolders
+    ext_assert(m_pathToExe != "", "FolderManager::GetPathToExeFile: forgot to invoke BuildSystemPathToFolders");
 #ifdef _WIN32
     return m_pathToExe + SLASH;
 #elif __linux__

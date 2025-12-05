@@ -723,6 +723,29 @@ _SetCameraThirdPersonTarget("MainCamera", "Player")
 
 **Параметры:**
 - `cameraName` (string) - имя камеры
+- `viewport` (ivec4) - координаты вьюпорта {x, y, width, height}
+- `viewProjectionJson` (string) - параметры проекции в JSON
+- `initPitch` (float) - начальный угол наклона
+- `initYaw` (float) - начальный угол поворота
+- `initPosition` (vec3) - начальная позиция
+- `isMainCamera` (integer) - 1 если основная камера
+
+**Пример:**
+```lua
+_CreateFirstPersonCamera(
+    "FPSCamera",
+    {0, 0, 1920, 1080},
+    '{"fov": 90, "near": 0.1, "far": 1000}',
+    0.0,   -- pitch
+    0.0,   -- yaw
+    {0, 1.7, 0},  -- position (eye level)
+    1      -- is main
+)
+```
+Создает камеру от первого лица.
+
+**Параметры:**
+- `cameraName` (string) - имя камеры
 - `viewport` (ivec4) - координаты вьюпорта
 - `viewProjectionJson` (string) - параметры проекции в JSON
 - `initPitch` (float) - начальный угол наклона

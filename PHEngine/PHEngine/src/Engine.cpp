@@ -215,8 +215,10 @@ void Engine::UnloadCurrentLevel()
 void Engine::PlayLevel(const std::string& levelName)
 {
     LogInfo("Engine::PlayLevel: ", levelName);
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
-    assert(m_levelFactory);
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "Engine::PlayLevel must be called from Render thread");
+    ext_assert(m_levelFactory, "Level factory is not initialized");
 
     if (!m_level || (m_level->GetLevelName() != levelName)) {
         bLevelIsLoading.store(true, std::memory_order::seq_cst);
@@ -226,7 +228,7 @@ void Engine::PlayLevel(const std::string& levelName)
         }
 
         const auto newLevel = m_levelFactory->CreateLevel(levelName);
-        assert(newLevel);
+        ext_assert(newLevel, "Failed to create level: " + levelName);
         m_level.reset();
         m_level = newLevel;
         m_level->SetScene(m_scene);
@@ -243,9 +245,11 @@ void Engine::PlayLevel(const std::string& levelName)
 void Engine::RestartLevel()
 {
     LogInfo("Engine::RestartLevel");
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
-    assert(m_levelFactory);
-    assert(m_level);
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "Engine::RestartLevel must be called from Render thread");
+    ext_assert(m_levelFactory, "Level factory is not initialized");
+    ext_assert(m_level, "Current level is null, cannot restart");
 
     bLevelIsLoading.store(true, std::memory_order::seq_cst);
     bPauseGameThreadExecution.store(false, std::memory_order::seq_cst);
@@ -253,7 +257,7 @@ void Engine::RestartLevel()
     UnloadCurrentLevel();
 
     const auto newLevel = m_levelFactory->CreateLevel(currentLevelName);
-    assert(newLevel);
+    ext_assert(newLevel, "Failed to create level on restart: " + currentLevelName);
     m_level.reset();
     m_level = newLevel;
     m_level->SetScene(m_scene);

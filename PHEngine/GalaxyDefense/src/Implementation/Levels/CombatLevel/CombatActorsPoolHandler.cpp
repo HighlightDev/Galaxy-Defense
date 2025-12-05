@@ -60,7 +60,7 @@ std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::CreateSpaceStationAc
     const std::string& towerName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale)
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in CreateSpaceStationActor");
     const SpaceStationFactory spaceStationFactory;
     return mSpaceStations.emplace_back(spaceStationFactory.CreateSpaceStation(sceneSp, towerName, translation, rotation, scale));
 }
@@ -68,7 +68,7 @@ std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::CreateSpaceStationAc
 std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayChainActor()
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in SpawnElectroRayChainActor");
 
     ElectroRayChainFactory factory;
     const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(std::static_pointer_cast<ElectroRayChainActor>(
@@ -87,7 +87,7 @@ void CombatActorsPoolHandler::SpawnEnemySpaceships(const int32_t count)
 std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor() const
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in SpawnSpaceshipActor");
     WeakSpaceShipFactory spaceShipFactory;
 
     return mEnemySpaceships.emplace_back(spaceShipFactory.CreateSpaceShip(
@@ -125,14 +125,14 @@ const std::vector<std::shared_ptr<PortalActor>> CombatActorsPoolHandler::GetPort
 void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count)
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in SpawnMissiles");
     const auto& missileFactory = GetMissileFactoryByType(missileType);
-    assert(missileFactory);
+    ext_assert(missileFactory, "Missile factory not found for missile type");
 
     for (int32_t i = 0; i < count; ++i) {
         const auto& missile = mMissilesPool.emplace_back(
             missileFactory->CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
-        assert(missile);
+        ext_assert(missile, "Failed to create missile");
         missile->SetIsEnabled(false);
     }
 }
@@ -140,7 +140,7 @@ void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, cons
 void CombatActorsPoolHandler::SpawnAsteroids(const int32_t count)
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in SpawnAsteroids");
     const auto& asteroidsFactory = std::make_unique<AsteroidFactory>();
     const auto& asteroid
         = mSpaceObjectsPool.emplace_back(asteroidsFactory->CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
@@ -150,7 +150,7 @@ void CombatActorsPoolHandler::SpawnAsteroids(const int32_t count)
 void CombatActorsPoolHandler::SpawnBarriers(const int32_t barriersCount, const int32_t pillarsCount)
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in SpawnBarriers");
     const auto& barriersFactory = std::make_unique<BarrierFactory>();
     for (int32_t i = 0; i < barriersCount; ++i) {
         const auto& barrier = mBarriersPool.emplace_back(
@@ -162,7 +162,7 @@ void CombatActorsPoolHandler::SpawnBarriers(const int32_t barriersCount, const i
 void CombatActorsPoolHandler::SpawnPortals(const int32_t count, const float portalSize)
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in SpawnPortals");
     const auto& portalsFactory = std::make_unique<SpawnPortalFactory>();
     for (int32_t i = 0; i < count; ++i) {
         const auto& portal = mSpawnPortals.emplace_back(
@@ -274,7 +274,7 @@ eGameObjectsType CombatActorsPoolHandler::GetGameObjectTypeByActorId(const int32
                 ? eGameObjectsType::NEUTRAL_SPACE_OBJECT
                 : GetSpaceStationOwnerActorById(actorId) ? eGameObjectsType::SPACE_STATION : eGameObjectsType::UNDEFINED;
 
-    assert(eGameObjectsType::UNDEFINED != result);
+    ext_assert(eGameObjectsType::UNDEFINED != result, "Game object type is UNDEFINED for actor ID");
 
     return result;
 }
@@ -303,7 +303,7 @@ std::vector<std::shared_ptr<PhysicsComponent>> CombatActorsPoolHandler::GetSpace
     physicsComponents.reserve(mSpaceStations.size());
     std::transform(
         mSpaceStations.cbegin(), mSpaceStations.cend(), std::back_inserter(physicsComponents), [](const auto& spaceStationActor) {
-            assert(spaceStationActor->GetPhysicsComponent());
+            ext_assert(spaceStationActor->GetPhysicsComponent(), "Space station physics component is null");
             return spaceStationActor->GetPhysicsComponent();
         });
     return physicsComponents;
@@ -315,7 +315,7 @@ std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> CombatActorsPool
     physicsComponents.reserve(mEnemySpaceships.size());
     std::transform(
         mEnemySpaceships.cbegin(), mEnemySpaceships.cend(), std::back_inserter(physicsComponents), [](const auto& spaceship) {
-            assert(spaceship->GetPhysicsComponent());
+            ext_assert(spaceship->GetPhysicsComponent(), "Spaceship physics component is null");
             return spaceship->GetPhysicsComponent();
         });
     return physicsComponents;
@@ -333,10 +333,16 @@ CombatActorsPoolHandler::GetMissilePhysicsComponents(const eMissileType missileT
         if (missileType == missile->GetMissileType()) {
             if (eMissileType::BLACK_HOLE == missileType) {
                 const auto& blackHoleMissile = std::static_pointer_cast<BlackHoleMissileActor>(missile);
-                assert(physicsComponents.emplace_back(blackHoleMissile->GetCombatActivePhaseActor()->GetPhysicsComponent()));
-                assert(physicsComponents.emplace_back(blackHoleMissile->GetExplosionPhaseActor()->GetPhysicsComponent()));
+                ext_assert(
+                    physicsComponents.emplace_back(blackHoleMissile->GetCombatActivePhaseActor()->GetPhysicsComponent()),
+                    "Failed to get combat active phase physics component in GetMissilePhysicsComponents");
+                ext_assert(
+                    physicsComponents.emplace_back(blackHoleMissile->GetExplosionPhaseActor()->GetPhysicsComponent()),
+                    "Failed to get explosion phase physics component in GetMissilePhysicsComponents");
             } else {
-                assert(physicsComponents.emplace_back(missile->GetPhysicsComponent()));
+                ext_assert(
+                    physicsComponents.emplace_back(missile->GetPhysicsComponent()),
+                    "Failed to get physics component in GetMissilePhysicsComponents");
             }
         }
     }

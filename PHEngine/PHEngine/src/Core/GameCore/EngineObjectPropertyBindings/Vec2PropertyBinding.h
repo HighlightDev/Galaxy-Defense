@@ -23,7 +23,7 @@ public:
 
     void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<glm::vec2>> gameObjectProperty)
     {
-        assert(gameObjectProperty);
+        ext_assert(gameObjectProperty, "Vec2PropertyBinding::SetEngineObjectProperty: gameObjectProperty is null");
         mGoPropertyWp = gameObjectProperty;
         bPropertyConnected = true;
     }

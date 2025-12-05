@@ -32,8 +32,8 @@ UiLabel::UiLabel(const std::string& fontName, const std::string& name)
     , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
           mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 {
-    assert(mFontName.size());
-    assert(!mProperties.count("Opacity"));
+    ext_assert(mFontName.size(), "UiLabel::ctor: fontName is empty");
+    ext_assert(!mProperties.count("Opacity"), "UiLabel::ctor: Property 'Opacity' already exists");
     mProperties.emplace("Opacity", mOpacityProperty);
 }
 

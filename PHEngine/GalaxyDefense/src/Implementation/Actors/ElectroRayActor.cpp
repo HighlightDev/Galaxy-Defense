@@ -60,7 +60,7 @@ void ElectroRayActor::Tick(const float deltaTimeSec)
 {
     MissileActor::Tick(deltaTimeSec);
 
-    assert(mLineComponent);
+    ext_assert(mLineComponent, "ElectroRayActor line component is null");
 
     glm::vec3 electroLineDirection = mElectroLineDirection;
 

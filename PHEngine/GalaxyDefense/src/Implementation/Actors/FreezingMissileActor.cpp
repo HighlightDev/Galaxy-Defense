@@ -39,7 +39,7 @@ void FreezingMissileActor::TriggerExplosion()
 {
     mActivityState = eMissileActivityState::EXPLOSION;
     const auto c_soundList = GetComponentsByType<SoundComponent>();
-    assert(c_soundList.size());
+    ext_assert(c_soundList.size(), "FreezingMissileActor has no sound components for explosion");
     c_soundList.back()->PlayBuffer("explosion");
 
     const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();

@@ -20,7 +20,7 @@ void InstancedGeometryBatch::AddInstancedMeshComponent(const std::shared_ptr<Ins
             }
             return false;
         });
-    assert(isNewComp);
+    ext_assert(isNewComp, "InstancedGeometryBatch::AddInstancedMeshComponent: Component already exists in batch");
 
     mInstancedStaticMeshComponents.emplace_back(componentSp);
 }

@@ -27,7 +27,7 @@ UiOverlay::UiOverlay(
 
 void UiOverlay::SetOverlayCanvas(const std::shared_ptr<UiCanvas>& canvas)
 {
-    assert(!mCanvas);
+    ext_assert(!mCanvas, "UiOverlay::SetOverlayCanvas: mCanvas is already set for overlay: " + mOverlayName);
     mCanvas = canvas;
     mCanvas->CreateAnimator();
     mCanvas->GetAnimator()->SubscribeOnAnimationFinished([weak = weak_from_this()](const std::string& animationName) {
@@ -48,7 +48,7 @@ std::string UiOverlay::GetOverlayName() const
 void UiOverlay::OpenOverlay()
 {
     LogInfo("UiOverlay::OpenOverlay: overlay: ", mOverlayName);
-    assert(mCanvas);
+    ext_assert(mCanvas, "UiOverlay::OpenOverlay: mCanvas is not set for overlay: " + mOverlayName);
     mCanvas->SetIsVisible(true);
     const auto& animator = mCanvas->GetAnimator();
     if (animator->HasAnimation("FadeIn")) {
@@ -59,7 +59,7 @@ void UiOverlay::OpenOverlay()
 void UiOverlay::CloseOverlay()
 {
     LogInfo("UiOverlay::OpenOverlay: overlay: ", mOverlayName);
-    assert(mCanvas);
+    ext_assert(mCanvas, "UiOverlay::CloseOverlay: mCanvas is not set for overlay: " + mOverlayName);
     const auto& animator = mCanvas->GetAnimator();
     if (animator->HasAnimation("FadeOut")) {
         animator->StartAnimation("FadeOut");
@@ -102,21 +102,21 @@ std::shared_ptr<UiCanvas> UiOverlay::GetCanvas() const
 
 void UiOverlay::SubscribeOnAnimationFinished(const std::function<void(std::string)>& callback)
 {
-    assert(mCanvas);
+    ext_assert(mCanvas, "UiOverlay::SubscribeOnAnimationFinished: mCanvas is not set for overlay: " + mOverlayName);
     const auto& animator = mCanvas->GetAnimator();
     animator->SubscribeOnAnimationFinished(callback);
 }
 
 bool UiOverlay::HasFadeInAnimation() const
 {
-    assert(mCanvas);
+    ext_assert(mCanvas, "UiOverlay::HasFadeInAnimation: mCanvas is not set for overlay: " + mOverlayName);
     const auto& animator = mCanvas->GetAnimator();
     return animator->HasAnimation("FadeIn");
 }
 
 bool UiOverlay::HasFadeOutAnimation() const
 {
-    assert(mCanvas);
+    ext_assert(mCanvas, "UiOverlay::HasFadeOutAnimation: mCanvas is not set for overlay: " + mOverlayName);
     const auto& animator = mCanvas->GetAnimator();
     return animator->HasAnimation("FadeOut");
 }

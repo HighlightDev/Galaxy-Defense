@@ -63,7 +63,7 @@ std::shared_ptr<PlanarReflectionProxy> PlanarReflectionComponent::CreatePlanarRe
     return std::make_shared<PlanarReflectionProxy>(this);
 }
 
-void PlanarReflectionComponent::OnPostInitialized()
+void PlanarReflectionComponent::OnPostRegistered()
 {
     if (const auto& sceneSp = m_sceneWP.lock()) {
         sceneSp->RegisterDeferredResourceCreator(
@@ -91,7 +91,7 @@ void PlanarReflectionComponent::PostLevelInit()
                             = std::static_pointer_cast<PlanarReflectionComponent>(componentPtr);
                         const auto& reflectionSp
                             = sceneRendererSp->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId);
-                        assert(reflectionSp);
+                        ext_assert(reflectionSp, "PlanarReflectionProxy not found in PostLevelInit");
                         const auto& proxySp = std::static_pointer_cast<PlanarReflectionProxy>(reflectionSp);
                         auto resourceTexture = proxySp->GetPlanarReflectionTexture();
                         planarReflectionComponentPtr->GetPlanarReflectionDeferredController()

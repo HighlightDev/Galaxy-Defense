@@ -1,5 +1,6 @@
 #include "UniformBufferControlBlock.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
 
 #include <gl/glew.h>
@@ -68,7 +69,9 @@ void UniformBufferControlBlock::CleanUp()
 UniformBufferUserInfo
 UniformBufferControlBlock::AllocateMemoryInUniformBuffer(const uint32_t shaderProgramId, const uint32_t memorySize)
 {
-    assert(mTotalMemoryAllocated <= mUniformBufferSize);
+    ext_assert(
+        mTotalMemoryAllocated <= mUniformBufferSize,
+        "UniformBufferControlBlock::AllocateMemoryInUniformBuffer: Total memory allocated exceeds buffer size");
     const auto leftMemory = mUniformBufferSize - mTotalMemoryAllocated;
     if (memorySize <= leftMemory) {
         // take memory from buffer
@@ -95,7 +98,9 @@ void UniformBufferControlBlock::BindUniformBlockToBindingPoint(const uint32_t sh
 
 void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserInfo& userInfo, const void* data, const size_t size)
 {
-    assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
+    ext_assert(
+        mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max(),
+        "UniformBufferControlBlock::SetDataInUniformBuffer: Uniform buffer descriptor ID is invalid");
     glBindBufferRange(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId, userInfo.mMemoryOffset, userInfo.mMemorySize);
     glNamedBufferSubData(mUniformBufferDescriptorId, userInfo.mMemoryOffset, size, data);
 }
@@ -103,7 +108,9 @@ void UniformBufferControlBlock::SetDataInUniformBuffer(const UniformBufferUserIn
 void UniformBufferControlBlock::SetDataInUniformBuffer(
     const UniformBufferUserInfo& userInfo, const void* data, const size_t offset, const size_t size)
 {
-    assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
+    ext_assert(
+        mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max(),
+        "UniformBufferControlBlock::SetDataInUniformBuffer: Uniform buffer descriptor ID is invalid");
     glBindBufferRange(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId, userInfo.mMemoryOffset + offset, size);
     glNamedBufferSubData(mUniformBufferDescriptorId, userInfo.mMemoryOffset + offset, size, data);
 }
@@ -111,13 +118,17 @@ void UniformBufferControlBlock::SetDataInUniformBuffer(
 void UniformBufferControlBlock::BindUniformBufferRange(
     const UniformBufferUserInfo& userInfo, const uint32_t offset, const uint32_t size)
 {
-    assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
+    ext_assert(
+        mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max(),
+        "UniformBufferControlBlock::BindUniformBufferRange: Uniform buffer descriptor ID is invalid");
     glBindBufferRange(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId, userInfo.mMemoryOffset + offset, size);
 }
 
 void UniformBufferControlBlock::BindUniformBuffer()
 {
-    assert(mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max());
+    ext_assert(
+        mUniformBufferDescriptorId != std::numeric_limits<uint32_t>::max(),
+        "UniformBufferControlBlock::BindUniformBuffer: Uniform buffer descriptor ID is invalid");
     glBindBufferBase(GL_UNIFORM_BUFFER, mBindingPoint, mUniformBufferDescriptorId);
 }
 } // namespace Graphics::OpenGL

@@ -88,7 +88,7 @@ struct BindingAttachmentBuilder {
             break;
         }
         default:
-            assert(false); // "unknown bindingSp type."
+            ext_assert(false, "unknown bindingSp type.");
             break;
         }
     }

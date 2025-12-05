@@ -51,7 +51,7 @@ std::shared_ptr<ITweenController> GetPropertyTweenerController(const eEngineProp
         propertyController = std::make_shared<Vec3TweenController>();
     }
 
-    assert(propertyController);
+    ext_assert(propertyController, "GetPropertyTweenerController: Unsupported property type");
 
     return propertyController;
 }
@@ -84,7 +84,7 @@ void Tweener::DoTranstionInstantly(const std::string& dstStateName)
 
         auto dstStateIt = std::find_if(
             mMyAllStates.begin(), mMyAllStates.end(), [=](const auto& state) { return state->GetStateName() == dstStateName; });
-        assert(dstStateIt != mMyAllStates.end());
+        ext_assert(dstStateIt != mMyAllStates.end(), "DoTranstionInstantly: Destination state not found: " + dstStateName);
         auto dstStateSp = (*dstStateIt);
 
         std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties
@@ -112,7 +112,9 @@ void Tweener::DoTransition(const std::string& dstStateName)
     auto spFrom = transition.StateFrom.lock();
 
     if (spDestination && spFrom) {
-        assert(spFrom->GetStateName() == mCurrentStateNode->GetStateName());
+        ext_assert(
+            spFrom->GetStateName() == mCurrentStateNode->GetStateName(),
+            "DoTransition: Source state name does not match current state name");
 
         mCurrentActiveStateTransition = transition;
         mTransitionTime = 0.0f;
@@ -127,8 +129,10 @@ void Tweener::DoTransition(const std::string& dstStateName)
 
         for (auto& dstNameAndPropertyPair : dstProperties) {
             const std::string& name = dstNameAndPropertyPair.first;
-            assert(srcProperties.count(
-                name)); // missing transition from src to dst property, probably forgot to add property state to src state
+            ext_assert(
+                srcProperties.count(name),
+                "DoTransition: missing transition from src to dst property, probably forgot to add property state to src state: "
+                    + name);
 
             const std::shared_ptr<BaseStateProperty> srcProperty = srcProperties.at(name);
             const std::shared_ptr<BaseStateProperty> dstProperty = dstNameAndPropertyPair.second;
@@ -201,13 +205,13 @@ void Tweener::CleanUp()
 
 std::shared_ptr<PropertyBinding> Tweener::GetPropertyBindingByName(const std::string& name) const
 {
-    assert(mPropertyBindings.count(name));
+    ext_assert(mPropertyBindings.count(name), "GetPropertyBindingByName: Property binding not found: " + name);
     return mPropertyBindings.at(name);
 }
 
 void Tweener::AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<PropertyBinding> binding)
 {
-    assert(binding);
+    ext_assert(binding, "AddPropertyBinding: binding is null: " + propBindingName);
     mPropertyBindings[propBindingName] = binding;
 }
 

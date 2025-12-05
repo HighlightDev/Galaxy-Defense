@@ -17,7 +17,7 @@ eModifierType FreezingRayModifier::GetModifierType() const
 int32_t FreezingRayModifier::CreatorObjectId() const
 {
     const auto& ownerSp = mOwnerWp.lock();
-    assert(ownerSp);
+    ext_assert(ownerSp, "FreezingRayModifier owner spaceship pointer is null");
     return ownerSp->GetObjectId();
 }
 
@@ -25,7 +25,7 @@ void FreezingRayModifier::Tick(const float deltaTimeSec)
 {
     if (const auto& spaceshipSp = mOwnerWp.lock()) {
         const auto& movementComponent = spaceshipSp->GetMovementComponent();
-        assert(movementComponent);
+        ext_assert(movementComponent, "FreezingRayModifier spaceship movement component is null");
         const float referenceSpeed = movementComponent->GetReferenceSpeed();
         movementComponent->SetCurrentSpeed(referenceSpeed / mFreezingPower);
         spaceshipSp->SetFreezingEffectValue(1.0f);
@@ -36,7 +36,7 @@ void FreezingRayModifier::OnPreRemoved()
 {
     if (const auto& spaceshipSp = mOwnerWp.lock()) {
         const auto& movementComponent = spaceshipSp->GetMovementComponent();
-        assert(movementComponent);
+        ext_assert(movementComponent, "FreezingRayModifier spaceship movement component is null in OnPreRemoved");
         movementComponent->SetCurrentSpeedToReferenceValue();
         spaceshipSp->SetFreezingEffectValue(0.0f);
     }
@@ -54,7 +54,7 @@ bool FreezingRayModifier::IsExpired() const
 
 void FreezingRayModifier::SetFreezingPower(const float power)
 {
-    assert(power > 0.0001f);
+    ext_assert(power > 0.0001f, "FreezingRayModifier freezing power must be greater than 0.0001");
     mFreezingPower = power;
 }
 } // namespace Game

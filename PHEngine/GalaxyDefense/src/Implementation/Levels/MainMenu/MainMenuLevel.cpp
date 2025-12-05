@@ -37,7 +37,7 @@ void MainMenuLevel::PreLevelInit()
     LogInfo("MainMenuLevel::PreLevelInit");
     Base::PreLevelInit();
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in MainMenuLevel::PreLevelInit");
     mUiController = std::make_unique<MainMenuLevelUiController>(sceneSp);
     mUiController->OnPreLevelInit();
 }
@@ -51,7 +51,7 @@ void MainMenuLevel::RunLuaBuildLevelScript()
 {
     LogInfo("MainMenuLevel::RunLuaBuildLevelScript");
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in RunLuaBuildLevelScript");
     LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("MainMenuLvl.lua");
     mLuaLevelBuilder.SetScene(sceneSp);
     mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());

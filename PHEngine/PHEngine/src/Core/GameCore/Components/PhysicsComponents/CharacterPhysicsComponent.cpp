@@ -14,7 +14,7 @@ CharacterPhysicsComponent::CharacterPhysicsComponent(const std::shared_ptr<Physi
     : PhysicsComponent(data)
 {
     characterController = std::dynamic_pointer_cast<DynamicCharacterController>(data->mPhysicsDescriptor);
-    assert(characterController);
+    ext_assert(characterController, "CharacterPhysicsComponent: DynamicCharacterController is null in constructor");
 }
 
 CharacterPhysicsComponent::~CharacterPhysicsComponent()

@@ -55,7 +55,7 @@ UniformArray IShader::GetUniformArray(
         = {{eShaderType::VertexShader, GL_MAX_VERTEX_UNIFORM_COMPONENTS},
            {eShaderType::FragmentShader, GL_MAX_FRAGMENT_UNIFORM_COMPONENTS},
            {eShaderType::GeometryShader, GL_MAX_GEOMETRY_UNIFORM_COMPONENTS}};
-    assert(s_mapShaderTypeToUniformShaderType.count(shaderType));
+    ext_assert(s_mapShaderTypeToUniformShaderType.count(shaderType), "IShader::GetUniformArray: Unsupported shader type");
     GLint maxUniforms;
     glGetIntegerv(s_mapShaderTypeToUniformShaderType.at(shaderType), &maxUniforms);
     ext_assert(
@@ -68,7 +68,7 @@ UniformArray IShader::GetUniformArray(
 
 int32_t IShader::GetAttributeLocationByName(const std::string& attributeName) const
 {
-    assert(-1 != m_shaderProgramID);
+    ext_assert(-1 != m_shaderProgramID, "IShader::GetAttributeLocationByName: Shader program ID is invalid");
     const auto attribLocation = glGetAttribLocation(m_shaderProgramID, attributeName.c_str());
     return attribLocation;
 }
@@ -163,7 +163,7 @@ std::string IShader::LoadShaderSource(const std::string& pathToShader) const
         std::ifstream stream(pathToShader);
         std::string line;
 
-        assert(stream.is_open());
+        ext_assert(stream.is_open(), "IShader::LoadShaderSource: Could not open shader file: " + pathToShader);
 
         while (stream.is_open() && getline(stream, line)) {
             result += line + "\n";
@@ -179,7 +179,9 @@ std::string IShader::LoadShaderSource(const std::string& pathToShader) const
 bool IShader::SendToGpuShadersSources(std::string& vsSource, std::string& gsSource, std::string& fsSource)
 {
     bool bVertexShaderLoaded = true, bFragmentShaderLoaded = true, bGeometryShaderLoaded = true;
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "IShader::SendToGpuShadersSources: Not called from Render thread");
 
     if (vsSource != "") {
         /*Vertex shader load*/

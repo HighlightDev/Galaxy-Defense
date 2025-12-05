@@ -36,7 +36,9 @@ void LevelPlacementGrid::InitializeTowerGridData()
     //     mTowerGridColumnsAndRowsCount.y += 1;
     //     levelGridDimensionsIntPart.y += s_gridCellSizeForTower;
     // }
-    assert(mTowerGridColumnsAndRowsCount.x >= 2 && mTowerGridColumnsAndRowsCount.y >= 2);
+    ext_assert(
+        mTowerGridColumnsAndRowsCount.x >= 2 && mTowerGridColumnsAndRowsCount.y >= 2,
+        "Tower grid must have at least 2 columns and 2 rows");
     mTowerLevelAreaBoundingBox
         = BoundingBox2D<glm::vec2>(glm::vec2(0.0f), levelGridDimensionsIntPart * s_gridCellSizeForTower * 0.5f);
 }
@@ -51,7 +53,9 @@ void LevelPlacementGrid::InitializeRouteGridData()
     const auto levelGridDimensionsIntPart = glm::floor(levelAreaToGridCellAspectRatio);
     mRouteGridColumnsAndRowsCount
         = glm::ivec2(static_cast<int32_t>(levelGridDimensionsIntPart.x), static_cast<int32_t>(levelGridDimensionsIntPart.y));
-    assert(mRouteGridColumnsAndRowsCount.x >= 2 && mRouteGridColumnsAndRowsCount.y >= 2);
+    ext_assert(
+        mRouteGridColumnsAndRowsCount.x >= 2 && mRouteGridColumnsAndRowsCount.y >= 2,
+        "Route grid must have at least 2 columns and 2 rows");
     mRouteLevelAreaBoundingBox
         = BoundingBox2D<glm::vec2>(glm::vec2(0.0f), levelGridDimensionsIntPart * s_gridCellSizeForRoute * 0.5f);
 }

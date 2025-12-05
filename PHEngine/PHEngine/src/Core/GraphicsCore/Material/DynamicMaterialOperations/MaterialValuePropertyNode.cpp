@@ -54,7 +54,7 @@ std::any MaterialValuePropertyNode::TraverseGraph()
     } else if (mValueProperty->GetPropertyType() == MaterialProperty::eMaterialPropertyType::VEC3_BINDING_PROPERTY) {
         return std::static_pointer_cast<Vec3BindingMaterialProperty>(mValueProperty)->GetValue();
     } else {
-        assert(false); // Inaccessible code
+        ext_assert(false, "MaterialValuePropertyNode::TraverseGraph: Unsupported material property type");
     }
 
     return -1;

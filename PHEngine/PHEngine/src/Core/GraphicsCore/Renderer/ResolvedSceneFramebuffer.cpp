@@ -143,7 +143,9 @@ void ResolvedSceneFramebuffer::ResizeRenderTargets(const ViewPortInfo& viewPortI
 
 void ResolvedSceneFramebuffer::TryToFreeRenderTargetTextures()
 {
-    assert(m_resolvedSceneColorBuffer);
+    ext_assert(
+        m_resolvedSceneColorBuffer,
+        "ResolvedSceneFramebuffer::TryToFreeRenderTargetTextures: Resolved scene color buffer is null");
     RenderTargetPool::GetInstance()->TryToFreeMemory(m_resolvedSceneColorBuffer);
 }
 

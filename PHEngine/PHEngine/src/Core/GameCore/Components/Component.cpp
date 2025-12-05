@@ -20,7 +20,23 @@ Component::~Component()
 {
 }
 
-void Component::Initialize()
+void Component::OnRegistered()
+{
+}
+
+void Component::OnUnregistered()
+{
+}
+
+void Component::OnPostRegistered()
+{
+}
+
+void Component::OnPostOwnerInitialized()
+{
+}
+
+void Component::PostLevelInit()
 {
 }
 
@@ -77,18 +93,6 @@ std::weak_ptr<Actor> Component::GetBaseOwner() const
 void Component::SetScene(const std::weak_ptr<Scene>& scene)
 {
     m_sceneWP = scene;
-}
-
-void Component::OnPostInitialized()
-{
-}
-
-void Component::OnPostOwnerInitialized()
-{
-}
-
-void Component::PostLevelInit()
-{
 }
 
 std::weak_ptr<Actor> Component::GetOwner() const

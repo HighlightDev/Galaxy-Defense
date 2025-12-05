@@ -24,11 +24,13 @@ public:
         std::shared_ptr<Skin> skin;
 
         const auto& mData = std::static_pointer_cast<RuntimeGeneratedMeshComponentData>(data);
-        assert(eMeshComponentDataType::RUNTIME_GENERATED_MESH == mData->GetMeshComponentDataType());
-        RuntimeGeneratedMeshPoolParameters runtimeMeshParams(mData->EngineObjectName, mData->mMaxVerticesCount);
+        ext_assert(
+            eMeshComponentDataType::RUNTIME_GENERATED_MESH == mData->GetMeshComponentDataType(),
+            "Invalid mesh component data type, expected RUNTIME_GENERATED_MESH");
+        RuntimeGeneratedMeshPoolParameters runtimeMeshParams(mData->EngineObjectName, mData->mMaxVerticesCount, 0);
 
         const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
-        assert(materialProxy);
+        ext_assert(materialProxy, "Material proxy is null for runtime generated mesh component");
         return std::make_shared<ComponentInstantiationType>(mData, MeshRenderData("", materialProxy, false), runtimeMeshParams);
     }
 };

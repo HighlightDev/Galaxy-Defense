@@ -24,7 +24,7 @@ void HumanoidPhysicsMovementComponent::OnSceneOwnerInitialized()
     if (const auto& spOwner = GetOwner().lock()) {
         const auto& characterPhysicsComponent
             = std::dynamic_pointer_cast<CharacterPhysicsComponent>(spOwner->GetPhysicsComponent());
-        assert(characterPhysicsComponent);
+        ext_assert(characterPhysicsComponent, "HumanoidPhysicsMovementComponent requires CharacterPhysicsComponent");
         m_playerPhysicsComponent = characterPhysicsComponent;
     }
 }
@@ -34,9 +34,9 @@ HumanoidPhysicsMovementComponent::~HumanoidPhysicsMovementComponent()
     CameraTransformChangedGameThreadEvent::GetInstance()->RemoveListener(CameraTransformChangedGameThreadEvent::GetInstanceId());
 }
 
-void HumanoidPhysicsMovementComponent::Initialize()
+void HumanoidPhysicsMovementComponent::OnRegistered()
 {
-    MovementComponent::Initialize();
+    MovementComponent::OnRegistered();
 
     CameraTransformChangedGameThreadEvent::GetInstance()->AddListener(
         std::dynamic_pointer_cast<HumanoidPhysicsMovementComponent>(shared_from_this()));

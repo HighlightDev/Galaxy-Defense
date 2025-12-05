@@ -26,19 +26,34 @@ bool VertexArrayObject::HasIBO() const
     return m_ibo != nullptr;
 }
 
-VertexBufferObjectBase* VertexArrayObject::GetVboByIndex(const size_t index) const
+void VertexArrayObject::SetIBO(IndexBufferObject* const ibo)
+{
+    if (m_ibo != nullptr) {
+        m_ibo->CleanUp();
+        delete m_ibo;
+    }
+    m_ibo = ibo;
+}
+
+const IndexBufferObject* VertexArrayObject::GetIBO() const
+{
+    return m_ibo;
+}
+
+VertexBufferObjectBase* VertexArrayObject::GetVBOByIndex(const size_t index) const
 {
     return m_vbos[index].first;
 }
 
-const std::vector<std::pair<VertexBufferObjectBase*, std::string>>& VertexArrayObject::GetVertexBufferObjects() const
+const std::vector<std::pair<VertexBufferObjectBase*, std::string>>& VertexArrayObject::GetVBOs() const
 {
     return m_vbos;
 }
 
 void VertexArrayObject::GenVAO()
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"), "GenVAO must be called from Render thread");
     glGenVertexArrays(1, &m_descriptor);
 }
 
@@ -49,7 +64,7 @@ void VertexArrayObject::RenderVAO(const int32_t primitiveMode)
         glDrawElements(primitiveMode, m_ibo->GetCountOfIndices(), GL_UNSIGNED_INT, 0);
     } else {
         VertexBufferObjectBase* positionVBO = GetVboByAttribArrayIndexName("VertexPosition");
-        assert(positionVBO);
+        ext_assert(positionVBO, "Position VBO is required for rendering");
         glDrawArrays(primitiveMode, 0, positionVBO->GetCountOfIndices());
     }
     glBindVertexArray(0);
@@ -70,18 +85,13 @@ void VertexArrayObject::RenderInstanced(const int32_t primitiveMode, const size_
 {
     glBindVertexArray(m_descriptor);
     VertexBufferObjectBase* positionVBO = GetVboByAttribArrayIndexName("VertexPosition");
-    assert(positionVBO);
+    ext_assert(positionVBO, "Position VBO is required for instanced rendering");
     if (HasIBO()) {
         glDrawElementsInstanced(primitiveMode, m_ibo->GetCountOfIndices(), GL_UNSIGNED_INT, 0, primitivesCount);
     } else {
         glDrawArraysInstanced(primitiveMode, 0, positionVBO->GetCountOfIndices(), primitivesCount);
     }
     glBindVertexArray(0);
-}
-
-void VertexArrayObject::AddIndexBuffer(IndexBufferObject* ibo)
-{
-    m_ibo = ibo;
 }
 
 void VertexArrayObject::BindBuffersToVao()

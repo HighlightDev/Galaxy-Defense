@@ -33,7 +33,7 @@ ElectroRayChainActor::ElectroRayChainActor(
 
 void ElectroRayChainActor::AttachTweener(std::shared_ptr<Tweener> tweener)
 {
-    assert(tweener);
+    ext_assert(tweener, "ElectroRayChainActor tweener pointer is null");
     LogInfo("ElectroRayChainActor::AttachTweener: Path to tweener", tweener->GetRelPathTweener());
 
     MissileActor::AttachTweener(tweener);
@@ -45,7 +45,7 @@ void ElectroRayChainActor::Tick(const float deltaTimeSec)
 {
     MissileActor::Tick(deltaTimeSec);
 
-    assert(mLineComponent);
+    ext_assert(mLineComponent, "ElectroRayChainActor line component is null");
 
     mElectroLineBegin = GetStartLinePosition();
     mElectroLineEnd = GetEndLinePosition();

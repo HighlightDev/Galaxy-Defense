@@ -34,9 +34,9 @@ void UiRectangleLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParamete
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiRectangleLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& uiRectangle = std::static_pointer_cast<::EngineCore::GUI::UiRectangle>(replicator);
-                assert(uiRectangle);
+                ext_assert(uiRectangle, "UiRectangleLuaProxy::OnLuaThreadDataUpdated: uiRectangle is null");
                 uiRectangle->SyncFromLuaJsonProperties(jsonStr);
             });
     }

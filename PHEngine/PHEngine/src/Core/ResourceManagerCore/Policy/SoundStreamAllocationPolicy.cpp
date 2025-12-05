@@ -19,10 +19,10 @@ std::shared_ptr<SoundStream> SoundStreamAllocationPolicy::AllocateMemory(const s
     LogInfo("SoundStreamAllocationPolicy::AllocateMemory: ", arg);
     Resource* outResource;
     const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
-    assert(bResourceValid);
+    ext_assert(bResourceValid, "SoundStreamAllocationPolicy::AllocateMemory: Resource not found: " + arg);
 
     const AudioStreamResource* audioResource = dynamic_cast<AudioStreamResource*>(outResource);
-    assert(audioResource);
+    ext_assert(audioResource, "SoundStreamAllocationPolicy::AllocateMemory: AudioStreamResource is null for: " + arg);
 
     return std::make_shared<SoundStream>(audioResource->mStream, audioResource->AudioInfo, arg);
 }

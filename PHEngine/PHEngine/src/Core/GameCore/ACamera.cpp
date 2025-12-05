@@ -101,7 +101,7 @@ void ACamera::UpdateCameraProxyData()
                 if (const auto& cameraPtr = weak.lock()) {
                     if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                         if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId)) {
-                            assert(sceneViewSp);
+                            ext_assert(sceneViewSp, "Scene view pointer is null in ACamera::UpdateCameraProxyData");
                             const auto& cameraProxy = sceneViewSp->GetCameraProxy();
                             cameraProxy->UpdateEyeVector(eyeVector);
                             cameraProxy->UpdateViewMatrix(viewMatrix);
@@ -163,7 +163,7 @@ void ACamera::ProcessEvent(
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId)) {
-                        assert(sceneViewSp);
+                        ext_assert(sceneViewSp, "Scene view pointer is null in ACamera::UpdateCameraProxyData");
                         const auto& cameraProxy = sceneViewSp->GetCameraProxy();
                         cameraProxy->SetViewPortInfo(newViewPortInfo);
                     }
@@ -288,7 +288,7 @@ const std::shared_ptr<ViewProjectionInfo>& ACamera::GetViewProjectionInfo() cons
 
 void ACamera::SetPlanarReflectionComponent(std::shared_ptr<PlanarReflectionComponent> planarReflectionComponent)
 {
-    assert(!mPlanarReflectionComponent);
+    ext_assert(!mPlanarReflectionComponent, "PlanarReflectionComponent is already set for this camera");
     mPlanarReflectionComponent = planarReflectionComponent;
 }
 

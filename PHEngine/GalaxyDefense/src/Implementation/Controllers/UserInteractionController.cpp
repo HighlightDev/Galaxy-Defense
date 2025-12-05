@@ -112,9 +112,9 @@ void UserInteractionController::Initialize()
     BroadcastGameThreadEvent::GetInstance()->AddListener(shared_from_this());
 
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in UserInteractionController::Initialize");
     const auto& mainCameraSp = std::dynamic_pointer_cast<ThirdPersonCamera>(sceneSp->GetMainCamera());
-    assert(mainCameraSp);
+    ext_assert(mainCameraSp, "Failed to cast main camera to ThirdPersonCamera");
     mMainSceneCamera = mainCameraSp;
 
     sceneSp->AddActor(mProjectileMarkerActor);
@@ -152,7 +152,7 @@ void UserInteractionController::Initialize()
 void UserInteractionController::SetTowersData(
     const std::unordered_map<std::string, std::tuple<glm::vec3 /*position*/, glm::vec3 /*scale*/>>& towersData)
 {
-    assert(towersData.size());
+    ext_assert(towersData.size(), "Towers data is empty in UserInteractionController::SetTowersData");
     mTowerPlacementCells.reserve(towersData.size());
     std::transform(towersData.cbegin(), towersData.cend(), std::back_inserter(mTowerPlacementCells), [](const auto& towerData) {
         return std::get<0>(towerData.second);
@@ -171,7 +171,7 @@ void UserInteractionController::OnPreLevelInit()
 
 void UserInteractionController::OnLevelInit()
 {
-    assert(mCombatActorsPoolHandler);
+    ext_assert(mCombatActorsPoolHandler, "Combat actors pool handler is null in OnLevelInit");
     mSmartPicker = std::make_shared<SmartPicker>(mCombatActorsPoolHandler);
 }
 
@@ -305,9 +305,9 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                 const auto cellPositionVec3 = glm::vec3(cellOriginPosition.x, 0.0f, cellOriginPosition.y);
 
                 if (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType && IsTowerPositionValid(cellPositionVec3)) {
-                    assert(mTowerMissileType != eMissileType::NONE);
+                    ext_assert(mTowerMissileType != eMissileType::NONE, "Tower missile type is NONE");
                     const auto spaceStationSp = mCombatActorsPoolHandler->GetFreeSpaceStationActor();
-                    assert(spaceStationSp);
+                    ext_assert(spaceStationSp, "Failed to get free space station actor");
                     spaceStationSp->GetRootComponent()->SetTranslation(cellPositionVec3);
                     spaceStationSp->SetSpaceStationLevel(std::make_shared<SpaceStationLevel>(
                         mTowerMissileType,
@@ -430,7 +430,7 @@ void UserInteractionController::SetActorsPoolHandler(const std::shared_ptr<Comba
 
 void UserInteractionController::ShowMissileProjectile()
 {
-    assert(eGameModeType::COMBAT == mCurrentGameModeType);
+    ext_assert(eGameModeType::COMBAT == mCurrentGameModeType, "Cannot show missile projectile in non-combat game mode");
     mProjectileMarkerActor->SetIsEnabled(true);
 }
 
@@ -447,7 +447,7 @@ glm::vec3 UserInteractionController::GetProjectileMarkerPosition() const
 void UserInteractionController::InitializeTowerGrid()
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in InitializeTowerGrid");
     const auto halfExtent = mLevelBounds.GetHalfExtent().x;
     mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(halfExtent)));
     mTowerPlacementGridActor = std::make_shared<Actor>(
@@ -525,7 +525,7 @@ void UserInteractionController::InitializeTowerGrid()
 void UserInteractionController::InitializePlacementAllowedArea()
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in InitializePlacementAllowedArea");
     mPlacementAllowedAreaActor = std::make_shared<Actor>(
         "PlacementAllowedAreaActor",
         std::make_shared<SceneComponent>("PlacementAllowedAreaActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
@@ -564,7 +564,7 @@ void UserInteractionController::InitializePlacementAllowedArea()
 void UserInteractionController::InitializeGhostTower()
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in InitializeGhostTower");
     sceneSp->AddActor(mGhostTowerActor);
 
     const auto& albedoName = "Space_Station_COLOR.png";
@@ -596,7 +596,7 @@ void UserInteractionController::InitializeGhostTower()
 void UserInteractionController::InitializeRemoveTowerMarker()
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in InitializeRemoveTowerMarker");
     sceneSp->AddActor(mRemoveTowerMarkerActor);
 
     MaterialParser materialParser;
@@ -638,7 +638,7 @@ void UserInteractionController::TriggerPlayerStatusChangedEvent(
     MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, statusChanged, jsonArgs);
 
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in TriggerPlayerStatusChangedEvent");
     static constexpr auto functionId = Hash64_CT("UserInteractionController::TriggerPlayerStatusChangedEvent");
     sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
         eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,

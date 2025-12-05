@@ -49,7 +49,7 @@ EditorLevel::~EditorLevel()
 void EditorLevel::RunLuaBuildLevelScript()
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "EditorLevel scene pointer is null in RunLuaBuildLevelScript");
     LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("EditorLvl.lua");
     mLuaLevelBuilder.SetScene(sceneSp);
     mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
@@ -61,7 +61,7 @@ void EditorLevel::RunLuaBuildLevelScript()
 void EditorLevel::PreLevelInit()
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "EditorLevel scene pointer is null in PreLevelInit");
     Base::PreLevelInit();
     mLevelEditorController = std::make_shared<LevelEditorController>(sceneSp);
     mLevelEditorController->OnPreLevelInit();
@@ -92,14 +92,14 @@ void EditorLevel::PreLevelInit()
 void EditorLevel::CreateScene()
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "EditorLevel scene pointer is null in CreateScene");
 
     constexpr float c_defaultLevelExtent = 60.0f;
     LevelDataProvider::GetInstance()->SetEditorLevelAreaBoundingBox(
         BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(c_defaultLevelExtent)), false, true);
 
     const auto& a_sceneCenterActorDummy = sceneSp->GetActorByName("SceneCenterActorDummy");
-    assert(a_sceneCenterActorDummy);
+    ext_assert(a_sceneCenterActorDummy, "EditorLevel scene center actor dummy not found");
 
     const auto& spaceCamera = std::make_shared<GalaxySceneCamera>(
         "LevelMainCamera",
@@ -124,7 +124,7 @@ void EditorLevel::CreateScene()
     spaceCamera->SetTimeForInterpolation(6e-1f);
 
     const auto& a_skybox = sceneSp->GetActorByName("SkyboxActor");
-    assert(a_skybox);
+    ext_assert(a_skybox, "EditorLevel skybox actor not found");
 
     MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& spaceStars_material = materialParser.ParseMaterialDescriptor("SpaceStarsMaterial.m");
@@ -150,7 +150,7 @@ void EditorLevel::CreateScene()
     a_skybox->AddComponent(billboardComponent);
 
     const auto& a_light = sceneSp->GetActorByName("MainLightActor");
-    assert(a_light);
+    ext_assert(a_light, "EditorLevel main light actor not found");
     std::static_pointer_cast<LightComponent>(a_light->GetComponentsByType<LightComponent>().front())->SetIsVisible(true);
 
     mLevelEditorController->OnLevelInit();

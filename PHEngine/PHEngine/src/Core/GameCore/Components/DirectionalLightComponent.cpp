@@ -18,7 +18,7 @@ DirectionalLightComponent::DirectionalLightComponent(const std::shared_ptr<Light
     : LightComponent(lightComponentData)
 {
     const auto& d_directionalLight = std::static_pointer_cast<DirectionalLightComponentData>(lightComponentData);
-    assert(nullptr == mLightRenderData);
+    ext_assert(nullptr == mLightRenderData, "DirectionalLightComponent render data is already initialized in constructor");
     mLightRenderData = std::make_shared<DirectionalLightRenderData>(
         d_directionalLight->Direction,
         d_directionalLight->Ambient,
@@ -34,9 +34,9 @@ DirectionalLightComponent::~DirectionalLightComponent()
         PhysicsComponentUpdatedGameThreadEvent::GetInstanceId());
 }
 
-void DirectionalLightComponent::Initialize()
+void DirectionalLightComponent::OnRegistered()
 {
-    LightComponent::Initialize();
+    LightComponent::OnRegistered();
 
     if (mLightRenderData->ShadowInfo) {
         PlayerMovedGameThreadEvent::GetInstance()->AddListener(
@@ -111,7 +111,7 @@ void DirectionalLightComponent::SyncRenderData()
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     const auto& lightProxySp = sceneRendererSp->GetLightProxyByProxyId(lightSceneProxyId);
-                    assert(lightProxySp);
+                    ext_assert(lightProxySp, "Light scene proxy not found in DirectionalLightComponent::SyncRenderData");
                     const auto shadowInfo = lightProxySp->GetShadowInfo();
                     if (shadowInfo) {
                         shadowInfo->SetPlayerPositionOffset(playerTranslationOffset);

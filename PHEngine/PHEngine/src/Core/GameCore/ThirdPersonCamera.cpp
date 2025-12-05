@@ -131,13 +131,13 @@ glm::vec3 ThirdPersonCamera::GetLocalSpaceUpVector() const
 
 glm::vec3 ThirdPersonCamera::GetEyeVector() const
 {
-    assert(m_thirdPersonTarget);
+    ext_assert(m_thirdPersonTarget, "ThirdPersonCamera::GetEyeVector: m_thirdPersonTarget is null");
     return GetTargetVector() - (GetEyeSpaceForwardVector() * m_distanceFromTargetToCamera);
 }
 
 glm::vec3 ThirdPersonCamera::GetTargetVector() const
 {
-    assert(m_thirdPersonTarget);
+    ext_assert(m_thirdPersonTarget, "ThirdPersonCamera::GetTargetVector: m_thirdPersonTarget is null");
     return m_actualTargetVector + m_thirdPersonTargetOffset; // attach to "head"
 }
 
@@ -248,7 +248,7 @@ void ThirdPersonCamera::SetThirdPersonTargetDeferred(const std::string& targetEn
 
 void ThirdPersonCamera::SetThirdPersonTarget(std::shared_ptr<Actor> thirdPersonTarget)
 {
-    assert(!bThirdPersonTargetDeferredDirty);
+    ext_assert(!bThirdPersonTargetDeferredDirty, "ThirdPersonCamera::SetThirdPersonTarget: Deferred target is still dirty");
 
     m_thirdPersonTarget = thirdPersonTarget;
     m_actualTargetVector = thirdPersonTarget->GetRootComponent()->GetTranslation();
@@ -260,7 +260,9 @@ void ThirdPersonCamera::ProcessDeferredThirdPersonTarget()
 {
     if (!m_thirdPersonTarget) {
         if (auto sceneSp = mScene.lock()) {
-            assert(mThirdPersonTargetGOName != "");
+            ext_assert(
+                mThirdPersonTargetGOName != "",
+                "ThirdPersonCamera::ProcessDeferredThirdPersonTarget: mThirdPersonTargetGOName is empty");
             const auto& actor = sceneSp->GetActorByName(mThirdPersonTargetGOName);
             bThirdPersonTargetDeferredDirty = false;
             SetThirdPersonTarget(actor);

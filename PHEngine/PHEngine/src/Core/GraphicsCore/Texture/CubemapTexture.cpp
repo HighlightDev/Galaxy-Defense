@@ -32,7 +32,7 @@ CubemapTexture::CubemapTexture(TexParams cubemapTexParams, const std::string& te
 uint32_t CubemapTexture::CreateEmptyCubemapTexture()
 {
     uint32_t resultTextureDescriptor = -1;
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"), "Render thread required");
 
     glGenTextures(1, &resultTextureDescriptor);
     glBindTexture(GL_TEXTURE_CUBE_MAP, resultTextureDescriptor);
@@ -66,7 +66,7 @@ uint32_t CubemapTexture::CreateCubemapTexture(const std::vector<std::string>& pa
 {
     uint32_t resultTextureDescriptor = -1;
     size_t mutualPixelFormat = -1;
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"), "Render thread required");
 
     glGenTextures(1, &resultTextureDescriptor);
     glBindTexture(GL_TEXTURE_CUBE_MAP, resultTextureDescriptor);
@@ -78,7 +78,9 @@ uint32_t CubemapTexture::CreateCubemapTexture(const std::vector<std::string>& pa
         Resource* outResource;
         bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, pathToTextures[texIndex]);
 
-        assert(bResourceValid);
+        ext_assert(
+            bResourceValid,
+            "CubemapTexture::CreateCubemapTexture: Failed to get texture resource for path: " + pathToTextures[texIndex]);
 
         TextureResource* texResource = static_cast<TextureResource*>(outResource);
 

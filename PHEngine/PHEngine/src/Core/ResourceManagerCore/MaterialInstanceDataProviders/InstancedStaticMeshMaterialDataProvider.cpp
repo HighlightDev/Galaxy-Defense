@@ -15,7 +15,7 @@ void InstancedStaticMeshMaterialDataProvider::UpdateInstancedDataProvider()
         const auto& batchKey = GetBatchKey();
         const auto& batchHolder = sceneSp->GetInstancedGeometryBatchHolder();
         const auto& batchSp = batchHolder->GetBatch(batchKey);
-        assert(batchSp);
+        ext_assert(batchSp, "InstancedStaticMeshMaterialDataProvider::UpdateInstancedDataProvider: Batch not found: " + batchKey);
 
         mRenderInstanceId = batchSp->GetRenderInstanceId(GetInstanceProxyId());
         mIsInstanceActive = mRenderInstanceId != -1;

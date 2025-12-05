@@ -34,7 +34,7 @@ std::any MaterialEnterNode::GetValue()
 
 std::any MaterialEnterNode::TraverseGraph()
 {
-    assert(mInputOperation);
+    ext_assert(mInputOperation, "MaterialEnterNode::TraverseGraph: Input operation is not attached");
     return mInputOperation->TraverseGraph();
 }
 

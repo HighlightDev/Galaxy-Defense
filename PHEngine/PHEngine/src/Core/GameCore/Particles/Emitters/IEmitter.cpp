@@ -17,7 +17,7 @@ void IEmitter::SetOwner(const std::weak_ptr<ParticleSystemComponent>& owner)
 std::vector<Particle>& IEmitter::GetParticlesPool()
 {
     const auto& ownerSp = mOwner.lock();
-    assert(ownerSp);
+    ext_assert(ownerSp, "IEmitter::GetParticlesPool: ownerSp is null");
     return ownerSp->mParticlesPool;
 }
 

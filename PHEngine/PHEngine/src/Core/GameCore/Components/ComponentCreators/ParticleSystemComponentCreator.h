@@ -28,7 +28,7 @@ public:
         params.mParticleCount = mData->m_particlesCount;
 
         const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
-        assert(materialProxy);
+        ext_assert(materialProxy, "ParticleSystemComponentCreator::CreateComponent: materialProxy is null");
 
         return std::make_shared<ComponentInstantiationType>(mData, ParticleSystemRenderData(params, materialProxy));
     }

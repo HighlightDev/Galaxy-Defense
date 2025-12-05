@@ -72,7 +72,7 @@ void UiItemBase::SetParents(const std::weak_ptr<UiCanvas>& parentCanvas, const s
     mParentCanvas = parentCanvas;
     mParent = parent;
     const auto& parentSp = mParent.lock();
-    assert(parentSp);
+    ext_assert(parentSp, "UiItemBase::SetParents: parentSp is null");
     parentSp->AddUiItem(std::static_pointer_cast<UiItemBase>(shared_from_this()));
 }
 
@@ -81,14 +81,14 @@ void UiItemBase::SetParents(const std::string& uiCanvasName, const std::string& 
     if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
         if (const auto& sceneSp = luaScriptProcessorSp->GetInterThreadCommunicationManager().GetSceneWP().lock()) {
             const auto parentCanvas = sceneSp->GetUiHandler()->GetCanvasByName(uiCanvasName);
-            assert(parentCanvas);
+            ext_assert(parentCanvas, "UiItemBase::SetParents: parentCanvas is null, name: " + uiCanvasName);
             mParentCanvas = parentCanvas;
             if (uiCanvasName == uiWidgetParentName) {
                 mParent = parentCanvas;
                 parentCanvas->AddUiItem(std::static_pointer_cast<UiItemBase>(shared_from_this()));
             } else {
                 const auto parent = parentCanvas->TryFindHierarchyChildByName(uiWidgetParentName);
-                assert(parent);
+                ext_assert(parent, "UiItemBase::SetParents: parent is null, name: " + uiWidgetParentName);
                 mParent = parent;
                 parent->AddUiItem(std::static_pointer_cast<UiItemBase>(shared_from_this()));
             }
@@ -241,9 +241,12 @@ void UiItemBase::SetChildrenIsVisible(const bool isVisible)
 
 void UiItemBase::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string& dstUiItemName)
 {
-    assert(dstUiItemName != GetName());
-    assert(UiAnchorPositionHelper::CheckIsAnchorBindingValid(srcAnchor, dstAnchor)); // Wrong anchor binding. srcAnchor
-    assert(TryFindAncestryUiItem(dstUiItemName)); // Try to anchor to ui item which is not parent or sibling
+    ext_assert(dstUiItemName != GetName(), "Cannot anchor to self: " + GetName());
+    ext_assert(
+        UiAnchorPositionHelper::CheckIsAnchorBindingValid(srcAnchor, dstAnchor),
+        "Wrong anchor binding. srcAnchor: " + std::to_string(static_cast<int>(srcAnchor))
+            + ", dstAnchor: " + std::to_string(static_cast<int>(dstAnchor)));
+    ext_assert(TryFindAncestryUiItem(dstUiItemName), "Try to anchor to ui item which is not parent or sibling: " + dstUiItemName);
 
     if (mAnchors.count(srcAnchor)) {
         const auto& anchorData = mAnchors.at(srcAnchor);
@@ -265,7 +268,9 @@ void UiItemBase::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor,
 
 void UiItemBase::SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin)
 {
-    assert(mAnchors.count(anchor) && mAnchors.at(anchor).GetDstAnchor() != eUiAnchor::NONE);
+    ext_assert(
+        mAnchors.count(anchor) && mAnchors.at(anchor).GetDstAnchor() != eUiAnchor::NONE,
+        "Anchor not set for UiItem: " + GetName());
     if (mAnchors.at(anchor).GetSrcAnchorMargin() != anchorMargin) {
         mAnchors[anchor].SetSrcAnchorMargin(anchorMargin);
         SetIsTransformDirty(true);
@@ -296,7 +301,7 @@ size_t UiItemBase::GetUId() const
 std::string UiItemBase::GetName() const
 {
     // Forgot to call Initialize() method
-    assert(std::string("") != mName);
+    ext_assert(std::string("") != mName, "UiItemBase::GetName: UiItem '" + mName + "' not initialized properly.");
     return mName;
 }
 
@@ -409,8 +414,10 @@ void UiItemBase::SetIsPropertiesShouldBeUpdatedOnLuaThread(const bool update)
 void UiItemBase::SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable>& inputReceiver)
 {
     const auto& canvasSp = mParentCanvas.lock();
-    assert(canvasSp);
-    assert(canvasSp->IsInputSystemInitialized());
+    ext_assert(canvasSp, "UiItemBase::SetMouseInputReceiver: parentCanvas is null, name: " + GetName());
+    ext_assert(
+        canvasSp->IsInputSystemInitialized(),
+        "UiItemBase::SetMouseInputReceiver: UiInputSystem is not initialized, name: " + GetName());
     mMouseInputReceiver = inputReceiver;
 }
 
@@ -420,7 +427,9 @@ void UiItemBase::RebuildNormalizedTransform()
         const auto rootWidth = rootParentSp->GetWidth();
         const auto rootHeight = rootParentSp->GetHeight();
         const auto rootOrigin = rootParentSp->GetAbsoluteOrigin();
-        assert(rootWidth != 0 && rootHeight != 0);
+        ext_assert(
+            rootWidth != 0 && rootHeight != 0,
+            "UiItemBase::RebuildNormalizedTransform: rootWidth or rootHeight is zero, name: " + GetName());
         mNormalizedTranslation = glm::vec2(
             (static_cast<float>(mAbsoluteOrigin.x) / static_cast<float>(rootWidth))
                 - (static_cast<float>(rootOrigin.x) / static_cast<float>(rootWidth)),
@@ -460,7 +469,8 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
                 + std::to_string(mUId)); // don't forget to set the width in addition to the horizontal center alignment settings
         const auto& dstAnchor = mAnchors.at(eUiAnchor::HORIZONTAL_CENTER);
         const auto& dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.GetDstUiItemName());
-        assert(dstAnchoringUiItem);
+        ext_assert(
+            dstAnchoringUiItem, "UiItemBase::CalculateHorizontalAnchorPositions: dstAnchoringUiItem is null, name: " + GetName());
         const auto& dstBoundingArea = dstAnchoringUiItem->GetBoundingArea();
         mAbsoluteOrigin.x = dstBoundingArea.GetOrigin().x - (mWidth / 2) + mHorizontalCenterOffset;
     } else {
@@ -475,7 +485,10 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
                 rightAnchorUiItem = TryFindAncestryUiItem(rightAnchor.GetDstUiItemName());
             }
 
-            assert(leftAnchorUiItem && rightAnchorUiItem);
+            ext_assert(
+                leftAnchorUiItem && rightAnchorUiItem,
+                "UiItemBase::CalculateHorizontalAnchorPositions: leftAnchorUiItem or rightAnchorUiItem is null, name: "
+                    + GetName());
             const auto& leftAnchorUiItemBoundingArea = leftAnchorUiItem->GetBoundingArea();
             const auto& rightAnchorUiItemBoundingArea = rightAnchorUiItem->GetBoundingArea();
 
@@ -500,7 +513,8 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
         } else if (mAnchors.count(eUiAnchor::LEFT)) {
             const auto& leftAnchor = mAnchors.at(eUiAnchor::LEFT);
             const auto& leftAnchorUiItem = TryFindAncestryUiItem(leftAnchor.GetDstUiItemName());
-            assert(leftAnchorUiItem);
+            ext_assert(
+                leftAnchorUiItem, "UiItemBase::CalculateHorizontalAnchorPositions: leftAnchorUiItem is null, name: " + GetName());
             const auto& leftAnchorUiItemBoundingArea = leftAnchorUiItem->GetBoundingArea();
 
             const int32_t originX = eUiAnchor::LEFT == leftAnchor.GetDstAnchor()
@@ -510,7 +524,9 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
         } else if (mAnchors.count(eUiAnchor::RIGHT)) {
             const auto& rightAnchor = mAnchors.at(eUiAnchor::RIGHT);
             const auto& rightAnchorUiItem = TryFindAncestryUiItem(rightAnchor.GetDstUiItemName());
-            assert(rightAnchorUiItem);
+            ext_assert(
+                rightAnchorUiItem,
+                "UiItemBase::CalculateHorizontalAnchorPositions: rightAnchorUiItem is null, name: " + GetName());
 
             const auto& rightAnchorUiItemBoundingArea = rightAnchorUiItem->GetBoundingArea();
 
@@ -525,10 +541,11 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
 void UiItemBase::CalculateVerticalAnchorPositions()
 {
     if (mAnchors.count(eUiAnchor::VERTICAL_CENTER)) {
-        assert(mHeight != 0); // don't forget to set the height in addition to the horizontal center alignment settings
+        ext_assert(mHeight != 0, "UiItemBase::CalculateVerticalAnchorPositions: mHeight is zero, name: " + GetName());
         const auto& dstAnchor = mAnchors.at(eUiAnchor::VERTICAL_CENTER);
         const auto& dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.GetDstUiItemName());
-        assert(dstAnchoringUiItem);
+        ext_assert(
+            dstAnchoringUiItem, "UiItemBase::CalculateVerticalAnchorPositions: dstAnchoringUiItem is null, name: " + GetName());
         const auto& dstBoundingArea = dstAnchoringUiItem->GetBoundingArea();
         mAbsoluteOrigin.y = dstBoundingArea.GetOrigin().y - (mHeight / 2) + mVerticalCenterOffset;
     } else {
@@ -543,7 +560,10 @@ void UiItemBase::CalculateVerticalAnchorPositions()
                 topAnchorUiItem = TryFindAncestryUiItem(topAnchor.GetDstUiItemName());
             }
 
-            assert(bottomAnchorUiItem && topAnchorUiItem);
+            ext_assert(
+                bottomAnchorUiItem && topAnchorUiItem,
+                "UiItemBase::CalculateVerticalAnchorPositions: bottomAnchorUiItem or topAnchorUiItem is null, name: "
+                    + GetName());
             const auto& bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
             const auto& topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
 
@@ -567,7 +587,9 @@ void UiItemBase::CalculateVerticalAnchorPositions()
         } else if (mAnchors.count(eUiAnchor::BOTTOM)) {
             const auto& bottomAnchor = mAnchors.at(eUiAnchor::BOTTOM);
             const auto& bottomAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.GetDstUiItemName());
-            assert(bottomAnchorUiItem);
+            ext_assert(
+                bottomAnchorUiItem,
+                "UiItemBase::CalculateVerticalAnchorPositions: bottomAnchorUiItem is null, name: " + GetName());
             const auto& bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
 
             const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor()
@@ -577,7 +599,8 @@ void UiItemBase::CalculateVerticalAnchorPositions()
         } else if (mAnchors.count(eUiAnchor::TOP)) {
             const auto& topAnchor = mAnchors.at(eUiAnchor::TOP);
             const auto& topAnchorUiItem = TryFindAncestryUiItem(topAnchor.GetDstUiItemName());
-            assert(topAnchorUiItem);
+            ext_assert(
+                topAnchorUiItem, "UiItemBase::CalculateVerticalAnchorPositions: topAnchorUiItem is null, name: " + GetName());
 
             const auto& topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
 
@@ -591,7 +614,10 @@ void UiItemBase::CalculateVerticalAnchorPositions()
 
 void UiItemBase::AddUiItem(const std::shared_ptr<UiItemBase>& uiItem)
 {
-    assert(GetName() == uiItem->GetParent().lock()->GetName());
+    ext_assert(
+        GetName() == uiItem->GetParent().lock()->GetName(),
+        "UiItemBase::AddUiItem: uiItem's parent is not this UiItem. uiItem name: " + uiItem->GetName()
+            + ", parent name: " + uiItem->GetParent().lock()->GetName() + ", this name: " + GetName());
 
     RegisterUiItem(uiItem->GetUId(), uiItem->GetName());
     mChildren.emplace_back(uiItem);
@@ -795,7 +821,7 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     }
     if (jsonObj.contains("width")) {
         const auto width = jsonObj["width"].get<size_t>();
-        assert(width > 0);
+        ext_assert(width > 0, "UiItemBase::SyncFromLuaJsonProperties: width is zero, name: " + GetName());
         if (mWidth != width) {
             mWidth = width;
             SetIsTransformDirty(true);
@@ -803,7 +829,7 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     }
     if (jsonObj.contains("height")) {
         const auto height = jsonObj["height"].get<size_t>();
-        assert(height > 0);
+        ext_assert(height > 0, "UiItemBase::SyncFromLuaJsonProperties: height is zero, name: " + GetName());
         if (mHeight != height) {
             mHeight = height;
             SetIsTransformDirty(true);
@@ -836,7 +862,9 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             const auto dstAnchor = static_cast<eUiAnchor>(dstAnchorValue);
 
             if (eUiAnchor::NONE != dstAnchor) {
-                assert(dstUiItemWidgetName != "");
+                ext_assert(
+                    dstUiItemWidgetName != "",
+                    "UiItemBase::SyncFromLuaJsonProperties: dstUiItemWidgetName is empty, name: " + GetName());
                 SetAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName);
                 SetAnchorMargin(srcAnchor, srcAnchorMargin);
             }
@@ -932,7 +960,7 @@ void UiItemBase::SyncDataOnLuaThread()
 void UiItemBase::InitLuaProxy(const std::shared_ptr<Scene>& sceneSp)
 {
     static constexpr uint64_t functionId = Hash64_CT("UiItemBase::InitLuaProxy");
-    assert(sceneSp);
+    ext_assert(sceneSp, "UiItemBase::InitLuaProxy: sceneSp is null, name: " + GetName());
     mIsPendingToAddLuaProxy = false;
     const auto& luaProxy = ReplicateLuaProxy();
     luaProxy->SetSceneWp(sceneSp);
@@ -989,7 +1017,9 @@ void UiItemBase::UpdateCenterOffsetProperties()
             const auto rootWidth = rootParentSp->GetWidth();
             const auto rootHeight = rootParentSp->GetHeight();
             const auto rootOrigin = rootParentSp->GetAbsoluteOrigin();
-            assert(rootWidth != 0 && rootHeight != 0);
+            ext_assert(
+                rootWidth != 0 && rootHeight != 0,
+                "UiItemBase::UpdateCenterOffsetProperties: rootWidth or rootHeight is zero, name: " + GetName());
             const int32_t verticalCenterOffset = mVerticalCenterOffsetProperty->GetValue(),
                           horizontalCenterOffset = mHorizontalCenterOffsetProperty->GetValue();
             normalizedCenterOffset = glm::vec2(

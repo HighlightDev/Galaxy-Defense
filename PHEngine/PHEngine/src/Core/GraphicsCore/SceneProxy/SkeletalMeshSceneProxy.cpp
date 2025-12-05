@@ -62,7 +62,7 @@ void SkeletalMeshSceneProxy::PostConstructorInitialize()
 
     m_skin = MeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
     std::shared_ptr<AnimatedSkin> animatedSkinSp = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
-    assert((animatedSkinSp));
+    ext_assert((animatedSkinSp), "SkeletalMeshSceneProxy::PostConstructorInitialize: Failed to cast Skin to AnimatedSkin");
     mAnimationPlayer = std::make_shared<AnimationPlayer>(animatedSkinSp);
 
     if (const auto& deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock()) {
@@ -77,9 +77,10 @@ void SkeletalMeshSceneProxy::PostConstructorInitialize()
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     const auto& engineObject = sceneSp->GetEngineObjectById(goID);
-                    assert(engineObject);
+                    ext_assert(engineObject, "Engine object not found by ID in SkeletalMeshSceneProxy");
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                    assert(primitiveComponent);
+                    ext_assert(
+                        primitiveComponent, "Failed to cast engine object to PrimitiveComponent in SkeletalMeshSceneProxy");
                     primitiveComponent->SetBoundingBox(boundingBox);
                 });
         }
@@ -201,7 +202,9 @@ RenderInfo SkeletalMeshSceneProxy::GetRenderInfo() const
 void SkeletalMeshSceneProxy::SetMeshModelPath(const std::string& modelPath)
 {
     m_renderData.mModelPath = modelPath;
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "SkeletalMeshSceneProxy::SetMeshModelPath must be called from Render thread");
 
     MeshPoolParameters poolParameters;
     poolParameters.mModelPath = modelPath;
@@ -209,7 +212,7 @@ void SkeletalMeshSceneProxy::SetMeshModelPath(const std::string& modelPath)
 
     m_skin = MeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
     std::shared_ptr<AnimatedSkin> animatedSkinSp = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
-    assert((animatedSkinSp));
+    ext_assert(animatedSkinSp, "SkeletalMeshSceneProxy::SetMeshModelPath: Failed to cast Skin to AnimatedSkin");
     mAnimationPlayer.reset();
     mAnimationPlayer = std::make_shared<AnimationPlayer>(animatedSkinSp);
 
@@ -225,9 +228,11 @@ void SkeletalMeshSceneProxy::SetMeshModelPath(const std::string& modelPath)
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     const auto& engineObject = sceneSp->GetEngineObjectById(goID);
-                    assert(engineObject);
+                    ext_assert(engineObject, "Engine object not found by ID in SkeletalMeshSceneProxy::SetMeshModelPath");
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                    assert(primitiveComponent);
+                    ext_assert(
+                        primitiveComponent,
+                        "Failed to cast engine object to PrimitiveComponent in SkeletalMeshSceneProxy::SetMeshModelPath");
                     primitiveComponent->SetBoundingBox(boundingBox);
                 });
         }

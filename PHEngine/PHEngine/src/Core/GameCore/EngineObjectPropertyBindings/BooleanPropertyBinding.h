@@ -21,7 +21,7 @@ public:
 
     void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<bool>>& gameObjectProperty)
     {
-        assert(gameObjectProperty);
+        ext_assert(gameObjectProperty, "BooleanPropertyBinding::SetEngineObjectProperty: gameObjectProperty is null");
         mGoPropertyWp = gameObjectProperty;
         bPropertyConnected = true;
     }

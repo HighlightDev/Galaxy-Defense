@@ -138,7 +138,7 @@ void GameThreadTimer::StopTimer()
 
 void GameThreadTimer::SetCallback(std::function<void(void)> callback)
 {
-    assert(!mCallback);
+    ext_assert(!mCallback, "Callback is already set for this timer!");
     mCallback = callback;
 }
 

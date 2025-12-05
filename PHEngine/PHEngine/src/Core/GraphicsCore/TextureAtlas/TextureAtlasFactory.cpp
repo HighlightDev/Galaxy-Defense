@@ -183,7 +183,10 @@ void TextureAtlasFactory::AllocateAtlasSpace()
 
 std::shared_ptr<TextureAtlasHandler> TextureAtlasFactory::GetTextureAtlasCellByRequestId(size_t requestId) const
 {
-    assert(mTextureAtlasHandlers.count(requestId));
+    ext_assert(
+        mTextureAtlasHandlers.count(requestId),
+        "TextureAtlasFactory::GetTextureAtlasCellByRequestId: No texture atlas handler for request id: "
+            + std::to_string(requestId));
     return mTextureAtlasHandlers.at(requestId);
 }
 

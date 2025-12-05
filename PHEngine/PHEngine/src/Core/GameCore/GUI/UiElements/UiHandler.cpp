@@ -32,7 +32,7 @@ std::shared_ptr<UiCanvas> UiHandler::CreateDebugCanvas(const ViewPortInfo& canva
 {
     if (!mDebugUiCanvas) {
         const auto& ownerSp = mOwner.lock();
-        assert(ownerSp);
+        ext_assert(ownerSp, "UiHandler::CreateDebugCanvas: ownerSp is null");
         mDebugUiCanvas = std::make_shared<UiCanvas>(canvasScreenSize, "DebugCanvas");
         LogInfo("UiHandler::CreateDebugCanvas: uid = ", mDebugUiCanvas->GetUId());
         mDebugUiCanvas->Initialize();
@@ -49,7 +49,7 @@ std::shared_ptr<UiCanvas> UiHandler::CreateDebugCanvas(const ViewPortInfo& canva
 std::shared_ptr<UiCanvas> UiHandler::CreateCanvas(const ViewPortInfo& canvasScreenSize, const std::string& name)
 {
     const auto& ownerSp = mOwner.lock();
-    assert(ownerSp);
+    ext_assert(ownerSp, "UiHandler::CreateCanvas: ownerSp is null");
     const auto& newCanvas = std::make_shared<UiCanvas>(canvasScreenSize, name);
     LogInfo("UiHandler::CreateCanvas: uid = ", newCanvas->GetUId());
     newCanvas->Initialize();
@@ -65,7 +65,7 @@ std::shared_ptr<UiCanvas> UiHandler::CreateHudCanvas(const ViewPortInfo& canvasS
 {
     if (!mHudCanvas) {
         const auto& ownerSp = mOwner.lock();
-        assert(ownerSp);
+        ext_assert(ownerSp, "UiHandler::CreateHudCanvas: ownerSp is null");
         mHudCanvas = std::make_shared<UiCanvas>(canvasScreenSize, "HudCanvas");
         LogInfo("UiHandler::CreateHudCanvas: uid = ", mHudCanvas->GetUId());
         mHudCanvas->Initialize();

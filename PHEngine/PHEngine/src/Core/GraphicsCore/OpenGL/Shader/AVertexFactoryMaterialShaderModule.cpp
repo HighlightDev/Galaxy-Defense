@@ -34,7 +34,7 @@ void AVertexFactoryMaterialShaderModule::ProcessAllPredefines()
 
 bool AVertexFactoryMaterialShaderModule::AssembleShaderSource()
 {
-    assert(GetBaseShader());
+    ext_assert(GetBaseShader(), "AVertexFactoryMaterialShaderModule::AssembleShaderSource: Base shader is null");
 
     const std::string vertexFactoryShaderSource = mVertexFactoryShader->GetShaderSource();
     const std::string materialShaderSource = mMaterialShader->GetShaderSource();

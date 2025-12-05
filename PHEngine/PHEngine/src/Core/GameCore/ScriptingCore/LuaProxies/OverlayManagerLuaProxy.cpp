@@ -54,9 +54,9 @@ void OverlayManagerLuaProxy::OpenOverlay(const std::string& overlayName)
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "OverlayManagerLuaProxy::OpenOverlay: replicator is null");
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
-                assert(overlayManager);
+                ext_assert(overlayManager, "OverlayManagerLuaProxy::OpenOverlay: overlayManager is null");
                 overlayManager->OpenOverlay(overlayName);
             });
     }
@@ -76,9 +76,9 @@ void OverlayManagerLuaProxy::OpenBackgroundOverlay(const std::string& overlayNam
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "OverlayManagerLuaProxy::OpenBackgroundOverlay: replicator is null");
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
-                assert(overlayManager);
+                ext_assert(overlayManager, "OverlayManagerLuaProxy::OpenBackgroundOverlay: overlayManager is null");
                 overlayManager->OpenBackgroundOverlay(overlayName);
             });
     }
@@ -98,9 +98,9 @@ void OverlayManagerLuaProxy::CloseCurrentOverlay()
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "OverlayManagerLuaProxy::CloseCurrentOverlay: replicator is null");
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
-                assert(overlayManager);
+                ext_assert(overlayManager, "OverlayManagerLuaProxy::CloseCurrentOverlay: overlayManager is null");
                 overlayManager->CloseCurrentOverlay();
             });
     }
@@ -120,9 +120,9 @@ void OverlayManagerLuaProxy::CloseOverlayAndClearHistory()
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "OverlayManagerLuaProxy::CloseOverlayAndClearHistory: replicator is null");
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
-                assert(overlayManager);
+                ext_assert(overlayManager, "OverlayManagerLuaProxy::CloseOverlayAndClearHistory: overlayManager is null");
                 overlayManager->CloseOverlayAndClearHistory();
             });
     }
@@ -142,9 +142,9 @@ void OverlayManagerLuaProxy::CloseBackgroundOverlay(const std::string& overlayNa
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "OverlayManagerLuaProxy::CloseBackgroundOverlay: replicator is null");
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
-                assert(overlayManager);
+                ext_assert(overlayManager, "OverlayManagerLuaProxy::CloseBackgroundOverlay: overlayManager is null");
                 overlayManager->CloseBackgroundOverlay(overlayName);
             });
     }

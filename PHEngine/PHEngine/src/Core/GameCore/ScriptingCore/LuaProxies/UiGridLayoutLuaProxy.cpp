@@ -77,9 +77,9 @@ void UiGridLayoutLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParamet
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiGridLayoutLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& gridLayout = std::static_pointer_cast<::EngineCore::GUI::UiGridLayout>(replicator);
-                assert(gridLayout);
+                ext_assert(gridLayout, "UiGridLayoutLuaProxy::OnLuaThreadDataUpdated: gridLayout is null");
                 gridLayout->SyncFromLuaJsonProperties(jsonStr);
             });
     }

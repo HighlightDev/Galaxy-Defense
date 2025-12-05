@@ -22,7 +22,7 @@ void MaterialUnaryOperationNode::AttachInputNode(std::shared_ptr<MaterialNode> i
 
 std::any MaterialUnaryOperationNode::TraverseGraph()
 {
-    assert(mInputOperation);
+    ext_assert(mInputOperation, "MaterialUnaryOperationNode::TraverseGraph: Input operation is not attached");
     return DoOperation(mInputOperation->TraverseGraph());
 }
 } // namespace Graphics

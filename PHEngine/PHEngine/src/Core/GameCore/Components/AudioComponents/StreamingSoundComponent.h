@@ -21,7 +21,7 @@ public:
 
     ~StreamingSoundComponent() override;
 
-    void Initialize() override;
+    void OnRegistered() override;
 
     void CleanUp() override;
 

@@ -1,5 +1,6 @@
 #include "UiTextBlockSceneProxy.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/Common/UniqueFontTextIdGenerator.h"
@@ -348,9 +349,13 @@ void UiTextBlockSceneProxy::onTextChanged()
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneSp = sceneWp.lock()) {
                     const auto uiItem = sceneSp->GetUiHandler()->GetUiItemByUId(uiItemUId);
-                    assert(uiItem);
+                    ext_assert(
+                        uiItem, "UiTextBlockSceneProxy::onTextChanged: UiItem not found for UId: " + std::to_string(uiItemUId));
                     const auto textBlockSp = std::dynamic_pointer_cast<UiTextBlock>(uiItem);
-                    assert(textBlockSp);
+                    ext_assert(
+                        textBlockSp,
+                        "UiTextBlockSceneProxy::onTextChanged: Failed to cast UiItem to UiTextBlock for UId: "
+                            + std::to_string(uiItemUId));
                     textBlockSp->SetTextNormalizedSize(createdMeshTextWidthHeightNormalized);
                     textBlockSp->SetTextScreenSpaceSize(createdMeshTextWidthHeightScreenSpace);
                 }

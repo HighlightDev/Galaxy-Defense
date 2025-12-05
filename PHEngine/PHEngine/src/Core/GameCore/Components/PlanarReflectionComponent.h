@@ -47,7 +47,7 @@ public:
 
     void Tick(const float deltaTimeSec) override;
 
-    void OnPostInitialized() override;
+    void OnPostRegistered() override;
 
     void PostLevelInit() override;
 

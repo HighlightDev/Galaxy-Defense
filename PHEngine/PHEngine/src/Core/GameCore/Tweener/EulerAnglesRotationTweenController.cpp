@@ -1,5 +1,6 @@
 #include "EulerAnglesRotationTweenController.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/ext/quaternion_float.hpp>
@@ -21,7 +22,10 @@ std::shared_ptr<EulerAnglesRotationPropertyBinding> EulerAnglesRotationTweenCont
 
     if (auto baseSp = mPropertyBinding.lock()) {
         result = std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(baseSp);
-        assert(result);
+        ext_assert(
+            result,
+            "EulerAnglesRotationTweenController::GetRotationPropertyBindingSP: Failed to cast to "
+            "EulerAnglesRotationPropertyBinding");
     }
 
     return result;

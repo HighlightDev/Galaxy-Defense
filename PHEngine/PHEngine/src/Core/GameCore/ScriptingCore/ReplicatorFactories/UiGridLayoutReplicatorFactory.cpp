@@ -20,7 +20,9 @@ int32_t UiGridLayoutReplicatorFactory::CreateReplicator(
     const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp,
     const std::string& jsonParamsStr) const
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        "UiGridLayoutReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto uiItemLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
     std::string name = "";
@@ -41,7 +43,9 @@ int32_t UiGridLayoutReplicatorFactory::CreateReplicator(
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
+                ext_assert(
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    "UiGridLayoutReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiItem = std::make_shared<UiGridLayout>(name);
                 createdUiItem->Initialize();
                 createdUiItem->SetLuaProxyId(uiItemLuaProxyId);

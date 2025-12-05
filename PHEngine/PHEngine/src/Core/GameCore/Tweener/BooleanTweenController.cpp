@@ -1,5 +1,6 @@
 #include "BooleanTweenController.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 namespace EngineCore {
@@ -19,7 +20,7 @@ std::shared_ptr<BooleanPropertyBinding> BooleanTweenController::GetBooleanProper
 
     if (auto baseSp = mPropertyBinding.lock()) {
         result = std::static_pointer_cast<BooleanPropertyBinding>(baseSp);
-        assert(result);
+        ext_assert(result, "BooleanTweenController::GetBooleanPropertyBindingSP: Failed to cast to BooleanPropertyBinding");
     }
 
     return result;

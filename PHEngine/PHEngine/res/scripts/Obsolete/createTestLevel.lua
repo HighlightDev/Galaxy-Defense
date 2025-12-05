@@ -72,6 +72,13 @@ function CreateTestLevel(host)
     _OpenAudioStreams(host, [[piano-loop2.ogg
         ]])
 
+    _CreateFirstPersonCamera("MainCamera", {0, 0, 1920, 1080},
+                             '{"fov": 90, "near": 0.1, "far": 1000}', 0.0, -- pitch
+                             0.0, -- yaw
+    {0, 1.7, 0}, -- position (eye level)
+    1 -- is main
+    )
+
     -- *********************************CREATE MAIN CAMERA******************************** --
     _CreateThirdPersonCamera(host, "MainCamera", 0, 0, _GetWindowWidth(host),
                              _GetWindowHeight(host), Json.encode({
@@ -446,9 +453,9 @@ function CreateTestLevel(host)
             gameObjectName = "SkeletInputComponent"
         }))
 
-    _CreateActorController(host, "DefaultActorControllerCreatorFactory",
-                           "SkeletActor", "HumanoidPlayerController",
-                           Json.encode({cameraName = "MainCamera"}))
+    -- _CreateActorController(host, "DefaultActorControllerCreatorFactory",
+    --                        "SkeletActor", "HumanoidPlayerController",
+    --                        Json.encode({cameraName = "MainCamera"}))
 
     -- local skeletAnimationTweener = _CreateTweener(host, a_skelet, "playerAnimation.tween")
     -- _SetTweenerBinding(host, a_skelet, skeletAnimationTweener, "SkeletMeshComponent", "animationBinding", "")

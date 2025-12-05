@@ -26,9 +26,12 @@ void LuaScriptProcessor::Tick(const float deltaTimeSec)
 void LuaScriptProcessor::RegisterLuaScriptExecutor(
     const std::shared_ptr<::EngineCore::Scripts::LuaScriptExecutorBase>& luaExecutor)
 {
-    assert(!std::any_of(mLuaScriptExecutors.begin(), mLuaScriptExecutors.end(), [&](const auto& scriptExecutor) {
-        return scriptExecutor->GetUId() == luaExecutor->GetUId();
-    }));
+    ext_assert(
+        !std::any_of(
+            mLuaScriptExecutors.begin(),
+            mLuaScriptExecutors.end(),
+            [&](const auto& scriptExecutor) { return scriptExecutor->GetUId() == luaExecutor->GetUId(); }),
+        "LuaScriptProcessor::RegisterLuaScriptExecutor: LuaScriptExecutor with the same UId already registered");
     mLuaScriptExecutors.emplace_back(luaExecutor);
     luaExecutor->SetLuaScriptProcessor(shared_from_this());
     luaExecutor->SetScene(m_interThreadMgr.GetSceneWP());
@@ -37,9 +40,12 @@ void LuaScriptProcessor::RegisterLuaScriptExecutor(
 
 void LuaScriptProcessor::UnregisterLuaScriptExecutor(const size_t uid)
 {
-    assert(std::any_of(mLuaScriptExecutors.begin(), mLuaScriptExecutors.end(), [uid](const auto& scriptExecutor) {
-        return scriptExecutor->GetUId() == uid;
-    }));
+    ext_assert(
+        std::any_of(
+            mLuaScriptExecutors.begin(),
+            mLuaScriptExecutors.end(),
+            [uid](const auto& scriptExecutor) { return scriptExecutor->GetUId() == uid; }),
+        "LuaScriptProcessor::UnregisterLuaScriptExecutor: LuaScriptExecutor with provided UId not found");
 
     mLuaScriptExecutors.erase(
         std::remove_if(mLuaScriptExecutors.begin(), mLuaScriptExecutors.end(), [uid](const auto& scriptExecutor) {
@@ -82,20 +88,22 @@ std::shared_ptr<OverlayManagerLuaProxy> LuaScriptProcessor::GetOverlayManagerLua
 
 void LuaScriptProcessor::SetOverlayManagerLuaProxy(const std::shared_ptr<OverlayManagerLuaProxy>& overlayManagerLuaProxy)
 {
-    assert(overlayManagerLuaProxy);
+    ext_assert(overlayManagerLuaProxy, "LuaScriptProcessor::SetOverlayManagerLuaProxy: overlayManagerLuaProxy is nullptr");
     mOverlayManagerLuaProxy = overlayManagerLuaProxy;
 }
 
 void LuaScriptProcessor::AddLuaProxy(const std::shared_ptr<LuaProxy>& luaProxy)
 {
-    assert(!GetLuaProxy(luaProxy->GetLuaProxyId()));
+    ext_assert(
+        !GetLuaProxy(luaProxy->GetLuaProxyId()),
+        "LuaScriptProcessor::AddLuaProxy: LuaProxy with the same LuaProxyId already exists");
     mLuaProxies.emplace_back(luaProxy);
 }
 
 void LuaScriptProcessor::RemoveLuaProxy(const int32_t luaProxyId)
 {
     const auto& luaProxySp = GetLuaProxy(luaProxyId);
-    assert(luaProxySp);
+    ext_assert(luaProxySp, "LuaScriptProcessor::RemoveLuaProxy: LuaProxy with provided LuaProxyId not found");
     luaProxySp->CleanUp();
     mLuaProxies.erase(std::remove_if(mLuaProxies.begin(), mLuaProxies.end(), [luaProxyId](const auto& luaProxySp) {
         return luaProxySp->GetLuaProxyId() == luaProxyId;

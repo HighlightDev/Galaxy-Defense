@@ -29,9 +29,9 @@ InstancedStaticMeshComponent::~InstancedStaticMeshComponent()
 {
 }
 
-void InstancedStaticMeshComponent::OnPostInitialized()
+void InstancedStaticMeshComponent::OnPostRegistered()
 {
-    PrimitiveComponent::OnPostInitialized();
+    PrimitiveComponent::OnPostRegistered();
 
     if (const auto& sceneSp = m_sceneWP.lock()) {
         const auto thisSp = std::static_pointer_cast<InstancedStaticMeshComponent>(shared_from_this());
@@ -83,7 +83,7 @@ std::shared_ptr<IMaterial> InstancedStaticMeshComponent::GetMaterial() const
     if (const auto& sceneSP = m_sceneWP.lock()) {
         materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
     }
-    assert(materialResult != nullptr);
+    ext_assert(materialResult != nullptr, "InstancedStaticMeshComponent::GetMaterial: materialResult is null");
     return materialResult;
 }
 

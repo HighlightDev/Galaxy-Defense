@@ -74,9 +74,9 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     const auto& engineObject = sceneSp->GetEngineObjectById(goID);
-                    assert(engineObject);
+                    ext_assert(engineObject, "Engine object not found by ID in StaticMeshSceneProxy");
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                    assert(primitiveComponent);
+                    ext_assert(primitiveComponent, "Failed to cast engine object to PrimitiveComponent in StaticMeshSceneProxy");
                     primitiveComponent->SetBoundingBox(boundingBox);
                 });
         }
@@ -196,7 +196,9 @@ RenderInfo StaticMeshSceneProxy::GetRenderInfo() const
 void StaticMeshSceneProxy::SetMeshModelPath(const std::string& modelPath)
 {
     m_renderData.mModelPath = modelPath;
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "StaticMeshSceneProxy::SetMeshModelPath must be called from Render thread");
 
     MeshPoolParameters poolParameters;
     poolParameters.mModelPath = modelPath;
@@ -217,9 +219,11 @@ void StaticMeshSceneProxy::SetMeshModelPath(const std::string& modelPath)
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     const auto& engineObject = sceneSp->GetEngineObjectById(goID);
-                    assert(engineObject);
+                    ext_assert(engineObject, "Engine object not found by ID in StaticMeshSceneProxy::SetMeshModelPath");
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                    assert(primitiveComponent);
+                    ext_assert(
+                        primitiveComponent,
+                        "Failed to cast engine object to PrimitiveComponent in StaticMeshSceneProxy::SetMeshModelPath");
                     primitiveComponent->SetBoundingBox(boundingBox);
                 });
         }

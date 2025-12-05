@@ -127,7 +127,7 @@ void MeshDataCollector::StoreIndices(size_t meshBaseVertexIndex, const aiMesh* p
 
     for (size_t faceIndex = 0; faceIndex < countOfFaces; faceIndex++) {
         const aiFace& face = pMesh->mFaces[faceIndex];
-        assert(face.mNumIndices == 3);
+        ext_assert(face.mNumIndices == 3, "Only triangular faces are supported");
         VertexIndices.emplace_back(face.mIndices[0] + meshBaseVertexIndex);
         VertexIndices.emplace_back(face.mIndices[1] + meshBaseVertexIndex);
         VertexIndices.emplace_back(face.mIndices[2] + meshBaseVertexIndex);

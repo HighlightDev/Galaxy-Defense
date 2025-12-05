@@ -23,7 +23,10 @@ std::any MaterialBinaryAddOperationNode::DoOperation(const std::any& left, const
         return std::any_cast<glm::vec2>(left) + std::any_cast<glm::vec2>(right);
     }
 
-    assert(false);
+    ext_assert(
+        false,
+        "MaterialBinaryAddOperationNode::DoOperation: Unsupported material property type for BINARY_ADD operation: "
+            + std::to_string(static_cast<int>(GetMaterialPropertyType())));
     return {};
 }
 } // namespace Graphics

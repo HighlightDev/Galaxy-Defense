@@ -21,7 +21,7 @@ int32_t EngineObject::GetObjectId() const
 
 void EngineObject::AddEngineProperty(const std::shared_ptr<EngineObjectPropertyBase>& goPtr)
 {
-    assert((!mEngineProperties.count(goPtr->Key)));
+    ext_assert((!mEngineProperties.count(goPtr->Key)), "EngineObjectProperty with key " + goPtr->Key + " already exists");
     mEngineProperties[goPtr->Key] = goPtr;
 }
 

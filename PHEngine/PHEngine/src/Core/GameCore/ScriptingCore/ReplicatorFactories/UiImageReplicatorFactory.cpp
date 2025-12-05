@@ -19,7 +19,9 @@ int32_t UiImageReplicatorFactory::CreateReplicator(
     const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp,
     const std::string& jsonParamsStr) const
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        "UiImageReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto uiImageLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
     std::string name = "";
@@ -40,7 +42,9 @@ int32_t UiImageReplicatorFactory::CreateReplicator(
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
+                ext_assert(
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    "UiImageReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiImage = std::make_shared<UiImage>(name);
                 createdUiImage->Initialize();
                 createdUiImage->SetLuaProxyId(uiImageLuaProxyId);

@@ -184,7 +184,7 @@ private:
     FORCEINLINE static std::string Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isstring(state, currentStackIndex));
+        ext_assert(lua_isstring(state, currentStackIndex), "Expected string at stack index " + std::to_string(currentStackIndex));
         return lua_tostring(state, currentStackIndex);
     }
 };
@@ -206,7 +206,8 @@ private:
     FORCEINLINE static int64_t Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isinteger(state, currentStackIndex));
+        ext_assert(
+            lua_isinteger(state, currentStackIndex), "Expected integer at stack index " + std::to_string(currentStackIndex));
         return lua_tointeger(state, currentStackIndex);
     }
 };
@@ -228,7 +229,8 @@ private:
     FORCEINLINE static bool Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isboolean(state, currentStackIndex));
+        ext_assert(
+            lua_isboolean(state, currentStackIndex), "Expected boolean at stack index " + std::to_string(currentStackIndex));
         return lua_toboolean(state, currentStackIndex);
     }
 };
@@ -250,7 +252,7 @@ private:
     FORCEINLINE static double Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isnumber(state, currentStackIndex));
+        ext_assert(lua_isnumber(state, currentStackIndex), "Expected number at stack index " + std::to_string(currentStackIndex));
         return lua_tonumber(state, currentStackIndex);
     }
 };
@@ -272,7 +274,8 @@ private:
     FORCEINLINE static int32_t Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isinteger(state, currentStackIndex));
+        ext_assert(
+            lua_isinteger(state, currentStackIndex), "Expected integer at stack index " + std::to_string(currentStackIndex));
         return (int32_t)lua_tointeger(state, currentStackIndex);
     }
 };
@@ -294,7 +297,7 @@ private:
     FORCEINLINE static float Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
-        assert(lua_isnumber(state, currentStackIndex));
+        ext_assert(lua_isnumber(state, currentStackIndex), "Expected number at stack index " + std::to_string(currentStackIndex));
         return (float)lua_tonumber(state, currentStackIndex);
     }
 };
@@ -502,7 +505,7 @@ struct LuaFunctionInvoker<RetType(Args...)> {
     FORCEINLINE static RetType Invoke(const LuaWrapper& instanceWrapper, const std::string& functionName, TArgs&&... args)
     {
         lua_getglobal(instanceWrapper.GetState(), functionName.c_str());
-        assert(lua_isfunction(instanceWrapper.GetState(), -1));
+        ext_assert(lua_isfunction(instanceWrapper.GetState(), -1), "Expected function at stack index -1");
 
         LuaInnerCore::LuaMultipleValuesPusher<TArgs...>::Push(instanceWrapper, std::forward<TArgs>(args)...);
 
@@ -512,7 +515,7 @@ struct LuaFunctionInvoker<RetType(Args...)> {
 #ifdef DEBUG
         const auto& errorMsg = instanceWrapper.GetErrorMessageAt(-1);
         if (errorMsg.size() > 1) {
-            std::cout << "ERROR: Lua script execution failed:" << errorMsg << std::endl;
+            LogInfo("ERROR: Lua script execution failed:", errorMsg);
             assert(false);
         }
 #endif
@@ -529,7 +532,7 @@ struct LuaFunctionInvoker<void(Args...)> {
     FORCEINLINE static void Invoke(const LuaWrapper& instanceWrapper, const std::string& functionName, TArgs&&... args)
     {
         lua_getglobal(instanceWrapper.GetState(), functionName.c_str());
-        assert(lua_isfunction(instanceWrapper.GetState(), -1));
+        ext_assert(lua_isfunction(instanceWrapper.GetState(), -1), "Expected function at stack index -1");
 
         LuaInnerCore::LuaMultipleValuesPusher<TArgs...>::Push(instanceWrapper, std::forward<TArgs>(args)...);
 
@@ -565,9 +568,9 @@ private:
     FORCEINLINE static int InnerInvokeCallback(lua_State* state)
     {
         using namespace LuaInnerCore;
-        assert(lua_gettop(state) != 0); // Check missing host data
+        ext_assert(lua_gettop(state) != 0, "Check missing host data"); // Check missing host data
         auto ownerPtr = lua_touserdata(state, 1);
-        assert(ownerPtr);
+        ext_assert(ownerPtr, "Check invalid host data"); // Check invalid host data
 
         static constexpr size_t argsCount = sizeof...(ArgsType);
         auto topStackIndex = ArgsCounter<args_t, argsCount - 1>::value + 1; // + 1 because of host data at index 1

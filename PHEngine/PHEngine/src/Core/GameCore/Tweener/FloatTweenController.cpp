@@ -1,5 +1,6 @@
 #include "FloatTweenController.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 namespace EngineCore {
@@ -19,7 +20,7 @@ std::shared_ptr<FloatPropertyBinding> FloatTweenController::GetFloatPropertyBind
 
     if (auto baseSp = mPropertyBinding.lock()) {
         result = std::static_pointer_cast<FloatPropertyBinding>(baseSp);
-        assert(result);
+        ext_assert(result, "FloatTweenController::GetFloatPropertyBindingSP: Failed to cast to FloatPropertyBinding");
     }
 
     return result;

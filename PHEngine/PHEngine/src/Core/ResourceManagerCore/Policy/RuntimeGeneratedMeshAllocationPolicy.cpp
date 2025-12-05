@@ -43,7 +43,12 @@ std::shared_ptr<Skin> RuntimeGeneratedMeshAllocationPolicy::AllocateMemory(const
             }
         }
 
-        assert(vao->GetVertexBufferObjects().size());
+        if (arg.mMaxIndicesCount > 0) {
+            const auto ibo = new IndexBufferObject(std::vector<uint32_t>(arg.mMaxIndicesCount), eDataCarryFlag::INVALIDATE);
+            vao->SetIBO(ibo);
+        }
+
+        ext_assert(vao->GetVBOs().size(), "Runtime generated mesh VAO must have at least one VBO");
         vao->BindBuffersToVao();
 
         resultSkin = std::make_shared<Skin>(vao, BoundingBox3D(), arg.mComponentName);

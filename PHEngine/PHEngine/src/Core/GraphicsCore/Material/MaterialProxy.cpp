@@ -63,7 +63,7 @@ void MaterialProxy::UpdateProperty(std::shared_ptr<MaterialProperty> property)
     auto propertyIt = std::find_if(mProperties.begin(), mProperties.end(), [&](const auto& property) {
         return property->GetPropertyName() == propertyName;
     });
-    assert(propertyIt != mProperties.end());
+    ext_assert(propertyIt != mProperties.end(), "MaterialProxy::UpdateProperty: Property not found in proxy: " + propertyName);
 
     const auto propType = property->GetPropertyType();
     if (propType == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY) {

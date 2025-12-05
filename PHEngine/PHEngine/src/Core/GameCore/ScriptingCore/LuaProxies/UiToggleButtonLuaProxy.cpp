@@ -35,9 +35,9 @@ void UiToggleButtonLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParam
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiToggleButtonLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& uiToggleButton = std::static_pointer_cast<::EngineCore::GUI::UiToggleButton>(replicator);
-                assert(uiToggleButton);
+                ext_assert(uiToggleButton, "UiToggleButtonLuaProxy::OnLuaThreadDataUpdated: uiToggleButton is null");
                 uiToggleButton->SyncFromLuaJsonProperties(jsonStr);
             });
     }
@@ -74,9 +74,9 @@ void UiToggleButtonLuaProxy::EnableMouseInputReceiver()
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiToggleButtonLuaProxy::EnableMouseInputReceiver: replicator is null");
                 const auto& uiToggleButton = std::static_pointer_cast<::EngineCore::GUI::UiToggleButton>(replicator);
-                assert(uiToggleButton);
+                ext_assert(uiToggleButton, "UiToggleButtonLuaProxy::EnableMouseInputReceiver: uiToggleButton is null");
                 uiToggleButton->SetMouseInputReceiver(std::make_shared<UiMouseInputReceiverToggleButton>(uiToggleButton));
             });
     }

@@ -25,7 +25,9 @@ public:
 
     virtual ~Component();
 
-    virtual void Initialize();
+    virtual void OnRegistered();
+
+    virtual void OnUnregistered();
 
     virtual void CleanUp();
 
@@ -51,7 +53,7 @@ public:
 
     virtual void SetIsEnabled(const bool bEnabled);
 
-    virtual void OnPostInitialized();
+    virtual void OnPostRegistered();
 
     virtual void OnPostOwnerInitialized();
 

@@ -107,7 +107,9 @@ void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<IParticleM
     auto foundSameModuleIt = std::find_if(mParticleModules.begin(), mParticleModules.end(), [=](const auto& particleModule) {
         return particleModule->GetParticleModuleType() == newModuleType;
     });
-    assert(foundSameModuleIt == mParticleModules.end());
+    ext_assert(
+        foundSameModuleIt == mParticleModules.end(),
+        "Particle module of the same type is already added to ParticleSystemComponent");
     mParticleModules.emplace_back(particleModule);
     std::sort(mParticleModules.begin(), mParticleModules.end(), [](const auto& leftModule, const auto& rightModule) {
         return (uint8_t)leftModule->GetParticleModuleType() < (uint8_t)rightModule->GetParticleModuleType();
@@ -180,7 +182,7 @@ ParticlesRawDataHandler& ParticleSystemComponent::GetParticlesRawDataHandler()
 
 void ParticleSystemComponent::SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter)
 {
-    assert(!mParticleEmitter);
+    ext_assert(!mParticleEmitter, "Particle emitter is already set for ParticleSystemComponent");
     mParticleEmitter = emitter;
 }
 

@@ -19,7 +19,7 @@ ParticlesRawDataHandler::ParticlesRawDataHandler(const size_t particlesCount)
     , mRotationSizeData(nullptr)
     , mColorData(nullptr)
 {
-    assert(particlesCount);
+    ext_assert(particlesCount, "ParticlesRawDataHandler::ctor: particlesCount is zero");
     AllocatePoolMemory();
 }
 
@@ -30,8 +30,10 @@ ParticlesRawDataHandler::~ParticlesRawDataHandler()
 
 void ParticlesRawDataHandler::SubTranslationData(const size_t byteDataOffset, const glm::vec3& translation)
 {
-    assert(mTranslationData);
-    assert(byteDataOffset <= (mTranslationDataSize - GetTranslationVectorByteDataOffset()));
+    ext_assert(mTranslationData, "ParticlesRawDataHandler::SubTranslationData: mTranslationData is null");
+    ext_assert(
+        byteDataOffset <= (mTranslationDataSize - GetTranslationVectorByteDataOffset()),
+        "ParticlesRawDataHandler::SubTranslationData: byteDataOffset out of range");
 
     float* f_data = (float*)((char*)mTranslationData + byteDataOffset);
     f_data[0] = translation.x;
@@ -41,8 +43,10 @@ void ParticlesRawDataHandler::SubTranslationData(const size_t byteDataOffset, co
 
 void ParticlesRawDataHandler::SubRotationSizeData(const size_t byteDataOffset, const float rotation, const float size)
 {
-    assert(mRotationSizeData);
-    assert(byteDataOffset <= (mRotationSizeDataSize - GetRotationSizeByteDataOffset()));
+    ext_assert(mRotationSizeData, "ParticlesRawDataHandler::SubRotationSizeData: mRotationSizeData is null");
+    ext_assert(
+        byteDataOffset <= (mRotationSizeDataSize - GetRotationSizeByteDataOffset()),
+        "ParticlesRawDataHandler::SubRotationSizeData: byteDataOffset out of range");
 
     float* f_data = (float*)((char*)mRotationSizeData + byteDataOffset);
     f_data[0] = rotation;
@@ -51,8 +55,10 @@ void ParticlesRawDataHandler::SubRotationSizeData(const size_t byteDataOffset, c
 
 void ParticlesRawDataHandler::SubColorData(const size_t byteDataOffset, const glm::vec4& color)
 {
-    assert(mColorData);
-    assert(byteDataOffset <= (mColorDataSize - GetColorByteDataOffset()));
+    ext_assert(mColorData, "ParticlesRawDataHandler::SubColorData: mColorData is null");
+    ext_assert(
+        byteDataOffset <= (mColorDataSize - GetColorByteDataOffset()),
+        "ParticlesRawDataHandler::SubColorData: byteDataOffset out of range");
 
     float* f_data = (float*)((char*)mColorData + byteDataOffset);
     f_data[0] = color.x;
@@ -78,19 +84,25 @@ void* ParticlesRawDataHandler::CopyToDstActiveColorData(void* dst)
 
 void ParticlesRawDataHandler::CopyToMeActiveTranslationData(const void* src, const size_t offset, const size_t byteChunkSize)
 {
-    assert(mTranslationDataSize >= (byteChunkSize - offset));
+    ext_assert(
+        mTranslationDataSize >= (byteChunkSize - offset),
+        "ParticlesRawDataHandler::CopyToMeActiveTranslationData: byteChunkSize and offset out of range");
     (void)memcpy((void*)((char*)mTranslationData + offset), src, byteChunkSize);
 }
 
 void ParticlesRawDataHandler::CopyToMeActiveRotationSizeData(const void* src, const size_t offset, const size_t byteChunkSize)
 {
-    assert(mRotationSizeDataSize >= (byteChunkSize - offset));
+    ext_assert(
+        mRotationSizeDataSize >= (byteChunkSize - offset),
+        "ParticlesRawDataHandler::CopyToMeActiveRotationSizeData: byteChunkSize and offset out of range");
     (void)memcpy((void*)((char*)mRotationSizeData + offset), src, byteChunkSize);
 }
 
 void ParticlesRawDataHandler::CopyToMeActiveColorData(const void* src, const size_t offset, const size_t byteChunkSize)
 {
-    assert(mColorDataSize >= (byteChunkSize - offset));
+    ext_assert(
+        mColorDataSize >= (byteChunkSize - offset),
+        "ParticlesRawDataHandler::CopyToMeActiveColorData: byteChunkSize and offset out of range");
     (void)memcpy((void*)((char*)mColorData + offset), src, byteChunkSize);
 }
 
@@ -111,19 +123,25 @@ void ParticlesRawDataHandler::ResetColorData()
 
 void ParticlesRawDataHandler::SetTranslationActiveDataChunkSize(const size_t activeDataChunkSize)
 {
-    assert(activeDataChunkSize <= mTranslationDataSize);
+    ext_assert(
+        activeDataChunkSize <= mTranslationDataSize,
+        "ParticlesRawDataHandler::SetTranslationActiveDataChunkSize: activeDataChunkSize out of range");
     mTranslationActiveDataChunkSize = activeDataChunkSize;
 }
 
 void ParticlesRawDataHandler::SetRotationSizeActiveDataChunkSize(const size_t activeDataChunkSize)
 {
-    assert(activeDataChunkSize <= mRotationSizeDataSize);
+    ext_assert(
+        activeDataChunkSize <= mRotationSizeDataSize,
+        "ParticlesRawDataHandler::SetRotationSizeActiveDataChunkSize: activeDataChunkSize out of range");
     mRotationSizeActiveDataChunkSize = activeDataChunkSize;
 }
 
 void ParticlesRawDataHandler::SetColorActiveDataChunkSize(const size_t activeDataChunkSize)
 {
-    assert(activeDataChunkSize <= mColorDataSize);
+    ext_assert(
+        activeDataChunkSize <= mColorDataSize,
+        "ParticlesRawDataHandler::SetColorActiveDataChunkSize: activeDataChunkSize out of range");
     mColorActiveDataChunkSize = activeDataChunkSize;
 }
 

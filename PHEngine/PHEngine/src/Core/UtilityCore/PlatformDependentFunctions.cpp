@@ -45,12 +45,12 @@ std::string GetExecutablePath()
         std::string exeFilePathStr = exeFilePathCharPtr;
         delete exeFilePathCharPtr;
         size_t indexToCurrentDir = LastIndexOf(exeFilePathStr, "\\");
-        assert(std::string::npos != indexToCurrentDir);
+        ext_assert(std::string::npos != indexToCurrentDir, "EngineUtility::GetExecutablePath: Invalid executable path");
         sPATH_TO_EXE = exeFilePathStr.substr(0, indexToCurrentDir);
 #elif __linux__
         const std::string& fullPath = get_module_file_name();
         const auto indexOfExecutable = LastIndexOf(fullPath, "/");
-        assert(indexOfExecutable != std::string::npos);
+        ext_assert(indexOfExecutable != std::string::npos, "EngineUtility::GetExecutablePath: Invalid executable path");
         sPATH_TO_EXE = fullPath.substr(0, indexOfExecutable + 1);
 #endif
     }

@@ -24,7 +24,10 @@ std::any MaterialUnaryDecrementNode::DoOperation(const std::any& value)
         return std::any_cast<glm::vec2>(value) - 1.0f;
     }
 
-    assert(false);
+    ext_assert(
+        false,
+        "MaterialUnaryDecrementNode::DoOperation: Unsupported material property type for UNARY_DECREMENT operation: "
+            + std::to_string(static_cast<int>(GetMaterialPropertyType())));
     return {};
 }
 } // namespace Graphics

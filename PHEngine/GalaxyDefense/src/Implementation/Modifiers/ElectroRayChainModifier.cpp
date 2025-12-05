@@ -23,7 +23,7 @@ ElectroRayChainModifier::ElectroRayChainModifier(
 void ElectroRayChainModifier::Initialize(const std::shared_ptr<::Game::ElectroRayChainActor>& electroRayChainActor)
 {
     mElectroRayChainActor = electroRayChainActor;
-    assert(mElectroRayChainActor);
+    ext_assert(mElectroRayChainActor, "ElectroRayChainModifier actor pointer is null");
     mElectroRayChainActor->SetStartLineSpaceship(mChainSrc.second);
     mElectroRayChainActor->SetEndLineSpaceship(mChainDst.second);
     mElectroRayChainActor->TriggerSpawn({}, {}, 0.0f, eDamageDealerType::MAIN_PLAYER, mChainSrc.second.lock());
@@ -37,7 +37,7 @@ eModifierType ElectroRayChainModifier::GetModifierType() const
 int32_t ElectroRayChainModifier::CreatorObjectId() const
 {
     const auto& chainDstSp = mChainDst.second.lock();
-    assert(chainDstSp);
+    ext_assert(chainDstSp, "ElectroRayChainModifier chain destination pointer is null");
     return chainDstSp->GetObjectId();
 }
 

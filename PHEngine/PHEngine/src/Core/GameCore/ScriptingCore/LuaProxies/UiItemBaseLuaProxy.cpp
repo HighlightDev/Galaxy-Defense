@@ -134,9 +134,9 @@ void UiItemBaseLuaProxy::SetParent(const std::string& canvasName, const std::str
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiItemBaseLuaProxy::SetParent: replicator is null");
                 const auto& uiItemBase = std::static_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
-                assert(uiItemBase);
+                ext_assert(uiItemBase, "UiItemBaseLuaProxy::SetParent: uiItemBase is null");
                 uiItemBase->SetParents(canvasName, parentName);
             });
     }
@@ -156,9 +156,9 @@ void UiItemBaseLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameter
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiItemBaseLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& uiItemBase = std::static_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
-                assert(uiItemBase);
+                ext_assert(uiItemBase, "UiItemBaseLuaProxy::OnLuaThreadDataUpdated: uiItemBase is null");
                 uiItemBase->SyncFromLuaJsonProperties(jsonStr);
             });
     }
@@ -227,9 +227,9 @@ void UiItemBaseLuaProxy::AddAnimation(const std::string& animationName, const An
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiItemBaseLuaProxy::AddAnimation: replicator is null");
                 const auto& uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
-                assert(uiItemBase);
+                ext_assert(uiItemBase, "UiItemBaseLuaProxy::AddAnimation: uiItemBase is null");
                 uiItemBase->AddAnimation(animationName, animationData);
             });
     }
@@ -249,9 +249,9 @@ void UiItemBaseLuaProxy::AddSequenceAnimation(const std::string& animationName, 
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiItemBaseLuaProxy::AddSequenceAnimation: replicator is null");
                 const auto& uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
-                assert(uiItemBase);
+                ext_assert(uiItemBase, "UiItemBaseLuaProxy::AddSequenceAnimation: uiItemBase is null");
                 uiItemBase->AddSequenceAnimation(animationName, animationSequence);
             });
     }
@@ -271,11 +271,13 @@ void UiItemBaseLuaProxy::StartAnimation(const std::string& animationName)
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiItemBaseLuaProxy::StartAnimation: replicator is null");
                 const auto& uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
-                assert(uiItemBase);
+                ext_assert(uiItemBase, "UiItemBaseLuaProxy::StartAnimation: uiItemBase is null");
                 const auto& animator = uiItemBase->GetAnimator();
-                assert(animator && animator->HasAnimation(animationName));
+                ext_assert(
+                    animator && animator->HasAnimation(animationName),
+                    "UiItemBaseLuaProxy::StartAnimation: animator is null or has no such animation");
                 animator->StartAnimation(animationName);
             });
     }
@@ -295,11 +297,13 @@ void UiItemBaseLuaProxy::StartSequenceAnimation(const std::string& animationSequ
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiItemBaseLuaProxy::StartSequenceAnimation: replicator is null");
                 const auto& uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
-                assert(uiItemBase);
+                ext_assert(uiItemBase, "UiItemBaseLuaProxy::StartSequenceAnimation: uiItemBase is null");
                 const auto& sequenceAnimator = uiItemBase->GetSequenceAnimator();
-                assert(sequenceAnimator && sequenceAnimator->HasAnimation(animationSequenceName));
+                ext_assert(
+                    sequenceAnimator && sequenceAnimator->HasAnimation(animationSequenceName),
+                    "UiItemBaseLuaProxy::StartSequenceAnimation: sequenceAnimator is null or has no such animation");
                 sequenceAnimator->StartSequenceAnimation(animationSequenceName);
             });
     }
@@ -328,9 +332,9 @@ void UiItemBaseLuaProxy::EnableMouseInputReceiverBase()
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiItemBaseLuaProxy::EnableMouseInputReceiver: replicator is null");
                 const auto& uiItemBase = std::static_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
-                assert(uiItemBase);
+                ext_assert(uiItemBase, "UiItemBaseLuaProxy::EnableMouseInputReceiver: uiItemBase is null");
                 const auto mouseInputReceiverBase = std::make_shared<UiMouseInputReceiverBase>(uiItemBase);
                 uiItemBase->SetMouseInputReceiver(mouseInputReceiverBase);
                 mouseInputReceiverBase->SetMouseClickedCallback(

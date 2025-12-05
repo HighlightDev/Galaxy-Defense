@@ -29,8 +29,8 @@ void MaterialBinaryOperationNode::AttachInputNode(std::shared_ptr<MaterialNode> 
 
 std::any MaterialBinaryOperationNode::TraverseGraph()
 {
-    assert(mInputOperationA);
-    assert(mInputOperationB);
+    ext_assert(mInputOperationA, "MaterialBinaryOperationNode::TraverseGraph: Input operation A is not attached");
+    ext_assert(mInputOperationB, "MaterialBinaryOperationNode::TraverseGraph: Input operation B is not attached");
     return DoOperation(mInputOperationA->TraverseGraph(), mInputOperationB->TraverseGraph());
 }
 

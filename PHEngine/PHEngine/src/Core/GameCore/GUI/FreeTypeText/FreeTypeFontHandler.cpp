@@ -39,7 +39,9 @@ void FreeTypeFontBatcher::RegisterText(const std::shared_ptr<FreeTypeTextFieldPr
     const auto it = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto& textFieldSp) {
         return textFieldSp->GetTextFieldId() == textFieldProxy->GetTextFieldId();
     });
-    assert(it == mTextFields.end());
+    ext_assert(
+        it == mTextFields.end(),
+        "Text field with ID " + std::to_string(textFieldProxy->GetTextFieldId()) + " is already registered");
 
     mTextFields.emplace_back(textFieldProxy);
     if (textFieldProxy->GetText() != "") // if text is empty - skip allocation
@@ -51,7 +53,9 @@ void FreeTypeFontBatcher::RegisterText(const std::shared_ptr<FreeTypeTextFieldPr
 void FreeTypeFontBatcher::UnregisterText(const int32_t textFieldId)
 {
     const auto freeTypeTextProxy = GetFreeTypeTextFieldById(textFieldId);
-    assert(freeTypeTextProxy != nullptr);
+    ext_assert(
+        freeTypeTextProxy != nullptr,
+        "FreeTypeFontBatcher::UnregisterText: text field proxy is null for ID " + std::to_string(textFieldId));
     mTextFields.erase(std::remove_if(
         mTextFields.begin(), mTextFields.end(), [=](const auto& mProxy) { return textFieldId == mProxy->GetTextFieldId(); }));
 
@@ -61,21 +65,27 @@ void FreeTypeFontBatcher::UnregisterText(const int32_t textFieldId)
 void FreeTypeFontBatcher::TextPositionChanged(const int32_t textFieldId, const glm::vec2& position)
 {
     const auto freeTypeTextProxy = GetFreeTypeTextFieldById(textFieldId);
-    assert(freeTypeTextProxy != nullptr);
+    ext_assert(
+        freeTypeTextProxy != nullptr,
+        "FreeTypeFontBatcher::TextPositionChanged: text field proxy is null for ID " + std::to_string(textFieldId));
     freeTypeTextProxy->SetPosition(position);
 }
 
 void FreeTypeFontBatcher::TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color)
 {
     const auto freeTypeTextProxy = GetFreeTypeTextFieldById(textFieldProxyId);
-    assert(freeTypeTextProxy != nullptr);
+    ext_assert(
+        freeTypeTextProxy != nullptr,
+        "FreeTypeFontBatcher::TextColorChanged: text field proxy is null for ID " + std::to_string(textFieldProxyId));
     freeTypeTextProxy->SetColor(color);
 }
 
 void FreeTypeFontBatcher::TextChanged(const int32_t textFieldProxyId, const std::string& text)
 {
     const auto freeTypeTextProxy = GetFreeTypeTextFieldById(textFieldProxyId);
-    assert(freeTypeTextProxy != nullptr);
+    ext_assert(
+        freeTypeTextProxy != nullptr,
+        "FreeTypeFontBatcher::TextChanged: text field proxy is null for ID " + std::to_string(textFieldProxyId));
     freeTypeTextProxy->SetText(text);
 
     ReallocateTextSpace();
@@ -84,7 +94,9 @@ void FreeTypeFontBatcher::TextChanged(const int32_t textFieldProxyId, const std:
 void FreeTypeFontBatcher::TextVisibilityChanged(const int32_t textFieldProxyId, const bool isVisible)
 {
     const auto freeTypeTextProxy = GetFreeTypeTextFieldById(textFieldProxyId);
-    assert(freeTypeTextProxy != nullptr);
+    ext_assert(
+        freeTypeTextProxy != nullptr,
+        "FreeTypeFontBatcher::TextVisibilityChanged: text field proxy is null for ID " + std::to_string(textFieldProxyId));
     if (freeTypeTextProxy && freeTypeTextProxy->GetText() != "") {
         freeTypeTextProxy->SetIsVisible(isVisible);
     }
@@ -103,12 +115,12 @@ void FreeTypeFontBatcher::FontBufferSubData(
             + ", got: " + std::to_string(textFieldProxy->GetFontSize()));
 
     const auto& [vertexPositions, textCoordinates] = textMeshCreator.CreateTextMesh(textFieldProxy, mTextFontAtlas);
-    assert(vertexPositions.size() == textCoordinates.size());
+    ext_assert(vertexPositions.size() == textCoordinates.size(), "Vertex positions and texture coordinates size mismatch");
     // positions
     const size_t positionOffset = mPositionChunkData.mCurrentChunkOffset;
     textFieldProxy->SetVertexStart(positionOffset / (positionVBO->GetElementByteSize() * positionVBO->GetVectorSize()));
     const size_t positionSizeUpdate = vertexPositions.size() * positionVBO->GetElementByteSize() * positionVBO->GetVectorSize();
-    assert(positionOffset + positionSizeUpdate <= mPositionChunkData.mTotalChunkSize);
+    ext_assert(positionOffset + positionSizeUpdate <= mPositionChunkData.mTotalChunkSize, "Position buffer overflow");
     positionVBO->BindVBO();
     positionVBO->BufferSubData(positionOffset, positionSizeUpdate, vertexPositions.data());
     mPositionChunkData.mCurrentChunkOffset = positionOffset + positionSizeUpdate;
@@ -120,7 +132,9 @@ void FreeTypeFontBatcher::FontBufferSubData(
     const size_t texCoordinatesOffset = mTextureCoordinatesChunkData.mCurrentChunkOffset;
     const size_t texCoordinatesSizeUpdate
         = textCoordinates.size() * textureCoordinatesVBO->GetElementByteSize() * textureCoordinatesVBO->GetVectorSize();
-    assert(texCoordinatesOffset + texCoordinatesSizeUpdate <= mTextureCoordinatesChunkData.mTotalChunkSize);
+    ext_assert(
+        texCoordinatesOffset + texCoordinatesSizeUpdate <= mTextureCoordinatesChunkData.mTotalChunkSize,
+        "Texture coordinates buffer overflow");
     textureCoordinatesVBO->BindVBO();
     textureCoordinatesVBO->BufferSubData(texCoordinatesOffset, texCoordinatesSizeUpdate, textCoordinates.data());
     mTextureCoordinatesChunkData.mCurrentChunkOffset = texCoordinatesOffset + texCoordinatesSizeUpdate;
@@ -138,7 +152,7 @@ void FreeTypeFontBatcher::AllocateTextSpace(const std::shared_ptr<FreeTypeTextFi
     if (!textFieldProxy->GetText().empty()) {
         auto* const positionVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
         auto* const textureCoordinatesVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
-        assert(positionVBO && textureCoordinatesVBO);
+        ext_assert(positionVBO && textureCoordinatesVBO, "Failed to get VBOs for vertex positions or texture coordinates");
 
         FontBufferSubData(textFieldProxy, positionVBO, textureCoordinatesVBO);
         textureCoordinatesVBO->UnbindVBO();
@@ -152,7 +166,7 @@ void FreeTypeFontBatcher::ReallocateTextSpace()
 {
     auto* const positionVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
     auto* const textureCoordinatesVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
-    assert(positionVBO && textureCoordinatesVBO);
+    ext_assert(positionVBO && textureCoordinatesVBO, "Failed to get VBOs for vertex positions or texture coordinates");
 
     mPositionChunkData.mCurrentChunkOffset = 0; // start filling buffer from the beginning
     mTextureCoordinatesChunkData.mCurrentChunkOffset = 0;
@@ -170,7 +184,7 @@ void FreeTypeFontBatcher::FreeAllocatedTextSpace(const std::shared_ptr<FreeTypeT
 {
     auto* const positionVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
     auto* const textureCoordinatesVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
-    assert(positionVBO && textureCoordinatesVBO);
+    ext_assert(positionVBO && textureCoordinatesVBO, "Failed to get VBOs for vertex positions or texture coordinates");
 
     if (0 == removeTextFieldProxy->GetPositionChunkOffset()) // text that should be removed is at the beginning
     {
@@ -258,9 +272,9 @@ FreeTypeFontHandler::FreeTypeFontHandler()
 
 void FreeTypeFontHandler::RegisterFont(const FreeTypeFontParams& fontParams) const
 {
-    assert(mFontBatcherMap.count(fontParams) == 0);
+    ext_assert(mFontBatcherMap.count(fontParams) == 0, "Font already registered: " + fontParams.FontName);
     const auto& fontTextureAtlas = FreeTypeFontMeshPool::GetInstance()->GetOrAllocateResource(fontParams);
-    assert(fontTextureAtlas);
+    ext_assert(fontTextureAtlas, "Failed to get or allocate FreeTypeFontAtlas for font: " + fontParams.FontName);
     mFontBatcherMap.emplace(fontParams, std::make_shared<FreeTypeFontBatcher>(fontTextureAtlas, fontParams));
 
     const size_t maxFontCharactersCount = EngineConfigHolder::GetInstance()->GetEngineConfig().MaxFontCharactersCount;
@@ -269,7 +283,7 @@ void FreeTypeFontHandler::RegisterFont(const FreeTypeFontParams& fontParams) con
 
     auto* const positionVBO = fontTextureAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
     auto* const textureCoordinatesVBO = fontTextureAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
-    assert(positionVBO && textureCoordinatesVBO);
+    ext_assert(positionVBO && textureCoordinatesVBO, "Failed to get VBOs for vertex positions or texture coordinates");
 
     fontBatcher->GetPositionChunkDataRef().mTotalChunkSize
         = maxFontCharactersCount * verticesPerCharacter * positionVBO->GetVectorSize() * positionVBO->GetElementByteSize();
@@ -299,7 +313,10 @@ void FreeTypeFontHandler::RegisterText(const std::shared_ptr<FreeTypeTextFieldPr
 void FreeTypeFontHandler::UnregisterText(const int32_t textFieldProxyId)
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::UnregisterText: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxyId));
     batcherSp->UnregisterText(textFieldProxyId);
     if (batcherSp->GetFreeTypeTextFieldProxies().empty()) {
         FreeTypeFontMeshPool::GetInstance()->TryToFreeMemory(batcherSp->GetFontParams());
@@ -310,35 +327,49 @@ void FreeTypeFontHandler::UnregisterText(const int32_t textFieldProxyId)
 void FreeTypeFontHandler::TextPositionChanged(const int32_t textFieldProxyId, const glm::vec2& position)
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::TextPositionChanged: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxyId));
     batcherSp->TextPositionChanged(textFieldProxyId, position);
 }
 
 void FreeTypeFontHandler::TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible)
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::TextVisibilityChanged: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxyId));
     batcherSp->TextVisibilityChanged(textFieldProxyId, bIsVisible);
 }
 
 void FreeTypeFontHandler::TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color)
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::TextColorChanged: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxyId));
     batcherSp->TextColorChanged(textFieldProxyId, color);
 }
 
 void FreeTypeFontHandler::TextChanged(const int32_t textFieldProxyId, const std::string& text)
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::TextChanged: Font batcher not found for text field proxy ID " + std::to_string(textFieldProxyId));
     batcherSp->TextChanged(textFieldProxyId, text);
 }
 
 void FreeTypeFontHandler::FontSizeChanged(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy)
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxy->GetTextFieldId());
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::FontSizeChanged: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxy->GetTextFieldId()));
     UnregisterText(textFieldProxy->GetTextFieldId());
     RegisterText(textFieldProxy);
 }
@@ -346,21 +377,30 @@ void FreeTypeFontHandler::FontSizeChanged(const std::shared_ptr<FreeTypeTextFiel
 float FreeTypeFontHandler::GetTextNormalizedWidth(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::GetTextNormalizedWidth: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxyId));
     return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidthHeightNormalized().x;
 }
 
 float FreeTypeFontHandler::GetTextNormalizedHeight(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::GetTextNormalizedHeight: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxyId));
     return batcherSp->GetFreeTypeTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidthHeightNormalized().y;
 }
 
 glm::vec2 FreeTypeFontHandler::GetTextSizeNormalized(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::GetTextSizeNormalized: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxyId));
     const auto textFiledSp = batcherSp->GetFreeTypeTextFieldById(textFieldProxyId);
     return glm::vec2(textFiledSp->GetCreatedMeshTextWidthHeightNormalized());
 }
@@ -368,7 +408,10 @@ glm::vec2 FreeTypeFontHandler::GetTextSizeNormalized(const int32_t textFieldProx
 glm::ivec2 FreeTypeFontHandler::GetTextScreenSpaceSize(const int32_t textFieldProxyId) const
 {
     const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
-    assert(batcherSp != nullptr);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::GetTextScreenSpaceSize: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxyId));
     const auto textFiledSp = batcherSp->GetFreeTypeTextFieldById(textFieldProxyId);
     return glm::vec2(textFiledSp->GetCreatedMeshTextWidthHeightScreenSpace());
 }

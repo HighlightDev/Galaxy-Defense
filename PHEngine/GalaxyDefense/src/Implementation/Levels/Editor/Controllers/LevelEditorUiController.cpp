@@ -65,7 +65,7 @@ void LevelEditorUiController::RestartLuaScripts()
                     = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
                     const auto& luaScriptExecutor = std::dynamic_pointer_cast<LuaUiControllerExecutor>(
                         luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
-                    assert(luaScriptExecutor);
+                    ext_assert(luaScriptExecutor, "LevelEditorUiController lua script executor is null in RestartLuaScripts");
                     luaScriptExecutor->SetIsEnabled(false);
                     mOverlayManager->CleanUp();
                     static constexpr uint64_t functionId = Hash64_CT("LevelEditorUiController::RestartLuaScripts");
@@ -90,7 +90,7 @@ void LevelEditorUiController::CleanUp()
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             const auto& luaScriptExecutor
                 = std::dynamic_pointer_cast<LuaUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
-            assert(luaScriptExecutor);
+            ext_assert(luaScriptExecutor, "LevelEditorUiController lua script executor is null in CleanUp");
             luaScriptExecutor->StopScript();
             luaScriptProcessorSp->UnregisterLuaScriptExecutor(mExecutorId);
         }

@@ -152,7 +152,9 @@ void PhysicsWorld::RegisterActiveCollision(
     const std::shared_ptr<PhysicsDescriptor>& collisionBody1Sp, const std::shared_ptr<PhysicsDescriptor>& collisionBody2Sp)
 {
     if (collisionBody1Sp && collisionBody2Sp) {
-        assert(collisionBody1Sp->GetPhysicsBodyType() == collisionBody2Sp->GetPhysicsBodyType());
+        ext_assert(
+            collisionBody1Sp->GetPhysicsBodyType() == collisionBody2Sp->GetPhysicsBodyType(),
+            "PhysicsWorld::RegisterActiveCollision: collision bodies must be of the same type");
         auto activeCollisionIt = std::find_if(mActiveCollisions.begin(), mActiveCollisions.end(), [&](const auto& collisionPair) {
             if (collisionPair.GetFirstCollisionBody().expired() || collisionPair.GetSecondCollisionBody().expired()) {
                 return false;

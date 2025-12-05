@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GraphicsCore/Texture/CubemapTexture.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
@@ -31,7 +32,7 @@ public:
     static inline std::shared_ptr<ITexture> AllocateMemory(const TexParams& texParams)
     {
         // to satisfy Allocatable concept
-        assert(false);
+        ext_assert(false, "RenderTargetAllocationPolicy::AllocateMemory called without template parameter");
         return nullptr;
     }
 

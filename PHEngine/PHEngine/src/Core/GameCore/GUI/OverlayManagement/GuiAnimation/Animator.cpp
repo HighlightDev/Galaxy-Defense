@@ -12,7 +12,7 @@ namespace GUI {
 Animator::Animator(const std::shared_ptr<IAnimatable>& animatable)
     : mAnimatable(animatable)
 {
-    assert(mAnimatable);
+    ext_assert(mAnimatable, "Animator::Animator: animatable is null");
 }
 
 void Animator::Tick(const float deltaTimeSec)
@@ -23,11 +23,15 @@ void Animator::UnpausableTick(const float deltaTimeSec)
 {
     if (mAnimationInProgress) {
         mAnimationTimePassed += deltaTimeSec;
-        assert(!mActiveAnimationName.empty());
-        assert(mAnimations.count(mActiveAnimationName));
+        ext_assert(!mActiveAnimationName.empty(), "Animator::UnpausableTick: activeAnimationName is empty");
+        ext_assert(
+            mAnimations.count(mActiveAnimationName),
+            "Animator::UnpausableTick: activeAnimationName not found in animations: " + mActiveAnimationName);
         bool isAnimationFinished = true;
         for (const auto& animationData : mAnimations.at(mActiveAnimationName)) {
-            assert(mAnimationControllers.count(animationData.GetPropertyName()));
+            ext_assert(
+                mAnimationControllers.count(animationData.GetPropertyName()),
+                "Animator::UnpausableTick: animation controller not found for property: " + animationData.GetPropertyName());
             const auto& propertyController = mAnimationControllers.at(animationData.GetPropertyName());
             if (!propertyController->IsAnimationFinished()) {
                 propertyController->ProcessAnimation(mAnimationTimePassed, animationData, mAnimatable);
@@ -57,7 +61,7 @@ void Animator::AddAnimation(const std::string& animationName, const AnimationDat
 
 void Animator::RemoveAnimation(const std::string& animationName)
 {
-    assert(mAnimations.count(animationName));
+    ext_assert(mAnimations.count(animationName), "Animator::RemoveAnimation: animation not found: " + animationName);
     mAnimations.erase(animationName);
 }
 
@@ -79,11 +83,15 @@ bool Animator::GetFinishAnimationOnNewAnimationStart() const
 void Animator::StartAnimation(const std::string& newAnimationName)
 {
     if (mAnimationInProgress) {
-        assert(!mActiveAnimationName.empty());
-        assert(mAnimations.count(mActiveAnimationName));
+        ext_assert(!mActiveAnimationName.empty(), "Animator::StartAnimation: activeAnimationName is empty");
+        ext_assert(
+            mAnimations.count(mActiveAnimationName),
+            "Animator::StartAnimation: activeAnimationName not found in animations: " + mActiveAnimationName);
         if (bFinishAnimationOnNewAnimationStart) {
             for (const auto& animationData : mAnimations.at(mActiveAnimationName)) {
-                assert(mAnimationControllers.count(animationData.GetPropertyName()));
+                ext_assert(
+                    mAnimationControllers.count(animationData.GetPropertyName()),
+                    "Animator::StartAnimation: animation controller not found for property: " + animationData.GetPropertyName());
                 const auto& propertyController = mAnimationControllers.at(animationData.GetPropertyName());
                 propertyController->ForceFinishAnimation(animationData, mAnimatable);
             }
@@ -95,14 +103,16 @@ void Animator::StartAnimation(const std::string& newAnimationName)
         mActiveAnimationName = "";
     }
 
-    assert(mAnimations.count(newAnimationName));
+    ext_assert(mAnimations.count(newAnimationName), "Animator::StartAnimation: animation not found: " + newAnimationName);
     mActiveAnimationName = newAnimationName;
     mAnimationTimePassed = 0.0f;
     mAnimationInProgress = true;
     CreateAnimationControllersForAnimation(newAnimationName);
     if (bFinishAnimationOnNewAnimationStart) {
         for (const auto& animationData : mAnimations.at(mActiveAnimationName)) {
-            assert(mAnimationControllers.count(animationData.GetPropertyName()));
+            ext_assert(
+                mAnimationControllers.count(animationData.GetPropertyName()),
+                "Animator::StartAnimation: animation controller not found for property: " + animationData.GetPropertyName());
             const auto& propertyController = mAnimationControllers.at(animationData.GetPropertyName());
             propertyController->InitWithSrcValues(animationData, mAnimatable);
         }
@@ -118,11 +128,17 @@ void Animator::CreateAnimationControllersForAnimation(const std::string& animati
 {
     for (const auto& animationData : mAnimations.at(animationName)) {
         const auto& property = mAnimatable->GetPropertyByName(animationData.GetPropertyName());
-        assert(property);
+        ext_assert(
+            property,
+            "Animator::CreateAnimationControllersForAnimation: property is null for property name: "
+                + animationData.GetPropertyName());
         const auto propertyType = property->GetPropertyType();
         const std::shared_ptr<IAnimationController> propertyController
             = AnimationControllerFactory::CreateAnimationController(propertyType);
-        assert(propertyController);
+        ext_assert(
+            propertyController,
+            "Animator::CreateAnimationControllersForAnimation: propertyController is null for property name: "
+                + animationData.GetPropertyName());
         mAnimationControllers.emplace(animationData.GetPropertyName(), propertyController);
     }
 }

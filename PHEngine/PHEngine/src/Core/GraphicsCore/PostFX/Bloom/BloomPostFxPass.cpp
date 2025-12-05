@@ -41,7 +41,9 @@ void BloomPostFxPass::Init()
         "",
         ""));
     const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-    assert(BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName));
+    ext_assert(
+        BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName),
+        "BloomPostFxPass::Init: Bloom quality name not found in settings map: " + cfg.BloomQualityName);
     const auto& bloomQuality = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName);
     mBlurPassCount = bloomQuality.blurPassCount;
 }

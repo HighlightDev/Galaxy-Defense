@@ -58,7 +58,7 @@ void TestFeaturesLevelUiController::CleanUp()
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             const auto& luaScriptExecutor
                 = std::dynamic_pointer_cast<LuaUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
-            assert(luaScriptExecutor);
+            ext_assert(luaScriptExecutor, "Lua script executor not found in TestFeaturesLevelUiController::CleanUp");
             luaScriptExecutor->StopScript();
             luaScriptProcessorSp->UnregisterLuaScriptExecutor(mExecutorId);
         }

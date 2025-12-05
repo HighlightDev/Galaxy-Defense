@@ -55,7 +55,9 @@ public:
 
     void UpdateStaticPropertyWithDynamicValue(const std::shared_ptr<MaterialProperty>& staticProperty) override
     {
-        assert(MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY == staticProperty->GetPropertyType());
+        ext_assert(
+            MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY == staticProperty->GetPropertyType(),
+            "DynamicFloatMaterialProperty::UpdateStaticPropertyWithDynamicValue: staticProperty type is not FLOAT_PROPERTY");
         const auto& staticFloatMaterialProperty = std::static_pointer_cast<FloatMaterialProperty>(staticProperty);
         staticFloatMaterialProperty->SetValue(GetValue());
     }
@@ -67,7 +69,9 @@ public:
 
     float GetValue()
     {
-        assert(mDynamicOperationStartNode->GetMaterialPropertyType() == MaterialNode::eMaterialPropertyType::FLOAT);
+        ext_assert(
+            mDynamicOperationStartNode->GetMaterialPropertyType() == MaterialNode::eMaterialPropertyType::FLOAT,
+            "DynamicFloatMaterialProperty::GetValue: mDynamicOperationStartNode property type is not FLOAT");
         auto value = std::any_cast<float>(mDynamicOperationStartNode->GetValue());
 
         /*If incremental - add new value to previous value*/

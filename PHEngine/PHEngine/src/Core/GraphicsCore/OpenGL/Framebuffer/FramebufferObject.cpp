@@ -23,21 +23,25 @@ FramebufferObject::~FramebufferObject()
 
 void FramebufferObject::AddRenderTexture(const uint32_t framebufferAttachement, const std::shared_ptr<ITexture>& renderTexture)
 {
-    assert(mRenderTextures.count(framebufferAttachement) == 0);
+    ext_assert(
+        mRenderTextures.count(framebufferAttachement) == 0, "FramebufferObject::AddRenderTexture: Attachment already exists");
     mRenderTextures[framebufferAttachement] = renderTexture;
 }
 
 void FramebufferObject::ReassignRenderTexture(
     const uint32_t framebufferAttachement, const std::shared_ptr<ITexture>& renderTexture)
 {
-    assert(mRenderTextures.count(framebufferAttachement) > 0);
+    ext_assert(
+        mRenderTextures.count(framebufferAttachement) > 0, "FramebufferObject::ReassignRenderTexture: Attachment does not exist");
     mRenderTextures[framebufferAttachement] = renderTexture;
 }
 
 // should be called after all render textures are attached
 void FramebufferObject::CreateFramebuffer()
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "FramebufferObject::CreateFramebuffer: Not called from Render thread");
     glGenFramebuffers(1, &mFramebufferId);
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
 
@@ -56,7 +60,9 @@ void FramebufferObject::CreateFramebuffer()
 
 void FramebufferObject::RebindFramebufferTextures()
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "FramebufferObject::RebindFramebufferTextures: Not called from Render thread");
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
     for (const auto& [attachment, textureSp] : mRenderTextures) {
         if (textureSp->GetTextureType() == eTextureType::TEXTURE_2D) {
@@ -79,7 +85,7 @@ GLenum FramebufferObject::GetFramebufferErrorCode() const
     GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (GL_FRAMEBUFFER_COMPLETE != result) {
         LogInfo(GetFramebufferLog());
-        assert(false); // this code should not be reached
+        ext_assert(false, "FramebufferObject::GetFramebufferErrorCode: Framebuffer is not complete");
     }
     return result;
 }
@@ -157,9 +163,15 @@ void FramebufferObject::CreateRenderBuffer(
     const size_t screenResX,
     const size_t screenResY)
 {
-    assert(mFramebufferId != std::numeric_limits<uint32_t>::max());
-    assert(mRenderBufferId == std::numeric_limits<uint32_t>::max());
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        mFramebufferId != std::numeric_limits<uint32_t>::max(),
+        "FramebufferObject::CreateRenderBuffer: Framebuffer not created yet");
+    ext_assert(
+        mRenderBufferId == std::numeric_limits<uint32_t>::max(),
+        "FramebufferObject::CreateRenderBuffer: Renderbuffer already created");
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "FramebufferObject::CreateRenderBuffer: Not called from Render thread");
 
     glGenRenderbuffers(1, &mRenderBufferId);
     glBindRenderbuffer(GL_FRAMEBUFFER, mRenderBufferId);
@@ -170,9 +182,15 @@ void FramebufferObject::CreateRenderBuffer(
 void FramebufferObject::CreateRenderBuffer(
     const int32_t renderbufferDataType, const int32_t framebufferRenderbufferAttachment, const glm::ivec2& screenResolution)
 {
-    assert(mFramebufferId != std::numeric_limits<uint32_t>::max());
-    assert(mRenderBufferId == std::numeric_limits<uint32_t>::max());
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        mFramebufferId != std::numeric_limits<uint32_t>::max(),
+        "FramebufferObject::CreateRenderBuffer: Framebuffer not created yet");
+    ext_assert(
+        mRenderBufferId == std::numeric_limits<uint32_t>::max(),
+        "FramebufferObject::CreateRenderBuffer: Renderbuffer already created");
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "FramebufferObject::CreateRenderBuffer: Not called from Render thread");
 
     glGenRenderbuffers(1, &mRenderBufferId);
     glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferId);
@@ -182,7 +200,9 @@ void FramebufferObject::CreateRenderBuffer(
 
 void FramebufferObject::ResizeRenderBufferStorage(const int32_t renderbufferDataType, const glm::ivec2& screenResolution)
 {
-    assert(mRenderBufferId != std::numeric_limits<uint32_t>::max());
+    ext_assert(
+        mRenderBufferId != std::numeric_limits<uint32_t>::max(),
+        "FramebufferObject::ResizeRenderBufferStorage: Renderbuffer not created yet");
     glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferId);
     glRenderbufferStorage(GL_RENDERBUFFER, renderbufferDataType, screenResolution.x, screenResolution.y);
 }

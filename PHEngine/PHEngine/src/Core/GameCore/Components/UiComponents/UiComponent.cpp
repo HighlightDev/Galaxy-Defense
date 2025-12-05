@@ -15,7 +15,7 @@ UiComponent::UiComponent(const std::shared_ptr<ComponentData>& data)
     : Component(data->EngineObjectName)
 {
     const auto uiData = std::dynamic_pointer_cast<UiComponentData>(data);
-    assert(uiData != nullptr);
+    ext_assert(uiData != nullptr, "UiComponent::UiComponent: ComponentData is not of type UiComponentData");
     mCanvas = uiData->Canvas;
 }
 

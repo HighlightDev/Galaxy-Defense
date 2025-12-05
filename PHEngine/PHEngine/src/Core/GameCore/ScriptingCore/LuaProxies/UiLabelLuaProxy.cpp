@@ -38,9 +38,9 @@ void UiLabelLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameters)
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiLabelLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& uiLabel = std::static_pointer_cast<::EngineCore::GUI::UiLabel>(replicator);
-                assert(uiLabel);
+                ext_assert(uiLabel, "UiLabelLuaProxy::OnLuaThreadDataUpdated: uiLabel is null");
                 uiLabel->SyncFromLuaJsonProperties(jsonStr);
             });
     }

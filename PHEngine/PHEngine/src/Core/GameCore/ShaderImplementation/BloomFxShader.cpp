@@ -74,7 +74,9 @@ void BloomFxShader::LoadRunResolveBloomColorSubroutine()
 void BloomFxShader::SetShaderPredefine()
 {
     const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-    assert(BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName));
+    ext_assert(
+        BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName),
+        "BloomFxShader::SetShaderPredefine: bloomQualityMap entry not found for given BloomQualityName");
     const auto& bloomQuality = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName);
 
     DefineConstant<int32_t>(FragmentShader, "BLUR_WIDTH", bloomQuality.blurWidth);

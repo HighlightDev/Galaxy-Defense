@@ -19,7 +19,7 @@ std::shared_ptr<Vec3PropertyBinding> Vec3TweenController::GetVec3PropertyBinding
 
     if (auto baseSp = mPropertyBinding.lock()) {
         result = std::static_pointer_cast<Vec3PropertyBinding>(baseSp);
-        assert(result);
+        ext_assert(result, "Vec3TweenController::GetVec3PropertyBindingSP: Failed to cast to Vec3PropertyBinding");
     }
 
     return result;

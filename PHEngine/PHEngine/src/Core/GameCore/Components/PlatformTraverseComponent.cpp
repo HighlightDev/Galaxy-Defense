@@ -28,7 +28,7 @@ void PlatformTraverseComponent::PostLevelInit()
 
     if (const auto& spOwner = GetOwner().lock()) {
         const auto& rootComponent = spOwner->GetRootComponent();
-        assert(rootComponent);
+        ext_assert(rootComponent, "PlatformTraverseComponent owner has no RootComponent in PostLevelInit");
 
         const auto& physComponent = spOwner->GetPhysicsComponent();
 
@@ -56,7 +56,7 @@ void PlatformTraverseComponent::SetDestinationPointByIndex(const int32_t index)
 {
     LogInfo("PlatformTraverseComponent::SetDestinationPoint: index: ", index);
     mCurrentPointIndex = index;
-    assert(mCurrentPointIndex < mMovementPoints.size());
+    ext_assert(mCurrentPointIndex < mMovementPoints.size(), "Index out of range in SetDestinationPointByIndex");
     mDestinationPoint = mMovementPoints.at(mCurrentPointIndex);
     const EulerAnglesTransform& transform = std::get<1>(mDestinationPoint.value());
     mBehaviorVisitor->CommitMovementStarted(transform);

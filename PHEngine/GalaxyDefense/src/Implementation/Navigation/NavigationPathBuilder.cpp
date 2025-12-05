@@ -7,13 +7,13 @@
 namespace Game {
 void NavigationPathBuilder::AddPath(const std::string& pathName, const Path& pathSegment)
 {
-    assert(!mPaths.count(pathName));
+    ext_assert(!mPaths.count(pathName), "NavigationPathBuilder path with this name already exists");
     mPaths[pathName] = pathSegment;
 }
 
 Path NavigationPathBuilder::GetPathByName(const std::string& name) const
 {
-    assert(mPaths.count(name));
+    ext_assert(mPaths.count(name), "NavigationPathBuilder path with name '" + name + "' not found");
     return mPaths.at(name);
 }
 
@@ -48,10 +48,10 @@ const std::unordered_multimap<std::string, std::pair<std::string, Path>>& Naviga
 
 void NavigationPathBuilder::ExtendPath(const std::string& pathName, const int32_t eachSideExtraPathCount)
 {
-    assert(mPaths.count(pathName));
+    ext_assert(mPaths.count(pathName), "NavigationPathBuilder path with name '" + pathName + "' not found for extending");
     auto& path = mPaths.at(pathName);
     const auto& segments = path.GetPathSegments();
-    assert(segments.size());
+    ext_assert(segments.size(), "NavigationPathBuilder path '" + pathName + "' has no segments");
 
     for (const auto& segment : segments) {
         const auto& controlPoints = segment.GetQuadraticBezierControlPoints();

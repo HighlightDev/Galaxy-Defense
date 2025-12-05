@@ -38,7 +38,7 @@ void PhysicsComponent::SetOwner(const std::weak_ptr<Actor>& ownerActor)
 {
     Component::SetOwner(ownerActor);
     const auto& ownerActorSp = ownerActor.lock();
-    assert(ownerActorSp);
+    ext_assert(ownerActorSp, "Owner Actor is null in PhysicsComponent::SetOwner");
 
     mDescriptor->SetOwnerActorEngineObjectId(ownerActorSp->GetObjectId());
 }
@@ -81,9 +81,9 @@ eComponentType PhysicsComponent::GetComponentType() const
 void PhysicsComponent::OnPostOwnerInitialized()
 {
     const auto& spOwner = GetOwner().lock();
-    assert(spOwner);
+    ext_assert(spOwner, "Owner Actor is null in PhysicsComponent::OnPostOwnerInitialized");
     auto ownerRootComponent = spOwner->GetRootComponent();
-    assert(ownerRootComponent);
+    ext_assert(ownerRootComponent, "Owner Actor has no RootComponent in PhysicsComponent::OnPostOwnerInitialized");
     const glm::vec3& translation = ownerRootComponent->GetTranslation();
     const glm::quat& rotator = ownerRootComponent->GetRotator();
 

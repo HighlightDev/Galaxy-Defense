@@ -22,7 +22,7 @@ struct CompositeShaderAllocationPolicy {
     static std::shared_ptr<IShader> AllocateMemory(const CompositeShaderParams& arg)
     {
         // to satisfy Allocatable concept
-        assert(false);
+        ext_assert(false, "CompositeShaderAllocationPolicy::AllocateMemory called without template parameter");
         return nullptr;
     }
 

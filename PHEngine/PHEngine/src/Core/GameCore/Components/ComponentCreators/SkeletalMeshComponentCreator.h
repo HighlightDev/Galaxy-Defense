@@ -22,10 +22,12 @@ public:
         CreateComponent(const std::shared_ptr<Scene>& spScene, const std::shared_ptr<ComponentData>& data) const override
     {
         const auto& mData = std::static_pointer_cast<MeshComponentData>(data);
-        assert(eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData->GetMeshComponentDataType());
+        ext_assert(
+            eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData->GetMeshComponentDataType(),
+            "Invalid mesh component data type, expected STATIC_OR_SKELETAL_MESH");
 
         const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
-        assert(materialProxy);
+        ext_assert(materialProxy, "SkeletalMeshComponentCreator::CreateComponent: materialProxy is null");
 
         MeshRenderData renderData(mData->m_pathToMesh, materialProxy, true);
         return std::make_shared<ComponentInstantiationType>(mData, renderData);

@@ -99,7 +99,7 @@ void GeneralSystemSettingsDataProvider::SetWindowHeight(const int32_t height)
 
 void GeneralSystemSettingsDataProvider::SetSoundGain(const float gain, const bool bSendToLua)
 {
-    assert(gain >= 0.0f && gain <= 1.0f);
+    ext_assert(gain >= 0.0f && gain <= 1.0f, "gain must be between 0.0 and 1.0");
     if (!EngineMath::FloatsNearEqual(m_soundGain, gain)) {
         m_soundGain = gain;
         LogInfo("GeneralSystemSettingsDataProvider::SetSoundGain: gain: ", gain, " SendToLua: ", bSendToLua);
@@ -117,7 +117,7 @@ void GeneralSystemSettingsDataProvider::SetSoundGain(const float gain, const boo
 
 void GeneralSystemSettingsDataProvider::SetMusicGain(const float gain, const bool bSendToLua)
 {
-    assert(gain >= 0.0f && gain <= 1.0f);
+    ext_assert(gain >= 0.0f && gain <= 1.0f, "gain must be between 0.0 and 1.0");
     if (!EngineMath::FloatsNearEqual(m_musicGain, gain)) {
         m_musicGain = gain;
         LogInfo("GeneralSystemSettingsDataProvider::SetMusicGain: gain: ", gain, " SendToLua: ", bSendToLua);

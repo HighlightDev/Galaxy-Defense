@@ -38,9 +38,9 @@ void UiSliderLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameters)
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiSliderLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& uiSlider = std::static_pointer_cast<UiSlider>(replicator);
-                assert(uiSlider);
+                ext_assert(uiSlider, "UiSliderLuaProxy::OnLuaThreadDataUpdated: uiSlider is null");
                 uiSlider->SyncFromLuaJsonProperties(jsonStr);
             });
     }
@@ -79,9 +79,9 @@ void UiSliderLuaProxy::EnableMouseInputReceiver()
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiSliderLuaProxy::EnableMouseInputReceiver: replicator is null");
                 const auto& uiSlider = std::static_pointer_cast<::EngineCore::GUI::UiSlider>(replicator);
-                assert(uiSlider);
+                ext_assert(uiSlider, "UiSliderLuaProxy::EnableMouseInputReceiver: uiSlider is null");
                 uiSlider->SetMouseInputReceiver(std::make_shared<UiMouseInputReceiverSlider>(uiSlider));
             });
     }

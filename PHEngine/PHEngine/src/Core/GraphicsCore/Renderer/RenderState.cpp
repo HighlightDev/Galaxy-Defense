@@ -54,7 +54,7 @@ DepthState& DepthState::SetDepthTestWriteMask(const GLboolean depthTestWriteMask
 
 DepthState& DepthState::SetDepthTestFunc(const GLenum depthTestFunc)
 {
-    assert(depthTestFunc >= GL_NEVER && depthTestFunc <= GL_ALWAYS);
+    ext_assert(depthTestFunc >= GL_NEVER && depthTestFunc <= GL_ALWAYS, "Invalid depth test function value");
     if (_dtFunc != depthTestFunc) {
         dtFuncDirty = true;
         _dtFunc = depthTestFunc;

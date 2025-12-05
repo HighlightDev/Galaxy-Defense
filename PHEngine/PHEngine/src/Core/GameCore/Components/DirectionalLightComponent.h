@@ -27,7 +27,7 @@ public:
 
     ~DirectionalLightComponent() override;
 
-    void Initialize() override;
+    void OnRegistered() override;
 
     void Tick(const float deltaTimeSec) override;
 

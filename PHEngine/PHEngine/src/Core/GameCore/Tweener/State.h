@@ -36,9 +36,11 @@ public:
     void AddStateProperty(const std::shared_ptr<BaseStateProperty>& stateProperty)
     {
         auto bindingSP = stateProperty->Binding.lock();
-        assert(bindingSP);
+        ext_assert(bindingSP, "State property binding is null in State::AddStateProperty");
         const std::string& name = bindingSP->BindingName;
-        assert(mStateProperties.count(name) == 0); // make sure that property doesn't duplicate
+        ext_assert(
+            mStateProperties.count(name) == 0,
+            "State property already exists in State::AddStateProperty"); // make sure that property doesn't duplicate
         mStateProperties.emplace(std::make_pair(name, stateProperty));
     }
 
@@ -47,7 +49,9 @@ public:
         if (auto spDestination = dstStateTransition.StateDestination.lock()) {
             const std::string& dstStateName = spDestination->GetStateName();
 
-            assert(mTransitions.count(dstStateName) == 0); // make sure that transition doesn't duplicate
+            ext_assert(
+                mTransitions.count(dstStateName) == 0,
+                "State transition already exists in State::AddStateTransition"); // make sure that transition doesn't duplicate
 
             mTransitions.emplace(std::make_pair(dstStateName, dstStateTransition));
         }

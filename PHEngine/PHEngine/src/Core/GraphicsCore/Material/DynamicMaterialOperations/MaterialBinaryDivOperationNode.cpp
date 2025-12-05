@@ -23,7 +23,10 @@ std::any MaterialBinaryDivOperationNode::DoOperation(const std::any& left, const
         return std::any_cast<glm::vec2>(left) / std::any_cast<glm::vec2>(right);
     }
 
-    assert(false);
+    ext_assert(
+        false,
+        "MaterialBinaryDivOperationNode::DoOperation: Unsupported material property type for BINARY_DIV operation: "
+            + std::to_string(static_cast<int>(GetMaterialPropertyType())));
     return {};
 }
 } // namespace Graphics

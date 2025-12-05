@@ -9,7 +9,7 @@
 
 bool FileFacade::OpenAndReadFile(const std::string& pathToFile)
 {
-    assert(pathToFile != "");
+    ext_assert(pathToFile != "", "FileFacade::OpenAndReadFile: pathToFile is empty");
     mPathToFile = pathToFile;
     return LoadFile(pathToFile);
 }
@@ -96,7 +96,7 @@ std::string FileFacade::SeparateByFunctor(
 
 void FileFacade::WriteToFile() const
 {
-    assert(mPathToFile != "");
+    ext_assert(mPathToFile != "", "FileFacade::WriteToFile: mPathToFile is empty");
     std::ofstream stream;
     stream.open(mPathToFile, std::fstream::out);
 

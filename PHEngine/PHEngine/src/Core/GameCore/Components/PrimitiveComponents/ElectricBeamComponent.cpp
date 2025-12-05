@@ -3,12 +3,17 @@
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/ProceduralBeamGeometry.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/SceneRenderer.h"
+#include "Core/GraphicsCore/SceneProxy/ElectricBeamSceneProxy.h"
 
 #include <random>
 
+using namespace Graphics::Renderer;
+
 namespace EngineCore {
 
-ElectricBeamComponent::ElectricBeamComponent(const std::string& gameObjectName)
+ElectricBeamComponent::ElectricBeamComponent(const std::string& gameObjectName, const MeshRenderData& renderData)
     : PrimitiveComponent(gameObjectName, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f))
     , mBeamMeshes()
     , mStartPoint(glm::vec3(0.0f))
@@ -18,13 +23,13 @@ ElectricBeamComponent::ElectricBeamComponent(const std::string& gameObjectName)
     , mBeamCount(3)
     , mJitterAmount(0.2f)
     , mUpdateFrequency(0.05f)
-    , mIsActive(true)
     , mRenderMode(BeamRenderMode::ProceduralMesh)
     , mRadialSegments(8)
     , mLengthSegments(10)
     , mAnimationTime(0.0f)
     , mAnimationSpeed(2.0f)
     , mTimeSinceLastUpdate(0.0f)
+    , mRenderData(renderData)
 {
 }
 
@@ -33,13 +38,19 @@ ElectricBeamComponent::~ElectricBeamComponent()
     DestroyBeamMeshes();
 }
 
+std::shared_ptr<PrimitiveSceneProxy> ElectricBeamComponent::CreateSceneProxy() const
+{
+    return std::make_shared<Graphics::Proxy::ElectricBeamSceneProxy>(this);
+}
+
+const MeshRenderData& ElectricBeamComponent::GetRenderData() const
+{
+    return mRenderData;
+}
+
 void ElectricBeamComponent::Tick(const float deltaTime)
 {
     Component::Tick(deltaTime);
-
-    if (!mIsActive) {
-        return;
-    }
 
     // Update animation time continuously for smooth procedural animation
     mAnimationTime += deltaTime;
@@ -47,40 +58,56 @@ void ElectricBeamComponent::Tick(const float deltaTime)
     mTimeSinceLastUpdate += deltaTime;
 
     if (mTimeSinceLastUpdate >= mUpdateFrequency) {
-        UpdateBeamPositions();
+        RegenerateBeams();
         mTimeSinceLastUpdate = 0.0f;
+    }
+
+    if (mIsRenderDataDirty) {
+        SyncRenderData();
+        mIsRenderDataDirty = false;
     }
 }
 
-void ElectricBeamComponent::Initialize()
+void ElectricBeamComponent::OnRegistered()
 {
-    LogInfo("ElectricBeamComponent::Initialize: ", GetEngineObjectName());
+    LogInfo("ElectricBeamComponent::OnRegistered: ", GetEngineObjectName());
 
     CreateBeamMeshes();
 
     RegenerateBeams();
 }
 
+void ElectricBeamComponent::OnUnregistered()
+{
+    LogInfo("ElectricBeamComponent::OnUnregistered: ", GetEngineObjectName());
+
+    DestroyBeamMeshes();
+}
+
 void ElectricBeamComponent::SetStartPoint(const glm::vec3& point)
 {
     mStartPoint = point;
+    mIsRenderDataDirty = true;
     RegenerateBeams();
 }
 
 void ElectricBeamComponent::SetEndPoint(const glm::vec3& point)
 {
     mEndPoint = point;
+    mIsRenderDataDirty = true;
     RegenerateBeams();
 }
 
 void ElectricBeamComponent::SetBeamColor(const glm::vec3& color)
 {
     mBeamColor = color;
+    mIsRenderDataDirty = true;
 }
 
 void ElectricBeamComponent::SetBeamThickness(float thickness)
 {
     mBeamThickness = thickness;
+    mIsRenderDataDirty = true;
 }
 
 void ElectricBeamComponent::SetBeamCount(int count)
@@ -91,6 +118,7 @@ void ElectricBeamComponent::SetBeamCount(int count)
         count = 20; // Reasonable limit
 
     mBeamCount = count;
+    mIsRenderDataDirty = true;
 
     DestroyBeamMeshes();
     CreateBeamMeshes();
@@ -108,17 +136,6 @@ void ElectricBeamComponent::SetUpdateFrequency(float frequency)
     if (frequency < 0.01f)
         frequency = 0.01f;
     mUpdateFrequency = frequency;
-}
-
-void ElectricBeamComponent::SetActive(bool active)
-{
-    mIsActive = active;
-
-    for (auto& mesh : mBeamMeshes) {
-        if (mesh) {
-            mesh->SetIsVisible(active);
-        }
-    }
 }
 
 glm::vec3 ElectricBeamComponent::GetStartPoint() const
@@ -156,22 +173,12 @@ float ElectricBeamComponent::GetUpdateFrequency() const
     return mUpdateFrequency;
 }
 
-bool ElectricBeamComponent::IsActive() const
-{
-    return mIsActive;
-}
-
 void ElectricBeamComponent::RegenerateBeams()
 {
 
     for (int i = 0; i < static_cast<int>(mBeamMeshes.size()); ++i) {
         UpdateBeamMesh(i);
     }
-}
-
-void ElectricBeamComponent::UpdateBeamPositions()
-{
-    RegenerateBeams();
 }
 
 glm::vec3 ElectricBeamComponent::GetJitteredPoint(const glm::vec3& basePoint, float jitterScale) const
@@ -191,12 +198,10 @@ void ElectricBeamComponent::SetRenderMode(BeamRenderMode mode)
         return;
     }
 
-    // Clean up old rendering method
     DestroyBeamMeshes();
 
     mRenderMode = mode;
 
-    // Create new rendering method
     CreateBeamMeshes();
 
     RegenerateBeams();
@@ -238,23 +243,22 @@ float ElectricBeamComponent::GetAnimationSpeed() const
     return mAnimationSpeed;
 }
 
+int ElectricBeamComponent::GetRadialSegments() const
+{
+    return mRadialSegments;
+}
+
+int ElectricBeamComponent::GetLengthSegments() const
+{
+    return mLengthSegments;
+}
+
 void ElectricBeamComponent::CreateBeamMeshes()
 {
-    const int beamCount = mBeamCount;
-    const bool isActive = mIsActive;
-
     mBeamMeshes.clear();
-    mBeamMeshes.reserve(beamCount);
+    mBeamMeshes.reserve(mBeamCount);
 
-    for (int i = 0; i < beamCount; ++i) {
-        auto mesh = std::make_shared<StaticMeshComponent>(GetEngineObjectName() + "_BeamMesh_" + std::to_string(i));
-
-        mesh->SetVisible(isActive);
-
-        mBeamMeshes.push_back(mesh);
-    }
-
-    LogInfo("ElectricBeamComponent::CreateBeamMeshes: Created ", beamCount, " beam meshes");
+    LogInfo("ElectricBeamComponent::CreateBeamMeshes: Created ", mBeamCount, " beam meshes");
 }
 
 void ElectricBeamComponent::DestroyBeamMeshes()
@@ -266,11 +270,6 @@ void ElectricBeamComponent::DestroyBeamMeshes()
 void ElectricBeamComponent::UpdateBeamMesh(int beamIndex)
 {
     if (beamIndex < 0 || beamIndex >= static_cast<int>(mBeamMeshes.size())) {
-        return;
-    }
-
-    auto& mesh = mBeamMeshes[beamIndex];
-    if (!mesh) {
         return;
     }
 
@@ -306,19 +305,37 @@ void ElectricBeamComponent::UpdateBeamMesh(int beamIndex)
             indices);
     }
 
-    // TODO: Update mesh geometry
-    // This would require integration with the mesh system to update vertex/index buffers
-    // For now, just log the vertex count
-    LogInfo(
-        "ElectricBeamComponent::UpdateBeamMesh[",
-        beamIndex,
-        "]: Generated ",
-        vertices.size(),
-        " vertices, ",
-        indices.size(),
-        " indices (time: ",
-        mAnimationTime,
-        ")");
+    mBeamMeshes[beamIndex] = std::make_tuple(vertices, indices);
+}
+
+void ElectricBeamComponent::SyncRenderData()
+{
+    static constexpr uint64_t functionId = Hash64_CT("ElectricBeamComponent::SyncRenderData");
+    if (const auto& sceneSp = m_sceneWP.lock()) {
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            GetObjectId(),
+            functionId,
+            [sceneProxyId = mSceneProxyId,
+             beamColor = mBeamColor,
+             beamCount = mBeamCount,
+             renderMode = mRenderMode,
+             animationSpeed = mAnimationSpeed,
+             beamMeshes = mBeamMeshes](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
+                    if (const auto& beamProxySp = std::static_pointer_cast<Graphics::Proxy::ElectricBeamSceneProxy>(
+                            sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId))) {
+                        beamProxySp->SetBeamColor(beamColor);
+                        beamProxySp->SetBeamCount(beamCount);
+                        beamProxySp->SetRenderMode(renderMode);
+                        beamProxySp->SetMeshData(beamMeshes);
+                    }
+                }
+            });
+    }
 }
 
 } // namespace EngineCore

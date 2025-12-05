@@ -31,7 +31,7 @@ void MissileActor::TriggerSpawn(
     const eDamageDealerType damageDealerType,
     const std::shared_ptr<Actor>& spawnerActor)
 {
-    assert(GetMovementComponent());
+    ext_assert(GetMovementComponent(), "MissileActor movement component is null");
     mDamageDealerType = damageDealerType;
     const auto& existingRotation = GetRootComponent()->GetAdditionalRotation();
     GetRootComponent()->SetAdditionalRotation(glm::vec3(existingRotation.x, yawDegrees, existingRotation.z));

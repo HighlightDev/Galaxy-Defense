@@ -16,7 +16,7 @@ void IParticleModule::SetOwner(const std::weak_ptr<ParticleSystemComponent>& own
 std::vector<Particle>& IParticleModule::GetParticlesPool()
 {
     const auto& ownerSp = mOwner.lock();
-    assert(ownerSp);
+    ext_assert(ownerSp, "IParticleModule::GetParticlesPool: owner is null");
     return ownerSp->mParticlesPool;
 }
 } // namespace EngineCore

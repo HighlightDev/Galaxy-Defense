@@ -277,7 +277,10 @@ std::string LuaCommonUiFunctions::GetUiWidgetName(const std::tuple<int32_t>& dat
                 const auto& uiCanvasProxy = std::static_pointer_cast<UiCanvasLuaProxy>(luaProxy);
                 widgetName = uiCanvasProxy->GetCanvasName();
             } else {
-                assert(false);
+                ext_assert(
+                    false,
+                    "LuaCommonUiFunctions::GetUiWidgetName: Unsupported lua proxy type for luaProxyId: {}"
+                        + std::to_string(luaProxyId));
             }
         }
     }
@@ -295,7 +298,10 @@ void LuaCommonUiFunctions::SetUiWidgetParent(
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         if (const auto& luaProxy = luaProcessorSp->GetLuaProxy(luaProxyId)) {
             const auto& uiItemWidgetProxy = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProxy);
-            assert(uiItemWidgetProxy);
+            ext_assert(
+                uiItemWidgetProxy,
+                "LuaCommonUiFunctions::SetUiWidgetParent: luaProxy is not UiItemBaseLuaProxy for luaProxyId: {}"
+                    + std::to_string(luaProxyId));
             uiItemWidgetProxy->SetParent(canvasName, parentName);
         }
     }
@@ -345,7 +351,7 @@ void LuaCommonUiFunctions::InitializeCanvasInputSystem(const std::tuple<int32_t 
     const auto luaProxyId = std::get<0>(data);
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto& canvasSp = std::dynamic_pointer_cast<UiCanvasLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
-        assert(canvasSp);
+        ext_assert(canvasSp, "LuaCommonUiFunctions::InitializeCanvasInputSystem: canvasSp is null");
         canvasSp->InitializeInputSystem();
     }
 }
@@ -360,19 +366,28 @@ void LuaCommonUiFunctions::AddCanvasFadeAnimation(
 
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto& canvasSp = std::dynamic_pointer_cast<UiCanvasLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
-        assert(canvasSp);
+        ext_assert(canvasSp, "LuaCommonUiFunctions::AddCanvasFadeAnimation: canvasSp is null");
         canvasSp->AddAnimation(animationName, ParseAnimationDataFromJson(animationDataJsonObj));
     }
 }
 
 AnimationData LuaCommonUiFunctions::ParseAnimationDataFromJson(const nlohmann::json& jsonObj)
 {
-    assert(jsonObj.contains("animatedPropertyType"));
-    assert(jsonObj.contains("animationFunctionType"));
-    assert(jsonObj.contains("animationDuration"));
-    assert(jsonObj.contains("animatedPropertyName"));
-    assert(jsonObj.contains("propertySrcValue"));
-    assert(jsonObj.contains("propertyDstValue"));
+    ext_assert(
+        jsonObj.contains("animatedPropertyType"),
+        "LuaCommonUiFunctions::ParseAnimationDataFromJson: animatedPropertyType is missing");
+    ext_assert(
+        jsonObj.contains("animationFunctionType"),
+        "LuaCommonUiFunctions::ParseAnimationDataFromJson: animationFunctionType is missing");
+    ext_assert(
+        jsonObj.contains("animationDuration"), "LuaCommonUiFunctions::ParseAnimationDataFromJson: animationDuration is missing");
+    ext_assert(
+        jsonObj.contains("animatedPropertyName"),
+        "LuaCommonUiFunctions::ParseAnimationDataFromJson: animatedPropertyName is missing");
+    ext_assert(
+        jsonObj.contains("propertySrcValue"), "LuaCommonUiFunctions::ParseAnimationDataFromJson: propertySrcValue is missing");
+    ext_assert(
+        jsonObj.contains("propertyDstValue"), "LuaCommonUiFunctions::ParseAnimationDataFromJson: propertyDstValue is missing");
     const auto functionType = static_cast<eAnimationInterpolationFunctionType>(jsonObj["animationFunctionType"].get<int32_t>());
     const auto propType = static_cast<eEnginePropertyType>(jsonObj["animatedPropertyType"].get<int32_t>());
     const auto animationDuration = jsonObj["animationDuration"].get<float>();
@@ -403,7 +418,7 @@ AnimationData LuaCommonUiFunctions::ParseAnimationDataFromJson(const nlohmann::j
         y = jsonObj["propertyDstValue"].at("y").get<float>();
         dstData = glm::vec2(x, y);
     } else {
-        assert(false); // Not supported yet
+        ext_assert(false, "LuaCommonUiFunctions::ParseAnimationDataFromJson: Unsupported property type");
     }
 
     return AnimationData(functionType, animationDuration, animatedPropertyName, srcData, dstData);
@@ -419,7 +434,10 @@ void LuaCommonUiFunctions::AddUiItemAnimation(
 
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto& uiItemBaseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
-        assert(uiItemBaseLuaProxySp);
+        ext_assert(
+            uiItemBaseLuaProxySp,
+            "LuaCommonUiFunctions::AddUiItemAnimation: uiItemBaseLuaProxySp is null for luaProxyId: "
+                + std::to_string(luaProxyId));
 
         uiItemBaseLuaProxySp->AddAnimation(animationName, ParseAnimationDataFromJson(animationDataJsonObj));
     }
@@ -443,7 +461,10 @@ void LuaCommonUiFunctions::AddUiItemSequenceAnimation(
 
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto& uiItemBaseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
-        assert(uiItemBaseLuaProxySp);
+        ext_assert(
+            uiItemBaseLuaProxySp,
+            "LuaCommonUiFunctions::AddUiItemSequenceAnimation: uiItemBaseLuaProxySp is null for luaProxyId: "
+                + std::to_string(luaProxyId));
 
         uiItemBaseLuaProxySp->AddSequenceAnimation(animationName, resultAnimationSequence);
     }
@@ -456,7 +477,10 @@ void LuaCommonUiFunctions::StartUiItemAnimation(const std::tuple<int32_t /*lua p
 
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto& uiItemBaseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
-        assert(uiItemBaseLuaProxySp);
+        ext_assert(
+            uiItemBaseLuaProxySp,
+            "LuaCommonUiFunctions::StartUiItemAnimation: uiItemBaseLuaProxySp is null for luaProxyId: "
+                + std::to_string(luaProxyId));
         uiItemBaseLuaProxySp->StartAnimation(animationName);
     }
 }
@@ -469,7 +493,10 @@ void LuaCommonUiFunctions::StartUiItemSequenceAnimation(
 
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto& uiItemBaseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
-        assert(uiItemBaseLuaProxySp);
+        ext_assert(
+            uiItemBaseLuaProxySp,
+            "LuaCommonUiFunctions::StartUiItemSequenceAnimation: uiItemBaseLuaProxySp is null for luaProxyId: "
+                + std::to_string(luaProxyId));
         uiItemBaseLuaProxySp->StartSequenceAnimation(animationName);
     }
 }
@@ -479,7 +506,10 @@ void LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver(const std::tuple
     const auto luaProxyId = std::get<0>(data);
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto& toggleButtonSp = std::dynamic_pointer_cast<UiToggleButtonLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
-        assert(toggleButtonSp);
+        ext_assert(
+            toggleButtonSp,
+            "LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver: toggleButtonSp is null for luaProxyId: "
+                + std::to_string(luaProxyId));
         toggleButtonSp->EnableMouseInputReceiver();
     }
 }
@@ -489,7 +519,10 @@ void LuaCommonUiFunctions::EnableSliderMouseInputReceiver(const std::tuple<int32
     const auto luaProxyId = std::get<0>(data);
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto& sliderSp = std::dynamic_pointer_cast<UiSliderLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
-        assert(sliderSp);
+        ext_assert(
+            sliderSp,
+            "LuaCommonUiFunctions::EnableSliderMouseInputReceiver: sliderSp is null for luaProxyId: "
+                + std::to_string(luaProxyId));
         sliderSp->EnableMouseInputReceiver();
     }
 }
@@ -499,7 +532,10 @@ void LuaCommonUiFunctions::EnableMouseInputReceiverBase(const std::tuple<int32_t
     const auto luaProxyId = std::get<0>(data);
     if (const auto& luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock()) {
         const auto& uiItemBaseSp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
-        assert(uiItemBaseSp);
+        ext_assert(
+            uiItemBaseSp,
+            "LuaCommonUiFunctions::EnableMouseInputReceiverBase: uiItemBaseSp is null for luaProxyId: "
+                + std::to_string(luaProxyId));
         uiItemBaseSp->EnableMouseInputReceiverBase();
     }
 }

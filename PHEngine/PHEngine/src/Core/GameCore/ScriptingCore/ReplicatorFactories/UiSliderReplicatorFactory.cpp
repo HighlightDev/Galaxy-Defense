@@ -19,7 +19,9 @@ int32_t UiSliderReplicatorFactory::CreateReplicator(
     const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp,
     const std::string& jsonParamsStr) const
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        "UiSliderReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto uiSliderLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
     std::string name = "";
@@ -40,7 +42,9 @@ int32_t UiSliderReplicatorFactory::CreateReplicator(
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
+                ext_assert(
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    "UiSliderReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdSlider = std::make_shared<UiSlider>(name);
                 createdSlider->Initialize();
                 createdSlider->SetLuaProxyId(uiSliderLuaProxyId);

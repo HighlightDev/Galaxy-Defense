@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Core/GameCore/Components/ComponentData/ElectricBeamComponentData.h"
-#include "Core/GameCore/Components/ElectricBeamComponent.h"
+#include "Core/GraphicsCore/RenderData/MeshRenderData.h"
+
+using namespace Graphics::Data;
 
 namespace EngineCore {
 class Scene;
@@ -14,7 +16,11 @@ public:
     {
         const auto& mData = std::static_pointer_cast<ElectricBeamComponentData>(data);
 
-        auto component = std::make_shared<ComponentInstantiationType>(mData->EngineObjectName);
+        const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
+        ext_assert(materialProxy, "ElectricBeamComponentCreator::CreateComponent: materialProxy is null");
+
+        auto component
+            = std::make_shared<ComponentInstantiationType>(mData->EngineObjectName, MeshRenderData("", materialProxy, false));
 
         // Set properties from data
         component->SetStartPoint(mData->StartPoint);
@@ -24,7 +30,6 @@ public:
         component->SetBeamCount(mData->BeamCount);
         component->SetJitterAmount(mData->JitterAmount);
         component->SetUpdateFrequency(mData->UpdateFrequency);
-        component->SetIsActive(mData->IsActive);
 
         return component;
     }

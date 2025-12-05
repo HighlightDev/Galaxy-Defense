@@ -57,9 +57,10 @@ void DebugUiController::PostPlayLevelFinished()
 
 void DebugUiController::RecalculateWidgetsSize()
 {
-    assert(mCanvas);
-    assert(
-        mRectangleBackground && mRenderFpsLabel && mGameFpsLabel && mLuaFpsLabel && mImage1 && mImage2 && mNextPoolsArrowImage);
+    ext_assert(mCanvas, "DebugUiController canvas is null in RecalculateWidgetsSize");
+    ext_assert(
+        mRectangleBackground && mRenderFpsLabel && mGameFpsLabel && mLuaFpsLabel && mImage1 && mImage2 && mNextPoolsArrowImage,
+        "One or more UI elements are null in DebugUiController::RecalculateWidgetsSize");
 
     const auto windowWidth = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth();
     const auto windowHeight = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();

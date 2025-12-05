@@ -37,7 +37,7 @@ std::string Level::GetLevelName() const
 
 void Level::SetScene(const std::shared_ptr<Scene>& scene)
 {
-    assert(scene);
+    ext_assert(scene, "Level::SetScene: scene is null");
     mSceneWp = scene;
 }
 

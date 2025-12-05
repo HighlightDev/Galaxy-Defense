@@ -26,7 +26,7 @@ glm::vec2 MaterialNodeDecorator::GetValueRange(const std::string& nodeStr) const
     auto rangeStr = XMLParserHelper::GetPropertyNodeAfterColon(nodeStr);
     const std::string& range = XMLParserHelper::GetSubstringInsideBrackets(rangeStr);
     auto rangeValues = EngineUtility::Split(range, ';');
-    assert(rangeValues.size() == 2);
+    ext_assert(rangeValues.size() == 2, "MaterialNodeDecorator::GetValueRange: Range must have exactly two values");
     const std::string& rangeMinValue = EngineUtility::TrimEnd(EngineUtility::TrimStart(rangeValues[0]));
     const std::string& rangeMaxValue = EngineUtility::TrimEnd(EngineUtility::TrimStart(rangeValues[1]));
     minMaxRange.x = std::stof(rangeMinValue);

@@ -384,7 +384,7 @@ std::shared_ptr<Skin> SimplePrimitiveAllocationPolicy::AllocateMemory(const Simp
             }
         }
 
-        assert(vao->GetVertexBufferObjects().size());
+        ext_assert(vao->GetVBOs().size(), "SimplePrimitiveAllocationPolicy::AllocateMemory: No VBOs added to VAO");
         vao->BindBuffersToVao();
 
         resultSkin = std::make_shared<Skin>(vao, boundingBox, std::to_string(static_cast<int32_t>(arg.mSimplePrimitiveType)));

@@ -39,10 +39,10 @@ void* StbFileLoader::AllocateMemoryForAudioSource(const std::string& pathToFile,
         outAudioInfo.mAudioFormat = AL_FORMAT_STEREO16;
         break;
     default:
-        assert(false); // Unsupported channel count
+        ext_assert(false, "Unsupported channel count: " + std::to_string(channels));
     }
 
-    assert(samples >= 1); // Failed to read samples
+    ext_assert(samples >= 1, "Failed to read samples from file: " + pathToFile);
     outAudioInfo.mSampleRate = sample_rate;
     outAudioInfo.mChannelsCount = channels;
     outAudioInfo.mNumBytes = (ALsizei)(samples * channels) * (ALsizei)sizeof(short);
@@ -68,10 +68,10 @@ std::shared_ptr<StbSoundStream> StbFileLoader::OpenStream(const std::string& pat
         outAudioInfo.mAudioFormat = AL_FORMAT_STEREO16;
         break;
     default:
-        assert(false); // Unsupported channel count
+        ext_assert(false, "Unsupported channel count: " + std::to_string(info.channels)); // Unsupported channel count
     }
 
-    assert(samples >= 1); // Failed to read samples
+    ext_assert(samples >= 1, "Failed to read samples from file: " + pathToFile); // Failed to read samples
     outAudioInfo.mSampleRate = info.sample_rate;
     outAudioInfo.mChannelsCount = info.channels;
     outAudioInfo.mNumBytes = (ALsizei)(samples * info.channels) * (ALsizei)sizeof(short);

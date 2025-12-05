@@ -34,7 +34,9 @@ public:
 
     void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const override
     {
-        assert(false);
+        ext_assert(
+            false,
+            "Vec3BindingMaterialProperty::SetValueToUniform: this code should not be called, use proxy on render thread part");
     } // this code should not be called, use proxy on render thread part
 
     void SetValue(MaterialPropertyValueType value)

@@ -67,7 +67,7 @@ bool CameraSceneProxy::IsInitializedFirstTime() const
 
 CameraFrustum CameraSceneProxy::GetCameraFrustum() const
 {
-    assert(mCameraFrustum);
+    ext_assert(mCameraFrustum, "Camera frustum is not initialized");
     return *mCameraFrustum;
 }
 

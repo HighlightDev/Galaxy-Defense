@@ -48,7 +48,7 @@ SpaceshipActor::SpaceshipActor(
     mDmgShakeTimer->SetIsPausable(true);
     mDmgShakeTimer->SetCallback([this]() {
         const auto& rootComponent = GetRootComponent();
-        assert(rootComponent);
+        ext_assert(rootComponent, "SpaceshipActor root component is null in damage shake callback");
         rootComponent->SetRotator(glm::quat()); // reset rotation
         mShakeTimePassed = 0.0f;
     });

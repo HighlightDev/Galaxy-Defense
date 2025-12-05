@@ -80,7 +80,7 @@ std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& proper
         resultProperty
             = std::make_shared<Vec3BindingMaterialProperty>(std::make_shared<Vec3PropertyBinding>(propertyName), propertyName);
     } else {
-        assert((false, "Unknown property type."));
+        ext_assert(false, "Unknown property type.");
     }
 
     return resultProperty;
@@ -92,7 +92,9 @@ std::shared_ptr<MaterialProperty> GetMaterialPropertyAndAdvanceIterator(
     auto propertyStartNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_START_NODE_NAME);
     auto propertyEndNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_END_NODE_NAME);
 
-    assert(propertyStartNode != propertiesEndIt);
+    ext_assert(
+        propertyStartNode != propertiesEndIt,
+        "MaterialParser::GetMaterialPropertyAndAdvanceIterator: Property start node not found");
 
     std::string propertyName, propertyType;
 
@@ -119,7 +121,7 @@ std::string MaterialParser::ReadMaterialNameFromMaterialDescriptor(const std::st
     fileWorker.OpenAndReadFile(absolutePath);
 
     const size_t sizeOfSrc = fileWorker.GetFileSourceLinesCount();
-    assert(sizeOfSrc > 0);
+    ext_assert(sizeOfSrc > 0, "MaterialParser::ReadMaterialNameFromMaterialDescriptor: File source is empty");
 
     std::list<std::string> fileSource = fileWorker.GetFileSrc();
 
@@ -137,7 +139,7 @@ std::string MaterialParser::ReadMaterialNameFromMaterialDescriptor(const std::st
         }
     }
 
-    assert(materialName != "");
+    ext_assert(materialName != "", "MaterialParser::ReadMaterialNameFromMaterialDescriptor: Material name is empty");
     return materialName;
 }
 
@@ -148,7 +150,7 @@ std::shared_ptr<IMaterial> MaterialParser::ParseMaterialDescriptor(const std::st
     fileWorker.OpenAndReadFile(absolutePath);
 
     const size_t sizeOfSrc = fileWorker.GetFileSourceLinesCount();
-    assert(sizeOfSrc > 0);
+    ext_assert(sizeOfSrc > 0, "MaterialParser::ParseMaterialDescriptor: File source is empty");
 
     std::list<std::string> fileSource = fileWorker.GetFileSrc();
 
@@ -179,7 +181,7 @@ std::shared_ptr<IMaterial> MaterialParser::ParseMaterialDescriptor(const std::st
     } else if ("static" == materialType) {
         parsedMaterial = ParseStaticMaterial(fileSource, materialName, materialShaderName);
     } else {
-        assert(false);
+        ext_assert(false, "MaterialParser::ParseMaterialDescriptor: Unknown material type: " + materialType);
     }
 
     return parsedMaterial;
@@ -269,7 +271,10 @@ XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(
                        {MaterialProperty::eMaterialPropertyType::VEC3_BINDING_PROPERTY,
                         MaterialNode::eMaterialPropertyType::VEC3}};
 
-                assert(supportedDynamicProperties.count(materialProperty->GetPropertyType()));
+                ext_assert(
+                    supportedDynamicProperties.count(materialProperty->GetPropertyType()),
+                    "MaterialParser::ParseMaterialDescriptor: Unsupported dynamic property type: "
+                        + materialProperty->GetPropertyName());
                 valueNode = std::make_shared<MaterialValuePropertyNode>(
                     materialProperty, supportedDynamicProperties.at(materialProperty->GetPropertyType()));
                 innerDynamicMaterialProperties.emplace_back(std::move(materialProperty));
@@ -277,7 +282,7 @@ XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(
                 valueNode = mMaterialNodeDecorator.CreateValueNode(currentNodeStr, *lastProcessedIt);
             }
 
-            assert(valueNode);
+            ext_assert(valueNode, "MaterialParser::ParseMaterialDescriptor: Value node creation failed");
             node->AttachInputNode(valueNode);
             ++lastProcessedIt;
         } else {
@@ -312,16 +317,23 @@ std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialInstancedDyn
 
     propertiesBeginIt = instancedDynamicPropertyEndNode;
 
-    assert(propertyName != "" && propertyType != "");
+    ext_assert(
+        propertyName != "" && propertyType != "",
+        "MaterialParser::GetMaterialInstancedDynamicPropertyAndAdvanceIterator: Property name or type is empty");
 
     std::shared_ptr<DynamicMaterialProperty> dynamicMaterialPropery;
     if ("instanced_binding_float" == propertyType) {
         dynamicMaterialPropery = std::make_shared<DynamicInstancedFloatMaterialProperty>(propertyName);
     } else {
-        assert(false);
+        ext_assert(
+            false,
+            "MaterialParser::GetMaterialInstancedDynamicPropertyAndAdvanceIterator: Unknown instanced dynamic property type: "
+                + propertyType);
     }
 
-    assert(dynamicMaterialPropery);
+    ext_assert(
+        dynamicMaterialPropery,
+        "MaterialParser::GetMaterialInstancedDynamicPropertyAndAdvanceIterator: Dynamic material property creation failed");
 
     return dynamicMaterialPropery;
 }
@@ -371,7 +383,9 @@ std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialDynamicPrope
 
     propertiesBeginIt = dynamicPropertyEndNode;
 
-    assert(propertyName != "" && propertyType != "");
+    ext_assert(
+        propertyName != "" && propertyType != "",
+        "MaterialParser::GetMaterialDynamicPropertyAndAdvanceIterator: Property name or type is empty");
     operationEnterNode->SetPropertyType(ConvertPropertyStrToPropertyTypeForMaterialOperationNode(propertyType));
 
     std::shared_ptr<DynamicMaterialProperty> dynamicMaterialPropery;
@@ -404,10 +418,14 @@ std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialDynamicPrope
         }
         dynamicMaterialPropery = dynamicVec3Property;
     } else {
-        assert(false);
+        ext_assert(
+            false,
+            "MaterialParser::GetMaterialDynamicPropertyAndAdvanceIterator: Unknown dynamic property type: " + propertyType);
     }
 
-    assert(dynamicMaterialPropery);
+    ext_assert(
+        dynamicMaterialPropery,
+        "MaterialParser::GetMaterialDynamicPropertyAndAdvanceIterator: Dynamic material property creation failed");
 
     if (innerDynamicMaterialProperties.size()) {
         dynamicMaterialPropery->SetInternalDynamicMaterialProperties(std::move(innerDynamicMaterialProperties));
@@ -456,7 +474,10 @@ MaterialParser::ConvertPropertyStrToPropertyTypeForMaterialOperationNode(const s
            {"vec3", MaterialNode::eMaterialPropertyType::VEC3},
            {"binding_vec3", MaterialNode::eMaterialPropertyType::VEC3}};
 
-    assert(strToPropTypeMapping.count(propertyTypeStr));
+    ext_assert(
+        strToPropTypeMapping.count(propertyTypeStr),
+        "MaterialParser::ConvertPropertyStrToPropertyTypeForMaterialOperationNode: Unsupported property type string: "
+            + propertyTypeStr);
     return strToPropTypeMapping.at(propertyTypeStr);
 }
 

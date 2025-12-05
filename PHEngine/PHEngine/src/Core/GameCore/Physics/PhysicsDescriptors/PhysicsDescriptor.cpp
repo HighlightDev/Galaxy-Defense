@@ -158,21 +158,21 @@ btVector3 PhysicsDescriptor::GetVelocity() const
 
 void PhysicsDescriptor::SetTranslation(const btVector3& translation)
 {
-    assert(mRigidBody);
+    ext_assert(mRigidBody, "PhysicsDescriptor::SetTranslation: mRigidBody is null");
     btTransform& worldTransform = mRigidBody->getWorldTransform();
     worldTransform.setOrigin(translation);
 }
 
 void PhysicsDescriptor::SetRotator(const btQuaternion& rotator)
 {
-    assert(mRigidBody);
+    ext_assert(mRigidBody, "PhysicsDescriptor::SetRotator: mRigidBody is null");
     btTransform& worldTransform = mRigidBody->getWorldTransform();
     worldTransform.setRotation(rotator);
 }
 
 void PhysicsDescriptor::SetIsCollisionEnabled(const bool isCollisionEnabled)
 {
-    assert(mRigidBody);
+    ext_assert(mRigidBody, "PhysicsDescriptor::SetIsCollisionEnabled: mRigidBody is null");
     if (mIsCollisionEnabled != isCollisionEnabled) {
         if (isCollisionEnabled) {
             mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);

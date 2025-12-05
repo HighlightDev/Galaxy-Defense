@@ -91,7 +91,7 @@ void LuaLvlProgressFunctions::SetLevelProgressStagesQueue(
             levelProgressStageSp->AddLevelProgressRequirementTracker(
                 trackerFactory->CreateLevelRequirementTracker(reqTrackerType, trackerJsonRoot));
         }
-        assert(levelProgressStageSp);
+        ext_assert(levelProgressStageSp, "Level progress stage is null after creation");
         mLevelProgressController->AddLevelProgressStage(levelProgressStageSp);
     }
 }

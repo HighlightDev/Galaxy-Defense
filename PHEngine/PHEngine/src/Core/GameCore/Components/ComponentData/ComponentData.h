@@ -11,7 +11,7 @@ struct ComponentData {
     ComponentData(const std::string& gameObjectName)
         : EngineObjectName(gameObjectName)
     {
-        assert(EngineObjectName != "");
+        ext_assert(EngineObjectName != "", "ComponentData: EngineObjectName cannot be empty");
     }
 
     virtual ~ComponentData()

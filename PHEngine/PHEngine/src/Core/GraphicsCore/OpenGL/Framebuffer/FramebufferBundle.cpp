@@ -23,7 +23,7 @@ void FramebufferBundle::UnbindFramebuffer(const GLbitfield clearFlag) const
 
 void FramebufferBundle::FramebufferClear(const FramebufferObject& fbo, const GLbitfield clearFlag)
 {
-    assert(clearFlag);
+    ext_assert(clearFlag, "FramebufferBundle::FramebufferClear: clearFlag is zero");
     fbo.BindFramebuffer(GL_FRAMEBUFFER, true, true);
     glClear(clearFlag);
 }

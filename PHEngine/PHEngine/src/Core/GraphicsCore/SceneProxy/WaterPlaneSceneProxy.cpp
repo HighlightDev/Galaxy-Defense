@@ -54,9 +54,9 @@ void WaterPlaneSceneProxy::PostConstructorInitialize()
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     const auto& engineObject = sceneSp->GetEngineObjectById(goID);
-                    assert(engineObject);
+                    ext_assert(engineObject, "Engine object not found by ID in WaterPlaneSceneProxy");
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                    assert(primitiveComponent);
+                    ext_assert(primitiveComponent, "Failed to cast engine object to PrimitiveComponent in WaterPlaneSceneProxy");
                     primitiveComponent->SetBoundingBox(boundingBox);
                 });
         }

@@ -20,9 +20,9 @@ StreamingSoundComponent::~StreamingSoundComponent()
         Event::GeneralSystemSettingsChangedGameThreadEvent::GetInstanceId());
 }
 
-void StreamingSoundComponent::Initialize()
+void StreamingSoundComponent::OnRegistered()
 {
-    Component::Initialize();
+    Component::OnRegistered();
 
     Event::GeneralSystemSettingsChangedGameThreadEvent::GetInstance()->AddListener(
         std::dynamic_pointer_cast<Event::GeneralSystemSettingsChangedGameThreadEvent>(shared_from_this()));
@@ -59,7 +59,7 @@ void StreamingSoundComponent::ProcessEvent(
             if ("change_value" == doneAction) {
                 if (jsonObj.contains("gain")) {
                     const float gain = nlohmann_utilities::GetFloatFromJson(jsonObj, "gain");
-                    assert(gain >= 0.0f && gain <= 1.0f);
+                    ext_assert(gain >= 0.0f && gain <= 1.0f, "Gain value out of range in StreamingSoundComponent::ProcessEvent");
                     SetGain(gain);
                 }
             }

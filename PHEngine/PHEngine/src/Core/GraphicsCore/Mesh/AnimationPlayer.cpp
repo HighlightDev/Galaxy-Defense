@@ -11,15 +11,15 @@ AnimationPlayer::AnimationPlayer(const std::shared_ptr<AnimatedSkin>& animatedSk
     , mTransitionParameter(0.0f)
     , bTransitionEnabled(false)
 {
-    assert(m_animatedSkin);
+    ext_assert(m_animatedSkin, "AnimationPlayer::AnimationPlayer: animatedSkin is null");
     const auto bResult = SetSrcAnimationByIndex(0);
-    assert(bResult);
+    ext_assert(bResult, "AnimationPlayer::AnimationPlayer: Failed to set source animation by index 0");
 }
 
 bool AnimationPlayer::SetDstAnimationByIndex(const size_t index)
 {
     const auto& animationData = m_animatedSkin->GetAnimatedMeshData();
-    assert(animationData->AnimationIndices.size() > index);
+    ext_assert(animationData->AnimationIndices.size() > index, "AnimationPlayer::SetDstAnimationByIndex: Index out of range");
     mDstAnimationName = animationData->AnimationIndices[index];
     return true;
 }
@@ -27,7 +27,7 @@ bool AnimationPlayer::SetDstAnimationByIndex(const size_t index)
 bool AnimationPlayer::SetSrcAnimationByIndex(const size_t index)
 {
     const auto& animationData = m_animatedSkin->GetAnimatedMeshData();
-    assert(animationData->AnimationIndices.size() > index);
+    ext_assert(animationData->AnimationIndices.size() > index, "AnimationPlayer::SetSrcAnimationByIndex: Index out of range");
     mSrcAnimationName = animationData->AnimationIndices[index];
     return true;
 }

@@ -14,8 +14,8 @@ ActorController::~ActorController()
 void ActorController::Initialize()
 {
     const auto& actorSp = m_actorWp.lock();
-    assert(actorSp);
-    assert(actorSp->GetMovementComponent());
+    ext_assert(actorSp, "Actor pointer is null in ActorController::Initialize");
+    ext_assert(actorSp->GetMovementComponent(), "MovementComponent is null in ActorController::Initialize");
     m_movementComponentWp = actorSp->GetMovementComponent();
 }
 

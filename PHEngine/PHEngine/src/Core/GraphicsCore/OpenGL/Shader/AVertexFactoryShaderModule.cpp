@@ -17,7 +17,7 @@ void AVertexFactoryShaderModule::AccessAllUniformLocations(uint32_t shaderProgra
 {
     IShader::AccessAllUniformLocations(shaderProgramID);
 
-    assert(GetBaseShader());
+    ext_assert(GetBaseShader(), "AVertexFactoryShaderModule::AccessAllUniformLocations: Base shader is null");
 
     mVertexFactoryShader->AccessAllUniformLocations(shaderProgramID);
     GetBaseShader()->AccessAllUniformLocations(shaderProgramID);

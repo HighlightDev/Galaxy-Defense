@@ -11,7 +11,7 @@ namespace Graphics::GeometryBatching {
 bool InstancedGeometryBatchRenderer::TryToAddBatchProxy(const std::shared_ptr<InstancedGeometryBatchProxy>& batch)
 {
     const auto& batchKey = batch->GetBatchKey();
-    assert(batchKey != "");
+    ext_assert(batchKey != "", "InstancedGeometryBatchRenderer::TryToAddBatchProxy: batchKey is empty");
     if (!mBatchProxies.count(batchKey)) {
         mBatchProxies.emplace(batchKey, batch);
         return true;
@@ -26,7 +26,7 @@ bool InstancedGeometryBatchRenderer::CheckIfBatchProxyExists(const std::string& 
 
 std::shared_ptr<InstancedGeometryBatchProxy> InstancedGeometryBatchRenderer::GetBatchProxy(const std::string& batchKey) const
 {
-    assert(batchKey != "");
+    ext_assert(batchKey != "", "InstancedGeometryBatchRenderer::GetBatchProxy: batchKey is empty");
     if (mBatchProxies.count(batchKey)) {
         return mBatchProxies.at(batchKey);
     }
@@ -53,7 +53,9 @@ void InstancedGeometryBatchRenderer::RenderAllBatches(
 void InstancedGeometryBatchRenderer::UpdateBatchInstancesData(const std::unordered_map<std::string, std::vector<int32_t>>& data)
 {
     for (const auto& [batchKey, batchProxySp] : mBatchProxies) {
-        assert(data.count(batchKey));
+        ext_assert(
+            data.count(batchKey),
+            "InstancedGeometryBatchRenderer::UpdateBatchInstancesData: No data found for batchKey: " + batchKey);
         batchProxySp->UpdateValidInstances(data.at(batchKey));
     }
 }

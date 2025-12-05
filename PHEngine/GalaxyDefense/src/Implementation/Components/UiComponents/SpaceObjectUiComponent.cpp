@@ -19,7 +19,7 @@ SpaceObjectUiComponent::SpaceObjectUiComponent(const std::shared_ptr<ComponentDa
     , mHealthBar(nullptr)
 {
     const auto spaceObjectData = std::dynamic_pointer_cast<SpaceObjectUiComponentData>(data);
-    assert(spaceObjectData != nullptr);
+    ext_assert(spaceObjectData != nullptr, "Failed to cast to SpaceObjectUiComponentData");
     mOwnerRootComponent = spaceObjectData->mOwnerRootComponent;
 }
 
@@ -57,7 +57,7 @@ void SpaceObjectUiComponent::CreateUiElements(
             std::bind(&SpaceObjectUiComponent::OnAnimationFinished, this, std::placeholders::_1));
         mHealthBar->GetAnimator()->SetFinishAnimationOnNewAnimationStart(false);
 
-        assert(mLabel != nullptr);
+        ext_assert(mLabel != nullptr, "UI label is null in SpaceObjectUiComponent");
         mLabel->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::TOP, mHealthBar->GetName());
         mLabel->SetAnchorMargin(eUiAnchor::BOTTOM, 20);
         mLabel->SetAnchor(eUiAnchor::HORIZONTAL_CENTER, eUiAnchor::HORIZONTAL_CENTER, mHealthBar->GetName());

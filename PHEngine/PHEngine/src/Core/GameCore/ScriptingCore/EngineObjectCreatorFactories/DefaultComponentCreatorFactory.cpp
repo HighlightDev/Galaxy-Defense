@@ -27,6 +27,7 @@
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/PlatformTraverseComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
@@ -61,9 +62,9 @@ void DefaultComponentCreatorFactory::CreateComponent(
     const std::string& componentDataJsonStr) const
 {
     const auto& sceneSp = sceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in CreateComponent");
     const auto& actor = sceneSp->GetActorById(actorObjectId);
-    assert(actor);
+    ext_assert(actor, "Actor not found by ID in CreateComponent");
 
     std::unordered_map<std::string, std::shared_ptr<IComponentCreatable>> creatorsMap
         = {{"PointLightComponent", std::make_shared<LightComponentCreator<PointLightComponent>>()},
@@ -82,9 +83,9 @@ void DefaultComponentCreatorFactory::CreateComponent(
            {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()},
            {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()},
            {"BillboardComponent", std::make_shared<BillboardComponentCreator<BillboardComponent>>()},
-           {"ElectricBeamComponent", std::make_shared<ElectricBeamComponentCreator>()}};
+           {"ElectricBeamComponent", std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>()}};
 
-    assert(creatorsMap.count(componentType));
+    ext_assert(creatorsMap.count(componentType), "Unknown component type: " + componentType);
 
     const auto componentDataSp = CreateComponentData(sceneSp, componentType, componentDataJsonStr);
     actor->AddComponent(sceneSp->CreateComponent_GameThread(creatorsMap.at(componentType), componentDataSp));
@@ -94,7 +95,7 @@ void DefaultComponentCreatorFactory::CreatePlanarReflectionComponent(
     const std::weak_ptr<::EngineCore::Scene>& sceneWp, const std::string& componentDataJsonStr) const
 {
     const auto& sceneSp = sceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in CreatePlanarReflectionComponent");
     const auto& jsonObj = nlohmann::json::parse(componentDataJsonStr);
     const std::string objectName = nlohmann_utilities::GetStringFromJson(jsonObj, "gameObjectName");
     const auto& componentCreatorSp = std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>();
@@ -103,7 +104,7 @@ void DefaultComponentCreatorFactory::CreatePlanarReflectionComponent(
     const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
     const auto cameraName = nlohmann_utilities::GetStringFromJson(jsonObj, "cameraName");
     const auto ownerCameraSp = sceneSp->GetCamera(cameraName);
-    assert(ownerCameraSp);
+    ext_assert(ownerCameraSp, "Camera not found: " + cameraName);
     const auto viewPortX = nlohmann_utilities::GetIntFromJson(jsonObj, "viewPortX");
     const auto viewPortY = nlohmann_utilities::GetIntFromJson(jsonObj, "viewPortY");
     const auto viewPortWidth = nlohmann_utilities::GetIntFromJson(jsonObj, "viewPortWidth");
@@ -210,7 +211,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto luaScriptRelPath = nlohmann_utilities::GetStringFromJson(jsonObj, "luaScriptName");
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
-        assert(material);
+        ext_assert(material, "Material not found by proxy ID: " + std::to_string(materialProxyId));
 
         componentData = std::make_shared<MeshComponentData>(
             objectName, pathToMesh, translation, rotation, scale, luaScriptRelPath, material);
@@ -275,7 +276,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
-        assert(material);
+        ext_assert(material, "Material not found for SkyboxComponent, proxy ID: " + std::to_string(materialProxyId));
 
         componentData = std::make_shared<SkyboxComponentData>(objectName, scale, material);
     } else if ("WaterPlaneComponent" == componentType) {
@@ -284,7 +285,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
-        assert(material);
+        ext_assert(material, "Material not found for WaterPlaneComponent, proxy ID: " + std::to_string(materialProxyId));
         componentData = std::make_shared<MeshComponentData>(objectName, "", translation, rotation, scale, "", material);
     } else if ("InputComponent" == componentType || "UiInputComponent" == componentType) {
         componentData = std::make_shared<ComponentData>(objectName);
@@ -296,7 +297,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
-        assert(material);
+        ext_assert(material, "Material not found for BillboardComponent, proxy ID: " + std::to_string(materialProxyId));
         componentData = std::make_shared<BillboardComponentData>(
             objectName,
             billboardExtent,
@@ -315,13 +316,15 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const int beamCount = nlohmann_utilities::GetIntFromJson(jsonObj, "beamCount");
         const float jitterAmount = nlohmann_utilities::GetFloatFromJson(jsonObj, "jitterAmount");
         const float updateFrequency = nlohmann_utilities::GetFloatFromJson(jsonObj, "updateFrequency");
-        const bool isActive = nlohmann_utilities::GetBoolFromJson(jsonObj, "isActive");
+        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
+        const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
+        ext_assert(material, "Material not found for ElectricBeamComponent, proxy ID: " + std::to_string(materialProxyId));
 
         componentData = std::make_shared<ElectricBeamComponentData>(
-            objectName, startPoint, endPoint, beamColor, beamThickness, beamCount, jitterAmount, updateFrequency, isActive);
+            objectName, startPoint, endPoint, beamColor, beamThickness, beamCount, jitterAmount, updateFrequency, material);
     }
 
-    assert(componentData);
+    ext_assert(componentData, "Failed to create component data for type: " + componentType);
 
     return componentData;
 }

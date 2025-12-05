@@ -24,14 +24,16 @@ OverlayManager::OverlayManager(const std::weak_ptr<Scene>& scene)
 void OverlayManager::RegisterOverlay(std::shared_ptr<IUiOverlay> overlay)
 {
     const auto& foundOverlay = FindOverlay(overlay->GetOverlayName());
-    assert(!foundOverlay);
+    ext_assert(!foundOverlay, "OverlayManager::RegisterOverlay: overlay already registered: " + overlay->GetOverlayName());
     mOverlays.emplace_back(overlay);
     overlay->SubscribeOnAnimationFinished([weak = weak_from_this()](const std::string& overlayName) {
         if (const auto& overlayManagerPtr = weak.lock()) {
             const auto overlayPtr = std::static_pointer_cast<OverlayManager>(overlayManagerPtr);
             if (overlayPtr->GetPendingAnimationFinishesToOpenOverlay() && overlayName == "FadeOut") {
                 overlayPtr->SetPendingAnimationFinishesToOpenOverlay(false);
-                assert(overlayPtr->GetCurrentOpenedOverlay());
+                ext_assert(
+                    overlayPtr->GetCurrentOpenedOverlay(),
+                    "OverlayManager::RegisterOverlay: CurrentOpenedOverlay is null on animation finished");
                 overlayPtr->GetCurrentOpenedOverlay()->OpenOverlay();
             }
         }
@@ -41,14 +43,16 @@ void OverlayManager::RegisterOverlay(std::shared_ptr<IUiOverlay> overlay)
 void OverlayManager::RegisterBackgroundOverlay(std::shared_ptr<IUiOverlay> overlay)
 {
     const auto& foundOverlay = FindBackgroundOverlay(overlay->GetOverlayName());
-    assert(!foundOverlay);
+    ext_assert(
+        !foundOverlay,
+        "OverlayManager::RegisterBackgroundOverlay: background overlay already registered: " + overlay->GetOverlayName());
     mBackgroundOverlays.emplace_back(overlay);
 }
 
 void OverlayManager::UnregisterOverlay(std::shared_ptr<IUiOverlay> overlay)
 {
     const auto& foundOverlay = FindOverlay(overlay->GetOverlayName());
-    assert(foundOverlay);
+    ext_assert(foundOverlay, "OverlayManager::UnregisterOverlay: overlay not found: " + overlay->GetOverlayName());
     auto remove_it = std::remove_if(mOverlays.begin(), mOverlays.end(), [&](const auto& myOverlay) {
         return overlay->GetOverlayName() == myOverlay->GetOverlayName();
     });
@@ -73,7 +77,8 @@ std::shared_ptr<IUiOverlay> OverlayManager::GetCurrentOpenedOverlay() const
 void OverlayManager::UnregisterBackgroundOverlay(std::shared_ptr<IUiOverlay> overlay)
 {
     const auto& foundOverlay = FindBackgroundOverlay(overlay->GetOverlayName());
-    assert(foundOverlay);
+    ext_assert(
+        foundOverlay, "OverlayManager::UnregisterBackgroundOverlay: background overlay not found: " + overlay->GetOverlayName());
     auto remove_it = std::remove_if(mBackgroundOverlays.begin(), mBackgroundOverlays.end(), [&](const auto& myOverlay) {
         return overlay->GetOverlayName() == myOverlay->GetOverlayName();
     });
@@ -102,7 +107,7 @@ std::weak_ptr<::EngineCore::Scene> OverlayManager::GetSceneWp() const
 void OverlayManager::OpenOverlay(const std::string& overlayName, const bool isRestoreFromHistory)
 {
     const auto& foundOverlay = FindOverlay(overlayName);
-    assert(foundOverlay);
+    ext_assert(foundOverlay, "OverlayManager::OpenOverlay: overlay not found: " + overlayName);
 
     if (mCurrentOpenedOverlay) {
         if (mCurrentOpenedOverlay->GetOverlayName() == overlayName) {
@@ -130,7 +135,7 @@ void OverlayManager::OpenOverlay(const std::string& overlayName, const bool isRe
 void OverlayManager::OpenBackgroundOverlay(const std::string& overlayName)
 {
     const auto& foundOverlay = FindBackgroundOverlay(overlayName);
-    assert(foundOverlay);
+    ext_assert(foundOverlay, "OverlayManager::OpenBackgroundOverlay: background overlay not found: " + overlayName);
     if (!mActiveBackgroundOverlays.count(overlayName)) {
         mActiveBackgroundOverlays.emplace(overlayName);
         foundOverlay->OpenOverlay();
@@ -142,7 +147,7 @@ void OverlayManager::CloseBackgroundOverlay(const std::string& overlayName)
 {
     if (mActiveBackgroundOverlays.count(overlayName)) {
         const auto& foundOverlay = FindBackgroundOverlay(overlayName);
-        assert(foundOverlay);
+        ext_assert(foundOverlay, "OverlayManager::CloseBackgroundOverlay: background overlay not found: " + overlayName);
         mActiveBackgroundOverlays.erase(overlayName);
         foundOverlay->CloseOverlay();
         SyncLuaThreadData();

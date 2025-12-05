@@ -34,7 +34,7 @@ void BarrierActor::AddRayLineMesh(const std::shared_ptr<RuntimeGeneratedLineComp
 bool BarrierActor::TrySetBarrierPillarMeshRelativeTransform(
     const int32_t pillarIndex, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale)
 {
-    assert(pillarIndex >= 0);
+    ext_assert(pillarIndex >= 0, "BarrierActor pillar index cannot be negative");
     if (mBarrierPillars.size() > pillarIndex) {
         const auto& pillarMesh = mBarrierPillars[pillarIndex];
         pillarMesh->SetTranslation(translation);
@@ -52,7 +52,7 @@ bool BarrierActor::TrySetBarrierPillarMeshRelativeTransform(
 
 glm::vec3 BarrierActor::GetBarrierPillarPosition(const int32_t pillarIndex) const
 {
-    assert(pillarIndex < mBarrierPillars.size());
+    ext_assert(pillarIndex < mBarrierPillars.size(), "BarrierActor pillar index out of bounds");
     return mBarrierPillars[pillarIndex]->GetHierarchyAccumulatedTranslation() + GetRootComponent()->GetTranslation();
 }
 

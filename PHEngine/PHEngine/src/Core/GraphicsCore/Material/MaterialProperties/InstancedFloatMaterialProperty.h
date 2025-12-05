@@ -37,7 +37,9 @@ public:
 
     void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const override
     {
-        assert(false);
+        ext_assert(
+            false,
+            "InstancedFloatMaterialProperty::SetValueToUniform: Use SetValueToUniformArray instead for instanced properties");
     }
 
     inline void SetValue(const std::vector<float>& value)

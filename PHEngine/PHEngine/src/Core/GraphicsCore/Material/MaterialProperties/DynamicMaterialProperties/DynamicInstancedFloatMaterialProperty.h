@@ -39,7 +39,10 @@ public:
 
     void UpdateStaticPropertyWithDynamicValue(const std::shared_ptr<MaterialProperty>& staticProperty) override
     {
-        assert(MaterialProperty::eMaterialPropertyType::FLOAT_INSTANCED_PROPERTY == staticProperty->GetPropertyType());
+        ext_assert(
+            MaterialProperty::eMaterialPropertyType::FLOAT_INSTANCED_PROPERTY == staticProperty->GetPropertyType(),
+            "DynamicInstancedFloatMaterialProperty::UpdateStaticPropertyWithDynamicValue: staticProperty type is not "
+            "FLOAT_INSTANCED_PROPERTY");
         const auto& staticInstancedFloatMaterialProperty
             = std::static_pointer_cast<InstancedFloatMaterialProperty>(staticProperty);
         staticInstancedFloatMaterialProperty->SetValue(GetValue());

@@ -22,7 +22,7 @@ public:
         const auto& mData = std::static_pointer_cast<SkyboxComponentData>(data);
 
         const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
-        assert(materialProxy);
+        ext_assert(materialProxy, "SkyboxComponentCreator::CreateComponent: materialProxy is null");
 
         return std::make_shared<ComponentInstantiationType>(mData, SkyboxRenderData(materialProxy));
     }

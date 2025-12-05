@@ -84,13 +84,16 @@ void MaterialShader::LoadUniformValues(const std::shared_ptr<MaterialProxy>& mat
             auto uniformArrayIt = std::find_if(UniformArrays.begin(), UniformArrays.end(), [&](const auto& uniformArray) {
                 return uniformArray.GetUniformName() == property->GetPropertyName();
             });
-            assert(uniformArrayIt != UniformArrays.end());
+            ext_assert(
+                uniformArrayIt != UniformArrays.end(),
+                "IShader::LoadUniformValues: Uniform array not found: " + property->GetPropertyName());
             property->SetValueToUniformArray(*uniformArrayIt);
         } else {
             auto uniformIt = std::find_if(Uniforms.begin(), Uniforms.end(), [&](const auto& uniform) {
                 return uniform.GetUniformName() == property->GetPropertyName();
             });
-            assert(uniformIt != Uniforms.end());
+            ext_assert(
+                uniformIt != Uniforms.end(), "IShader::LoadUniformValues: Uniform not found: " + property->GetPropertyName());
             property->SetValueToUniform(activeBindedState, *uniformIt, uIndex++);
         }
     }

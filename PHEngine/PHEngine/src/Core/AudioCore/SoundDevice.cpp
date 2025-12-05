@@ -53,7 +53,7 @@ void SoundDevice::CleanUp()
 
 SoundDevice::~SoundDevice()
 {
-    assert(mIsCleanedUp); // clean up should be called before dctor
+    ext_assert(mIsCleanedUp, "Clean up should be called before destructor");
 }
 
 std::shared_ptr<SoundDevice> SoundDevice::GetInstance()

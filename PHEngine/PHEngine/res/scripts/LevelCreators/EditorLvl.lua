@@ -46,7 +46,7 @@ function CreateLevel(host)
         ufo.obj,
         brick_mid.jpg,
 	    brick_nm_mid.jpg,
-        dummy_metallic_roughness.png,
+        dummy_metallic_roughness.png
 		]])
 
     _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1,

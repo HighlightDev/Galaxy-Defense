@@ -19,7 +19,9 @@ int32_t UiTextBlockReplicatorFactory::CreateReplicator(
     const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp,
     const std::string& jsonParamsStr) const
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        "UiTextBlockReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto uiTextBlockLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
     std::string name = "", fontName = "";
@@ -33,7 +35,7 @@ int32_t UiTextBlockReplicatorFactory::CreateReplicator(
         }
     }
 
-    assert(fontName.size());
+    ext_assert(fontName.size(), "UiTextBlockReplicatorFactory::CreateReplicator: fontName is empty");
     if (const auto& sceneSp = sceneWp.lock()) {
         static constexpr auto functionId = Hash64_CT("UiTextBlockReplicatorFactory::CreateReplicator");
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
@@ -44,7 +46,9 @@ int32_t UiTextBlockReplicatorFactory::CreateReplicator(
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
+                ext_assert(
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    "UiTextBlockReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiTextBlock = std::make_shared<UiTextBlock>(fontName, name);
                 createdUiTextBlock->Initialize();
                 createdUiTextBlock->SetLuaProxyId(uiTextBlockLuaProxyId);

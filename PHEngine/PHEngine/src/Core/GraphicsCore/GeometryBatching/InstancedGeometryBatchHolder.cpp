@@ -62,7 +62,7 @@ void InstancedGeometryBatchHolder::AddInstancedGeometryBatch(const std::shared_p
         mInstancedGeometryBatches.cend(),
         [newBatchKey = batch->GetBatchKey()](const auto& batchSp) { return newBatchKey == batchSp->GetBatchKey(); });
 
-    assert(isNewBatch);
+    ext_assert(isNewBatch, "InstancedGeometryBatchHolder::AddInstancedGeometryBatch: Batch already exists");
     mInstancedGeometryBatches.emplace_back(batch);
 }
 

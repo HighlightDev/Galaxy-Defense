@@ -17,7 +17,9 @@ int32_t MapShaderTypeToOpenGLConstant(const eShaderType internalShaderType)
         return GL_TESS_EVALUATION_SHADER;
 
     default: {
-        assert(false);
+        ext_assert(
+            false,
+            "MapShaderTypeToOpenGLConstant: Unsupported shader type: " + std::to_string(static_cast<int>(internalShaderType)));
         return 0;
     }
     }

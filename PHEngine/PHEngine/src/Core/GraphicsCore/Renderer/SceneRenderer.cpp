@@ -1233,7 +1233,9 @@ void SceneRenderer::AddMaterialProxy_OnRenderThread(const std::shared_ptr<Materi
     static const uint64_t functionId = Hash64_CT("SceneRenderer::AddMaterialProxy_OnRenderThread");
 
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
-        assert(!GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
+        ext_assert(
+            !GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()),
+            "Material proxy with id {} already exists" + std::to_string(materialProxy->GetSceneProxyId()));
         MaterialProxiesVector.emplace_back(materialProxy);
         LogInfo(
             "SceneRenderer::AddMaterialProxy_OnRenderThread: material name: ",
@@ -1250,7 +1252,9 @@ void SceneRenderer::AddMaterialProxy_OnRenderThread(const std::shared_ptr<Materi
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    assert(!sceneRenderer->GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
+                    ext_assert(
+                        !sceneRenderer->GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()),
+                        "Material proxy with id {} already exists" + std::to_string(materialProxy->GetSceneProxyId()));
                     sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy);
                     LogInfo(
                         "SceneRenderer::AddMaterialProxy_OnRenderThread: material name: ",
@@ -1622,7 +1626,9 @@ void SceneRenderer::AddPrimitiveSceneProxy_OnRenderThread(
     static const uint64_t functionId = Hash64_CT("SceneRenderer::AddPrimitiveSceneProxy_OnRenderThread");
 
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
-        assert(!GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
+        ext_assert(
+            !GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()),
+            "Primitive proxy with id {} already exists" + std::to_string(primitiveSceneProxy->GetSceneProxyId()));
         primitiveSceneProxy->PostConstructorInitialize();
         PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
         SetProxiesAreDirty(true);
@@ -1637,7 +1643,9 @@ void SceneRenderer::AddPrimitiveSceneProxy_OnRenderThread(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    assert(!sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
+                    ext_assert(
+                        !sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()),
+                        "Primitive proxy with id {} already exists" + std::to_string(primitiveSceneProxy->GetSceneProxyId()));
                     primitiveSceneProxy->PostConstructorInitialize();
                     sceneRenderer->GetPrimitiveProxies().emplace_back(primitiveSceneProxy);
                     sceneRenderer->SetProxiesAreDirty(true);
@@ -1654,7 +1662,9 @@ void SceneRenderer::AddLightSceneProxy_OnRenderThread(
     static const uint64_t functionId = Hash64_CT("SceneRenderer::AddLightSceneProxy_OnRenderThread");
 
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
-        assert(!GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
+        ext_assert(
+            !GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()),
+            "Light proxy with id {} already exists" + std::to_string(lightSceneProxy->GetSceneProxyId()));
         LightProxiesVector.emplace_back(lightSceneProxy);
         SetLightProxiesAreDirty(true);
         lightComponent->SetIsSceneProxyReady(true);
@@ -1669,7 +1679,9 @@ void SceneRenderer::AddLightSceneProxy_OnRenderThread(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    assert(!sceneRenderer->GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
+                    ext_assert(
+                        !sceneRenderer->GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()),
+                        "Light proxy with id {} already exists" + std::to_string(lightSceneProxy->GetSceneProxyId()));
                     sceneRenderer->LightProxiesVector.emplace_back(lightSceneProxy);
                     sceneRenderer->SetLightProxiesAreDirty(true);
                     lightComponent->SetIsSceneProxyReady(true);
@@ -1825,7 +1837,8 @@ void SceneRenderer::AddPlanarReflectionSceneProxy_OnRenderThread(
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
         const auto& reflectionProxySp = GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
-        assert(!reflectionProxySp);
+        ext_assert(
+            !reflectionProxySp, "Planar reflection proxy with id {} already exists" + std::to_string(proxy->GetSceneProxyId()));
         PlanarReflectionProxiesVector.emplace_back(proxy);
         SetPlanarReflectionProxiesAreDirty(true);
         planarReflectionComponent->SetIsSceneProxyReady(true);
@@ -1841,7 +1854,9 @@ void SceneRenderer::AddPlanarReflectionSceneProxy_OnRenderThread(
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     const auto& reflectionProxySp = sceneRenderer->GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
-                    assert(!reflectionProxySp);
+                    ext_assert(
+                        !reflectionProxySp,
+                        "Planar reflection proxy with id {} already exists" + std::to_string(proxy->GetSceneProxyId()));
                     sceneRenderer->PlanarReflectionProxiesVector.emplace_back(proxy);
                     sceneRenderer->SetPlanarReflectionProxiesAreDirty(true);
                     planarReflectionComponent->SetIsSceneProxyReady(true);
@@ -2002,18 +2017,23 @@ void SceneRenderer::TextVisibilityChanged(const int32_t textFieldProxyId, const 
 
 void SceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy>& canvasSceneProxy)
 {
-    assert(canvasSceneProxy);
+    ext_assert(canvasSceneProxy, "SceneRenderer::RegisterUiCanvasProxy: canvasSceneProxy is nullptr");
     auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [&](const auto& canvasProxy) {
         return canvasSceneProxy->GetUiItemUId() == canvasProxy->GetUiItemUId();
     });
-    assert(canvasIt == mUiCanvasProxies.end());
+    ext_assert(
+        canvasIt == mUiCanvasProxies.end(),
+        "SceneRenderer::RegisterUiCanvasProxy: canvasSceneProxy with id {} already exists"
+            + std::to_string(canvasSceneProxy->GetUiItemUId()));
     mUiCanvasProxies.emplace_back(canvasSceneProxy);
     canvasSceneProxy->SetFontHandler(mFreeTypeFontHandler);
 }
 
 void SceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "SceneRenderer::UnregisterUiCanvasProxy: This function must be called from Render thread");
     mUiCanvasProxies.erase(
         std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [canvasUiId](const auto& canvasProxy) {
             return canvasUiId == canvasProxy->GetUiItemUId();
@@ -2022,12 +2042,16 @@ void SceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)
 
 void SceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>& sceneProxy, const size_t canvasUId)
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
-    assert(sceneProxy);
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "SceneRenderer::RegisterUiSceneProxy: This function must be called from Render thread");
+    ext_assert(sceneProxy, "SceneRenderer::RegisterUiSceneProxy: sceneProxy is nullptr");
     auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto& canvasProxy) {
         return canvasUId == canvasProxy->GetUiItemUId();
     });
-    assert(canvasIt != mUiCanvasProxies.end());
+    ext_assert(
+        canvasIt != mUiCanvasProxies.end(),
+        "SceneRenderer::RegisterUiSceneProxy: canvas with id {} not found" + std::to_string(canvasUId));
     sceneProxy->SetCanvasSceneProxy((*canvasIt));
     (*canvasIt)->AddUiSceneProxy(sceneProxy);
     sceneProxy->SetSceneRenderer(shared_from_this());
@@ -2036,11 +2060,15 @@ void SceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>
 
 void SceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t canvasUId)
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        "SceneRenderer::UnregisterUiSceneProxy: This function must be called from Render thread");
     auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto& canvasProxy) {
         return canvasUId == canvasProxy->GetUiItemUId();
     });
-    assert(canvasIt != mUiCanvasProxies.end());
+    ext_assert(
+        canvasIt != mUiCanvasProxies.end(),
+        "SceneRenderer::UnregisterUiSceneProxy: canvas with id {} not found" + std::to_string(canvasUId));
     (*canvasIt)->RemoveUiSceneProxy(uiItemUId);
 }
 

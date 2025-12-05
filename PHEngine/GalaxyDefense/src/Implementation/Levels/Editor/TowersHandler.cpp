@@ -24,7 +24,7 @@ TowersHandler::TowersHandler(const std::weak_ptr<Scene>& sceneWp, const std::sha
 void TowersHandler::CreateNewTower(const glm::vec3& position, const glm::vec3& scale)
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "TowersHandler scene pointer is null");
 
     if (mIdleTowerComponents.empty()) {
         MaterialParser materialParser;

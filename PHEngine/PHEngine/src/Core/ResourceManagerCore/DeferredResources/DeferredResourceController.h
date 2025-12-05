@@ -41,8 +41,9 @@ public:
 
     void SetResource(TResource const& resource)
     {
-        assert(mDeferredResource);
-        assert(mDeferredResource->GetIsFutureInitialized());
+        ext_assert(mDeferredResource, "DeferredResource is null in DeferredResourceController::SetResource");
+        ext_assert(
+            mDeferredResource->GetIsFutureInitialized(), "Future is not initialized in DeferredResourceController::SetResource");
         mPromise.set_value(resource);
         bValueSet = true;
     }

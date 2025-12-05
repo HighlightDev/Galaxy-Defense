@@ -11,10 +11,14 @@ using namespace EngineMath;
 namespace EngineCore {
 void ParticleExplosionEmitter::EmitParticles(const size_t particlesCount)
 {
-    assert(mThetaSlicesCount); // set theta slices count before emitting
-    assert((particlesCount % mThetaSlicesCount) == 0);
+    ext_assert(
+        mThetaSlicesCount,
+        "ParticleExplosionEmitter::EmitParticles: mThetaSlicesCount is zero"); // set theta slices count before emitting
+    ext_assert(
+        (particlesCount % mThetaSlicesCount) == 0,
+        "ParticleExplosionEmitter::EmitParticles: particlesCount must be multiple of mThetaSlicesCount");
     const auto& ownerSp = mOwner.lock();
-    assert(ownerSp);
+    ext_assert(ownerSp, "ParticleExplosionEmitter::EmitParticles: owner is null");
 
     auto& particlePool = GetParticlesPool();
     const auto& poolSize = particlePool.size();

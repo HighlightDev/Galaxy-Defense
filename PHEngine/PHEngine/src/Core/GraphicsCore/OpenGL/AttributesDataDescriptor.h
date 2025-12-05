@@ -53,7 +53,9 @@ public:
         , mAttributeComponentDataType(type)
         , mAttributeComponentsNumber(attributeComponentsNumber)
     {
-        assert(mAttributeComponentsNumber >= 1 && mAttributeComponentsNumber <= 4);
+        ext_assert(
+            mAttributeComponentsNumber >= 1 && mAttributeComponentsNumber <= 4,
+            "CustomAttributeData components number must be between 1 and 4");
     }
 
     std::string GetAttributeName() const override

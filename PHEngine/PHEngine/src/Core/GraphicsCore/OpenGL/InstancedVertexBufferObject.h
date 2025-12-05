@@ -78,7 +78,7 @@ private:
         } else if (m_glType == GL_FLOAT) {
             glVertexAttribPointer(index, size, m_glType, normalized, stride, 0);
         } else {
-            assert(false);
+            ext_assert(false, "InstancedVertexBufferObject::SetVertexAttribPointer: Unsupported GL type");
         }
     }
 

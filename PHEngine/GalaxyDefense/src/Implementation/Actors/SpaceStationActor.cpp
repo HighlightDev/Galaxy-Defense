@@ -61,7 +61,7 @@ eSpaceStationActivityState SpaceStationActor::GetState() const
 
 void SpaceStationActor::SetSpaceStationLevel(const std::shared_ptr<SpaceStationLevel>& spaceStationLevel)
 {
-    assert(spaceStationLevel);
+    ext_assert(spaceStationLevel, "SpaceStationActor space station level pointer is null");
     mSpaceStationLevel = spaceStationLevel;
     const float shootRadius = mSpaceStationLevel->GetShootRadius();
     mShootRadiusProperty->SetValue(shootRadius);
@@ -70,13 +70,13 @@ void SpaceStationActor::SetSpaceStationLevel(const std::shared_ptr<SpaceStationL
 
 const std::shared_ptr<SpaceStationLevel>& SpaceStationActor::GetSpaceStationLevel() const
 {
-    assert(mSpaceStationLevel);
+    ext_assert(mSpaceStationLevel, "SpaceStationActor space station level is null");
     return mSpaceStationLevel;
 }
 
 void SpaceStationActor::SetRadiusMarkerComponent(const std::shared_ptr<StaticMeshComponent>& radiusMarkerComponent)
 {
-    assert(!mRadiusMarkerComponent);
+    ext_assert(!mRadiusMarkerComponent, "SpaceStationActor radius marker component already exists");
     mRadiusMarkerComponent = radiusMarkerComponent;
     AddComponent(radiusMarkerComponent);
 }

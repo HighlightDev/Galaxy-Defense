@@ -40,7 +40,7 @@ void BombMissileActor::TriggerExplosion()
 {
     mActivityState = eMissileActivityState::EXPLOSION;
     const auto c_soundList = GetComponentsByType<SoundComponent>();
-    assert(c_soundList.size());
+    ext_assert(c_soundList.size(), "BombMissileActor has no sound components for explosion");
     const auto& soundSp = c_soundList.back();
     soundSp->GetSoundSource()->SetPitch(0.75f + (Random::Float() * 0.25f));
     soundSp->PlayBuffer("explosion");

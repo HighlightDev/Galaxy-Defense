@@ -31,7 +31,7 @@ public:
         const auto& mData = std::static_pointer_cast<InstancedMeshComponentData>(data);
 
         const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
-        assert(materialProxy);
+        ext_assert(materialProxy, "InstancedStaticMeshComponentCreator::CreateComponent: materialProxy is null");
 
         return std::make_shared<ComponentInstantiationType>(
             mData, MeshRenderData(mData->m_pathToMesh, materialProxy, mIsDeferredShaderUsed));

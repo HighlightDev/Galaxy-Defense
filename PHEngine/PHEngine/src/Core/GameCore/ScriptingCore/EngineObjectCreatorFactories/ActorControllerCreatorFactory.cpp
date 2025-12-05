@@ -21,13 +21,13 @@ void ActorControllerCreatorFactory::CreateActorController(
 {
     const nlohmann::json jsonRoot = nlohmann::json::parse(jsonParamStr);
     const auto& sceneSp = sceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in CreateActorController");
     if ("HumanoidPlayerController" == actorControllerTypeName) {
         const auto& actorSp = sceneSp->GetActorByName(actorName);
         const auto& cameraSp = sceneSp->GetCamera(nlohmann_utilities::GetStringFromJson(jsonRoot, "cameraName"));
         sceneSp->AddActorController(std::make_shared<HumanoidPlayerController>(cameraSp, actorSp));
     } else {
-        assert(false); // not implemented type
+        ext_assert(false, "ActorController type not implemented: " + actorControllerTypeName);
     }
 }
 } // namespace Scripts

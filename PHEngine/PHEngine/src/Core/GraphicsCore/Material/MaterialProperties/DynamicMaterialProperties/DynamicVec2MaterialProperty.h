@@ -55,7 +55,9 @@ public:
 
     void UpdateStaticPropertyWithDynamicValue(const std::shared_ptr<MaterialProperty>& staticProperty) override
     {
-        assert(MaterialProperty::eMaterialPropertyType::VEC2_PROPERTY == staticProperty->GetPropertyType());
+        ext_assert(
+            MaterialProperty::eMaterialPropertyType::VEC2_PROPERTY == staticProperty->GetPropertyType(),
+            "DynamicVec2MaterialProperty::UpdateStaticPropertyWithDynamicValue: staticProperty type is not VEC2_PROPERTY");
         const auto& staticVec2MaterialProperty = std::static_pointer_cast<Vec2MaterialProperty>(staticProperty);
         staticVec2MaterialProperty->SetValue(GetValue());
     }
@@ -67,7 +69,9 @@ public:
 
     glm::vec2 GetValue()
     {
-        assert(mDynamicOperationStartNode->GetMaterialPropertyType() == MaterialNode::eMaterialPropertyType::VEC2);
+        ext_assert(
+            mDynamicOperationStartNode->GetMaterialPropertyType() == MaterialNode::eMaterialPropertyType::VEC2,
+            "DynamicVec2MaterialProperty::GetValue: Dynamic operation start node property type is not VEC2");
         auto value = std::any_cast<glm::vec2>(mDynamicOperationStartNode->GetValue());
 
         /*If incremental - add new value to previous value*/

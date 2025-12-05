@@ -33,7 +33,7 @@ void InstancedStaticMeshSceneProxy::PostConstructorInitialize()
         } else {
             const auto& batchProxy = std::make_shared<InstancedGeometryBatchProxy>(shared_from_this());
             const bool bSuccess = batcherRendererSp->TryToAddBatchProxy(batchProxy);
-            assert(bSuccess);
+            ext_assert(bSuccess, "InstancedStaticMeshSceneProxy::PostConstructorInitialize: Failed to add batch proxy");
             batchProxy->Initialize();
             mBatchProxy = batchProxy;
         }
@@ -47,7 +47,7 @@ void InstancedStaticMeshSceneProxy::Render(
     ActiveBindedState& activeBindedState)
 {
     // this code should not be invoked
-    assert(false);
+    ext_assert(false, "InstancedStaticMeshSceneProxy::Render: This method should not be invoked");
 }
 
 void InstancedStaticMeshSceneProxy::RenderPlanarReflection(
@@ -58,7 +58,7 @@ void InstancedStaticMeshSceneProxy::RenderPlanarReflection(
     ActiveBindedState& activeBindedState)
 {
     // this code should not be invoked
-    assert(false);
+    ext_assert(false, "InstancedStaticMeshSceneProxy::RenderPlanarReflection: This method should not be invoked");
 }
 
 bool InstancedStaticMeshSceneProxy::IsDeferred() const
@@ -89,7 +89,7 @@ std::string InstancedStaticMeshSceneProxy::GetBatchKey() const
 
 RenderInfo InstancedStaticMeshSceneProxy::GetRenderInfo() const
 {
-    assert(mBatchProxy);
+    ext_assert(mBatchProxy, "InstancedStaticMeshSceneProxy::GetRenderInfo: Batch proxy is null");
     return RenderInfo{mBatchProxy->GetBatchShader()->GetShaderName()};
 }
 

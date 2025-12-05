@@ -22,7 +22,7 @@ BlackHoleMissileActor::BlackHoleMissileActor(
 
 void BlackHoleMissileActor::AttachTweener(std::shared_ptr<Tweener> tweener)
 {
-    assert(tweener);
+    ext_assert(tweener, "BlackHoleMissileActor tweener pointer is null");
     LogInfo("BlackHoleMissileActor::AttachTweener: Path to tweener", tweener->GetRelPathTweener());
 
     Actor::AttachTweener(tweener);
@@ -37,14 +37,14 @@ void BlackHoleMissileActor::InitTweenerSubscriptions()
 
 void BlackHoleMissileActor::AddCombatActivePhaseActor(const std::shared_ptr<Actor>& combatActivePhaseActor)
 {
-    assert(!mCombatActivePhaseActor);
+    ext_assert(!mCombatActivePhaseActor, "BlackHoleMissileActor combat active phase actor already exists");
     mCombatActivePhaseActor = combatActivePhaseActor;
     AddChild(combatActivePhaseActor);
 }
 
 void BlackHoleMissileActor::AddExplosionSecondPhaseActor(const std::shared_ptr<MissileActor>& explosionSecondPhaseActor)
 {
-    assert(!mExplosionSecondPhaseActor);
+    ext_assert(!mExplosionSecondPhaseActor, "BlackHoleMissileActor explosion second phase actor already exists");
     mExplosionSecondPhaseActor = explosionSecondPhaseActor;
     AddChild(mExplosionSecondPhaseActor);
 }
@@ -74,37 +74,37 @@ void BlackHoleMissileActor::OnTweenStateChanged(const std::string& stateName)
     } else if ("s_BlackHoleSuckIn" == stateName) {
         TriggerDisabled();
     } else {
-        assert(false);
+        ext_assert(false, "BlackHoleMissileActor unknown tweener state");
     }
 }
 
 void BlackHoleMissileActor::TriggerLifecycle_FirstPhasePreload()
 {
-    assert(mBlackMissileTweener);
+    ext_assert(mBlackMissileTweener, "BlackHoleMissileActor tweener is null in FirstPhasePreload");
     mBlackMissileTweener->ChangeState("s_FirstPhasePreload");
 }
 
 void BlackHoleMissileActor::TriggerLifecycle_FirstPhaseActiveCombat()
 {
-    assert(mBlackMissileTweener);
+    ext_assert(mBlackMissileTweener, "BlackHoleMissileActor tweener is null in FirstPhaseActiveCombat");
     mBlackMissileTweener->ChangeState("s_FirstPhaseActiveCombat");
 }
 
 void BlackHoleMissileActor::TriggerLifecycle_FirstPhaseExplosion()
 {
-    assert(mBlackMissileTweener);
+    ext_assert(mBlackMissileTweener, "BlackHoleMissileActor tweener is null in FirstPhaseExplosion");
     mBlackMissileTweener->ChangeState("s_FirstPhaseExplosion");
 }
 
 void BlackHoleMissileActor::TriggerLifecycle_SecondPhaseExplosion()
 {
-    assert(mBlackMissileTweener);
+    ext_assert(mBlackMissileTweener, "BlackHoleMissileActor tweener is null in SecondPhaseExplosion");
     mBlackMissileTweener->ChangeState("s_SecondPhaseExplosion");
 }
 
 void BlackHoleMissileActor::TriggerLifecycle_BlackHoleSuckIn()
 {
-    assert(mBlackMissileTweener);
+    ext_assert(mBlackMissileTweener, "BlackHoleMissileActor tweener is null in BlackHoleSuckIn");
     mBlackMissileTweener->ChangeState("s_BlackHoleSuckIn");
 }
 
@@ -131,7 +131,7 @@ void BlackHoleMissileActor::TriggerExplosion()
 {
     mActivityState = eMissileActivityState::EXPLOSION;
     const auto c_soundList = GetComponentsByType<SoundComponent>();
-    assert(c_soundList.size());
+    ext_assert(c_soundList.size(), "BlackHoleMissileActor has no sound components for explosion");
     c_soundList.back()->PlayBuffer("explosion");
     TriggerLifecycle_FirstPhaseExplosion();
 }

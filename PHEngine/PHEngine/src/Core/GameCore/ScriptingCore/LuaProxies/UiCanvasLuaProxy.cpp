@@ -75,9 +75,9 @@ void UiCanvasLuaProxy::AddAnimation(const std::string& animationName, const Anim
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiCanvasLuaProxy::AddAnimation: replicator is null");
                 const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
-                assert(canvas);
+                ext_assert(canvas, "UiCanvasLuaProxy::AddAnimation: canvas is null");
                 canvas->AddAnimation(animationName, animationData);
             });
     }
@@ -97,9 +97,9 @@ void UiCanvasLuaProxy::AddSequenceAnimation(const std::string& sequenceAnimation
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiCanvasLuaProxy::AddSequenceAnimation: replicator is null");
                 const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
-                assert(canvas);
+                ext_assert(canvas, "UiCanvasLuaProxy::AddSequenceAnimation: canvas is null");
                 canvas->AddSequenceAnimation(sequenceAnimationName, animationSequence);
             });
     }
@@ -129,9 +129,9 @@ void UiCanvasLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameters)
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiCanvasLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
-                assert(canvas);
+                ext_assert(canvas, "UiCanvasLuaProxy::OnLuaThreadDataUpdated: canvas is null");
                 canvas->SyncFromLuaJsonProperties(jsonStr);
             });
     }
@@ -172,9 +172,9 @@ void UiCanvasLuaProxy::InitializeInputSystem()
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiCanvasLuaProxy::InitializeInputSystem: replicator is null");
                 const auto& canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
-                assert(canvas);
+                ext_assert(canvas, "UiCanvasLuaProxy::InitializeInputSystem: canvas is null");
                 canvas->InitializeInputSystem();
             });
     }

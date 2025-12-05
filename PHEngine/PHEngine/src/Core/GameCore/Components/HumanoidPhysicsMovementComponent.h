@@ -29,7 +29,7 @@ public:
 
     ~HumanoidPhysicsMovementComponent() override;
 
-    void Initialize() override;
+    void OnRegistered() override;
 
     eComponentType GetComponentType() const override;
 

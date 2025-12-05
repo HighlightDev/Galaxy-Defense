@@ -83,7 +83,7 @@ std::shared_ptr<IMaterial> SkyboxComponent::GetMaterial() const
     if (const auto& sceneSP = m_sceneWP.lock()) {
         materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
     }
-    assert(materialResult != nullptr);
+    ext_assert(materialResult != nullptr, "SkyboxComponent::GetMaterial: materialResult is null");
     return materialResult;
 }
 } // namespace EngineCore

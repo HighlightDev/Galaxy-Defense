@@ -49,7 +49,7 @@ std::shared_ptr<CameraSceneProxy> SceneView::GetCameraProxy() const
 
 bool SceneView::IsPrimitiveVisible(const size_t proxyId) const
 {
-    assert(mVisibilityMap.count(proxyId));
+    ext_assert(mVisibilityMap.count(proxyId), "SceneView::IsPrimitiveVisible: Proxy ID not found in visibility map");
     return mVisibilityMap.at(proxyId);
 }
 } // namespace Graphics

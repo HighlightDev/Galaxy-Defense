@@ -62,9 +62,10 @@ void ParticleSystemSceneProxy::PostConstructorInitialize()
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     const auto& engineObject = sceneSp->GetEngineObjectById(goID);
-                    assert(engineObject);
+                    ext_assert(engineObject, "Engine object not found by ID in ParticleSystemSceneProxy");
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                    assert(primitiveComponent);
+                    ext_assert(
+                        primitiveComponent, "Failed to cast engine object to PrimitiveComponent in ParticleSystemSceneProxy");
                     primitiveComponent->SetBoundingBox(boundingBox);
                 });
         }
@@ -160,7 +161,7 @@ void ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer()
     auto* const particlesRotationSizeVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("ParticleRotationAndSize");
     auto* const particlesColorVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("ParticleColor");
 
-    assert(particlesTransformVBO && particlesRotationSizeVBO && particlesColorVBO);
+    ext_assert(particlesTransformVBO && particlesRotationSizeVBO && particlesColorVBO, "Failed to get particle system VBOs");
 
     const size_t translationSubBufferSize = mParticlesRawDataHandler.GetTranslationActiveDataChunkSize();
     const size_t rotationSizeSubBufferSize = mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize();

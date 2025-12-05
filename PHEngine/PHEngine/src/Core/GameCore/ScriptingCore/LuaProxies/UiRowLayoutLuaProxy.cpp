@@ -49,9 +49,9 @@ void UiRowLayoutLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParamete
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiRowLayoutLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& rowLayout = std::static_pointer_cast<::EngineCore::GUI::UiRowLayout>(replicator);
-                assert(rowLayout);
+                ext_assert(rowLayout, "UiRowLayoutLuaProxy::OnLuaThreadDataUpdated: rowLayout is null");
                 rowLayout->SyncFromLuaJsonProperties(jsonStr);
             });
     }

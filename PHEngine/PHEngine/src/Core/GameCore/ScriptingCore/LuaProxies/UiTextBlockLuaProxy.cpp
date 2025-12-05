@@ -46,9 +46,9 @@ void UiTextBlockLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParamete
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiTextBlockLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& uiTextBlock = std::static_pointer_cast<::EngineCore::GUI::UiTextBlock>(replicator);
-                assert(uiTextBlock);
+                ext_assert(uiTextBlock, "UiTextBlockLuaProxy::OnLuaThreadDataUpdated: uiTextBlock is null");
                 uiTextBlock->SyncFromLuaJsonProperties(jsonStr);
             });
     }

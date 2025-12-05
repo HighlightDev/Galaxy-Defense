@@ -221,7 +221,7 @@ void LuaEngineEventsFunctions::ProcessEvent(
     const auto& jsonParameters = std::get<1>(data);
     const auto& parsedParameters = nlohmann::json::parse(jsonParameters);
 
-    assert(eventTypeToStringMap.count(eventType));
+    ext_assert(eventTypeToStringMap.count(eventType), "LuaEngineEventsFunctions::ProcessEvent: unknown event type");
     nlohmann::json jsonObj;
     jsonObj["settings_type"] = eventTypeToStringMap.at(eventType);
     if (parsedParameters.contains("action")) {

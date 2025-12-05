@@ -19,7 +19,9 @@ int32_t UiToggleButtonReplicatorFactory::CreateReplicator(
     const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp,
     const std::string& jsonParamsStr) const
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        "UiToggleButtonReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto& jsonObj = nlohmann::json::parse(jsonParamsStr);
     const auto isStateOn = jsonObj["is_state_on"].get<bool>();
     std::string name = "";
@@ -39,7 +41,9 @@ int32_t UiToggleButtonReplicatorFactory::CreateReplicator(
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
+                ext_assert(
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    "UiToggleButtonReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiToggleButton = std::make_shared<UiToggleButton>(isStateOn, name);
                 createdUiToggleButton->Initialize();
                 createdUiToggleButton->SetLuaProxyId(uiToggleButtonLuaProxyId);

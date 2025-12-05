@@ -24,7 +24,7 @@ bool FloatsNearEqual(const float X, const float Y)
 
 float LerpNormalizedFloat(const float src, const float dst, const float factor)
 {
-    assert(factor <= 1 && factor >= 0);
+    ext_assert(factor <= 1 && factor >= 0, "EngineMath::LerpNormalizedFloat: factor out of range [0,1]");
     return (dst - src) * factor + src;
 }
 

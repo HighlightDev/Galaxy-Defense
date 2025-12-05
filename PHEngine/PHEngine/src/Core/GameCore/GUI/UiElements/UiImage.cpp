@@ -73,7 +73,9 @@ void UiImage::ReallocateTexture(const bool updateRenderThreadData, const bool up
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& texturePool = TexturePool::GetInstance();
                 if (mTexture) {
-                    assert(texturePool->TryToFreeMemory(mTexture));
+                    ext_assert(
+                        texturePool->TryToFreeMemory(mTexture),
+                        "UiImage::ReallocateTexture: Failed to free previous texture memory");
                 }
                 mTexture = texturePool->GetOrAllocateResource(mTextureSrc);
 
@@ -122,7 +124,9 @@ void UiImage::SetTexture(const std::shared_ptr<ITexture>& texture)
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (mTexture && mTextureSrc != "") {
-                    assert(TexturePool::GetInstance()->TryToFreeMemory(mTexture));
+                    ext_assert(
+                        TexturePool::GetInstance()->TryToFreeMemory(mTexture),
+                        "UiImage::SetTexture: Failed to free previous texture memory");
                     mTextureSrc = "";
                     mTexture = nullptr;
                 }

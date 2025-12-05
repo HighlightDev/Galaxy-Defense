@@ -20,7 +20,7 @@ AssimpLoader::AssimpLoader(const std::string& modelFilePath)
     importer_t importer;
     const aiScene* scene = importer.ReadFile(modelFilePath, LOAD_FLAGS);
 
-    assert((scene));
+    ext_assert(scene, "AssimpLoader::AssimpLoader: Failed to load model file: " + modelFilePath);
     LoadMeshAndAnimations(scene);
 }
 

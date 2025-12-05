@@ -67,7 +67,7 @@ void GhostController::CompletePhysicsDescriptorConstruction()
 
 void GhostController::SetIsCollisionEnabled(const bool isCollisionEnabled)
 {
-    assert(mGhostObject);
+    ext_assert(mGhostObject, "GhostController::SetIsCollisionEnabled: mGhostObject is null");
 
     if (isCollisionEnabled != mIsCollisionEnabled) {
         if (isCollisionEnabled) {

@@ -15,7 +15,7 @@ PointLightComponent::PointLightComponent(const std::shared_ptr<LightComponentDat
     : LightComponent(lightComponentData)
 {
     const auto& d_pointLight = std::static_pointer_cast<PointLightComponentData>(lightComponentData);
-    assert(nullptr == mLightRenderData);
+    ext_assert(nullptr == mLightRenderData, "PointLightComponent render data is already initialized in constructor");
     mLightRenderData = std::make_shared<PointLightRenderData>(
         d_pointLight->Attenuation,
         d_pointLight->RadianceRadius,
@@ -35,7 +35,7 @@ PointLightComponent::~PointLightComponent()
     }
 }
 
-void PointLightComponent::Initialize()
+void PointLightComponent::OnRegistered()
 {
     if (mLightRenderData->ShadowInfo) {
         const auto thisSp = std::dynamic_pointer_cast<PointLightComponent>(shared_from_this());

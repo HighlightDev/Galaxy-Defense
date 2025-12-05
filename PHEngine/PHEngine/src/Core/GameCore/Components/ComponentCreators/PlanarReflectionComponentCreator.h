@@ -20,7 +20,7 @@ public:
         const auto& mData = std::static_pointer_cast<PlanarReflectionComponentData>(data);
 
         const auto& ownerCameraSp = mData->m_ownerCamera.lock();
-        assert(ownerCameraSp);
+        ext_assert(ownerCameraSp, "PlanarReflectionComponentCreator::CreateComponent: ownerCameraSp is null");
 
         const auto& component = std::make_shared<ComponentInstantiationType>(mData);
 

@@ -1,5 +1,6 @@
 #include "InstancedGeometryBatchProxy.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderUtilityFunctions.h"
 #include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 #include "Core/GraphicsCore/SceneProxy/InstancedStaticMeshSceneProxy.h"
@@ -119,9 +120,11 @@ void InstancedGeometryBatchProxy::PrepareRenderData()
                 }
                 return false;
             });
-        assert(foundIt != mInstancedStaticMeshSceneProxies.cend());
+        ext_assert(
+            foundIt != mInstancedStaticMeshSceneProxies.cend(),
+            "InstancedGeometryBatchProxy::PrepareRenderData: Scene proxy not found in batch");
         const auto& proxySp = foundIt->lock();
-        assert(proxySp);
+        ext_assert(proxySp, "InstancedGeometryBatchProxy::PrepareRenderData: Scene proxy weak pointer is expired");
         mCachedWorldMatrices.emplace_back(proxySp->GetMatrix());
     }
 }

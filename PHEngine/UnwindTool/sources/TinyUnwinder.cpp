@@ -1,6 +1,9 @@
 #include "TinyUnwinder.h"
 
+#include <cxxabi.h>
+#include <dlfcn.h>
 #include <libunwind.h>
+#include <link.h>
 
 #include <memory>
 
@@ -27,7 +30,7 @@ std::string TinyUnwinder::GetStackBacktraceStr() const
     unw_getcontext(&uc);
     unw_init_local(&cursor, &uc);
     unw_word_t offset;
-    char sym[4096];
+    char sym[16384];
     int32_t stackFrameIndex{0};
     std::string btStr = "\n";
     while (unw_step(&cursor) > 0) {
@@ -35,7 +38,30 @@ std::string TinyUnwinder::GetStackBacktraceStr() const
         unw_get_reg(&cursor, UNW_REG_SP, &sp);
         // printf("ip = %lx, sp = %lx\n", (long)ip, (long)sp);
         if (unw_get_proc_name(&cursor, sym, sizeof(sym), &offset) == 0) {
-            btStr += string_format("#%d (%s+0x%lx)\n", stackFrameIndex++, sym, offset);
+            // Demangle C++ symbol names
+            int status = 0;
+            char* demangled = abi::__cxa_demangle(sym, nullptr, nullptr, &status);
+            const char* name = (status == 0 && demangled) ? demangled : sym;
+
+            // Get base address to calculate relative offset for addr2line
+            Dl_info dlinfo;
+            unw_word_t relativeAddr = ip;
+            if (dladdr((void*)ip, &dlinfo) && dlinfo.dli_fbase) {
+                relativeAddr = ip - (unw_word_t)dlinfo.dli_fbase;
+            }
+
+            // Include absolute IP, relative offset, and function offset
+            btStr += string_format(
+                "#%d [0x%lx] (0x%lx) (%s+0x%lx)\n",
+                stackFrameIndex++,
+                (unsigned long)ip,
+                (unsigned long)relativeAddr,
+                name,
+                offset);
+
+            if (demangled) {
+                free(demangled);
+            }
         }
     }
 

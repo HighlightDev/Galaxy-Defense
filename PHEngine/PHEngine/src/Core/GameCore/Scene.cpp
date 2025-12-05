@@ -141,7 +141,7 @@ void Scene::RegisterMainCamera(const std::shared_ptr<ACamera>& camera)
 {
     LogInfo("Scene::RegisterMainCamera: name = ", camera->GetCameraName());
 
-    assert(!mMainCamera);
+    ext_assert(!mMainCamera, "Scene::RegisterMainCamera: main camera is already registered");
     mMainCamera = camera;
     RegisterCamera(camera);
 }
@@ -149,10 +149,12 @@ void Scene::RegisterMainCamera(const std::shared_ptr<ACamera>& camera)
 void Scene::RegisterCamera(const std::shared_ptr<ACamera>& camera)
 {
     camera->Initialize();
-    assert(!std::any_of(
-        mActiveCameras.cbegin(), mActiveCameras.cend(), [cameraObjectId = camera->GetObjectId()](const auto& camera) {
-            return camera->GetObjectId() == cameraObjectId;
-        }));
+    ext_assert(
+        !std::any_of(
+            mActiveCameras.cbegin(),
+            mActiveCameras.cend(),
+            [cameraObjectId = camera->GetObjectId()](const auto& camera) { return camera->GetObjectId() == cameraObjectId; }),
+        "Scene::RegisterCamera: camera with id " + std::to_string(camera->GetObjectId()) + " is already registered");
 
     mActiveCameras.emplace_back(camera);
     RegisterEngineObject(camera);
@@ -171,7 +173,9 @@ void Scene::UnregisterCamera(const int32_t objectId)
     auto foundCameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [objectId](const auto& camera) {
         return camera->GetObjectId() == objectId;
     });
-    assert(foundCameraIt != mActiveCameras.end());
+    ext_assert(
+        foundCameraIt != mActiveCameras.end(),
+        "Scene::UnregisterCamera: camera with id " + std::to_string(objectId) + " not found");
     const auto& cameraSp = *foundCameraIt;
     RemoveEngineObject(cameraSp->GetObjectId());
 
@@ -244,7 +248,7 @@ std::vector<std::shared_ptr<ACamera>> Scene::GetActiveCameras() const
 
 std::shared_ptr<ACamera> Scene::GetMainCamera() const
 {
-    assert(mMainCamera);
+    ext_assert(mMainCamera, "Scene::GetMainCamera: main camera is not registered");
     return mMainCamera;
 }
 
@@ -257,14 +261,14 @@ std::shared_ptr<Actor> Scene::GetActorByName(const std::string& name) const
 {
     auto foundActor
         = std::find_if(mActors.begin(), mActors.end(), [&](const auto& actor) { return actor->GetEngineObjectName() == name; });
-    assert(foundActor != mActors.end());
+    ext_assert(foundActor != mActors.end(), "Scene::GetActorByName: actor with name " + name + " not found");
     return *foundActor;
 }
 
 std::shared_ptr<Actor> Scene::GetActorById(const int32_t id) const
 {
     auto foundActor = std::find_if(mActors.begin(), mActors.end(), [&](const auto& actor) { return actor->GetObjectId() == id; });
-    assert(foundActor != mActors.end());
+    ext_assert(foundActor != mActors.end(), "Scene::GetActorById: actor with id " + std::to_string(id) + " not found");
     return *foundActor;
 }
 
@@ -345,7 +349,10 @@ void Scene::AddActorController(std::shared_ptr<ActorController> actorController)
     const auto it = std::find_if(mActorControllers.begin(), mActorControllers.end(), [&](const auto& existingController) {
         return existingController->GetBindedActorName() == actorController->GetBindedActorName();
     });
-    assert(it == mActorControllers.end());
+    ext_assert(
+        it == mActorControllers.end(),
+        "Scene::AddActorController: actor controller for actor " + actorController->GetBindedActorName()
+            + " is already registered");
 
     actorController->Initialize();
     mActorControllers.emplace_back(actorController);
@@ -530,6 +537,8 @@ void Scene::RemoveComponent(std::shared_ptr<Component> component)
         }
     }
 
+    component->OnUnregistered();
+
     RemoveEngineObject(component->GetObjectId());
 }
 
@@ -561,7 +570,9 @@ void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& compon
             planarComponentSp->SetSceneProxyId(sceneProxySp->GetSceneProxyId());
             if (const auto& sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock()) {
                 const auto ownerCameraSp = planarComponentSp->GetOwnerCameraWp().lock();
-                assert(ownerCameraSp);
+                ext_assert(
+                    ownerCameraSp,
+                    "Scene::RegisterComponentSceneProxy: owner camera is not valid for planar reflection component");
                 sceneRendererSp->BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
                     sceneProxySp, ownerCameraSp->GetCameraProxyId());
                 sceneRendererSp->AddPlanarReflectionSceneProxy_OnRenderThread(planarComponentSp, sceneProxySp);
@@ -576,11 +587,11 @@ std::shared_ptr<Component> Scene::CreateComponent_GameThread(
     const std::shared_ptr<IComponentCreatable>& componentCreator, const std::shared_ptr<ComponentData>& componentData)
 {
     const auto component = componentCreator->CreateComponent(shared_from_this(), componentData);
-    component->Initialize();
+    component->OnRegistered();
     component->SetScene(shared_from_this());
     RegisterComponentSceneProxy(component);
     RegisterEngineObject(component);
-    component->OnPostInitialized();
+    component->OnPostRegistered();
     return component;
 }
 
@@ -588,7 +599,10 @@ bool Scene::RegisterDeferredResourceCreator(
     const std::shared_ptr<IDeferredResourceCreator>& creatorInstance, const std::string& gameObjectName)
 {
     // Add deferred resource creator instance
-    assert(!mDeferredResourceCreators.count(gameObjectName));
+    ext_assert(
+        !mDeferredResourceCreators.count(gameObjectName),
+        "Scene::RegisterDeferredResourceCreator: deferred resource creator with name " + gameObjectName
+            + " is already registered");
     mDeferredResourceCreators[gameObjectName] = creatorInstance;
 
     return true;

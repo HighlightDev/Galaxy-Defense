@@ -24,7 +24,10 @@ std::any MaterialUnaryIncrementNode::DoOperation(const std::any& value)
         return std::any_cast<glm::vec2>(value) + 1.0f;
     }
 
-    assert(false);
+    ext_assert(
+        false,
+        "MaterialUnaryIncrementNode::DoOperation: Unsupported material property type for UNARY_INCREMENT operation: "
+            + std::to_string(static_cast<int>(GetMaterialPropertyType())));
     return {};
 }
 } // namespace Graphics

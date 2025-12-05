@@ -1,5 +1,6 @@
 #include "BloomFramebuffer.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/PostFX/Bloom/BloomConstants.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 
@@ -17,7 +18,9 @@ BloomFramebuffer::BloomFramebuffer(const ViewPortInfo& viewPortInfo)
     , mResolvedBloomColorFramebuffer(std::make_shared<FramebufferObject>())
 {
     const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-    assert(BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName));
+    ext_assert(
+        BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName),
+        "Unknown bloom quality name: " + cfg.BloomQualityName);
     const auto& bloomQuality = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName);
     // scale bloom render target resolution accordingly to config file
     mQualityBloomResolutionMultiplier = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName).bloomResolutionMultiplier;
@@ -241,7 +244,9 @@ void BloomFramebuffer::AllocateTextures()
 
 void BloomFramebuffer::TryToFreeRenderTargetTextures()
 {
-    assert(m_color1 && m_color2 && m_resolvedBloomColor);
+    ext_assert(
+        m_color1 && m_color2 && m_resolvedBloomColor,
+        "BloomFramebuffer::TryToFreeRenderTargetTextures: render target textures are null");
     RenderTargetPool::GetInstance()->TryToFreeMemory(m_color1);
     RenderTargetPool::GetInstance()->TryToFreeMemory(m_color2);
     RenderTargetPool::GetInstance()->TryToFreeMemory(m_resolvedBloomColor);

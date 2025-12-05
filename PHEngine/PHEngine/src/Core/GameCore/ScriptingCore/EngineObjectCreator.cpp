@@ -173,7 +173,7 @@ std::shared_ptr<ViewProjectionInfo> EngineObjectCreator::CreateViewProjectionInf
         return std::make_shared<ViewOrthographicInfo>(left, right, bottom, top, zNear, zFar);
     }
 
-    assert(false);
+    ext_assert(false, "EngineObjectCreator::CreateViewProjectionInfo: Unknown projection type: " + projectionType);
     return nullptr;
 }
 

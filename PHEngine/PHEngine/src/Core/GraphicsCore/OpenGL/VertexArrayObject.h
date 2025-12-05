@@ -25,7 +25,7 @@ public:
 
     uint32_t GetDescriptor() const;
 
-    VertexBufferObjectBase* GetVboByIndex(const size_t index) const;
+    VertexBufferObjectBase* GetVBOByIndex(const size_t index) const;
 
     VertexBufferObjectBase* GetVboByAttribArrayIndexName(const std::string& attribArrayIndexName) const
     {
@@ -40,7 +40,7 @@ public:
     {
         if (p_vbo != nullptr) {
             const auto& attribArrayIndexName = static_cast<VertexBufferObjectBase*>(p_vbo)->GetAttribArrayIndexName();
-            assert(!GetVboByAttribArrayIndexName(attribArrayIndexName));
+            ext_assert(!GetVboByAttribArrayIndexName(attribArrayIndexName), "VBO already exists for this attribute index");
             m_vbos.emplace_back(std::make_pair(std::forward<Arg>(p_vbo), attribArrayIndexName));
         }
         AddVBO(std::forward<Args>(p_vbos)...);
@@ -51,14 +51,18 @@ public:
     {
         if (p_vbo != nullptr) {
             const auto& attribArrayIndexName = static_cast<VertexBufferObjectBase*>(p_vbo)->GetAttribArrayIndexName();
-            assert(!GetVboByAttribArrayIndexName(attribArrayIndexName));
+            ext_assert(!GetVboByAttribArrayIndexName(attribArrayIndexName), "VBO already exists for this attribute index");
             m_vbos.emplace_back(std::make_pair(std::forward<Arg>(p_vbo), attribArrayIndexName));
         }
     }
 
     bool HasIBO() const;
 
-    const std::vector<std::pair<VertexBufferObjectBase*, std::string>>& GetVertexBufferObjects() const;
+    void SetIBO(IndexBufferObject* const ibo);
+
+    const IndexBufferObject* GetIBO() const;
+
+    const std::vector<std::pair<VertexBufferObjectBase*, std::string>>& GetVBOs() const;
 
     void GenVAO();
 
@@ -67,8 +71,6 @@ public:
     void RenderVAO(const size_t first, const size_t count, const int32_t primitiveMode = GL_TRIANGLES);
 
     void RenderInstanced(const int32_t primitiveMode, const size_t primitivesCount);
-
-    void AddIndexBuffer(IndexBufferObject* ibo);
 
     void BindBuffersToVao();
 

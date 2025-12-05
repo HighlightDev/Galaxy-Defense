@@ -71,9 +71,9 @@ void LevelEditorController::OnPostLevelInit()
 {
 
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LevelEditorController scene pointer is null in OnPostLevelInit");
     const auto& mainCameraSp = std::dynamic_pointer_cast<ThirdPersonCamera>(sceneSp->GetMainCamera());
-    assert(mainCameraSp);
+    ext_assert(mainCameraSp, "LevelEditorController main camera is null or not a ThirdPersonCamera");
     mMainSceneCamera = mainCameraSp;
 
     sceneSp->AddActor(mBezierCurvesActor);
@@ -329,7 +329,8 @@ void LevelEditorController::ProcessEvent(const ChangeEditModeEvent* sender, cons
 void LevelEditorController::Initialize()
 {
     mLevelAreaBoundingBox = LevelDataProvider::GetInstance()->GetEditorLevelAreaBoundingBox();
-    assert(mLevelAreaBoundingBox.GetHalfExtent().length() > 0.001);
+    ext_assert(
+        mLevelAreaBoundingBox.GetHalfExtent().length() > 0.001, "LevelEditorController level area bounding box has zero size");
     mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(mLevelAreaBoundingBox);
     InitializeGhostTower();
     InitializeInternalActors();
@@ -357,7 +358,7 @@ void LevelEditorController::RestoreLineComponentsPool()
 void LevelEditorController::ReAllocateLineComponents()
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LevelEditorController scene pointer is null in ReAllocateLineComponents");
     const auto& rtMeshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
     const glm::ivec2 routeGridColumnsAndRowsCount = mLevelPlacementGrid->GetRouteGridColumnsAndRowsCount();
     const glm::ivec2 towerGridColumnsAndRowsCount = mLevelPlacementGrid->GetTowerGridColumnsAndRowsCount();
@@ -396,7 +397,7 @@ void LevelEditorController::ReAllocateLineComponents()
 void LevelEditorController::InitializeInternalActors()
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LevelEditorController scene pointer is null in InitializeInternalActors");
 
     MaterialParser materialParser;
     mGridLineMaterialPrefab = materialParser.ParseMaterialDescriptor("TowerPlacementGridMaterial.m");
@@ -446,7 +447,9 @@ void LevelEditorController::InitializeRoutePlacementGrid()
     const glm::ivec2 routeGridColumnsAndRowsCount = mLevelPlacementGrid->GetRouteGridColumnsAndRowsCount();
     const int32_t columnsLineCount = routeGridColumnsAndRowsCount.x + 1;
     const int32_t rowsLineCount = routeGridColumnsAndRowsCount.y + 1;
-    assert((columnsLineCount + rowsLineCount) <= mIdleRuntimeGeneratedLineComponents.size());
+    ext_assert(
+        (columnsLineCount + rowsLineCount) <= mIdleRuntimeGeneratedLineComponents.size(),
+        "LevelEditorController insufficient idle line components for route grid");
 
     const auto& levelAreaBoundingBox = mLevelPlacementGrid->GetRouteLevelAreaBoundingBox();
 
@@ -455,7 +458,7 @@ void LevelEditorController::InitializeRoutePlacementGrid()
     for (int32_t columnIdx = 0; columnIdx < columnsLineCount; ++columnIdx) {
         const auto c_mesh = mIdleRuntimeGeneratedLineComponents.top();
         mIdleRuntimeGeneratedLineComponents.pop();
-        assert(c_mesh);
+        ext_assert(c_mesh, "LevelEditorController route grid line component is null");
         const auto& lineBegin = glm::vec3(
             levelAreaBoundingBox.GetMin().x + columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
         const auto& lineEnd = glm::vec3(
@@ -493,7 +496,9 @@ void LevelEditorController::InitializeTowerPlacementGrid()
     const glm::ivec2 towerGridColumnsAndRowsCount = mLevelPlacementGrid->GetTowerGridColumnsAndRowsCount();
     const int32_t columnsLineCount = towerGridColumnsAndRowsCount.x + 1;
     const int32_t rowsLineCount = towerGridColumnsAndRowsCount.y + 1;
-    assert((columnsLineCount + rowsLineCount) <= mIdleRuntimeGeneratedLineComponents.size());
+    ext_assert(
+        (columnsLineCount + rowsLineCount) <= mIdleRuntimeGeneratedLineComponents.size(),
+        "LevelEditorController insufficient idle line components for tower grid");
 
     const auto& levelAreaBoundingBox = mLevelPlacementGrid->GetTowerLevelAreaBoundingBox();
 
@@ -504,7 +509,7 @@ void LevelEditorController::InitializeTowerPlacementGrid()
     for (int32_t columnIdx = 0; columnIdx < columnsLineCount; ++columnIdx) {
         const auto c_mesh = mIdleRuntimeGeneratedLineComponents.top();
         mIdleRuntimeGeneratedLineComponents.pop();
-        assert(c_mesh);
+        ext_assert(c_mesh, "LevelEditorController tower grid column line component is null");
         const auto& lineBegin = glm::vec3(
             levelAreaBoundingBox.GetMin().x + columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
         const auto& lineEnd = glm::vec3(
@@ -520,7 +525,7 @@ void LevelEditorController::InitializeTowerPlacementGrid()
     for (int32_t rowIdx = 0; rowIdx < rowsLineCount; ++rowIdx) {
         const auto c_mesh = mIdleRuntimeGeneratedLineComponents.top();
         mIdleRuntimeGeneratedLineComponents.pop();
-        assert(c_mesh);
+        ext_assert(c_mesh, "LevelEditorController tower grid row line component is null");
         const auto& lineBegin = glm::vec3(
             levelAreaBoundingBox.GetMin().x,
             -grid_elevation_bias * 1.5f,
@@ -541,7 +546,7 @@ void LevelEditorController::InitializeTowerPlacementGrid()
 void LevelEditorController::InitializeGhostTower()
 {
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "LevelEditorController scene pointer is null in InitializeGhostTower");
     sceneSp->AddActor(mGhostTowerActor);
 
     const auto& albedoName = "Space_Station_COLOR.png";

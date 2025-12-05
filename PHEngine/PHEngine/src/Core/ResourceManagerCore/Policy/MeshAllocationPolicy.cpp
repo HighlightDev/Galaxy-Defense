@@ -38,7 +38,7 @@ std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParamet
         Resource* outResource;
         const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg.mModelPath);
 
-        assert(bResourceValid);
+        ext_assert(bResourceValid, "Mesh resource not found: " + arg.mModelPath);
 
         const MeshResource* meshResource = static_cast<MeshResource*>(outResource);
         const MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
@@ -86,7 +86,7 @@ std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParamet
                         break;
 
                     default:
-                        assert(false);
+                        ext_assert(false, "Unknown attribute array index type");
                         break;
                     }
 
@@ -108,10 +108,10 @@ std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParamet
 
         if (meshAttributes->VertexIndices.size()) {
             const auto& ibo = new IndexBufferObject(meshAttributes->VertexIndices, eDataCarryFlag::INVALIDATE);
-            vao->AddIndexBuffer(ibo);
+            vao->SetIBO(ibo);
         }
 
-        assert(vao->GetVertexBufferObjects().size());
+        ext_assert(vao->GetVBOs().size(), "VAO must have at least one VBO");
         vao->BindBuffersToVao();
 
         if (meshInfo->meshAnimatedData) {

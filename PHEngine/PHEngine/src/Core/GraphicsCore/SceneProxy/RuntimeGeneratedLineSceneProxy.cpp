@@ -63,9 +63,9 @@ void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     const auto& engineObject = sceneSp->GetEngineObjectById(goID);
-                    assert(engineObject);
+                    ext_assert(engineObject, "Engine object not found by ID");
                     const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                    assert(primitiveComponent);
+                    ext_assert(primitiveComponent, "Failed to cast engine object to PrimitiveComponent");
                     primitiveComponent->SetBoundingBox(boundingBox);
                 });
         }
@@ -130,7 +130,7 @@ void RuntimeGeneratedLineSceneProxy::UpdateGeometry(const glm::mat4& viewMatrix)
         auto* const verticesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
         auto* const textureCoordinatesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
 
-        assert(verticesVBO && textureCoordinatesVBO);
+        ext_assert(verticesVBO && textureCoordinatesVBO, "VBOs not created for runtime generated line");
 
         const float halfWidth = mLineWidth * 0.5f;
         const auto& worldForwardVec = glm::normalize(mLineEndWorldSpacePosition - mLineBeginWorldSpacePosition);

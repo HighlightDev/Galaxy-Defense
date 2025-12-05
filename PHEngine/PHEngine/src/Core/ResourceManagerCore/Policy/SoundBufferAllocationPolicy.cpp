@@ -18,10 +18,10 @@ std::shared_ptr<SoundBuffer> SoundBufferAllocationPolicy::AllocateMemory(const s
     LogInfo("SoundBufferAllocationPolicy::AllocateMemory: ", arg);
     Resource* outResource;
     const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
-    assert(bResourceValid);
+    ext_assert(bResourceValid, "SoundBufferAllocationPolicy::AllocateMemory: Resource not found: " + arg);
 
     const AudioResource* audioResource = static_cast<AudioResource*>(outResource);
-    assert(audioResource);
+    ext_assert(audioResource, "SoundBufferAllocationPolicy::AllocateMemory: AudioResource is null for: " + arg);
 
     const auto& buffer = std::make_shared<SoundBuffer>(audioResource->mData, audioResource->AudioInfo, arg);
     return buffer;

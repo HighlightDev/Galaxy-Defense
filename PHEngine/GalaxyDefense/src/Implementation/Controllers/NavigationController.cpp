@@ -39,14 +39,14 @@ NavigationController::NavigationController(const std::weak_ptr<::EngineCore::Sce
 void NavigationController::Initialize()
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in NavigationController::Initialize");
     sceneSp->AddActor(mNavPathDummyActor);
 }
 
 void NavigationController::InitializePathDebugRendering()
 {
     const auto sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "Scene pointer is null in NavigationController::InitializePathDebugRendering");
     MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& splineMaterial = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
     sceneSp->RegisterMaterialInstance(splineMaterial);
@@ -111,7 +111,7 @@ void NavigationController::OnPreLevelInit()
 
 void NavigationController::OnLevelInit()
 {
-    assert(mNavPathBuilder.GetPaths().size());
+    ext_assert(mNavPathBuilder.GetPaths().size(), " No path routes found in NavigationController::OnLevelInit");
     Initialize();
     if (cEnableDebugPathRendering) { // todo: make it runtime configurable
         InitializePathDebugRendering(); // for debug visualisation purpose
@@ -182,7 +182,7 @@ std::vector<std::string> NavigationController::GetPathNames() const
 const Path& NavigationController::GetPath(const std::string& pathName) const
 {
     const auto& spacePaths = mNavPathBuilder.GetPaths();
-    assert(spacePaths.count(pathName));
+    ext_assert(spacePaths.count(pathName), "Path not found: " + pathName + " in NavigationController::GetPath");
     return spacePaths.at(pathName);
 }
 
@@ -207,9 +207,9 @@ void NavigationController::PutSpaceshipOnRoute(const std::string& routeName, con
         }
     }
 
-    assert(spacePath.has_value());
+    ext_assert(spacePath.has_value(), "Route not found: " + routeName + " in NavigationController::PutSpaceshipOnRoute");
     const auto enemyMovementComponent = spaceship->GetOnRouteMovementComponent();
-    assert(enemyMovementComponent);
+    ext_assert(enemyMovementComponent, "Enemy movement component is null");
     enemyMovementComponent->ResetStates();
     enemyMovementComponent->SetIsMovementOnRouteAllowed(true);
     enemyMovementComponent->SetRoutePoints(spacePath->GetRoutePoints());
@@ -219,8 +219,9 @@ void NavigationController::PutSpaceshipOnRoute(const std::string& routeName, con
 
 void NavigationController::PutMissileToNavigate(const std::shared_ptr<MissileActor>& missile)
 {
-    assert(missile);
-    assert(missile->GetMissileActivityState() == eMissileActivityState::ACTIVE);
+    ext_assert(missile, "Missile pointer is null in PutMissileToNavigate");
+    ext_assert(
+        missile->GetMissileActivityState() == eMissileActivityState::ACTIVE, "Missile is not active in PutMissileToNavigate");
     const bool missingMissile = std::none_of(mMissiles.cbegin(), mMissiles.cend(), [missile](const auto& missileSp) {
         return missile->GetObjectId() == missileSp->GetObjectId();
     });

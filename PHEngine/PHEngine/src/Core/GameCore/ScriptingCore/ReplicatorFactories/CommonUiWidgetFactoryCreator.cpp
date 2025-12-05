@@ -48,7 +48,7 @@ std::unique_ptr<IReplicatorFactory> CommonUiWidgetFactoryCreator::GetReplicatorF
         return std::make_unique<UiGridLayoutReplicatorFactory>();
 
     default:
-        assert(false);
+        ext_assert(false, "CommonUiWidgetFactoryCreator::GetReplicatorFactory: Unsupported widget type");
         return nullptr;
     }
 }

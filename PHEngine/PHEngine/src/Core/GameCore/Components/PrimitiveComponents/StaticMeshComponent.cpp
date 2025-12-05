@@ -59,7 +59,7 @@ std::shared_ptr<IMaterial> StaticMeshComponent::GetMaterial() const
     if (const auto& sceneSP = m_sceneWP.lock()) {
         materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
     }
-    assert(materialResult != nullptr);
+    ext_assert(materialResult != nullptr, "StaticMeshComponent::GetMaterial: materialResult is null");
     return materialResult;
 }
 

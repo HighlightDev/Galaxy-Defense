@@ -1,5 +1,6 @@
 #include "UiCanvas.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/EngineObjectProperty.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
 #include "Core/GameCore/Scene.h"
@@ -98,7 +99,7 @@ bool UiCanvas::GetIsLuaProxyReady() const
 void UiCanvas::InitLuaProxy(const std::shared_ptr<Scene>& sceneSp)
 {
     static constexpr uint64_t functionId = Hash64_CT("UiCanvas::InitLuaProxy");
-    assert(sceneSp);
+    ext_assert(sceneSp, "UiCanvas::InitLuaProxy: scene pointer is null");
     mIsPendingToAddLuaProxy = false;
     const auto& luaProxy = ReplicateLuaProxy();
     luaProxy->SetSceneWp(sceneSp);
@@ -362,14 +363,18 @@ void UiCanvas::ProcessEvent(
 
 void UiCanvas::RegisterUiItem(const size_t uiId, const std::string& uiItemName)
 {
-    assert(!mRegisteredUIds.count(uiId) && !mRegisteredNames.count(uiItemName));
+    ext_assert(
+        !mRegisteredUIds.count(uiId) && !mRegisteredNames.count(uiItemName),
+        "UiCanvas::RegisterUiItem: uiId or uiItemName is already registered");
     mRegisteredUIds.insert(uiId);
     mRegisteredNames.insert(uiItemName);
 }
 
 void UiCanvas::UnregisterUiItem(const size_t uiId, const std::string& uiItemName)
 {
-    assert(mRegisteredUIds.count(uiId) && mRegisteredNames.count(uiItemName));
+    ext_assert(
+        mRegisteredUIds.count(uiId) && mRegisteredNames.count(uiItemName),
+        "UiCanvas::UnregisterUiItem: uiId or uiItemName is not registered");
     mRegisteredUIds.erase(uiId);
     mRegisteredNames.erase(uiItemName);
     CollectChildrenWithDescendingZOrder();

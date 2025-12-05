@@ -64,7 +64,7 @@ void GalaxySceneCamera::OnTransformationUpdated()
 
 glm::vec3 GalaxySceneCamera::GetEyeVector() const
 {
-    assert(m_thirdPersonTarget);
+    ext_assert(m_thirdPersonTarget, "Third person target is not set");
     const float allowedDistance = m_maxDistanceFromTargetToCamera - m_minDistanceFromTargetToCamera;
     const float currentZoomCoef = (m_maxDistanceFromTargetToCamera - m_distanceFromTargetToCamera) / allowedDistance;
     const auto& directionVec = -GetEyeSpaceForwardVector();

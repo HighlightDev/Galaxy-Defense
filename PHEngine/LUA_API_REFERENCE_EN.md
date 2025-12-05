@@ -730,6 +730,18 @@ Creates a first-person camera.
 - `initPosition` (vec3) - initial position
 - `isMainCamera` (integer) - 1 if main camera
 
+**Пример:**
+```lua
+_CreateFirstPersonCamera(
+    "FPSCamera",
+    {0, 0, 1920, 1080},
+    '{"fov": 90, "near": 0.1, "far": 1000}',
+    0.0,   -- pitch
+    0.0,   -- yaw
+    {0, 1.7, 0},  -- position (eye level)
+    1      -- is main
+)
+
 ---
 
 ### `_CreateMaterial(materialName)`

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
+#include "Core/GraphicsCore/Material/IMaterial.h"
 
 #include <glm/vec3.hpp>
 
@@ -14,7 +15,7 @@ struct ElectricBeamComponentData : public ComponentData {
     int BeamCount;
     float JitterAmount;
     float UpdateFrequency;
-    bool IsActive;
+    std::shared_ptr<Graphics::IMaterial> m_material;
 
     ElectricBeamComponentData(
         const std::string& gameObjectName,
@@ -25,7 +26,7 @@ struct ElectricBeamComponentData : public ComponentData {
         int beamCount = 3,
         float jitterAmount = 0.2f,
         float updateFrequency = 0.05f,
-        bool isActive = true)
+        const std::shared_ptr<Graphics::IMaterial>& material = nullptr)
         : ComponentData(gameObjectName)
         , StartPoint(startPoint)
         , EndPoint(endPoint)
@@ -34,7 +35,7 @@ struct ElectricBeamComponentData : public ComponentData {
         , BeamCount(beamCount)
         , JitterAmount(jitterAmount)
         , UpdateFrequency(updateFrequency)
-        , IsActive(isActive)
+        , m_material(material)
     {
     }
 };

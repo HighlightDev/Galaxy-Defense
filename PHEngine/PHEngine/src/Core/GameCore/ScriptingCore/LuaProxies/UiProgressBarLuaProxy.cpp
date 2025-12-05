@@ -34,9 +34,9 @@ void UiProgressBarLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParame
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiProgressBarLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& uiProgressBar = std::static_pointer_cast<::EngineCore::GUI::UiProgressBar>(replicator);
-                assert(uiProgressBar);
+                ext_assert(uiProgressBar, "UiProgressBarLuaProxy::OnLuaThreadDataUpdated: uiProgressBar is null");
                 uiProgressBar->SyncFromLuaJsonProperties(jsonStr);
             });
     }

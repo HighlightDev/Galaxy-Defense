@@ -36,9 +36,9 @@ void UiImageLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameters)
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
-                assert(replicator);
+                ext_assert(replicator, "UiImageLuaProxy::OnLuaThreadDataUpdated: replicator is null");
                 const auto& uiImage = std::static_pointer_cast<::EngineCore::GUI::UiImage>(replicator);
-                assert(uiImage);
+                ext_assert(uiImage, "UiImageLuaProxy::OnLuaThreadDataUpdated: uiImage is null");
                 uiImage->SyncFromLuaJsonProperties(jsonStr);
             });
     }

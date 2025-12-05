@@ -36,10 +36,12 @@ public:
         std::shared_ptr<Skin> skin = nullptr;
 
         const auto& mData = std::static_pointer_cast<MeshComponentData>(data);
-        assert(eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData->GetMeshComponentDataType());
+        ext_assert(
+            eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData->GetMeshComponentDataType(),
+            "Invalid mesh component data type, expected STATIC_OR_SKELETAL_MESH");
 
         const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
-        assert(materialProxy);
+        ext_assert(materialProxy, "StaticMeshComponentCreator::CreateComponent: materialProxy is null");
 
         return std::make_shared<ComponentInstantiationType>(
             mData, MeshRenderData(mData->m_pathToMesh, materialProxy, mIsDeferredShaderUsed));

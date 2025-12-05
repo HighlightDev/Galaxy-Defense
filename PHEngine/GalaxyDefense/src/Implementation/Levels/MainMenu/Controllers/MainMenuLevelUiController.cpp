@@ -56,7 +56,7 @@ void MainMenuLevelUiController::CleanUp()
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             const auto& luaScriptExecutor
                 = std::dynamic_pointer_cast<LuaUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
-            assert(luaScriptExecutor);
+            ext_assert(luaScriptExecutor, "Failed to get Lua script executor in CleanUp");
             luaScriptExecutor->StopScript();
             luaScriptProcessorSp->UnregisterLuaScriptExecutor(mExecutorId);
         }
@@ -67,13 +67,15 @@ void MainMenuLevelUiController::CleanUp()
 
 void MainMenuLevelUiController::RestartLuaScripts()
 {
-    assert(!ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+    ext_assert(
+        !ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        "MainMenuLevelUiController::RestartLuaScripts called from Lua thread");
 
     if (const auto& sceneSp = mSceneWp.lock()) {
         if (const auto& luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock()) {
             const auto& luaScriptExecutor
                 = std::dynamic_pointer_cast<LuaUiControllerExecutor>(luaScriptProcessorSp->GetLuaScriptExecutor(mExecutorId));
-            assert(luaScriptExecutor);
+            ext_assert(luaScriptExecutor, "Failed to get Lua script executor in RestartLuaScripts");
             luaScriptExecutor->SetIsEnabled(false);
             mOverlayManager->CleanUp();
             static constexpr uint64_t functionId = Hash64_CT("MainMenuLevelUiController::RestartLuaScripts");

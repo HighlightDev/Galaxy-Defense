@@ -46,7 +46,7 @@ void ResourceMap::CleanUp()
               return !mAsyncDataProxy->ResourcesMap.count(resourcePair.first);
           });
 
-    assert(!bResourceWasntLoaded);
+    ext_assert(!bResourceWasntLoaded, "ResourceMap::CleanUp: Some resources are still loading or havent been loaded yet!");
 
     for (auto& [resourceName, resource] : ReadyToReadResources) {
         resource->Clear();
@@ -179,7 +179,7 @@ void ResourceMap::OpenAudioStream(const std::string& key)
 
     const eResourceType resType = ResourceExtensionsInfo::GetResourceTypeByFileExtension(key);
     const std::string& fileFullPath = GET_FUL_PATH_TO_FILE(key);
-    assert(resType == eResourceType::AUDIO);
+    ext_assert(resType == eResourceType::AUDIO, "ResourceMap::OpenAudioStream: Resource is not audio type! key = " + key);
     AudioStreamResources[key] = static_cast<AudioStreamResource*>(mAudioLoader.GetStreamResource(fileFullPath));
 }
 

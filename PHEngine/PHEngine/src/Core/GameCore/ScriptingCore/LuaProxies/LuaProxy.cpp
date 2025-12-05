@@ -27,13 +27,13 @@ bool LuaProxy::IsLuaDataDirty() const
 
 int32_t LuaProxy::GetLuaProxyId() const
 {
-    assert(mLuaProxyId != -1);
+    ext_assert(mLuaProxyId != -1, "LuaProxy::GetLuaProxyId: mLuaProxyId is invalid");
     return mLuaProxyId;
 }
 
 int32_t LuaProxy::GetReplicatorId() const
 {
-    assert(mReplicatorId != -1);
+    ext_assert(mReplicatorId != -1, "LuaProxy::GetReplicatorId: mReplicatorId is invalid");
     return mReplicatorId;
 }
 

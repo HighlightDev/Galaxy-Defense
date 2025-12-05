@@ -25,7 +25,7 @@ WeakSpaceshipActor::WeakSpaceshipActor(
 
 void WeakSpaceshipActor::AttachTweener(std::shared_ptr<Tweener> tweener)
 {
-    assert(tweener);
+    ext_assert(tweener, "WeakSpaceshipActor tweener pointer is null");
     LogInfo("WeakSpaceshipActor::AttachTweener: Path to tweener", tweener->GetRelPathTweener());
 
     Actor::AttachTweener(tweener);

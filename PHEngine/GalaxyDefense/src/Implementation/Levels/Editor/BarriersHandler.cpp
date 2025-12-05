@@ -39,7 +39,7 @@ void BarriersHandler::SelectNewBarrier(const std::string& barrierName)
     mCurrentActiveBarrierName = barrierName;
     mCurrentBarrierPillarsCount = 0;
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "BarriersHandler scene pointer is null in SelectNewBarrier");
     const auto& barrierIndexStr = std::to_string(mBarrierActorsCount++);
     const auto& rootComponent
         = std::make_shared<SceneComponent>("c_barrier_root_" + barrierIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1.0));
@@ -71,7 +71,7 @@ void BarriersHandler::CreateNewBarrierPillar(const glm::vec3& position, const gl
         return;
 
     const auto& sceneSp = mSceneWp.lock();
-    assert(sceneSp);
+    ext_assert(sceneSp, "BarriersHandler scene pointer is null in AddBarrierPillar");
     const auto& a_barrier = mBarrierActors.at(mCurrentActiveBarrierName);
     const auto pillarsSize = mCurrentBarrierPillarsCount++;
     const auto& barrierIndexStr = std::to_string(mBarrierActorsCount);
@@ -129,7 +129,7 @@ void BarriersHandler::UndoLastBarrier()
         mBarrierActors.erase(mCurrentActiveBarrierName);
         lastBarrierSp->SetIsEnabled(false);
         const auto& sceneSp = mSceneWp.lock();
-        assert(sceneSp);
+        ext_assert(sceneSp, "BarriersHandler scene pointer is null in RemoveSelectedBarrier");
         sceneSp->RemoveActor(lastBarrierSp);
         if (mBarrierMaterials.count(mCurrentActiveBarrierName)) {
             mBarrierMaterials.erase(mCurrentActiveBarrierName);

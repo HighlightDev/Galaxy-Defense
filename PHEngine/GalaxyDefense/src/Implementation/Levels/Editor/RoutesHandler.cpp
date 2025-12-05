@@ -31,7 +31,7 @@ void RoutesHandler::SpawnBezierCurveComponent(
     const glm::vec3& controlPoint,
     const glm::vec3& pointB)
 {
-    assert(mCurrentActiveRouteName != "");
+    ext_assert(mCurrentActiveRouteName != "", "RoutesHandler current active route name is empty");
     const auto& sceneSp = mSceneWp.lock();
     std::shared_ptr<IMaterial> newSplineMaterial = splineMaterialPrefab;
     if (!mActiveRoutes.count(mCurrentActiveRouteName)) {

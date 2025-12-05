@@ -24,7 +24,7 @@ struct ShaderAllocationPolicy {
     static std::shared_ptr<Shader> AllocateMemory(const ShaderParams& arg)
     {
         // to sutisfy Allocatable concept
-        assert(false);
+        ext_assert(false, "ShaderAllocationPolicy::AllocateMemory called without template parameter");
         return nullptr;
     }
 

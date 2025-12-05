@@ -54,7 +54,7 @@ void CheckAlcErrors(ALCdevice* device)
             LogInfo("UNKNOWN ALC ERROR: ", error);
         }
 
-        assert(false);
+        ext_assert(false, "OpenAL context error detected");
     }
 }
 } // namespace EngineCore

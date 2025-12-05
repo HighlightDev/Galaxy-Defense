@@ -7,7 +7,7 @@ std::shared_ptr<TexturePool> TexturePool::m_instance;
 
 std::shared_ptr<ITexture> TexturePool::GetTextureAt(const size_t index) const
 {
-    assert(index < resourceMap.size());
+    ext_assert(index < resourceMap.size(), "TexturePool::GetTextureAt: index out of range");
     resourceMap_t::const_iterator startIt = resourceMap.begin();
     std::advance(startIt, index);
     return startIt->second;

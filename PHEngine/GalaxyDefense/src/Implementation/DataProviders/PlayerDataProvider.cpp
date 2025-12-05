@@ -35,7 +35,7 @@ void PlayerDataProvider::SetSelectedMissileType(const eMissileType missileType)
 
 void PlayerDataProvider::SetMissilesCountForType(const eMissileType missileType, const size_t missilesCount)
 {
-    assert(mAvailableMissiles.count(missileType));
+    ext_assert(mAvailableMissiles.count(missileType), "Unknown missile type in SetMissilesCountForType");
     if (mAvailableMissiles.at(missileType) != missilesCount) {
         mAvailableMissiles[missileType] = missilesCount;
         const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::MISSILES_COUNT_CHANGED;
@@ -69,7 +69,7 @@ void PlayerDataProvider::SetMissilesCount(const std::unordered_map<eMissileType,
 
 size_t PlayerDataProvider::GetMissilesCount(const eMissileType missileType) const
 {
-    assert(mAvailableMissiles.count(missileType));
+    ext_assert(mAvailableMissiles.count(missileType), "Unknown missile type in GetMissilesCount");
     return mAvailableMissiles.at(missileType);
 }
 

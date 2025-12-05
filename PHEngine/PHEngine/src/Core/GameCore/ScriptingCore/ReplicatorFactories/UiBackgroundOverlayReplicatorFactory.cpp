@@ -21,14 +21,17 @@ int32_t UiBackgroundOverlayReplicatorFactory::CreateReplicator(
     const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp,
     const std::string& jsonParamsStr) const
 {
-    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        "UiBackgroundOverlayReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto& jsonObj = nlohmann::json::parse(jsonParamsStr);
     const auto canvasLuaProxyId = jsonObj["canvasLuaProxyId"].get<int32_t>();
     const auto& overlayName = jsonObj["overlayName"].get<std::string>();
 
     const auto overlayLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
     const auto luaScriptProcessorSp = luaScriptProcessorWp.lock();
-    assert(luaScriptProcessorSp);
+    ext_assert(
+        luaScriptProcessorSp, "UiBackgroundOverlayReplicatorFactory::CreateReplicator: LuaScriptProcessor weak_ptr lock failed");
     const auto overlayManagerReplicatorId = luaScriptProcessorSp->GetOverlayManagerLuaProxy()->GetReplicatorId();
 
     if (const auto& sceneSp = sceneWp.lock()) {
@@ -41,13 +44,15 @@ int32_t UiBackgroundOverlayReplicatorFactory::CreateReplicator(
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
+                ext_assert(
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    "UiBackgroundOverlayReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& uiOverlay = std::make_shared<UiOverlay>(overlayName, sceneSp, luaScriptProcessorWp);
                 const auto& uiCanvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(
                     sceneSp->GetEngineToLuaReplicatorByLuaProxyId(canvasLuaProxyId));
                 const auto& overlayManager
                     = std::static_pointer_cast<OverlayManager>(sceneSp->GetEngineToLuaReplicatorById(overlayManagerReplicatorId));
-                assert(uiCanvas);
+                ext_assert(uiCanvas, "UiBackgroundOverlayReplicatorFactory::CreateReplicator: uiCanvas is null");
                 uiOverlay->SetOverlayCanvas(uiCanvas);
                 uiOverlay->SetLuaProxyId(overlayLuaProxyId);
                 uiOverlay->SetLuaScriptProcessor(luaScriptProcessorWp);

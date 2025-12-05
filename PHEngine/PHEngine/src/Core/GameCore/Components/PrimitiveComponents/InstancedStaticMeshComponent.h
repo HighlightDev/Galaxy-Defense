@@ -21,7 +21,7 @@ public:
 
     ~InstancedStaticMeshComponent() override;
 
-    void OnPostInitialized() override;
+    void OnPostRegistered() override;
 
     eComponentType GetComponentType() const override;
 

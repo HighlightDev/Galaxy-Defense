@@ -16,8 +16,9 @@
 #ifdef USE_LIBUNWIND
 #include "TinyUnwinder.h"
 
-#include <signal.h>
 #include <stdlib.h>
+
+#include <csignal>
 #endif
 
 using namespace EngineCore;
@@ -145,7 +146,7 @@ void handler(int sig)
 int32_t main(int32_t argc, char** argv)
 {
 #ifdef USE_LIBUNWIND
-    signal(SIGSEGV, handler); // install our handler
+    std::signal(SIGSEGV, handler); // install our handler
 #endif
 
     ThreadHelper::GetInstance()->RegisterThread("Render");

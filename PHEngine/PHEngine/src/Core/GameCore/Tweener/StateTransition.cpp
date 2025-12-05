@@ -9,7 +9,7 @@ StateTransition::StateTransition(
     , StateDestination(stateDestination)
     , TransitionDuration(transitionDuration)
 {
-    assert(stateFrom != nullptr);
-    assert(stateDestination != nullptr);
+    ext_assert(stateFrom != nullptr, "StateTransition::StateTransition: stateFrom is null");
+    ext_assert(stateDestination != nullptr, "StateTransition::StateTransition: stateDestination is null");
 }
 } // namespace EngineCore

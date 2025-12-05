@@ -26,7 +26,7 @@ void ITweenController::OnTransitionUpdate(const float deltaTimeSec, const float 
 eEnginePropertyBindingType ITweenController::GetControllerPropertyType() const
 {
     auto srcProp = TranstionProperties[(int)StateType::SourceState];
-    assert(srcProp != nullptr);
+    ext_assert(srcProp != nullptr, "ITweenController::GetControllerPropertyType: SourceState property is null");
     return srcProp->GetStatePropertyType();
 }
 

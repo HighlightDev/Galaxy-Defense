@@ -29,8 +29,8 @@ UiRectangle::UiRectangle(const std::string& name)
     , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
           mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 {
-    assert(!mProperties.count("Color"));
-    assert(!mProperties.count("Opacity"));
+    ext_assert(!mProperties.count("Color"), "UiRectangle::ctor: Property 'Color' already exists");
+    ext_assert(!mProperties.count("Opacity"), "UiRectangle::ctor: Property 'Opacity' already exists");
     mProperties.emplace("Color", mColorProperty);
     mProperties.emplace("Opacity", mOpacityProperty);
 }

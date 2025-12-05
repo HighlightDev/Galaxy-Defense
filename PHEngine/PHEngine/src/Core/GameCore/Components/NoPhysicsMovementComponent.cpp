@@ -18,7 +18,9 @@ void NoPhysicsMovementComponent::OnPostOwnerInitialized()
     MovementComponent::OnPostOwnerInitialized();
 
     if (const auto& spOwner = GetOwner().lock()) {
-        assert(spOwner->GetRootComponent());
+        ext_assert(
+            spOwner->GetRootComponent(),
+            "Owner Actor has no RootComponent in NoPhysicsMovementComponent::OnPostOwnerInitialized");
         m_actorRootComponent = spOwner->GetRootComponent();
     }
 }
