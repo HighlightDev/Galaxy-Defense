@@ -102,7 +102,7 @@ void ParticleSystemSceneProxy::Render(
     if (needToRebindShader) {
         shader->ExecuteShader();
     }
-    shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+    shader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderInstanced(GL_POINTS, mActiveParticlesCount);
 }
@@ -166,15 +166,9 @@ void ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer()
     const size_t translationSubBufferSize = mParticlesRawDataHandler.GetTranslationActiveDataChunkSize();
     const size_t rotationSizeSubBufferSize = mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize();
     const size_t colorBufferSize = mParticlesRawDataHandler.GetColorActiveDataChunkSize();
-    particlesTransformVBO->BindVBO();
     particlesTransformVBO->BufferSubData(0, translationSubBufferSize, mParticlesRawDataHandler.GetTranslationData());
-
-    particlesRotationSizeVBO->BindVBO();
     particlesTransformVBO->BufferSubData(0, rotationSizeSubBufferSize, mParticlesRawDataHandler.GetRotationSizeData());
-
-    particlesColorVBO->BindVBO();
     particlesColorVBO->BufferSubData(0, colorBufferSize, mParticlesRawDataHandler.GetColorData());
-
     particlesTransformVBO->UnbindVBO();
 
     bIsParticlesTransformDirty = false;

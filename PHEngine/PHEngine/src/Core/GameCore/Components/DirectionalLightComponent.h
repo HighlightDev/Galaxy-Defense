@@ -37,7 +37,7 @@ public:
 
     std::shared_ptr<DirectionalLightRenderData> GetRenderData() const;
 
-    void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
+    void UpdateWorldMatrix(const glm::mat4& parentWorldMatrix) override;
 
 protected:
     void

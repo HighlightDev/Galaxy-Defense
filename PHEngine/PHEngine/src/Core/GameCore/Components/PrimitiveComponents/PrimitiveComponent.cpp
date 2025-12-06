@@ -50,9 +50,9 @@ void PrimitiveComponent::UnpausableTick(const float deltaTimeSec)
     }
 }
 
-void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
+void PrimitiveComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
 {
-    Base::UpdateRelativeMatrix(parentRelativeMatrix);
+    Base::UpdateWorldMatrix(parentWorldMatrix);
 
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         // Update primitives proxy transform
@@ -65,7 +65,7 @@ void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMat
                     GetObjectId(),
                     functionId,
                     [sceneProxyId = mSceneProxyId,
-                     relativeMatrix = m_relativeMatrix,
+                     worldMatrix = m_worldMatrix,
                      outlineMatrix = m_outlineMatrix,
                      boundingBox = mBoundingBox,
                      newTransformedBoundingBox = GetTransformedBoundingBox()](
@@ -75,7 +75,7 @@ void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMat
                         if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                             const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
                             if (primitiveSp) {
-                                primitiveSp->SetTransformationMatrix(relativeMatrix);
+                                primitiveSp->SetWorldMatrix(worldMatrix);
                                 primitiveSp->SetOutlineMatrix(outlineMatrix);
                                 primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
                                 primitiveSp->SetOriginPosition(boundingBox.GetOrigin());
@@ -142,7 +142,7 @@ bool PrimitiveComponent::IsSceneProxyReady() const
 
 BoundingBox3D PrimitiveComponent::GetTransformedBoundingBox() const
 {
-    return BoundingBoxBuilder::GetTransformedBoundingBox(mBoundingBox, m_relativeMatrix);
+    return BoundingBoxBuilder::GetTransformedBoundingBox(mBoundingBox, m_worldMatrix);
 }
 
 void PrimitiveComponent::SetBoundingBox(const BoundingBox3D& boundingBox)

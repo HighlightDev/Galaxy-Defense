@@ -56,7 +56,7 @@ public:
 
     size_t GetParticlesCount() const;
 
-    void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
+    void UpdateWorldMatrix(const glm::mat4& parentWorldMatrix) override;
 
     void SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter);
 

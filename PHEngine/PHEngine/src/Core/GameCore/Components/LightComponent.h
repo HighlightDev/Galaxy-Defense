@@ -54,7 +54,7 @@ public:
 
     eComponentType GetComponentType() const override;
 
-    void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
+    void UpdateWorldMatrix(const glm::mat4& parentWorldMatrix) override;
 
     virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const = 0;
 

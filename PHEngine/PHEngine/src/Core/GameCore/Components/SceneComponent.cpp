@@ -25,7 +25,7 @@ SceneComponent::SceneComponent(
           translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
     , m_additionalRotationEuler(std::make_shared<EngineObjectProperty<glm::vec3>>(
           glm::vec3(0.0f), "p_rotator", [this](const glm::vec3& rotator) { SetIsTransformationDirty(true); }))
-    , m_relativeMatrix(1)
+    , m_worldMatrix(1)
     , m_outlineMatrix(1)
 {
     AddEngineProperty(m_additionalRotationEuler);
@@ -70,7 +70,7 @@ float SceneComponent::GetOutlineThickness() const
     return mOutlineThickness;
 }
 
-void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentRelativeMatrix)
+void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentWorldMatrix)
 {
     if (!mIsEnabled)
         return;
@@ -81,7 +81,7 @@ void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentRelativeMatrix)
 
     const glm::mat4 identityMatrix(1);
     m_outlineMatrix = identityMatrix;
-    m_outlineMatrix *= parentRelativeMatrix;
+    m_outlineMatrix *= parentWorldMatrix;
     m_outlineMatrix *= glm::translate(identityMatrix, mTransform->Translation);
     m_outlineMatrix *= glm::scale(identityMatrix, mTransform->Scale + thicknessScale);
 
@@ -102,22 +102,22 @@ void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentRelativeMatrix)
     SetIsTransformationDirty(false);
 }
 
-void SceneComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
+void SceneComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
 {
     if (!mIsEnabled)
         return;
 
     if (mIsOutlineApplied) {
-        UpdateOutlineMatrix(parentRelativeMatrix);
+        UpdateOutlineMatrix(parentWorldMatrix);
     }
 
-    // Update current relative matrix
+    // Update current world matrix
 
     const glm::mat4 identityMatrix(1);
-    m_relativeMatrix = identityMatrix;
-    m_relativeMatrix *= parentRelativeMatrix;
-    m_relativeMatrix *= glm::translate(identityMatrix, mTransform->Translation);
-    m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
+    m_worldMatrix = identityMatrix;
+    m_worldMatrix *= parentWorldMatrix;
+    m_worldMatrix *= glm::translate(identityMatrix, mTransform->Translation);
+    m_worldMatrix *= glm::scale(identityMatrix, mTransform->Scale);
 
     if (bIsRootComponent) {
         const auto& additionalRotation = m_additionalRotationEuler->GetValue();
@@ -125,13 +125,13 @@ void SceneComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
         const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(additionalRotation.y), AXIS_UP);
         const glm::mat4 rollRotation = glm::rotate(identityMatrix, DEG_TO_RAD(additionalRotation.z), AXIS_FORWARD);
 
-        m_relativeMatrix *= pitchRotation;
-        m_relativeMatrix *= yawRotation;
-        m_relativeMatrix *= rollRotation;
+        m_worldMatrix *= pitchRotation;
+        m_worldMatrix *= yawRotation;
+        m_worldMatrix *= rollRotation;
     }
 
     const auto nRotator = glm::normalize(mTransform->Rotator);
-    m_relativeMatrix *= glm::toMat4(nRotator);
+    m_worldMatrix *= glm::toMat4(nRotator);
 
     SetIsTransformationDirty(false);
 }
@@ -201,9 +201,9 @@ glm::vec3 SceneComponent::GetScale() const
     return mTransform->Scale;
 }
 
-glm::mat4 SceneComponent::GetRelativeMatrix() const
+glm::mat4 SceneComponent::GetWorldMatrix() const
 {
-    return m_relativeMatrix;
+    return m_worldMatrix;
 }
 
 glm::vec3 SceneComponent::GetHierarchyAccumulatedTranslation() const

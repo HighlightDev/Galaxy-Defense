@@ -124,7 +124,7 @@ void WaterPlaneSceneProxy::Render(
         shader->ExecuteShader();
     }
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
-    shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+    shader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
 }
 

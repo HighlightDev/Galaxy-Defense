@@ -14,8 +14,9 @@
 #ifdef USE_LIBUNWIND
 #include "TinyUnwinder.h"
 
-#include <signal.h>
 #include <stdlib.h>
+
+#include <csignal>
 #endif
 
 using namespace EngineCore;
@@ -53,6 +54,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
      *  @param[in] action One of `GLFW_PRESS` or `GLFW_RELEASE`.  Future releases
      *  may add more actions.
      * */
+
+    if (GLFW_PRESS == action && button == GLFW_MOUSE_BUTTON_RIGHT) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    } else if (GLFW_RELEASE == action && button == GLFW_MOUSE_BUTTON_RIGHT) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
 
     if (GLFW_PRESS == action) {
         engineInputManager->TriggerOnMouseButtonKeyDown((eMouseKeys)button);
@@ -144,7 +151,7 @@ void handler(int sig)
 int32_t main(int32_t argc, char** argv)
 {
 #ifdef USE_LIBUNWIND
-    signal(SIGSEGV, handler); // install our handler
+    std::signal(SIGSEGV, handler); // install our handler
 #endif
 
     ThreadHelper::GetInstance()->RegisterThread("Render");

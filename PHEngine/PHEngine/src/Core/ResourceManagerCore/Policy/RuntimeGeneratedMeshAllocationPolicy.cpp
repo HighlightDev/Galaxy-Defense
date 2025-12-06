@@ -29,7 +29,8 @@ std::shared_ptr<Skin> RuntimeGeneratedMeshAllocationPolicy::AllocateMemory(const
             if (vertexAttribute->GetAttributeType() == eAttributeType::STANDART) {
                 const auto& standartAttribute = std::static_pointer_cast<StandartAttributeDataBase>(vertexAttribute);
                 if (standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexPosition
-                    || standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexTexCoords) {
+                    || standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexTexCoords
+                    || standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexNormal) {
                     const auto& vbo = new VertexBufferObject<float>(
                         arg.mMaxVerticesCount,
                         vertexAttribute->GetAttributeName(),

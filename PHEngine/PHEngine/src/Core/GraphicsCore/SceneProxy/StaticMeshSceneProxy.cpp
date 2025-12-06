@@ -106,7 +106,7 @@ void StaticMeshSceneProxy::Render(
         mainShader->ExecuteShader();
     }
     mainShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
-    mainShader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+    mainShader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
 }
 
@@ -125,7 +125,7 @@ void StaticMeshSceneProxy::RenderPlanarReflection(
     }
     planarReflectionShader->GetShader()->SetClipPlane(plane);
     planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
-    planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_relativeMatrix, viewMatrix, projectionMatrix);
+    planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_worldMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
 }
 
@@ -146,7 +146,7 @@ void StaticMeshSceneProxy::RenderOutlineStencil(
             outlineShader->ExecuteShader();
         }
         outlineShader->GetMaterialShader()->LoadUniformValues(mOutlineMaterialProxy, activeBindedState);
-        outlineShader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+        outlineShader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
         m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
     }
 }

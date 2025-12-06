@@ -56,7 +56,6 @@ public:
 
     void SetBeamColor(const glm::vec3& color);
     void SetBeamCount(int count);
-    void SetRenderMode(BeamRenderMode mode);
     void SetMeshData(const std::vector<std::tuple<std::vector<BeamVertex>, std::vector<uint32_t>>>& meshData);
 
     bool IsFrustumCullTestNeeded() const override;

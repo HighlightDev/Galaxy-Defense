@@ -9,5 +9,5 @@ void main()
 
     VsOutput = VertexFactoryGetMaterialOutput();
 
-    gl_Position = VsOutput.ClippedCoordinates;
+    gl_Position = VsOutput.ProjectedCoordinates;
 }

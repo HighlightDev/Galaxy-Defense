@@ -23,7 +23,7 @@ protected:
 
     std::shared_ptr<EngineObjectProperty<glm::vec3>> m_additionalRotationEuler;
 
-    glm::mat4 m_relativeMatrix;
+    glm::mat4 m_worldMatrix;
 
     glm::mat4 m_outlineMatrix;
 
@@ -44,9 +44,9 @@ public:
     eComponentType GetComponentType() const override;
 
     /* This method works every time when this component has dirty transform */
-    virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix = glm::mat4(1));
+    virtual void UpdateWorldMatrix(const glm::mat4& parentWorldMatrix = glm::mat4(1));
 
-    virtual void UpdateOutlineMatrix(const glm::mat4& parentRelativeMatrix = glm::mat4(1));
+    virtual void UpdateOutlineMatrix(const glm::mat4& parentWorldMatrix = glm::mat4(1));
 
     void SetIsTransformationDirty(const bool isDirty);
 
@@ -72,7 +72,7 @@ public:
 
     glm::vec3 GetScale() const;
 
-    glm::mat4 GetRelativeMatrix() const;
+    glm::mat4 GetWorldMatrix() const;
 
     glm::mat4 GetOutlineMatrix() const;
 

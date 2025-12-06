@@ -93,7 +93,7 @@ void RuntimeGeneratedLineSceneProxy::Render(
         shader->ExecuteShader();
     }
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
-    shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+    shader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
     m_skin->GetBuffer()->RenderVAO(0, mVerticesCountToRender, GL_TRIANGLE_STRIP);
 
     if (isCullFaceEnabled) {
@@ -167,10 +167,7 @@ void RuntimeGeneratedLineSceneProxy::UpdateGeometry(const glm::mat4& viewMatrix)
         const size_t verticesBufferSize = sizeof(float) * vertices.size();
         const size_t texCoordsBufferSize = sizeof(float) * texCoords.size();
 
-        verticesVBO->BindVBO();
         verticesVBO->BufferSubData(0, verticesBufferSize, (void*)vertices.data());
-
-        textureCoordinatesVBO->BindVBO();
         textureCoordinatesVBO->BufferSubData(0, texCoordsBufferSize, (void*)texCoords.data());
         textureCoordinatesVBO->UnbindVBO();
 

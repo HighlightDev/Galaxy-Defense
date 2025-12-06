@@ -85,11 +85,12 @@ void ElectricBeamSceneProxy::Render(
     }
 
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
-    shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
 
     // Render each beam
     for (size_t i = 0; i < mBeamSkins.size(); ++i) {
         if (mBeamSkins[i]) {
+            auto modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, i * 2.0f, 0.0f));
+            shader->GetVertexFactoryShader()->SetMatrices(modelMatrix, viewMatrix, projectionMatrix);
             const auto& buffer = mBeamSkins[i]->GetBuffer();
             buffer->RenderVAO(GL_TRIANGLES);
         }
@@ -124,12 +125,6 @@ void ElectricBeamSceneProxy::SetBeamCount(int count)
     bUpdateBeamGeometry = true;
 }
 
-void ElectricBeamSceneProxy::SetRenderMode(BeamRenderMode mode)
-{
-    mRenderMode = mode;
-    bUpdateBeamGeometry = true;
-}
-
 void ElectricBeamSceneProxy::SetMeshData(const std::vector<std::tuple<std::vector<BeamVertex>, std::vector<uint32_t>>>& meshData)
 {
     mMeshData = meshData;
@@ -155,7 +150,8 @@ RenderInfo ElectricBeamSceneProxy::GetRenderInfo() const
 
 void ElectricBeamSceneProxy::UpdateBeamGeometry(int beamIndex)
 {
-    if (beamIndex < 0 || beamIndex >= static_cast<int>(mBeamSkins.size())) {
+    if (beamIndex < 0 || beamIndex >= static_cast<int>(mBeamSkins.size()) || mMeshData.empty()
+        || beamIndex >= static_cast<int>(mMeshData.size())) {
         return;
     }
 
@@ -168,22 +164,34 @@ void ElectricBeamSceneProxy::UpdateBeamGeometry(int beamIndex)
 
         // Convert BeamVertex to the format expected by the mesh buffer
         std::vector<float> vertexData;
-        vertexData.reserve(vertices.size() * 8); // Position(3) + Normal(3) + TexCoord(2)
+        std::vector<float> texCoordsData;
+        std::vector<float> normalData;
+        vertexData.reserve(vertices.size() * 3);
+        texCoordsData.reserve(vertices.size() * 2);
+        normalData.reserve(vertices.size() * 3);
 
         for (const auto& vertex : vertices) {
             vertexData.push_back(vertex.Position.x);
             vertexData.push_back(vertex.Position.y);
             vertexData.push_back(vertex.Position.z);
-            vertexData.push_back(vertex.Normal.x);
-            vertexData.push_back(vertex.Normal.y);
-            vertexData.push_back(vertex.Normal.z);
-            vertexData.push_back(vertex.TexCoord.x);
-            vertexData.push_back(vertex.TexCoord.y);
+            normalData.push_back(vertex.Normal.x);
+            normalData.push_back(vertex.Normal.y);
+            normalData.push_back(vertex.Normal.z);
+            texCoordsData.push_back(vertex.TexCoord.x);
+            texCoordsData.push_back(vertex.TexCoord.y);
         }
 
-        buffer->GetVboByAttribArrayIndexName("VertexPosition")
-            ->BufferSubData(0, vertexData.size() * sizeof(float), vertexData.data());
-        buffer->GetIBO()->BufferSubData(0, indices.size() * sizeof(uint32_t), indices.data());
+        const auto& positionVBO = buffer->GetVboByAttribArrayIndexName("VertexPosition");
+        const auto& normalVBO = buffer->GetVboByAttribArrayIndexName("VertexNormal");
+        const auto& texCoordVBO = buffer->GetVboByAttribArrayIndexName("VertexTexCoords");
+        const auto& ibo = buffer->GetIBO();
+
+        positionVBO->BufferSubData(0, vertexData.size() * sizeof(float), vertexData.data());
+        normalVBO->BufferSubData(0, normalData.size() * sizeof(float), normalData.data());
+        texCoordVBO->BufferSubData(0, texCoordsData.size() * sizeof(float), texCoordsData.data());
+        texCoordVBO->UnbindVBO();
+        ibo->BufferSubData(0, indices.size() * sizeof(uint32_t), indices.data());
+        ibo->UnbindVBO();
     }
 }
 

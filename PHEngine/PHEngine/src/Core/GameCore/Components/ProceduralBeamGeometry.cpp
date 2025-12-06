@@ -286,9 +286,7 @@ void ProceduralBeamGeometry::GenerateAnimatedElectricBeamGeometry(
     if (lengthSegments < 2)
         lengthSegments = 2;
 
-    const glm::vec3 baseDirection = endPoint - startPoint;
-    const float totalLength = glm::length(baseDirection);
-    const glm::vec3 direction = baseDirection / totalLength;
+    const glm::vec3 direction = glm::normalize(endPoint - startPoint);
 
     glm::vec3 tangent, bitangent;
     CalculateTangentBasis(direction, tangent, bitangent);

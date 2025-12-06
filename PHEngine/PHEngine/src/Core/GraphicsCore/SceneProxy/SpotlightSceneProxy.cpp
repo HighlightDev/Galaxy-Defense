@@ -43,7 +43,7 @@ std::shared_ptr<ProjectedSpotlightShadowInfo> SpotlightSceneProxy::GetProjectedS
 glm::vec3 SpotlightSceneProxy::GetDirection() const
 {
     static const glm::vec4 spotlightDefaultDirection{1.0f, 0.0f, 0.0f, 0.0f};
-    glm::vec3 result = m_relativeMatrix * spotlightDefaultDirection;
+    glm::vec3 result = m_worldMatrix * spotlightDefaultDirection;
     return result;
 }
 
@@ -54,7 +54,7 @@ float SpotlightSceneProxy::GetCutoff() const
 
 glm::vec3 SpotlightSceneProxy::GetTransformedDirectionVector(const glm::vec4& initialDirection) const
 {
-    return m_relativeMatrix * initialDirection;
+    return m_worldMatrix * initialDirection;
 }
 
 std::shared_ptr<ProjectedShadowInfo> SpotlightSceneProxy::GetShadowInfo()

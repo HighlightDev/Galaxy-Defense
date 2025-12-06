@@ -1408,14 +1408,14 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
     const int32_t primitiveSceneProxyIndex,
     const int32_t creatorObjectId,
     const uint64_t functionId,
-    const glm::mat4& newRelativeMatrix,
+    const glm::mat4& newworldMatrix,
     const glm::mat4& newOutlineMatrix,
     const BoundingBox3D& newTransformedBoundingBox)
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
         const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
         if (primitiveSp) {
-            primitiveSp->SetTransformationMatrix(newRelativeMatrix);
+            primitiveSp->SetWorldMatrix(newworldMatrix);
             primitiveSp->SetOutlineMatrix(newOutlineMatrix);
             primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
         }
@@ -1424,14 +1424,14 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
             creatorObjectId,
             functionId,
-            [weak = weak_from_this(), primitiveSceneProxyIndex, newRelativeMatrix, newOutlineMatrix, newTransformedBoundingBox](
+            [weak = weak_from_this(), primitiveSceneProxyIndex, newworldMatrix, newOutlineMatrix, newTransformedBoundingBox](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
                     if (primitiveSp) {
-                        primitiveSp->SetTransformationMatrix(newRelativeMatrix);
+                        primitiveSp->SetWorldMatrix(newworldMatrix);
                         primitiveSp->SetOutlineMatrix(newOutlineMatrix);
                         primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
                     }
@@ -1444,26 +1444,26 @@ void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
     const int32_t lightSceneProxyIndex,
     const int32_t creatorObjectId,
     const uint64_t functionId,
-    const glm::mat4& newRelativeMatrix)
+    const glm::mat4& newworldMatrix)
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
         const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
         if (lightSp) {
-            lightSp->SetTransformationMatrix(newRelativeMatrix);
+            lightSp->SetWorldMatrix(newworldMatrix);
         }
     } else {
         m_interThreadMgr.ExecuteOnRenderThread(
             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
             creatorObjectId,
             functionId,
-            [weak = weak_from_this(), newRelativeMatrix, lightSceneProxyIndex](
+            [weak = weak_from_this(), newworldMatrix, lightSceneProxyIndex](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
                     if (lightProxySp) {
-                        lightProxySp->SetTransformationMatrix(newRelativeMatrix);
+                        lightProxySp->SetWorldMatrix(newworldMatrix);
                     }
                 }
             });

@@ -141,7 +141,7 @@ void ParticleSystemComponent::ResetParticles()
     }
 }
 
-void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
+void ParticleSystemComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
 {
     if (!mIsEnabled)
         return;
@@ -150,11 +150,11 @@ void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelati
         const auto& ownerTranslation = ownerSp->GetRootComponent()->GetTranslation();
         const auto& ownerScale = ownerSp->GetRootComponent()->GetScale();
 
-        // Update current relative matrix
+        // Update current world matrix
         const glm::mat4 identityMatrix(1);
-        m_relativeMatrix = identityMatrix;
-        m_relativeMatrix *= glm::translate(identityMatrix, (mTransform->Translation + ownerTranslation));
-        m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
+        m_worldMatrix = identityMatrix;
+        m_worldMatrix *= glm::translate(identityMatrix, (mTransform->Translation + ownerTranslation));
+        m_worldMatrix *= glm::scale(identityMatrix, mTransform->Scale);
 
         if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
             // Update primitives proxy transform
@@ -162,7 +162,7 @@ void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4& parentRelati
             if (const auto& sceneSP = m_sceneWP.lock()) {
                 if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                     sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(
-                        mSceneProxyId, GetObjectId(), functionId, m_relativeMatrix, glm::mat4(1), GetTransformedBoundingBox());
+                        mSceneProxyId, GetObjectId(), functionId, m_worldMatrix, glm::mat4(1), GetTransformedBoundingBox());
                 }
             }
         }

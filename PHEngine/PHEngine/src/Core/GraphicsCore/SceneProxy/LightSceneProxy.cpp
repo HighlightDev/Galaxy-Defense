@@ -6,13 +6,13 @@ namespace Proxy {
 LightSceneProxy::LightSceneProxy(
     const bool isEnabled,
     const bool isVisible,
-    const glm::mat4& relativeMatrix,
+    const glm::mat4& worldMatrix,
     const glm::vec3& ambientColor,
     const glm::vec3& diffuseColor,
     const glm::vec3& specularColor,
     const std::shared_ptr<ProjectedShadowInfo>& shadowInfo)
     : SceneProxyBase(isEnabled)
-    , m_relativeMatrix(relativeMatrix)
+    , m_worldMatrix(worldMatrix)
     , m_shadowInfo(shadowInfo)
     , mIsVisible(isVisible)
     , AmbientColor(ambientColor)
@@ -39,9 +39,9 @@ void LightSceneProxy::PostInitialize()
 {
 }
 
-void LightSceneProxy::SetTransformationMatrix(const glm::mat4& relativeMatrix)
+void LightSceneProxy::SetWorldMatrix(const glm::mat4& worldMatrix)
 {
-    m_relativeMatrix = relativeMatrix;
+    m_worldMatrix = worldMatrix;
     SetIsTransformationDirty(true);
 }
 

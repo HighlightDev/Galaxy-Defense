@@ -54,7 +54,7 @@ class PrimitiveSceneProxy : public SceneProxyBase, public AProxyVisibilityContro
     int32_t mSortOrderValue{0};
 
 protected:
-    glm::mat4 m_relativeMatrix;
+    glm::mat4 m_worldMatrix;
 
     glm::mat4 m_outlineMatrix;
 
@@ -83,7 +83,7 @@ public:
 
     void CleanUp() override;
 
-    void SetTransformationMatrix(const glm::mat4& relativeMatrix);
+    void SetWorldMatrix(const glm::mat4& worldMatrix);
 
     void SetDeferredShadingSceneRenderer(const std::weak_ptr<::Graphics::Renderer::SceneRenderer>& deferredShadingSceneRenderer);
 

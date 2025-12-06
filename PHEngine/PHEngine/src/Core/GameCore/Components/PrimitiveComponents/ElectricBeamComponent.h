@@ -52,7 +52,7 @@ private:
 
     bool mIsRenderDataDirty{false};
 
-    const MeshRenderData& mRenderData;
+    const MeshRenderData mRenderData;
 
 public:
     ElectricBeamComponent(const std::string& gameObjectName, const MeshRenderData& renderData);

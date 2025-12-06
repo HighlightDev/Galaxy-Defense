@@ -13,7 +13,7 @@ PointLightSceneProxy::PointLightSceneProxy(const PointLightComponent* component)
     : LightSceneProxy(
         component->IsEnabled(),
         component->IsVisible(),
-        component->GetRelativeMatrix(),
+        component->GetWorldMatrix(),
         component->GetRenderData()->Ambient,
         component->GetRenderData()->Diffuse,
         component->GetRenderData()->Specular,
@@ -58,7 +58,7 @@ std::shared_ptr<ProjectedPointLightShadowInfo> PointLightSceneProxy::GetProjecte
 
 glm::vec3 PointLightSceneProxy::GetPosition() const
 {
-    glm::vec3 result = m_relativeMatrix * glm::vec4(0, 0, 0, 1.0f);
+    glm::vec3 result = m_worldMatrix * glm::vec4(0, 0, 0, 1.0f);
     return result;
 }
 

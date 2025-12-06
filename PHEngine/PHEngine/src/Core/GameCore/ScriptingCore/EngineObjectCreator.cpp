@@ -30,7 +30,8 @@ EngineObjectCreator::EngineObjectCreator()
            "WaterPlaneComponent",
            "PlanarReflectionComponent",
            "InputComponent",
-           "BillboardComponent"};
+           "BillboardComponent",
+           "ElectricBeamComponent"};
 }
 
 void EngineObjectCreator::SetScene(const std::weak_ptr<Scene>& scene)

@@ -110,8 +110,8 @@ void VertexArrayObject::BindBuffersToVao()
 
 void VertexArrayObject::DisableVertexAttribArrays()
 {
-    IndexBufferObject::UnbindIndexBuffer();
-    VertexBufferObjectBase::UnbindVBO();
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     for (auto it = m_vbos.begin(); it != m_vbos.end(); ++it) {
         glDisableVertexAttribArray(it->first->GetVertexAttribIndex());
     }

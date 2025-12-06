@@ -10,7 +10,7 @@ uniform float distortion;
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
-    vec3 ndc = materialIn.ClippedCoordinates.xyz / materialIn.ClippedCoordinates.w;
+    vec3 ndc = materialIn.ProjectedCoordinates.xyz / materialIn.ProjectedCoordinates.w;
     vec2 texSpaceCoords = (ndc.xy * 0.5) + 0.5;
     vec2 texCoords = materialIn.TextureCoordinates.xy * 10;
 

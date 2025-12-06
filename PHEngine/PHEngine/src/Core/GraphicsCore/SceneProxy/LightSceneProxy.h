@@ -17,7 +17,7 @@ enum class LightSceneProxyType { DIR_LIGHT, SPOT_LIGHT, POINT_LIGHT };
 
 class LightSceneProxy : public SceneProxyBase {
 protected:
-    glm::mat4 m_relativeMatrix;
+    glm::mat4 m_worldMatrix;
 
     std::shared_ptr<ProjectedShadowInfo> m_shadowInfo;
 
@@ -33,7 +33,7 @@ public:
     LightSceneProxy(
         const bool isEnabled,
         const bool isVisible,
-        const glm::mat4& relativeMatrix,
+        const glm::mat4& worldMatrix,
         const glm::vec3& ambientColor,
         const glm::vec3& diffuseColor,
         const glm::vec3& specularColor,
@@ -45,7 +45,7 @@ public:
 
     virtual void PostInitialize();
 
-    void SetTransformationMatrix(const glm::mat4& relativeMatrix);
+    void SetWorldMatrix(const glm::mat4& worldMatrix);
 
     bool IsTransformationDirty() const;
 

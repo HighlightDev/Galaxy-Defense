@@ -68,7 +68,7 @@ public:
 
     virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;
 
-    void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
+    void UpdateWorldMatrix(const glm::mat4& parentWorldMatrix) override;
 
     void SetBoundingBox(const BoundingBox3D& boundingBox);
 

@@ -9,7 +9,7 @@ DirectionalLightSceneProxy::DirectionalLightSceneProxy(const DirectionalLightCom
     : LightSceneProxy(
         component->IsEnabled(),
         component->IsVisible(),
-        component->GetRelativeMatrix(),
+        component->GetWorldMatrix(),
         component->GetRenderData()->Ambient,
         component->GetRenderData()->Diffuse,
         component->GetRenderData()->Specular,
@@ -24,7 +24,7 @@ DirectionalLightSceneProxy::~DirectionalLightSceneProxy()
 
 glm::vec3 DirectionalLightSceneProxy::GetDirection() const
 {
-    return m_relativeMatrix * glm::vec4(m_direction, 0.0f);
+    return m_worldMatrix * glm::vec4(m_direction, 0.0f);
 }
 
 void DirectionalLightSceneProxy::PostInitialize()

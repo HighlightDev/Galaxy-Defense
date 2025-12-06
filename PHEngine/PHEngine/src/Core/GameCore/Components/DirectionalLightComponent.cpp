@@ -56,9 +56,9 @@ std::shared_ptr<LightSceneProxy> DirectionalLightComponent::CreateSceneProxy() c
     return std::make_shared<DirectionalLightSceneProxy>(this);
 }
 
-void DirectionalLightComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
+void DirectionalLightComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
 {
-    Base::UpdateRelativeMatrix(parentRelativeMatrix);
+    Base::UpdateWorldMatrix(parentWorldMatrix);
 }
 
 void DirectionalLightComponent::Tick(float deltaTimeSec)

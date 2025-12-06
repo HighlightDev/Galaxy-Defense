@@ -125,12 +125,12 @@ void Actor::UpdateTransform()
     ext_assert(m_rootComponent, "Actor root component is null in UpdateTransform");
 
     if (m_rootComponent->GetIsTransformationDirty()) {
-        glm::mat4 parentRelativeMatrix(1);
+        glm::mat4 parentWorldMatrix(1);
         if (const auto& spParent = m_parent.lock()) {
-            parentRelativeMatrix *= spParent->GetRootComponent()->GetRelativeMatrix();
+            parentWorldMatrix *= spParent->GetRootComponent()->GetWorldMatrix();
         }
 
-        m_rootComponent->UpdateRelativeMatrix(parentRelativeMatrix);
+        m_rootComponent->UpdateWorldMatrix(parentWorldMatrix);
         UpdateComponentsTransform(true);
 
         for (const auto& child : m_children) {
@@ -146,13 +146,13 @@ void Actor::UpdateComponentsTransform(const bool bForceUpdate)
     ext_assert(m_rootComponent, "Actor root component is null in UpdateComponentsTransform");
 
     if (m_allComponents.size()) {
-        auto parentRelativeMatrix = m_rootComponent->GetRelativeMatrix();
+        auto parentWorldMatrix = m_rootComponent->GetWorldMatrix();
 
         for (auto& component : m_allComponents) {
             if ((component->GetComponentType() & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT) {
                 auto sceneComp = std::static_pointer_cast<SceneComponent>(component);
                 if (bForceUpdate || sceneComp->GetIsTransformationDirty()) {
-                    sceneComp->UpdateRelativeMatrix(parentRelativeMatrix);
+                    sceneComp->UpdateWorldMatrix(parentWorldMatrix);
                 }
             }
         }

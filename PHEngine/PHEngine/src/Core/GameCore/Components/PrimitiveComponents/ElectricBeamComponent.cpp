@@ -1,5 +1,6 @@
 #include "ElectricBeamComponent.h"
 
+#include "Core/CommonCore/Random.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/ProceduralBeamGeometry.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -23,7 +24,7 @@ ElectricBeamComponent::ElectricBeamComponent(const std::string& gameObjectName, 
     , mBeamCount(3)
     , mJitterAmount(0.2f)
     , mUpdateFrequency(0.05f)
-    , mRenderMode(BeamRenderMode::ProceduralMesh)
+    , mRenderMode(BeamRenderMode::ProceduralElectric)
     , mRadialSegments(8)
     , mLengthSegments(10)
     , mAnimationTime(0.0f)
@@ -57,7 +58,7 @@ void ElectricBeamComponent::Tick(const float deltaTime)
 
     mTimeSinceLastUpdate += deltaTime;
 
-    if (mTimeSinceLastUpdate >= mUpdateFrequency) {
+    if (not EngineMath::FloatsNearEqual(mUpdateFrequency, 0.0f) && mTimeSinceLastUpdate >= mUpdateFrequency) {
         RegenerateBeams();
         mTimeSinceLastUpdate = 0.0f;
     }
@@ -133,8 +134,6 @@ void ElectricBeamComponent::SetJitterAmount(float amount)
 
 void ElectricBeamComponent::SetUpdateFrequency(float frequency)
 {
-    if (frequency < 0.01f)
-        frequency = 0.01f;
     mUpdateFrequency = frequency;
 }
 
@@ -175,7 +174,6 @@ float ElectricBeamComponent::GetUpdateFrequency() const
 
 void ElectricBeamComponent::RegenerateBeams()
 {
-
     for (int i = 0; i < static_cast<int>(mBeamMeshes.size()); ++i) {
         UpdateBeamMesh(i);
     }
@@ -183,13 +181,13 @@ void ElectricBeamComponent::RegenerateBeams()
 
 glm::vec3 ElectricBeamComponent::GetJitteredPoint(const glm::vec3& basePoint, float jitterScale) const
 {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
+    const float jitter1 = Random::Float() * 2.0f - 1.0f;
+    const float jitter2 = Random::Float() * 2.0f - 1.0f;
+    const float jitter3 = Random::Float() * 2.0f - 1.0f;
 
     const float jitter = mJitterAmount * jitterScale;
 
-    return basePoint + glm::vec3(dis(gen) * jitter, dis(gen) * jitter, dis(gen) * jitter);
+    return basePoint + glm::vec3(jitter1 * jitter, jitter2 * jitter, jitter3 * jitter);
 }
 
 void ElectricBeamComponent::SetRenderMode(BeamRenderMode mode)
@@ -258,6 +256,10 @@ void ElectricBeamComponent::CreateBeamMeshes()
     mBeamMeshes.clear();
     mBeamMeshes.reserve(mBeamCount);
 
+    for (int i = 0; i < mBeamCount; ++i) {
+        mBeamMeshes.emplace_back(std::vector<BeamVertex>(), std::vector<uint32_t>());
+    }
+
     LogInfo("ElectricBeamComponent::CreateBeamMeshes: Created ", mBeamCount, " beam meshes");
 }
 
@@ -306,6 +308,8 @@ void ElectricBeamComponent::UpdateBeamMesh(int beamIndex)
     }
 
     mBeamMeshes[beamIndex] = std::make_tuple(vertices, indices);
+
+    mIsRenderDataDirty = true;
 }
 
 void ElectricBeamComponent::SyncRenderData()
@@ -319,7 +323,6 @@ void ElectricBeamComponent::SyncRenderData()
             [sceneProxyId = mSceneProxyId,
              beamColor = mBeamColor,
              beamCount = mBeamCount,
-             renderMode = mRenderMode,
              animationSpeed = mAnimationSpeed,
              beamMeshes = mBeamMeshes](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
@@ -330,7 +333,6 @@ void ElectricBeamComponent::SyncRenderData()
                             sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         beamProxySp->SetBeamColor(beamColor);
                         beamProxySp->SetBeamCount(beamCount);
-                        beamProxySp->SetRenderMode(renderMode);
                         beamProxySp->SetMeshData(beamMeshes);
                     }
                 }

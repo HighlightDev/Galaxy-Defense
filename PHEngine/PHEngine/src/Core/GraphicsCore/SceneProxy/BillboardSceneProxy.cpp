@@ -90,7 +90,7 @@ void BillboardSceneProxy::Render(
 
     billboardShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     billboardShader->GetVertexFactoryShader()->SetMatrices(
-        m_relativeMatrix, mViewMatrixTransformer(viewMatrix), mProjectionMatrixTransformer(projectionMatrix));
+        m_worldMatrix, mViewMatrixTransformer(viewMatrix), mProjectionMatrixTransformer(projectionMatrix));
     billboardShader->GetShader()->SetExtent(mBillboardExtent);
     billboardShader->GetShader()->SetScreenResolution(screenResolution);
     billboardShader->GetShader()->SetApplyScreenAspectRatio(mApplyScreenAspectRatio);

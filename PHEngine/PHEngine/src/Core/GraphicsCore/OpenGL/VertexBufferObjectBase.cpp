@@ -23,14 +23,14 @@ void VertexBufferObjectBase::GenBuffer()
     glGenBuffers(1, &m_descriptor);
 }
 
-void VertexBufferObjectBase::BindVBO()
+void VertexBufferObjectBase::BindVBO() const
 {
     glBindBuffer(m_bufferTarget, m_descriptor);
 }
 
-void VertexBufferObjectBase::UnbindVBO()
+void VertexBufferObjectBase::UnbindVBO() const
 {
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(m_bufferTarget, 0);
 }
 
 void* VertexBufferObjectBase::GetData()
@@ -51,6 +51,7 @@ std::string VertexBufferObjectBase::GetAttribArrayIndexName() const
 void VertexBufferObjectBase::BufferSubData(const size_t offset, const size_t size, const void* data) const
 {
     ext_assert(m_allocatedBufferSize >= size, "Buffer size exceeds allocated buffer size");
+    glBindBuffer(m_bufferTarget, m_descriptor);
     glBufferSubData(m_bufferTarget, offset, size, data);
 }
 

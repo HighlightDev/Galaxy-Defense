@@ -16,7 +16,7 @@ PrimitiveSceneProxy::PrimitiveSceneProxy(
     : SceneProxyBase(component->IsEnabled())
     , AProxyVisibilityController(component->IsVisible())
     , bTransformInitialized(false)
-    , m_relativeMatrix(component->GetRelativeMatrix())
+    , m_worldMatrix(component->GetWorldMatrix())
     , m_outlineMatrix(component->GetOutlineMatrix())
     , mMaterialProxy(materialProxy)
     , mSortOrderValue(component->GetSortOrderValue())
@@ -53,13 +53,13 @@ void PrimitiveSceneProxy::PostConstructorInitialize()
 
 glm::mat4 PrimitiveSceneProxy::GetMatrix() const
 {
-    return m_relativeMatrix;
+    return m_worldMatrix;
 }
 
-void PrimitiveSceneProxy::SetTransformationMatrix(const glm::mat4& relativeMatrix)
+void PrimitiveSceneProxy::SetWorldMatrix(const glm::mat4& worldMatrix)
 {
     bTransformInitialized = true;
-    m_relativeMatrix = relativeMatrix;
+    m_worldMatrix = worldMatrix;
 }
 
 void PrimitiveSceneProxy::SetOutlineMatrix(const glm::mat4& outlineMatrix)

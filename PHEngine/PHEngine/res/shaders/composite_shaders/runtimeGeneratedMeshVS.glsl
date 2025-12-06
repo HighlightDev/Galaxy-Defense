@@ -8,5 +8,5 @@ void main(void)
 {
     VsOutput = VertexFactoryGetMaterialOutput();
 
-    gl_Position = projectionMatrix * viewMatrix * vec4(VertexPosition, 1.0);
+    gl_Position = VsOutput.ProjectedCoordinates;
 }

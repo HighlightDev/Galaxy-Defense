@@ -101,7 +101,7 @@ void CubemapSceneProxy::Render(
             texture->BindTexture(slot);
         }
         cubemapShader->SetTexture(slot);
-        cubemapShader->SetTransformMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+        cubemapShader->SetTransformMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
         m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
     }
 }

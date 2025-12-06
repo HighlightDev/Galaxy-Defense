@@ -109,7 +109,7 @@ void SkeletalMeshSceneProxy::Render(
     if (needToRebindShader) {
         shader->ExecuteShader();
     }
-    shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+    shader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
     shader->GetVertexFactoryShader()->SetSkinningMatrices(GetSkinningMatrices());
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
@@ -129,7 +129,7 @@ void SkeletalMeshSceneProxy::RenderPlanarReflection(
         planarReflectionShader->ExecuteShader();
     }
     planarReflectionShader->GetShader()->SetClipPlane(plane);
-    planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_relativeMatrix, viewMatrix, projectionMatrix);
+    planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_worldMatrix, viewMatrix, projectionMatrix);
     planarReflectionShader->GetVertexFactoryShader()->SetSkinningMatrices(GetSkinningMatrices());
     planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);

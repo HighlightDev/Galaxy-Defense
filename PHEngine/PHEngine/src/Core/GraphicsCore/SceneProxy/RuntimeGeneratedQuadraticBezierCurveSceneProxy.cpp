@@ -122,10 +122,7 @@ void RuntimeGeneratedQuadraticBezierCurveSceneProxy::UpdateGeometry(const glm::m
         const size_t verticesBufferSize = sizeof(float) * vertices.size();
         const size_t texCoordsBufferSize = sizeof(float) * texCoords.size();
 
-        verticesVBO->BindVBO();
         verticesVBO->BufferSubData(0, verticesBufferSize, (void*)vertices.data());
-
-        textureCoordinatesVBO->BindVBO();
         textureCoordinatesVBO->BufferSubData(0, texCoordsBufferSize, (void*)texCoords.data());
         textureCoordinatesVBO->UnbindVBO();
 

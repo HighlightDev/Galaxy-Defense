@@ -77,9 +77,9 @@ bool LightComponent::IsVisible() const
     return mIsVisible;
 }
 
-void LightComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
+void LightComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
 {
-    Base::UpdateRelativeMatrix(parentRelativeMatrix);
+    Base::UpdateWorldMatrix(parentWorldMatrix);
     // Update light proxy transform
     static const uint64_t functionId = Hash("LightComponent::UpdateLightComponentTransform_GameThread");
 
@@ -88,7 +88,7 @@ void LightComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
         if (const auto& sceneSP = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                 sceneRendererSp->UpdateLightComponentTransform_OnRenderThread(
-                    mLightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
+                    mLightSceneProxyId, GetObjectId(), functionId, m_worldMatrix);
             }
         }
     } else {

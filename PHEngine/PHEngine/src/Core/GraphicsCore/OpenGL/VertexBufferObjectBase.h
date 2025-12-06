@@ -24,9 +24,9 @@ public:
 
     void GenBuffer();
 
-    void BindVBO();
+    void BindVBO() const;
 
-    static void UnbindVBO();
+    void UnbindVBO() const;
 
     virtual void SendDataToGPU() = 0;
 

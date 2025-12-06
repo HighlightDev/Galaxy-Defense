@@ -121,7 +121,6 @@ void FreeTypeFontBatcher::FontBufferSubData(
     textFieldProxy->SetVertexStart(positionOffset / (positionVBO->GetElementByteSize() * positionVBO->GetVectorSize()));
     const size_t positionSizeUpdate = vertexPositions.size() * positionVBO->GetElementByteSize() * positionVBO->GetVectorSize();
     ext_assert(positionOffset + positionSizeUpdate <= mPositionChunkData.mTotalChunkSize, "Position buffer overflow");
-    positionVBO->BindVBO();
     positionVBO->BufferSubData(positionOffset, positionSizeUpdate, vertexPositions.data());
     mPositionChunkData.mCurrentChunkOffset = positionOffset + positionSizeUpdate;
     textFieldProxy->SetPositionChunkOffset(positionOffset);
@@ -135,7 +134,6 @@ void FreeTypeFontBatcher::FontBufferSubData(
     ext_assert(
         texCoordinatesOffset + texCoordinatesSizeUpdate <= mTextureCoordinatesChunkData.mTotalChunkSize,
         "Texture coordinates buffer overflow");
-    textureCoordinatesVBO->BindVBO();
     textureCoordinatesVBO->BufferSubData(texCoordinatesOffset, texCoordinatesSizeUpdate, textCoordinates.data());
     mTextureCoordinatesChunkData.mCurrentChunkOffset = texCoordinatesOffset + texCoordinatesSizeUpdate;
     textFieldProxy->SetTextureCoordinatesChunkOffset(texCoordinatesOffset);

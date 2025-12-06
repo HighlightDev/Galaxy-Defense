@@ -95,7 +95,7 @@ void SkyboxSceneProxy::Render(
     if (needToRebindShader) {
         shaderPtr->ExecuteShader();
     }
-    shaderPtr->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
+    shaderPtr->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrixNoTranslation, projectionMatrix);
     shaderPtr->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
 }
@@ -118,7 +118,7 @@ void SkyboxSceneProxy::RenderPlanarReflection(
     }
     planarReflectionShader->GetShader()->SetClipPlane(plane);
     planarReflectionShader->GetVertexFactoryShader()->SetMatrices(
-        mirrorMatrix * m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
+        mirrorMatrix * m_worldMatrix, viewMatrixNoTranslation, projectionMatrix);
     planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
     m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
 }

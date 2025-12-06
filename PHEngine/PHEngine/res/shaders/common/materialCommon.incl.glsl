@@ -7,7 +7,7 @@ struct MATERIAL_VS_OUTPUT {
 
     vec4 ViewCoordinates;
 
-    vec4 ClippedCoordinates;
+    vec4 ProjectedCoordinates;
 
     vec3 WorldNormal;
 
