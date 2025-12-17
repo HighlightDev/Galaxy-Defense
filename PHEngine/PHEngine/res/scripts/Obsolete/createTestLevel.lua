@@ -89,33 +89,37 @@ function CreateTestLevel(host)
     0.0, -- yaw
     0, 50, -20, 1)
 
-    local beamMat = _CreateMaterial(host, "TestElectroMaterial.m")
+    local beamMat = _CreateMaterial(host, "ElectroBeamMaterial.m")
     _SetTextureToMaterial(host, beamMat, "perlin_noise_128x128.png", "noise")
     _SetBindingToMaterial(host, beamMat, "EngineScene", "GT_DeltaSec", "gt_timeSec")
+    _SetVec3ToMaterial(host, beamMat, Json.encode({
+        x = 0.2,
+        y = 1.0,
+        z = 1.0
+    }), "beamGlowColor")
+    _SetVec3ToMaterial(host, beamMat, Json.encode({
+        x = 0.6,
+        y = 0.4,
+        z = 1.0
+    }), "beamMainColor")
 
     local actorId = _CreateActor(host, "Actor", "ElectricBarrier", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
     _CreateAndAttachComponentToActor(host, actorId, "ElectricBeamComponent", Json.encode({
         gameObjectName = "ElectricBeam",
         startPoint = {
-            x = -20,
+            x = 10,
             y = 30,
-            z = 0
+            z = 20
         },
         endPoint = {
             x = 20,
             y = 30,
-            z = 0
+            z = 20
         },
-        beamColor = {
-            r = 0.3,
-            g = 0.5,
-            b = 1.0
-        },
-        beamThickness = 2.0,
-        beamCount = 2,
-        jitterAmount = 2.2,
-        updateFrequency = 0.0,
-        isActive = true,
+        beamThickness = 0.15,
+        beamCount = 3,
+        jitterAmount = 0.3,
+        updateFrequency = 0.03,
         materialProxyId = beamMat
     }))
 

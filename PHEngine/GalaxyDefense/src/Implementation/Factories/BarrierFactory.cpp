@@ -1,9 +1,9 @@
 #include "BarrierFactory.h"
 
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Scene.h"
@@ -58,33 +58,29 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
     }
 
     const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise_128x128.png");
-    const std::shared_ptr<IMaterial>& electroRay_material = materialParser.ParseMaterialDescriptor("ElectroBarrierMaterial.m");
+    const std::shared_ptr<IMaterial>& electroRay_material = materialParser.ParseMaterialDescriptor("ElectroBeamMaterial.m");
     scene->RegisterMaterialInstance(electroRay_material);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "noise", noiseTex);
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "rayColor", glm::vec3(1.0, 0.5, 1.0));
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "rayWidthCoef", 2.0f);
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamGlowColor", glm::vec3(0.2, 1.0, 1.0));
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamMainColor", glm::vec3(0.6, 0.4, 1.0));
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, scene, "GT_DeltaSec", "gt_timeSec");
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "opacity", 1.0f);
 
     int32_t rayIndex = 0;
     const auto currentBarrierIndex = s_barrierCounter - 1;
     while (rayIndex < (pillarsMeshCount - 1)) {
-        const auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(
+        const auto d_mesh = std::make_shared<ElectricBeamComponentData>(
             "c_barrier_mesh_line_" + barrierIndexStr + "_ray_" + std::to_string(rayIndex),
-            4,
-            glm::vec3(0.0f, currentBarrierIndex * rayIndex * 0.1f, 0.0f),
             glm::vec3(),
-            glm::vec3(1),
-            "",
+            glm::vec3(),
+            2.0f,
+            3,
+            2.0f,
+            0.05f,
             electroRay_material);
-        const auto& meshComponentCreator
-            = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
-        const auto& c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(
-            scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-        c_mesh->SetDepthWriteMaskEnabled(false);
-
-        c_mesh->SetSortOrderValue(10 + currentBarrierIndex * rayIndex);
-        c_mesh->SetLineWidth(8.0f);
+        const std::shared_ptr<IComponentCreatable>& meshComponentCreator
+            = std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>();
+        const auto& c_mesh
+            = std::static_pointer_cast<ElectricBeamComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         a_barrier->AddRayLineMesh(c_mesh);
         ++rayIndex;
     }

@@ -18,7 +18,7 @@ const vec3 luma = vec3(0.2126, 0.7152, 0.0722);
 subroutine(executePostFx) vec4 extractBrightParts()
 {
     vec4 sceneColor = texture(sceneColorTexture, vs_out_texCoords);
-    return sceneColor * step(bloomThreshold, dot(sceneColor.rgb, luma));
+    return sceneColor * step(bloomThreshold, dot(sceneColor.rgb, luma)) * sceneColor.a;
 }
 
 subroutine(executePostFx) vec4 runVerticalBlur()

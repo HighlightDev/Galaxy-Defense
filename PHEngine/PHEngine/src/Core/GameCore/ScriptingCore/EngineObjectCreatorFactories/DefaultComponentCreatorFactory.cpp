@@ -311,7 +311,6 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
     } else if ("ElectricBeamComponent" == componentType) {
         const auto startPoint = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["startPoint"]);
         const auto endPoint = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["endPoint"]);
-        const auto beamColor = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["beamColor"]);
         const float beamThickness = nlohmann_utilities::GetFloatFromJson(jsonObj, "beamThickness");
         const int beamCount = nlohmann_utilities::GetIntFromJson(jsonObj, "beamCount");
         const float jitterAmount = nlohmann_utilities::GetFloatFromJson(jsonObj, "jitterAmount");
@@ -321,7 +320,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         ext_assert(material, "Material not found for ElectricBeamComponent, proxy ID: " + std::to_string(materialProxyId));
 
         componentData = std::make_shared<ElectricBeamComponentData>(
-            objectName, startPoint, endPoint, beamColor, beamThickness, beamCount, jitterAmount, updateFrequency, material);
+            objectName, startPoint, endPoint, beamThickness, beamCount, jitterAmount, updateFrequency, material);
     }
 
     ext_assert(componentData, "Failed to create component data for type: " + componentType);

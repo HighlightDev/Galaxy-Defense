@@ -1,7 +1,7 @@
 #include "BarrierActor.h"
 
 #include "Core/CommonCore/Assertion.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
@@ -26,7 +26,7 @@ void BarrierActor::AddBarrierPillarMesh(const std::shared_ptr<StaticMeshComponen
     AddComponent(mBarrierPillars.emplace_back(meshComponent));
 }
 
-void BarrierActor::AddRayLineMesh(const std::shared_ptr<RuntimeGeneratedLineComponent>& rayComponent)
+void BarrierActor::AddRayLineMesh(const std::shared_ptr<ElectricBeamComponent>& rayComponent)
 {
     AddComponent(mBarrierRays.emplace_back(rayComponent));
 }
@@ -43,8 +43,8 @@ bool BarrierActor::TrySetBarrierPillarMeshRelativeTransform(
 
         int32_t rayIndex = 0;
         for (const auto& raySp : mBarrierRays) {
-            raySp->SetLineBeginWorldSpacePosition(GetBarrierPillarPosition(rayIndex++));
-            raySp->SetLineEndWorldSpacePosition(GetBarrierPillarPosition(rayIndex));
+            raySp->SetStartWorldPosition(GetBarrierPillarPosition(rayIndex++));
+            raySp->SetEndWorldPosition(GetBarrierPillarPosition(rayIndex));
         }
     }
     return false;

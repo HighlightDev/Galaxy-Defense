@@ -30,8 +30,7 @@ bool LuaWrapper::ExecuteScript(const std::string& absPath)
 {
     if (luaL_dofile(mState, absPath.c_str()) != LUA_OK) {
         const auto& message = GetErrorMessageAt(-1);
-        LogInfo(message);
-        std::cout << "ERROR: Lua script execution failed: " << message << std::endl;
+        LogInfo("ERROR: Lua script execution failed: " + message);
         return false;
     }
 

@@ -10,7 +10,7 @@
 namespace EngineCore {
 class SceneComponent;
 class StaticMeshComponent;
-class RuntimeGeneratedLineComponent;
+class ElectricBeamComponent;
 } // namespace EngineCore
 
 using namespace EngineCore;
@@ -20,7 +20,7 @@ class BarrierActor : public Actor {
 
     std::vector<std::shared_ptr<::EngineCore::StaticMeshComponent>> mBarrierPillars;
 
-    std::vector<std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>> mBarrierRays;
+    std::vector<std::shared_ptr<::EngineCore::ElectricBeamComponent>> mBarrierRays;
 
 public:
     BarrierActor(const std::string& gameObjectName, const std::shared_ptr<::EngineCore::SceneComponent>& rootComponent);
@@ -29,7 +29,7 @@ public:
 
     void AddBarrierPillarMesh(const std::shared_ptr<::EngineCore::StaticMeshComponent>& meshComponent);
 
-    void AddRayLineMesh(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>& rayComponent);
+    void AddRayLineMesh(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& rayComponent);
 
     bool TrySetBarrierPillarMeshRelativeTransform(
         const int32_t pillarIndex, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);

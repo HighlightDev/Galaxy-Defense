@@ -17,21 +17,21 @@ namespace EngineCore {
 ElectricBeamComponent::ElectricBeamComponent(const std::string& gameObjectName, const MeshRenderData& renderData)
     : PrimitiveComponent(gameObjectName, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f))
     , mBeamMeshes()
-    , mStartPoint(glm::vec3(0.0f))
-    , mEndPoint(glm::vec3(10.0f, 0.0f, 0.0f))
-    , mBeamColor(glm::vec3(0.3f, 0.5f, 1.0f))
+    , mStartWorldPosition(glm::vec3(0.0f))
+    , mEndWorldPosition(glm::vec3(10.0f, 0.0f, 0.0f))
     , mBeamThickness(2.0f)
     , mBeamCount(3)
     , mJitterAmount(0.2f)
     , mUpdateFrequency(0.05f)
     , mRenderMode(BeamRenderMode::ProceduralElectric)
     , mRadialSegments(8)
-    , mLengthSegments(10)
+    , mLengthSegments(20)
     , mAnimationTime(0.0f)
     , mAnimationSpeed(2.0f)
     , mTimeSinceLastUpdate(0.0f)
     , mRenderData(renderData)
 {
+    SetCanBloomBeApplied(true);
 }
 
 ElectricBeamComponent::~ElectricBeamComponent()
@@ -85,24 +85,18 @@ void ElectricBeamComponent::OnUnregistered()
     DestroyBeamMeshes();
 }
 
-void ElectricBeamComponent::SetStartPoint(const glm::vec3& point)
+void ElectricBeamComponent::SetStartWorldPosition(const glm::vec3& point)
 {
-    mStartPoint = point;
+    mStartWorldPosition = point;
     mIsRenderDataDirty = true;
     RegenerateBeams();
 }
 
-void ElectricBeamComponent::SetEndPoint(const glm::vec3& point)
+void ElectricBeamComponent::SetEndWorldPosition(const glm::vec3& point)
 {
-    mEndPoint = point;
+    mEndWorldPosition = point;
     mIsRenderDataDirty = true;
     RegenerateBeams();
-}
-
-void ElectricBeamComponent::SetBeamColor(const glm::vec3& color)
-{
-    mBeamColor = color;
-    mIsRenderDataDirty = true;
 }
 
 void ElectricBeamComponent::SetBeamThickness(float thickness)
@@ -111,14 +105,11 @@ void ElectricBeamComponent::SetBeamThickness(float thickness)
     mIsRenderDataDirty = true;
 }
 
-void ElectricBeamComponent::SetBeamCount(int count)
+void ElectricBeamComponent::SetBeamCount(const int32_t count)
 {
-    if (count < 1)
-        count = 1;
-    if (count > 20)
-        count = 20; // Reasonable limit
+    const int32_t clampedCount = count < c_minBeamsCount ? c_minBeamsCount : (count > c_maxBeamsCount ? c_maxBeamsCount : count);
 
-    mBeamCount = count;
+    mBeamCount = clampedCount;
     mIsRenderDataDirty = true;
 
     DestroyBeamMeshes();
@@ -127,29 +118,24 @@ void ElectricBeamComponent::SetBeamCount(int count)
     RegenerateBeams();
 }
 
-void ElectricBeamComponent::SetJitterAmount(float amount)
+void ElectricBeamComponent::SetJitterAmount(const float amount)
 {
     mJitterAmount = amount;
 }
 
-void ElectricBeamComponent::SetUpdateFrequency(float frequency)
+void ElectricBeamComponent::SetUpdateFrequency(const float frequency)
 {
     mUpdateFrequency = frequency;
 }
 
 glm::vec3 ElectricBeamComponent::GetStartPoint() const
 {
-    return mStartPoint;
+    return mStartWorldPosition;
 }
 
 glm::vec3 ElectricBeamComponent::GetEndPoint() const
 {
-    return mEndPoint;
-}
-
-glm::vec3 ElectricBeamComponent::GetBeamColor() const
-{
-    return mBeamColor;
+    return mEndWorldPosition;
 }
 
 float ElectricBeamComponent::GetBeamThickness() const
@@ -157,7 +143,7 @@ float ElectricBeamComponent::GetBeamThickness() const
     return mBeamThickness;
 }
 
-int ElectricBeamComponent::GetBeamCount() const
+int32_t ElectricBeamComponent::GetBeamCount() const
 {
     return mBeamCount;
 }
@@ -174,20 +160,26 @@ float ElectricBeamComponent::GetUpdateFrequency() const
 
 void ElectricBeamComponent::RegenerateBeams()
 {
-    for (int i = 0; i < static_cast<int>(mBeamMeshes.size()); ++i) {
+    const float totalLength = glm::length(mEndWorldPosition - mStartWorldPosition);
+    if (EngineMath::FloatsNearEqual(totalLength, 0.0f)) {
+        return;
+    }
+
+    // todo: removed this feature due to missing reallocation of beam mesh buffers on the render thread
+    // mLengthSegments = static_cast<int32_t>(totalLength / 1.5f); // Example: one segment per 1.5 units of length
+
+    for (int32_t i = 0; i < static_cast<int32_t>(mBeamMeshes.size()); ++i) {
         UpdateBeamMesh(i);
     }
 }
 
-glm::vec3 ElectricBeamComponent::GetJitteredPoint(const glm::vec3& basePoint, float jitterScale) const
+glm::vec3 ElectricBeamComponent::GetJitteredPoint(const glm::vec3& basePoint) const
 {
     const float jitter1 = Random::Float() * 2.0f - 1.0f;
     const float jitter2 = Random::Float() * 2.0f - 1.0f;
     const float jitter3 = Random::Float() * 2.0f - 1.0f;
 
-    const float jitter = mJitterAmount * jitterScale;
-
-    return basePoint + glm::vec3(jitter1 * jitter, jitter2 * jitter, jitter3 * jitter);
+    return basePoint + glm::vec3(jitter1 * mJitterAmount, jitter2 * mJitterAmount, jitter3 * mJitterAmount);
 }
 
 void ElectricBeamComponent::SetRenderMode(BeamRenderMode mode)
@@ -204,20 +196,12 @@ void ElectricBeamComponent::SetRenderMode(BeamRenderMode mode)
 
     RegenerateBeams();
 
-    LogInfo("ElectricBeamComponent::SetRenderMode: Changed to ", static_cast<int>(mode));
+    LogInfo("ElectricBeamComponent::SetRenderMode: Changed to ", static_cast<int32_t>(mode));
 }
 
-void ElectricBeamComponent::SetGeometrySegments(int radialSegments, int lengthSegments)
+void ElectricBeamComponent::SetRadialSegments(const int32_t radialSegments)
 {
-    if (radialSegments < 3)
-        radialSegments = 3;
-    if (lengthSegments < 2)
-        lengthSegments = 2;
-
-    mRadialSegments = radialSegments;
-
-    mLengthSegments = lengthSegments;
-    // Recreate meshes with new segment count
+    mRadialSegments = radialSegments < 3 ? 3 : radialSegments;
     DestroyBeamMeshes();
     CreateBeamMeshes();
     RegenerateBeams();
@@ -228,12 +212,11 @@ BeamRenderMode ElectricBeamComponent::GetRenderMode() const
     return mRenderMode;
 }
 
-void ElectricBeamComponent::SetAnimationSpeed(float speed)
+void ElectricBeamComponent::SetAnimationSpeed(const float speed)
 {
-    if (speed < 0.0f)
-        speed = 0.0f;
-    mAnimationSpeed = speed;
-    LogInfo("ElectricBeamComponent::SetAnimationSpeed: ", speed);
+    const float clampedSpeed = speed < 0.0f ? 0.0f : speed;
+    mAnimationSpeed = clampedSpeed;
+    LogInfo("ElectricBeamComponent::SetAnimationSpeed: ", clampedSpeed);
 }
 
 float ElectricBeamComponent::GetAnimationSpeed() const
@@ -241,12 +224,12 @@ float ElectricBeamComponent::GetAnimationSpeed() const
     return mAnimationSpeed;
 }
 
-int ElectricBeamComponent::GetRadialSegments() const
+int32_t ElectricBeamComponent::GetRadialSegments() const
 {
     return mRadialSegments;
 }
 
-int ElectricBeamComponent::GetLengthSegments() const
+int32_t ElectricBeamComponent::GetLengthSegments() const
 {
     return mLengthSegments;
 }
@@ -256,7 +239,7 @@ void ElectricBeamComponent::CreateBeamMeshes()
     mBeamMeshes.clear();
     mBeamMeshes.reserve(mBeamCount);
 
-    for (int i = 0; i < mBeamCount; ++i) {
+    for (int32_t i = 0; i < mBeamCount; ++i) {
         mBeamMeshes.emplace_back(std::vector<BeamVertex>(), std::vector<uint32_t>());
     }
 
@@ -269,14 +252,14 @@ void ElectricBeamComponent::DestroyBeamMeshes()
     LogInfo("ElectricBeamComponent::DestroyBeamMeshes: Destroyed all beam meshes");
 }
 
-void ElectricBeamComponent::UpdateBeamMesh(int beamIndex)
+void ElectricBeamComponent::UpdateBeamMesh(const int32_t beamIndex)
 {
-    if (beamIndex < 0 || beamIndex >= static_cast<int>(mBeamMeshes.size())) {
+    if (beamIndex < 0 || beamIndex >= static_cast<int32_t>(mBeamMeshes.size())) {
         return;
     }
 
-    const glm::vec3 startPoint = mStartPoint;
-    const glm::vec3 endPoint = mEndPoint;
+    const glm::vec3 startPoint = mStartWorldPosition;
+    const glm::vec3 endPoint = mEndWorldPosition;
     const float radius = mBeamThickness * 0.1f; // Convert thickness to radius
 
     std::vector<BeamVertex> vertices;
@@ -284,15 +267,14 @@ void ElectricBeamComponent::UpdateBeamMesh(int beamIndex)
 
     if (mRenderMode == BeamRenderMode::ProceduralMesh) {
         // Simple cylindrical beam with animated jitter
-        glm::vec3 jitteredStart = GetJitteredPoint(startPoint, 0.3f);
-        glm::vec3 jitteredEnd = GetJitteredPoint(endPoint, 0.3f);
+        glm::vec3 jitteredStart = GetJitteredPoint(startPoint);
+        glm::vec3 jitteredEnd = GetJitteredPoint(endPoint);
 
         ProceduralBeamGeometry::GenerateBeamGeometry(jitteredStart, jitteredEnd, radius, mRadialSegments, vertices, indices);
     } else if (mRenderMode == BeamRenderMode::ProceduralElectric) {
         // Electric beam with animated jittered segments
-        glm::vec3 jitteredStart = GetJitteredPoint(startPoint, 0.2f);
-        glm::vec3 jitteredEnd = GetJitteredPoint(endPoint, 0.2f);
-
+        glm::vec3 jitteredStart = GetJitteredPoint(startPoint);
+        glm::vec3 jitteredEnd = GetJitteredPoint(endPoint);
         // Use animated version with continuous time parameter
         ProceduralBeamGeometry::GenerateAnimatedElectricBeamGeometry(
             jitteredStart,
@@ -320,19 +302,13 @@ void ElectricBeamComponent::SyncRenderData()
             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
             GetObjectId(),
             functionId,
-            [sceneProxyId = mSceneProxyId,
-             beamColor = mBeamColor,
-             beamCount = mBeamCount,
-             animationSpeed = mAnimationSpeed,
-             beamMeshes = mBeamMeshes](
+            [sceneProxyId = mSceneProxyId, beamCount = mBeamCount, animationSpeed = mAnimationSpeed, beamMeshes = mBeamMeshes](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
                     if (const auto& beamProxySp = std::static_pointer_cast<Graphics::Proxy::ElectricBeamSceneProxy>(
                             sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId))) {
-                        beamProxySp->SetBeamColor(beamColor);
-                        beamProxySp->SetBeamCount(beamCount);
                         beamProxySp->SetMeshData(beamMeshes);
                     }
                 }

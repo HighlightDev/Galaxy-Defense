@@ -30,10 +30,9 @@ class ElectricBeamSceneProxy : public PrimitiveSceneProxy {
         = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
 
 protected:
-    std::vector<RuntimeGeneratedMeshPoolParameters> mBeamMeshPoolParams;
-    std::vector<std::shared_ptr<Skin>> mBeamSkins;
+    RuntimeGeneratedMeshPoolParameters mBeamMeshPoolParams;
+    std::shared_ptr<Skin> mBeamSkin;
 
-    glm::vec3 mBeamColor;
     int mBeamCount;
     BeamRenderMode mRenderMode;
     int mRadialSegments;
@@ -54,8 +53,6 @@ public:
         const glm::mat4& projectionMatrix,
         ActiveBindedState& activeBindedState) override;
 
-    void SetBeamColor(const glm::vec3& color);
-    void SetBeamCount(int count);
     void SetMeshData(const std::vector<std::tuple<std::vector<BeamVertex>, std::vector<uint32_t>>>& meshData);
 
     bool IsFrustumCullTestNeeded() const override;
@@ -63,7 +60,7 @@ public:
     bool IsDeferred() const override;
 
 protected:
-    void UpdateBeamGeometry(int beamIndex);
+    void UpdateBeamGeometry();
     void CreateBeamSkins();
     void DestroyBeamSkins();
 

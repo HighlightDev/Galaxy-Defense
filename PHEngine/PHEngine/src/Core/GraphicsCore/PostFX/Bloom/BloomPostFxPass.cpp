@@ -89,7 +89,7 @@ void BloomPostFxPass::ExecutePostFx(
 
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
-        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
+        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_KEEP)
         .SetStencilFunction(GL_EQUAL, EngineConstants::eStencilValues::BLOOM, 0xFF)
         .SetStencilMask(0x00);
 
@@ -126,10 +126,6 @@ void BloomPostFxPass::ExecutePostFx(
         }
     }
 
-    // Get rid of bloom effect for neighbour pixels
-    renderState.GetStencilState().SetIsStencilTestEnabled(true);
-    renderState.BindRenderState();
-
     mBloomFramebuffer->BindResolvedBloomColorFramebuffer();
     mBloomFramebuffer->BindColor1Texture(0);
     mBloomFxShader->SetBluredColorTexture(0);
@@ -137,7 +133,6 @@ void BloomPostFxPass::ExecutePostFx(
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
 
     mBloomFxShader->StopShader();
-    renderState.GetStencilState().SetIsStencilTestEnabled(false);
     renderState.GetDepthState().SetDepthTestWriteMask(true);
     renderState.BindRenderState();
 }

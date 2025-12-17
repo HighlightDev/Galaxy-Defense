@@ -10,7 +10,6 @@ namespace EngineCore {
 struct ElectricBeamComponentData : public ComponentData {
     glm::vec3 StartPoint;
     glm::vec3 EndPoint;
-    glm::vec3 BeamColor;
     float BeamThickness;
     int BeamCount;
     float JitterAmount;
@@ -21,16 +20,14 @@ struct ElectricBeamComponentData : public ComponentData {
         const std::string& gameObjectName,
         const glm::vec3& startPoint,
         const glm::vec3& endPoint,
-        const glm::vec3& beamColor = glm::vec3(0.3f, 0.5f, 1.0f),
-        float beamThickness = 2.0f,
-        int beamCount = 3,
-        float jitterAmount = 0.2f,
-        float updateFrequency = 0.05f,
-        const std::shared_ptr<Graphics::IMaterial>& material = nullptr)
+        float beamThickness,
+        int beamCount,
+        float jitterAmount,
+        float updateFrequency,
+        const std::shared_ptr<Graphics::IMaterial>& material)
         : ComponentData(gameObjectName)
         , StartPoint(startPoint)
         , EndPoint(endPoint)
-        , BeamColor(beamColor)
         , BeamThickness(beamThickness)
         , BeamCount(beamCount)
         , JitterAmount(jitterAmount)

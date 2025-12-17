@@ -27,7 +27,7 @@ protected:
 
     float mUpdateDataResetTimeCounter;
 
-    float update_data_reset_time;
+    float mUpdateDataResetTime;
 
     float mTimeIncreaseMultiply;
 

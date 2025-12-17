@@ -628,7 +628,6 @@ _CreateAndAttachComponentToActor(actorId, "ElectricBeamComponent", Json.encode({
     gameObjectName = "ElectricBeam",
     startPoint = {x = 0, y = 0, z = 0},
     endPoint = {x = 10, y = 0, z = 0},
-    beamColor = {r = 0.3, g = 0.5, b = 1.0},
     beamThickness = 2.0,
     beamCount = 3,
     jitterAmount = 0.2,

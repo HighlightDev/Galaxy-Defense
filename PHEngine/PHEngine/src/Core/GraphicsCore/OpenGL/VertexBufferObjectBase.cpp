@@ -50,7 +50,10 @@ std::string VertexBufferObjectBase::GetAttribArrayIndexName() const
 
 void VertexBufferObjectBase::BufferSubData(const size_t offset, const size_t size, const void* data) const
 {
-    ext_assert(m_allocatedBufferSize >= size, "Buffer size exceeds allocated buffer size");
+    ext_assert(
+        m_allocatedBufferSize >= size,
+        "Buffer size exceeds allocated buffer size, available allocated: " + std::to_string(m_allocatedBufferSize)
+            + ", requested size: " + std::to_string(size));
     glBindBuffer(m_bufferTarget, m_descriptor);
     glBufferSubData(m_bufferTarget, offset, size, data);
 }

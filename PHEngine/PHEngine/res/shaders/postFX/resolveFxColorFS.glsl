@@ -16,8 +16,6 @@ vec3 resolveHdrAndBloom()
     const float gamma = 2.2;
     vec3 hdrColor = texture(sceneColorTexture, vs_out_texCoords).rgb;
     vec3 bloomColor = texture(bloomColorTexture, vs_out_texCoords).rgb;
-    // also gamma correct while we're at it
-    bloomColor = pow(bloomColor, vec3(1.0 / gamma));
     hdrColor += bloomColor;
     // tone mapping
     return (vec3(1.0) - exp(-hdrColor * HDR_EXPOSURE));
@@ -30,8 +28,6 @@ vec3 resolveBloom()
     const float gamma = 2.2;
     vec3 sceneColor = texture(sceneColorTexture, vs_out_texCoords).rgb;
     vec3 bloomColor = texture(bloomColorTexture, vs_out_texCoords).rgb;
-    // also gamma correct while we're at it
-    bloomColor = pow(bloomColor, vec3(1.0 / gamma));
     sceneColor += bloomColor;
     return sceneColor;
 }

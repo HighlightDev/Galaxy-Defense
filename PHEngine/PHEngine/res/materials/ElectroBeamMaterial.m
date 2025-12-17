@@ -1,12 +1,20 @@
 <general>
-	name: "TestElectro material"
-	shader: "TestElectroMaterial.glsl"
+	name: "ElectroBeamMaterial"
+	shader: "ElectroBeamMaterial.glsl"
 	material_type: "dynamic"
 </general>
 <properties>
 	<property>
 		name: "noise"
 		type: "texture"
+	</property>
+	<property>
+		name: "beamMainColor"
+		type: "vec3"
+	</property>
+		<property>
+		name: "beamGlowColor"
+		type: "vec3"
 	</property>
 	<dynamic_property>
 		name: "timeSec"

@@ -1441,10 +1441,7 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
 }
 
 void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
-    const int32_t lightSceneProxyIndex,
-    const int32_t creatorObjectId,
-    const uint64_t functionId,
-    const glm::mat4& newworldMatrix)
+    const int32_t lightSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const glm::mat4& newworldMatrix)
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
         const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);

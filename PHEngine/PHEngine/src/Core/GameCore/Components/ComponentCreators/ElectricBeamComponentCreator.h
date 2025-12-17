@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/ComponentData/ElectricBeamComponentData.h"
 #include "Core/GraphicsCore/RenderData/MeshRenderData.h"
+#include "IComponentCreatable.h"
 
 using namespace Graphics::Data;
 
@@ -23,9 +25,8 @@ public:
             = std::make_shared<ComponentInstantiationType>(mData->EngineObjectName, MeshRenderData("", materialProxy, false));
 
         // Set properties from data
-        component->SetStartPoint(mData->StartPoint);
-        component->SetEndPoint(mData->EndPoint);
-        component->SetBeamColor(mData->BeamColor);
+        component->SetStartWorldPosition(mData->StartPoint);
+        component->SetEndWorldPosition(mData->EndPoint);
         component->SetBeamThickness(mData->BeamThickness);
         component->SetBeamCount(mData->BeamCount);
         component->SetJitterAmount(mData->JitterAmount);

@@ -26,7 +26,7 @@ SkeletalMeshComponent::SkeletalMeshComponent(
     , mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() + meshComponentData->m_luaScriptPath)
     , mLuaInstance(std::make_unique<LuaWrapper>())
     , mUpdateDataResetTimeCounter(0.0f)
-    , update_data_reset_time(0.1f)
+    , mUpdateDataResetTime(0.1f)
     , mTimeIncreaseMultiply(1.0f)
     , LuaScriptName(meshComponentData->m_luaScriptPath)
     , SrcAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "SrcAnimTime"))
@@ -54,7 +54,7 @@ void SkeletalMeshComponent::OnSceneOwnerInitialized()
 {
     PrimitiveComponent::OnSceneOwnerInitialized();
 
-    if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath)) {
+    if (not LuaScriptName.empty() && mLuaInstance->ExecuteScript(mLuaScriptAbsPath)) {
         mTimeIncreaseMultiply = GetLuaGlobalVariable::Value<float>(*mLuaInstance.get(), "AnimationTimeMultiply", -1);
     }
 }
@@ -99,8 +99,8 @@ void SkeletalMeshComponent::Tick(const float deltaTimeSec)
 {
     SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTimeSec * mTimeIncreaseMultiply));
     mUpdateDataResetTimeCounter += deltaTimeSec;
-    const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
-    mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
+    const bool bUpdateData = mUpdateDataResetTimeCounter >= mUpdateDataResetTime;
+    mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, mUpdateDataResetTime);
 
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && (bUpdateData || bIsRenderDataDirty)) {
         SyncDataWithRenderThread();

@@ -73,9 +73,7 @@ void UiImage::ReallocateTexture(const bool updateRenderThreadData, const bool up
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 const auto& texturePool = TexturePool::GetInstance();
                 if (mTexture) {
-                    ext_assert(
-                        texturePool->TryToFreeMemory(mTexture),
-                        "UiImage::ReallocateTexture: Failed to free previous texture memory");
+                    texturePool->TryToFreeMemory(mTexture);
                 }
                 mTexture = texturePool->GetOrAllocateResource(mTextureSrc);
 
