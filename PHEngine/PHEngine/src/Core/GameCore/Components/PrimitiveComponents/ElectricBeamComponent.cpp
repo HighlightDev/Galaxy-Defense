@@ -14,8 +14,12 @@ using namespace Graphics::Renderer;
 
 namespace EngineCore {
 
-ElectricBeamComponent::ElectricBeamComponent(const std::string& gameObjectName, const MeshRenderData& renderData)
+ElectricBeamComponent::ElectricBeamComponent(
+    const std::string& gameObjectName,
+    const MeshRenderData& renderData,
+    const RuntimeGeneratedMeshPoolParameters& beamMeshPoolParams)
     : PrimitiveComponent(gameObjectName, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f))
+    , mBeamMeshPoolParams(beamMeshPoolParams)
     , mBeamMeshes()
     , mStartWorldPosition(glm::vec3(0.0f))
     , mEndWorldPosition(glm::vec3(10.0f, 0.0f, 0.0f))
@@ -23,7 +27,6 @@ ElectricBeamComponent::ElectricBeamComponent(const std::string& gameObjectName, 
     , mBeamCount(3)
     , mJitterAmount(0.2f)
     , mUpdateFrequency(0.05f)
-    , mRenderMode(BeamRenderMode::ProceduralElectric)
     , mRadialSegments(8)
     , mLengthSegments(20)
     , mAnimationTime(0.0f)
@@ -53,17 +56,16 @@ void ElectricBeamComponent::Tick(const float deltaTime)
 {
     Component::Tick(deltaTime);
 
-    // Update animation time continuously for smooth procedural animation
     mAnimationTime += deltaTime;
-
     mTimeSinceLastUpdate += deltaTime;
 
     if (not EngineMath::FloatsNearEqual(mUpdateFrequency, 0.0f) && mTimeSinceLastUpdate >= mUpdateFrequency) {
-        RegenerateBeams();
+        mIsRenderDataDirty = true;
         mTimeSinceLastUpdate = 0.0f;
     }
 
     if (mIsRenderDataDirty) {
+        RegenerateBeams();
         SyncRenderData();
         mIsRenderDataDirty = false;
     }
@@ -72,16 +74,13 @@ void ElectricBeamComponent::Tick(const float deltaTime)
 void ElectricBeamComponent::OnRegistered()
 {
     LogInfo("ElectricBeamComponent::OnRegistered: ", GetEngineObjectName());
-
     CreateBeamMeshes();
-
-    RegenerateBeams();
+    mIsRenderDataDirty = true;
 }
 
 void ElectricBeamComponent::OnUnregistered()
 {
     LogInfo("ElectricBeamComponent::OnUnregistered: ", GetEngineObjectName());
-
     DestroyBeamMeshes();
 }
 
@@ -89,14 +88,12 @@ void ElectricBeamComponent::SetStartWorldPosition(const glm::vec3& point)
 {
     mStartWorldPosition = point;
     mIsRenderDataDirty = true;
-    RegenerateBeams();
 }
 
 void ElectricBeamComponent::SetEndWorldPosition(const glm::vec3& point)
 {
     mEndWorldPosition = point;
     mIsRenderDataDirty = true;
-    RegenerateBeams();
 }
 
 void ElectricBeamComponent::SetBeamThickness(float thickness)
@@ -114,8 +111,6 @@ void ElectricBeamComponent::SetBeamCount(const int32_t count)
 
     DestroyBeamMeshes();
     CreateBeamMeshes();
-
-    RegenerateBeams();
 }
 
 void ElectricBeamComponent::SetJitterAmount(const float amount)
@@ -182,34 +177,12 @@ glm::vec3 ElectricBeamComponent::GetJitteredPoint(const glm::vec3& basePoint) co
     return basePoint + glm::vec3(jitter1 * mJitterAmount, jitter2 * mJitterAmount, jitter3 * mJitterAmount);
 }
 
-void ElectricBeamComponent::SetRenderMode(BeamRenderMode mode)
-{
-    if (mRenderMode == mode) {
-        return;
-    }
-
-    DestroyBeamMeshes();
-
-    mRenderMode = mode;
-
-    CreateBeamMeshes();
-
-    RegenerateBeams();
-
-    LogInfo("ElectricBeamComponent::SetRenderMode: Changed to ", static_cast<int32_t>(mode));
-}
-
 void ElectricBeamComponent::SetRadialSegments(const int32_t radialSegments)
 {
     mRadialSegments = radialSegments < 3 ? 3 : radialSegments;
     DestroyBeamMeshes();
     CreateBeamMeshes();
-    RegenerateBeams();
-}
-
-BeamRenderMode ElectricBeamComponent::GetRenderMode() const
-{
-    return mRenderMode;
+    mIsRenderDataDirty = true;
 }
 
 void ElectricBeamComponent::SetAnimationSpeed(const float speed)
@@ -232,6 +205,11 @@ int32_t ElectricBeamComponent::GetRadialSegments() const
 int32_t ElectricBeamComponent::GetLengthSegments() const
 {
     return mLengthSegments;
+}
+
+RuntimeGeneratedMeshPoolParameters ElectricBeamComponent::GetRuntimeGeneratedMeshPoolParameters() const
+{
+    return mBeamMeshPoolParams;
 }
 
 void ElectricBeamComponent::CreateBeamMeshes()
@@ -265,29 +243,21 @@ void ElectricBeamComponent::UpdateBeamMesh(const int32_t beamIndex)
     std::vector<BeamVertex> vertices;
     std::vector<uint32_t> indices;
 
-    if (mRenderMode == BeamRenderMode::ProceduralMesh) {
-        // Simple cylindrical beam with animated jitter
-        glm::vec3 jitteredStart = GetJitteredPoint(startPoint);
-        glm::vec3 jitteredEnd = GetJitteredPoint(endPoint);
-
-        ProceduralBeamGeometry::GenerateBeamGeometry(jitteredStart, jitteredEnd, radius, mRadialSegments, vertices, indices);
-    } else if (mRenderMode == BeamRenderMode::ProceduralElectric) {
-        // Electric beam with animated jittered segments
-        glm::vec3 jitteredStart = GetJitteredPoint(startPoint);
-        glm::vec3 jitteredEnd = GetJitteredPoint(endPoint);
-        // Use animated version with continuous time parameter
-        ProceduralBeamGeometry::GenerateAnimatedElectricBeamGeometry(
-            jitteredStart,
-            jitteredEnd,
-            radius,
-            mRadialSegments,
-            mLengthSegments,
-            mJitterAmount,
-            mAnimationTime + beamIndex * 0.5f, // Offset animation time per beam
-            mAnimationSpeed,
-            vertices,
-            indices);
-    }
+    // Electric beam with animated jittered segments
+    glm::vec3 jitteredStart = GetJitteredPoint(startPoint);
+    glm::vec3 jitteredEnd = GetJitteredPoint(endPoint);
+    // Use animated version with continuous time parameter
+    ProceduralBeamGeometry::GenerateAnimatedElectricBeamGeometry(
+        jitteredStart,
+        jitteredEnd,
+        radius,
+        mRadialSegments,
+        mLengthSegments,
+        mJitterAmount,
+        mAnimationTime + beamIndex * 0.5f, // Offset animation time per beam
+        mAnimationSpeed,
+        vertices,
+        indices);
 
     mBeamMeshes[beamIndex] = std::make_tuple(vertices, indices);
 

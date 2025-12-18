@@ -34,7 +34,6 @@ protected:
     std::shared_ptr<Skin> mBeamSkin;
 
     int mBeamCount;
-    BeamRenderMode mRenderMode;
     int mRadialSegments;
     int mLengthSegments;
 

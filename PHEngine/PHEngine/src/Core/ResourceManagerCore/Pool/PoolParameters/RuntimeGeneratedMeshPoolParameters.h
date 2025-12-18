@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
 
 #include <stdint.h>
@@ -25,8 +26,8 @@ struct RuntimeGeneratedMeshPoolParameters {
     {
     }
 
-    RuntimeGeneratedMeshPoolParameters()
-        : mComponentName()
+    explicit RuntimeGeneratedMeshPoolParameters(const std::string& componentName)
+        : mComponentName(componentName)
         , mMaxVerticesCount(0)
         , mMaxIndicesCount(0)
     {

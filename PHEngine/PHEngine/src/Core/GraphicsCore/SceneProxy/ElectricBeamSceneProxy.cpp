@@ -23,8 +23,8 @@ namespace Proxy {
 
 ElectricBeamSceneProxy::ElectricBeamSceneProxy(const ElectricBeamComponent* component)
     : PrimitiveSceneProxy(component, component->GetRenderData().mMaterialProxy)
+    , mBeamMeshPoolParams(component->GetRuntimeGeneratedMeshPoolParameters())
     , mBeamCount(component->GetBeamCount())
-    , mRenderMode(component->GetRenderMode())
     , mRadialSegments(component->GetRadialSegments())
     , mLengthSegments(component->GetLengthSegments())
 {

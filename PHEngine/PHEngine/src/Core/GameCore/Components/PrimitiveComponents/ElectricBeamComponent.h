@@ -4,6 +4,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/EngineObjectProperty.h"
 #include "Core/GraphicsCore/RenderData/MeshRenderData.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/RuntimeGeneratedMeshPoolParameters.h"
 
 #include <glm/vec3.hpp>
 
@@ -11,13 +12,9 @@
 #include <vector>
 
 using namespace Graphics::Data;
+using namespace Resources;
 
 namespace EngineCore {
-
-enum class BeamRenderMode {
-    ProceduralMesh, // Use procedural geometry (more realistic, volumetric)
-    ProceduralElectric // Use procedural geometry with jittered segments
-};
 
 class StaticMeshComponent;
 struct BeamVertex;
@@ -33,6 +30,8 @@ private:
     constexpr static int32_t c_maxBeamsCount = 20;
     constexpr static int32_t c_minBeamsCount = 1;
 
+    RuntimeGeneratedMeshPoolParameters mBeamMeshPoolParams;
+
     std::vector<std::tuple<std::vector<BeamVertex>, std::vector<uint32_t>>> mBeamMeshes;
 
     glm::vec3 mStartWorldPosition;
@@ -42,7 +41,6 @@ private:
     float mJitterAmount;
     float mUpdateFrequency;
 
-    BeamRenderMode mRenderMode;
     int32_t mRadialSegments;
     int32_t mLengthSegments;
     float mAnimationTime;
@@ -55,7 +53,10 @@ private:
     const MeshRenderData mRenderData;
 
 public:
-    ElectricBeamComponent(const std::string& gameObjectName, const MeshRenderData& renderData);
+    ElectricBeamComponent(
+        const std::string& gameObjectName,
+        const MeshRenderData& renderData,
+        const RuntimeGeneratedMeshPoolParameters& mBeamMeshPoolParams);
 
     ~ElectricBeamComponent() override;
 
@@ -76,16 +77,15 @@ public:
     void SetUpdateFrequency(const float frequency);
     void SetRadialSegments(const int32_t radialSegments);
     void SetAnimationSpeed(const float speed);
-    void SetRenderMode(BeamRenderMode mode);
 
     // Getters
+    RuntimeGeneratedMeshPoolParameters GetRuntimeGeneratedMeshPoolParameters() const;
     glm::vec3 GetStartPoint() const;
     glm::vec3 GetEndPoint() const;
     float GetBeamThickness() const;
     int32_t GetBeamCount() const;
     float GetJitterAmount() const;
     float GetUpdateFrequency() const;
-    BeamRenderMode GetRenderMode() const;
     float GetAnimationSpeed() const;
     int32_t GetRadialSegments() const;
     int32_t GetLengthSegments() const;

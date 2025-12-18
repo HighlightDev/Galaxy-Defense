@@ -3,9 +3,11 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/ComponentData/ElectricBeamComponentData.h"
 #include "Core/GraphicsCore/RenderData/MeshRenderData.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/RuntimeGeneratedMeshPoolParameters.h"
 #include "IComponentCreatable.h"
 
 using namespace Graphics::Data;
+using namespace Resources;
 
 namespace EngineCore {
 class Scene;
@@ -21,8 +23,10 @@ public:
         const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
         ext_assert(materialProxy, "ElectricBeamComponentCreator::CreateComponent: materialProxy is null");
 
-        auto component
-            = std::make_shared<ComponentInstantiationType>(mData->EngineObjectName, MeshRenderData("", materialProxy, false));
+        auto component = std::make_shared<ComponentInstantiationType>(
+            mData->EngineObjectName,
+            MeshRenderData("", materialProxy, false),
+            RuntimeGeneratedMeshPoolParameters(mData->EngineObjectName, 0, 0));
 
         // Set properties from data
         component->SetStartWorldPosition(mData->StartPoint);
