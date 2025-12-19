@@ -3,7 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/SphereCollisionTestWithFilterAdapter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
@@ -59,11 +59,6 @@ bool FreezingRayActor::IsInsideLevel(const BoundingBox3D& boundingBox) const
         || EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mFreezingLineBegin);
 }
 
-void FreezingRayActor::SetFreezingRayHitRadius(const float radius)
-{
-    mFreezingRayHitRadius = radius;
-}
-
 void FreezingRayActor::SendShootRayCollisionEvent(
     const std::shared_ptr<Actor>& collidedActor, const eCollisionActionType collisionActionType)
 {
@@ -110,8 +105,9 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
         if (const auto& actorWhoSpawnedMeSp = mActorWhoSpawnedMeWp.lock()) {
             mFreezingLineBegin = actorWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
             const auto& ownerPhysComp = actorWhoSpawnedMeSp->GetPhysicsComponent();
+            const auto freezingRayHitRadius = actorWhoSpawnedMeSp->GetSpaceStationLevel()->GetShootRadius();
             auto sphereCollisionTest = SphereCollisionTestWithFilterAdapter(
-                mFreezingRayHitRadius, CreateExcludedCollisionComponentsVector(ownerPhysComp));
+                freezingRayHitRadius, CreateExcludedCollisionComponentsVector(ownerPhysComp));
             sphereCollisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), mFreezingLineBegin);
 
             if (sphereCollisionTest.HasHit()) {
@@ -187,8 +183,8 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
         }
     }
 
-    mLineComponent->SetLineBeginWorldSpacePosition(mFreezingLineBegin);
-    mLineComponent->SetLineEndWorldSpacePosition(mFreezingLineEnd);
+    mLineComponent->SetStartWorldPosition(mFreezingLineBegin);
+    mLineComponent->SetEndWorldPosition(mFreezingLineEnd);
 }
 
 void FreezingRayActor::TriggerSpawn(
@@ -196,7 +192,7 @@ void FreezingRayActor::TriggerSpawn(
     const glm::vec3& direction,
     const float yawDegrees,
     const eDamageDealerType ownerType,
-    const std::shared_ptr<Actor>& spawnerActor)
+    const std::shared_ptr<SpaceStationActor>& spawnerActor)
 {
     LogInfo("FreezingRayActor::TriggerSpawn");
     mDamageDealerType = ownerType;
@@ -229,7 +225,7 @@ std::shared_ptr<MissileExplosionVisitorBase> FreezingRayActor::CreateMissileExpl
     return std::make_shared<FreezingRayExplosionVisitor>(std::static_pointer_cast<FreezingRayActor>(shared_from_this()));
 }
 
-void FreezingRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>& lineComponent)
+void FreezingRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& lineComponent)
 {
     mLineComponent = lineComponent;
 }
@@ -238,7 +234,7 @@ void FreezingRayActor::DropState()
 {
 }
 
-std::weak_ptr<Actor> FreezingRayActor::GetActorWhoSpawnedMeWp() const
+std::weak_ptr<SpaceStationActor> FreezingRayActor::GetActorWhoSpawnedMeWp() const
 {
     return mActorWhoSpawnedMeWp;
 }

@@ -502,7 +502,7 @@ void CombatController::Tick(const float deltaTimeSec)
 }
 
 void CombatController::LaunchMisile(
-    const std::shared_ptr<Actor>& missileOwner,
+    const std::shared_ptr<SpaceStationActor>& missileOwner,
     const glm::vec3& missileStartPosition,
     const glm::vec3& missileDirection,
     const eMissileType missileType)

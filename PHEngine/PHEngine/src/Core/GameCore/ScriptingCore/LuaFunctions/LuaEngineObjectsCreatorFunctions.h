@@ -63,12 +63,12 @@ private:
                         glm::vec3 /*root component scale*/,
                         std::string /*json params string*/>& actorData);
     /* -------------------  Create component and attach to actor ----------------------------*/
-    void CreateAndAttachComponentToActor(
+    int32_t CreateAndAttachComponentToActor(
         const std::tuple<int32_t /*actorObjectId*/, std::string /*componentType*/, std::string /*component data json*/>&
             componentData);
 
     /* -------------------Create Planar Reflection Component ----------------------------*/
-    void CreatePlanarReflectionComponent(const std::tuple<std::string /*component data json*/>& componentData);
+    int32_t CreatePlanarReflectionComponent(const std::tuple<std::string /*component data json*/>& componentData);
 
     /* -------------------  Create third person camera ----------------------------*/
     void CreateThirdPersonCamera(

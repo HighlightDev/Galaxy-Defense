@@ -96,7 +96,7 @@ void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper& luaWr
             "_CreateActor");
     LuaCallbackBindingHelper<
         Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateAndAttachComponentToActor"),
-        void(int32_t /*actorObjectId*/, std::string /*componentType*/, std::string /*component data json*/)>::
+        int32_t(int32_t /*actorObjectId*/, std::string /*componentType*/, std::string /*component data json*/)>::
         Bind(
             luaWrapper,
             mOwnerPtr,
@@ -105,7 +105,7 @@ void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper& luaWr
 
     LuaCallbackBindingHelper<
         Hash64_CT("LuaEngineObjectsCreatorFunctions::CreatePlanarReflectionComponent"),
-        void(std::string /*component data json*/)>::
+        int32_t(std::string /*component data json*/)>::
         Bind(
             luaWrapper,
             mOwnerPtr,
@@ -259,17 +259,18 @@ int32_t LuaEngineObjectsCreatorFunctions::CreateActor(const std::tuple<
 }
 
 /* -------------------  Create component and attach to actor ----------------------------*/
-void LuaEngineObjectsCreatorFunctions::CreateAndAttachComponentToActor(
+int32_t LuaEngineObjectsCreatorFunctions::CreateAndAttachComponentToActor(
     const std::tuple<int32_t /*actorObjectId*/, std::string /*componentType*/, std::string /*component data json*/>&
         componentData)
 {
-    mEngineObjectCreator->CreateComponent(std::get<0>(componentData), std::get<1>(componentData), std::get<2>(componentData));
+    return mEngineObjectCreator->CreateComponent(
+        std::get<0>(componentData), std::get<1>(componentData), std::get<2>(componentData));
 }
 
-void LuaEngineObjectsCreatorFunctions::CreatePlanarReflectionComponent(
+int32_t LuaEngineObjectsCreatorFunctions::CreatePlanarReflectionComponent(
     const std::tuple<std::string /*component data json*/>& componentData)
 {
-    mEngineObjectCreator->CreatePlanarReflectionComponent(std::get<0>(componentData));
+    return mEngineObjectCreator->CreatePlanarReflectionComponent(std::get<0>(componentData));
 }
 
 /* -------------------  Create first person camera ----------------------------*/

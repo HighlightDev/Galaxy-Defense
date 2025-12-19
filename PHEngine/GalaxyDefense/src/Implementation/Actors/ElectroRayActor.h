@@ -13,7 +13,8 @@
 using namespace EngineCore;
 
 namespace EngineCore {
-class RuntimeGeneratedLineComponent;
+class ElectricBeamComponent;
+class SpaceStationActor;
 class Actor;
 } // namespace EngineCore
 
@@ -22,8 +23,8 @@ class MissileExplosionVisitorBase;
 class CombatActorsPoolHandler;
 
 class ElectroRayActor : public MissileActor {
-    std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> mLineComponent;
-    std::weak_ptr<::EngineCore::Actor> mSpaceshipWhoSpawnedMeWp;
+    std::shared_ptr<::EngineCore::ElectricBeamComponent> mLineComponent;
+    std::weak_ptr<SpaceStationActor> mSpaceshipWhoSpawnedMeWp;
 
     glm::vec3 mElectroLineDirection;
     glm::vec3 mElectroLineBegin;
@@ -55,7 +56,7 @@ public:
         const glm::vec3& direction,
         const float yawDegrees,
         const eDamageDealerType ownerType,
-        const std::shared_ptr<Actor>& spawnerActor) override;
+        const std::shared_ptr<SpaceStationActor>& spawnerActor) override;
 
     void TriggerExplosion() override;
 
@@ -63,7 +64,7 @@ public:
 
     void TriggerDisabled() override;
 
-    void SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>& lineComponent);
+    void SetLineComponent(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& lineComponent);
 
     void SetElectroLineOriginSpeed(const float speed);
 

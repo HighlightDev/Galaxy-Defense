@@ -2,9 +2,9 @@
 
 #include "Core/AudioCore/SoundSource.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
@@ -38,24 +38,21 @@ std::shared_ptr<MissileActor> ElectroRayChainFactory::CreateMissile(
         = std::make_shared<ElectroRayChainActor>("a_electroRayChain_" + rayChainIndexStr, rootComponent, combatActorsPoolHandler);
     scene->AddActor(a_electroRayChain);
 
-    MaterialParser materialParser;
-    const std::shared_ptr<IMaterial>& electro_material = materialParser.ParseMaterialDescriptor("ElectroRayMaterial.m");
-    scene->RegisterMaterialInstance(electro_material);
     const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise_128x128.png");
+    MaterialParser materialParser;
+    const std::shared_ptr<IMaterial>& electroRay_material = materialParser.ParseMaterialDescriptor("ElectroBeamMaterial.m");
+    scene->RegisterMaterialInstance(electroRay_material);
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "noise", noiseTex);
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamGlowColor", glm::vec3(0.8, 0.2, 0.8));
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamMainColor", glm::vec3(0.8, 1.0, 0.2));
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, scene, "GT_DeltaSec", "gt_timeSec");
 
-    MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "noise", noiseTex);
-    MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "rayColor", glm::vec3(1.0, 1.0, 0.0));
-    MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "rayWidthCoef", 1.0f);
-    MaterialPropertySetter::SetMaterialPropertyValue(electro_material, scene, "GT_DeltaSec", "gt_timeSec");
-    MaterialPropertySetter::SetMaterialPropertyValue(electro_material, a_electroRayChain, "p_opacity", "b_opacity");
-
-    const auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(
-        "c_rayChainRuntineLineMesh_" + rayChainIndexStr, 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", electro_material);
-    const auto& meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
-    const auto& c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(
-        scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-    c_mesh->SetLineWidth(12.0f);
-    c_mesh->SetSortOrderValue(100);
+    const auto d_mesh = std::make_shared<ElectricBeamComponentData>(
+        "c_rayChainElectricLineMesh_" + rayChainIndexStr, glm::vec3(), glm::vec3(), 1.0f, 2, 0.7f, 0.05f, electroRay_material);
+    const std::shared_ptr<IComponentCreatable>& meshComponentCreator
+        = std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>();
+    const auto& c_mesh
+        = std::static_pointer_cast<ElectricBeamComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
 
     TweenerParser tweenerParser;
     const auto& rayChainTweener = tweenerParser.ParseTweenerDescriptor("electroRayChain.tween");

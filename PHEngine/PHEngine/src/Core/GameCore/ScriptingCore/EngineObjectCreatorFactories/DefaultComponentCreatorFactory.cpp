@@ -55,7 +55,7 @@ using namespace EngineCore;
 
 namespace EngineCore {
 namespace Scripts {
-void DefaultComponentCreatorFactory::CreateComponent(
+int32_t DefaultComponentCreatorFactory::CreateComponent(
     const std::weak_ptr<::EngineCore::Scene>& sceneWp,
     const int32_t actorObjectId,
     const std::string& componentType,
@@ -88,10 +88,12 @@ void DefaultComponentCreatorFactory::CreateComponent(
     ext_assert(creatorsMap.count(componentType), "Unknown component type: " + componentType);
 
     const auto componentDataSp = CreateComponentData(sceneSp, componentType, componentDataJsonStr);
-    actor->AddComponent(sceneSp->CreateComponent_GameThread(creatorsMap.at(componentType), componentDataSp));
+    const auto& component = sceneSp->CreateComponent_GameThread(creatorsMap.at(componentType), componentDataSp);
+    actor->AddComponent(component);
+    return component->GetObjectId();
 }
 
-void DefaultComponentCreatorFactory::CreatePlanarReflectionComponent(
+int32_t DefaultComponentCreatorFactory::CreatePlanarReflectionComponent(
     const std::weak_ptr<::EngineCore::Scene>& sceneWp, const std::string& componentDataJsonStr) const
 {
     const auto& sceneSp = sceneWp.lock();
@@ -117,7 +119,8 @@ void DefaultComponentCreatorFactory::CreatePlanarReflectionComponent(
         ownerCameraSp,
         ::Graphics::ViewPortInfo(viewPortX, viewPortY, viewPortWidth, viewPortHeight));
 
-    sceneSp->CreateComponent_GameThread(componentCreatorSp, componentData);
+    const auto& component = sceneSp->CreateComponent_GameThread(componentCreatorSp, componentData);
+    return component->GetObjectId();
 }
 
 std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentData(

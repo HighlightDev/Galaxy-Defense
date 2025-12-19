@@ -3,11 +3,12 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/RayCastWithFilterAdapter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h"
@@ -130,8 +131,8 @@ void ElectroRayActor::Tick(const float deltaTimeSec)
         }
     }
 
-    mLineComponent->SetLineBeginWorldSpacePosition(mElectroLineBegin);
-    mLineComponent->SetLineEndWorldSpacePosition(mElectroLineEnd);
+    mLineComponent->SetStartWorldPosition(mElectroLineBegin);
+    mLineComponent->SetEndWorldPosition(mElectroLineEnd);
 }
 
 void ElectroRayActor::TriggerSpawn(
@@ -139,7 +140,7 @@ void ElectroRayActor::TriggerSpawn(
     const glm::vec3& direction,
     const float yawDegrees,
     const eDamageDealerType ownerType,
-    const std::shared_ptr<Actor>& spawnerActor)
+    const std::shared_ptr<SpaceStationActor>& spawnerActor)
 {
     mDamageDealerType = ownerType;
     mSpaceshipWhoSpawnedMeWp = spawnerActor;
@@ -178,7 +179,7 @@ std::shared_ptr<MissileExplosionVisitorBase> ElectroRayActor::CreateMissileExplo
     return std::make_shared<ElectroRayExplosionVisitor>(std::static_pointer_cast<ElectroRayActor>(shared_from_this()));
 }
 
-void ElectroRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>& lineComponent)
+void ElectroRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& lineComponent)
 {
     mLineComponent = lineComponent;
 }

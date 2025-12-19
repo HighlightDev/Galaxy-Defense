@@ -3,10 +3,11 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 #include <utility>
@@ -65,8 +66,8 @@ void ElectroRayChainActor::Tick(const float deltaTimeSec)
     const float endLineDistance = t * distance;
     const auto& finalDestination = mElectroLineBegin + (nToEndLineVec * endLineDistance);
 
-    mLineComponent->SetLineBeginWorldSpacePosition(mElectroLineBegin);
-    mLineComponent->SetLineEndWorldSpacePosition(finalDestination);
+    mLineComponent->SetStartWorldPosition(mElectroLineBegin);
+    mLineComponent->SetEndWorldPosition(finalDestination);
 }
 
 bool ElectroRayChainActor::IsInsideLevel(const BoundingBox3D& boundingBox) const
@@ -79,8 +80,9 @@ void ElectroRayChainActor::TriggerSpawn(
     const glm::vec3& direction,
     const float yawDegrees,
     const eDamageDealerType ownerType,
-    const std::shared_ptr<Actor>& spawnerActor)
+    const std::shared_ptr<SpaceStationActor>& spawnerActor)
 {
+    ext_assert(spawnerActor == nullptr, "ElectroRayChainActor spawnerActor should be null");
     mDamageDealerType = ownerType;
     DropState();
     SetIsEnabled(true);
@@ -121,7 +123,7 @@ void ElectroRayChainActor::SetEndLineSpaceship(const std::weak_ptr<Actor>& endLi
     mEndLineSpaceship = endLineSpaceship;
 }
 
-void ElectroRayChainActor::SetLineComponent(const std::shared_ptr<RuntimeGeneratedLineComponent>& lineComponent)
+void ElectroRayChainActor::SetLineComponent(const std::shared_ptr<ElectricBeamComponent>& lineComponent)
 {
     mLineComponent = lineComponent;
 }

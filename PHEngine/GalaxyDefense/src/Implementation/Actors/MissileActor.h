@@ -14,6 +14,7 @@ using namespace EngineCore;
 namespace Game {
 class MissileExplosionVisitorBase;
 class CombatActorsPoolHandler;
+class SpaceStationActor;
 
 enum class eMissileActivityState { IDLE, ACTIVE, EXPLOSION, EXPLOSION_FINISHED, OUT_OF_LEVEL };
 
@@ -40,7 +41,7 @@ public:
         const glm::vec3& direction,
         const float yawDegrees,
         const eDamageDealerType ownerType,
-        const std::shared_ptr<Actor>& spawnerActor);
+        const std::shared_ptr<SpaceStationActor>& spawnerActor);
 
     virtual void TriggerExplosion();
 

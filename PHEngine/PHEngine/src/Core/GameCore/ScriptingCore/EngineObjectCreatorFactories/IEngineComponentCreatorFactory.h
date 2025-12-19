@@ -11,13 +11,13 @@ class Scene;
 namespace Scripts {
 class IEngineComponentCreatorFactory {
 public:
-    virtual void CreateComponent(
+    virtual int32_t CreateComponent(
         const std::weak_ptr<::EngineCore::Scene>& sceneWp,
         const int32_t actorObjectId,
         const std::string& componentType,
         const std::string& componentDataJsonStr) const = 0;
 
-    virtual void CreatePlanarReflectionComponent(
+    virtual int32_t CreatePlanarReflectionComponent(
         const std::weak_ptr<::EngineCore::Scene>& sceneWp, const std::string& componentDataJsonStr) const = 0;
 };
 } // namespace Scripts

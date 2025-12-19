@@ -5,6 +5,7 @@
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h"
 
@@ -65,7 +66,7 @@ void BlackHoleMissileActor::OnTweenStateChanged(const std::string& stateName)
     } else if ("s_FirstPhaseActiveCombat" == stateName) {
     } else if ("s_FirstPhaseExplosion" == stateName) {
         mExplosionSecondPhaseActor->TriggerSpawn(
-            mCombatActivePhaseActor->GetRootComponent()->GetTranslation(), {}, 0.0f, mDamageDealerType, shared_from_this());
+            mCombatActivePhaseActor->GetRootComponent()->GetTranslation(), {}, 0.0f, mDamageDealerType, mSpawnerActor);
         const auto c_particle = mExplosionSecondPhaseActor->GetComponentsByType<ParticleSystemComponent>().back();
         c_particle->EmitParticles();
         TriggerLifecycle_SecondPhaseExplosion();
@@ -113,7 +114,7 @@ void BlackHoleMissileActor::TriggerSpawn(
     const glm::vec3& direction,
     const float yawDegrees,
     const eDamageDealerType ownerType,
-    const std::shared_ptr<Actor>& spawnerActor)
+    const std::shared_ptr<SpaceStationActor>& spawnerActor)
 {
     mDamageDealerType = ownerType;
     mActivityState = eMissileActivityState::ACTIVE;
@@ -123,6 +124,7 @@ void BlackHoleMissileActor::TriggerSpawn(
         glm::vec3(existingRotation.x, yawDegrees, existingRotation.z));
     mCombatActivePhaseActor->GetMovementComponent()->SetDirection(direction);
     mCombatActivePhaseActor->GetMovementComponent()->Teleport(position);
+    mSpawnerActor = spawnerActor;
 
     TriggerLifecycle_FirstPhaseActiveCombat();
 }

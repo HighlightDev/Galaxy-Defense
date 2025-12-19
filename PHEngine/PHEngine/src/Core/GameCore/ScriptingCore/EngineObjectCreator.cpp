@@ -77,7 +77,7 @@ int32_t EngineObjectCreator::CreateActor(
         mSceneWp, actorName, rootTranslation, rootEulerRotation, rootScale, jsonParamStr);
 }
 
-void EngineObjectCreator::CreateComponent(
+int32_t EngineObjectCreator::CreateComponent(
     const int32_t actorObjectId, const std::string& componentType, const std::string& componentDataJsonStr) const
 {
     std::string factoryName = "";
@@ -89,12 +89,13 @@ void EngineObjectCreator::CreateComponent(
     ext_assert(
         mComponentCreatorFactoriesMap.count(factoryName),
         "Component creator factory not found for component type: " + componentType);
-    mComponentCreatorFactoriesMap.at(factoryName)->CreateComponent(mSceneWp, actorObjectId, componentType, componentDataJsonStr);
+    return mComponentCreatorFactoriesMap.at(factoryName)
+        ->CreateComponent(mSceneWp, actorObjectId, componentType, componentDataJsonStr);
 }
 
-void EngineObjectCreator::CreatePlanarReflectionComponent(const std::string& componentDataJsonStr) const
+int32_t EngineObjectCreator::CreatePlanarReflectionComponent(const std::string& componentDataJsonStr) const
 {
-    mComponentCreatorFactoriesMap.at("DefaultComponentCreatorFactory")
+    return mComponentCreatorFactoriesMap.at("DefaultComponentCreatorFactory")
         ->CreatePlanarReflectionComponent(mSceneWp, componentDataJsonStr);
 }
 

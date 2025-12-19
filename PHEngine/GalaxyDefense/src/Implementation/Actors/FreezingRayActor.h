@@ -13,8 +13,9 @@
 using namespace EngineCore;
 
 namespace EngineCore {
-class RuntimeGeneratedLineComponent;
+class ElectricBeamComponent;
 class Actor;
+class SpaceStationActor;
 } // namespace EngineCore
 
 namespace Game {
@@ -22,14 +23,12 @@ class MissileExplosionVisitorBase;
 class CombatActorsPoolHandler;
 
 class FreezingRayActor : public MissileActor {
-    std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> mLineComponent;
+    std::shared_ptr<::EngineCore::ElectricBeamComponent> mLineComponent;
 
-    std::weak_ptr<::EngineCore::Actor> mActorWhoSpawnedMeWp;
+    std::weak_ptr<SpaceStationActor> mActorWhoSpawnedMeWp;
 
     glm::vec3 mFreezingLineBegin;
     glm::vec3 mFreezingLineEnd;
-
-    float mFreezingRayHitRadius{0.0f};
 
     int32_t mLastCollidedActorId{-1};
 
@@ -52,7 +51,7 @@ public:
         const glm::vec3& direction,
         const float yawDegrees,
         const eDamageDealerType ownerType,
-        const std::shared_ptr<::EngineCore::Actor>& spawnerActor) override;
+        const std::shared_ptr<SpaceStationActor>& spawnerActor) override;
 
     void TriggerExplosion() override;
 
@@ -60,13 +59,11 @@ public:
 
     void TriggerDisabled() override;
 
-    void SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>& lineComponent);
-
-    void SetFreezingRayHitRadius(const float radius);
+    void SetLineComponent(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& lineComponent);
 
     std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
 
-    std::weak_ptr<::EngineCore::Actor> GetActorWhoSpawnedMeWp() const;
+    std::weak_ptr<SpaceStationActor> GetActorWhoSpawnedMeWp() const;
 
 private:
     void Initialize();

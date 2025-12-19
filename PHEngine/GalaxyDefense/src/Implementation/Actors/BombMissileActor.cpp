@@ -5,6 +5,7 @@
 #include "Core/CommonCore/Random.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Implementation/MissileExplosionVisitors/BombExplosionVisitor.h"
 
@@ -25,7 +26,7 @@ void BombMissileActor::TriggerSpawn(
     const glm::vec3& direction,
     const float yawDegrees,
     const eDamageDealerType ownerType,
-    const std::shared_ptr<Actor>& spawnerActor)
+    const std::shared_ptr<SpaceStationActor>& spawnerActor)
 {
     mDamageDealerType = ownerType;
     mActivityState = eMissileActivityState::ACTIVE;

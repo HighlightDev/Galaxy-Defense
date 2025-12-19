@@ -25,7 +25,7 @@ public:
         const glm::vec3& direction,
         const float yawDegrees,
         const eDamageDealerType ownerType,
-        const std::shared_ptr<Actor>& spawnerActor) override;
+        const std::shared_ptr<SpaceStationActor>& spawnerActor) override;
 
     void TriggerExplosion() override;
 

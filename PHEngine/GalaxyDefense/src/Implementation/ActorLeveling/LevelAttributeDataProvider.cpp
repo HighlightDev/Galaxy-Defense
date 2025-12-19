@@ -34,9 +34,9 @@ float LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(const eMissileT
     std::unordered_map<eMissileType, std::vector<float>> radiusesData = {
         {eMissileType::BOMB, {30.0, 40.0, 50.0, 55.0, 60.0}},
         {eMissileType::FREEZING_BOMB, {30.0, 40.0, 50.0, 55.0, 60.0}},
-        {eMissileType::ELECTRO_RAY, {20.0, 25.0, 30.0, 35.0, 40.0}},
+        {eMissileType::ELECTRO_RAY, {30.0, 35.0, 40.0, 45.0, 50.0}},
         {eMissileType::BLACK_HOLE, {50.0, 55.0, 55.0, 60.0, 60.0}},
-        {eMissileType::FREEZING_RAY, {30.0, 40.0, 50.0, 55.0, 60.0}},
+        {eMissileType::FREEZING_RAY, {50.0, 60.0, 70.0, 75.0, 80.0}},
     };
 
     if (radiusesData.contains(missileType)) {

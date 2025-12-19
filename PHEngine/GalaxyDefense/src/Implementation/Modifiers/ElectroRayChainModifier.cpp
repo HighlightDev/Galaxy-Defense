@@ -26,7 +26,7 @@ void ElectroRayChainModifier::Initialize(const std::shared_ptr<::Game::ElectroRa
     ext_assert(mElectroRayChainActor, "ElectroRayChainModifier actor pointer is null");
     mElectroRayChainActor->SetStartLineSpaceship(mChainSrc.second);
     mElectroRayChainActor->SetEndLineSpaceship(mChainDst.second);
-    mElectroRayChainActor->TriggerSpawn({}, {}, 0.0f, eDamageDealerType::MAIN_PLAYER, mChainSrc.second.lock());
+    mElectroRayChainActor->TriggerSpawn({}, {}, 0.0f, eDamageDealerType::MAIN_PLAYER, nullptr);
 }
 
 eModifierType ElectroRayChainModifier::GetModifierType() const

@@ -17,13 +17,13 @@ struct ComponentData;
 namespace Scripts {
 class DefaultComponentCreatorFactory : public IEngineComponentCreatorFactory {
 public:
-    void CreateComponent(
+    int32_t CreateComponent(
         const std::weak_ptr<::EngineCore::Scene>& sceneWp,
         const int32_t actorObjectId,
         const std::string& componentType,
         const std::string& componentDataJsonStr) const override;
 
-    void CreatePlanarReflectionComponent(
+    int32_t CreatePlanarReflectionComponent(
         const std::weak_ptr<::EngineCore::Scene>& sceneWp, const std::string& componentDataJsonStr) const override;
 
 private:

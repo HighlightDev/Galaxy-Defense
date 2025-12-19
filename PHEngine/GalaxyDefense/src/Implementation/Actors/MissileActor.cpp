@@ -2,6 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 namespace Game {
@@ -29,7 +30,7 @@ void MissileActor::TriggerSpawn(
     const glm::vec3& direction,
     const float yawDegrees,
     const eDamageDealerType damageDealerType,
-    const std::shared_ptr<Actor>& spawnerActor)
+    const std::shared_ptr<SpaceStationActor>& spawnerActor)
 {
     ext_assert(GetMovementComponent(), "MissileActor movement component is null");
     mDamageDealerType = damageDealerType;

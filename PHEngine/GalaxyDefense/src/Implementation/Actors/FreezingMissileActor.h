@@ -16,10 +16,11 @@ class Actor;
 namespace Game {
 class MissileExplosionVisitorBase;
 class CombatActorsPoolHandler;
+class SpaceStationActor;
 
 class FreezingMissileActor : public MissileActor {
 
-    std::weak_ptr<::EngineCore::Actor> mSpaceshipWhoSpawnedMeWp;
+    std::weak_ptr<SpaceStationActor> mSpaceshipWhoSpawnedMeWp;
 
     float explosionTime{0.0f};
 
@@ -34,7 +35,7 @@ public:
         const glm::vec3& direction,
         const float yawDegrees,
         const eDamageDealerType ownerType,
-        const std::shared_ptr<Actor>& spawnerActor) override;
+        const std::shared_ptr<SpaceStationActor>& spawnerActor) override;
 
     void Tick(const float deltaTimeSec) override;
 

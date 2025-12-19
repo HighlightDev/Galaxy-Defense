@@ -10,13 +10,17 @@ using namespace EngineCore;
 namespace Game {
 class MissileExplosionVisitorBase;
 class CombatActorsPoolHandler;
+class SpaceStationActor;
 
 class BlackHoleMissileActor : public MissileActor, public ITweenStateChangeNotifyable {
 protected:
     std::shared_ptr<Actor> mCombatActivePhaseActor;
+
     std::shared_ptr<MissileActor> mExplosionSecondPhaseActor;
 
     std::shared_ptr<Tweener> mBlackMissileTweener;
+
+    std::shared_ptr<SpaceStationActor> mSpawnerActor;
 
 public:
     BlackHoleMissileActor(
@@ -33,7 +37,7 @@ public:
         const glm::vec3& direction,
         const float yawDegrees,
         const eDamageDealerType ownerType,
-        const std::shared_ptr<Actor>& spawnerActor) override;
+        const std::shared_ptr<SpaceStationActor>& spawnerActor) override;
 
     void TriggerExplosion() override;
 
