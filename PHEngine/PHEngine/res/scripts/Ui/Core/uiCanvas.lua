@@ -29,9 +29,7 @@ local json = require("Ui/Core/3rdparty/json")
 UiCanvas = UiBaseWidget:new()
 
 function UiCanvas:new(host, originX, originY, width, height, name)
-    assert(
-        host ~= nil and originX ~= nil and originY ~= nil and width ~= nil and
-            height ~= nil)
+    assert(host ~= nil and originX ~= nil and originY ~= nil and width ~= nil and height ~= nil)
     local canvasJsonParameters;
     if name ~= nil then
         assert(type(name) == "string" and name ~= "")
@@ -43,17 +41,10 @@ function UiCanvas:new(host, originX, originY, width, height, name)
             name = name
         })
     else
-        canvasJsonParameters = json.encode({
-            originX = originX,
-            originY = originY,
-            width = width,
-            height = height
-        })
+        canvasJsonParameters = json.encode({originX = originX, originY = originY, width = width, height = height})
     end
 
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-                                                            CommonUiWidgetCreator.CommonUiWidgetType
-                                                                .UI_CANVAS,
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_CANVAS,
                                                             canvasJsonParameters)
 
     local canvasProperties = {
@@ -77,12 +68,9 @@ function UiCanvas:updateFromReplicatorData(host)
     local replicatorJsonData = _GetGameThreadData(host, self.luaProxyId)
     if replicatorJsonData ~= "" then
         local parsedJson = json.decode(replicatorJsonData)
-        if parsedJson["visible"] ~= nil then
-            self.properties.visible.value = parsedJson["visible"]
-        end
+        if parsedJson["visible"] ~= nil then self.properties.visible.value = parsedJson["visible"] end
         if parsedJson["intercept_mouse_input_event"] ~= nil then
-            self.properties.intercept_mouse_input_event.value =
-                parsedJson["intercept_mouse_input_event"]
+            self.properties.intercept_mouse_input_event.value = parsedJson["intercept_mouse_input_event"]
         end
         if parsedJson["canvas_z_order"] ~= nil then
             self.properties.canvas_z_order.value = parsedJson["canvas_z_order"];
@@ -102,10 +90,7 @@ function UiCanvas:sendDataToReplicator(host)
         end
     end
 
-    if propDataDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
-                                     json.encode(propertiesData))
-    end
+    if propDataDirty then _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData)) end
 end
 
 function UiCanvas:setIsVisible(isVisible)
@@ -122,9 +107,7 @@ function UiCanvas:setIfCanInterceptMouseInputEvent(intercept)
     end
 end
 
-function UiCanvas:getIfCanInterceptMouseInputEvent()
-    return self.properties.intercept_mouse_input_event.value
-end
+function UiCanvas:getIfCanInterceptMouseInputEvent() return self.properties.intercept_mouse_input_event.value end
 
 function UiCanvas:setCanvasZOrder(zOrder)
     if self.properties.canvas_z_order.value ~= zOrder then
@@ -133,19 +116,13 @@ function UiCanvas:setCanvasZOrder(zOrder)
     end
 end
 
-function UiCanvas:addFadeInAnimation(host, animationFunctionType,
-                                     animationDuration, animatedPropertyName,
-                                     animatedPropertyType, propertySrcValue,
-                                     propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady ==
-               true)
-    assert(animationFunctionType ~= nil and type(animationFunctionType) ==
-               "number" and animationDuration ~= nil and type(animationDuration) ==
-               "number" and animatedPropertyName ~= nil and
-               type(animatedPropertyName) == "string" and animatedPropertyType ~=
-               nil and type(animatedPropertyType) == "number")
-    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and
-               type(propertySrcValue) == type(propertyDstValue))
+function UiCanvas:addFadeInAnimation(host, animationFunctionType, animationDuration, animatedPropertyName,
+                                     animatedPropertyType, propertySrcValue, propertyDstValue)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(animationFunctionType ~= nil and type(animationFunctionType) == "number" and animationDuration ~= nil and
+               type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) ==
+               "string" and animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
     local animationJsonData = json.encode({
         animatedPropertyType = animatedPropertyType,
         animationFunctionType = animationFunctionType,
@@ -157,19 +134,13 @@ function UiCanvas:addFadeInAnimation(host, animationFunctionType,
     _AddCanvasFadeAnimation(host, self.luaProxyId, 0, animationJsonData)
 end
 
-function UiCanvas:addFadeOutAnimation(host, animationFunctionType,
-                                      animationDuration, animatedPropertyName,
-                                      animatedPropertyType, propertySrcValue,
-                                      propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady ==
-               true)
-    assert(animationFunctionType ~= nil and type(animationFunctionType) ==
-               "number" and animationDuration ~= nil and type(animationDuration) ==
-               "number" and animatedPropertyName ~= nil and
-               type(animatedPropertyName) == "string" and animatedPropertyType ~=
-               nil and type(animatedPropertyType) == "number")
-    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and
-               type(propertySrcValue) == type(propertyDstValue))
+function UiCanvas:addFadeOutAnimation(host, animationFunctionType, animationDuration, animatedPropertyName,
+                                      animatedPropertyType, propertySrcValue, propertyDstValue)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(animationFunctionType ~= nil and type(animationFunctionType) == "number" and animationDuration ~= nil and
+               type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) ==
+               "string" and animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
     local animationJsonData = json.encode({
         animatedPropertyType = animatedPropertyType,
         animationFunctionType = animationFunctionType,

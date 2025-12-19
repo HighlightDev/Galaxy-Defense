@@ -17,8 +17,10 @@ namespace EngineCore {
 ElectricBeamComponent::ElectricBeamComponent(
     const std::string& gameObjectName,
     const MeshRenderData& renderData,
-    const RuntimeGeneratedMeshPoolParameters& beamMeshPoolParams)
-    : PrimitiveComponent(gameObjectName, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f))
+    const RuntimeGeneratedMeshPoolParameters& beamMeshPoolParams,
+    const bool isEnabled,
+    const bool isVisible)
+    : PrimitiveComponent(gameObjectName, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f), isEnabled, isVisible)
     , mBeamMeshPoolParams(beamMeshPoolParams)
     , mBeamMeshes()
     , mStartWorldPosition(glm::vec3(0.0f))

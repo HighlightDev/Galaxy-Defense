@@ -6,11 +6,11 @@
 #include <algorithm>
 
 namespace EngineCore {
-Component::Component(const std::string& gameObjectName)
+Component::Component(const std::string& gameObjectName, const bool isEnabled)
     : EngineObject(gameObjectName)
     , m_owner()
     , mIsEnabled(std::make_shared<EngineObjectProperty<bool>>(
-          true, "p_isEnabled", [this](const bool& isEnabled) { SetIsEnabled(isEnabled); }))
+          isEnabled, "p_isEnabled", [this](const bool& isEnabled) { SetIsEnabled(isEnabled); }))
     , m_sceneWP()
 {
     AddEngineProperty(mIsEnabled);

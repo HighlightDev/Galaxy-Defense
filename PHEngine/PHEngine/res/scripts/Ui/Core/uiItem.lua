@@ -37,9 +37,7 @@ function UiItem:new(host, name)
         jsonParameters = json.encode({name = name})
     end
 
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-                                                            CommonUiWidgetCreator.CommonUiWidgetType
-                                                                .UI_ITEM,
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_ITEM,
                                                             jsonParameters)
 
     local uiItemObj = UiItem.uiItemBaseClass.new(self)
@@ -61,12 +59,8 @@ function UiItem:updateFromReplicatorData(host)
 end
 
 function UiItem:sendDataToReplicator(host)
-    local basePropertiesData, isPropsDirty =
-        self:getUiItemBaseDataToReplicator()
-    if isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
-                                     json.encode(basePropertiesData))
-    end
+    local basePropertiesData, isPropsDirty = self:getUiItemBaseDataToReplicator()
+    if isPropsDirty then _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(basePropertiesData)) end
 end
 
 function UiItem:update(host) end

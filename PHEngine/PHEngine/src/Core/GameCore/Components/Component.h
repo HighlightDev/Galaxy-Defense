@@ -21,7 +21,7 @@ protected:
     std::weak_ptr<Scene> m_sceneWP;
 
 public:
-    Component(const std::string& gameObjectName);
+    Component(const std::string& gameObjectName, const bool isEnabled = true);
 
     virtual ~Component();
 

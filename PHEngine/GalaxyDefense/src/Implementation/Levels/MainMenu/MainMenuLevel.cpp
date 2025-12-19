@@ -23,7 +23,7 @@ MainMenuLevel::MainMenuLevel()
     : LevelBase("MainMenuLevel")
     , mAmbientMusicDummy(std::make_shared<Actor>(
           "Ambient Music Dummy",
-          std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent", glm::vec3(), glm::vec3(), glm::vec3())))
+          std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent", glm::vec3(), glm::vec3(), glm::vec3(), true)))
 
 {
 }

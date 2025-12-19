@@ -9,7 +9,8 @@
 namespace EngineCore {
 
 BillboardComponent::BillboardComponent(const std::shared_ptr<BillboardComponentData>& data, const BillboardRenderData& renderData)
-    : PrimitiveComponent(data->EngineObjectName, data->m_translation, glm::vec3(), data->m_scale)
+    : PrimitiveComponent(
+        data->EngineObjectName, data->m_translation, glm::vec3(), data->m_scale, data->mIsEnabled, data->mIsVisible)
     , mBillboardExtent(data->m_billboardExtent)
     , m_renderData(renderData)
     , mViewMatrixTransformer(data->mViewMatrixTransformer)

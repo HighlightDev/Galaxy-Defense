@@ -542,17 +542,6 @@ _CreateAndAttachComponentToActor(actorId, "SkyboxComponent", Json.encode({
 }))
 ```
 
-#### WaterPlaneComponent
-```lua
-_CreateAndAttachComponentToActor(actorId, "WaterPlaneComponent", Json.encode({
-    gameObjectName = "Water",
-    translation = {x = 0, y = 0, z = 0},
-    rotation = {x = 0, y = 0, z = 0},
-    scale = {x = 50, y = 1, z = 50},
-    materialProxyId = waterMaterialId
-}))
-```
-
 #### HumanoidPhysicsMovementComponent
 ```lua
 _CreateAndAttachComponentToActor(actorId, "HumanoidPhysicsMovementComponent", Json.encode({
@@ -648,6 +637,191 @@ _CreateAndAttachComponentToActor(actorId, "ElectricBeamComponent", Json.encode({
 - Анимация происходит каждый кадр в методе `Tick()`
 - Скорость анимации управляется через `SetAnimationSpeed()` (по умолчанию 2.0)
 - Каждый луч в `beamCount` имеет смещение по фазе для разнообразия
+
+#### ParticleSystemComponent
+Компонент системы частиц с модульной архитектурой. Поддерживает различные типы эмиттеров, модули времени жизни, цвета, размера и скорости.
+
+**Типы модулей:**
+
+**Emitter (Эмиттер):**
+- `explosion` - испускает частицы сферически во все стороны
+  - `radius` - радиус сферы эмиссии
+  - `thetaSlicesCount` - количество секторов по theta углу
+
+**Lifetime (Время жизни):**
+- `simple` - простое время жизни частиц
+  - `lifeTime` - время жизни в секундах
+
+**Color (Цвет):**
+- `simple` - линейная интерполяция между двумя цветами
+  - `colorBegin` - начальный цвет (r, g, b, a)
+  - `colorEnd` - конечный цвет (r, g, b, a)
+
+**Size (Размер):**
+- `simple` - линейная интерполяция между двумя размерами
+  - `sizeBegin` - начальный размер
+  - `sizeEnd` - конечный размер
+
+**Velocity Modules (Модули скорости):**
+- `explosionInitial` - начальная скорость при взрыве (без параметров)
+- `simple` - простая скорость с отклонением
+  - `velocityDirection` - направление скорости (x, y, z)
+  - `velocityDeviation` - отклонение скорости (x, y, z)
+  - `extraVelocityPower` - дополнительная сила скорости
+- `orbit` - орбитальное движение
+  - `orbitRadius` - радиус орбиты
+  - `orbitHeight` - высота орбиты
+  - `orbitAngularSpeed` - угловая скорость вращения
+
+**Базовый пример:**
+```lua
+_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+    gameObjectName = "c_particleSystem",
+    translation = {x = 0.0, y = 0.0, z = 0.0},
+    scale = {x = 1.0, y = 1.0, z = 1.0},
+    particlesCount = 100,
+    materialProxyId = materialId,
+    
+    emitter = {
+        type = "explosion",
+        radius = 1.0,
+        thetaSlicesCount = 10
+    },
+    
+    lifetime = {
+        type = "simple",
+        lifeTime = 2.5
+    },
+    
+    color = {
+        type = "simple",
+        colorBegin = {r = 1.0, g = 0.7, b = 0.2, a = 1.0},
+        colorEnd = {r = 1.0, g = 0.2, b = 0.02, a = 1.0}
+    },
+    
+    size = {
+        type = "simple",
+        sizeBegin = 0.4,
+        sizeEnd = 0.1
+    },
+    
+    velocityModules = {
+        {type = "explosionInitial"},
+        {
+            type = "simple",
+            velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
+            velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
+            extraVelocityPower = 1.0
+        }
+    }
+}))
+```
+
+**Пример с орбитальным движением:**
+```lua
+_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+    gameObjectName = "c_particleOrbit",
+    translation = {x = 0.0, y = 0.0, z = 0.0},
+    scale = {x = 1.0, y = 1.0, z = 1.0},
+    particlesCount = 50,
+    materialProxyId = materialId,
+    
+    emitter = {
+        type = "explosion",
+        radius = 0.5,
+        thetaSlicesCount = 8
+    },
+    
+    lifetime = {
+        type = "simple",
+        lifeTime = 5.0
+    },
+    
+    color = {
+        type = "simple",
+        colorBegin = {r = 0.2, g = 0.5, b = 1.0, a = 1.0},
+        colorEnd = {r = 1.0, g = 0.8, b = 0.2, a = 0.5}
+    },
+    
+    size = {
+        type = "simple",
+        sizeBegin = 0.3,
+        sizeEnd = 0.2
+    },
+    
+    velocityModules = {
+        {
+            type = "orbit",
+            orbitRadius = 3.0,
+            orbitHeight = 2.0,
+            orbitAngularSpeed = 1.5
+        }
+    }
+}))
+```
+
+**Полный пример со всеми опциями:**
+```lua
+-- Создание материала для частиц
+local materialParser = MaterialParser()
+local particleMaterial = materialParser:ParseMaterialDescriptor("OpaqueParticleMaterial.m")
+scene:RegisterMaterialInstance(particleMaterial)
+
+-- Настройка свойств материала
+MaterialPropertySetter.SetMaterialPropertyValue(particleMaterial, "opacity", 1.0)
+MaterialPropertySetter.SetMaterialPropertyValue(particleMaterial, "clipRadius", 0.35)
+
+-- Получение ID материала
+local materialProxyId = particleMaterial:GetMaterialProxyWp():lock():GetSceneProxyId()
+
+-- Создание компонента частиц
+_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+    gameObjectName = "c_explosion_particles",
+    translation = {x = 0.0, y = 5.0, z = 0.0},
+    scale = {x = 1.0, y = 1.0, z = 1.0},
+    particlesCount = 200,
+    materialProxyId = materialProxyId,
+    
+    emitter = {
+        type = "explosion",
+        radius = 2.5,
+        thetaSlicesCount = 12
+    },
+    
+    lifetime = {
+        type = "simple",
+        lifeTime = 3.0
+    },
+    
+    color = {
+        type = "simple",
+        colorBegin = {r = 1.0, g = 1.0, b = 1.0, a = 1.0},
+        colorEnd = {r = 0.5, g = 0.0, b = 0.0, a = 0.0}
+    },
+    
+    size = {
+        type = "simple",
+        sizeBegin = 0.8,
+        sizeEnd = 0.05
+    },
+    
+    velocityModules = {
+        {type = "explosionInitial"},
+        {
+            type = "simple",
+            velocityDirection = {x = 0.0, y = -10.0, z = 0.0},
+            velocityDeviation = {x = 5.0, y = 2.0, z = 5.0},
+            extraVelocityPower = 2.0
+        }
+    }
+}))
+```
+
+**Важные замечания:**
+- Все модули опциональны - если не указаны, частицы используют значения по умолчанию
+- Можно использовать несколько velocity модулей одновременно - они применяются последовательно
+- Material должен быть создан и зарегистрирован до создания компонента
+- MaterialProxyId получается через `material:GetMaterialProxyWp():lock():GetSceneProxyId()`
 
 ---
 

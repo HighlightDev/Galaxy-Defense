@@ -27,8 +27,7 @@ local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
-local LevelEditorOverlay = require(
-                               "Ui/Overlays/EditorNavigation/LevelEditorOverlay")
+local LevelEditorOverlay = require("Ui/Overlays/EditorNavigation/LevelEditorOverlay")
 
 GlobalContext = {}
 
@@ -44,23 +43,16 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
             if value == "Escape" then
                 if pressButtonCooldown >= 0.5 then
                     pressButtonCooldown = 0.0
-                    if "PauseMenuOverlay" ==
-                        UiOverlayManager:getCurrentOverlayName(host) then
-                        EventsHelper:sendPauseGameThreadEvent(host,
-                                                              EventsHelper.enqueueJobPolicy
-                                                                  .IF_DUPLICATE_NO_PUSH,
+                    if "PauseMenuOverlay" == UiOverlayManager:getCurrentOverlayName(host) then
+                        EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                               false)
                         UiOverlayManager:closeCurrentOverlay(host)
-                        UiOverlayManager:openBackgroundOverlay(host,
-                                                               "LevelEditorOverlay")
+                        UiOverlayManager:openBackgroundOverlay(host, "LevelEditorOverlay")
                     else
-                        EventsHelper:sendPauseGameThreadEvent(host,
-                                                              EventsHelper.enqueueJobPolicy
-                                                                  .IF_DUPLICATE_NO_PUSH,
+                        EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                               true)
                         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
-                        UiOverlayManager:closeBackgroundOverlay(host,
-                                                                "LevelEditorOverlay")
+                        UiOverlayManager:closeBackgroundOverlay(host, "LevelEditorOverlay")
                     end
                 end
             end
@@ -68,8 +60,7 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
     end
 end
 
-local function createLevelEditorOverlay(host) return
-    LevelEditorOverlay:new(host) end
+local function createLevelEditorOverlay(host) return LevelEditorOverlay:new(host) end
 
 local function createPauseOverlay(host) return PauseOverlay:new(host) end
 
@@ -99,45 +90,29 @@ function System_OnUpdate(host, deltaTimeSec)
 
     for _, value in pairs(UiOverlays) do value:update(host, deltaTimeSec) end
 
-    for _, value in pairs(UiBackgroundOverlays) do
-        value:updateFromReplicatorData(host)
-    end
+    for _, value in pairs(UiBackgroundOverlays) do value:updateFromReplicatorData(host) end
 
-    for _, value in pairs(UiBackgroundOverlays) do
-        value:update(host, deltaTimeSec)
-    end
+    for _, value in pairs(UiBackgroundOverlays) do value:update(host, deltaTimeSec) end
 
-    for _, value in pairs(GlobalContext) do
-        if value.canUpdate then value:update(host) end
-    end
+    for _, value in pairs(GlobalContext) do if value.canUpdate then value:update(host) end end
 
     for _, value in pairs(UiOverlays) do value:sendDataToReplicator(host) end
 
-    for _, value in pairs(UiBackgroundOverlays) do
-        value:sendDataToReplicator(host)
-    end
+    for _, value in pairs(UiBackgroundOverlays) do value:sendDataToReplicator(host) end
 end
 
 function System_OnEngineEventTriggered(host, eventName, jsonArgs)
     assert(eventName ~= nil and type(eventName) == "string")
 
-    for _, value in pairs(UiOverlays) do
-        value.onEngineEventTriggered(eventName, jsonArgs)
-    end
-    for _, value in pairs(UiBackgroundOverlays) do
-        value.onEngineEventTriggered(eventName, jsonArgs)
-    end
+    for _, value in pairs(UiOverlays) do value.onEngineEventTriggered(eventName, jsonArgs) end
+    for _, value in pairs(UiBackgroundOverlays) do value.onEngineEventTriggered(eventName, jsonArgs) end
 end
 
 function System_OnGameEventTriggered(host, eventName, jsonArgs)
     assert(eventName ~= nil and type(eventName) == "string")
 
-    for _, value in pairs(UiOverlays) do
-        value.onGameEventTriggered(eventName, jsonArgs)
-    end
-    for _, value in pairs(UiBackgroundOverlays) do
-        value.onGameEventTriggered(eventName, jsonArgs)
-    end
+    for _, value in pairs(UiOverlays) do value.onGameEventTriggered(eventName, jsonArgs) end
+    for _, value in pairs(UiBackgroundOverlays) do value.onGameEventTriggered(eventName, jsonArgs) end
 end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)

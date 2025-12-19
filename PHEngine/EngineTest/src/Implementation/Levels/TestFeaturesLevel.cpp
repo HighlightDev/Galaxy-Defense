@@ -1,10 +1,22 @@
 #include "TestFeaturesLevel.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/AudioComponents/StreamingSoundComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
+#include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
 #include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
+#include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
+#include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
+#include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
+#include "Core/GameCore/Particles/Modules/Size/SimpleSizeModule.h"
+#include "Core/GameCore/Particles/Modules/Velocity/ExplosionInitialVelocityModule.h"
+#include "Core/GameCore/Particles/Modules/Velocity/SimpleVelocityModule.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
+#include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 
 #include <glm/vec3.hpp>
@@ -24,7 +36,7 @@ TestFeaturesLevel::TestFeaturesLevel()
     : Level("TestFeaturesLevel")
     , mAmbientMusicDummy(std::make_shared<Actor>(
           "Ambient Music Dummy",
-          std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent", glm::vec3(), glm::vec3(), glm::vec3())))
+          std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent", glm::vec3(), glm::vec3(), glm::vec3(), true)))
 
 {
 }
@@ -61,9 +73,15 @@ void TestFeaturesLevel::RunLuaBuildLevelScript()
     mLuaLevelBuilder.StopScript();
 }
 
+std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
+
 void TestFeaturesLevel::PostLevelInit()
 {
     Base::PostLevelInit();
+
+    if (const auto& sceneSp = mSceneWp.lock()) {
+        mInputComponent = std::make_unique<InputComponent>(std::make_shared<ComponentData>("GameFlowController_InputComponent"));
+    }
 
 #ifdef DEBUG
     if (EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic) {
@@ -119,6 +137,19 @@ void TestFeaturesLevel::Tick(const float deltaTimeSec)
 {
     if (mUiController) {
         mUiController->Tick(deltaTimeSec);
+    }
+
+    if (mInputComponent) {
+        const auto& mouseBindings = mInputComponent->GetMouseBindings();
+
+        if (const auto& sceneSp = mSceneWp.lock()) {
+
+            if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
+                const auto particlesActor = sceneSp->GetActorByName("ParticlesActor");
+                assert(particlesActor);
+                particlesActor->GetComponentsByType<ParticleSystemComponent>().back()->EmitParticles();
+            }
+        }
     }
 }
 

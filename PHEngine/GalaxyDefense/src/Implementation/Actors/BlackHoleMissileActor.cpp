@@ -67,7 +67,7 @@ void BlackHoleMissileActor::OnTweenStateChanged(const std::string& stateName)
         mExplosionSecondPhaseActor->TriggerSpawn(
             mCombatActivePhaseActor->GetRootComponent()->GetTranslation(), {}, 0.0f, mDamageDealerType, shared_from_this());
         const auto c_particle = mExplosionSecondPhaseActor->GetComponentsByType<ParticleSystemComponent>().back();
-        c_particle->EmitParticles(100);
+        c_particle->EmitParticles();
         TriggerLifecycle_SecondPhaseExplosion();
     } else if ("s_SecondPhaseExplosion" == stateName) {
         TriggerExplosionFinished();

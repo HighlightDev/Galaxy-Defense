@@ -22,8 +22,10 @@ struct BillboardComponentData : public ComponentData {
         const std::function<glm::mat4(const glm::mat4&)> viewMatrixTransformer
         = std::function([](const glm::mat4& viewMatrix) { return viewMatrix; }),
         const std::function<glm::mat4(const glm::mat4&)> projectionMatrixTransformer
-        = std::function([](const glm::mat4& projectionMatrix) { return projectionMatrix; }))
-        : ComponentData(gameObjectName)
+        = std::function([](const glm::mat4& projectionMatrix) { return projectionMatrix; }),
+        const bool isEnabled = true,
+        const bool isVisible = true)
+        : ComponentData(gameObjectName, isEnabled)
         , m_billboardExtent(billboardExtent)
         , mApplyScreenAspectRatio(applyScreenAspectRatio)
         , m_translation(translation)
@@ -32,6 +34,7 @@ struct BillboardComponentData : public ComponentData {
         , m_material(material)
         , mViewMatrixTransformer(viewMatrixTransformer)
         , mProjectionMatrixTransformer(projectionMatrixTransformer)
+        , mIsVisible(isVisible)
     {
     }
 
@@ -42,6 +45,7 @@ struct BillboardComponentData : public ComponentData {
     glm::vec3 m_scale;
     std::function<glm::mat4(const glm::mat4&)> mViewMatrixTransformer;
     std::function<glm::mat4(const glm::mat4&)> mProjectionMatrixTransformer;
+    bool mIsVisible;
 
     std::shared_ptr<Graphics::IMaterial> m_material;
 };

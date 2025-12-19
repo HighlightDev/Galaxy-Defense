@@ -36,13 +36,13 @@ LevelEditorController::LevelEditorController(const std::weak_ptr<Scene>& sceneWp
     , mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent")))
     , mBezierCurvesActor(std::make_shared<Actor>(
           "BezierCurvesActor",
-          std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+          std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mTowersActor(std::make_shared<Actor>(
           "TowersActor",
-          std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+          std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostTowerActor(std::make_shared<Actor>(
           "GhostTowerActor",
-          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mRoutesHandler(mSceneWp, mBezierCurvesActor)
     , mTowersHandler(mSceneWp, mTowersActor)
@@ -407,7 +407,7 @@ void LevelEditorController::InitializeInternalActors()
 
     mRouteNodePickerActor = std::make_shared<Actor>(
         "RouteNodePickerActor",
-        std::make_shared<SceneComponent>("RouteNodePickerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        std::make_shared<SceneComponent>("RouteNodePickerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true));
     sceneSp->AddActor(mRouteNodePickerActor);
 
     const auto& editorNodePickerMaterial = materialParser.ParseMaterialDescriptor("PbrSingleValueMaterial.m");
@@ -433,12 +433,14 @@ void LevelEditorController::InitializeInternalActors()
 
     mRoutePlacementGridActor = std::make_shared<Actor>(
         "RoutePlacementGridActor",
-        std::make_shared<SceneComponent>("RoutePlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        std::make_shared<SceneComponent>(
+            "RoutePlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true));
     sceneSp->AddActor(mRoutePlacementGridActor);
 
     mTowerPlacementGridActor = std::make_shared<Actor>(
         "TowerPlacementGridActor",
-        std::make_shared<SceneComponent>("TowerPlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        std::make_shared<SceneComponent>(
+            "TowerPlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true));
     sceneSp->AddActor(mTowerPlacementGridActor);
 }
 
@@ -580,7 +582,8 @@ void LevelEditorController::InitializeGhostTower()
     const auto pickerCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
     mTowerPlacementPickerActor = std::make_shared<Actor>(
         "TowerPlacementPickerActor",
-        std::make_shared<SceneComponent>("TowerPlacementPickerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        std::make_shared<SceneComponent>(
+            "TowerPlacementPickerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true));
     sceneSp->AddActor(mTowerPlacementPickerActor);
 
     const std::shared_ptr<IMaterial>& editorPickerMaterial = materialParser.ParseMaterialDescriptor("EditorPickerMaterial.m");

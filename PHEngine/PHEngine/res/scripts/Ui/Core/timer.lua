@@ -1,9 +1,4 @@
-TimerManager = {
-    timers_id_counter = 0,
-    timers = {},
-    tickTimePassed = 0.0,
-    lastTime = os.clock()
-}
+TimerManager = {timers_id_counter = 0, timers = {}, tickTimePassed = 0.0, lastTime = os.clock()}
 
 function TimerManager:new()
     local newObj = {}
@@ -29,15 +24,11 @@ function TimerManager:createTimer(action, oneshot, intervalInSec)
 end
 
 function TimerManager:startTimer(timer_id)
-    for _, timer in pairs(TimerManager.timers) do
-        if timer.id == timer_id then timer.isRunning = true end
-    end
+    for _, timer in pairs(TimerManager.timers) do if timer.id == timer_id then timer.isRunning = true end end
 end
 
 function TimerManager:stopTimer(timer_id)
-    for _, timer in pairs(TimerManager.timers) do
-        if timer.id == timer_id then timer.isRunning = false end
-    end
+    for _, timer in pairs(TimerManager.timers) do if timer.id == timer_id then timer.isRunning = false end end
 end
 
 function TimerManager:restartTimer(timer_id)

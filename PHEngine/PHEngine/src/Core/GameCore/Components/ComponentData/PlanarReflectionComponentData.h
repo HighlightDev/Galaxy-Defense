@@ -20,8 +20,9 @@ struct PlanarReflectionComponentData : public ComponentData {
         const glm::vec3& rotation,
         const glm::vec3& scale,
         const std::weak_ptr<ACamera>& ownerCameraWp,
-        const ::Graphics::ViewPortInfo& fboViewPortInfo)
-        : ComponentData(gameObjectName)
+        const ::Graphics::ViewPortInfo& fboViewPortInfo,
+        const bool isEnabled = true)
+        : ComponentData(gameObjectName, isEnabled)
         , m_translation(translation)
         , m_eulerRotationDegrees(rotation)
         , m_scale(scale)

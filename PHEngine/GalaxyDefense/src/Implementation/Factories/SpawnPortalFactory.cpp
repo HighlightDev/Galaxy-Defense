@@ -25,7 +25,7 @@ std::shared_ptr<PortalActor> SpawnPortalFactory::CreatePortal(
 {
     const auto& portalIndexStr = std::to_string(s_portalCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
-        "c_portal_root_" + portalIndexStr, translation, glm::vec3(0), glm::vec3(1));
+        "c_portal_root_" + portalIndexStr, translation, glm::vec3(0), glm::vec3(1), true);
     const auto& a_portal = std::make_shared<PortalActor>("a_portal_" + portalIndexStr, rootComponent);
     scene->AddActor(a_portal);
 

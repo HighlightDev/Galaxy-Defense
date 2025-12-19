@@ -19,7 +19,9 @@ StaticMeshComponent::StaticMeshComponent(
         meshComponentData->EngineObjectName,
         meshComponentData->m_translation,
         meshComponentData->m_eulerRotationDegrees,
-        meshComponentData->m_scale)
+        meshComponentData->m_scale,
+        meshComponentData->mIsEnabled,
+        meshComponentData->mIsVisible)
     , m_renderData(renderData)
 {
 }

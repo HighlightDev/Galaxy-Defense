@@ -47,8 +47,7 @@ function EngineInputReceiver:update(host)
     self.hasReleasedKeyboardButtons = _HasReleasedKeyboardButtons(host)
 
     if self.subscribeToKeyboardEvents then
-        if self.hasPressedKeyboardButtons and
-            self.onPressedKeyboardButtonCallback ~= nil then
+        if self.hasPressedKeyboardButtons and self.onPressedKeyboardButtonCallback ~= nil then
             local keyboardPressedKeyNames = {}
             if KeyboardKeys.ValuesToKeysPairs ~= nil then
                 local jsonValuesToKeys = _GetKeyboardJsonData(host)
@@ -57,16 +56,14 @@ function EngineInputReceiver:update(host)
                     local keyboardValues = parsedJson["pressed_keys"]
 
                     for _, value in pairs(keyboardValues) do
-                        table.insert(keyboardPressedKeyNames,
-                                     KeyboardKeys.ValuesToKeysPairs[value])
+                        table.insert(keyboardPressedKeyNames, KeyboardKeys.ValuesToKeysPairs[value])
                     end
                 end
             end
 
             self.onPressedKeyboardButtonCallback(host, keyboardPressedKeyNames)
         end
-        if self.hasReleasedKeyboardButtons and
-            self.onReleasedKeyboardButtonCallback ~= nil then
+        if self.hasReleasedKeyboardButtons and self.onReleasedKeyboardButtonCallback ~= nil then
             self.onReleasedKeyboardButtonCallback()
         end
     end
@@ -74,12 +71,9 @@ end
 
 function EngineInputReceiver:__gc(self) end
 
-function EngineInputReceiver:subscribeOnPressedKeyboardButton(callback)
-    self.onPressedKeyboardButtonCallback = callback
-end
+function EngineInputReceiver:subscribeOnPressedKeyboardButton(callback) self.onPressedKeyboardButtonCallback = callback end
 
-function EngineInputReceiver:subscribeOnReleasedKeyboardButton(callback)
-    self.onReleasedKeyboardButtonCallback = callback
-end
+function EngineInputReceiver:subscribeOnReleasedKeyboardButton(callback) self.onReleasedKeyboardButtonCallback =
+    callback end
 
 return EngineInputReceiver

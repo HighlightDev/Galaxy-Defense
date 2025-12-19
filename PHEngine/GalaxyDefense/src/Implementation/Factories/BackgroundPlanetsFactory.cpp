@@ -49,7 +49,7 @@ std::shared_ptr<BackgroundSpaceObjectActor> BackgroundPlanetsFactory::CreateSpac
 {
     const auto& backgroundPlanetIndexStr = std::to_string(s_backgroundPlanetCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
-        "c_backgroundPlanet_root_" + backgroundPlanetIndexStr, translation, glm::vec3(0), glm::vec3(1));
+        "c_backgroundPlanet_root_" + backgroundPlanetIndexStr, translation, glm::vec3(0), glm::vec3(1), true);
     const auto& a_backgroundPlanet
         = std::make_shared<BackgroundSpaceObjectActor>("a_backgroundPlanet_" + backgroundPlanetIndexStr, rootComponent);
     scene->AddActor(a_backgroundPlanet);

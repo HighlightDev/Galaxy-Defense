@@ -46,13 +46,14 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     , mMainSceneCamera()
     , mProjectileMarkerActor(std::make_shared<Actor>(
           "MissileProjectileActor",
-          std::make_shared<SceneComponent>("MissileProjectileRootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+          std::make_shared<SceneComponent>("MissileProjectileRootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostTowerActor(std::make_shared<Actor>(
           "GhostTowerActor",
-          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mRemoveTowerMarkerActor(std::make_shared<Actor>(
           "RemoveTowerMarkerActor",
-          std::make_shared<SceneComponent>("RemoveTowerMarkerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+          std::make_shared<SceneComponent>(
+              "RemoveTowerMarkerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mReadyToShootTimer(std::make_shared<GameThreadTimer>())
     , mReloadPlacementTower(std::make_shared<GameThreadTimer>())
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
@@ -135,7 +136,9 @@ void UserInteractionController::Initialize()
         glm::vec3(),
         glm::vec3(mTowerCellSize, 1.0f, mTowerCellSize),
         "",
-        missileProjectileMaterial);
+        missileProjectileMaterial,
+        true,
+        true);
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     c_mesh->SetSortOrderValue(1);
@@ -452,7 +455,8 @@ void UserInteractionController::InitializeTowerGrid()
     mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(halfExtent)));
     mTowerPlacementGridActor = std::make_shared<Actor>(
         "TowerPlacementGridActor",
-        std::make_shared<SceneComponent>("TowerPlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        std::make_shared<SceneComponent>(
+            "TowerPlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true));
     sceneSp->AddActor(mTowerPlacementGridActor);
     const glm::ivec2 towerGridColumnsAndRowsCount = mLevelPlacementGrid->GetTowerGridColumnsAndRowsCount();
     const int32_t columnsLineCount = towerGridColumnsAndRowsCount.x + 1;
@@ -479,7 +483,9 @@ void UserInteractionController::InitializeTowerGrid()
             glm::vec3(),
             glm::vec3(1),
             "",
-            lineMaterial);
+            lineMaterial,
+            true,
+            true);
         const auto& c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(
             sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
         c_mesh->SetCanBloomBeApplied(false);
@@ -502,7 +508,9 @@ void UserInteractionController::InitializeTowerGrid()
             glm::vec3(0.0),
             glm::vec3(1),
             "",
-            lineMaterial);
+            lineMaterial,
+            true,
+            true);
         const auto& c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(
             sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
         c_mesh->SetCanBloomBeApplied(false);
@@ -528,7 +536,8 @@ void UserInteractionController::InitializePlacementAllowedArea()
     ext_assert(sceneSp, "Scene pointer is null in InitializePlacementAllowedArea");
     mPlacementAllowedAreaActor = std::make_shared<Actor>(
         "PlacementAllowedAreaActor",
-        std::make_shared<SceneComponent>("PlacementAllowedAreaActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        std::make_shared<SceneComponent>(
+            "PlacementAllowedAreaActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true));
     sceneSp->AddActor(mPlacementAllowedAreaActor);
 
     MaterialParser materialParser;
@@ -553,7 +562,9 @@ void UserInteractionController::InitializePlacementAllowedArea()
             glm::vec3(),
             glm::vec3(mTowerCellSize, 1.0f, mTowerCellSize),
             "",
-            placementAllowedAreaMaterial);
+            placementAllowedAreaMaterial,
+            true,
+            true);
         const auto& c_mesh
             = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         c_mesh->SetSortOrderValue(20);
@@ -586,7 +597,9 @@ void UserInteractionController::InitializeGhostTower()
         glm::vec3(),
         glm::vec3(mTowerCellSize),
         "",
-        ghostTowerActorMaterial);
+        ghostTowerActorMaterial,
+        true,
+        true);
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
@@ -625,7 +638,9 @@ void UserInteractionController::InitializeRemoveTowerMarker()
         glm::vec3(1.0f),
         billboard_material,
         [](const glm::mat4& viewMatrix) { return glm::mat4(1); },
-        [](const glm::mat4& projectionMatrix) { return glm::mat4(1); });
+        [](const glm::mat4& projectionMatrix) { return glm::mat4(1); },
+        true,
+        true);
     const auto& billboardComponent
         = std::static_pointer_cast<BillboardComponent>(sceneSp->CreateComponent_GameThread(billboardComponentCreator, data));
     billboardComponent->SetSortOrderValue(10000);

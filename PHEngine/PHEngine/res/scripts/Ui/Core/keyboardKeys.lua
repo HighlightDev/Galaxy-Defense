@@ -785,9 +785,6 @@ local function table_invert(t)
     return s
 end
 
-KeyboardKeys = {
-    ["KeysValuePairs"] = keyboardKeysMap,
-    ["ValuesToKeysPairs"] = table_invert(keyboardKeysMap)
-}
+KeyboardKeys = {["KeysValuePairs"] = keyboardKeysMap, ["ValuesToKeysPairs"] = table_invert(keyboardKeysMap)}
 
 return KeyboardKeys

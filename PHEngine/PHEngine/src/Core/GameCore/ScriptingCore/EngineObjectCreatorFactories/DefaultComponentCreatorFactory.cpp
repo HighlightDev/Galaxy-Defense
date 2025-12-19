@@ -21,6 +21,7 @@
 #include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/HumanoidPhysicsMovementComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/RigidBodyPhysicsComponent.h"
@@ -31,7 +32,6 @@
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/WaterPlaneComponent.h"
 #include "Core/GameCore/Components/SpotlightComponent.h"
 #include "Core/GameCore/Components/UiInputComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
@@ -79,11 +79,11 @@ void DefaultComponentCreatorFactory::CreateComponent(
            {"HumanoidPhysicsMovementComponent", std::make_shared<MovementComponentCreator<HumanoidPhysicsMovementComponent>>()},
            {"PlatformTraverseComponent", std::make_shared<PlatformTraverseComponentCreator<PlatformTraverseComponent>>()},
            {"SkyboxComponent", std::make_shared<SkyboxComponentCreator<SkyboxComponent>>()},
-           {"WaterPlaneComponent", std::make_shared<StaticMeshComponentCreator<WaterPlaneComponent>>(false)},
            {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()},
            {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()},
            {"BillboardComponent", std::make_shared<BillboardComponentCreator<BillboardComponent>>()},
-           {"ElectricBeamComponent", std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>()}};
+           {"ElectricBeamComponent", std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>()},
+           {"ParticleSystemComponent", std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>()}};
 
     ext_assert(creatorsMap.count(componentType), "Unknown component type: " + componentType);
 
@@ -212,9 +212,17 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         ext_assert(material, "Material not found by proxy ID: " + std::to_string(materialProxyId));
+        bool isEnabled = true;
+        bool isVisible = true;
+        if (jsonObj.contains("is_enabled")) {
+            isEnabled = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_enabled");
+        }
+        if (jsonObj.contains("is_visible")) {
+            isVisible = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_visible");
+        }
 
         componentData = std::make_shared<MeshComponentData>(
-            objectName, pathToMesh, translation, rotation, scale, luaScriptRelPath, material);
+            objectName, pathToMesh, translation, rotation, scale, luaScriptRelPath, material, isEnabled, isVisible);
     } else if ("RigidBodyPhysicsComponent" == componentType || "GhostPhysicsComponent" == componentType) {
         std::shared_ptr<PhysicsDescriptor> descriptor;
         std::shared_ptr<CollisionShapeBase> collisionShape;
@@ -274,19 +282,18 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         componentData = std::make_shared<PlatformTraverseComponentData>(objectName, routePoints);
     } else if ("SkyboxComponent" == componentType) {
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
+        bool isEnabled = true;
+        bool isVisible = true;
+        if (jsonObj.contains("is_enabled")) {
+            isEnabled = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_enabled");
+        }
+        if (jsonObj.contains("is_visible")) {
+            isVisible = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_visible");
+        }
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         ext_assert(material, "Material not found for SkyboxComponent, proxy ID: " + std::to_string(materialProxyId));
-
-        componentData = std::make_shared<SkyboxComponentData>(objectName, scale, material);
-    } else if ("WaterPlaneComponent" == componentType) {
-        const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
-        const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
-        const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
-        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
-        const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
-        ext_assert(material, "Material not found for WaterPlaneComponent, proxy ID: " + std::to_string(materialProxyId));
-        componentData = std::make_shared<MeshComponentData>(objectName, "", translation, rotation, scale, "", material);
+        componentData = std::make_shared<SkyboxComponentData>(objectName, scale, material, isEnabled, isVisible);
     } else if ("InputComponent" == componentType || "UiInputComponent" == componentType) {
         componentData = std::make_shared<ComponentData>(objectName);
     } else if ("BillboardComponent" == componentType) {
@@ -298,6 +305,14 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         ext_assert(material, "Material not found for BillboardComponent, proxy ID: " + std::to_string(materialProxyId));
+        bool isEnabled = true;
+        bool isVisible = true;
+        if (jsonObj.contains("is_enabled")) {
+            isEnabled = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_enabled");
+        }
+        if (jsonObj.contains("is_visible")) {
+            isVisible = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_visible");
+        }
         componentData = std::make_shared<BillboardComponentData>(
             objectName,
             billboardExtent,
@@ -307,7 +322,9 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             scale,
             material,
             [](const glm::mat4& viewMatrix) { return viewMatrix; },
-            [](const glm::mat4& projectionMatrix) { return projectionMatrix; });
+            [](const glm::mat4& projectionMatrix) { return projectionMatrix; },
+            isEnabled,
+            isVisible);
     } else if ("ElectricBeamComponent" == componentType) {
         const auto startPoint = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["startPoint"]);
         const auto endPoint = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["endPoint"]);
@@ -318,9 +335,109 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         ext_assert(material, "Material not found for ElectricBeamComponent, proxy ID: " + std::to_string(materialProxyId));
+        bool isEnabled = true;
+        bool isVisible = true;
+        if (jsonObj.contains("is_enabled")) {
+            isEnabled = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_enabled");
+        }
+        if (jsonObj.contains("is_visible")) {
+            isVisible = (bool)nlohmann_utilities::GetIntFromJson(jsonObj, "is_visible");
+        }
 
         componentData = std::make_shared<ElectricBeamComponentData>(
-            objectName, startPoint, endPoint, beamThickness, beamCount, jitterAmount, updateFrequency, material);
+            objectName,
+            startPoint,
+            endPoint,
+            beamThickness,
+            beamCount,
+            jitterAmount,
+            updateFrequency,
+            material,
+            isEnabled,
+            isVisible);
+    } else if ("ParticleSystemComponent" == componentType) {
+        const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
+        const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
+        const auto particlesCount = nlohmann_utilities::GetIntFromJson(jsonObj, "particlesCount");
+        const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
+        const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
+        ext_assert(material, "Material not found for ParticleSystemComponent, proxy ID: " + std::to_string(materialProxyId));
+
+        componentData = std::make_shared<ParticleSystemComponentData>(objectName, material, translation, scale, particlesCount);
+        const auto& particleData = std::static_pointer_cast<ParticleSystemComponentData>(componentData);
+
+        // Parse emitter
+        if (jsonObj.contains("emitter")) {
+            const auto& emitterJson = jsonObj["emitter"];
+            const auto emitterType = nlohmann_utilities::GetStringFromJson(emitterJson, "type");
+            auto emitterData = std::make_shared<ParticleEmitterData>();
+            emitterData->emitterType = emitterType;
+            if (emitterJson.contains("radius")) {
+                emitterData->radius = nlohmann_utilities::GetFloatFromJson(emitterJson, "radius");
+            }
+            if (emitterJson.contains("thetaSlicesCount")) {
+                emitterData->thetaSlicesCount = nlohmann_utilities::GetIntFromJson(emitterJson, "thetaSlicesCount");
+            }
+            particleData->emitterData = emitterData;
+        }
+
+        // Parse lifetime module
+        if (jsonObj.contains("lifetime")) {
+            const auto& lifetimeJson = jsonObj["lifetime"];
+            const auto moduleType = nlohmann_utilities::GetStringFromJson(lifetimeJson, "type");
+            auto lifetimeData = std::make_shared<LifeTimeModuleData>();
+            lifetimeData->moduleType = moduleType;
+            lifetimeData->lifeTime = nlohmann_utilities::GetFloatFromJson(lifetimeJson, "lifeTime");
+            particleData->lifeTimeData = lifetimeData;
+        }
+
+        // Parse color module
+        if (jsonObj.contains("color")) {
+            const auto& colorJson = jsonObj["color"];
+            const auto moduleType = nlohmann_utilities::GetStringFromJson(colorJson, "type");
+            auto colorData = std::make_shared<ColorModuleData>();
+            colorData->moduleType = moduleType;
+            colorData->colorBegin = nlohmann_utilities::GetRgbaFromJsonMap(colorJson["colorBegin"]);
+            colorData->colorEnd = nlohmann_utilities::GetRgbaFromJsonMap(colorJson["colorEnd"]);
+            particleData->colorData = colorData;
+        }
+
+        // Parse size module
+        if (jsonObj.contains("size")) {
+            const auto& sizeJson = jsonObj["size"];
+            const auto moduleType = nlohmann_utilities::GetStringFromJson(sizeJson, "type");
+            auto sizeData = std::make_shared<SizeModuleData>();
+            sizeData->moduleType = moduleType;
+            sizeData->sizeBegin = nlohmann_utilities::GetFloatFromJson(sizeJson, "sizeBegin");
+            sizeData->sizeEnd = nlohmann_utilities::GetFloatFromJson(sizeJson, "sizeEnd");
+            particleData->sizeData = sizeData;
+        }
+
+        // Parse velocity modules (can be multiple)
+        if (jsonObj.contains("velocityModules")) {
+            const auto& velocityModulesJson = jsonObj["velocityModules"];
+            for (const auto& velJson : velocityModulesJson) {
+                const auto moduleType = nlohmann_utilities::GetStringFromJson(velJson, "type");
+                auto velData = std::make_shared<VelocityModuleData>();
+                velData->moduleType = moduleType;
+
+                if (moduleType == "simple") {
+                    velData->velocityDirection = nlohmann_utilities::GetXyzFromJsonMap(velJson["velocityDirection"]);
+                    if (velJson.contains("velocityDeviation")) {
+                        velData->velocityDeviation = nlohmann_utilities::GetXyzFromJsonMap(velJson["velocityDeviation"]);
+                    }
+                    if (velJson.contains("extraVelocityPower")) {
+                        velData->extraVelocityPower = nlohmann_utilities::GetFloatFromJson(velJson, "extraVelocityPower");
+                    }
+                } else if (moduleType == "orbit") {
+                    velData->orbitRadius = nlohmann_utilities::GetFloatFromJson(velJson, "orbitRadius");
+                    velData->orbitHeight = nlohmann_utilities::GetFloatFromJson(velJson, "orbitHeight");
+                    velData->orbitAngularSpeed = nlohmann_utilities::GetFloatFromJson(velJson, "orbitAngularSpeed");
+                }
+
+                particleData->velocityModules.push_back(velData);
+            }
+        }
     }
 
     ext_assert(componentData, "Failed to create component data for type: " + componentType);

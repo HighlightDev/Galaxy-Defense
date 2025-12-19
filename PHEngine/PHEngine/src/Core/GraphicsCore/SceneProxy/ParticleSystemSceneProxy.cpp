@@ -167,7 +167,7 @@ void ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer()
     const size_t rotationSizeSubBufferSize = mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize();
     const size_t colorBufferSize = mParticlesRawDataHandler.GetColorActiveDataChunkSize();
     particlesTransformVBO->BufferSubData(0, translationSubBufferSize, mParticlesRawDataHandler.GetTranslationData());
-    particlesTransformVBO->BufferSubData(0, rotationSizeSubBufferSize, mParticlesRawDataHandler.GetRotationSizeData());
+    particlesRotationSizeVBO->BufferSubData(0, rotationSizeSubBufferSize, mParticlesRawDataHandler.GetRotationSizeData());
     particlesColorVBO->BufferSubData(0, colorBufferSize, mParticlesRawDataHandler.GetColorData());
     particlesTransformVBO->UnbindVBO();
 

@@ -25,12 +25,7 @@ setup()
 
 local Json = require("Ui/Core/3rdparty/json")
 
-local PhysicsBodyType = {
-    STATIC = 0,
-    DYNAMIC = 1,
-    KINEMATIC = 2,
-    GHOST = 3
-}
+local PhysicsBodyType = {STATIC = 0, DYNAMIC = 1, KINEMATIC = 2, GHOST = 3}
 
 function CreateTestLevel(host)
     _LazyLoadResourcesAsync(host, [[brick_mid.jpg
@@ -73,6 +68,7 @@ function CreateTestLevel(host)
 	,arrow_right_1.png
 	,tina.fbx
     ,perlin_noise_128x128.png
+    ,plane.obj
 	]])
 
     _OpenAudioStreams(host, [[piano-loop2.ogg
@@ -92,30 +88,14 @@ function CreateTestLevel(host)
     local beamMat = _CreateMaterial(host, "ElectroBeamMaterial.m")
     _SetTextureToMaterial(host, beamMat, "perlin_noise_128x128.png", "noise")
     _SetBindingToMaterial(host, beamMat, "EngineScene", "GT_DeltaSec", "gt_timeSec")
-    _SetVec3ToMaterial(host, beamMat, Json.encode({
-        x = 0.2,
-        y = 1.0,
-        z = 1.0
-    }), "beamGlowColor")
-    _SetVec3ToMaterial(host, beamMat, Json.encode({
-        x = 0.6,
-        y = 0.4,
-        z = 1.0
-    }), "beamMainColor")
+    _SetVec3ToMaterial(host, beamMat, Json.encode({x = 0.2, y = 1.0, z = 1.0}), "beamGlowColor")
+    _SetVec3ToMaterial(host, beamMat, Json.encode({x = 0.6, y = 0.4, z = 1.0}), "beamMainColor")
 
     local actorId = _CreateActor(host, "Actor", "ElectricBarrier", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
     _CreateAndAttachComponentToActor(host, actorId, "ElectricBeamComponent", Json.encode({
         gameObjectName = "ElectricBeam",
-        startPoint = {
-            x = 10,
-            y = 30,
-            z = 20
-        },
-        endPoint = {
-            x = 20,
-            y = 30,
-            z = 20
-        },
+        startPoint = {x = 10, y = 40, z = 0},
+        endPoint = {x = -10, y = 40, z = 0},
         beamThickness = 0.15,
         beamCount = 3,
         jitterAmount = 0.3,
@@ -141,19 +121,17 @@ function CreateTestLevel(host)
 
     local skyboxMat = _CreateMaterial(host, "SkyboxMaterial.m")
     _SetTextureToMaterial(host, skyboxMat, "dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg",
-        "dayTexture")
+                          "dayTexture")
     _SetTextureToMaterial(host, skyboxMat,
-        "nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg", "nightTexture")
+                          "nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",
+                          "nightTexture")
     _SetBindingToMaterial(host, skyboxMat, "EngineScene", "GT_DeltaSec", "deltaTimeSec")
     _SetFloatToMaterial(host, skyboxMat, 0.01, "mul_coef")
 
     _CreateAndAttachComponentToActor(host, a_spaceSkyboxId, "SkyboxComponent", Json.encode({
         gameObjectName = "SpaceSkyboxComponent",
-        scale = {
-            x = 250,
-            y = 250,
-            z = 250
-        },
+        scale = {x = 250, y = 250, z = 250},
+        is_visible = true,
         materialProxyId = skyboxMat
     }))
 
@@ -162,21 +140,9 @@ function CreateTestLevel(host)
     _CreatePlanarReflectionComponent(host, Json.encode({
         gameObjectName = "PlanarReflectionComponent",
         cameraName = "MainCamera",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 1,
-            y = 1,
-            z = 1
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 1, y = 1, z = 1},
         viewPortX = 0,
         viewPortY = 0,
         viewPortWidth = _GetWindowWidth(host),
@@ -189,31 +155,11 @@ function CreateTestLevel(host)
 
     _CreateAndAttachComponentToActor(host, a_dirLightId, "DirectionalLightComponent", Json.encode({
         gameObjectName = "MainLightComp",
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        direction = {
-            x = -0.5,
-            y = -0.5,
-            z = 0
-        },
-        ambient = {
-            r = 0.02,
-            g = 0.02,
-            b = 0.02
-        },
-        diffuse = {
-            r = 1.68,
-            g = 1.5,
-            b = 1.5
-        },
-        specular = {
-            r = 0.4,
-            g = 0.4,
-            b = 0.4
-        },
+        rotation = {x = 0, y = 0, z = 0},
+        direction = {x = -0.5, y = -0.5, z = 0},
+        ambient = {r = 0.02, g = 0.02, b = 0.02},
+        diffuse = {r = 1.68, g = 1.5, b = 1.5},
+        specular = {r = 0.4, g = 0.4, b = 0.4},
         is_enabled = true,
         is_visible = true,
         shadowAtlasSize = 512
@@ -245,36 +191,12 @@ function CreateTestLevel(host)
 
     _CreateAndAttachComponentToActor(host, a_spotLightId, "SpotlightComponent", Json.encode({
         gameObjectName = "SpotlightComp",
-        translation = {
-            x = 0,
-            y = 5,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        ambient = {
-            r = 0.0,
-            g = 0.0,
-            b = 1.0
-        },
-        diffuse = {
-            r = 1.0,
-            g = 0.0,
-            b = 0.0
-        },
-        specular = {
-            r = 0.4,
-            g = 0.0,
-            b = 0.0
-        },
-        attenuation = {
-            x = 1,
-            y = 1,
-            z = 1
-        },
+        translation = {x = 0, y = 5, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        ambient = {r = 0.0, g = 0.0, b = 1.0},
+        diffuse = {r = 1.0, g = 0.0, b = 0.0},
+        specular = {r = 0.4, g = 0.0, b = 0.0},
+        attenuation = {x = 1, y = 1, z = 1},
         radianceRadius = 100.0,
         cutoff = 0.75,
         is_enabled = true,
@@ -295,21 +217,9 @@ function CreateTestLevel(host)
     _CreateAndAttachComponentToActor(host, a_ground, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "GroundMeshComponent",
         meshName = "cube.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 50,
-            y = 1,
-            z = 50
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 50, y = 1, z = 50},
         luaScriptName = "",
         materialProxyId = groundMat
     }))
@@ -317,11 +227,7 @@ function CreateTestLevel(host)
     _CreateAndAttachComponentToActor(host, a_ground, "RigidBodyPhysicsComponent", Json.encode({
         gameObjectName = "GroundPhysicsComponent",
         collisionShape = "box",
-        halfExtent = {
-            x = 50,
-            y = 1,
-            z = 50
-        },
+        halfExtent = {x = 50, y = 1, z = 50},
         physicsBodyType = PhysicsBodyType.STATIC,
         mass = 0.0
     }))
@@ -339,21 +245,9 @@ function CreateTestLevel(host)
     _CreateAndAttachComponentToActor(host, a_platform, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "PlatformdMeshComponent",
         meshName = "cube.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 8,
-            y = 1,
-            z = 8
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 8, y = 1, z = 8},
         luaScriptName = "",
         materialProxyId = platformMat
     }))
@@ -363,75 +257,27 @@ function CreateTestLevel(host)
         scriptName = "platformMovementComponentAction.lua",
         routePoints = {
             a1 = {
-                translation = {
-                    x = 0,
-                    y = 0,
-                    z = 0
-                },
-                rotation = {
-                    x = 0,
-                    y = 90,
-                    z = 0
-                },
-                scale = {
-                    x = 1,
-                    y = 1,
-                    z = 1
-                },
+                translation = {x = 0, y = 0, z = 0},
+                rotation = {x = 0, y = 90, z = 0},
+                scale = {x = 1, y = 1, z = 1},
                 transitionTime = 1.8
             },
             a2 = {
-                translation = {
-                    x = 10,
-                    y = 0,
-                    z = 0
-                },
-                rotation = {
-                    x = 0,
-                    y = 90,
-                    z = 0
-                },
-                scale = {
-                    x = 1,
-                    y = 1,
-                    z = 1
-                },
+                translation = {x = 10, y = 0, z = 0},
+                rotation = {x = 0, y = 90, z = 0},
+                scale = {x = 1, y = 1, z = 1},
                 transitionTime = 1.8
             },
             a3 = {
-                translation = {
-                    x = 0,
-                    y = 0,
-                    z = 10
-                },
-                rotation = {
-                    x = 0,
-                    y = 90,
-                    z = 0
-                },
-                scale = {
-                    x = 1,
-                    y = 1,
-                    z = 1
-                },
+                translation = {x = 0, y = 0, z = 10},
+                rotation = {x = 0, y = 90, z = 0},
+                scale = {x = 1, y = 1, z = 1},
                 transitionTime = 1.8
             },
             a4 = {
-                translation = {
-                    x = -10,
-                    y = 0,
-                    z = -10
-                },
-                rotation = {
-                    x = 0,
-                    y = 90,
-                    z = 0
-                },
-                scale = {
-                    x = 1,
-                    y = 1,
-                    z = 1
-                },
+                translation = {x = -10, y = 0, z = -10},
+                rotation = {x = 0, y = 90, z = 0},
+                scale = {x = 1, y = 1, z = 1},
                 transitionTime = 1.8
             }
         }
@@ -440,11 +286,7 @@ function CreateTestLevel(host)
     _CreateAndAttachComponentToActor(host, a_platform, "RigidBodyPhysicsComponent", Json.encode({
         gameObjectName = "PlatformPhysicsComponent",
         collisionShape = "box",
-        halfExtent = {
-            x = 8,
-            y = 1,
-            z = 8
-        },
+        halfExtent = {x = 8, y = 1, z = 8},
         physicsBodyType = PhysicsBodyType.STATIC,
         mass = 0.0
     }))
@@ -462,21 +304,9 @@ function CreateTestLevel(host)
     _CreateAndAttachComponentToActor(host, a_wall, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "WallMeshComponent",
         meshName = "cube.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 8,
-            y = 1,
-            z = 8
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 8, y = 1, z = 8},
         luaScriptName = "",
         materialProxyId = wallMaterial
     }))
@@ -484,11 +314,7 @@ function CreateTestLevel(host)
     _CreateAndAttachComponentToActor(host, a_wall, "RigidBodyPhysicsComponent", Json.encode({
         gameObjectName = "WallPhysicsComponent",
         collisionShape = "box",
-        halfExtent = {
-            x = 8,
-            y = 1,
-            z = 8
-        },
+        halfExtent = {x = 8, y = 1, z = 8},
         physicsBodyType = PhysicsBodyType.STATIC,
         mass = 0.0
     }))
@@ -506,21 +332,9 @@ function CreateTestLevel(host)
     _CreateAndAttachComponentToActor(host, a_house, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "HosueMeshComponent",
         meshName = "italian_house_1.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 15,
-            y = 15,
-            z = 15
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 15, y = 15, z = 15},
         luaScriptName = "",
         materialProxyId = houseMaterial
     }))
@@ -528,11 +342,7 @@ function CreateTestLevel(host)
     _CreateAndAttachComponentToActor(host, a_house, "RigidBodyPhysicsComponent", Json.encode({
         gameObjectName = "HousePhysicsComponent",
         collisionShape = "box",
-        halfExtent = {
-            x = 7.5,
-            y = 7.5,
-            z = 7.5
-        },
+        halfExtent = {x = 7.5, y = 7.5, z = 7.5},
         physicsBodyType = PhysicsBodyType.DYNAMIC,
         mass = 500.0
     }))
@@ -549,21 +359,9 @@ function CreateTestLevel(host)
     _CreateAndAttachComponentToActor(host, a_grave, "StaticMeshComponent_Deferred", Json.encode({
         gameObjectName = "GraveMeshComponent",
         meshName = "witcher.obj",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 1.5,
-            y = 1.5,
-            z = 1.5
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 1.5, y = 1.5, z = 1.5},
         luaScriptName = "",
         materialProxyId = graveMat
     }))
@@ -577,30 +375,14 @@ function CreateTestLevel(host)
             leftSphere = {
                 collisionShape = "sphere",
                 radius = 5,
-                translation = {
-                    x = -4,
-                    y = 0,
-                    z = 0
-                },
-                rotation = {
-                    x = 0,
-                    y = 0,
-                    z = 0
-                }
+                translation = {x = -4, y = 0, z = 0},
+                rotation = {x = 0, y = 0, z = 0}
             },
             rightSphere = {
                 collisionShape = "sphere",
                 radius = 5,
-                translation = {
-                    x = 4,
-                    y = 0,
-                    z = 0
-                },
-                rotation = {
-                    x = 0,
-                    y = 0,
-                    z = 0
-                }
+                translation = {x = 4, y = 0, z = 0},
+                rotation = {x = 0, y = 0, z = 0}
             }
         }
     }))
@@ -626,39 +408,22 @@ function CreateTestLevel(host)
 
     _CreateAndAttachComponentToActor(host, a_skelet, "HumanoidPhysicsMovementComponent", Json.encode({
         gameObjectName = "SkeletMovementComponent",
-        launchDirection = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
+        launchDirection = {x = 0, y = 0, z = 0},
         cameraName = "MainCamera"
     }))
 
     _CreateAndAttachComponentToActor(host, a_skelet, "SkeletalMeshComponent", Json.encode({
         gameObjectName = "SkeletMeshComponent",
         meshName = "tina.fbx",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 90
-        },
-        scale = {
-            x = 8,
-            y = 8,
-            z = 8
-        },
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 90},
+        scale = {x = 8, y = 8, z = 8},
         luaScriptName = "",
         materialProxyId = skeletMat
     }))
 
-    _CreateAndAttachComponentToActor(host, a_skelet, "InputComponent", Json.encode({
-        gameObjectName = "SkeletInputComponent"
-    }))
+    _CreateAndAttachComponentToActor(host, a_skelet, "InputComponent",
+                                     Json.encode({gameObjectName = "SkeletInputComponent"}))
 
     -- _CreateActorController(host, "DefaultActorControllerCreatorFactory",
     --                        "SkeletActor", "HumanoidPlayerController",
@@ -677,30 +442,54 @@ function CreateTestLevel(host)
     _SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTimeSec")
     _SetFloatToMaterial(host, waterMat, 0.5, "mul_coef")
 
-    _CreateAndAttachComponentToActor(host, a_water, "WaterPlaneComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_water, "StaticMeshComponent_Forward", Json.encode({
         gameObjectName = "WaterMeshComponent",
-        translation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        rotation = {
-            x = 0,
-            y = 0,
-            z = 0
-        },
-        scale = {
-            x = 20,
-            y = 1,
-            z = 20
-        },
+        meshName = "plane.obj",
+        translation = {x = 0, y = 0, z = 0},
+        rotation = {x = 0, y = 0, z = 0},
+        scale = {x = 20, y = 1, z = 20},
+        luaScriptName = "",
         materialProxyId = waterMat
+    }))
+
+    -- **************************** Particles ***************************** --
+
+    local particlesMat = _CreateMaterial(host, "OpaqueParticleMaterial.m")
+    _SetFloatToMaterial(host, particlesMat, 1.0, "opacity")
+    _SetFloatToMaterial(host, particlesMat, 0.35, "clipRadius")
+
+    local a_particle = _CreateActor(host, "Actor", "ParticlesActor", 0, 40, 0, 0, 0, 0, 1, 1, 1, "")
+    _CreateAndAttachComponentToActor(host, a_particle, "ParticleSystemComponent", Json.encode({
+        gameObjectName = "c_particleSystem",
+        translation = {x = 0.0, y = 0.0, z = 0.0},
+        scale = {x = 1.0, y = 1.0, z = 1.0},
+        particlesCount = 100,
+        materialProxyId = particlesMat,
+
+        emitter = {type = "explosion", radius = 1.0, thetaSlicesCount = 10},
+
+        lifetime = {type = "simple", lifeTime = 2.5},
+
+        color = {
+            type = "simple",
+            colorBegin = {r = 1.0, g = 0.7, b = 0.2, a = 1.0},
+            colorEnd = {r = 1.0, g = 0.2, b = 0.02, a = 1.0}
+        },
+
+        size = {type = "simple", sizeBegin = 0.4, sizeEnd = 0.1},
+
+        velocityModules = {
+            {type = "explosionInitial"}, {
+                type = "simple",
+                velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
+                velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
+                extraVelocityPower = 1.0
+            }
+        }
     }))
 end
 
-function System_OnStart(host)
-    CreateTestLevel(host)
-end
+function System_OnStart(host) CreateTestLevel(host) end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)
 HasOnUpdate = (_G["System_OnUpdate"] ~= nil and 1 or 0)

@@ -15,6 +15,7 @@ struct ElectricBeamComponentData : public ComponentData {
     float JitterAmount;
     float UpdateFrequency;
     std::shared_ptr<Graphics::IMaterial> m_material;
+    bool mIsVisible{true};
 
     ElectricBeamComponentData(
         const std::string& gameObjectName,
@@ -24,8 +25,10 @@ struct ElectricBeamComponentData : public ComponentData {
         int beamCount,
         float jitterAmount,
         float updateFrequency,
-        const std::shared_ptr<Graphics::IMaterial>& material)
-        : ComponentData(gameObjectName)
+        const std::shared_ptr<Graphics::IMaterial>& material,
+        const bool isEnabled = true,
+        const bool isVisible = true)
+        : ComponentData(gameObjectName, isEnabled)
         , StartPoint(startPoint)
         , EndPoint(endPoint)
         , BeamThickness(beamThickness)
@@ -33,6 +36,7 @@ struct ElectricBeamComponentData : public ComponentData {
         , JitterAmount(jitterAmount)
         , UpdateFrequency(updateFrequency)
         , m_material(material)
+        , mIsVisible(isVisible)
     {
     }
 };

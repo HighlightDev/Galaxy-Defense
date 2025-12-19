@@ -42,9 +42,7 @@ local escape_char_map = {
 local escape_char_map_inv = {["/"] = "/"}
 for k, v in pairs(escape_char_map) do escape_char_map_inv[v] = k end
 
-local function escape_char(c)
-    return "\\" .. (escape_char_map[c] or string.format("u%04x", c:byte()))
-end
+local function escape_char(c) return "\\" .. (escape_char_map[c] or string.format("u%04x", c:byte())) end
 
 local function encode_nil(val) return "null" end
 
@@ -61,9 +59,7 @@ local function encode_table(val, stack)
         -- Treat as array -- check keys are valid and it is not sparse
         local n = 0
         for k in pairs(val) do
-            if type(k) ~= "number" then
-                error("invalid table: mixed or invalid key types")
-            end
+            if type(k) ~= "number" then error("invalid table: mixed or invalid key types") end
             n = n + 1
         end
         if n ~= #val then error("invalid table: sparse array") end
@@ -74,9 +70,7 @@ local function encode_table(val, stack)
     else
         -- Treat as an object
         for k, v in pairs(val) do
-            if type(k) ~= "string" then
-                error("invalid table: mixed or invalid key types")
-            end
+            if type(k) ~= "string" then error("invalid table: mixed or invalid key types") end
             table.insert(res, encode(k, stack) .. ":" .. encode(v, stack))
         end
         stack[val] = nil
@@ -84,9 +78,7 @@ local function encode_table(val, stack)
     end
 end
 
-local function encode_string(val)
-    return '"' .. val:gsub('[%z\1-\31\\"]', escape_char) .. '"'
-end
+local function encode_string(val) return '"' .. val:gsub('[%z\1-\31\\"]', escape_char) .. '"' end
 
 local function encode_number(val)
     -- Check for NaN, -inf and inf
@@ -158,11 +150,9 @@ local function codepoint_to_utf8(n)
     elseif n <= 0x7ff then
         return string.char(f(n / 64) + 192, n % 64 + 128)
     elseif n <= 0xffff then
-        return string.char(f(n / 4096) + 224, f(n % 4096 / 64) + 128,
-                           n % 64 + 128)
+        return string.char(f(n / 4096) + 224, f(n % 4096 / 64) + 128, n % 64 + 128)
     elseif n <= 0x10ffff then
-        return string.char(f(n / 262144) + 240, f(n % 262144 / 4096) + 128,
-                           f(n % 4096 / 64) + 128, n % 64 + 128)
+        return string.char(f(n / 262144) + 240, f(n % 262144 / 4096) + 128, f(n % 4096 / 64) + 128, n % 64 + 128)
     end
     error(string.format("invalid unicode codepoint '%x'", n))
 end
@@ -172,8 +162,7 @@ local function parse_unicode_escape(s)
     local n2 = tonumber(s:sub(7, 10), 16)
     -- Surrogate pair?
     if n2 then
-        return
-            codepoint_to_utf8((n1 - 0xd800) * 0x400 + (n2 - 0xdc00) + 0x10000)
+        return codepoint_to_utf8((n1 - 0xd800) * 0x400 + (n2 - 0xdc00) + 0x10000)
     else
         return codepoint_to_utf8(n1)
     end
@@ -194,16 +183,13 @@ local function parse_string(str, i)
             j = j + 1
             local c = str:sub(j, j)
             if c == "u" then
-                local hex = str:match("^[dD][89aAbB]%x%x\\u%x%x%x%x", j + 1) or
-                                str:match("^%x%x%x%x", j + 1) or
-                                decode_error(str, j - 1,
-                                             "invalid unicode escape in string")
+                local hex = str:match("^[dD][89aAbB]%x%x\\u%x%x%x%x", j + 1) or str:match("^%x%x%x%x", j + 1) or
+                                decode_error(str, j - 1, "invalid unicode escape in string")
                 res = res .. parse_unicode_escape(hex)
                 j = j + #hex
             else
                 if not escape_chars[c] then
-                    decode_error(str, j - 1,
-                                 "invalid escape char '" .. c .. "' in string")
+                    decode_error(str, j - 1, "invalid escape char '" .. c .. "' in string")
                 end
                 res = res .. escape_char_map_inv[c]
             end
@@ -230,9 +216,7 @@ end
 local function parse_literal(str, i)
     local x = next_char(str, i, delim_chars)
     local word = str:sub(i, x - 1)
-    if not literals[word] then
-        decode_error(str, i, "invalid literal '" .. word .. "'")
-    end
+    if not literals[word] then decode_error(str, i, "invalid literal '" .. word .. "'") end
     return literal_map[word], x
 end
 
@@ -274,15 +258,11 @@ local function parse_object(str, i)
             break
         end
         -- Read key
-        if str:sub(i, i) ~= '"' then
-            decode_error(str, i, "expected string for key")
-        end
+        if str:sub(i, i) ~= '"' then decode_error(str, i, "expected string for key") end
         key, i = parse(str, i)
         -- Read ':' delimiter
         i = next_char(str, i, space_chars, true)
-        if str:sub(i, i) ~= ":" then
-            decode_error(str, i, "expected ':' after key")
-        end
+        if str:sub(i, i) ~= ":" then decode_error(str, i, "expected ':' after key") end
         i = next_char(str, i + 1, space_chars, true)
         -- Read value
         val, i = parse(str, i)
@@ -326,9 +306,7 @@ parse = function(str, idx)
 end
 
 function json.decode(str)
-    if type(str) ~= "string" then
-        error("expected argument of type string, got " .. type(str))
-    end
+    if type(str) ~= "string" then error("expected argument of type string, got " .. type(str)) end
     local res, idx = parse(str, next_char(str, 1, space_chars, true))
     idx = next_char(str, idx, space_chars, true)
     if idx <= #str then decode_error(str, idx, "trailing garbage") end

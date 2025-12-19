@@ -33,7 +33,7 @@ file(GLOB_RECURSE LUA_FILES ${PROJECT_SOURCE_DIR}/PHEngine/res/scripts/*.lua)
 add_custom_target(
   codeformat
   COMMAND clang-format -i ${SOURCE_FILES}
-  COMMAND lua-format ${LUA_FILES} -i --align-args
+  COMMAND lua-format ${LUA_FILES} -i --align-args --config=${CMAKE_SOURCE_DIR}/lua_format_config
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Formatting source files...")
 

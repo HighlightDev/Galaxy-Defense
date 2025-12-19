@@ -32,7 +32,8 @@ NavigationController::NavigationController(const std::weak_ptr<::EngineCore::Sce
     : mSceneWp(sceneWp)
     , mNavPathDummyActor(std::make_shared<Actor>(
           "NavPathDummyActor",
-          std::make_shared<EngineCore::SceneComponent>("NavPathDummy_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1))))
+          std::make_shared<EngineCore::SceneComponent>(
+              "NavPathDummy_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true)))
 {
 }
 
@@ -76,7 +77,9 @@ void NavigationController::InitializePathDebugRendering()
                 glm::vec3(),
                 glm::vec3(1),
                 "",
-                splineMaterial);
+                splineMaterial,
+                true,
+                true);
             const auto& meshComponentCreator
                 = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
             auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(

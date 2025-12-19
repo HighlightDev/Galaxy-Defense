@@ -53,16 +53,14 @@ local function CreateLevel(host)
     1 -- is main camera on scene
     )
 
-    local a_spaceSkyboxId = _CreateActor(host, "Actor", "SpaceSkyboxActor", 0,
-                                         0, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_spaceSkyboxId = _CreateActor(host, "Actor", "SpaceSkyboxActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
 
     local skyboxMatProxyId = _CreateMaterial(host, "SpaceSkyboxMaterial.m")
     _SetTextureToMaterial(host, skyboxMatProxyId,
                           "nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",
                           "spaceTexture")
 
-    _CreateAndAttachComponentToActor(host, a_spaceSkyboxId, "SkyboxComponent",
-                                     Json.encode({
+    _CreateAndAttachComponentToActor(host, a_spaceSkyboxId, "SkyboxComponent", Json.encode({
         gameObjectName = "SpaceSkyboxComponent",
         scale = {x = 250, y = 250, z = 250},
         materialProxyId = skyboxMatProxyId

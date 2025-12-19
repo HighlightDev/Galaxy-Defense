@@ -26,7 +26,9 @@ public:
         auto component = std::make_shared<ComponentInstantiationType>(
             mData->EngineObjectName,
             MeshRenderData("", materialProxy, false),
-            RuntimeGeneratedMeshPoolParameters(mData->EngineObjectName, 0, 0));
+            RuntimeGeneratedMeshPoolParameters(mData->EngineObjectName, 0, 0),
+            mData->mIsEnabled,
+            mData->mIsVisible);
 
         // Set properties from data
         component->SetStartWorldPosition(mData->StartPoint);

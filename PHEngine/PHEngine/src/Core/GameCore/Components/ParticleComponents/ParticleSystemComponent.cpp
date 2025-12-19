@@ -27,6 +27,7 @@ ParticleSystemComponent::ParticleSystemComponent(
     const std::shared_ptr<ParticleSystemComponentData>& meshComponentData, const ParticleSystemRenderData& renderData)
     : PrimitiveComponent(
         meshComponentData->EngineObjectName, meshComponentData->m_translation, glm::vec3(), meshComponentData->m_scale)
+    , mParticlesCount(meshComponentData->m_particlesCount)
     , mParticlesPool()
     , mParticlesRawDataHandler(meshComponentData->m_particlesCount)
     , mRenderData(renderData)
@@ -116,9 +117,9 @@ void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<IParticleM
     });
 }
 
-void ParticleSystemComponent::EmitParticles(const size_t particlesCount)
+void ParticleSystemComponent::EmitParticles()
 {
-    mParticleEmitter->EmitParticles(particlesCount);
+    mParticleEmitter->EmitParticles(mParticlesCount);
 
     for (const auto& particleModule : mParticleModules) {
         particleModule->OnEmitParticles();

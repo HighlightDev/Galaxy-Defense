@@ -15,8 +15,9 @@ SceneComponent::SceneComponent(
     const std::string& gameObjectName,
     const glm::vec3& translation = glm::vec3(0.0f),
     const glm::vec3& rotation = glm::vec3(0.0f),
-    const glm::vec3& scale = glm::vec3(0.0f))
-    : Component(gameObjectName)
+    const glm::vec3& scale = glm::vec3(0.0f),
+    const bool isEnabled = true)
+    : Component(gameObjectName, isEnabled)
     , m_TransformScale(std::make_shared<EngineObjectProperty<glm::vec3>>(
           scale, "p_scale", [this](const glm::vec3& scale) { SyncScale(scale); }))
     , m_TransformTranslation(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_translation"))

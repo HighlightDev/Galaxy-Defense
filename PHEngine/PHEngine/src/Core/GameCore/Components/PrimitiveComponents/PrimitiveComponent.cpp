@@ -12,10 +12,15 @@ using namespace Graphics::Proxy;
 namespace EngineCore {
 
 PrimitiveComponent::PrimitiveComponent(
-    const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale)
-    : SceneComponent(gameObjectName, translation, rotation, scale)
+    const std::string& gameObjectName,
+    const glm::vec3& translation,
+    const glm::vec3& rotation,
+    const glm::vec3& scale,
+    const bool isEnabled,
+    const bool isVisible)
+    : SceneComponent(gameObjectName, translation, rotation, scale, isEnabled)
     , mBoundingBox(BoundingBox3D())
-    , mIsVisible(std::make_shared<EngineObjectProperty<bool>>(true, "p_isVisible"))
+    , mIsVisible(std::make_shared<EngineObjectProperty<bool>>(isVisible, "p_isVisible"))
 {
     /******  HOOKS ****/
     AddEngineProperty(mIsVisible);

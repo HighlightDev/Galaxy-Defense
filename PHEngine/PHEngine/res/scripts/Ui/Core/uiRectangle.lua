@@ -37,9 +37,7 @@ function UiRectangle:new(host, name)
         jsonParameters = json.encode({name = name})
     end
 
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-                                                            CommonUiWidgetCreator.CommonUiWidgetType
-                                                                .UI_RECTANGLE,
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_RECTANGLE,
                                                             jsonParameters)
 
     local rectangleProperties = {
@@ -75,8 +73,7 @@ function UiRectangle:updateFromReplicatorData(host)
                 self.rectangleProperties.opacity.value = parsedJson["opacity"]
             end
             if parsedJson["border_radius"] ~= nil then
-                self.rectangleProperties.border_radius.value =
-                    parsedJson["border_radius"]
+                self.rectangleProperties.border_radius.value = parsedJson["border_radius"]
             end
         end
     end
@@ -94,8 +91,7 @@ function UiRectangle:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
-                                     json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
     end
 end
 
@@ -113,15 +109,13 @@ function UiRectangle:setColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE,
-                  b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiRectangle:setColor(r, g, b)
     assert(
-        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
-            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
-            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.rectangleProperties.color.value.r = r
     self.rectangleProperties.color.value.g = g
     self.rectangleProperties.color.value.b = b

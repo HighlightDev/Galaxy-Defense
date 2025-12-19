@@ -42,7 +42,7 @@ void BarriersHandler::SelectNewBarrier(const std::string& barrierName)
     ext_assert(sceneSp, "BarriersHandler scene pointer is null in SelectNewBarrier");
     const auto& barrierIndexStr = std::to_string(mBarrierActorsCount++);
     const auto& rootComponent
-        = std::make_shared<SceneComponent>("c_barrier_root_" + barrierIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1.0));
+        = std::make_shared<SceneComponent>("c_barrier_root_" + barrierIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1.0), true);
     const auto& a_barrier = std::make_shared<BarrierActor>("a_barrier_" + barrierIndexStr, rootComponent);
     sceneSp->AddActor(a_barrier);
     mBarrierActors.emplace(mCurrentActiveBarrierName, a_barrier);

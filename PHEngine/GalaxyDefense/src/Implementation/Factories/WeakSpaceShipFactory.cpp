@@ -64,7 +64,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
 
     const auto& enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
-        "c_enemyShip_rootComponent_" + enemyShipIndexStr, translation, rotation, scale);
+        "c_enemyShip_rootComponent_" + enemyShipIndexStr, translation, rotation, scale, true);
     const auto& a_enemySpaceship
         = std::make_shared<WeakSpaceshipActor>("a_enemyShip_" + enemyShipIndexStr, rootComponent, SpaceshipLevel(health));
     scene->AddActor(a_enemySpaceship);
@@ -135,6 +135,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     const std::shared_ptr<IMaterial>& particles_mat = materialParser.ParseMaterialDescriptor("OpaqueParticleMaterial.m");
     scene->RegisterMaterialInstance(particles_mat);
     MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacity", 1.0f);
+    MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "clipRadius", 0.35f);
 
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
         "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 100);

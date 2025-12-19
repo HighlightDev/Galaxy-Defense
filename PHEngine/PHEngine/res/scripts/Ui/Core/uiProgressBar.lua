@@ -38,8 +38,7 @@ function UiProgressBar:new(host, name)
     end
 
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-                                                            CommonUiWidgetCreator.CommonUiWidgetType
-                                                                .UI_PROGRESS_BAR,
+                                                            CommonUiWidgetCreator.CommonUiWidgetType.UI_PROGRESS_BAR,
                                                             jsonParameters)
 
     local progressBarProperties = {
@@ -83,12 +82,10 @@ function UiProgressBar:updateFromReplicatorData(host)
                 self.progressBarProperties.opacity.value = parsedJson["opacity"]
             end
             if parsedJson["fill_percent_value"] ~= nil then
-                self.progressBarProperties.fill_percent_value.value =
-                    parsedJson["fill_percent_value"]
+                self.progressBarProperties.fill_percent_value.value = parsedJson["fill_percent_value"]
             end
             if parsedJson["border_radius"] ~= nil then
-                self.progressBarProperties.border_radius.value =
-                    parsedJson["border_radius"]
+                self.progressBarProperties.border_radius.value = parsedJson["border_radius"]
             end
         end
     end
@@ -106,8 +103,7 @@ function UiProgressBar:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
-                                     json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
     end
 end
 
@@ -125,16 +121,13 @@ function UiProgressBar:setEmptyColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setEmptyColor(r * INV_COLOR_MAX_BYTE_VALUE,
-                       g * INV_COLOR_MAX_BYTE_VALUE,
-                       b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setEmptyColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiProgressBar:setEmptyColor(r, g, b)
     assert(
-        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
-            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
-            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.progressBarProperties.empty_color.value.r = r
     self.progressBarProperties.empty_color.value.g = g
     self.progressBarProperties.empty_color.value.b = b
@@ -154,16 +147,13 @@ function UiProgressBar:setFilledColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    self:setFilledColor(r * INV_COLOR_MAX_BYTE_VALUE,
-                        g * INV_COLOR_MAX_BYTE_VALUE,
-                        b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setFilledColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiProgressBar:setFilledColor(r, g, b)
     assert(
-        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and
-            b ~= nil and type(b) == "number" and r >= 0.0 and r <= 1.0 and g >=
-            0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.progressBarProperties.filled_color.value.r = r
     self.progressBarProperties.filled_color.value.g = g
     self.progressBarProperties.filled_color.value.b = b

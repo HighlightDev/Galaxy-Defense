@@ -542,17 +542,6 @@ _CreateAndAttachComponentToActor(actorId, "SkyboxComponent", Json.encode({
 }))
 ```
 
-#### WaterPlaneComponent
-```lua
-_CreateAndAttachComponentToActor(actorId, "WaterPlaneComponent", Json.encode({
-    gameObjectName = "Water",
-    translation = {x = 0, y = 0, z = 0},
-    rotation = {x = 0, y = 0, z = 0},
-    scale = {x = 50, y = 1, z = 50},
-    materialProxyId = waterMaterialId
-}))
-```
-
 #### HumanoidPhysicsMovementComponent
 ```lua
 _CreateAndAttachComponentToActor(actorId, "HumanoidPhysicsMovementComponent", Json.encode({
@@ -648,6 +637,191 @@ _CreateAndAttachComponentToActor(actorId, "ElectricBeamComponent", Json.encode({
 - Animation happens every frame in the `Tick()` method
 - Animation speed controlled via `SetAnimationSpeed()` (default 2.0)
 - Each beam in `beamCount` has phase offset for variety
+
+#### ParticleSystemComponent
+Particle system component with modular architecture. Supports various emitter types, lifetime, color, size, and velocity modules.
+
+**Module Types:**
+
+**Emitter:**
+- `explosion` - emits particles spherically in all directions
+  - `radius` - emission sphere radius
+  - `thetaSlicesCount` - number of theta angle sectors
+
+**Lifetime:**
+- `simple` - simple particle lifetime
+  - `lifeTime` - lifetime in seconds
+
+**Color:**
+- `simple` - linear interpolation between two colors
+  - `colorBegin` - starting color (r, g, b, a)
+  - `colorEnd` - ending color (r, g, b, a)
+
+**Size:**
+- `simple` - linear interpolation between two sizes
+  - `sizeBegin` - starting size
+  - `sizeEnd` - ending size
+
+**Velocity Modules:**
+- `explosionInitial` - initial explosion velocity (no parameters)
+- `simple` - simple velocity with deviation
+  - `velocityDirection` - velocity direction (x, y, z)
+  - `velocityDeviation` - velocity deviation (x, y, z)
+  - `extraVelocityPower` - extra velocity power
+- `orbit` - orbital movement
+  - `orbitRadius` - orbit radius
+  - `orbitHeight` - orbit height
+  - `orbitAngularSpeed` - angular rotation speed
+
+**Basic Example:**
+```lua
+_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+    gameObjectName = "c_particleSystem",
+    translation = {x = 0.0, y = 0.0, z = 0.0},
+    scale = {x = 1.0, y = 1.0, z = 1.0},
+    particlesCount = 100,
+    materialProxyId = materialId,
+    
+    emitter = {
+        type = "explosion",
+        radius = 1.0,
+        thetaSlicesCount = 10
+    },
+    
+    lifetime = {
+        type = "simple",
+        lifeTime = 2.5
+    },
+    
+    color = {
+        type = "simple",
+        colorBegin = {r = 1.0, g = 0.7, b = 0.2, a = 1.0},
+        colorEnd = {r = 1.0, g = 0.2, b = 0.02, a = 1.0}
+    },
+    
+    size = {
+        type = "simple",
+        sizeBegin = 0.4,
+        sizeEnd = 0.1
+    },
+    
+    velocityModules = {
+        {type = "explosionInitial"},
+        {
+            type = "simple",
+            velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
+            velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
+            extraVelocityPower = 1.0
+        }
+    }
+}))
+```
+
+**Orbital Movement Example:**
+```lua
+_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+    gameObjectName = "c_particleOrbit",
+    translation = {x = 0.0, y = 0.0, z = 0.0},
+    scale = {x = 1.0, y = 1.0, z = 1.0},
+    particlesCount = 50,
+    materialProxyId = materialId,
+    
+    emitter = {
+        type = "explosion",
+        radius = 0.5,
+        thetaSlicesCount = 8
+    },
+    
+    lifetime = {
+        type = "simple",
+        lifeTime = 5.0
+    },
+    
+    color = {
+        type = "simple",
+        colorBegin = {r = 0.2, g = 0.5, b = 1.0, a = 1.0},
+        colorEnd = {r = 1.0, g = 0.8, b = 0.2, a = 0.5}
+    },
+    
+    size = {
+        type = "simple",
+        sizeBegin = 0.3,
+        sizeEnd = 0.2
+    },
+    
+    velocityModules = {
+        {
+            type = "orbit",
+            orbitRadius = 3.0,
+            orbitHeight = 2.0,
+            orbitAngularSpeed = 1.5
+        }
+    }
+}))
+```
+
+**Complete Example with All Options:**
+```lua
+-- Create particle material
+local materialParser = MaterialParser()
+local particleMaterial = materialParser:ParseMaterialDescriptor("OpaqueParticleMaterial.m")
+scene:RegisterMaterialInstance(particleMaterial)
+
+-- Set material properties
+MaterialPropertySetter.SetMaterialPropertyValue(particleMaterial, "opacity", 1.0)
+MaterialPropertySetter.SetMaterialPropertyValue(particleMaterial, "clipRadius", 0.35)
+
+-- Get material ID
+local materialProxyId = particleMaterial:GetMaterialProxyWp():lock():GetSceneProxyId()
+
+-- Create particle component
+_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+    gameObjectName = "c_explosion_particles",
+    translation = {x = 0.0, y = 5.0, z = 0.0},
+    scale = {x = 1.0, y = 1.0, z = 1.0},
+    particlesCount = 200,
+    materialProxyId = materialProxyId,
+    
+    emitter = {
+        type = "explosion",
+        radius = 2.5,
+        thetaSlicesCount = 12
+    },
+    
+    lifetime = {
+        type = "simple",
+        lifeTime = 3.0
+    },
+    
+    color = {
+        type = "simple",
+        colorBegin = {r = 1.0, g = 1.0, b = 1.0, a = 1.0},
+        colorEnd = {r = 0.5, g = 0.0, b = 0.0, a = 0.0}
+    },
+    
+    size = {
+        type = "simple",
+        sizeBegin = 0.8,
+        sizeEnd = 0.05
+    },
+    
+    velocityModules = {
+        {type = "explosionInitial"},
+        {
+            type = "simple",
+            velocityDirection = {x = 0.0, y = -10.0, z = 0.0},
+            velocityDeviation = {x = 5.0, y = 2.0, z = 5.0},
+            extraVelocityPower = 2.0
+        }
+    }
+}))
+```
+
+**Important Notes:**
+- All modules are optional - if not specified, particles use default values
+- Multiple velocity modules can be used simultaneously - they are applied sequentially
+- Material must be created and registered before creating the component
+- MaterialProxyId is obtained via `material:GetMaterialProxyWp():lock():GetSceneProxyId()`
 
 ---
 

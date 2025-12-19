@@ -17,6 +17,8 @@ class ParticleSystemComponent : public PrimitiveComponent {
     friend class IEmitter;
     friend class IParticleModule;
 
+    size_t mParticlesCount{0};
+
     std::vector<Particle> mParticlesPool;
 
     ParticlesRawDataHandler mParticlesRawDataHandler;
@@ -43,7 +45,7 @@ public:
 
     void AddParticleModule(const std::shared_ptr<IParticleModule>& particleModule);
 
-    void EmitParticles(const size_t particlesCount = 0);
+    void EmitParticles();
 
     void ResetParticles();
 

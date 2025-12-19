@@ -1,10 +1,13 @@
 #pragma once
 
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <json/json.hpp>
 
 namespace nlohmann_utilities {
 glm::vec3 GetRgbFromJsonMap(const nlohmann::json& root);
+
+glm::vec4 GetRgbaFromJsonMap(const nlohmann::json& root);
 
 glm::vec3 GetXyzFromJsonMap(const nlohmann::json& root);
 

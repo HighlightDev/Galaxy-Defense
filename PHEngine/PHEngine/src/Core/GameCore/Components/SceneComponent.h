@@ -35,7 +35,11 @@ protected:
 
 public:
     SceneComponent(
-        const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);
+        const std::string& gameObjectName,
+        const glm::vec3& translation,
+        const glm::vec3& rotation,
+        const glm::vec3& scale,
+        const bool isEnabled);
 
     ~SceneComponent() override;
 

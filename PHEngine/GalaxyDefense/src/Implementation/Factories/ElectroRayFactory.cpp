@@ -41,8 +41,8 @@ std::shared_ptr<MissileActor> ElectroRayFactory::CreateMissile(
     const glm::vec3& scale)
 {
     const auto& rayIndexStr = std::to_string(s_rayCounter++);
-    const auto& rootComponent
-        = std::make_shared<EngineCore::SceneComponent>("c_electroRay_rootComponent_" + rayIndexStr, translation, rotation, scale);
+    const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
+        "c_electroRay_rootComponent_" + rayIndexStr, translation, rotation, scale, true);
     const auto& a_electroRay
         = std::make_shared<ElectroRayActor>("a_electroRay_" + rayIndexStr, rootComponent, combatActorsPoolHandler);
     scene->AddActor(a_electroRay);

@@ -30,16 +30,13 @@ GlobalContext = {}
 UiOverlays = {}
 
 local function createMainMenuOverlay(host, overlayNumber)
-    assert(host ~= nil and type(host) == "userdata" and overlayNumber ~= nil and
-               type(overlayNumber) == "number" and overlayNumber > 0 and
-               overlayNumber <= 1)
+    assert(host ~= nil and type(host) == "userdata" and overlayNumber ~= nil and type(overlayNumber) == "number" and
+               overlayNumber > 0 and overlayNumber <= 1)
     if overlayNumber == 1 then return MainMenuOverlay:new(host) end
     return nil;
 end
 
-local function initialize(host)
-    UiOverlays["MainMenuOverlay"] = createMainMenuOverlay(host, 1)
-end
+local function initialize(host) UiOverlays["MainMenuOverlay"] = createMainMenuOverlay(host, 1) end
 
 function System_OnStart(host)
     initialize(host)
@@ -51,9 +48,7 @@ function System_OnUpdate(host, deltaTimeSec)
 
     for _, value in pairs(UiOverlays) do value:update(host, deltaTimeSec) end
 
-    for _, value in pairs(GlobalContext) do
-        if value.canUpdate then value:update(host) end
-    end
+    for _, value in pairs(GlobalContext) do if value.canUpdate then value:update(host) end end
 
     for _, value in pairs(UiOverlays) do value:sendDataToReplicator(host) end
 end
@@ -61,17 +56,13 @@ end
 function System_OnEngineEventTriggered(host, eventName, jsonArgs)
     assert(eventName ~= nil and type(eventName) == "string")
 
-    for _, value in pairs(UiOverlays) do
-        value.onEngineEventTriggered(eventName, jsonArgs)
-    end
+    for _, value in pairs(UiOverlays) do value.onEngineEventTriggered(eventName, jsonArgs) end
 end
 
 function System_OnGameEventTriggered(host, eventName, jsonArgs)
     assert(eventName ~= nil and type(eventName) == "string")
 
-    for _, value in pairs(UiOverlays) do
-        value.onGameEventTriggered(eventName, jsonArgs)
-    end
+    for _, value in pairs(UiOverlays) do value.onGameEventTriggered(eventName, jsonArgs) end
 end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)

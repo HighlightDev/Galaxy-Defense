@@ -74,14 +74,11 @@ function CreateLevel(host)
 		,warning.png
 		]])
 
-    _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1,
-                 1, "")
+    _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
 
-    local a_lightId = _CreateActor(host, "Actor", "MainLightActor", 0, 0, 0, 0,
-                                   0, 0, 1, 1, 1, "")
+    local a_lightId = _CreateActor(host, "Actor", "MainLightActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
 
-    _CreateAndAttachComponentToActor(host, a_lightId,
-                                     "DirectionalLightComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_lightId, "DirectionalLightComponent", Json.encode({
         gameObjectName = "MainLightComp",
         rotation = {x = 0, y = 0, z = 0},
         direction = {x = -0.2, y = -0.5, z = 0},
@@ -101,16 +98,12 @@ function CreateLevelProgressStages(host)
     trackers[1] = {
         type = "MissedSpaceshipsTracker",
         spaceships_count = 20,
-        hint = string.format(
-            "Не пропустите более %d космических кораблей",
-            20)
+        hint = string.format("Не пропустите более %d космических кораблей", 20)
     }
     trackers[2] = {
         type = "DestroySpaceshipsTracker",
         spaceships_count = 10,
-        hint = string.format(
-            "Уничтожьте %d космических кораблей",
-            10)
+        hint = string.format("Уничтожьте %d космических кораблей", 10)
     }
     local stage = {name = "weak_spaceships_attack", trackers = trackers}
     stagesQueue[1] = stage

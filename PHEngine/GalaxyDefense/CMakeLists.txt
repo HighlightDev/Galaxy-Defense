@@ -210,11 +210,6 @@ add_custom_command(
   COMMAND
     ${CMAKE_COMMAND} -E echo
     "Start copy of resources to build directory: $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/res"
-)
-
-add_custom_command(
-  TARGET ${EXECUTABLE_NAME}
-  POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
           ${PROJECT_SOURCE_DIR}/PHEngine/res/
           $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/res)

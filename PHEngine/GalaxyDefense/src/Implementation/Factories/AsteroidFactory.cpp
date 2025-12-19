@@ -44,7 +44,7 @@ std::shared_ptr<SpaceObjectActor> AsteroidFactory::CreateSpaceObject(
 {
     const auto& asteroidIndexStr = std::to_string(s_asteroidCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
-        "c_asteroid_root_" + asteroidIndexStr, translation, glm::vec3(0), glm::vec3(1));
+        "c_asteroid_root_" + asteroidIndexStr, translation, glm::vec3(0), glm::vec3(1), true);
     const auto& a_asteroid = std::make_shared<AsteroidActor>("a_asteroid_" + asteroidIndexStr, rootComponent);
     scene->AddActor(a_asteroid);
 
@@ -70,7 +70,7 @@ std::shared_ptr<SpaceObjectActor> AsteroidFactory::CreateSpaceObject(
     MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "uvScale", uvScale);
 
     const auto d_mesh = std::make_shared<MeshComponentData>(
-        "c_asteroid_mesh_" + asteroidIndexStr, "asteroid.fbx", glm::vec3(0), rotation, scale, "", asteroidPbs_mat);
+        "c_asteroid_mesh_" + asteroidIndexStr, "asteroid.fbx", glm::vec3(0), rotation, scale, "", asteroidPbs_mat, true, true);
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
     const auto& c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
     a_asteroid->AddComponent(c_mesh);

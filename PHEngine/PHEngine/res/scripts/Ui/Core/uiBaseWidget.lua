@@ -25,15 +25,7 @@ setup()
 local CommonUiWidgetCreator = require("Ui/Core/commonUiWidgetCreator")
 
 UiBaseWidget = {
-    EnginePropertyType = {
-        Undefined = 0,
-        Float = 1,
-        Vec3 = 2,
-        Boolean = 3,
-        Integer = 4,
-        iVec2 = 5,
-        Vec2 = 6
-    },
+    EnginePropertyType = {Undefined = 0, Float = 1, Vec3 = 2, Boolean = 3, Integer = 4, iVec2 = 5, Vec2 = 6},
     AnimationInterpolationFunctionType = {LINEAR = 0}
 }
 
@@ -56,9 +48,7 @@ function UiBaseWidget:new()
     return setmetatable(newObj, self)
 end
 
-function UiBaseWidget:subscribeOnLuaProxyReady(callback)
-    self.luaProxyReadyCallback = callback
-end
+function UiBaseWidget:subscribeOnLuaProxyReady(callback) self.luaProxyReadyCallback = callback end
 
 function UiBaseWidget:checkLuaProxyReady(host)
     if self.luaProxyReady ~= true then
@@ -66,9 +56,7 @@ function UiBaseWidget:checkLuaProxyReady(host)
         self.widgetName = _GetUiWidgetName(host, self.luaProxyId)
         if self.luaProxyReady == true then
             -- print("UiBaseWidget:checkLuaProxyReady: " .. tostring(self.widgetName) .. " is now ready.")
-            if self.luaProxyReadyCallback ~= nil then
-                self.luaProxyReadyCallback(host)
-            end
+            if self.luaProxyReadyCallback ~= nil then self.luaProxyReadyCallback(host) end
         end
     end
 end

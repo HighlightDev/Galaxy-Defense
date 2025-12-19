@@ -8,4 +8,8 @@
 		name: "opacity"
 		type: "float"
 	</property>
+	<property>
+		name: "clipRadius"
+		type: "float"
+	</property>
 </properties>

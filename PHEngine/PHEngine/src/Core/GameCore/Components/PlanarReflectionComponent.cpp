@@ -14,7 +14,7 @@ using namespace EngineMath;
 namespace EngineCore {
 
 PlanarReflectionComponent::PlanarReflectionComponent(const std::shared_ptr<PlanarReflectionComponentData>& data)
-    : SceneComponent(data->EngineObjectName, data->m_translation, data->m_eulerRotationDegrees, data->m_scale)
+    : SceneComponent(data->EngineObjectName, data->m_translation, data->m_eulerRotationDegrees, data->m_scale, data->mIsEnabled)
     , mReflectionPlane()
     , mOwnerCameraWp(data->m_ownerCamera)
     , mRenderTargetViewPortInfo(data->m_fboViewPortInfo)

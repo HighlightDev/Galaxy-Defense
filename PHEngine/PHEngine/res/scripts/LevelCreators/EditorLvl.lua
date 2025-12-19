@@ -49,14 +49,11 @@ function CreateLevel(host)
         dummy_metallic_roughness.png
 		]])
 
-    _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1,
-                 1, "")
+    _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
 
-    local a_lightId = _CreateActor(host, "Actor", "MainLightActor", 0, 0, 0, 0,
-                                   0, 0, 1, 1, 1, "")
+    local a_lightId = _CreateActor(host, "Actor", "MainLightActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")
 
-    _CreateAndAttachComponentToActor(host, a_lightId,
-                                     "DirectionalLightComponent", Json.encode({
+    _CreateAndAttachComponentToActor(host, a_lightId, "DirectionalLightComponent", Json.encode({
         gameObjectName = "MainLightComp",
         rotation = {x = 0, y = 0, z = 0},
         direction = {x = -0.2, y = -0.5, z = 0},

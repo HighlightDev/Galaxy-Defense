@@ -42,7 +42,7 @@ std::shared_ptr<MissileActor> FreezingRayFactory::CreateMissile(
 {
     const auto& rayIndexStr = std::to_string(s_rayCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
-        "c_freezingRay_rootComponent_" + rayIndexStr, translation, rotation, scale);
+        "c_freezingRay_rootComponent_" + rayIndexStr, translation, rotation, scale, true);
     const auto& a_freezingRay
         = std::make_shared<FreezingRayActor>("a_freezingRay_" + rayIndexStr, rootComponent, combatActorsPoolHandler);
     scene->AddActor(a_freezingRay);

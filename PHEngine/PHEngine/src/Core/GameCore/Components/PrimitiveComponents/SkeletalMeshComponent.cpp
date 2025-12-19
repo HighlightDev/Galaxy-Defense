@@ -21,7 +21,9 @@ SkeletalMeshComponent::SkeletalMeshComponent(
         meshComponentData->EngineObjectName,
         meshComponentData->m_translation,
         meshComponentData->m_eulerRotationDegrees,
-        meshComponentData->m_scale)
+        meshComponentData->m_scale,
+        meshComponentData->mIsEnabled,
+        meshComponentData->mIsVisible)
     , m_renderData(renderData)
     , mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() + meshComponentData->m_luaScriptPath)
     , mLuaInstance(std::make_unique<LuaWrapper>())

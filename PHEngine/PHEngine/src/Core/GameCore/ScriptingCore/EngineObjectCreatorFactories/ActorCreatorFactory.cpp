@@ -19,7 +19,8 @@ int32_t ActorCreatorFactory::CreateActor(
     const auto& sceneSp = sceneWp.lock();
     ext_assert(sceneSp, "Scene pointer is null in CreateActor");
     const auto& actor = std::make_shared<Actor>(
-        actorName, std::make_shared<SceneComponent>(actorName + "_root", rootTranslation, rootEulerRotationAngles, rootScale));
+        actorName,
+        std::make_shared<SceneComponent>(actorName + "_root", rootTranslation, rootEulerRotationAngles, rootScale, true));
     sceneSp->AddActor(actor);
     return actor->GetObjectId();
 }

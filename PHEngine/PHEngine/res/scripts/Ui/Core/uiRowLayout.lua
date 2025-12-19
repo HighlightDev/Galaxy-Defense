@@ -39,8 +39,7 @@ function UiRowLayout:new(host, name)
     end
 
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-                                                            CommonUiWidgetCreator.CommonUiWidgetType
-                                                                .UI_ROW_LAYOUT,
+                                                            CommonUiWidgetCreator.CommonUiWidgetType.UI_ROW_LAYOUT,
                                                             jsonParameters)
 
     local rowLayoutProperties = {
@@ -66,12 +65,10 @@ function UiRowLayout:updateFromReplicatorData(host)
             self:extractUiItemBaseReplicatorData(parsedJson)
 
             if parsedJson["spacing"] ~= nil then
-                self.rowLayoutProperties.spacing.value = tonumber(
-                                                             parsedJson["spacing"])
+                self.rowLayoutProperties.spacing.value = tonumber(parsedJson["spacing"])
             end
             if parsedJson["alignment"] ~= nil then
-                self.rowLayoutProperties.alignment.value = tonumber(
-                                                               parsedJson["alignment"])
+                self.rowLayoutProperties.alignment.value = tonumber(parsedJson["alignment"])
             end
         end
     end
@@ -89,8 +86,7 @@ function UiRowLayout:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
-                                     json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
     end
 end
 
@@ -105,9 +101,8 @@ function UiRowLayout:setSpacing(spacing)
 end
 
 function UiRowLayout:setAlignment(alignment)
-    assert(
-        alignment ~= nil and alignment >= UiRowLayout.UiRowAlignmentType.LEFT and
-            alignment <= UiRowLayout.UiRowAlignmentType.CENTER)
+    assert(alignment ~= nil and alignment >= UiRowLayout.UiRowAlignmentType.LEFT and alignment <=
+               UiRowLayout.UiRowAlignmentType.CENTER)
     if self.rowLayoutProperties.alignment.value ~= alignment then
         self.rowLayoutProperties.alignment.value = alignment
         self.rowLayoutProperties.alignment.dirty = true

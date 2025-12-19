@@ -41,8 +41,7 @@ function UiGridLayout:new(host, name)
     end
 
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-                                                            CommonUiWidgetCreator.CommonUiWidgetType
-                                                                .UI_GRID_LAYOUT,
+                                                            CommonUiWidgetCreator.CommonUiWidgetType.UI_GRID_LAYOUT,
                                                             jsonParameters)
 
     local gridLayoutProperties = {
@@ -50,14 +49,8 @@ function UiGridLayout:new(host, name)
         vertical_spacing = {value = 0, dirty = false},
         columns_count = {value = 1, dirty = false},
         rows_count = {value = 1, dirty = false},
-        horizontal_alignment = {
-            value = UiGridLayout.UiGridHorizontalAlignmentType.LEFT,
-            dirty = false
-        },
-        vertical_alignment = {
-            value = UiGridLayout.UiGridVerticalAlignmentType.TOP,
-            dirty = false
-        }
+        horizontal_alignment = {value = UiGridLayout.UiGridHorizontalAlignmentType.LEFT, dirty = false},
+        vertical_alignment = {value = UiGridLayout.UiGridVerticalAlignmentType.TOP, dirty = false}
     }
 
     local uiGridLayoutObj = UiGridLayout.uiItemBaseClass.new(self)
@@ -77,28 +70,22 @@ function UiGridLayout:updateFromReplicatorData(host)
             self:extractUiItemBaseReplicatorData(parsedJson)
 
             if parsedJson["horizontal_spacing"] ~= nil then
-                self.gridLayoutProperties.horizontal_spacing.value = tonumber(
-                                                                         parsedJson["horizontal_spacing"])
+                self.gridLayoutProperties.horizontal_spacing.value = tonumber(parsedJson["horizontal_spacing"])
             end
             if parsedJson["vertical_spacing"] ~= nil then
-                self.gridLayoutProperties.vertical_spacing.value = tonumber(
-                                                                       parsedJson["vertical_spacing"])
+                self.gridLayoutProperties.vertical_spacing.value = tonumber(parsedJson["vertical_spacing"])
             end
             if parsedJson["columns_count"] ~= nil then
-                self.gridLayoutProperties.columns_count.value = tonumber(
-                                                                    parsedJson["columns_count"])
+                self.gridLayoutProperties.columns_count.value = tonumber(parsedJson["columns_count"])
             end
             if parsedJson["rows_count"] ~= nil then
-                self.gridLayoutProperties.rows_count.value = tonumber(
-                                                                 parsedJson["rows_count"])
+                self.gridLayoutProperties.rows_count.value = tonumber(parsedJson["rows_count"])
             end
             if parsedJson["horizontal_alignment"] ~= nil then
-                self.gridLayoutProperties.horizontal_alignment.value = tonumber(
-                                                                           parsedJson["horizontal_alignment"])
+                self.gridLayoutProperties.horizontal_alignment.value = tonumber(parsedJson["horizontal_alignment"])
             end
             if parsedJson["vertical_alignment"] ~= nil then
-                self.gridLayoutProperties.vertical_alignment.value = tonumber(
-                                                                         parsedJson["vertical_alignment"])
+                self.gridLayoutProperties.vertical_alignment.value = tonumber(parsedJson["vertical_alignment"])
             end
         end
     end
@@ -116,8 +103,7 @@ function UiGridLayout:sendDataToReplicator(host)
         end
     end
     if basePropsDirty or isPropsDirty then
-        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId,
-                                     json.encode(propertiesData))
+        _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData))
     end
 end
 
@@ -158,18 +144,13 @@ end
 function UiGridLayout:setAlignment(horizontalAlignment, verticalAlignment)
     assert(horizontalAlignment ~= nil and type(horizontalAlignment) == "number")
     assert(verticalAlignment ~= nil and type(verticalAlignment) == "number")
-    assert(horizontalAlignment >=
-               UiGridLayout.UiGridHorizontalAlignmentType.LEFT and
-               horizontalAlignment <=
+    assert(horizontalAlignment >= UiGridLayout.UiGridHorizontalAlignmentType.LEFT and horizontalAlignment <=
                UiGridLayout.UiGridHorizontalAlignmentType.RIGHT)
-    assert(verticalAlignment >= UiGridLayout.UiGridVerticalAlignmentType.TOP and
-               verticalAlignment <=
+    assert(verticalAlignment >= UiGridLayout.UiGridVerticalAlignmentType.TOP and verticalAlignment <=
                UiGridLayout.UiGridVerticalAlignmentType.BOTTOM)
 
-    if self.gridLayoutProperties.horizontal_alignment.value ~=
-        horizontalAlignment then
-        self.gridLayoutProperties.horizontal_alignment.value =
-            horizontalAlignment
+    if self.gridLayoutProperties.horizontal_alignment.value ~= horizontalAlignment then
+        self.gridLayoutProperties.horizontal_alignment.value = horizontalAlignment
         self.gridLayoutProperties.horizontal_alignment.dirty = true
     end
 

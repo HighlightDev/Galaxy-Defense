@@ -9,11 +9,10 @@ using namespace Graphics::Renderer;
 
 namespace EngineCore {
 LightComponent::LightComponent(const std::shared_ptr<LightComponentData>& data)
-    : SceneComponent(data->EngineObjectName, data->Translation, data->Rotation, data->Scale)
+    : SceneComponent(data->EngineObjectName, data->Translation, data->Rotation, data->Scale, data->mIsEnabled)
     , mLightRenderData()
     , mIsVisible(data->mIsVisible)
 {
-    mIsEnabled->SetValue(data->mIsEnabled, false);
 }
 
 LightComponent::~LightComponent()

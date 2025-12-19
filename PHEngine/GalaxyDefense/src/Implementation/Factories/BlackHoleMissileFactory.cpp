@@ -48,7 +48,7 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
 {
     const auto& missileIndexStr = std::to_string(s_blackHoleMissileCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
-        "c_blackHoleMissile_rootComponent_" + missileIndexStr, translation, rotation, scale);
+        "c_blackHoleMissile_rootComponent_" + missileIndexStr, translation, rotation, scale, true);
     const auto& a_missile = std::make_shared<BlackHoleMissileActor>(
         "a_blackHoleMissile_" + missileIndexStr, rootComponent, combatActorsPoolHandler);
     scene->AddActor(a_missile);
@@ -63,7 +63,7 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
         a_missileCombatActivePhase = std::make_shared<Actor>(
             "a_missileCombatActivePhase_" + missileIndexStr,
             std::make_shared<EngineCore::SceneComponent>(
-                "c_missileCombatActivePhase_rootComponent_" + missileIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1)));
+                "c_missileCombatActivePhase_rootComponent_" + missileIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1), true));
 
         MaterialParser materialParser;
         const std::shared_ptr<IMaterial>& pbs_mat = materialParser.ParseMaterialDescriptor("MissileMaterial.m");
@@ -126,7 +126,7 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
         a_missileExplosionSecondPhase = std::make_shared<MissileActor>(
             "a_missileExplosionSecondPhase" + missileIndexStr,
             std::make_shared<EngineCore::SceneComponent>(
-                "c_missileExplosionSecondPhase_rootComponent_" + missileIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1)),
+                "c_missileExplosionSecondPhase_rootComponent_" + missileIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1), true),
             combatActorsPoolHandler);
 
         MaterialParser materialParser;

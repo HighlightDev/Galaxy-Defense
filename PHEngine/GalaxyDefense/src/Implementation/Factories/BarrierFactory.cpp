@@ -28,7 +28,7 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
 {
     const auto& barrierIndexStr = std::to_string(s_barrierCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
-        "c_barrier_root_" + barrierIndexStr, translation, glm::vec3(), glm::vec3(1.0));
+        "c_barrier_root_" + barrierIndexStr, translation, glm::vec3(), glm::vec3(1.0), true);
     const auto& a_barrier = std::make_shared<BarrierActor>("a_barrier_" + barrierIndexStr, rootComponent);
     scene->AddActor(a_barrier);
 

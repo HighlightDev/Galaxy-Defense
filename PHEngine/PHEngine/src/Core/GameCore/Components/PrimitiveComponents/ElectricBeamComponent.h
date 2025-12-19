@@ -56,7 +56,9 @@ public:
     ElectricBeamComponent(
         const std::string& gameObjectName,
         const MeshRenderData& renderData,
-        const RuntimeGeneratedMeshPoolParameters& mBeamMeshPoolParams);
+        const RuntimeGeneratedMeshPoolParameters& mBeamMeshPoolParams,
+        const bool isEnabled = true,
+        const bool isVisible = true);
 
     ~ElectricBeamComponent() override;
 

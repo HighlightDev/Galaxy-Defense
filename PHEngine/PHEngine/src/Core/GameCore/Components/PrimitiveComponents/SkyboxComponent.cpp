@@ -12,12 +12,10 @@ namespace EngineCore {
 using namespace EngineUtility;
 
 SkyboxComponent::SkyboxComponent(const std::shared_ptr<SkyboxComponentData>& data, const SkyboxRenderData& renderData)
-    : PrimitiveComponent(data->EngineObjectName, glm::vec3(), glm::vec3(), data->m_scale)
+    : PrimitiveComponent(data->EngineObjectName, glm::vec3(), glm::vec3(), data->m_scale, data->mIsEnabled, data->mIsVisible)
     , m_rotateSpeed(2.0f)
     , m_renderData(renderData)
 {
-    // skybox must be first rendered primitive
-    mSortOrderValue = std::numeric_limits<int32_t>::min();
 }
 
 SkyboxComponent::~SkyboxComponent()

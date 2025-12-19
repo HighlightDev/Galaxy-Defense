@@ -27,11 +27,11 @@ EngineObjectCreator::EngineObjectCreator()
            "HumanoidPhysicsMovementComponent",
            "PlatformTraverseComponent",
            "SkyboxComponent",
-           "WaterPlaneComponent",
            "PlanarReflectionComponent",
            "InputComponent",
            "BillboardComponent",
-           "ElectricBeamComponent"};
+           "ElectricBeamComponent",
+           "ParticleSystemComponent"};
 }
 
 void EngineObjectCreator::SetScene(const std::weak_ptr<Scene>& scene)

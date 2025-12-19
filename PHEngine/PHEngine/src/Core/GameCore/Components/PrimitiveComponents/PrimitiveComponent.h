@@ -44,7 +44,12 @@ protected:
 
 public:
     PrimitiveComponent(
-        const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);
+        const std::string& gameObjectName,
+        const glm::vec3& translation,
+        const glm::vec3& rotation,
+        const glm::vec3& scale,
+        const bool isEnabled = true,
+        const bool isVisible = true);
 
     ~PrimitiveComponent() override;
 

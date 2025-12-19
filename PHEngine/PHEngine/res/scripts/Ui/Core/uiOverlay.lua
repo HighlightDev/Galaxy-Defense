@@ -33,13 +33,9 @@ function UiOverlay:createOverlay(host, overlayName, overlayCanvas)
     print("UiOverlay::createOverlay")
     assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil)
 
-    local uiOverlayJsonParameters = json.encode({
-        overlayName = overlayName,
-        canvasLuaProxyId = overlayCanvas.luaProxyId
-    })
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-                                                            CommonUiWidgetCreator.CommonUiWidgetType
-                                                                .UI_OVERLAY,
+    local uiOverlayJsonParameters =
+        json.encode({overlayName = overlayName, canvasLuaProxyId = overlayCanvas.luaProxyId})
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_OVERLAY,
                                                             uiOverlayJsonParameters)
 
     local newObj = {
@@ -66,14 +62,10 @@ function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
     print("UiOverlay::createBackgroundOverlay")
     assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil)
 
-    local uiOverlayJsonParameters = json.encode({
-        overlayName = overlayName,
-        canvasLuaProxyId = overlayCanvas.luaProxyId
-    })
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-                                                            CommonUiWidgetCreator.CommonUiWidgetType
-                                                                .UI_BACKGROUND_OVERLAY,
-                                                            uiOverlayJsonParameters)
+    local uiOverlayJsonParameters =
+        json.encode({overlayName = overlayName, canvasLuaProxyId = overlayCanvas.luaProxyId})
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType
+                                                                .UI_BACKGROUND_OVERLAY, uiOverlayJsonParameters)
 
     local newObj = {
         luaProxyId = luaProxyId,
@@ -112,9 +104,7 @@ function UiOverlay:updateFromReplicatorData(host)
 
     for _, value in pairs(self.widgets) do
         value:updateFromReplicatorData(host)
-        if value.updateFromReplicatorMouseInputData ~= nil then
-            value:updateFromReplicatorMouseInputData(host)
-        end
+        if value.updateFromReplicatorMouseInputData ~= nil then value:updateFromReplicatorMouseInputData(host) end
     end
 end
 
@@ -125,17 +115,14 @@ function UiOverlay:sendDataToReplicator(host)
 end
 
 function UiOverlay:addWidget(widget)
-    assert(
-        widget ~= nil and type(widget) == "table" and widget.typeName ~= nil and
-            type(widget.typeName) == "string")
+    assert(widget ~= nil and type(widget) == "table" and widget.typeName ~= nil and type(widget.typeName) == "string")
     self.widgets[#self.widgets + 1] = widget
 end
 
 function UiOverlay:addCompoundWidget(compoundWidget)
-    assert(compoundWidget ~= nil and type(compoundWidget) == "table" and
-               compoundWidget.typeName == nil and
-               compoundWidget.onCompoundWidgetInitialize ~= nil and
-               type(compoundWidget.onCompoundWidgetInitialize) == "function")
+    assert(compoundWidget ~= nil and type(compoundWidget) == "table" and compoundWidget.typeName == nil and
+               compoundWidget.onCompoundWidgetInitialize ~= nil and type(compoundWidget.onCompoundWidgetInitialize) ==
+               "function")
     self.compoundWidgets[#self.compoundWidgets + 1] = compoundWidget
 end
 
@@ -148,14 +135,12 @@ function UiOverlay:removeWidget(widget)
                 break
             end
         end
-    elseif widget.onCompoundWidgetInitialize ~= nil and
-        type(widget.onCompoundWidgetInitialize) == "function" then
+    elseif widget.onCompoundWidgetInitialize ~= nil and type(widget.onCompoundWidgetInitialize) == "function" then
         assert(widget.backgroundTile.luaProxyReady)
         for index, iterate_widget in pairs(self.compoundWidgets) do
             if iterate_widget.backgroundTile ~= nil then
                 assert(widget.backgroundTile ~= nil, "backgroundTile is null")
-                if widget.backgroundTile.luaProxyId ==
-                    iterate_widget.backgroundTile.luaProxyId then
+                if widget.backgroundTile.luaProxyId == iterate_widget.backgroundTile.luaProxyId then
                     table.remove(self.compoundWidgets, index)
                     break
                 end
@@ -165,8 +150,7 @@ function UiOverlay:removeWidget(widget)
 end
 
 function UiOverlay:subscribeOnAllWidgetLuaProxiesReady(callback)
-    self.allWidgetLuaProxiesReadyCallbacks[#self.allWidgetLuaProxiesReadyCallbacks +
-        1] = callback
+    self.allWidgetLuaProxiesReadyCallbacks[#self.allWidgetLuaProxiesReadyCallbacks + 1] = callback
 end
 
 function UiOverlay:update(host, deltaTimeSec)
@@ -174,24 +158,14 @@ function UiOverlay:update(host, deltaTimeSec)
 
     if self.allWidgetLuaProxiesReady ~= true then
         local allProxiesReady = true
-        for _, value in pairs(self.widgets) do
-            if value.luaProxyReady ~= true then
-                allProxiesReady = false
-            end
-        end
+        for _, value in pairs(self.widgets) do if value.luaProxyReady ~= true then allProxiesReady = false end end
         if allProxiesReady and self.overlayCanvas.luaProxyReady then
             self.allWidgetLuaProxiesReady = true
-            for index, value in pairs(self.compoundWidgets) do
-                value:onPreCompoundWidgetInitialize()
-            end
+            for index, value in pairs(self.compoundWidgets) do value:onPreCompoundWidgetInitialize() end
 
-            for _, callback in pairs(self.allWidgetLuaProxiesReadyCallbacks) do
-                callback(host, self)
-            end
+            for _, callback in pairs(self.allWidgetLuaProxiesReadyCallbacks) do callback(host, self) end
 
-            for _, value in pairs(self.compoundWidgets) do
-                value:onCompoundWidgetInitialize()
-            end
+            for _, value in pairs(self.compoundWidgets) do value:onCompoundWidgetInitialize() end
         end
     end
 
