@@ -31,6 +31,11 @@ void BillboardShader::SetRotationRadians(const float rotationRadians)
     u_rotationRadians.LoadUniform(rotationRadians);
 }
 
+void BillboardShader::SetIsFlipped(const int32_t isFlipped)
+{
+    u_isFlipped.LoadUniform(isFlipped);
+}
+
 void BillboardShader::AccessAllUniformLocations(uint32_t shaderProgramID)
 {
     Shader::AccessAllUniformLocations(shaderProgramID);
@@ -39,6 +44,7 @@ void BillboardShader::AccessAllUniformLocations(uint32_t shaderProgramID)
     u_screenResolution = GetUniform("screenResolution", shaderProgramID);
     u_applyScreenAspectRatio = GetUniform("applyScreenAspectRatio", shaderProgramID);
     u_rotationRadians = GetUniform("rotationRadians", shaderProgramID);
+    u_isFlipped = GetUniform("isFlipped", shaderProgramID);
 }
 
 } // namespace EngineCore::ShaderImpl

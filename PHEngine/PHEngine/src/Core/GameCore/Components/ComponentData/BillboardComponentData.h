@@ -17,6 +17,7 @@ struct BillboardComponentData : public ComponentData {
         const bool applyScreenAspectRatio,
         const glm::vec3& translation,
         const float rotationRadians,
+        const bool isFlipped,
         const glm::vec3& scale,
         const std::shared_ptr<Graphics::IMaterial>& material,
         const std::function<glm::mat4(const glm::mat4&)> viewMatrixTransformer
@@ -30,6 +31,7 @@ struct BillboardComponentData : public ComponentData {
         , mApplyScreenAspectRatio(applyScreenAspectRatio)
         , m_translation(translation)
         , m_rotationRadians(rotationRadians)
+        , mIsFlipped(isFlipped)
         , m_scale(scale)
         , m_material(material)
         , mViewMatrixTransformer(viewMatrixTransformer)
@@ -42,6 +44,7 @@ struct BillboardComponentData : public ComponentData {
     bool mApplyScreenAspectRatio;
     glm::vec3 m_translation;
     float m_rotationRadians;
+    bool mIsFlipped;
     glm::vec3 m_scale;
     std::function<glm::mat4(const glm::mat4&)> mViewMatrixTransformer;
     std::function<glm::mat4(const glm::mat4&)> mProjectionMatrixTransformer;

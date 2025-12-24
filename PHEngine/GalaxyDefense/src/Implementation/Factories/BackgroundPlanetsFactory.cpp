@@ -69,6 +69,7 @@ std::shared_ptr<BackgroundSpaceObjectActor> BackgroundPlanetsFactory::CreateSpac
         true,
         glm::vec3(0.0f),
         0.0f,
+        false,
         glm::vec3(1.0f),
         billboard_material);
     const auto& billboardComponent

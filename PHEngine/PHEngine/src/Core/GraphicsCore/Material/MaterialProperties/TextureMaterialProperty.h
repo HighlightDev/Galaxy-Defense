@@ -13,10 +13,13 @@ struct TextureMaterialProperty : public MaterialProperty {
 private:
     MaterialPropertyValueType m_value;
 
+    bool m_isGrayscale{false};
+
 public:
     TextureMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
         : MaterialProperty(propertyName)
         , m_value(propertyValue)
+        , m_isGrayscale(propertyValue->GetTextureParameters().bIsGrayscale)
     {
     }
 
@@ -51,16 +54,23 @@ public:
     inline void SetValue(MaterialPropertyValueType value)
     {
         m_value = value;
+        m_isGrayscale = value->GetTextureParameters().bIsGrayscale;
     }
 
     inline void SetValue(ITexture* value)
     {
         m_value = std::shared_ptr<ITexture>(value);
+        m_isGrayscale = value->GetTextureParameters().bIsGrayscale;
     }
 
     inline std::shared_ptr<ITexture> GetValue() const
     {
         return m_value;
+    }
+
+    inline bool IsGrayscale() const
+    {
+        return m_isGrayscale;
     }
 };
 } // namespace Graphics

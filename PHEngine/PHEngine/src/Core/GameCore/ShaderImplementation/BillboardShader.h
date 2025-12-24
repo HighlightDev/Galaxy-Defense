@@ -10,7 +10,7 @@ namespace ShaderImpl {
 class BillboardShader : public Shader {
 
 private:
-    Uniform u_billboardExtent, u_screenResolution, u_applyScreenAspectRatio, u_rotationRadians;
+    Uniform u_billboardExtent, u_screenResolution, u_applyScreenAspectRatio, u_rotationRadians, u_isFlipped;
 
 public:
     BillboardShader(const ShaderParams& params);
@@ -24,6 +24,8 @@ public:
     void SetApplyScreenAspectRatio(const bool applyScreenAspectRatio);
 
     void SetRotationRadians(const float rotationRadians);
+
+    void SetIsFlipped(const int32_t isFlipped);
 
 protected:
     void AccessAllUniformLocations(uint32_t shaderProgramID) override;

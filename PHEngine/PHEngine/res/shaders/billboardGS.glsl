@@ -13,6 +13,7 @@ uniform float extent;
 uniform vec2 screenResolution;
 uniform bool applyScreenAspectRatio;
 uniform float rotationRadians;
+uniform int isFlipped;
 
 in MATERIAL_VS_OUTPUT VsOutput[];
 
@@ -30,7 +31,7 @@ void main()
 {
     mat4 rotMatrix = rollMatrix(rotationRadians);
 
-    float aspectRatio = screenResolution.x / screenResolution.y;
+    float aspectRatio = applyScreenAspectRatio ? screenResolution.x / screenResolution.y : 1.0;
     vec4 vertex1 = vec4(-extent, extent * aspectRatio, 0.0, 0.0);
     vec4 vertex2 = vec4(-extent, -extent * aspectRatio, 0.0, 0.0);
     vec4 vertex3 = vec4(extent, extent * aspectRatio, 0.0, 0.0);
@@ -41,10 +42,10 @@ void main()
     vertex3 = rotMatrix * vertex3;
     vertex4 = rotMatrix * vertex4;
 
-    vec3 texCoordsVertex1 = vec3(0.0, 1.0, 0.0);
-    vec3 texCoordsVertex2 = vec3(0.0, 0.0, 0.0);
-    vec3 texCoordsVertex3 = vec3(1.0, 1.0, 0.0);
-    vec3 texCoordsVertex4 = vec3(1.0, 0.0, 0.0);
+    vec3 texCoordsVertex1 = vec3(1.0 * isFlipped, 1.0, 0.0);
+    vec3 texCoordsVertex2 = vec3(1.0 * isFlipped, 0.0, 0.0);
+    vec3 texCoordsVertex3 = vec3(1.0 - isFlipped, 1.0, 0.0);
+    vec3 texCoordsVertex4 = vec3(1.0 - isFlipped, 0.0, 0.0);
 
     gl_Position = projectionMatrix * (vertex1 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];

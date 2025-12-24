@@ -20,6 +20,7 @@ BillboardSceneProxy::BillboardSceneProxy(const BillboardComponent* component)
     , mViewMatrixTransformer(component->GetViewMatrixTransformer())
     , mProjectionMatrixTransformer(component->GetProjectionMatrixTransformer())
     , mRotationRadians(component->GetRotationRadians())
+    , mIsFlipped(component->GetIsFlipped())
 {
 }
 
@@ -95,6 +96,7 @@ void BillboardSceneProxy::Render(
     billboardShader->GetShader()->SetScreenResolution(screenResolution);
     billboardShader->GetShader()->SetApplyScreenAspectRatio(mApplyScreenAspectRatio);
     billboardShader->GetShader()->SetRotationRadians(mRotationRadians);
+    billboardShader->GetShader()->SetIsFlipped(mIsFlipped);
     m_skin->GetBuffer()->RenderVAO(GL_POINTS);
 }
 
@@ -133,5 +135,9 @@ void BillboardSceneProxy::SetRotationRadians(const float rotationRadians)
     mRotationRadians = rotationRadians;
 }
 
+void BillboardSceneProxy::SetIsFlipped(const bool isFlipped)
+{
+    mIsFlipped = isFlipped;
+}
 } // namespace Proxy
 } // namespace Graphics

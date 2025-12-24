@@ -38,6 +38,9 @@ std::vector<std::string> MaterialProxy::GetUniformNames() const
     std::for_each(mProperties.begin(), mProperties.end(), [&](const auto& property) {
         if (property->GetPropertyType() != MaterialProperty::eMaterialPropertyType::FLOAT_INSTANCED_PROPERTY) {
             result.push_back(property->GetPropertyName());
+            if (property->GetPropertyType() == MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY) {
+                result.push_back(property->GetPropertyName() + "_isGrayscale");
+            }
         }
     });
 

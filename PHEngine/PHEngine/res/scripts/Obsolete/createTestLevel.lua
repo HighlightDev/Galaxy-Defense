@@ -459,7 +459,8 @@ function CreateTestLevel(host)
     _SetFloatToMaterial(host, particlesMat, 0.35, "clipRadius")
 
     local a_particle = _CreateActor(host, "Actor", "ParticlesActor", 0, 40, 0, 0, 0, 0, 1, 1, 1, "")
-    local particleComponent = _CreateAndAttachComponentToActor(host, a_particle, "ParticleSystemComponent", Json.encode({
+    local particleComponent = _CreateAndAttachComponentToActor(host, a_particle, "ParticleSystemComponent",
+                                                               Json.encode({
         gameObjectName = "c_particleSystem",
         translation = {x = 0.0, y = 0.0, z = 0.0},
         scale = {x = 1.0, y = 1.0, z = 1.0},
@@ -482,6 +483,24 @@ function CreateTestLevel(host)
                 extraVelocityPower = 1.0
             }
         }
+    }))
+
+    -- **************************** Billboard ***************************** --
+    local billboardMat = _CreateMaterial(host, "BillboardMaterial.m")
+    _SetTextureToMaterial(host, billboardMat, "perlin_noise_128x128.png", "albedo")
+
+    local a_billboard = _CreateActor(host, "Actor", "BillboardActor", 0, 40, 0, 0, 0, 0, 1, 1, 1, "")
+    _CreateAndAttachComponentToActor(host, a_billboard, "BillboardComponent", Json.encode({
+        gameObjectName = "BillboardComp",
+        translation = {x = 0, y = 0, z = 0},
+        rotationRadians = math.rad(180),
+        isFlipped = true,
+        scale = {x = 1, y = 1, z = 1},
+        billboardExtent = 5.0,
+        enableScreenAspectRatio = true,
+        is_enabled = true,
+        is_visible = true,
+        materialProxyId = billboardMat
     }))
 end
 

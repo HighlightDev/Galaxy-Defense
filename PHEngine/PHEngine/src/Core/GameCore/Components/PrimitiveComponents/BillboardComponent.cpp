@@ -17,6 +17,7 @@ BillboardComponent::BillboardComponent(const std::shared_ptr<BillboardComponentD
     , mProjectionMatrixTransformer(data->mProjectionMatrixTransformer)
     , mApplyScreenAspectRatio(data->mApplyScreenAspectRatio)
     , mRotationRadians(data->m_rotationRadians)
+    , mIsFlipped(data->mIsFlipped)
 {
 }
 
@@ -33,12 +34,9 @@ void BillboardComponent::UnpausableTick(float deltaTimeSec)
 {
     PrimitiveComponent::UnpausableTick(deltaTimeSec);
 
-    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)
-        && (bIsExtentDataDirty || bIsApplyScreenAspectRatioDirty || bIsRotationDirty)) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && bIsRenderDataDirty) {
         SyncRenderData();
-        bIsExtentDataDirty = false;
-        bIsApplyScreenAspectRatioDirty = false;
-        bIsRotationDirty = false;
+        bIsRenderDataDirty = false;
     }
 }
 
@@ -51,7 +49,7 @@ void BillboardComponent::SetBillboardExtent(const float extent)
 {
     if (mBillboardExtent != extent) {
         mBillboardExtent = extent;
-        bIsExtentDataDirty = true;
+        bIsRenderDataDirty = true;
     }
 }
 
@@ -101,7 +99,8 @@ void BillboardComponent::SyncRenderData()
             [sceneProxyId = mSceneProxyId,
              billboardExtent = mBillboardExtent,
              applyScreenAspectRatio = mApplyScreenAspectRatio,
-             rotationRadians = mRotationRadians](
+             rotationRadians = mRotationRadians,
+             isFlipped = mIsFlipped](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -111,6 +110,7 @@ void BillboardComponent::SyncRenderData()
                         billboardProxySp->SetBillboardExtent(billboardExtent);
                         billboardProxySp->SetApplyScreenAspectRatio(applyScreenAspectRatio);
                         billboardProxySp->SetRotationRadians(rotationRadians);
+                        billboardProxySp->SetIsFlipped(isFlipped);
                     }
                 }
             });
@@ -131,7 +131,7 @@ void BillboardComponent::SetApplyScreenAspectRatio(const bool apply)
 {
     if (mApplyScreenAspectRatio != apply) {
         mApplyScreenAspectRatio = apply;
-        bIsApplyScreenAspectRatioDirty = true;
+        bIsRenderDataDirty = true;
     }
 }
 
@@ -144,12 +144,25 @@ void BillboardComponent::SetRotationRadians(const float rotationRadians)
 {
     if (!EngineMath::FloatsNearEqual(rotationRadians, mRotationRadians)) {
         mRotationRadians = rotationRadians;
-        bIsRotationDirty = true;
+        bIsRenderDataDirty = true;
     }
 }
 
 float BillboardComponent::GetRotationRadians() const
 {
     return mRotationRadians;
+}
+
+void BillboardComponent::SetIsFlipped(const bool isFlipped)
+{
+    if (mIsFlipped != isFlipped) {
+        mIsFlipped = isFlipped;
+        bIsRenderDataDirty = true;
+    }
+}
+
+bool BillboardComponent::GetIsFlipped() const
+{
+    return mIsFlipped;
 }
 } // namespace EngineCore

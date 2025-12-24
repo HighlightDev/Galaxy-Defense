@@ -635,6 +635,7 @@ void UserInteractionController::InitializeRemoveTowerMarker()
         true,
         glm::vec3(0.0f),
         0.0f,
+        false,
         glm::vec3(1.0f),
         billboard_material,
         [](const glm::mat4& viewMatrix) { return glm::mat4(1); },

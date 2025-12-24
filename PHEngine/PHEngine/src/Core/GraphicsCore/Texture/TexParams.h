@@ -21,6 +21,7 @@ struct TexParams {
     int32_t TexPixelFormat;
     int32_t TexPixelType;
     int32_t TexWrapMode;
+    bool bIsGrayscale;
 
     TexParams(
         int32_t texBufferWidth,

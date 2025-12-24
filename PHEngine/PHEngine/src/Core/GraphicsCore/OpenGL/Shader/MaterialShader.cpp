@@ -2,6 +2,7 @@
 
 #include "Core/CommonCore/EngineConstants.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringStreamWrapper.h"
 
@@ -89,6 +90,21 @@ void MaterialShader::LoadUniformValues(const std::shared_ptr<MaterialProxy>& mat
                 "IShader::LoadUniformValues: Uniform array not found: " + property->GetPropertyName());
             property->SetValueToUniformArray(*uniformArrayIt);
         } else {
+            if (property->GetPropertyType() == MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY) {
+                // additionally set isGrayscale uniform for texture properties
+                auto isGrayscaleUniformIt = std::find_if(Uniforms.begin(), Uniforms.end(), [&](const auto& uniform) {
+                    return uniform.GetUniformName() == property->GetPropertyName() + "_isGrayscale";
+                });
+                ext_assert(
+                    isGrayscaleUniformIt != Uniforms.end(),
+                    "IShader::LoadUniformValues: isGrayscale uniform not found: " + property->GetPropertyName() + "_isGrayscale");
+                const auto textureProperty = std::dynamic_pointer_cast<TextureMaterialProperty>(property);
+                ext_assert(
+                    textureProperty,
+                    "IShader::LoadUniformValues: Failed to cast to TextureMaterialProperty: " + property->GetPropertyName());
+                isGrayscaleUniformIt->LoadUniform(textureProperty->IsGrayscale());
+            }
+
             auto uniformIt = std::find_if(Uniforms.begin(), Uniforms.end(), [&](const auto& uniform) {
                 return uniform.GetUniformName() == property->GetPropertyName();
             });

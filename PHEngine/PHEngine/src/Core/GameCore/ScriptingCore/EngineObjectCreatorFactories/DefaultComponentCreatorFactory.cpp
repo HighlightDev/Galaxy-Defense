@@ -303,6 +303,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const float billboardExtent = nlohmann_utilities::GetFloatFromJson(jsonObj, "billboardExtent");
         const bool enableScreenAspectRatio = nlohmann_utilities::GetBoolFromJson(jsonObj, "enableScreenAspectRatio");
         const float rotationRadians = nlohmann_utilities::GetFloatFromJson(jsonObj, "rotationRadians");
+        const bool isFlipped = nlohmann_utilities::GetBoolFromJson(jsonObj, "isFlipped");
         const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
@@ -322,6 +323,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             enableScreenAspectRatio,
             translation,
             rotationRadians,
+            isFlipped,
             scale,
             material,
             [](const glm::mat4& viewMatrix) { return viewMatrix; },

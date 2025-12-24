@@ -580,6 +580,7 @@ _CreateAndAttachComponentToActor(actorId, "BillboardComponent", Json.encode({
     billboardExtent = 1.0,
     enableScreenAspectRatio = true,
     rotationRadians = 0.0,
+    isFlipped = false,
     translation = {x = 0, y = 5, z = 0},
     scale = {x = 1, y = 1, z = 1},
     materialProxyId = billboardMaterialId

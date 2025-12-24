@@ -24,14 +24,12 @@ protected:
 
     float mRotationRadians;
 
+    bool mIsFlipped{false};
+
 private:
     BillboardRenderData m_renderData;
 
-    bool bIsExtentDataDirty{false};
-
-    bool bIsApplyScreenAspectRatioDirty{false};
-
-    bool bIsRotationDirty{false};
+    bool bIsRenderDataDirty{false};
 
     std::function<glm::mat4(const glm::mat4&)> mViewMatrixTransformer;
 
@@ -74,6 +72,10 @@ public:
     void SetRotationRadians(const float rotationRadians);
 
     float GetRotationRadians() const;
+
+    void SetIsFlipped(const bool isFlipped);
+
+    bool GetIsFlipped() const;
 
 private:
     void SyncRenderData();

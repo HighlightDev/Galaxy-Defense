@@ -3,6 +3,7 @@
 #include "materialCommon.incl.glsl"
 
 uniform sampler2D albedo;
+uniform bool albedo_isGrayscale;
 uniform sampler2D mask;
 uniform vec3 transparency_color_filler;
 uniform vec3 albedo_custom_color;
@@ -19,6 +20,7 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
                                              : materialIn.TextureCoordinates.xy;
 
     vec4 sampleColor = texture(albedo, textureCoordinates);
+    sampleColor = albedo_isGrayscale ? vec4(sampleColor.rrrr) : sampleColor;
     alphaValue = use_mask == 1 ? texture(mask, textureCoordinates).a : sampleColor.a;
     sampleColor.rgb = fill_albedo_transparency_with_color == 1 && sampleColor.a < 0.1
         ? transparency_color_filler

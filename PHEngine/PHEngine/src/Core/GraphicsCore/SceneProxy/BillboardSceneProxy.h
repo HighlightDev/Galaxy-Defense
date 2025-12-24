@@ -29,6 +29,8 @@ protected:
 
     float mRotationRadians;
 
+    bool mIsFlipped{false};
+
     std::function<glm::mat4(const glm::mat4&)> mViewMatrixTransformer;
 
     std::function<glm::mat4(const glm::mat4&)> mProjectionMatrixTransformer;
@@ -59,6 +61,8 @@ public:
     void SetApplyScreenAspectRatio(const bool applyScreenAspectRatio);
 
     void SetRotationRadians(const float rotationRadians);
+
+    void SetIsFlipped(const bool isFlipped);
 
 protected:
     std::shared_ptr<Shader_t> GetShader() const;

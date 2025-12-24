@@ -27,6 +27,7 @@ TexParams::TexParams(
     , TexPixelType(texPixelType)
     , TexWrapMode(texWrapMode)
     , UniqueIndex(bUnique_resource ? ++unique_index : unique_index)
+    , bIsGrayscale(texPixelFormat == GL_RED)
 {
 }
 

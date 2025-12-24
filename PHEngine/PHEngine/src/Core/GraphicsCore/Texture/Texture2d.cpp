@@ -99,12 +99,15 @@ uint32_t Texture2d::GetTextureResource(const std::string& pathToTex, int32_t tex
     if (texResource->mTexInfo.PixelComponents == 1) {
         m_textureParams.TexPixelFormat = GL_RED;
         m_textureParams.TexPixelInternalFormat = GL_RED;
+        m_textureParams.bIsGrayscale = true;
     } else if (texResource->mTexInfo.PixelComponents == 3) {
         m_textureParams.TexPixelFormat = GL_RGB;
         m_textureParams.TexPixelInternalFormat = GL_RGB;
+        m_textureParams.bIsGrayscale = false;
     } else if (texResource->mTexInfo.PixelComponents == 4) {
         m_textureParams.TexPixelFormat = GL_RGBA;
         m_textureParams.TexPixelInternalFormat = GL_RGBA;
+        m_textureParams.bIsGrayscale = false;
     }
 
     const auto resultTexture = CreateTexture(texResource->mData);
