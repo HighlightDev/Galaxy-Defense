@@ -277,6 +277,15 @@ void UiCanvas::SetIsVisible(const bool isVisible)
     }
 }
 
+#ifdef DEBUG
+void UiCanvas::SetIsHiddenForDebugging(const bool isHiddenForDebugging)
+{
+    for (const auto& child : mChildren) {
+        child->SetIsHiddenForDebugging(isHiddenForDebugging);
+    }
+}
+#endif
+
 void UiCanvas::SetIfCanInterceptMouseInputEvents(const bool intercepts)
 {
     if (mCanInterceptMouseInputEvents != intercepts) {
@@ -351,6 +360,7 @@ void UiCanvas::AddUiItem(const std::shared_ptr<UiItemBase>& uiItem)
     uiItem->OnRegistered();
     SetIsTransformDirty(true);
     CollectChildrenWithDescendingZOrder();
+    uiItem->OnPostRegistered();
 }
 
 void UiCanvas::ProcessEvent(

@@ -119,24 +119,57 @@ function LevelEditorOverlay:new(host)
         newBarrierButton:setIsVisible(buttonsVisible)
     end)
 
+    changeContainerStateButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            changeContainerStateButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            changeContainerStateButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
+    end)
+
     editStationSocketsButton:subscribeOnMouseInputClickedCallback(function()
         self.currentEditModeType = EditModeType.EDIT_TOWERS == self.currentEditModeType and EditModeType.IDLE or
                                        EditModeType.EDIT_TOWERS
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                        self.currentEditModeType)
     end)
+
+    editStationSocketsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            editStationSocketsButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            editStationSocketsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
+    end)
+
     editRoutesButton:subscribeOnMouseInputClickedCallback(function()
         self.currentEditModeType = EditModeType.EDIT_ROUTES == self.currentEditModeType and EditModeType.IDLE or
                                        EditModeType.EDIT_ROUTES
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                        self.currentEditModeType)
     end)
+    editRoutesButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            editRoutesButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            editRoutesButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
+    end)
+
     editBarriersButton:subscribeOnMouseInputClickedCallback(function()
         self.currentEditModeType = EditModeType.EDIT_BARRIERS == self.currentEditModeType and EditModeType.IDLE or
                                        EditModeType.EDIT_BARRIERS
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                        self.currentEditModeType)
     end)
+    editBarriersButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            editBarriersButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            editBarriersButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
+    end)
+
     undoLastActionButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                   "EditorLevelEvents", json.encode({action = "undo"}))
@@ -146,6 +179,13 @@ function LevelEditorOverlay:new(host)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                   "EditorLevelEvents",
                                                   json.encode({action = "save", name = "TestLevelName"}))
+    end)
+    saveLevelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            saveLevelButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            saveLevelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
     end)
 
     newRouteButton:subscribeOnMouseInputClickedCallback(function()
@@ -158,6 +198,13 @@ function LevelEditorOverlay:new(host)
         }))
         RouteName = RouteName + 1
     end)
+    newRouteButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            newRouteButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            newRouteButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
+    end)
 
     newBarrierButton:subscribeOnMouseInputClickedCallback(function()
         local newBarrierColor = getRandomColor()
@@ -168,6 +215,13 @@ function LevelEditorOverlay:new(host)
             barrier_color = {r = newBarrierColor.r, g = newBarrierColor.g, b = newBarrierColor.b}
         }))
         BarrierName = BarrierName + 1
+    end)
+    newBarrierButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            newBarrierButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            newBarrierButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
     end)
 
     overlay.onWindowSizeChanged = function(width, height)
@@ -211,7 +265,6 @@ function LevelEditorOverlay:new(host)
         editorContainer:setHeight(windowHeight * 0.35)
         editorContainer:setZOrder(1)
         editorContainer:setOpacity(0.0)
-        editorContainer:setIfCanInterceptMouseInputEvent(false)
         editorContainer:setColorHexValue(0x000000)
 
         levelWidthLabel:setParent(host, canvas.widgetName, editorContainer.widgetName)

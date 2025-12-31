@@ -97,13 +97,9 @@ void GalaxySceneCamera::Tick(const float deltaTimeSec)
             || (mouseMoveEvent.y <= s_screenThresholdOffset
                 || mouseMoveEvent.y >= (displayDeviceProvider->GetWindowHeight() - s_screenThresholdOffset))) {
             isUserMouseMoveIdle = false;
-            const glm::vec2& windowPos = glm::vec2(
-                static_cast<float>(displayDeviceProvider->GetWindowPosX()),
-                static_cast<float>(displayDeviceProvider->GetWindowPosY()));
             const auto& centerOfScreen = glm::vec2(
-                                             static_cast<float>(displayDeviceProvider->GetWindowWidth() >> 1),
-                                             static_cast<float>(displayDeviceProvider->GetWindowHeight() >> 1))
-                + windowPos;
+                static_cast<float>(displayDeviceProvider->GetWindowWidth() >> 1),
+                static_cast<float>(displayDeviceProvider->GetWindowHeight() >> 1));
             const auto& mousePosition = glm::vec2(static_cast<float>(mouseMoveEvent.x), static_cast<float>(mouseMoveEvent.y));
             const glm::vec2 nCameraMovementDir = glm::normalize(centerOfScreen - mousePosition);
 

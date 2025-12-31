@@ -101,6 +101,10 @@ public:
 
     glm::ivec2 GetTextScreenSpaceSize() const;
 
+#ifdef DEBUG
+    void UpdateIsHiddenForDebugging(const bool isHiddenForDebugging);
+#endif
+
 protected:
     void OnRegistered() override;
 

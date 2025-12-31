@@ -13,10 +13,6 @@ UiInputComponent::UiInputComponent(const std::shared_ptr<ComponentData>& compone
     m_uiMouseBindings->Initialize();
 }
 
-UiInputComponent::~UiInputComponent()
-{
-}
-
 eComponentType UiInputComponent::GetComponentType() const
 {
     return INPUT_COMPONENT;

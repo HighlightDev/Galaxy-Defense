@@ -135,7 +135,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
         int32_t pillarIndex = 0;
         for (const auto& pillarPosition : barrierData) {
             a_barrier->TrySetBarrierPillarMeshRelativeTransform(
-                pillarIndex++, pillarPosition, glm::vec3(), glm::vec3(6.0f, 12.0f, 6.0f));
+                pillarIndex++, pillarPosition, glm::vec3(), glm::vec3(3.0f, 12.0f, 3.0f));
         }
         a_barrier->SetIsEnabled(true);
     }

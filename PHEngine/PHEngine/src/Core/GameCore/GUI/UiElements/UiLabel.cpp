@@ -228,6 +228,17 @@ void UiLabel::SetTextVerticalAlignment(const eTextVerticalAlignmentType textVeri
     }
 }
 
+#ifdef DEBUG
+void UiLabel::UpdateIsHiddenForDebugging(const bool isHiddenForDebugging)
+{
+    if (mIsHiddenForDebugging != isHiddenForDebugging) {
+        mIsHiddenForDebugging = isHiddenForDebugging;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+#endif
+
 std::shared_ptr<UiSceneProxyBase> UiLabel::CreateUiSceneProxy() const
 {
     return std::make_shared<UiLabelSceneProxy>(this);

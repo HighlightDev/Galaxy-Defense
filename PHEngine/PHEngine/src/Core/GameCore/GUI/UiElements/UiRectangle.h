@@ -17,8 +17,8 @@ class LuaProxy;
 } // namespace EngineCore
 
 namespace EngineCore {
-class UiCanvas;
 namespace GUI {
+class UiLabel;
 class UiRectangle : public UiItemBase {
     glm::vec3 mColor;
 
@@ -29,6 +29,10 @@ class UiRectangle : public UiItemBase {
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mColorProperty;
 
     std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
+
+#ifdef DEBUG
+    std::shared_ptr<EngineCore::GUI::UiLabel> mDebugLabel;
+#endif
 
 public:
     explicit UiRectangle(const std::string& name = std::string(""));
@@ -63,8 +67,14 @@ public:
 
     std::string GetUiTypeString() const override;
 
+#ifdef DEBUG
+    void SetIsHiddenForDebugging(const bool isHiddenForDebugging) override;
+#endif
+
 protected:
     void OnRegistered() override;
+
+    void OnPostRegistered() override;
 
     void OnUnregistered() override;
 

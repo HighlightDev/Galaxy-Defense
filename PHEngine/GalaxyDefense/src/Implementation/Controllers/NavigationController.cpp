@@ -34,6 +34,7 @@ NavigationController::NavigationController(const std::weak_ptr<::EngineCore::Sce
           "NavPathDummyActor",
           std::make_shared<EngineCore::SceneComponent>(
               "NavPathDummy_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true)))
+    , mBarriersController(sceneWp)
 {
 }
 
@@ -252,5 +253,15 @@ void NavigationController::RemoveMissileFromNavigation(const int32_t missileActo
             mMissiles.erase(removeIt, mMissiles.end());
         }
     }
+}
+
+BarriersController& NavigationController::GetBarriersController()
+{
+    return mBarriersController;
+}
+
+const BarriersController& NavigationController::GetBarriersController() const
+{
+    return mBarriersController;
 }
 } // namespace Game

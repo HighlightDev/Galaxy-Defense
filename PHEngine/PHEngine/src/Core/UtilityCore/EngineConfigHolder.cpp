@@ -123,6 +123,9 @@ void EngineConfigHolder::FillEngineConfig(const std::list<std::string>& configLi
                           })),
            std::make_pair("render_debug_physics_data", std::function([=, this](const std::string& valueStr) {
                               mEngineConfig.RenderDebugPhysicsData = parseBool(valueStr);
+                          })),
+           std::make_pair("enable_debug_ui_widget_naming", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.EnableDebugUiWidgetNaming = parseBool(valueStr);
                           }))
 #endif
         };

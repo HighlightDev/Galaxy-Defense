@@ -1,13 +1,20 @@
 #include "UiRectangle.h"
 
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
+#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiRectangleLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiRectangleSceneProxy.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/JsonUtilities.h"
+
+#ifdef DEBUG
+#include "Core/GameCore/GUI/UiElements/UiLabel.h"
+#endif
 
 #include <json/json.hpp>
 
@@ -16,6 +23,7 @@ using namespace EngineCore::Scripts;
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
 using namespace Resources;
+using namespace EngineCore::DataProviders;
 
 namespace EngineCore {
 namespace GUI {
@@ -28,6 +36,9 @@ UiRectangle::UiRectangle(const std::string& name)
           mColor, "Color", [this](const glm::vec3& newColorVaue) { SetColor(newColorVaue); }))
     , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
           mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
+#ifdef DEBUG
+    , mDebugLabel(std::make_shared<UiLabel>("Lora-VariableFont_wght", "Rectangle_DebugLabel_" + std::to_string(GetUId())))
+#endif
 {
     ext_assert(!mProperties.count("Color"), "UiRectangle::ctor: Property 'Color' already exists");
     ext_assert(!mProperties.count("Opacity"), "UiRectangle::ctor: Property 'Opacity' already exists");
@@ -51,6 +62,44 @@ void UiRectangle::OnRegistered()
         }
     }
 }
+
+void UiRectangle::OnPostRegistered()
+{
+#ifdef DEBUG
+
+    if (EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig().EnableDebugUiWidgetNaming) {
+        const auto& parentCanvasSp = mParentCanvas.lock();
+        ext_assert(parentCanvasSp, "UiRectangle::OnPostRegistered: Parent canvas is expired, name: " + GetName());
+
+        const auto labelWidth = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth() / 2;
+        const auto labelHeight = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight() / 2;
+
+        mDebugLabel->SetParents(parentCanvasSp, std::static_pointer_cast<UiRectangle>(shared_from_this()));
+        mDebugLabel->Initialize();
+        mDebugLabel->SetTextColor(glm::vec3(1.0f, 0.0f, 0.0f));
+        mDebugLabel->SetFontSize(18);
+        mDebugLabel->SetAnchor(eUiAnchor::HORIZONTAL_CENTER, eUiAnchor::HORIZONTAL_CENTER, GetName());
+        mDebugLabel->SetAnchor(eUiAnchor::VERTICAL_CENTER, eUiAnchor::VERTICAL_CENTER, GetName());
+        mDebugLabel->SetWidth(labelWidth);
+        mDebugLabel->SetHeight(labelHeight);
+        mDebugLabel->SetZOrder(std::numeric_limits<size_t>::max());
+        mDebugLabel->SetText(GetName());
+        mDebugLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::CENTER);
+        mDebugLabel->SetTextVerticalAlignment(eTextVerticalAlignmentType::CENTER);
+        mDebugLabel->UpdateIsHiddenForDebugging(true);
+    }
+#endif
+}
+
+#ifdef DEBUG
+void UiRectangle::SetIsHiddenForDebugging(const bool isHiddenForDebugging)
+{
+    if (mDebugLabel) {
+        mDebugLabel->UpdateIsHiddenForDebugging(isHiddenForDebugging);
+        UiItemBase::SetIsHiddenForDebugging(isHiddenForDebugging);
+    }
+}
+#endif
 
 void UiRectangle::OnUnregistered()
 {

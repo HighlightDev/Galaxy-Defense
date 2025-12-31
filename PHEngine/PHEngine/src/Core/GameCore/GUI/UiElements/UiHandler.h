@@ -10,6 +10,7 @@
 
 namespace EngineCore {
 class Scene;
+class UiInputComponent;
 
 namespace GUI {
 class UiHandler : public ITickable {
@@ -21,10 +22,14 @@ class UiHandler : public ITickable {
 
 #ifdef DEBUG
     std::shared_ptr<UiCanvas> mDebugUiCanvas;
+
+    std::unique_ptr<UiInputComponent> mInputComponent;
 #endif
 
 public:
     UiHandler();
+
+    ~UiHandler();
 
     void SetScene(const std::weak_ptr<::EngineCore::Scene>& owner);
 

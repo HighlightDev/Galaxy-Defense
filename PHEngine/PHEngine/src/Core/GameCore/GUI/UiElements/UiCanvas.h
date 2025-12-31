@@ -143,6 +143,9 @@ public:
     void SetWidth(const size_t width) override;
     void SetHeight(const size_t height) override;
     void SetIsVisible(const bool isVisible) override;
+#ifdef DEBUG
+    void SetIsHiddenForDebugging(const bool isHiddenForDebugging) override;
+#endif
     void SetIfCanInterceptMouseInputEvents(const bool intercepts) override;
     void SetScene(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 

@@ -36,6 +36,9 @@ public:
     virtual void SetWidth(const size_t width) = 0;
     virtual void SetHeight(const size_t height) = 0;
     virtual void SetIsVisible(const bool visibility) = 0;
+#ifdef DEBUG
+    virtual void SetIsHiddenForDebugging(const bool isHiddenForDebugging) = 0;
+#endif
     virtual void SetIfCanInterceptMouseInputEvents(const bool intercepts) = 0;
     virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string& dstUiItemName) = 0;
     virtual void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) = 0;

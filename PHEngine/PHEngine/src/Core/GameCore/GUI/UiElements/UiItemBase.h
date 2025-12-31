@@ -97,6 +97,10 @@ protected:
 
     std::shared_ptr<EngineObjectProperty<int32_t>> mHorizontalCenterOffsetProperty;
 
+#ifdef DEBUG
+    bool mIsHiddenForDebugging;
+#endif
+
 public:
     explicit UiItemBase(const std::string& name);
 
@@ -113,6 +117,8 @@ public:
     virtual std::string GetUiTypeString() const = 0;
 
     virtual void OnRegistered() = 0;
+
+    virtual void OnPostRegistered(){};
 
     virtual void OnUnregistered() = 0;
 
@@ -175,6 +181,9 @@ public:
     void SetWidth(const size_t width) override;
     void SetHeight(const size_t height) override;
     void SetIsVisible(const bool isVisible) override;
+#ifdef DEBUG
+    void SetIsHiddenForDebugging(const bool isHiddenForDebugging) override;
+#endif
     void SetIfCanInterceptMouseInputEvents(const bool intercepts) override;
     void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string& dstUiItemName) override;
     void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;

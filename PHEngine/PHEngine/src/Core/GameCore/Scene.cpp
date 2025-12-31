@@ -134,7 +134,9 @@ void Scene::PostPlayLevelFinished()
         actor->PostPlayLevelFinished();
     }
 
+#ifdef DEBUG
     mDebugUiController->PostPlayLevelFinished();
+#endif
 }
 
 void Scene::RegisterMainCamera(const std::shared_ptr<ACamera>& camera)

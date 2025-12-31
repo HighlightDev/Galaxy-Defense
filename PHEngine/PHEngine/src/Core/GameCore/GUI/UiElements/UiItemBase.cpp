@@ -46,7 +46,7 @@ UiItemBase::UiItemBase(const std::string& name)
     , mParentCanvas()
     , mChildren()
     , mIsVisible(true)
-    , mCanInterceptMouseInputEvents(true)
+    , mCanInterceptMouseInputEvents(false)
     , mIsTransformDirty(false)
     , mIsPropertiesShouldBeUpdatedOnRenderThread(false)
     , mIsPropertiesShouldBeUpdatedOnLuaThread(false)
@@ -56,6 +56,9 @@ UiItemBase::UiItemBase(const std::string& name)
           0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
     , mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
           0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
+#ifdef DEBUG
+    , mIsHiddenForDebugging(false)
+#endif
 {
     mProperties.emplace("Scale", mScaleProperty);
     mProperties.emplace("VerticalCenterOffset", mVerticalCenterOffsetProperty);
@@ -238,6 +241,15 @@ void UiItemBase::SetChildrenIsVisible(const bool isVisible)
         child->SetIsVisible(isVisible);
     }
 }
+
+#ifdef DEBUG
+void UiItemBase::SetIsHiddenForDebugging(const bool isHiddenForDebugging)
+{
+    for (const auto& child : mChildren) {
+        child->SetIsHiddenForDebugging(isHiddenForDebugging);
+    }
+}
+#endif
 
 void UiItemBase::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string& dstUiItemName)
 {
@@ -628,6 +640,8 @@ void UiItemBase::AddUiItem(const std::shared_ptr<UiItemBase>& uiItem)
     if (const auto& canvasSp = mParentCanvas.lock()) {
         canvasSp->CollectChildrenWithDescendingZOrder();
     }
+
+    uiItem->OnPostRegistered();
 }
 
 void UiItemBase::RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem)
@@ -664,11 +678,11 @@ void UiItemBase::UnpausableTick(const float deltaTimeSec)
         mIsTransformDirty = false;
     }
 
-    if (mIsPropertiesShouldBeUpdatedOnRenderThread) {
+    if (mIsPropertiesShouldBeUpdatedOnRenderThread || mIsVisibleDirty) {
         OnPropertiesShouldBeUpdatedOnRenderThread();
     }
 
-    if (mIsPropertiesShouldBeUpdatedOnLuaThread) {
+    if (mIsPropertiesShouldBeUpdatedOnLuaThread || mIsVisibleDirty) {
         OnPropertiesShouldBeUpdatedOnLuaThread();
     }
 
@@ -683,6 +697,8 @@ void UiItemBase::UnpausableTick(const float deltaTimeSec)
     if (mSequenceAnimator) {
         mSequenceAnimator->UnpausableTick(deltaTimeSec);
     }
+
+    SetIsVisibleDirty(false);
 }
 
 void UiItemBase::Tick(const float deltaTimeSec)
@@ -768,28 +784,28 @@ void UiItemBase::CollectAllHierarchyChildren(std::vector<std::shared_ptr<UiItemB
 
 void UiItemBase::OnMousePositionChanged(const glm::ivec2& mouseCursorPosition)
 {
-    if (mMouseInputReceiver) {
+    if (mMouseInputReceiver && mCanInterceptMouseInputEvents) {
         mMouseInputReceiver->OnMousePositionChanged(GetBoundingArea(), mouseCursorPosition);
     }
 }
 
 void UiItemBase::OnMouseReleased(const glm::ivec2& mouseCursorPosition)
 {
-    if (mMouseInputReceiver) {
+    if (mMouseInputReceiver && mCanInterceptMouseInputEvents) {
         mMouseInputReceiver->OnMouseReleased(GetBoundingArea(), mouseCursorPosition);
     }
 }
 
 void UiItemBase::OnMousePressed(const glm::ivec2& mouseCursorPosition)
 {
-    if (mMouseInputReceiver) {
+    if (mMouseInputReceiver && mCanInterceptMouseInputEvents) {
         mMouseInputReceiver->OnMousePressed(GetBoundingArea(), mouseCursorPosition);
     }
 }
 
 void UiItemBase::OnMouseClicked(const glm::ivec2& mouseCursorPosition)
 {
-    if (mMouseInputReceiver) {
+    if (mMouseInputReceiver && mCanInterceptMouseInputEvents) {
         mMouseInputReceiver->OnMouseClicked(GetBoundingArea(), mouseCursorPosition);
     }
 }
@@ -802,7 +818,11 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         if (mIsVisible != isVisible) {
             mIsVisible = isVisible;
             SetIsVisibleDirty(true);
+#ifdef DEBUG
+            SetChildrenIsVisible(mIsVisible && not mIsHiddenForDebugging);
+#else
             SetChildrenIsVisible(mIsVisible);
+#endif
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
@@ -892,7 +912,8 @@ void UiItemBase::SyncDataOnRenderThread()
                      normTranslation = mNormalizedTranslation,
                      normScale = mNormalizedScale,
                      width = mWidth,
-                     height = mHeight](
+                     height = mHeight,
+                     isHiddenForDebugging = mIsHiddenForDebugging](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -900,7 +921,11 @@ void UiItemBase::SyncDataOnRenderThread()
                             = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                             if (uiSceneProxy) {
+#ifdef DEBUG
+                                uiSceneProxy->SetIsVisible(isVisible && not isHiddenForDebugging);
+#else
                                 uiSceneProxy->SetIsVisible(isVisible);
+#endif
                                 uiSceneProxy->SetZOrder(zOrder);
                                 uiSceneProxy->SetTransform(normTranslation, normScale);
                                 uiSceneProxy->SetWidthHeightPixels(
@@ -916,7 +941,6 @@ void UiItemBase::SyncDataOnRenderThread()
 void UiItemBase::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnLuaThread");
-    SetIsVisibleDirty(false);
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             if (const auto& luaScriptProcessorSp = GetLuaScriptProcessorWp().lock()) {
@@ -934,13 +958,18 @@ void UiItemBase::SyncDataOnLuaThread()
                      height = mHeight,
                      horizontalOffset = mHorizontalCenterOffset,
                      verticalOffset = mVerticalCenterOffset,
-                     anchorsMap = mAnchors](
+                     anchorsMap = mAnchors,
+                     isHiddenForDebugging = mIsHiddenForDebugging](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                         if (const auto& uiItemBaseLuaProxy
                             = std::static_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId))) {
+#ifdef DEBUG
+                            uiItemBaseLuaProxy->SetIsVisible_FromGameThread(visible && not isHiddenForDebugging);
+#else
                             uiItemBaseLuaProxy->SetIsVisible_FromGameThread(visible);
+#endif
                             uiItemBaseLuaProxy->SetIfCanInterceptMouseInputEvents_FromGameThread(interceptsMouseInputEvent);
                             uiItemBaseLuaProxy->SetZOrder_FromGameThread(zorder);
                             uiItemBaseLuaProxy->SetWidth_FromGameThread(width);

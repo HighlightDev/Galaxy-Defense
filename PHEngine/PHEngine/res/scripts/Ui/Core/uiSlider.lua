@@ -124,6 +124,7 @@ function UiSlider:update(host) end
 function UiSlider:enableSliderMouseInputReceiver(host)
     assert(host ~= nil and type(host) == "userdata");
     _EnableSliderMouseInputReceiver(host, self.luaProxyId);
+    self:setIfCanInterceptMouseInputEvent(true)
 end
 function UiSlider:setOpacity(opacity)
     assert(opacity ~= nil and type(opacity) == "number");

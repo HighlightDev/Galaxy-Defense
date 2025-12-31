@@ -207,6 +207,7 @@ function ImageAndLabelTile:onCompoundWidgetInitialize()
     self.backgroundTile:setColorHexValue(self.containerColor)
     self.backgroundTile:setBorderRadius(8)
     self.backgroundTile:enableMouseInputReceiverBase(self.host)
+    self.backgroundTile:setIfCanInterceptMouseInputEvent(true)
 
     self.image:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.image:setZOrder(4);
@@ -240,6 +241,10 @@ end
 function ImageAndLabelTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
     self.backgroundTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
+end
+
+function ImageAndLabelTile:setIfCanInterceptMouseInputEvent(intercept)
+    self.backgroundTile:setIfCanInterceptMouseInputEvent(intercept)
 end
 
 return ImageAndLabelTile

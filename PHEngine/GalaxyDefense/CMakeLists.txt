@@ -35,6 +35,7 @@ set(HEADERS
     src/Implementation/Controllers/AiSpaceshipActorController.h
     src/Implementation/Controllers/UserInteractionController.h
     src/Implementation/Controllers/NavigationController.h
+    src/Implementation/Controllers/BarriersController.h
     src/Implementation/Events/ElectroRaySphereContactCollisionEvent.h
     src/Implementation/Events/ShootRayCollisionEvent.h
     src/Implementation/Events/MainPlayerStatusChangedEvent.h
@@ -133,6 +134,7 @@ set(SOURCES
     src/Implementation/Controllers/AiSpaceshipActorController.cpp
     src/Implementation/Controllers/UserInteractionController.cpp
     src/Implementation/Controllers/NavigationController.cpp
+    src/Implementation/Controllers/BarriersController.cpp
     src/Implementation/Events/ElectroRaySphereContactCollisionEvent.cpp
     src/Implementation/Events/ShootRayCollisionEvent.cpp
     src/Implementation/Events/MainPlayerStatusChangedEvent.cpp

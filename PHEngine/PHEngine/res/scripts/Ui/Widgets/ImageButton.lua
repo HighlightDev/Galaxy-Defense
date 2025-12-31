@@ -48,10 +48,8 @@ function ImageButton:new(host, overlay, name)
     }
 
     local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
-    local containerName = debugName ~= nil and "ImageButtonContainer_" .. debugName or nil
-    local imageName = debugName ~= nil and "ImageButtonImage_" .. debugName or nil
-    newObj.backgroundTile = UiRectangle:new(host, containerName)
-    newObj.image = UiImage:new(host, imageName)
+    newObj.backgroundTile = UiRectangle:new(host, debugName)
+    newObj.image = UiImage:new(host, debugName)
     newObj.pressButtonStateContainer = UiRectangle:new(host)
 
     overlay:addWidget(newObj.backgroundTile)
@@ -90,6 +88,7 @@ function ImageButton:onCompoundWidgetInitialize()
     self.backgroundTile:setWidth(self.buttonWidth);
     self.backgroundTile:setColorHexValue(self.containerColor)
     self.backgroundTile:enableMouseInputReceiverBase(self.host)
+    self.backgroundTile:setIfCanInterceptMouseInputEvent(true)
 
     self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setZOrder(4);
@@ -102,6 +101,7 @@ function ImageButton:onCompoundWidgetInitialize()
     self.pressButtonStateContainer:setWidth(self.buttonWidth);
     self.pressButtonStateContainer:setBorderRadius(10)
     self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
+    self.pressButtonStateContainer:setIfCanInterceptMouseInputEvent(true)
     self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick", {
         {
             animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
@@ -278,6 +278,10 @@ function ImageButton:setIsButtonActive(isButtonActive)
             self:setButtonColorHexValue(Styles.Colors.notActiveButtonColor)
         end
     end
+end
+
+function ImageButton:setIfCanInterceptMouseInputEvent(intercept)
+    self.backgroundTile:setIfCanInterceptMouseInputEvent(intercept)
 end
 
 return ImageButton

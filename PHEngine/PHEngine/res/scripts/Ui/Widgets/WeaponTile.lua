@@ -169,6 +169,7 @@ function WeaponTile:onCompoundWidgetInitialize()
     self.backgroundTile:setColorHexValue(WeaponTile.weaponBackgroundTileColor)
     self.backgroundTile:setBorderRadius(8)
     self.backgroundTile:enableMouseInputReceiverBase(self.host)
+    self.backgroundTile:setIfCanInterceptMouseInputEvent(true)
 
     self.weaponImage:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.weaponImage:setTextureSource("weapon_missile.png");
@@ -199,6 +200,10 @@ end
 function WeaponTile:subscribeOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
     self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
+end
+
+function WeaponTile:setIfCanInterceptMouseInputEvent(intercept)
+    self.backgroundTile:setIfCanInterceptMouseInputEvent(intercept)
 end
 
 return WeaponTile

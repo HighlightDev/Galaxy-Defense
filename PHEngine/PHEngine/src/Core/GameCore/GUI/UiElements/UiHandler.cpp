@@ -1,6 +1,7 @@
 #include "UiHandler.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/Components/UiInputComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
@@ -17,10 +18,17 @@ UiHandler::UiHandler()
     , mUiCanvases()
 #ifdef DEBUG
     , mDebugUiCanvas()
+    , mInputComponent(std::make_unique<UiInputComponent>(std::make_shared<ComponentData>("UiHandlerDebugInputComponent")))
 #endif
 {
     LogInfo("UiHandler::ctor");
+
+#ifdef DEBUG
+    mInputComponent->SetIsReceivingMouseEvents(false);
+#endif
 }
+
+UiHandler::~UiHandler() = default;
 
 void UiHandler::SetScene(const std::weak_ptr<::EngineCore::Scene>& owner)
 {
@@ -92,6 +100,40 @@ void UiHandler::Tick(const float deltaTimeSec)
     if (mDebugUiCanvas) {
         mDebugUiCanvas->Tick(deltaTimeSec);
     }
+
+    static float mPressButtonCooldown = 0.0f;
+
+    const auto& keyboardBindings = mInputComponent->GetKeyboardBindings();
+    static constexpr float buttonCooldown = 0.5f;
+
+    if (keyboardBindings->HasPressedKeys()) {
+        std::vector<std::shared_ptr<UiCanvas>> mCanvases;
+        mCanvases.reserve(mUiCanvases.size() + 2);
+        mCanvases.insert(mCanvases.end(), mUiCanvases.begin(), mUiCanvases.end());
+        if (mHudCanvas) {
+            mCanvases.push_back(mHudCanvas);
+        }
+        if (mDebugUiCanvas) {
+            mCanvases.push_back(mDebugUiCanvas);
+        }
+
+        if (KeyState::PRESSED == keyboardBindings->GetStateByKey(eKeyboardKeys::Shift)
+            && KeyState::PRESSED == keyboardBindings->GetStateByKey(eKeyboardKeys::P)) {
+            for (const auto& canvas : mCanvases) {
+                canvas->SetIsHiddenForDebugging(true);
+            }
+            mPressButtonCooldown = 0.0f;
+        } else if (KeyState::PRESSED == keyboardBindings->GetStateByKey(eKeyboardKeys::P)) {
+            if (mPressButtonCooldown >= buttonCooldown) {
+                mPressButtonCooldown = 0.0f;
+                for (const auto& canvas : mCanvases) {
+                    canvas->SetIsHiddenForDebugging(false);
+                }
+            }
+        }
+    }
+
+    mPressButtonCooldown += deltaTimeSec;
 #endif
 }
 

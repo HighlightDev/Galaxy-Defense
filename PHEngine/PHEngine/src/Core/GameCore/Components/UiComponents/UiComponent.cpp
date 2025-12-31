@@ -47,7 +47,6 @@ void UiComponent::CreateUiElements(
         mLabel->SetHeight(lineMaxWidthHeight.y);
         mLabel->SetZOrder(50);
         mLabel->SetText(text);
-        mLabel->SetTextColor(color);
         mLabel->SetTextHorizontalAlignment(textHorizontalAlignment);
         mLabel->SetTextVerticalAlignment(textVericalAlignment);
     } else {

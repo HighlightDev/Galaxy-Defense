@@ -46,10 +46,8 @@ function LabelButton:new(host, overlay, labelFontName, name)
     }
 
     local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
-    local containerName = debugName ~= nil and "LabelButton_" .. debugName or nil
-    local labelName = debugName ~= nil and "LabelButton_" .. debugName or nil
-    newObj.backgroundTile = UiRectangle:new(host, containerName)
-    newObj.label = UiLabel:new(host, labelFontName, labelName)
+    newObj.backgroundTile = UiRectangle:new(host, debugName)
+    newObj.label = UiLabel:new(host, labelFontName, debugName)
     newObj.pressButtonStateContainer = UiRectangle:new(host)
 
     overlay:addWidget(newObj.backgroundTile)
@@ -86,12 +84,14 @@ function LabelButton:onCompoundWidgetInitialize()
     self.backgroundTile:setWidth(self.buttonWidth);
     self.backgroundTile:setColorHexValue(self.containerColor)
     self.backgroundTile:enableMouseInputReceiverBase(self.host)
+    self.backgroundTile:setIfCanInterceptMouseInputEvent(true)
 
     self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setZOrder(4);
     self.pressButtonStateContainer:fill(self.backgroundTile.widgetName)
     self.pressButtonStateContainer:setOpacity(0.0);
     self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
+    self.pressButtonStateContainer:setIfCanInterceptMouseInputEvent(true)
     self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick", {
         {
             animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
@@ -258,6 +258,10 @@ function LabelButton:setLabelFontSize(fontSize) self.label:setFontSize(fontSize)
 
 function LabelButton:setPressStateButtonColorHexValues(colorHex)
     self.pressButtonStateContainer:setColorHexValue(colorHex)
+end
+
+function LabelButton:setIfCanInterceptMouseInputEvent(intercept)
+    self.backgroundTile:setIfCanInterceptMouseInputEvent(intercept)
 end
 
 return LabelButton

@@ -73,8 +73,8 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
             glm::vec3(),
             glm::vec3(),
             1.2f,
-            3,
-            1.3f,
+            2,
+            1.0f,
             0.05f,
             electroRay_material);
         const std::shared_ptr<IComponentCreatable>& meshComponentCreator

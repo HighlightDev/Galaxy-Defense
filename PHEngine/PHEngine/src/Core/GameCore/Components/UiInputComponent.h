@@ -14,7 +14,7 @@ class UiInputComponent : public Component {
 public:
     UiInputComponent(const std::shared_ptr<ComponentData>& componentData);
 
-    virtual ~UiInputComponent();
+    virtual ~UiInputComponent() = default;
 
     eComponentType GetComponentType() const override;
 

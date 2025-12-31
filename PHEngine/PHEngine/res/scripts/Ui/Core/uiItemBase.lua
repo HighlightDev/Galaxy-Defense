@@ -290,6 +290,7 @@ end
 function UiItemBase:enableMouseInputReceiverBase(host)
     assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
     _EnableMouseInputReceiverBase(host, self.luaProxyId)
+    self:setIfCanInterceptMouseInputEvent(true)
 end
 
 function UiItemBase:subscribeOnMouseInputPressStateChanged(callback)

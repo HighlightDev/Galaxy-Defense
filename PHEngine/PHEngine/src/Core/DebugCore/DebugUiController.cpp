@@ -75,7 +75,7 @@ void DebugUiController::RecalculateWidgetsSize()
 
     mTexturesLayout->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mCanvas->GetName());
     mTexturesLayout->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mCanvas->GetName());
-    mTexturesLayout->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mCanvas->GetName());
+    mTexturesLayout->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mCanvas->GetName());
     mTexturesLayout->SetHeight(imageWidth + (imageMargin * 2));
     mTexturesLayout->SetAlignment(eUiRowAlignmentType::CENTER);
     mTexturesLayout->SetSpacing(imageMargin);

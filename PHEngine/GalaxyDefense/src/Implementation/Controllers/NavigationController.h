@@ -3,6 +3,7 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/ITickable.h"
 #include "ILevelController.h"
+#include "Implementation/Controllers/BarriersController.h"
 #include "Implementation/DamageDealerType.h"
 #include "Implementation/Navigation/NavigationPathBuilder.h"
 
@@ -34,6 +35,8 @@ class NavigationController : public ITickable, public ILevelController {
     BoundingBox3D mLevelBounds;
 
     static constexpr bool cEnableDebugPathRendering{false};
+
+    BarriersController mBarriersController;
 
 public:
     explicit NavigationController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
@@ -69,6 +72,10 @@ public:
     void RemoveSpaceshipFromRoute(const int32_t spaceshipActorId);
 
     void RemoveMissileFromNavigation(const int32_t missileActorId);
+
+    BarriersController& GetBarriersController();
+
+    const BarriersController& GetBarriersController() const;
 
 private:
     void Initialize();
