@@ -1,4 +1,5 @@
 #pragma once
+#include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Core/GameCore/Event/GeneralSystemSettingsChangedEvent.h"
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 #include "ILuaFunctionable.h"
@@ -20,6 +21,7 @@ class LuaScriptProcessor;
 class LuaEngineEventsFunctions : public ILuaFunctionable,
                                  public WindowSizeChangedLuaThreadEvent,
                                  public GeneralSystemSettingsChangedLuaThreadEvent,
+                                 public BroadcastLuaThreadEvent,
                                  public std::enable_shared_from_this<LuaEngineEventsFunctions> {
 protected:
     LuaScriptExecutorBase* mOwnerPtr;
@@ -63,6 +65,8 @@ private:
     void ProcessEvent(
         const GeneralSystemSettingsChangedLuaThreadEvent* sender,
         const GeneralSystemSettingsChangedLuaThreadEvent::EventData_t& data) override;
+
+    void ProcessEvent(const BroadcastLuaThreadEvent* sender, const BroadcastLuaThreadEvent::EventData_t& data) override;
 };
 } // namespace Scripts
 } // namespace EngineCore

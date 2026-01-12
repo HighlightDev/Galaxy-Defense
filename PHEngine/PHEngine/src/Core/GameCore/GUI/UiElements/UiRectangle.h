@@ -26,6 +26,10 @@ class UiRectangle : public UiItemBase {
 
     float mBorderRadius;
 
+    bool mIsRoundTop;
+
+    bool mIsRoundBottom;
+
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mColorProperty;
 
     std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
@@ -52,6 +56,14 @@ public:
     void SetBorderRadius(const float radiusPx);
 
     float GetBorderRadius() const;
+
+    bool GetIsRoundTop() const;
+
+    bool GetIsRoundBottom() const;
+
+    void SetIsRoundTop(const bool bIsRoundTop);
+
+    void SetIsRoundBottom(const bool bIsRoundBottom);
 
     glm::vec3 GetColor() const;
 

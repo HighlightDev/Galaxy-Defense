@@ -242,6 +242,8 @@ function SettingsOverlay:new(host)
         end
     end
 
+    pauseSettingsOverlay.onBroadcastEventTriggered = function(eventName, jsonArgs) end
+
     return pauseSettingsOverlay
 end
 

@@ -19,6 +19,8 @@ void UiRectangleShader::AccessAllUniformLocations(uint32_t shaderProgramId)
     u_opacity = GetUniform("opacity", shaderProgramId);
     u_widthHeightPx = GetUniform("widthAndHeight", shaderProgramId);
     u_borderRadius = GetUniform("borderRadius", shaderProgramId);
+    u_isRoundTop = GetUniform("isRoundTop", shaderProgramId);
+    u_isRoundBottom = GetUniform("isRoundBottom", shaderProgramId);
 }
 
 void UiRectangleShader::SetColor(const glm::vec3& color)
@@ -45,6 +47,16 @@ void UiRectangleShader::SetBorderRadius(const float borderRadiusPx)
 void UiRectangleShader::SetWidthHeightPixels(const glm::vec2& widthHeightPixels)
 {
     u_widthHeightPx.LoadUniform(widthHeightPixels);
+}
+
+void UiRectangleShader::SetIsRoundTop(const bool bIsRoundTop)
+{
+    u_isRoundTop.LoadUniform(bIsRoundTop);
+}
+
+void UiRectangleShader::SetIsRoundBottom(const bool bIsRoundBottom)
+{
+    u_isRoundBottom.LoadUniform(bIsRoundBottom);
 }
 
 void UiRectangleShader::SetShaderPredefine()

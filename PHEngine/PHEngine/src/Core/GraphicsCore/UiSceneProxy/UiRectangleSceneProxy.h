@@ -25,6 +25,10 @@ protected:
 
     float mBorderRadius;
 
+    bool mIsRoundTop;
+
+    bool mIsRoundBottom;
+
 public:
     UiRectangleSceneProxy(const ::EngineCore::GUI::UiRectangle* uiRectangle);
 
@@ -37,6 +41,10 @@ public:
     void SetOpacity(const float opacity);
 
     void SetBorderRadius(const float borderRadiusPx);
+
+    void SetIsRoundTop(const bool bIsRoundTop);
+
+    void SetIsRoundBottom(const bool bIsRoundBottom);
 
     void CleanUp() override;
 

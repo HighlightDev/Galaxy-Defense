@@ -200,6 +200,10 @@ function MainMenuOverlay:new(host)
     mainMenuOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
     mainMenuOverlay.onEngineEventTriggered = function(eventName, jsonArgs) end
 
+    mainMenuOverlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
+        -- Currently no implementation is needed here
+    end
+
     return mainMenuOverlay;
 end
 

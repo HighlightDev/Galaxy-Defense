@@ -115,5 +115,12 @@ function System_OnGameEventTriggered(host, eventName, jsonArgs)
     for _, value in pairs(UiBackgroundOverlays) do value.onGameEventTriggered(eventName, jsonArgs) end
 end
 
+function System_OnBroadcastEventTriggered(host, eventName, jsonArgs)
+    assert(eventName ~= nil and type(eventName) == "string")
+
+    for _, value in pairs(UiOverlays) do value.onBroadcastEventTriggered(eventName, jsonArgs) end
+    for _, value in pairs(UiBackgroundOverlays) do value.onBroadcastEventTriggered(eventName, jsonArgs) end
+end
+
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)
 HasOnUpdate = (_G["System_OnUpdate"] ~= nil and 1 or 0)

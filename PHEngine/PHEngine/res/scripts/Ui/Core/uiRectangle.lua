@@ -43,7 +43,9 @@ function UiRectangle:new(host, name)
     local rectangleProperties = {
         color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
         opacity = {value = 1.0, dirty = false},
-        border_radius = {value = 0.0, dirty = false}
+        border_radius = {value = 0.0, dirty = false},
+        is_round_top = {value = false, dirty = false},
+        is_round_bottom = {value = false, dirty = false}
     }
 
     local uiRectangleObj = UiRectangle.uiItemBaseClass.new(self)
@@ -74,6 +76,12 @@ function UiRectangle:updateFromReplicatorData(host)
             end
             if parsedJson["border_radius"] ~= nil then
                 self.rectangleProperties.border_radius.value = parsedJson["border_radius"]
+            end
+            if parsedJson["is_round_top"] ~= nil then
+                self.rectangleProperties.is_round_top.value = parsedJson["is_round_top"]
+            end
+            if parsedJson["is_round_bottom"] ~= nil then
+                self.rectangleProperties.is_round_bottom.value = parsedJson["is_round_bottom"]
             end
         end
     end
@@ -136,6 +144,22 @@ function UiRectangle:setBorderRadius(borderRadius)
     if self.rectangleProperties.border_radius.value ~= borderRadius then
         self.rectangleProperties.border_radius.value = borderRadius
         self.rectangleProperties.border_radius.dirty = true
+    end
+end
+
+function UiRectangle:setIsRoundTop(bIsRoundTop)
+    assert(bIsRoundTop ~= nil and type(bIsRoundTop) == "boolean")
+    if self.rectangleProperties.is_round_top.value ~= bIsRoundTop then
+        self.rectangleProperties.is_round_top.value = bIsRoundTop
+        self.rectangleProperties.is_round_top.dirty = true
+    end
+end
+
+function UiRectangle:setIsRoundBottom(bIsRoundBottom)
+    assert(bIsRoundBottom ~= nil and type(bIsRoundBottom) == "boolean")
+    if self.rectangleProperties.is_round_bottom.value ~= bIsRoundBottom then
+        self.rectangleProperties.is_round_bottom.value = bIsRoundBottom
+        self.rectangleProperties.is_round_bottom.dirty = true
     end
 end
 

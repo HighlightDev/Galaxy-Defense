@@ -20,6 +20,8 @@ class UiRectangleShader : public Shader {
     Uniform u_scale;
     Uniform u_widthHeightPx;
     Uniform u_borderRadius;
+    Uniform u_isRoundTop;
+    Uniform u_isRoundBottom;
 
 public:
     UiRectangleShader(const ShaderParams& params);
@@ -33,6 +35,10 @@ public:
     void SetBorderRadius(const float borderRadiusPx);
 
     void SetWidthHeightPixels(const glm::vec2& widthHeightPixels);
+
+    void SetIsRoundTop(const bool bIsRoundTop);
+
+    void SetIsRoundBottom(const bool bIsRoundBottom);
 
 protected:
     void AccessAllUniformLocations(uint32_t shaderProgramId) override;

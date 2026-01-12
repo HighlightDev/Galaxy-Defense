@@ -477,6 +477,10 @@ function LevelEditorOverlay:new(host)
         end
     end
 
+    overlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
+        -- Currently no implementation is needed here
+    end
+
     return overlay
 end
 

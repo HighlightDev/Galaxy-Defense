@@ -254,12 +254,18 @@ function ImageButton:setZOrder(zOrder)
     assert(zOrder ~= nil and type(zOrder) == "number")
     self.backgroundTile:setZOrder(zOrder)
     self.image:setZOrder(zOrder + 1)
+    self.pressButtonStateContainer:setZOrder(zOrder)
 end
 
 function ImageButton:setIsVisible(isVisible)
     assert(isVisible ~= nil and type(isVisible) == "boolean")
     self.backgroundTile:setIsVisible(isVisible)
     self.image:setIsVisible(isVisible)
+end
+
+function ImageButton:setIsBackgroundVisible(isVisible)
+    assert(isVisible ~= nil and type(isVisible) == "boolean")
+    self.backgroundTile:setIsVisible(isVisible)
 end
 
 function ImageButton:setIsButtonActive(isButtonActive)

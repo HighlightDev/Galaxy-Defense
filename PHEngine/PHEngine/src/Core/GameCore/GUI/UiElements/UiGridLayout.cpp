@@ -145,7 +145,7 @@ void UiGridLayout::RecalculatePositionsForChildren()
             }
 
             const auto& anchors = child->GetAnchors();
-            ext_assert(anchors.size() == 0, "Ui widget cannot have anchors inside layout widget.");
+            ext_assert(anchors.size() == 0, "Ui widget " + child->GetName() + " cannot have anchors inside layout widget.");
 
             const int32_t columnIndex = childIndex % mColumnsCount;
             const int32_t rowIndex = childIndex / mColumnsCount;
@@ -155,10 +155,9 @@ void UiGridLayout::RecalculatePositionsForChildren()
 
             cursorX = columnIndex != 0 ? cursorX + childWidth + mHorizontalSpacing : startCursorX;
 
-            const int32_t widgetHeight
-                = maxPotentialHeight > mAbsoluteOrigin.y ? normalizedChildHeight : GetRowHeight(prevRowIndex);
+            const int32_t widgetHeight = maxPotentialHeight > mHeight ? normalizedChildHeight : GetRowHeight(prevRowIndex);
             if (rowIndex != 0 && rowIndex != prevRowIndex) {
-                cursorY -= widgetHeight + mVerticalSpacing;
+                cursorY -= (widgetHeight + mVerticalSpacing);
                 prevRowIndex = rowIndex;
             }
 

@@ -36,12 +36,14 @@ LuaEngineEventsFunctions::~LuaEngineEventsFunctions()
     WindowSizeChangedLuaThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedLuaThreadEvent::GetInstanceId());
     GeneralSystemSettingsChangedLuaThreadEvent::GetInstance()->RemoveListener(
         GeneralSystemSettingsChangedLuaThreadEvent::GetInstanceId());
+    BroadcastLuaThreadEvent::GetInstance()->RemoveListener(BroadcastLuaThreadEvent::GetInstanceId());
 }
 
 void LuaEngineEventsFunctions::Initialize()
 {
     WindowSizeChangedLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
     GeneralSystemSettingsChangedLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
+    BroadcastLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
 }
 
 void LuaEngineEventsFunctions::SetScene(const std::weak_ptr<Scene>& sceneWp)
@@ -219,24 +221,24 @@ void LuaEngineEventsFunctions::ProcessEvent(
         {eSystemSettingsEventType::SOUND_SETTINGS_CHANGED, "sound"}, {eSystemSettingsEventType::MUSIC_SETTINGS_CHANGED, "music"}};
     const auto& eventType = std::get<0>(data);
     const auto& jsonParameters = std::get<1>(data);
-    const auto& parsedParameters = nlohmann::json::parse(jsonParameters);
 
     ext_assert(eventTypeToStringMap.count(eventType), "LuaEngineEventsFunctions::ProcessEvent: unknown event type");
-    nlohmann::json jsonObj;
-    jsonObj["settings_type"] = eventTypeToStringMap.at(eventType);
-    if (parsedParameters.contains("action")) {
-        jsonObj["action"] = nlohmann_utilities::GetStringFromJson(parsedParameters, "action");
-    }
-    if (parsedParameters.contains("gain")) {
-        jsonObj["gain"] = nlohmann_utilities::GetFloatFromJson(parsedParameters, "gain");
-    }
-    const auto& eventParams = jsonObj.dump();
     LuaFunctionInvoker<void(void*, std::string, std::string)>::Invoke(
         mOwnerPtr->GetLuaInstance(),
         "System_OnEngineEventTriggered",
         (void*)mOwnerPtr,
         std::string("GeneralSystemSettingsChanged"),
-        eventParams);
+        jsonParameters);
+}
+
+void LuaEngineEventsFunctions::ProcessEvent(
+    const BroadcastLuaThreadEvent* sender, const BroadcastLuaThreadEvent::EventData_t& data)
+{
+    const std::string& eventHeader = std::get<0>(data);
+    const std::string& jsonParameters = std::get<1>(data);
+
+    LuaFunctionInvoker<void(void*, std::string, std::string)>::Invoke(
+        mOwnerPtr->GetLuaInstance(), "System_OnBroadcastEventTriggered", (void*)mOwnerPtr, eventHeader, jsonParameters);
 }
 } // namespace Scripts
 } // namespace EngineCore

@@ -458,6 +458,10 @@ function PlayerHUDOverlay:new(host)
         end
     end
 
+    playerHUDOverlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
+        -- Currently no implementation is needed here
+    end
+
     return playerHUDOverlay
 end
 

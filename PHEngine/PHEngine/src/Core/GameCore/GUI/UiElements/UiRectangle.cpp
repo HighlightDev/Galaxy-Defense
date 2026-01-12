@@ -32,6 +32,8 @@ UiRectangle::UiRectangle(const std::string& name)
     , mColor(glm::vec3(1.0f))
     , mOpacity(1.0f)
     , mBorderRadius(0.0f)
+    , mIsRoundTop(true)
+    , mIsRoundBottom(true)
     , mColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(
           mColor, "Color", [this](const glm::vec3& newColorVaue) { SetColor(newColorVaue); }))
     , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
@@ -176,6 +178,34 @@ float UiRectangle::GetBorderRadius() const
     return mBorderRadius;
 }
 
+bool UiRectangle::GetIsRoundTop() const
+{
+    return mIsRoundTop;
+}
+
+bool UiRectangle::GetIsRoundBottom() const
+{
+    return mIsRoundBottom;
+}
+
+void UiRectangle::SetIsRoundTop(const bool bIsRoundTop)
+{
+    if (mIsRoundTop != bIsRoundTop) {
+        mIsRoundTop = bIsRoundTop;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+void UiRectangle::SetIsRoundBottom(const bool bIsRoundBottom)
+{
+    if (mIsRoundBottom != bIsRoundBottom) {
+        mIsRoundBottom = bIsRoundBottom;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
 std::string UiRectangle::GetUiTypeString() const
 {
     return "UiRectangle";
@@ -217,6 +247,20 @@ void UiRectangle::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
+    if (jsonObj.contains("is_round_top")) {
+        const auto isRoundTop = jsonObj["is_round_top"].get<bool>();
+        if (mIsRoundTop != isRoundTop) {
+            mIsRoundTop = isRoundTop;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
+    if (jsonObj.contains("is_round_bottom")) {
+        const auto isRoundBottom = jsonObj["is_round_bottom"].get<bool>();
+        if (mIsRoundBottom != isRoundBottom) {
+            mIsRoundBottom = isRoundBottom;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
 }
 
 void UiRectangle::SyncDataOnRenderThread()
@@ -236,7 +280,9 @@ void UiRectangle::SyncDataOnRenderThread()
                          canvasUId = canvasSp->GetUId(),
                          color = mColor,
                          opacity = mOpacity,
-                         borderRadius = mBorderRadius](
+                         borderRadius = mBorderRadius,
+                         isRoundTop = mIsRoundTop,
+                         isRoundBottom = mIsRoundBottom](
                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                             std::weak_ptr<EngineCore::Scene> sceneWp,
                             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -246,6 +292,8 @@ void UiRectangle::SyncDataOnRenderThread()
                                 rectangleSceneProxy->SetColor(color);
                                 rectangleSceneProxy->SetOpacity(opacity);
                                 rectangleSceneProxy->SetBorderRadius(borderRadius);
+                                rectangleSceneProxy->SetIsRoundTop(isRoundTop);
+                                rectangleSceneProxy->SetIsRoundBottom(isRoundBottom);
                             }
                         });
                 }
@@ -271,7 +319,9 @@ void UiRectangle::SyncDataOnLuaThread()
                      luaProxyId = GetLuaProxyId(),
                      opacity = mOpacity,
                      color = mColor,
-                     borderRadius = mBorderRadius](
+                     borderRadius = mBorderRadius,
+                     isRoundTop = mIsRoundTop,
+                     isRoundBottom = mIsRoundBottom](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -280,6 +330,8 @@ void UiRectangle::SyncDataOnLuaThread()
                             rectangleLuaProxy->SetOpacity_FromGameThread(opacity);
                             rectangleLuaProxy->SetColor_FromGameThread(color);
                             rectangleLuaProxy->SetBorderRadius_FromGameThread(borderRadius);
+                            rectangleLuaProxy->SetIsRoundTop_FromGameThread(isRoundTop);
+                            rectangleLuaProxy->SetIsRoundBottom_FromGameThread(isRoundBottom);
                         }
                     });
             }

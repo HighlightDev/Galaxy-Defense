@@ -17,6 +17,8 @@ UiRectangleLuaProxy::UiRectangleLuaProxy(const std::shared_ptr<::EngineCore::GUI
     , mColor(ownerRectangle->GetColor())
     , mOpacity(ownerRectangle->GetOpacity())
     , mBorderRadius(static_cast<float>(ownerRectangle->GetBorderRadius()))
+    , mIsRoundTop(ownerRectangle->GetIsRoundTop())
+    , mIsRoundBottom(ownerRectangle->GetIsRoundBottom())
 {
 }
 
@@ -50,6 +52,8 @@ std::string UiRectangleLuaProxy::GetGameThreadData()
     jsonObj["color"] = colorVec;
     jsonObj["opacity"] = mOpacity;
     jsonObj["border_radius"] = mBorderRadius;
+    jsonObj["is_round_top"] = mIsRoundTop;
+    jsonObj["is_round_bottom"] = mIsRoundBottom;
     return jsonObj.dump();
 }
 
@@ -73,6 +77,22 @@ void UiRectangleLuaProxy::SetBorderRadius_FromGameThread(const float borderRadiu
 {
     if (!EngineMath::FloatsNearEqual(mBorderRadius, borderRadius)) {
         mBorderRadius = borderRadius;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiRectangleLuaProxy::SetIsRoundTop_FromGameThread(const bool bIsRoundTop)
+{
+    if (mIsRoundTop != bIsRoundTop) {
+        mIsRoundTop = bIsRoundTop;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiRectangleLuaProxy::SetIsRoundBottom_FromGameThread(const bool bIsRoundBottom)
+{
+    if (mIsRoundBottom != bIsRoundBottom) {
+        mIsRoundBottom = bIsRoundBottom;
         mIsLuaDataDirty = true;
     }
 }

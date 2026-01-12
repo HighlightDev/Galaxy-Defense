@@ -18,6 +18,8 @@ UiRectangleSceneProxy::UiRectangleSceneProxy(const UiRectangle* uiRectangle)
     , mColor(uiRectangle->GetColor())
     , mOpacity(uiRectangle->GetOpacity())
     , mBorderRadius(uiRectangle->GetBorderRadius())
+    , mIsRoundTop(uiRectangle->GetIsRoundTop())
+    , mIsRoundBottom(uiRectangle->GetIsRoundBottom())
 {
 }
 
@@ -41,6 +43,10 @@ void UiRectangleSceneProxy::OnSceneProxyRegistered()
 
 void UiRectangleSceneProxy::Render()
 {
+    if (mWidthHeightPixels.x == 0 || mWidthHeightPixels.y == 0) {
+        return;
+    }
+
     mUiRectangleShader->ExecuteShader();
     const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
     mUiRectangleShader->SetTransform(mNormalizedTranslation + scaleOffset + mCenterOffset, mNormalizedScale * mScale);
@@ -49,6 +55,8 @@ void UiRectangleSceneProxy::Render()
     mUiRectangleShader->SetBorderRadius(mBorderRadius);
     mUiRectangleShader->SetWidthHeightPixels(
         glm::vec2(static_cast<float>(mWidthHeightPixels.x), static_cast<float>(mWidthHeightPixels.y)));
+    mUiRectangleShader->SetIsRoundTop(mIsRoundTop);
+    mUiRectangleShader->SetIsRoundBottom(mIsRoundBottom);
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     mUiRectangleShader->StopShader();
 }
@@ -66,6 +74,16 @@ void UiRectangleSceneProxy::SetOpacity(const float opacity)
 void UiRectangleSceneProxy::SetBorderRadius(const float borderRadiusPx)
 {
     mBorderRadius = borderRadiusPx;
+}
+
+void UiRectangleSceneProxy::SetIsRoundTop(const bool bIsRoundTop)
+{
+    mIsRoundTop = bIsRoundTop;
+}
+
+void UiRectangleSceneProxy::SetIsRoundBottom(const bool bIsRoundBottom)
+{
+    mIsRoundBottom = bIsRoundBottom;
 }
 
 void UiRectangleSceneProxy::CleanUp()

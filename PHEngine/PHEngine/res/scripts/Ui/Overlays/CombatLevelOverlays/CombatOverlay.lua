@@ -33,6 +33,7 @@ local UiTextBlock = require("Ui/Core/uiTextBlock")
 local UiGridLayout = require("Ui/Core/uiGridLayout")
 local ImageButton = require("Ui/Widgets/ImageButton")
 local UiRectangle = require("Ui/Core/uiRectangle")
+local UiImageButton = require("Ui/Widgets/ImageButton")
 
 local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}
 
@@ -51,7 +52,6 @@ local RequirementTrackersIdle = {}
 local RequirementTrackerHint = nil
 
 local createTowerButtons = {}
-local barrierButtons = {}
 
 local function showTileRequirementAchived(requirementTile)
     requirementTile:setTextureSource("check.png")
@@ -184,9 +184,10 @@ function CombatOverlay:new(host)
     local panelHeight = windowHeight * 0.15
     local mainButtonSize = panelHeight * 0.8
     local smallButtonSize = windowHeight * 0.07
-    local panelWidth = (mainButtonSize * 2) + 70
-    local gridWidth = smallButtonSize * 3 + 90
-    local gridHeight = smallButtonSize * 2 + 60
+    local panelWidth = (mainButtonSize) + 50
+    local gridHeader = smallButtonSize * 0.5
+    local gridWidth = smallButtonSize * 3 + (smallButtonSize * 0.5) * 3
+    local gridHeight = smallButtonSize * 3 + (smallButtonSize * 0.5) * 3 + gridHeader
 
     local backgroundRect = UiRectangle:new(host)
     combatOverlay:addWidget(backgroundRect)
@@ -209,6 +210,9 @@ function CombatOverlay:new(host)
     local gridBackground = UiRectangle:new(host, "GridBackground")
     combatOverlay:addWidget(gridBackground)
 
+    local gridBackgroundHeader = UiRectangle:new(host, "GridBackgroundHeader")
+    combatOverlay:addWidget(gridBackgroundHeader)
+
     local createMenuDropDownGridLayout = UiGridLayout:new(host, "CreateMenuDropDownGridLayout")
     combatOverlay:addWidget(createMenuDropDownGridLayout)
 
@@ -217,25 +221,6 @@ function CombatOverlay:new(host)
 
     local removeMenuDropDownRowLayout = UiRowLayout:new(host, "RemoveMenuDropDownRowLayout")
     combatOverlay:addWidget(removeMenuDropDownRowLayout)
-
-    -- Barrier management grid layout
-    local barrierGridBackground = UiRectangle:new(host, "BarrierGridBackground")
-    combatOverlay:addWidget(barrierGridBackground)
-
-    local barrierGridLayout = UiGridLayout:new(host, "BarrierGridLayout")
-    combatOverlay:addWidget(barrierGridLayout)
-
-    local createBarrierButton = ImageButton:new(host, combatOverlay, "CreateBarrierButton")
-    combatOverlay:addCompoundWidget(createBarrierButton)
-    barrierButtons[#barrierButtons + 1] = createBarrierButton
-
-    local removeBarrierButton = ImageButton:new(host, combatOverlay, "RemoveBarrierButton")
-    combatOverlay:addCompoundWidget(removeBarrierButton)
-    barrierButtons[#barrierButtons + 1] = removeBarrierButton
-
-    local closeBarrierGridButton = ImageButton:new(host, combatOverlay, "CloseBarrierGridButton")
-    combatOverlay:addCompoundWidget(closeBarrierGridButton)
-    barrierButtons[#barrierButtons + 1] = closeBarrierGridButton
 
     for i = MissileType.BOMB, MissileType.BLACK_HOLE do
         local button = ImageButton:new(host, combatOverlay, "CreateTowerButton" .. tostring(i))
@@ -262,60 +247,12 @@ function CombatOverlay:new(host)
         end)
     end
 
-    local discardCreateTowerButton = ImageButton:new(host, combatOverlay, "DiscardCreateTowerButton")
-    combatOverlay:addCompoundWidget(discardCreateTowerButton)
+    local closeTowerCreatePanelButton = UiImageButton:new(host, combatOverlay, "closeTowerCreatePanelButton")
+    combatOverlay:addCompoundWidget(closeTowerCreatePanelButton)
 
-    local hideCreatePanel = function()
-        discardCreateTowerButton:setIsVisible(false)
-        gridBackground:setIsVisible(false)
-    end
-
-    local hideBarrierPanel = function() barrierGridBackground:setIsVisible(false) end
-
-    -- Create Barrier Button
-    createBarrierButton:subscribeOnMouseInputClickedCallback(function()
-        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-                                                  json.encode({action = "create_barrier"}))
-    end)
-
-    createBarrierButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            createBarrierButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-        else
-            createBarrierButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        end
-    end)
-
-    -- Remove Barrier Button
-    removeBarrierButton:subscribeOnMouseInputClickedCallback(function()
-        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-                                                  json.encode({action = "remove_barrier"}))
-    end)
-
-    removeBarrierButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            removeBarrierButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-        else
-            removeBarrierButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        end
-    end)
-
-    -- Close Barrier Grid Button
-    closeBarrierGridButton:subscribeOnMouseInputClickedCallback(function()
-        hideBarrierPanel()
-        closeBarrierGridButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-    end)
-
-    closeBarrierGridButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            closeBarrierGridButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-        else
-            closeBarrierGridButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        end
-    end)
+    local hideCreatePanel = function() gridBackground:setIsVisible(false) end
 
     createObjectButton:subscribeOnMouseInputClickedCallback(function()
-        hideBarrierPanel()
         gridBackground:setIsVisible(true)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                                   json.encode(
@@ -330,25 +267,23 @@ function CombatOverlay:new(host)
         end
     end)
 
-    discardCreateTowerButton:subscribeOnMouseInputClickedCallback(function()
+    closeTowerCreatePanelButton:subscribeOnMouseInputClickedCallback(function()
         hideCreatePanel()
-        hideBarrierPanel()
-        discardCreateTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        closeTowerCreatePanelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                                   json.encode({action = "ghost_tower_visibility", visible = false}))
     end)
 
-    discardCreateTowerButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    closeTowerCreatePanelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            discardCreateTowerButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+            closeTowerCreatePanelButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
-            discardCreateTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+            closeTowerCreatePanelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
     removeObjectButton:subscribeOnMouseInputClickedCallback(function()
         hideCreatePanel()
-        hideBarrierPanel()
         removeDropDownPanel:setIsVisible(true);
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                                   json.encode(
@@ -363,10 +298,7 @@ function CombatOverlay:new(host)
         end
     end)
 
-    barrierManagementButton:subscribeOnMouseInputClickedCallback(function()
-        hideCreatePanel()
-        barrierGridBackground:setIsVisible(true)
-    end)
+    barrierManagementButton:subscribeOnMouseInputClickedCallback(function() hideCreatePanel() end)
 
     barrierManagementButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -465,7 +397,8 @@ function CombatOverlay:new(host)
         createObjectButton:setHeight(mainButtonSize)
         createObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         createObjectButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        createObjectButton:setImageTextureSource("plus.png")
+        createObjectButton:setImageTextureSource("hammer.png")
+        createObjectButton:setImageRotationDegrees(180)
 
         gridBackground:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
         gridBackground:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName,
@@ -477,13 +410,34 @@ function CombatOverlay:new(host)
         gridBackground:setColorHexValue(Styles.Colors.panelColor)
         gridBackground:setBorderRadius(CombatPreparationOverlay.buttonRadius)
         gridBackground:setIsVisible(false)
+        gridBackground:setZOrder(2)
+
+        gridBackgroundHeader:setParent(host, combatOverlayCanvas.widgetName, gridBackground.widgetName)
+        gridBackgroundHeader:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+                                       gridBackground.widgetName)
+        gridBackgroundHeader:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+                                       UiItemBase.UiAnchorType.HORIZONTAL_CENTER, gridBackground.widgetName)
+        gridBackgroundHeader:setWidth(gridWidth)
+        gridBackgroundHeader:setHeight(gridHeader)
+        gridBackgroundHeader:setColorHexValue(Styles.Colors.headerPanelColor)
+        gridBackgroundHeader:setBorderRadius(CombatPreparationOverlay.buttonRadius)
+        gridBackgroundHeader:setIsRoundBottom(false)
+        gridBackgroundHeader:setZOrder(3)
 
         createMenuDropDownGridLayout:setParent(host, combatOverlayCanvas.widgetName, gridBackground.widgetName)
-        createMenuDropDownGridLayout:fill(gridBackground.widgetName)
+        createMenuDropDownGridLayout:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
+                                               gridBackgroundHeader.widgetName, 0)
+        createMenuDropDownGridLayout:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+                                               gridBackground.widgetName)
+        createMenuDropDownGridLayout:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+                                               gridBackground.widgetName)
+        createMenuDropDownGridLayout:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+                                               gridBackground.widgetName)
+        createMenuDropDownGridLayout:setZOrder(3)
         createMenuDropDownGridLayout:setHorizontalSpacing(smallButtonSize * 0.5)
         createMenuDropDownGridLayout:setVerticalSpacing(smallButtonSize * 0.5)
         createMenuDropDownGridLayout:setColumnsCount(3)
-        createMenuDropDownGridLayout:setRowsCount(2)
+        createMenuDropDownGridLayout:setRowsCount(3)
         createMenuDropDownGridLayout:setAlignment(UiGridLayout.UiGridHorizontalAlignmentType.CENTER,
                                                   UiGridLayout.UiGridVerticalAlignmentType.CENTER)
 
@@ -492,7 +446,8 @@ function CombatOverlay:new(host)
         removeObjectButton:setHeight(smallButtonSize)
         removeObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         removeObjectButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        removeObjectButton:setImageTextureSource("minus.png")
+        removeObjectButton:setImageTextureSource("trash.png")
+        removeObjectButton:setImageRotationDegrees(180)
 
         for i = 1, #createTowerButtons do
             createTowerButtons[i]:setParent(host, combatOverlayCanvas.widgetName,
@@ -505,16 +460,22 @@ function CombatOverlay:new(host)
             createTowerButtons[i]:setImageRotationDegrees(180)
         end
 
-        discardCreateTowerButton:setParent(host, combatOverlayCanvas.widgetName, createMenuDropDownGridLayout.widgetName)
-        discardCreateTowerButton:setWidth(smallButtonSize)
-        discardCreateTowerButton:setHeight(smallButtonSize)
-        discardCreateTowerButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        discardCreateTowerButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        discardCreateTowerButton:setImageTextureSource("cancel.png")
+        closeTowerCreatePanelButton:setParent(host, combatOverlayCanvas.widgetName, gridBackgroundHeader.widgetName)
+        closeTowerCreatePanelButton:setWidth(smallButtonSize * 0.4)
+        closeTowerCreatePanelButton:setHeight(smallButtonSize * 0.4)
+        closeTowerCreatePanelButton:setUseImageCustomColor(true)
+        closeTowerCreatePanelButton:setImageColorHexValue(0x000000)
+        closeTowerCreatePanelButton:setImageTextureSource("cancel.png")
+        closeTowerCreatePanelButton:setIsBackgroundVisible(false)
+        closeTowerCreatePanelButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+                                              gridBackgroundHeader.widgetName, 0)
+        closeTowerCreatePanelButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+                                              gridBackgroundHeader.widgetName, 0)
+        closeTowerCreatePanelButton:setZOrder(4)
 
-        barrierManagementButton:setParent(host, combatOverlayCanvas.widgetName, combatPreparationRowLayout.widgetName)
-        barrierManagementButton:setWidth(mainButtonSize)
-        barrierManagementButton:setHeight(mainButtonSize)
+        barrierManagementButton:setParent(host, combatOverlayCanvas.widgetName, createMenuDropDownGridLayout.widgetName)
+        barrierManagementButton:setWidth(smallButtonSize)
+        barrierManagementButton:setHeight(smallButtonSize)
         barrierManagementButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         barrierManagementButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
         barrierManagementButton:setImageTextureSource("warning.png")
@@ -533,51 +494,6 @@ function CombatOverlay:new(host)
         removeMenuDropDownRowLayout:fill(removeDropDownPanel.widgetName)
         removeMenuDropDownRowLayout:setSpacing(smallButtonSize * 0.5)
         removeMenuDropDownRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
-
-        -- Barrier Grid Layout Setup
-        barrierGridBackground:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
-        barrierGridBackground:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.TOP,
-                                        backgroundRect.widgetName, 50)
-        barrierGridBackground:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                                        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, backgroundRect.widgetName)
-        barrierGridBackground:setWidth(smallButtonSize * 3 + 60)
-        barrierGridBackground:setHeight(smallButtonSize + 40)
-        barrierGridBackground:setColorHexValue(Styles.Colors.panelColor)
-        barrierGridBackground:setBorderRadius(CombatPreparationOverlay.buttonRadius)
-        barrierGridBackground:setIsVisible(false)
-
-        barrierGridLayout:setParent(host, combatOverlayCanvas.widgetName, barrierGridBackground.widgetName)
-        barrierGridLayout:fill(barrierGridBackground.widgetName)
-        barrierGridLayout:setHorizontalSpacing(smallButtonSize * 0.3)
-        barrierGridLayout:setVerticalSpacing(smallButtonSize * 0.3)
-        barrierGridLayout:setColumnsCount(3)
-        barrierGridLayout:setRowsCount(1)
-        barrierGridLayout:setAlignment(UiGridLayout.UiGridHorizontalAlignmentType.CENTER,
-                                       UiGridLayout.UiGridVerticalAlignmentType.CENTER)
-
-        -- Create Barrier Button
-        createBarrierButton:setParent(host, combatOverlayCanvas.widgetName, barrierGridLayout.widgetName)
-        createBarrierButton:setWidth(smallButtonSize)
-        createBarrierButton:setHeight(smallButtonSize)
-        createBarrierButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        createBarrierButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        createBarrierButton:setImageTextureSource("plus.png")
-
-        -- Remove Barrier Button
-        removeBarrierButton:setParent(host, combatOverlayCanvas.widgetName, barrierGridLayout.widgetName)
-        removeBarrierButton:setWidth(smallButtonSize)
-        removeBarrierButton:setHeight(smallButtonSize)
-        removeBarrierButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        removeBarrierButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        removeBarrierButton:setImageTextureSource("minus.png")
-
-        -- Close Barrier Grid Button
-        closeBarrierGridButton:setParent(host, combatOverlayCanvas.widgetName, barrierGridLayout.widgetName)
-        closeBarrierGridButton:setWidth(smallButtonSize)
-        closeBarrierGridButton:setHeight(smallButtonSize)
-        closeBarrierGridButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        closeBarrierGridButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        closeBarrierGridButton:setImageTextureSource("cancel.png")
     end)
 
     combatOverlay.onGameEventTriggered = function(eventName, jsonArgs)
@@ -606,6 +522,27 @@ function CombatOverlay:new(host)
         end
     end
 
+    combatOverlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
+        if "CombatLevelEvents" == eventName and combatOverlay.allWidgetLuaProxiesReady == true then
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            local parsedJson = json.decode(jsonArgs)
+            if parsedJson["action"] ~= nil then
+                local action = tostring(parsedJson["action"])
+                if action == "switch_mode" then
+                    local mode = tostring(parsedJson["mode"])
+                    if mode == "IDLE" then
+                        hideCreatePanel()
+                        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
+                                                                  "CombatLevelEvents", json.encode(
+                                                                      {
+                                action = "ghost_tower_visibility",
+                                visible = false
+                            }))
+                    end
+                end
+            end
+        end
+    end
     return combatOverlay
 end
 

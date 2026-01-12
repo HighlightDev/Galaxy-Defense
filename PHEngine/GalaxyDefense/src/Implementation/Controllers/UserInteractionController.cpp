@@ -11,6 +11,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
+#include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Core/GameCore/Input/KeyboardBindings.h"
 #include "Core/GameCore/Input/MouseBindings.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -332,6 +333,10 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                 mReloadPlacementTower->StartTimer();
             }
         }
+    } else if (
+        mouseBindings->GetKeyState(eMouseKeys::MouseButtonRight) == KeyState::PRESSED
+        && eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
+        TriggerSwitchToIdleInteractionMode();
     }
 }
 
@@ -665,6 +670,26 @@ void UserInteractionController::TriggerPlayerStatusChangedEvent(
             std::weak_ptr<EngineCore::Scene> sceneWp,
             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, statusChanged, jsonArgs);
+        });
+}
+
+void UserInteractionController::TriggerSwitchToIdleInteractionMode()
+{
+    const auto& sceneSp = mSceneWp.lock();
+    ext_assert(sceneSp, "Scene pointer is null in TriggerSwitchToIdleInteractionMode");
+    static constexpr auto functionId = Hash64_CT("UserInteractionController::TriggerSwitchToIdleInteractionMode");
+    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+        0,
+        functionId,
+        [](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+           std::weak_ptr<EngineCore::Scene> sceneWp,
+           std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+            nlohmann::json root;
+            root["action"] = "switch_mode";
+            root["mode"] = "IDLE";
+            Event::BroadcastLuaThreadEvent::GetInstance()->SendEvent(
+                eExecutionOrder::POST_EXECUTION, "CombatLevelEvents", root.dump());
         });
 }
 

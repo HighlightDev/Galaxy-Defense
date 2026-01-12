@@ -160,6 +160,7 @@ function LevelFailedOverlay:new(host)
 
     levelFailedOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
     levelFailedOverlay.onEngineEventTriggered = function(eventName, jsonArgs) end
+    levelFailedOverlay.onBroadcastEventTriggered = function(eventName, jsonArgs) end
 
     return levelFailedOverlay
 end

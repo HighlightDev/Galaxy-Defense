@@ -153,6 +153,8 @@ private:
 
     void TriggerPlayerStatusChangedEvent(const eMainPlayerStatusType statusChanged, const std::string& jsonArgs);
 
+    void TriggerSwitchToIdleInteractionMode();
+
     eMissileType MissileTypeFromString(const std::string& typeStr) const;
 };
 } // namespace Game
