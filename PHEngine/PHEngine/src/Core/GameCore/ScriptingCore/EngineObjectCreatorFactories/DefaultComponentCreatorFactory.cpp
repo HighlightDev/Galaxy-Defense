@@ -12,15 +12,18 @@
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PlanarReflectionComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PlatformTraverseComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ScriptComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/SkeletalMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/SkyboxComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/ElectricBeamComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
+#include "Core/GameCore/Components/ComponentData/ScriptComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/HumanoidPhysicsMovementComponent.h"
+#include "Core/GameCore/Components/LuaScriptComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
@@ -83,7 +86,8 @@ int32_t DefaultComponentCreatorFactory::CreateComponent(
            {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()},
            {"BillboardComponent", std::make_shared<BillboardComponentCreator<BillboardComponent>>()},
            {"ElectricBeamComponent", std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>()},
-           {"ParticleSystemComponent", std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>()}};
+           {"ParticleSystemComponent", std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>()},
+           {"LuaScriptComponent", std::make_shared<ScriptComponentCreator<LuaScriptComponent>>()}};
 
     ext_assert(creatorsMap.count(componentType), "Unknown component type: " + componentType);
 
@@ -211,7 +215,6 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
         const auto rotation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["rotation"]);
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
-        const auto luaScriptRelPath = nlohmann_utilities::GetStringFromJson(jsonObj, "luaScriptName");
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         ext_assert(material, "Material not found by proxy ID: " + std::to_string(materialProxyId));
@@ -225,7 +228,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         }
 
         componentData = std::make_shared<MeshComponentData>(
-            objectName, pathToMesh, translation, rotation, scale, luaScriptRelPath, material, isEnabled, isVisible);
+            objectName, pathToMesh, translation, rotation, scale, material, isEnabled, isVisible);
     } else if ("RigidBodyPhysicsComponent" == componentType || "GhostPhysicsComponent" == componentType) {
         std::shared_ptr<PhysicsDescriptor> descriptor;
         std::shared_ptr<CollisionShapeBase> collisionShape;
@@ -443,6 +446,9 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
                 particleData->velocityModules.push_back(velData);
             }
         }
+    } else if ("LuaScriptComponent" == componentType) {
+        const auto scriptName = nlohmann_utilities::GetStringFromJson(jsonObj, "scriptName");
+        componentData = std::make_shared<ScriptComponentData>(objectName, scriptName);
     }
 
     ext_assert(componentData, "Failed to create component data for type: " + componentType);

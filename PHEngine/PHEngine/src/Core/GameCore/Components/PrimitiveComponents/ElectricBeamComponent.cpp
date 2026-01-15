@@ -5,12 +5,14 @@
 #include "Core/GameCore/Components/ProceduralBeamGeometry.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/ComponentProxies/ElectricBeamComponentLuaProxy.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/ElectricBeamSceneProxy.h"
 
 #include <random>
 
 using namespace Graphics::Renderer;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore {
 
@@ -47,6 +49,11 @@ ElectricBeamComponent::~ElectricBeamComponent()
 std::shared_ptr<PrimitiveSceneProxy> ElectricBeamComponent::CreateSceneProxy() const
 {
     return std::make_shared<Graphics::Proxy::ElectricBeamSceneProxy>(this);
+}
+
+std::shared_ptr<Scripts::LuaProxy> ElectricBeamComponent::ReplicateLuaProxy()
+{
+    return std::make_shared<ElectricBeamComponentLuaProxy>(std::static_pointer_cast<ElectricBeamComponent>(shared_from_this()));
 }
 
 const MeshRenderData& ElectricBeamComponent::GetRenderData() const

@@ -3,8 +3,8 @@
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorData.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorType.h"
 #include "Core/GameCore/ScriptingCore/Common/LuaMouseInputState.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/IAnimatableLuaProxy.h"
-#include "LuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/IAnimatableLuaProxy.h"
 
 #include <string>
 #include <tuple>
@@ -103,6 +103,12 @@ public:
         const std::string& animationName, const ::EngineCore::GUI::AnimationSequence& animationSequence) override;
 
     void StartSequenceAnimation(const std::string& animationSequenceName) override;
+
+    bool InvokeFunction(const std::string& functionName, const std::string& jsonParameters) override
+    {
+        // No functions to invoke for now
+        return false;
+    }
 };
 } // namespace Scripts
 } // namespace EngineCore

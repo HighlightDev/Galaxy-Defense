@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Core/GameCore/ScriptingCore/LuaProxies/EngineInputLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/OverlayManagerLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/EngineInputLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/OverlayManagerLuaProxy.h"
 #include "Core/InterThreadCommunicationMgr.h"
 
 #include <memory>

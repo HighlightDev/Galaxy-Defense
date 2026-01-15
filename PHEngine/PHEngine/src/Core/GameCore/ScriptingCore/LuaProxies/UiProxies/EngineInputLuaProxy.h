@@ -5,7 +5,7 @@
 #include "Core/GameCore/Event/MouseMovedEvent.h"
 #include "Core/GameCore/Event/MouseScrollEvent.h"
 #include "Core/GameCore/Input/Keys.h"
-#include "LuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 
 #include <string>
 #include <vector>
@@ -56,6 +56,12 @@ public:
         const MouseButtonDownLuaThreadEvent* sender, const typename MouseButtonDownLuaThreadEvent::EventData_t& data) override;
 
     void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
+
+    bool InvokeFunction(const std::string& functionName, const std::string& jsonParameters) override
+    {
+        // No functions to invoke for now
+        return false;
+    }
 
     std::string GetGameThreadData() override;
 

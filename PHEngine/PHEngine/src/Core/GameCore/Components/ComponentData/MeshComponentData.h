@@ -17,7 +17,6 @@ struct MeshComponentData : public ComponentData {
         const glm::vec3& translation,
         const glm::vec3& rotation,
         const glm::vec3& scale,
-        const std::string& mLuaScriptRelPath,
         const std::shared_ptr<Graphics::IMaterial>& material,
         const bool isEnabled = true,
         const bool isVisible = true)
@@ -26,7 +25,6 @@ struct MeshComponentData : public ComponentData {
         , m_translation(translation)
         , m_eulerRotationDegrees(rotation)
         , m_scale(scale)
-        , m_luaScriptPath(mLuaScriptRelPath)
         , m_material(material)
         , mIsEnabled(isEnabled)
         , mIsVisible(isVisible)
@@ -37,7 +35,6 @@ struct MeshComponentData : public ComponentData {
     glm::vec3 m_translation;
     glm::vec3 m_eulerRotationDegrees;
     glm::vec3 m_scale;
-    std::string m_luaScriptPath;
     bool mIsEnabled{true};
     bool mIsVisible{true};
 
@@ -60,11 +57,10 @@ struct RuntimeGeneratedMeshComponentData : public MeshComponentData {
         const glm::vec3& translation,
         const glm::vec3& rotation,
         const glm::vec3& scale,
-        const std::string& mLuaScriptRelPath,
         const std::shared_ptr<Graphics::IMaterial>& material,
         const bool isEnabled = true,
         const bool isVisible = true)
-        : MeshComponentData(gameObjectName, "", translation, rotation, scale, mLuaScriptRelPath, material, isEnabled, isVisible)
+        : MeshComponentData(gameObjectName, "", translation, rotation, scale, material, isEnabled, isVisible)
         , mMaxVerticesCount(maxVerticesCount)
     {
     }

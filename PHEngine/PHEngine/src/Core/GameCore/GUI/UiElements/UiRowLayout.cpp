@@ -4,7 +4,7 @@
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/UiRowLayoutLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/UiRowLayoutLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/UtilityCore/JsonUtilities.h"
 

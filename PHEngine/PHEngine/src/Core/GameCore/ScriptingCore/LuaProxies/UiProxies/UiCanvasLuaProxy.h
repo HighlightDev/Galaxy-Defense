@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 #include "IAnimatableLuaProxy.h"
-#include "LuaProxy.h"
 
 #include <string>
 
@@ -57,6 +57,12 @@ public:
     void StartAnimation(const std::string& animationName) override;
 
     void StartSequenceAnimation(const std::string& animationSequenceName) override;
+
+    bool InvokeFunction(const std::string& functionName, const std::string& jsonParameters) override
+    {
+        // No functions to invoke for now
+        return false;
+    }
 };
 } // namespace Scripts
 } // namespace EngineCore

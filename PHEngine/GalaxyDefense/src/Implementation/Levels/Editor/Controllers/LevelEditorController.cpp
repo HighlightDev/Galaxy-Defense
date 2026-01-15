@@ -382,7 +382,6 @@ void LevelEditorController::ReAllocateLineComponents()
                 glm::vec3(),
                 glm::vec3(),
                 glm::vec3(1),
-                "",
                 mGridLineMaterialPrefab);
             const auto& c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(
                 sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
@@ -424,7 +423,6 @@ void LevelEditorController::InitializeInternalActors()
         glm::vec3(),
         glm::vec3(),
         glm::vec3(pickerSize, 1.0f, pickerSize),
-        "",
         editorNodePickerMaterial);
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
@@ -571,7 +569,6 @@ void LevelEditorController::InitializeGhostTower()
         glm::vec3(),
         glm::vec3(),
         glm::vec3(towerCellSize),
-        "",
         ghostTowerActorMaterial);
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
     const auto& c_mesh
@@ -598,7 +595,6 @@ void LevelEditorController::InitializeGhostTower()
         glm::vec3(),
         glm::vec3(),
         glm::vec3(pickerCellSize, 1.0f, pickerCellSize),
-        "",
         editorPickerMaterial);
     const auto& c_pickerMesh
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_pickerMesh));

@@ -220,7 +220,6 @@ function CreateTestLevel(host)
         translation = {x = 0, y = 0, z = 0},
         rotation = {x = 0, y = 0, z = 0},
         scale = {x = 50, y = 1, z = 50},
-        luaScriptName = "",
         materialProxyId = groundMat
     }))
 
@@ -248,7 +247,6 @@ function CreateTestLevel(host)
         translation = {x = 0, y = 0, z = 0},
         rotation = {x = 0, y = 0, z = 0},
         scale = {x = 8, y = 1, z = 8},
-        luaScriptName = "",
         materialProxyId = platformMat
     }))
 
@@ -307,7 +305,6 @@ function CreateTestLevel(host)
         translation = {x = 0, y = 0, z = 0},
         rotation = {x = 0, y = 0, z = 0},
         scale = {x = 8, y = 1, z = 8},
-        luaScriptName = "",
         materialProxyId = wallMaterial
     }))
 
@@ -335,7 +332,6 @@ function CreateTestLevel(host)
         translation = {x = 0, y = 0, z = 0},
         rotation = {x = 0, y = 0, z = 0},
         scale = {x = 15, y = 15, z = 15},
-        luaScriptName = "",
         materialProxyId = houseMaterial
     }))
 
@@ -362,7 +358,6 @@ function CreateTestLevel(host)
         translation = {x = 0, y = 0, z = 0},
         rotation = {x = 0, y = 0, z = 0},
         scale = {x = 1.5, y = 1.5, z = 1.5},
-        luaScriptName = "",
         materialProxyId = graveMat
     }))
 
@@ -418,7 +413,6 @@ function CreateTestLevel(host)
         translation = {x = 0, y = 0, z = 0},
         rotation = {x = 0, y = 0, z = 90},
         scale = {x = 8, y = 8, z = 8},
-        luaScriptName = "",
         materialProxyId = skeletMat
     }))
 
@@ -448,7 +442,6 @@ function CreateTestLevel(host)
         translation = {x = 0, y = 0, z = 0},
         rotation = {x = 0, y = 0, z = 0},
         scale = {x = 20, y = 1, z = 20},
-        luaScriptName = "",
         materialProxyId = waterMat
     }))
 
@@ -502,6 +495,12 @@ function CreateTestLevel(host)
         is_visible = true,
         materialProxyId = billboardMat
     }))
+
+    _CreateAndAttachComponentToActor(host, a_billboard, "LuaScriptComponent", Json.encode(
+                                         {
+            gameObjectName = "BillboardRotationScript",
+            scriptName = "billboardRotationScript.lua"
+        }))
 end
 
 function System_OnStart(host) CreateTestLevel(host) end

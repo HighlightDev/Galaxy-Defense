@@ -11,6 +11,7 @@
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchHolder.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
@@ -589,11 +590,21 @@ std::shared_ptr<Component> Scene::CreateComponent_GameThread(
     const std::shared_ptr<IComponentCreatable>& componentCreator, const std::shared_ptr<ComponentData>& componentData)
 {
     const auto component = componentCreator->CreateComponent(shared_from_this(), componentData);
-    component->OnRegistered();
     component->SetScene(shared_from_this());
+    component->OnRegistered();
     RegisterComponentSceneProxy(component);
     RegisterEngineObject(component);
     component->OnPostRegistered();
+
+    if ((eComponentType::PRIMITIVE_COMPONENT & component->GetComponentType()) == eComponentType::PRIMITIVE_COMPONENT) {
+        // Register Lua replicator
+        RegisterEngineToLuaReplicator(component);
+        const auto luaProxyId = LuaProxy::CreateUniqueLuaProxyId();
+        component->SetLuaProxyId(luaProxyId);
+        component->SetPendingToCreateLuaProxy();
+        component->SetLuaScriptProcessor(m_interThreadMgr.GetLuaScriptProcessor());
+    }
+
     return component;
 }
 

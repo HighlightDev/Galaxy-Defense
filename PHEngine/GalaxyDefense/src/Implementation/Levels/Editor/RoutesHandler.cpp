@@ -51,7 +51,6 @@ void RoutesHandler::SpawnBezierCurveComponent(
             glm::vec3(0, 5, 0),
             glm::vec3(),
             glm::vec3(1),
-            "",
             newSplineMaterial);
         const auto& meshComponentCreator
             = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();

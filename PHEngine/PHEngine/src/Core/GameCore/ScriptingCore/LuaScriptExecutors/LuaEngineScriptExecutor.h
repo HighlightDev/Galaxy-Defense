@@ -1,6 +1,5 @@
 #pragma once
-#include "Core/GameCore/ScriptingCore/LuaFunctions/LuaCommonEngineFunctions.h"
-#include "Core/GameCore/ScriptingCore/LuaFunctions/LuaEngineObjectsCreatorFunctions.h"
+#include "Core/GameCore/ScriptingCore/LuaFunctions/ILuaFunctionable.h"
 #include "LuaScriptExecutorBase.h"
 
 #include <memory>

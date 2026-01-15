@@ -4,7 +4,7 @@
 #include "Core/GameCore/GUI/UiElements/UiTextBlock.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/UiItemBaseLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/UiItemBaseLuaProxy.h"
 
 #include <json/json.hpp>
 

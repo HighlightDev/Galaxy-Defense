@@ -31,7 +31,8 @@ EngineObjectCreator::EngineObjectCreator()
            "InputComponent",
            "BillboardComponent",
            "ElectricBeamComponent",
-           "ParticleSystemComponent"};
+           "ParticleSystemComponent",
+           "LuaScriptComponent"};
 }
 
 void EngineObjectCreator::SetScene(const std::weak_ptr<Scene>& scene)

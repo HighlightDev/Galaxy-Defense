@@ -4,7 +4,7 @@
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/UiRectangleLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/UiRectangleLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiRectangleSceneProxy.h"

@@ -27,6 +27,8 @@ public:
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
+    std::shared_ptr<Scripts::LuaProxy> ReplicateLuaProxy() override;
+
     inline const CubemapRenderData& GetRenderData() const
     {
         return m_renderData;

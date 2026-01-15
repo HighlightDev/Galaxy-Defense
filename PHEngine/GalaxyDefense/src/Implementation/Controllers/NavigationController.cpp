@@ -77,7 +77,6 @@ void NavigationController::InitializePathDebugRendering()
                 glm::vec3(),
                 glm::vec3(),
                 glm::vec3(1),
-                "",
                 splineMaterial,
                 true,
                 true);

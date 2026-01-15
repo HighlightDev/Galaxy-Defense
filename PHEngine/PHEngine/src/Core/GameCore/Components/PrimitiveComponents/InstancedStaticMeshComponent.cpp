@@ -3,6 +3,7 @@
 #include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/Components/ComponentData/InstancedMeshComponentData.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/ComponentProxies/InstancedStaticMeshComponentLuaProxy.h"
 #include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatch.h"
 #include "Core/GraphicsCore/GeometryBatching/InstancedGeometryBatchHolder.h"
 #include "Core/GraphicsCore/SceneProxy/InstancedStaticMeshSceneProxy.h"
@@ -11,6 +12,7 @@
 #include <memory>
 
 using namespace Graphics;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore {
 
@@ -90,6 +92,12 @@ std::shared_ptr<IMaterial> InstancedStaticMeshComponent::GetMaterial() const
 std::shared_ptr<PrimitiveSceneProxy> InstancedStaticMeshComponent::CreateSceneProxy() const
 {
     return std::make_shared<InstancedStaticMeshSceneProxy>(this);
+}
+
+std::shared_ptr<Scripts::LuaProxy> InstancedStaticMeshComponent::ReplicateLuaProxy()
+{
+    return std::make_shared<InstancedStaticMeshComponentLuaProxy>(
+        std::static_pointer_cast<InstancedStaticMeshComponent>(shared_from_this()));
 }
 
 eComponentType InstancedStaticMeshComponent::GetComponentType() const

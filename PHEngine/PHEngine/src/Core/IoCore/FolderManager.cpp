@@ -50,6 +50,7 @@ void FolderManager::CreateFilePathMap(const std::string& absolutePathToDirectory
 
     for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(absolutePathToDirectory)) {
         if (!std::filesystem::is_directory(dirEntry)) {
+            EngineCore::LogInfo("FolderManager::CreateFilePathMap: processing file: ", dirEntry.path().string());
             const std::string& fileName = std::string(dirEntry.path().filename().string());
             if (mAbsFilesPathMap.count(fileName) || mFilesPathMap.count(fileName)) {
                 EngineCore::LogInfo("FolderManager::CreateFilePathMap: duplicate of file: ", fileName, ", skipping...");

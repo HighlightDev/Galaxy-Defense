@@ -455,7 +455,6 @@ _CreateAndAttachComponentToActor(actorId, "StaticMeshComponent_Deferred", Json.e
     translation = {x = 0, y = 0, z = 0},
     rotation = {x = 0, y = 0, z = 0},
     scale = {x = 1, y = 1, z = 1},
-    luaScriptName = "",
     materialProxyId = materialId
 }))
 ```
@@ -603,6 +602,38 @@ _CreateAndAttachComponentToActor(actorId, "GhostPhysicsComponent", Json.encode({
     mass = 0.0
 }))
 ```
+
+#### LuaScriptComponent
+Component that executes Lua scripts with `Initialize()` and `Tick(deltaTime)` functions. Useful for custom game logic attached to actors.
+
+```lua
+_CreateAndAttachComponentToActor(actorId, "LuaScriptComponent", Json.encode({
+    gameObjectName = "ScriptComp",
+    scriptFilePath = "myScript.lua"  -- Path to Lua script file
+}))
+```
+
+**Script File Example (myScript.lua):**
+```lua
+-- Called once when component is registered
+function Initialize()
+    print("Script initialized!")
+end
+
+-- Called every frame
+function Tick(deltaTime)
+    -- deltaTime is the time in seconds since last frame
+    -- Add your game logic here
+end
+```
+
+**Notes:**
+- The script file must be located in the resources/scripts directory
+- Both `Initialize()` and `Tick(deltaTime)` functions are optional
+- The script has access to all global Lua API functions
+- Use this component to implement custom behavior for actors
+
+---
 
 #### ElectricBeamComponent
 Component for creating electric beam effects between two points.

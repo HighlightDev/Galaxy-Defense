@@ -84,4 +84,13 @@ bool GetBoolFromJson(const nlohmann::json& root, const std::string& key)
     ext_assert(root.contains(key), "Missing key in json object: " + key);
     return root.at(key).get<bool>();
 }
+
+glm::quat GetQuatFromJson(const nlohmann::json& json)
+{
+    ext_assert(
+        json.contains("x") && json.contains("y") && json.contains("z") && json.contains("w"),
+        "Missing x or y or z or w key in json object for quat");
+
+    return glm::quat(json.at("w").get<float>(), json.at("x").get<float>(), json.at("y").get<float>(), json.at("z").get<float>());
+}
 } // namespace nlohmann_utilities

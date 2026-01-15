@@ -86,7 +86,6 @@ function CreateTestLevel(host)
         translation = {x = 0, y = 0, z = 0},
         rotation = {x = 0, y = 180, z = 0},
         scale = {x = 5, y = 5, z = 5},
-        luaScriptName = "",
         materialProxyId = spaceshipMatProxyId
     }))
 end

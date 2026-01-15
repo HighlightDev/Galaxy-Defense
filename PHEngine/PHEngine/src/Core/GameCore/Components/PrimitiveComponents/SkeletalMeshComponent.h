@@ -21,8 +21,6 @@ class SkeletalMeshComponent : public PrimitiveComponent {
 protected:
     MeshRenderData m_renderData;
 
-    std::string mLuaScriptAbsPath;
-
     std::unique_ptr<::EngineCore::Scripts::LuaWrapper> mLuaInstance;
 
     float mUpdateDataResetTimeCounter;
@@ -67,6 +65,8 @@ public:
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
+    std::shared_ptr<Scripts::LuaProxy> ReplicateLuaProxy() override;
+
     inline const MeshRenderData& GetRenderData() const
     {
         return m_renderData;
@@ -75,6 +75,8 @@ public:
     std::shared_ptr<IMaterial> GetMaterial() const;
 
     void SetMeshModelPath(const std::string& modelPath);
+
+    void SetTimeIncreaseMultiply(const float timeMultiply);
 
 protected:
     void SyncDataWithRenderThread();

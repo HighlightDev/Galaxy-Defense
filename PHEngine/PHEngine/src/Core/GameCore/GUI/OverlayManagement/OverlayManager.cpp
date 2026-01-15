@@ -2,7 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/OverlayManagerLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/OverlayManagerLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
 #include <algorithm>

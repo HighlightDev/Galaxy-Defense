@@ -136,7 +136,6 @@ void UserInteractionController::Initialize()
         glm::vec3(),
         glm::vec3(),
         glm::vec3(mTowerCellSize, 1.0f, mTowerCellSize),
-        "",
         missileProjectileMaterial,
         true,
         true);
@@ -487,7 +486,6 @@ void UserInteractionController::InitializeTowerGrid()
             glm::vec3(),
             glm::vec3(),
             glm::vec3(1),
-            "",
             lineMaterial,
             true,
             true);
@@ -512,7 +510,6 @@ void UserInteractionController::InitializeTowerGrid()
             glm::vec3(0),
             glm::vec3(0.0),
             glm::vec3(1),
-            "",
             lineMaterial,
             true,
             true);
@@ -566,7 +563,6 @@ void UserInteractionController::InitializePlacementAllowedArea()
             glm::vec3(realCellOriginPositionVec2.x, 0.0f, realCellOriginPositionVec2.y),
             glm::vec3(),
             glm::vec3(mTowerCellSize, 1.0f, mTowerCellSize),
-            "",
             placementAllowedAreaMaterial,
             true,
             true);
@@ -601,7 +597,6 @@ void UserInteractionController::InitializeGhostTower()
         glm::vec3(),
         glm::vec3(),
         glm::vec3(mTowerCellSize),
-        "",
         ghostTowerActorMaterial,
         true,
         true);

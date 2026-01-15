@@ -3,6 +3,7 @@
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/ComponentProxies/SkeletalMeshComponentLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
@@ -25,12 +26,10 @@ SkeletalMeshComponent::SkeletalMeshComponent(
         meshComponentData->mIsEnabled,
         meshComponentData->mIsVisible)
     , m_renderData(renderData)
-    , mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() + meshComponentData->m_luaScriptPath)
     , mLuaInstance(std::make_unique<LuaWrapper>())
     , mUpdateDataResetTimeCounter(0.0f)
     , mUpdateDataResetTime(0.1f)
     , mTimeIncreaseMultiply(1.0f)
-    , LuaScriptName(meshComponentData->m_luaScriptPath)
     , SrcAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "SrcAnimTime"))
     , DstAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "DstAnimTime"))
     , SrcAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "SrcAnimName"))
@@ -55,10 +54,6 @@ SkeletalMeshComponent::~SkeletalMeshComponent()
 void SkeletalMeshComponent::OnSceneOwnerInitialized()
 {
     PrimitiveComponent::OnSceneOwnerInitialized();
-
-    if (not LuaScriptName.empty() && mLuaInstance->ExecuteScript(mLuaScriptAbsPath)) {
-        mTimeIncreaseMultiply = GetLuaGlobalVariable::Value<float>(*mLuaInstance.get(), "AnimationTimeMultiply", -1);
-    }
 }
 
 void SkeletalMeshComponent::SetIsEnabled(const bool bEnabled)
@@ -79,6 +74,11 @@ void SkeletalMeshComponent::SetIsVisible(bool isVisible)
     if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType()) {
         material->SetIsEnabled(isVisible);
     }
+}
+
+void SkeletalMeshComponent::SetTimeIncreaseMultiply(const float timeMultiply)
+{
+    mTimeIncreaseMultiply = timeMultiply;
 }
 
 std::shared_ptr<IMaterial> SkeletalMeshComponent::GetMaterial() const
@@ -143,6 +143,11 @@ void SkeletalMeshComponent::SyncDataWithRenderThread()
 std::shared_ptr<PrimitiveSceneProxy> SkeletalMeshComponent::CreateSceneProxy() const
 {
     return std::make_shared<SkeletalMeshSceneProxy>(this);
+}
+
+std::shared_ptr<Scripts::LuaProxy> SkeletalMeshComponent::ReplicateLuaProxy()
+{
+    return std::make_shared<SkeletalMeshComponentLuaProxy>(std::static_pointer_cast<SkeletalMeshComponent>(shared_from_this()));
 }
 
 void SkeletalMeshComponent::SetMeshModelPath(const std::string& modelPath)

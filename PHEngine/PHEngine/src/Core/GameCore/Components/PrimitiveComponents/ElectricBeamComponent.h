@@ -70,6 +70,8 @@ public:
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
+    std::shared_ptr<Scripts::LuaProxy> ReplicateLuaProxy() override;
+
     // Setters
     void SetStartWorldPosition(const glm::vec3& point);
     void SetEndWorldPosition(const glm::vec3& point);

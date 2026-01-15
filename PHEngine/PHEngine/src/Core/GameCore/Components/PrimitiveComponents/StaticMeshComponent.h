@@ -9,6 +9,9 @@ using namespace Graphics::Data;
 using namespace Graphics;
 
 namespace EngineCore {
+namespace Scripts {
+class LuaProxy;
+} // namespace Scripts
 struct MeshComponentData;
 
 class StaticMeshComponent : public PrimitiveComponent {
@@ -31,6 +34,8 @@ public:
     void Tick(const float deltaTimeSec) override;
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
+
+    std::shared_ptr<Scripts::LuaProxy> ReplicateLuaProxy() override;
 
     inline const MeshRenderData& GetRenderData() const
     {

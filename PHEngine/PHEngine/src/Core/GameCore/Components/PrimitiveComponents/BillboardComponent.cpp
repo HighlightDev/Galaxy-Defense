@@ -3,8 +3,11 @@
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/ComponentProxies/BillboardComponentLuaProxy.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/BillboardSceneProxy.h"
+
+using namespace EngineCore::Scripts;
 
 namespace EngineCore {
 
@@ -43,6 +46,11 @@ void BillboardComponent::UnpausableTick(float deltaTimeSec)
 std::shared_ptr<PrimitiveSceneProxy> BillboardComponent::CreateSceneProxy() const
 {
     return std::make_shared<BillboardSceneProxy>(this);
+}
+
+std::shared_ptr<Scripts::LuaProxy> BillboardComponent::ReplicateLuaProxy()
+{
+    return std::make_shared<BillboardComponentLuaProxy>(std::static_pointer_cast<BillboardComponent>(shared_from_this()));
 }
 
 void BillboardComponent::SetBillboardExtent(const float extent)

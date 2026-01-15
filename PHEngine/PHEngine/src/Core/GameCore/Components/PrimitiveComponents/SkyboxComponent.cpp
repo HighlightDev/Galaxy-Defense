@@ -2,11 +2,14 @@
 
 #include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/ComponentProxies/SkyboxComponentLuaProxy.h"
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/gtx/quaternion.hpp>
 #include <glm/vec3.hpp>
+
+using namespace EngineCore::Scripts;
 
 namespace EngineCore {
 using namespace EngineUtility;
@@ -52,6 +55,11 @@ void SkyboxComponent::Tick(const float deltaTimeSec)
 std::shared_ptr<PrimitiveSceneProxy> SkyboxComponent::CreateSceneProxy() const
 {
     return std::make_shared<SkyboxSceneProxy>(this);
+}
+
+std::shared_ptr<Scripts::LuaProxy> SkyboxComponent::ReplicateLuaProxy()
+{
+    return std::make_shared<SkyboxComponentLuaProxy>(std::static_pointer_cast<SkyboxComponent>(shared_from_this()));
 }
 
 eComponentType SkyboxComponent::GetComponentType() const

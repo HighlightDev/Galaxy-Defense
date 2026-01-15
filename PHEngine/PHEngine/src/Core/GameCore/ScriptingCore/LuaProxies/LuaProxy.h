@@ -41,6 +41,8 @@ public:
 
     virtual std::string GetGameThreadData() = 0;
 
+    virtual bool InvokeFunction(const std::string& functionName, const std::string& jsonParameters) = 0;
+
     bool IsLuaDataDirty() const;
 
     int32_t GetLuaProxyId() const;

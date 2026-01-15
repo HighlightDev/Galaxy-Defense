@@ -94,7 +94,6 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
             glm::vec3(0),
             glm::vec3(0),
             glm::vec3(1.5),
-            "",
             pbs_mat);
         const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
         const auto& c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
@@ -150,7 +149,6 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
             glm::vec3(0),
             glm::vec3(0),
             glm::vec3(5),
-            "",
             missile_mat);
         const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
         const auto& c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);

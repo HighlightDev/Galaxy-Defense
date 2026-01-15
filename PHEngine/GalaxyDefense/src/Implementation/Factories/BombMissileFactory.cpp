@@ -71,7 +71,7 @@ std::shared_ptr<MissileActor> BombMissileFactory::CreateMissile(
     MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "outlineColor", glm::vec3(1.0f, 0.0f, 0.0f));
 
     const auto d_mesh = std::make_shared<MeshComponentData>(
-        "c_bombMissileMesh_" + shipBulletIndexStr, "missile1_model.fbx", glm::vec3(0), glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
+        "c_bombMissileMesh_" + shipBulletIndexStr, "missile1_model.fbx", glm::vec3(0), glm::vec3(0), glm::vec3(1.5), pbs_mat);
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
     const auto& c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
     a_missile->AddComponent(c_mesh);

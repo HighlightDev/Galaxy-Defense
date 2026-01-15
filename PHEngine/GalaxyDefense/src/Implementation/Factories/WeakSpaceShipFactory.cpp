@@ -221,7 +221,6 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         glm::vec3(0, -0.05f, 1.2f),
         glm::vec3(90, 0, 0.0f),
         glm::vec3(0.2f, 0.2f, 1.1f),
-        "",
         engineMaterial);
     const auto& engineComponent
         = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(engineComponentCreator, data));

@@ -5,6 +5,7 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Particles/Emitters/IEmitter.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/ComponentProxies/ParticleSystemComponentLuaProxy.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
@@ -21,6 +22,7 @@ using namespace Graphics::Renderer;
 using namespace Graphics;
 using namespace EngineMath;
 using namespace TinyLogger;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore {
 ParticleSystemComponent::ParticleSystemComponent(
@@ -100,6 +102,12 @@ void ParticleSystemComponent::Tick(const float deltaTimeSec)
 std::shared_ptr<PrimitiveSceneProxy> ParticleSystemComponent::CreateSceneProxy() const
 {
     return std::make_shared<ParticleSystemSceneProxy>(this);
+}
+
+std::shared_ptr<Scripts::LuaProxy> ParticleSystemComponent::ReplicateLuaProxy()
+{
+    return std::make_shared<ParticleSystemComponentLuaProxy>(
+        std::static_pointer_cast<ParticleSystemComponent>(shared_from_this()));
 }
 
 void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<IParticleModule>& particleModule)

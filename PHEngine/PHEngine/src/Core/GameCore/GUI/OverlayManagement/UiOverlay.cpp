@@ -6,7 +6,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/UiOverlayLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/UiOverlayLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
 using namespace EngineCore;

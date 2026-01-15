@@ -57,7 +57,7 @@ void TowersHandler::CreateNewTower(const glm::vec3& position, const glm::vec3& s
 
         const auto& newTowerName = "tower_" + std::to_string(mTowerComponentCounter++);
         const auto& d_mesh = std::make_shared<MeshComponentData>(
-            "c_" + newTowerName, "space_station.obj", position, glm::vec3(), glm::vec3(scale), "", towerMaterialPrefab);
+            "c_" + newTowerName, "space_station.obj", position, glm::vec3(), glm::vec3(scale), towerMaterialPrefab);
         const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
         const auto& c_mesh
             = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));

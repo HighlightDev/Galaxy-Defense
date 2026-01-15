@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/UiSliderLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/UiSliderLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSliderSceneProxy.h"

@@ -4,7 +4,7 @@
 #include "Core/GameCore/EngineObjectProperty.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/UiCanvasLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/UiCanvasLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"

@@ -81,7 +81,6 @@ void BarriersHandler::CreateNewBarrierPillar(const glm::vec3& position, const gl
         position,
         glm::vec3(),
         glm::vec3(3.0, 12.0, 3.0),
-        "",
         barrier_mat.first);
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
     const auto& c_mesh

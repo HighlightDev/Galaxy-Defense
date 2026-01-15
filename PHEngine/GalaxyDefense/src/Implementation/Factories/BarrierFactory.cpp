@@ -48,7 +48,6 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
             glm::vec3(0),
             rotation,
             scale,
-            "",
             barrierPbs_mat);
         const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
         const auto& c_mesh

@@ -43,6 +43,8 @@ public:
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
+    std::shared_ptr<Scripts::LuaProxy> ReplicateLuaProxy() override;
+
     void AddParticleModule(const std::shared_ptr<IParticleModule>& particleModule);
 
     void EmitParticles();

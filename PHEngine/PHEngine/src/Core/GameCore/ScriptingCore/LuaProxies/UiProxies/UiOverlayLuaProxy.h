@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 
 #include <memory>
 #include <string>
@@ -24,6 +24,12 @@ public:
     void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
 
     std::string GetGameThreadData() override;
+
+    bool InvokeFunction(const std::string& functionName, const std::string& jsonParameters) override
+    {
+        // No functions to invoke for now
+        return false;
+    }
 };
 } // namespace Scripts
 } // namespace EngineCore

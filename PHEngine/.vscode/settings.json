@@ -169,7 +169,9 @@
         "_CreateActorController",
         "_CreateTweener",
         "_SetTweenerBinding",
-        "_SetDeferredTextureToMaterial"
+        "_SetDeferredTextureToMaterial",
+        "_GetLuaProxyIdForComponent",
+        "_InvokeFunction"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

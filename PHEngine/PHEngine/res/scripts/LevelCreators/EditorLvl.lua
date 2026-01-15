@@ -90,7 +90,6 @@ function CreateLevel(host)
     --         z = 1.0
     --     },
     --     materialProxyId = materialProxyId,
-    --     luaScriptName = ""
     -- }))
 
     _CreateActor(host, "Actor", "SkyboxActor", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")

@@ -3,16 +3,20 @@
 #include "ComponentType.h"
 #include "Core/GameCore/EngineObject.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
 
 #include <memory>
 
 namespace EngineCore {
 class Scene;
 class Actor;
+namespace Scripts {
+class LuaProxy;
+} // namespace Scripts
 // This is the base abstract class
 // of all components which could be
 // picked by actor
-class Component : public EngineObject, public ITickable, public std::enable_shared_from_this<Component> {
+class Component : public EngineObject, public Scripts::EngineToLuaReplicatorBase, public ITickable {
     std::weak_ptr<Actor> m_owner;
 
 protected:
@@ -21,7 +25,7 @@ protected:
     std::weak_ptr<Scene> m_sceneWP;
 
 public:
-    Component(const std::string& gameObjectName, const bool isEnabled = true);
+    explicit Component(const std::string& gameObjectName, const bool isEnabled = true);
 
     virtual ~Component();
 
@@ -29,7 +33,17 @@ public:
 
     virtual void OnUnregistered();
 
-    virtual void CleanUp();
+    void CleanUp() override;
+
+    void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override
+    {
+        // No properties to sync in base class
+    }
+
+    std::shared_ptr<Scripts::LuaProxy> ReplicateLuaProxy() override
+    {
+        return nullptr;
+    }
 
     virtual eComponentType GetComponentType() const;
 

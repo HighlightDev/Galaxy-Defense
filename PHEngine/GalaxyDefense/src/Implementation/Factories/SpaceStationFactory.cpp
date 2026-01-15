@@ -49,7 +49,7 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     scene->RegisterMaterialInstance(towerMaterialPrefab);
 
     const auto& d_mesh = std::make_shared<MeshComponentData>(
-        "c_mesh_" + towerName, "space_station.obj", glm::vec3(), glm::vec3(), scale, "", towerMaterialPrefab);
+        "c_mesh_" + towerName, "space_station.obj", glm::vec3(), glm::vec3(), scale, towerMaterialPrefab);
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
@@ -77,7 +77,6 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
         glm::vec3(0, -2 - (index * 0.01f), 0),
         glm::vec3(),
         glm::vec3(1.0f),
-        "",
         radiusMeshMaterial);
     meshComponentCreator->SetIsDeferredShaderUsed(false);
     const auto& c_radiusMesh

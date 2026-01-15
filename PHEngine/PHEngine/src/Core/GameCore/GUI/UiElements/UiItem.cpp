@@ -4,7 +4,7 @@
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/UiItemLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiProxies/UiItemLuaProxy.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
