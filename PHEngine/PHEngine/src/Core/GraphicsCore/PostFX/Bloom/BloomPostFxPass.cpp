@@ -32,14 +32,11 @@ BloomPostFxPass::~BloomPostFxPass()
 
 void BloomPostFxPass::Init()
 {
-    mBloomFxShader = ShaderPool::GetInstance()->template GetOrAllocateResource<BloomFxShader>(ShaderParams(
-        "BloomFxShader",
+    auto bloomFxShaderParams = ShaderParams("BloomFxShader");
+    bloomFxShaderParams.SetMainShaders(
         IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/postFxVS.glsl",
-        IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/bloomFS.glsl",
-        "",
-        "",
-        "",
-        ""));
+        IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/bloomFS.glsl");
+    mBloomFxShader = ShaderPool::GetInstance()->template GetOrAllocateResource<BloomFxShader>(bloomFxShaderParams);
     const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
     ext_assert(
         BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName),

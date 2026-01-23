@@ -35,24 +35,22 @@ bool AVertexFactoryShaderModule::AssembleShaderSource()
 
     ShaderParams shaderParams = GetBaseShader()->GetShaderParams();
 
-    std::string vsSourcePath = shaderParams.VertexShaderFile;
-    std::string fsSourcePath = shaderParams.FragmentShaderFile;
-    std::string gsSourcePath = shaderParams.GeometryShaderFile;
+    std::unordered_map<eShaderType, std::string> shaderSources;
 
-    auto vsSource = LoadShaderSource(vsSourcePath);
-    auto fsSource = LoadShaderSource(fsSourcePath);
-    auto gsSource = LoadShaderSource(gsSourcePath);
+    for (const auto& [shaderType, shaderFile] : shaderParams.ShaderFiles) {
+        LogInfo("AVertexFactoryShaderModule::AssembleShaderSource: Loading shader file: ", shaderFile);
+        auto shaderSource = LoadShaderSource(shaderFile);
 
-    // Vertex Factory shader is combined with vertex shader
-    vsSource = vertexFactoryShaderSource + "\n" + vsSource;
+        if (shaderType == eShaderType::VertexShader) {
+            // Vertex Factory shader is combined with vertex shader
+            shaderSources[shaderType] = vertexFactoryShaderSource + "\n" + shaderSource;
+        } else {
+            shaderSources[shaderType] = shaderSource;
+        }
 
-    // Material shader is combined with fragment shader
-
-    ProcessShaderIncludes(vsSource);
-    ProcessShaderIncludes(gsSource);
-    ProcessShaderIncludes(fsSource);
-
-    return SendToGpuShadersSources(vsSource, gsSource, fsSource);
+        ProcessShaderIncludes(shaderSources[shaderType]);
+    }
+    return SendToGpuShadersSources(shaderSources);
 }
 
 void AVertexFactoryShaderModule::Init()

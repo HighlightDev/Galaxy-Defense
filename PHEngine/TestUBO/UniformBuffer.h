@@ -64,22 +64,6 @@ public:
         return UniformBuffer(buffer);
     }
 
-    // void SetData(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection)
-    // {
-    //     glBindBuffer(GL_UNIFORM_BUFFER, buffer);
-    //     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(model));
-    //     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
-    //     glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
-    //     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    // }
-
-    // void SetData(const glm::vec4& color)
-    // {
-    //     glBindBuffer(GL_UNIFORM_BUFFER, buffer);
-    //     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec4), glm::value_ptr(color));
-    //     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    // }
-
 private:
     UniformBuffer(GLuint buffer)
         : buffer(buffer)

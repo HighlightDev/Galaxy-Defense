@@ -40,12 +40,12 @@ const IndexBufferObject* VertexArrayObject::GetIBO() const
     return m_ibo;
 }
 
-VertexBufferObjectBase* VertexArrayObject::GetVBOByIndex(const size_t index) const
+BufferObjectBase* VertexArrayObject::GetVBOByIndex(const size_t index) const
 {
     return m_vbos[index].first;
 }
 
-const std::vector<std::pair<VertexBufferObjectBase*, std::string>>& VertexArrayObject::GetVBOs() const
+const std::vector<std::pair<BufferObjectBase*, std::string>>& VertexArrayObject::GetVBOs() const
 {
     return m_vbos;
 }
@@ -63,7 +63,7 @@ void VertexArrayObject::RenderVAO(const int32_t primitiveMode)
     if (HasIBO()) {
         glDrawElements(primitiveMode, m_ibo->GetCountOfIndices(), GL_UNSIGNED_INT, 0);
     } else {
-        VertexBufferObjectBase* positionVBO = GetVboByAttribArrayIndexName("VertexPosition");
+        BufferObjectBase* positionVBO = GetVboByAttribArrayIndexName("VertexPosition");
         ext_assert(positionVBO, "Position VBO is required for rendering");
         glDrawArrays(primitiveMode, 0, positionVBO->GetCountOfIndices());
     }
@@ -84,7 +84,7 @@ void VertexArrayObject::RenderVAO(const size_t first, const size_t count, const 
 void VertexArrayObject::RenderInstanced(const int32_t primitiveMode, const size_t primitivesCount)
 {
     glBindVertexArray(m_descriptor);
-    VertexBufferObjectBase* positionVBO = GetVboByAttribArrayIndexName("VertexPosition");
+    BufferObjectBase* positionVBO = GetVboByAttribArrayIndexName("VertexPosition");
     ext_assert(positionVBO, "Position VBO is required for instanced rendering");
     if (HasIBO()) {
         glDrawElementsInstanced(primitiveMode, m_ibo->GetCountOfIndices(), GL_UNSIGNED_INT, 0, primitivesCount);

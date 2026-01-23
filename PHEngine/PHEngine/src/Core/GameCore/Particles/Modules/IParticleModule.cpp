@@ -1,6 +1,6 @@
 #include "IParticleModule.h"
 
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 
 namespace EngineCore {
 IParticleModule::IParticleModule()
@@ -8,7 +8,7 @@ IParticleModule::IParticleModule()
 {
 }
 
-void IParticleModule::SetOwner(const std::weak_ptr<ParticleSystemComponent>& owner)
+void IParticleModule::SetOwner(const std::weak_ptr<CpuParticleSystemComponent>& owner)
 {
     mOwner = owner;
 }

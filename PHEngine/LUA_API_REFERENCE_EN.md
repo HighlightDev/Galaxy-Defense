@@ -670,7 +670,7 @@ _CreateAndAttachComponentToActor(actorId, "ElectricBeamComponent", Json.encode({
 - Animation speed controlled via `SetAnimationSpeed()` (default 2.0)
 - Each beam in `beamCount` has phase offset for variety
 
-#### ParticleSystemComponent
+#### CpuParticleSystemComponent
 Particle system component with modular architecture. Supports various emitter types, lifetime, color, size, and velocity modules.
 
 **Module Types:**
@@ -707,7 +707,7 @@ Particle system component with modular architecture. Supports various emitter ty
 
 **Basic Example:**
 ```lua
-_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+_CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.encode({
     gameObjectName = "c_particleSystem",
     translation = {x = 0.0, y = 0.0, z = 0.0},
     scale = {x = 1.0, y = 1.0, z = 1.0},
@@ -751,7 +751,7 @@ _CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode
 
 **Orbital Movement Example:**
 ```lua
-_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+_CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.encode({
     gameObjectName = "c_particleOrbit",
     translation = {x = 0.0, y = 0.0, z = 0.0},
     scale = {x = 1.0, y = 1.0, z = 1.0},
@@ -807,7 +807,7 @@ MaterialPropertySetter.SetMaterialPropertyValue(particleMaterial, "clipRadius", 
 local materialProxyId = particleMaterial:GetMaterialProxyWp():lock():GetSceneProxyId()
 
 -- Create particle component
-_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+_CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.encode({
     gameObjectName = "c_explosion_particles",
     translation = {x = 0.0, y = 5.0, z = 0.0},
     scale = {x = 1.0, y = 1.0, z = 1.0},

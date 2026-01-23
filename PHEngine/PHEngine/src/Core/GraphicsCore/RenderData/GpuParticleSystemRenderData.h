@@ -2,6 +2,7 @@
 
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
 #include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
+#include "Core/ResourceManagerCore/Pool/PoolParameters/SSBOPoolParameters.h"
 
 #include <memory>
 
@@ -10,12 +11,17 @@ using namespace EngineCore;
 
 namespace Graphics {
 namespace Data {
-struct ParticleSystemRenderData {
+struct GpuParticleSystemRenderData {
     ParticlePoolParameters mParticleMeshParams;
+    SSBOPoolParameters mSSBOPoolParams;
     std::shared_ptr<MaterialProxy> mMaterialProxy;
 
-    ParticleSystemRenderData(const ParticlePoolParameters& particleMeshParams, std::shared_ptr<MaterialProxy> materialProxy)
+    GpuParticleSystemRenderData(
+        const ParticlePoolParameters& particleMeshParams,
+        const SSBOPoolParameters& ssboPoolParams,
+        std::shared_ptr<MaterialProxy> materialProxy)
         : mParticleMeshParams(particleMeshParams)
+        , mSSBOPoolParams(ssboPoolParams)
         , mMaterialProxy(materialProxy)
     {
     }

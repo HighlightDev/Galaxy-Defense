@@ -91,7 +91,6 @@ void UniformBufferControlBlock::BindUniformBlockToBindingPoint(const uint32_t sh
 {
     glUseProgram(shaderProgramId);
     const uint32_t blockIndex = glGetUniformBlockIndex(shaderProgramId, mBlockName.c_str());
-    LogInfo("UniformBufferControlBlock::BindUniformBlockToBindingPoint: uniform block index wasn't found for ", mBlockName);
     glUniformBlockBinding(shaderProgramId, blockIndex, mBindingPoint);
     glUseProgram(0);
 }

@@ -38,16 +38,16 @@ void SkeletalMeshSceneProxy::PostConstructorInitialize()
     PrimitiveSceneProxy::PostConstructorInitialize();
     static constexpr uint64_t functionId = Hash64_CT("SkeletalMeshSceneProxy::PostConstructorInitialize");
 
-    const ShaderParams shaderParams(
-        "DeferredNonSkeletalBase Shader",
+    ShaderParams shaderParams("DeferredNonSkeletalBase Shader");
+    shaderParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "deferredFS.glsl");
 
     m_shader = CreateMaterialShader<SkeletalMeshVertexFactory<4>, SimpleShader>(
         "SkeletalMeshVertexFactory<4>_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
 
-    const ShaderParams planarReflectionParams(
-        "PlanarReflectionShader",
+    ShaderParams planarReflectionParams("PlanarReflectionShader");
+    planarReflectionParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "planarReflectionVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 

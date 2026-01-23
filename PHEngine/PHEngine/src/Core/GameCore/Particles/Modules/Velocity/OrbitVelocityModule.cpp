@@ -1,7 +1,7 @@
 #include "OrbitVelocityModule.h"
 
 #include "Core/CommonCore/Random.h"
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/gtc/matrix_transform.hpp>

@@ -4,7 +4,7 @@
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 #include "Core/GameCore/Components/ComponentData/UiComponentData.h"
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -126,7 +126,7 @@ void SpaceshipActor::TriggerDamageReceived(const size_t dmg, const eDamageDealer
         mIsDamageEffectActive = true;
         mDamageEffectTimePassed = 0.0f;
 
-        const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
+        const auto c_particle = GetComponentsByType<CpuParticleSystemComponent>().back();
         c_particle->EmitParticles();
 
         mUiComponent->SetLabelText(std::to_string(dmg));

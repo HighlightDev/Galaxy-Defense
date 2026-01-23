@@ -1,8 +1,8 @@
 #include "ScreenQuad.h"
 
 #include "Core/GameCore/BoundingBoxBuilder.h"
+#include "Core/GraphicsCore/OpenGL/BufferObjectBase.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
-#include "Core/GraphicsCore/OpenGL/VertexBufferObjectBase.h"
 #include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
@@ -54,7 +54,7 @@ void ScreenQuad::Init()
         GL_ARRAY_BUFFER,
         eDataCarryFlag::INVALIDATE);
 
-    VertexBufferObjectBase* texCoordsVBO = new VertexBufferObject<float>(
+    BufferObjectBase* texCoordsVBO = new VertexBufferObject<float>(
         std::move(texCoords),
         "VertexTexCoords",
         (int32_t)eAttribArrayIndex::VertexTexCoords,

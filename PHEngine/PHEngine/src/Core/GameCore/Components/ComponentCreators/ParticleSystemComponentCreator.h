@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
 #include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
 #include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
@@ -11,7 +11,7 @@
 #include "Core/GameCore/Particles/Modules/Velocity/SimpleVelocityModule.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
+#include "Core/GraphicsCore/RenderData/CpuParticleSystemRenderData.h"
 #include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
 #include "IComponentCreatable.h"
 
@@ -38,7 +38,7 @@ public:
         const auto& materialProxy = mData->m_material->GetMaterialProxyWp().lock();
         ext_assert(materialProxy, "ParticleSystemComponentCreator::CreateComponent: materialProxy is null");
 
-        auto component = std::make_shared<ComponentInstantiationType>(mData, ParticleSystemRenderData(params, materialProxy));
+        auto component = std::make_shared<ComponentInstantiationType>(mData, CpuParticleSystemRenderData(params, materialProxy));
 
         // Create emitter from data
         if (mData->emitterData) {

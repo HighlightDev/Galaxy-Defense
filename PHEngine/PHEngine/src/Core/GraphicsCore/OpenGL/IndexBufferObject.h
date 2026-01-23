@@ -1,6 +1,6 @@
 #pragma once
+#include "BufferObjectBase.h"
 #include "DataCarryFlag.h"
-#include "VertexBufferObjectBase.h"
 
 #include <stdint.h>
 
@@ -10,7 +10,7 @@
 
 namespace Graphics {
 namespace OpenGL {
-class IndexBufferObject : public VertexBufferObjectBase {
+class IndexBufferObject : public BufferObjectBase {
 private:
     std::vector<uint32_t> m_data;
     eDataCarryFlag m_dataCarryFlag;

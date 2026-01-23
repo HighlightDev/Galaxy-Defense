@@ -28,16 +28,16 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
 
     const auto shaderIdName = m_renderData.mIsDeferredShaded ? "DeferredNonSkeletalBase Shader" : "ForwardNonSkeletalBase Shader";
     const auto fragmentShaderName = m_renderData.mIsDeferredShaded ? "deferredFS.glsl" : "forwardNoLitFS.glsl";
-    const ShaderParams shaderParams(
-        shaderIdName,
+    ShaderParams shaderParams(shaderIdName);
+    shaderParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
 
     m_shader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
         "StaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
 
-    const ShaderParams planarReflectionParams(
-        "PlanarReflectionShader",
+    ShaderParams planarReflectionParams("PlanarReflectionShader");
+    planarReflectionParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "planarReflectionVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 
@@ -56,8 +56,8 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
         if (const auto& sceneSp = deferredShadingSceneRendererSp->GetInterThreadCommunicationManager().GetSceneWP().lock()) {
             if (const auto& outlineMatProxySp = sceneSp->GetOutlineMaterial()->GetMaterialProxyWp().lock()) {
                 mOutlineMaterialProxy = outlineMatProxySp;
-                const ShaderParams outlineShaderParams(
-                    "OutlineShader",
+                ShaderParams outlineShaderParams("OutlineShader");
+                outlineShaderParams.SetMainShaders(
                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
                 m_outlineShader = CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(

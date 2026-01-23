@@ -1,7 +1,7 @@
 #include "FreeTypeFontHandler.h"
 
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
-#include "Core/GraphicsCore/OpenGL/VertexBufferObjectBase.h"
+#include "Core/GraphicsCore/OpenGL/BufferObjectBase.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/FreeTypeFontMeshPool.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
@@ -104,8 +104,8 @@ void FreeTypeFontBatcher::TextVisibilityChanged(const int32_t textFieldProxyId, 
 
 void FreeTypeFontBatcher::FontBufferSubData(
     const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy,
-    VertexBufferObjectBase* const positionVBO,
-    VertexBufferObjectBase* const textureCoordinatesVBO)
+    BufferObjectBase* const positionVBO,
+    BufferObjectBase* const textureCoordinatesVBO)
 {
     const auto displayDeviceProvider = EngineCore::DataProviders::GeneralSystemSettingsDataProvider::GetInstance();
     FreeTypeTextMeshCreator textMeshCreator;
@@ -153,7 +153,7 @@ void FreeTypeFontBatcher::AllocateTextSpace(const std::shared_ptr<FreeTypeTextFi
         ext_assert(positionVBO && textureCoordinatesVBO, "Failed to get VBOs for vertex positions or texture coordinates");
 
         FontBufferSubData(textFieldProxy, positionVBO, textureCoordinatesVBO);
-        textureCoordinatesVBO->UnbindVBO();
+        textureCoordinatesVBO->UnbindBuffer();
 
         mVerticesCount
             = (mPositionChunkData.mCurrentChunkOffset / positionVBO->GetElementByteSize()) / positionVBO->GetVectorSize();
@@ -216,7 +216,7 @@ void FreeTypeFontBatcher::FreeAllocatedTextSpace(const std::shared_ptr<FreeTypeT
         }
     }
 
-    textureCoordinatesVBO->UnbindVBO();
+    textureCoordinatesVBO->UnbindBuffer();
     mVerticesCount = (mPositionChunkData.mCurrentChunkOffset / positionVBO->GetElementByteSize()) / positionVBO->GetVectorSize();
 }
 

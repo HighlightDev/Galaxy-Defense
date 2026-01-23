@@ -31,16 +31,16 @@ void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
 {
     static constexpr uint64_t functionId = Hash64_CT("RuntimeGeneratedLineSceneProxy::PostConstructorInitialize");
 
-    const ShaderParams shaderParams(
-        "RuntimeGeneratedMesh_BaseShader",
+    ShaderParams shaderParams("RuntimeGeneratedMesh_BaseShader");
+    shaderParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "runtimeGeneratedMeshVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 
     m_shader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
         "StaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
 
-    const ShaderParams planarReflectionParams(
-        "PlanarReflectionShader",
+    ShaderParams planarReflectionParams("PlanarReflectionShader");
+    planarReflectionParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "planarReflectionVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 
@@ -169,7 +169,7 @@ void RuntimeGeneratedLineSceneProxy::UpdateGeometry(const glm::mat4& viewMatrix)
 
         verticesVBO->BufferSubData(0, verticesBufferSize, (void*)vertices.data());
         textureCoordinatesVBO->BufferSubData(0, texCoordsBufferSize, (void*)texCoords.data());
-        textureCoordinatesVBO->UnbindVBO();
+        textureCoordinatesVBO->UnbindBuffer();
 
         bUpdateLineGeometry = false;
     }

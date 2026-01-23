@@ -1,4 +1,4 @@
-#include "ParticleSystemComponent.h"
+#include "CpuParticleSystemComponent.h"
 
 #include "Core/CommonCore/Random.h"
 #include "Core/CommonCore/StringHash.h"
@@ -7,7 +7,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/ComponentProxies/ParticleSystemComponentLuaProxy.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
-#include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/CpuParticleSystemSceneProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/vec3.hpp>
@@ -25,30 +25,24 @@ using namespace TinyLogger;
 using namespace EngineCore::Scripts;
 
 namespace EngineCore {
-ParticleSystemComponent::ParticleSystemComponent(
-    const std::shared_ptr<ParticleSystemComponentData>& meshComponentData, const ParticleSystemRenderData& renderData)
-    : PrimitiveComponent(
-        meshComponentData->EngineObjectName, meshComponentData->m_translation, glm::vec3(), meshComponentData->m_scale)
-    , mParticlesCount(meshComponentData->m_particlesCount)
-    , mParticlesPool()
+CpuParticleSystemComponent::CpuParticleSystemComponent(
+    const std::shared_ptr<ParticleSystemComponentData>& meshComponentData, const CpuParticleSystemRenderData& renderData)
+    : ParticleSystemBaseComponent(
+        meshComponentData->EngineObjectName,
+        meshComponentData->m_translation,
+        glm::vec3(),
+        meshComponentData->m_scale,
+        meshComponentData->m_particlesCount)
     , mParticlesRawDataHandler(meshComponentData->m_particlesCount)
     , mRenderData(renderData)
 {
-    mParticlesPool.resize(meshComponentData->m_particlesCount);
-    mSortOrderValue = std::numeric_limits<int32_t>::max(); // draw this primitive the last one
-    mCanBloomBeApplied = true;
 }
 
-ParticleSystemComponent::~ParticleSystemComponent()
+CpuParticleSystemComponent::~CpuParticleSystemComponent()
 {
 }
 
-eComponentType ParticleSystemComponent::GetComponentType() const
-{
-    return PRIMITIVE_COMPONENT;
-}
-
-void ParticleSystemComponent::Tick(const float deltaTimeSec)
+void CpuParticleSystemComponent::Tick(const float deltaTimeSec)
 {
     static constexpr float particleMoveSpeed = 15.0f;
 
@@ -99,58 +93,27 @@ void ParticleSystemComponent::Tick(const float deltaTimeSec)
     }
 }
 
-std::shared_ptr<PrimitiveSceneProxy> ParticleSystemComponent::CreateSceneProxy() const
+std::shared_ptr<PrimitiveSceneProxy> CpuParticleSystemComponent::CreateSceneProxy() const
 {
-    return std::make_shared<ParticleSystemSceneProxy>(this);
+    return std::make_shared<CpuParticleSystemSceneProxy>(this);
 }
 
-std::shared_ptr<Scripts::LuaProxy> ParticleSystemComponent::ReplicateLuaProxy()
+std::shared_ptr<Scripts::LuaProxy> CpuParticleSystemComponent::ReplicateLuaProxy()
 {
     return std::make_shared<ParticleSystemComponentLuaProxy>(
-        std::static_pointer_cast<ParticleSystemComponent>(shared_from_this()));
+        std::static_pointer_cast<CpuParticleSystemComponent>(shared_from_this()));
 }
 
-void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<IParticleModule>& particleModule)
+void CpuParticleSystemComponent::ResetParticles()
 {
-    const auto& newModuleType = particleModule->GetParticleModuleType();
-    auto foundSameModuleIt = std::find_if(mParticleModules.begin(), mParticleModules.end(), [=](const auto& particleModule) {
-        return particleModule->GetParticleModuleType() == newModuleType;
-    });
-    ext_assert(
-        foundSameModuleIt == mParticleModules.end(),
-        "Particle module of the same type is already added to ParticleSystemComponent");
-    mParticleModules.emplace_back(particleModule);
-    std::sort(mParticleModules.begin(), mParticleModules.end(), [](const auto& leftModule, const auto& rightModule) {
-        return (uint8_t)leftModule->GetParticleModuleType() < (uint8_t)rightModule->GetParticleModuleType();
-    });
-}
-
-void ParticleSystemComponent::EmitParticles()
-{
-    mParticleEmitter->EmitParticles(mParticlesCount);
-
-    for (const auto& particleModule : mParticleModules) {
-        particleModule->OnEmitParticles();
-    }
-}
-
-void ParticleSystemComponent::ResetParticles()
-{
-    for (auto particleIt = mParticlesPool.begin(); particleIt != mParticlesPool.end(); ++particleIt) {
-        particleIt->Reset();
-    }
+    ParticleSystemBaseComponent::ResetParticles();
 
     mParticlesRawDataHandler.ResetTranslationData();
     mParticlesRawDataHandler.ResetRotationSizeData();
     mParticlesRawDataHandler.ResetColorData();
-
-    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
-        SyncDataWithRenderThread(0, true);
-        mPrevActiveParticles = 0;
-    }
 }
 
-void ParticleSystemComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
+void CpuParticleSystemComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
 {
     if (!mIsEnabled)
         return;
@@ -167,7 +130,7 @@ void ParticleSystemComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatr
 
         if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
             // Update primitives proxy transform
-            static const uint64_t functionId = Hash("ParticleSystemComponent:UpdatePrimitiveComponentTransform_GameThread");
+            static const uint64_t functionId = Hash("CpuParticleSystemComponent:UpdatePrimitiveComponentTransform_GameThread");
             if (const auto& sceneSP = m_sceneWP.lock()) {
                 if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                     sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(
@@ -179,25 +142,14 @@ void ParticleSystemComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatr
     }
 }
 
-size_t ParticleSystemComponent::GetParticlesCount() const
-{
-    return mParticlesPool.size();
-}
-
-ParticlesRawDataHandler& ParticleSystemComponent::GetParticlesRawDataHandler()
+ParticlesRawDataHandler& CpuParticleSystemComponent::GetParticlesRawDataHandler()
 {
     return mParticlesRawDataHandler;
 }
 
-void ParticleSystemComponent::SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter)
+void CpuParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData)
 {
-    ext_assert(!mParticleEmitter, "Particle emitter is already set for ParticleSystemComponent");
-    mParticleEmitter = emitter;
-}
-
-void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData)
-{
-    static const uint64_t functionId = Hash("ParticleSystemComponent: SyncDataWithRenderThread");
+    static const uint64_t functionId = Hash("CpuParticleSystemComponent: SyncDataWithRenderThread");
     if (const auto& sceneSp = m_sceneWP.lock()) {
         sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
@@ -209,8 +161,8 @@ void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activePartic
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) mutable {
                 if (const auto& componentPtr = weak.lock()) {
                     if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
-                        const auto particleComponentPtr = std::static_pointer_cast<ParticleSystemComponent>(componentPtr);
-                        const auto& proxyPtr = std::static_pointer_cast<ParticleSystemSceneProxy>(
+                        const auto particleComponentPtr = std::static_pointer_cast<CpuParticleSystemComponent>(componentPtr);
+                        const auto& proxyPtr = std::static_pointer_cast<CpuParticleSystemSceneProxy>(
                             sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId));
                         if (proxyPtr) {
                             if (activeParticlesCount > 0) {

@@ -1,7 +1,7 @@
 #pragma once
+#include "BufferObjectBase.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "DataCarryFlag.h"
-#include "VertexBufferObjectBase.h"
 
 #include <gl/glew.h>
 #include <stdint.h>
@@ -15,7 +15,7 @@ using namespace TinyLogger;
 namespace Graphics {
 namespace OpenGL {
 template<typename DataType, int32_t buffer_usage = GL_STREAM_DRAW, int32_t attrib_divisor = 1>
-class InstancedVertexBufferObject : public VertexBufferObjectBase {
+class InstancedVertexBufferObject : public BufferObjectBase {
 protected:
     std::vector<DataType> m_data;
     int32_t m_vectorSize;
@@ -34,7 +34,7 @@ public:
         const int32_t vectorSize,
         const int32_t bufferTarget,
         const eDataCarryFlag flag)
-        : VertexBufferObjectBase(attribArrayIndexName, bufferTarget)
+        : BufferObjectBase(attribArrayIndexName, bufferTarget)
         , m_data(std::move(data))
         , m_vectorSize(vectorSize)
         , m_totalDataLength(m_data.size())
@@ -52,7 +52,7 @@ public:
         const int32_t glType,
         const int32_t vectorSize,
         const int32_t bufferTarget)
-        : VertexBufferObjectBase(attribArrayIndexName, bufferTarget)
+        : BufferObjectBase(attribArrayIndexName, bufferTarget)
         , m_countOfIndices(indicesCount)
         , m_vertexAttribIndex(attributeIndex)
         , m_vectorSize(vectorSize)
@@ -109,7 +109,7 @@ public:
     {
         m_allocatedBufferSize = GetElementByteSize() * m_totalDataLength;
         GenBuffer();
-        BindVBO();
+        BindBuffer();
 
         LogInfo("InstancedVertexBufferObject::SendDataToGPU: bufferSize: ", m_allocatedBufferSize);
 
@@ -154,7 +154,7 @@ public:
     void CleanUp() override
     {
         LogInfo("InstancedVertexBufferObject::CleanUp: descriptor: ", m_descriptor);
-        UnbindVBO();
+        UnbindBuffer();
         glDeleteBuffers(1, &m_descriptor);
     }
 };

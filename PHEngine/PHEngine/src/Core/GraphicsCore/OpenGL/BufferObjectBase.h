@@ -8,25 +8,26 @@
 
 namespace Graphics {
 namespace OpenGL {
-class VertexBufferObjectBase {
+class BufferObjectBase {
 protected:
-    uint32_t m_descriptor;
+    GLuint m_descriptor;
 
-    int32_t m_bufferTarget;
+    GLint m_bufferTarget;
 
     std::string mAttribArrayIndexName;
 
     size_t m_allocatedBufferSize{0};
 
 public:
-    VertexBufferObjectBase(const std::string& attribArrayIndexName, const int32_t bufferTarget = GL_ARRAY_BUFFER);
-    virtual ~VertexBufferObjectBase();
+    BufferObjectBase(const std::string& attribArrayIndexName, const GLint bufferTarget = GL_ARRAY_BUFFER);
+
+    virtual ~BufferObjectBase();
 
     void GenBuffer();
 
-    void BindVBO() const;
+    void BindBuffer() const;
 
-    void UnbindVBO() const;
+    void UnbindBuffer() const;
 
     virtual void SendDataToGPU() = 0;
 
@@ -46,11 +47,11 @@ public:
 
     virtual void* GetData();
 
-    size_t GetDescriptor() const;
+    GLuint GetDescriptor() const;
 
     std::string GetAttribArrayIndexName() const;
 
-    int32_t GetBufferTarget() const;
+    GLint GetBufferTarget() const;
 
     size_t GetAllocatedBufferSize() const;
 };

@@ -16,7 +16,7 @@ namespace OpenGL {
 class VertexArrayObject {
 private:
     uint32_t m_descriptor;
-    std::vector<std::pair<VertexBufferObjectBase*, std::string>> m_vbos;
+    std::vector<std::pair<BufferObjectBase*, std::string>> m_vbos;
     IndexBufferObject* m_ibo;
 
 public:
@@ -25,9 +25,9 @@ public:
 
     uint32_t GetDescriptor() const;
 
-    VertexBufferObjectBase* GetVBOByIndex(const size_t index) const;
+    BufferObjectBase* GetVBOByIndex(const size_t index) const;
 
-    VertexBufferObjectBase* GetVboByAttribArrayIndexName(const std::string& attribArrayIndexName) const
+    BufferObjectBase* GetVboByAttribArrayIndexName(const std::string& attribArrayIndexName) const
     {
         auto alreadyExistingAttribVboIt = std::find_if(
             m_vbos.begin(), m_vbos.end(), [=](const auto& vboPair) { return vboPair.second == attribArrayIndexName; });
@@ -39,7 +39,7 @@ public:
     void AddVBO(Arg&& p_vbo, Args&&... p_vbos)
     {
         if (p_vbo != nullptr) {
-            const auto& attribArrayIndexName = static_cast<VertexBufferObjectBase*>(p_vbo)->GetAttribArrayIndexName();
+            const auto& attribArrayIndexName = static_cast<BufferObjectBase*>(p_vbo)->GetAttribArrayIndexName();
             ext_assert(!GetVboByAttribArrayIndexName(attribArrayIndexName), "VBO already exists for this attribute index");
             m_vbos.emplace_back(std::make_pair(std::forward<Arg>(p_vbo), attribArrayIndexName));
         }
@@ -50,7 +50,7 @@ public:
     void AddVBO(Arg&& p_vbo)
     {
         if (p_vbo != nullptr) {
-            const auto& attribArrayIndexName = static_cast<VertexBufferObjectBase*>(p_vbo)->GetAttribArrayIndexName();
+            const auto& attribArrayIndexName = static_cast<BufferObjectBase*>(p_vbo)->GetAttribArrayIndexName();
             ext_assert(!GetVboByAttribArrayIndexName(attribArrayIndexName), "VBO already exists for this attribute index");
             m_vbos.emplace_back(std::make_pair(std::forward<Arg>(p_vbo), attribArrayIndexName));
         }
@@ -62,7 +62,7 @@ public:
 
     const IndexBufferObject* GetIBO() const;
 
-    const std::vector<std::pair<VertexBufferObjectBase*, std::string>>& GetVBOs() const;
+    const std::vector<std::pair<BufferObjectBase*, std::string>>& GetVBOs() const;
 
     void GenVAO();
 

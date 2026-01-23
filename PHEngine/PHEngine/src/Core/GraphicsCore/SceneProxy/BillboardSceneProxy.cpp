@@ -34,11 +34,11 @@ void BillboardSceneProxy::PostConstructorInitialize()
 
     static constexpr uint64_t functionId = Hash64_CT("BillboardSceneProxy::PostConstructorInitialize");
 
-    const ShaderParams shaderParams(
-        "Billboard Shader",
+    ShaderParams shaderParams("Billboard Shader");
+    shaderParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "billboardVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "billboardFS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "billboardGS.glsl");
+        FolderManager::GetInstance()->GetShadersPath() + "billboardFS.glsl");
+    shaderParams.SetGeometryShader(FolderManager::GetInstance()->GetShadersPath() + "billboardGS.glsl");
 
     m_shader = CreateMaterialShader<StaticMeshVertexFactory, BillboardShader>(
         "StaticMeshVertexFactory_BillboardShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);

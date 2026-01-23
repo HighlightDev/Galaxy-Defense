@@ -13,9 +13,7 @@ namespace Graphics {
 namespace OpenGL {
 class IShader {
 protected:
-    int32_t m_vertexShaderID;
-    int32_t m_fragmentShaderID;
-    int32_t m_geometryShaderID;
+    mutable std::unordered_map<eShaderType, GLint> m_shaderIdsMap;
     uint32_t m_shaderProgramID;
 
     std::string mShaderName;
@@ -81,7 +79,7 @@ public:
 
     bool ProcessShaderIncludes(std::string& shaderSource);
     bool SendToGpuSingleShaderSource(int32_t shaderId, const std::string& shaderSource) const;
-    bool SendToGpuShadersSources(std::string& vsSource, std::string& gsSource, std::string& fsSource);
+    bool SendToGpuShadersSources(const std::unordered_map<eShaderType, std::string>& shaderSources) const;
 
     std::vector<std::string> LoadShaderSrcVector(const std::string& pathToShader) const;
     std::string LoadShaderSource(const std::string& pathToShader) const;

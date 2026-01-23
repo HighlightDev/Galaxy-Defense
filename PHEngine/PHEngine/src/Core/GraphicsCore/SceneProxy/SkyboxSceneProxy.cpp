@@ -21,16 +21,17 @@ void SkyboxSceneProxy::PostConstructorInitialize()
     PrimitiveSceneProxy::PostConstructorInitialize();
     static constexpr uint64_t functionId = Hash64_CT("SkyboxSceneProxy::PostConstructorInitialize");
 
-    const ShaderParams shaderParams = ShaderParams(
-        "SkyboxForwardShader",
+    ShaderParams shaderParams = ShaderParams("SkyboxForwardShader");
+
+    shaderParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 
     m_shader = CreateMaterialShader<SkyboxVertexFactory, SimpleShader>(
         "SkyboxVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
 
-    const ShaderParams planarReflectionParams(
-        "PlanarReflectionShader",
+    ShaderParams planarReflectionParams("PlanarReflectionShader");
+    planarReflectionParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "planarReflectionVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
 

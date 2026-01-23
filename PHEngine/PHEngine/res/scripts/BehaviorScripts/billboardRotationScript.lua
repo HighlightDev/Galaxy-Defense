@@ -30,9 +30,7 @@ local engineReceiver = nil
 
 local function onPressedKeyboardButtons(host, pressedKeyNames)
     for _, keyName in pairs(pressedKeyNames) do
-        if keyName == "F" then
-            _InvokeFunction(host, particlesLuaProxyId, "EmitParticles", "")
-        end
+        if keyName == "F" then _InvokeFunction(host, particlesLuaProxyId, "EmitParticles", "") end
     end
 end
 
@@ -46,11 +44,7 @@ function System_OnStart(host)
     engineReceiver:subscribeOnPressedKeyboardButton(onPressedKeyboardButtons)
 end
 
-function System_OnUpdate(host, deltaTime)
-    if engineReceiver ~= nil then
-        engineReceiver:update(host)
-    end
-end
+function System_OnUpdate(host, deltaTime) if engineReceiver ~= nil then engineReceiver:update(host) end end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)
 HasOnUpdate = (_G["System_OnUpdate"] ~= nil and 1 or 0)

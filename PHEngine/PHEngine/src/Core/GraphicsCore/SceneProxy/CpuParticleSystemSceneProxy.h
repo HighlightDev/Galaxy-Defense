@@ -1,0 +1,77 @@
+#pragma once
+
+#include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
+#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
+#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/ParticleVertexFactory.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
+#include "Core/GraphicsCore/RenderData/CpuParticleSystemRenderData.h"
+#include "Core/IoCore/FolderManager.h"
+#include "PrimitiveSceneProxy.h"
+
+#include <vector>
+
+using namespace IO;
+using namespace Graphics::Data;
+using namespace EngineCore;
+using namespace EngineCore::ShaderImpl;
+
+namespace EngineCore {
+class CpuParticleSystemComponent;
+}
+
+namespace Graphics {
+namespace Proxy {
+class CpuParticleSystemSceneProxy : public PrimitiveSceneProxy {
+    ParticlesRawDataHandler mParticlesRawDataHandler;
+
+    CpuParticleSystemRenderData mRenderData;
+
+    size_t mActiveParticlesCount;
+
+    bool bIsParticlesTransformDirty{false};
+
+    using Base = PrimitiveSceneProxy;
+    using ParticleShader_t = VertexFactoryMaterialCompositeShader<ParticleVertexFactory, SimpleShader>;
+
+private:
+    std::shared_ptr<ParticleShader_t> GetShader() const;
+
+public:
+    CpuParticleSystemSceneProxy(const ::EngineCore::CpuParticleSystemComponent* component);
+
+    ~CpuParticleSystemSceneProxy() override;
+
+    void CleanUp() override;
+
+    void Render(
+        const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
+        const glm::mat4& viewMatrix,
+        const glm::mat4& projectionMatrix,
+        ActiveBindedState& activeBindedState) override;
+
+    void PostConstructorInitialize() override;
+
+    bool IsDeferred() const override;
+
+    eMeshFacing GetMeshFrontFace() const override;
+
+    bool IsFrustumCullTestNeeded() const override;
+
+    void SetActiveParticlesCount(const size_t activeParticlesCount);
+
+    void CopyParticlesRawData(
+        const void* translationBuffer,
+        const size_t translationByteChunkSize,
+        const void* rotationSizeBuffer,
+        const size_t rotationByteChunkSize,
+        const void* colorBuffer,
+        const size_t colorByteChunkSize);
+
+    RenderInfo GetRenderInfo() const override;
+
+private:
+    void PrepareParticlesInstancedBuffer();
+};
+} // namespace Proxy
+} // namespace Graphics

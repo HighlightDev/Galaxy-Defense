@@ -670,7 +670,7 @@ _CreateAndAttachComponentToActor(actorId, "ElectricBeamComponent", Json.encode({
 - Скорость анимации управляется через `SetAnimationSpeed()` (по умолчанию 2.0)
 - Каждый луч в `beamCount` имеет смещение по фазе для разнообразия
 
-#### ParticleSystemComponent
+#### CpuParticleSystemComponent
 Компонент системы частиц с модульной архитектурой. Поддерживает различные типы эмиттеров, модули времени жизни, цвета, размера и скорости.
 
 **Типы модулей:**
@@ -707,7 +707,7 @@ _CreateAndAttachComponentToActor(actorId, "ElectricBeamComponent", Json.encode({
 
 **Базовый пример:**
 ```lua
-_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+_CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.encode({
     gameObjectName = "c_particleSystem",
     translation = {x = 0.0, y = 0.0, z = 0.0},
     scale = {x = 1.0, y = 1.0, z = 1.0},
@@ -751,7 +751,7 @@ _CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode
 
 **Пример с орбитальным движением:**
 ```lua
-_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+_CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.encode({
     gameObjectName = "c_particleOrbit",
     translation = {x = 0.0, y = 0.0, z = 0.0},
     scale = {x = 1.0, y = 1.0, z = 1.0},
@@ -807,7 +807,7 @@ MaterialPropertySetter.SetMaterialPropertyValue(particleMaterial, "clipRadius", 
 local materialProxyId = particleMaterial:GetMaterialProxyWp():lock():GetSceneProxyId()
 
 -- Создание компонента частиц
-_CreateAndAttachComponentToActor(actorId, "ParticleSystemComponent", Json.encode({
+_CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.encode({
     gameObjectName = "c_explosion_particles",
     translation = {x = 0.0, y = 5.0, z = 0.0},
     scale = {x = 1.0, y = 1.0, z = 1.0},

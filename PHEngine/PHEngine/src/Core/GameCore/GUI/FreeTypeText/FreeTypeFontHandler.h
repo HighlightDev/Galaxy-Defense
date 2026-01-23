@@ -15,7 +15,7 @@ using namespace Graphics;
 using namespace Graphics::Texture;
 
 namespace Graphics::OpenGL {
-class VertexBufferObjectBase;
+class BufferObjectBase;
 }
 
 namespace EngineCore::GUI {
@@ -81,8 +81,8 @@ private:
 
     void FontBufferSubData(
         const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy,
-        ::Graphics::OpenGL::VertexBufferObjectBase* const positionVBO,
-        ::Graphics::OpenGL::VertexBufferObjectBase* const textureCoordinatesVBO);
+        ::Graphics::OpenGL::BufferObjectBase* const positionVBO,
+        ::Graphics::OpenGL::BufferObjectBase* const textureCoordinatesVBO);
 };
 
 class FreeTypeFontHandler {

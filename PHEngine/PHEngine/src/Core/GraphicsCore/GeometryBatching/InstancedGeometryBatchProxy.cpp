@@ -24,8 +24,8 @@ void InstancedGeometryBatchProxy::Initialize()
 {
     const auto shaderIdName = m_renderData.mIsDeferredShaded ? "DeferredNonSkeletalBase Shader" : "ForwardNonSkeletalBase Shader";
     const auto fragmentShaderName = m_renderData.mIsDeferredShaded ? "deferredFS.glsl" : "forwardNoLitFS.glsl";
-    const ShaderParams shaderParams(
-        shaderIdName,
+    ShaderParams shaderParams(shaderIdName);
+    shaderParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
 

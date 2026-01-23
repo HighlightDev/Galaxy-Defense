@@ -5,7 +5,7 @@
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
 #include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
 #include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
@@ -147,7 +147,7 @@ void TestFeaturesLevel::Tick(const float deltaTimeSec)
             if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
                 const auto particlesActor = sceneSp->GetActorByName("ParticlesActor");
                 assert(particlesActor);
-                particlesActor->GetComponentsByType<ParticleSystemComponent>().back()->EmitParticles();
+                particlesActor->GetComponentsByType<CpuParticleSystemComponent>().back()->EmitParticles();
             }
         }
     }

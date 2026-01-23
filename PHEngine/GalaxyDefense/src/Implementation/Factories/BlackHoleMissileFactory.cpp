@@ -8,7 +8,7 @@
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
@@ -175,8 +175,9 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
             glm::vec3(0),
             glm::vec3(1.0f),
             100);
-        const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
-        const auto& c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(
+        const auto& particleSystemComponentCreator
+            = std::make_shared<ParticleSystemComponentCreator<CpuParticleSystemComponent>>();
+        const auto& c_particleSystemComponent = std::static_pointer_cast<CpuParticleSystemComponent>(
             scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
         auto emitter = std::make_shared<ParticleExplosionEmitter>();
         emitter->SetOwner(c_particleSystemComponent);

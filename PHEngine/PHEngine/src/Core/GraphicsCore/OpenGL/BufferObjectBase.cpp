@@ -1,21 +1,21 @@
-#include "VertexBufferObjectBase.h"
+#include "BufferObjectBase.h"
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/ThreadHelper.h"
 
 namespace Graphics {
 namespace OpenGL {
-VertexBufferObjectBase::VertexBufferObjectBase(const std::string& attribArrayIndexName, const int32_t bufferTarget)
+BufferObjectBase::BufferObjectBase(const std::string& attribArrayIndexName, const GLint bufferTarget)
     : m_bufferTarget(bufferTarget)
     , mAttribArrayIndexName(attribArrayIndexName)
 {
 }
 
-VertexBufferObjectBase::~VertexBufferObjectBase()
+BufferObjectBase::~BufferObjectBase()
 {
 }
 
-void VertexBufferObjectBase::GenBuffer()
+void BufferObjectBase::GenBuffer()
 {
     ext_assert(
         ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
@@ -23,32 +23,32 @@ void VertexBufferObjectBase::GenBuffer()
     glGenBuffers(1, &m_descriptor);
 }
 
-void VertexBufferObjectBase::BindVBO() const
+void BufferObjectBase::BindBuffer() const
 {
     glBindBuffer(m_bufferTarget, m_descriptor);
 }
 
-void VertexBufferObjectBase::UnbindVBO() const
+void BufferObjectBase::UnbindBuffer() const
 {
     glBindBuffer(m_bufferTarget, 0);
 }
 
-void* VertexBufferObjectBase::GetData()
+void* BufferObjectBase::GetData()
 {
     return nullptr;
 }
 
-size_t VertexBufferObjectBase::GetDescriptor() const
+GLuint BufferObjectBase::GetDescriptor() const
 {
     return m_descriptor;
 }
 
-std::string VertexBufferObjectBase::GetAttribArrayIndexName() const
+std::string BufferObjectBase::GetAttribArrayIndexName() const
 {
     return mAttribArrayIndexName;
 }
 
-void VertexBufferObjectBase::BufferSubData(const size_t offset, const size_t size, const void* data) const
+void BufferObjectBase::BufferSubData(const size_t offset, const size_t size, const void* data) const
 {
     ext_assert(
         m_allocatedBufferSize >= size,
@@ -56,14 +56,15 @@ void VertexBufferObjectBase::BufferSubData(const size_t offset, const size_t siz
             + ", requested size: " + std::to_string(size));
     glBindBuffer(m_bufferTarget, m_descriptor);
     glBufferSubData(m_bufferTarget, offset, size, data);
+    glBindBuffer(m_bufferTarget, 0);
 }
 
-int32_t VertexBufferObjectBase::GetBufferTarget() const
+GLint BufferObjectBase::GetBufferTarget() const
 {
     return m_bufferTarget;
 }
 
-size_t VertexBufferObjectBase::GetAllocatedBufferSize() const
+size_t BufferObjectBase::GetAllocatedBufferSize() const
 {
     return m_allocatedBufferSize;
 }

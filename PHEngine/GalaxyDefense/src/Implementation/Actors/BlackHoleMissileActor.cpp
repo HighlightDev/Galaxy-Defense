@@ -2,7 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Implementation/Actors/SpaceStationActor.h"
@@ -67,7 +67,7 @@ void BlackHoleMissileActor::OnTweenStateChanged(const std::string& stateName)
     } else if ("s_FirstPhaseExplosion" == stateName) {
         mExplosionSecondPhaseActor->TriggerSpawn(
             mCombatActivePhaseActor->GetRootComponent()->GetTranslation(), {}, 0.0f, mDamageDealerType, mSpawnerActor);
-        const auto c_particle = mExplosionSecondPhaseActor->GetComponentsByType<ParticleSystemComponent>().back();
+        const auto c_particle = mExplosionSecondPhaseActor->GetComponentsByType<CpuParticleSystemComponent>().back();
         c_particle->EmitParticles();
         TriggerLifecycle_SecondPhaseExplosion();
     } else if ("s_SecondPhaseExplosion" == stateName) {

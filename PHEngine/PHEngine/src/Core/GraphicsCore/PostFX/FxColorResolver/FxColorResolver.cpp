@@ -22,14 +22,11 @@ FxColorResolver::~FxColorResolver()
 
 void FxColorResolver::Init()
 {
-    mResolveFxColorShader = ShaderPool::GetInstance()->template GetOrAllocateResource<ResolveFxColorShader>(ShaderParams(
-        "ResolveFxColorShader",
+    auto shaderParams = ShaderParams("ResolveFxColorShader");
+    shaderParams.SetMainShaders(
         IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/postFxVS.glsl",
-        IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/resolveFxColorFS.glsl",
-        "",
-        "",
-        "",
-        ""));
+        IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/resolveFxColorFS.glsl");
+    mResolveFxColorShader = ShaderPool::GetInstance()->template GetOrAllocateResource<ResolveFxColorShader>(shaderParams);
 }
 
 void FxColorResolver::Execute(

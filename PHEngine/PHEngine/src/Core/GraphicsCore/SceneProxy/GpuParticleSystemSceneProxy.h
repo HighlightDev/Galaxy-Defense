@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/ParticleVertexFactory.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
-#include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
+#include "Core/GraphicsCore/RenderData/GpuParticleSystemRenderData.h"
 #include "Core/IoCore/FolderManager.h"
 #include "PrimitiveSceneProxy.h"
 
@@ -17,30 +16,33 @@ using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
 
 namespace EngineCore {
-class ParticleSystemComponent;
+class GpuParticleSystemComponent;
+}
+
+namespace Graphics::OpenGL {
+class ShaderStorageBufferObject;
 }
 
 namespace Graphics {
 namespace Proxy {
-class ParticleSystemSceneProxy : public PrimitiveSceneProxy {
-    ParticlesRawDataHandler mParticlesRawDataHandler;
+class GpuParticleSystemSceneProxy : public PrimitiveSceneProxy {
+    using Base = PrimitiveSceneProxy;
+    using ParticleShader_t = VertexFactoryMaterialCompositeShader<ParticleVertexFactory, SimpleShader>;
 
-    ParticleSystemRenderData mRenderData;
-
+    GpuParticleSystemRenderData mRenderData;
     size_t mActiveParticlesCount;
 
     bool bIsParticlesTransformDirty{false};
 
-    using Base = PrimitiveSceneProxy;
-    using ParticleShader_t = VertexFactoryMaterialCompositeShader<ParticleVertexFactory, SimpleShader>;
+    std::shared_ptr<ShaderStorageBufferObject> m_gpuParticlesSSBO;
 
 private:
     std::shared_ptr<ParticleShader_t> GetShader() const;
 
 public:
-    ParticleSystemSceneProxy(const ::EngineCore::ParticleSystemComponent* component);
+    GpuParticleSystemSceneProxy(const ::EngineCore::GpuParticleSystemComponent* component);
 
-    ~ParticleSystemSceneProxy() override;
+    ~GpuParticleSystemSceneProxy() override;
 
     void CleanUp() override;
 
@@ -60,13 +62,7 @@ public:
 
     void SetActiveParticlesCount(const size_t activeParticlesCount);
 
-    void CopyParticlesRawData(
-        const void* translationBuffer,
-        const size_t translationByteChunkSize,
-        const void* rotationSizeBuffer,
-        const size_t rotationByteChunkSize,
-        const void* colorBuffer,
-        const size_t colorByteChunkSize);
+    void SetParticlesPositionsData(const void* positionsData, const size_t byteChunkSize);
 
     RenderInfo GetRenderInfo() const override;
 

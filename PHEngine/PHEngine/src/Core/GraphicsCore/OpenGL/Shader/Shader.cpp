@@ -27,8 +27,8 @@ Shader::~Shader()
 
 bool Shader::operator==(const Shader& right) const
 {
-    return this->mShaderName == right.mShaderName && this->m_vertexShaderID == right.m_vertexShaderID
-        && this->m_fragmentShaderID == right.m_fragmentShaderID && this->m_shaderProgramID == right.m_shaderProgramID;
+    return this->mShaderName == right.mShaderName && this->m_shaderIdsMap == right.m_shaderIdsMap
+        && this->m_shaderProgramID == right.m_shaderProgramID;
 }
 
 void Shader::ShaderInit()
@@ -48,91 +48,61 @@ void Shader::ShaderInit()
     }
 }
 
-ShaderParams Shader::GetShaderParams() const
+const ShaderParams& Shader::GetShaderParams() const
 {
     return m_shaderParams;
 }
 
 bool Shader::LoadShadersSourceToGpu()
 {
-    std::string vsSourcePath = m_shaderParams.VertexShaderFile;
-    std::string fsSourcePath = m_shaderParams.FragmentShaderFile;
-    std::string gsSourcePath = m_shaderParams.GeometryShaderFile;
+    std::unordered_map<eShaderType, std::string> shaderSources;
+    for (const auto& [shaderType, shaderFile] : m_shaderParams.ShaderFiles) {
+        LogInfo("Shader::LoadShadersSourceToGpu: Loading shader file: ", shaderFile);
 
-    auto vsSource = LoadShaderSource(vsSourcePath);
-    auto fsSource = LoadShaderSource(fsSourcePath);
-    auto gsSource = LoadShaderSource(gsSourcePath);
+        auto shaderSource = LoadShaderSource(shaderFile);
+        ProcessShaderIncludes(shaderSource);
+        shaderSources[shaderType] = shaderSource;
+    }
 
-    ProcessShaderIncludes(vsSource);
-    ProcessShaderIncludes(gsSource);
-    ProcessShaderIncludes(fsSource);
-
-    return SendToGpuShadersSources(vsSource, gsSource, fsSource);
+    return SendToGpuShadersSources(shaderSources);
 }
 
 void Shader::ProcessAllPredefines()
 {
-    std::vector<ShaderGenericDefineConstant> vertexConstantPredefine, fragmentConstantPredefine, geometryConstantPredefine;
-    std::vector<ShaderGenericConstantArray> vertexArrayConstants, fragmentArrayConstants, geometryArrayConstants;
-    std::vector<ShaderGenericDefine> vertexPredefine, fragmentPredefine, geometryPredefine;
+    std::unordered_map<eShaderType, std::vector<ShaderGenericDefineConstant>> constantPredefines;
+    std::unordered_map<eShaderType, std::vector<ShaderGenericConstantArray>> arrayConstants;
+    std::unordered_map<eShaderType, std::vector<ShaderGenericDefine>> predefines;
 
-    if (m_defineConstantParameters.size() > 0 || m_defines.size() > 0 || m_defineConstantArrays.size() > 0) {
-        for (auto define_it = m_defineConstantParameters.begin(); define_it != m_defineConstantParameters.end(); ++define_it) {
-            if (define_it->m_ShaderType & eShaderType::VertexShader) {
-                vertexConstantPredefine.emplace_back(*define_it);
-            }
-            if (define_it->m_ShaderType & eShaderType::FragmentShader) {
-                fragmentConstantPredefine.emplace_back(*define_it);
-            }
-            if (define_it->m_ShaderType & eShaderType::GeometryShader) {
-                geometryConstantPredefine.emplace_back(*define_it);
-            }
-        }
-
-        for (const auto& arrayConstant : m_defineConstantArrays) {
-            if (arrayConstant.m_ShaderType & eShaderType::VertexShader) {
-                vertexArrayConstants.emplace_back(arrayConstant);
-            }
-            if (arrayConstant.m_ShaderType & eShaderType::FragmentShader) {
-                fragmentArrayConstants.emplace_back(arrayConstant);
-            }
-            if (arrayConstant.m_ShaderType & eShaderType::GeometryShader) {
-                geometryArrayConstants.emplace_back(arrayConstant);
-            }
-        }
-
-        for (auto define_it = m_defines.begin(); define_it != m_defines.end(); ++define_it) {
-            if (define_it->m_ShaderType & eShaderType::VertexShader) {
-                vertexPredefine.emplace_back(*define_it);
-            }
-            if (define_it->m_ShaderType & eShaderType::FragmentShader) {
-                fragmentPredefine.emplace_back(*define_it);
-            }
-            if (define_it->m_ShaderType & eShaderType::GeometryShader) {
-                geometryPredefine.emplace_back(*define_it);
-            }
-        }
+    for (const auto& define : m_defineConstantParameters) {
+        constantPredefines[define.m_ShaderType].emplace_back(define);
     }
 
-    const bool processVsPredefines = m_shaderParams.VertexShaderFile != ""
-        && (vertexConstantPredefine.size() || vertexPredefine.size() || vertexArrayConstants.size());
-    const bool processFsPredefines = m_shaderParams.FragmentShaderFile != ""
-        && (fragmentConstantPredefine.size() || fragmentPredefine.size() || fragmentArrayConstants.size());
-    const bool processGsPredefines = m_shaderParams.GeometryShaderFile != ""
-        && (geometryConstantPredefine.size() || geometryPredefine.size() || geometryArrayConstants.size());
-
-    if (processVsPredefines) {
-        ProcessPredefineToFile(m_shaderParams.VertexShaderFile, vertexConstantPredefine, vertexPredefine, vertexArrayConstants);
+    for (const auto& arrayConstant : m_defineConstantArrays) {
+        arrayConstants[arrayConstant.m_ShaderType].emplace_back(arrayConstant);
     }
 
-    if (processFsPredefines) {
-        ProcessPredefineToFile(
-            m_shaderParams.FragmentShaderFile, fragmentConstantPredefine, fragmentPredefine, fragmentArrayConstants);
+    for (const auto& define_it : m_defines) {
+        predefines[define_it.m_ShaderType].emplace_back(define_it);
     }
 
-    if (processGsPredefines) {
-        ProcessPredefineToFile(
-            m_shaderParams.GeometryShaderFile, geometryConstantPredefine, geometryPredefine, geometryArrayConstants);
+    const auto& inShaderFiles = m_shaderParams.ShaderFiles;
+
+    for (const auto shaderType :
+         {eShaderType::VertexShader,
+          eShaderType::FragmentShader,
+          eShaderType::GeometryShader,
+          eShaderType::TesselationControlShader,
+          eShaderType::TesselationEvaluationShader,
+          eShaderType::ComputeShader}) {
+
+        if (inShaderFiles.count(shaderType)) {
+
+            ProcessPredefineToFile(
+                m_shaderParams.ShaderFiles.at(shaderType),
+                constantPredefines[shaderType],
+                predefines[shaderType],
+                arrayConstants[shaderType]);
+        }
     }
 }
 

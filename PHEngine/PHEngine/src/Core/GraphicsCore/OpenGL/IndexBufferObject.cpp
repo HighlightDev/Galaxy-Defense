@@ -9,7 +9,7 @@ using namespace EngineCore;
 namespace Graphics {
 namespace OpenGL {
 IndexBufferObject::IndexBufferObject(const std::vector<uint32_t>& data, eDataCarryFlag dataCarryFlag)
-    : VertexBufferObjectBase("PositionIndex", GL_ELEMENT_ARRAY_BUFFER)
+    : BufferObjectBase("PositionIndex", GL_ELEMENT_ARRAY_BUFFER)
     , m_data(data)
     , m_dataCarryFlag(dataCarryFlag)
     , m_countOfIndices(m_data.size())

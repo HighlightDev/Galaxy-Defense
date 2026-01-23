@@ -14,8 +14,11 @@ enum eShaderType : int32_t {
     GeometryShader = FragmentShader << 1,
     TesselationControlShader = GeometryShader << 1,
     TesselationEvaluationShader = TesselationControlShader << 1,
+    ComputeShader = TesselationEvaluationShader << 1
 };
 
 int32_t MapShaderTypeToOpenGLConstant(const eShaderType internalShaderType);
+
+std::string ShaderTypeToString(const eShaderType shaderType);
 } // namespace OpenGL
 } // namespace Graphics

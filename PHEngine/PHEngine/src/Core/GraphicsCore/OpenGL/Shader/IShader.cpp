@@ -16,10 +16,7 @@ using namespace EngineCore;
 namespace Graphics {
 namespace OpenGL {
 IShader::IShader(const std::string& shaderName)
-    : m_vertexShaderID(-1)
-    , m_fragmentShaderID(-1)
-    , m_geometryShaderID(-1)
-    , m_shaderProgramID(-1)
+    : m_shaderProgramID(-1)
     , mShaderName(shaderName)
 {
 }
@@ -30,8 +27,8 @@ IShader::~IShader()
 
 bool IShader::operator==(const IShader& right) const
 {
-    return this->mShaderName == right.mShaderName && this->m_vertexShaderID == right.m_vertexShaderID
-        && this->m_fragmentShaderID == right.m_fragmentShaderID && this->m_shaderProgramID == right.m_shaderProgramID;
+    return this->mShaderName == right.mShaderName && this->m_shaderIdsMap == right.m_shaderIdsMap
+        && this->m_shaderProgramID == right.m_shaderProgramID;
 }
 
 uint32_t IShader::GetShaderProgramID() const
@@ -54,7 +51,10 @@ UniformArray IShader::GetUniformArray(
     static std::unordered_map<eShaderType, GLenum> s_mapShaderTypeToUniformShaderType
         = {{eShaderType::VertexShader, GL_MAX_VERTEX_UNIFORM_COMPONENTS},
            {eShaderType::FragmentShader, GL_MAX_FRAGMENT_UNIFORM_COMPONENTS},
-           {eShaderType::GeometryShader, GL_MAX_GEOMETRY_UNIFORM_COMPONENTS}};
+           {eShaderType::GeometryShader, GL_MAX_GEOMETRY_UNIFORM_COMPONENTS},
+           {eShaderType::TesselationControlShader, GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS},
+           {eShaderType::TesselationEvaluationShader, GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS},
+           {eShaderType::ComputeShader, GL_MAX_COMPUTE_UNIFORM_COMPONENTS}};
     ext_assert(s_mapShaderTypeToUniformShaderType.count(shaderType), "IShader::GetUniformArray: Unsupported shader type");
     GLint maxUniforms;
     glGetIntegerv(s_mapShaderTypeToUniformShaderType.at(shaderType), &maxUniforms);
@@ -176,32 +176,20 @@ std::string IShader::LoadShaderSource(const std::string& pathToShader) const
     return result;
 }
 
-bool IShader::SendToGpuShadersSources(std::string& vsSource, std::string& gsSource, std::string& fsSource)
+bool IShader::SendToGpuShadersSources(const std::unordered_map<eShaderType, std::string>& shaderSources) const
 {
-    bool bVertexShaderLoaded = true, bFragmentShaderLoaded = true, bGeometryShaderLoaded = true;
+    bool bAllShadersLoaded = true;
     ext_assert(
         ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
         "IShader::SendToGpuShadersSources: Not called from Render thread");
 
-    if (vsSource != "") {
-        /*Vertex shader load*/
-        m_vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-        bVertexShaderLoaded &= SendToGpuSingleShaderSource(m_vertexShaderID, vsSource);
+    for (const auto& [shaderType, shaderSource] : shaderSources) {
+        const GLenum glShaderType = MapShaderTypeToOpenGLConstant(shaderType);
+        m_shaderIdsMap[shaderType] = glCreateShader(glShaderType);
+        bAllShadersLoaded &= SendToGpuSingleShaderSource(m_shaderIdsMap.at(shaderType), shaderSource);
     }
 
-    if (fsSource != "") {
-        /*Fragment shader load*/
-        m_fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-        bFragmentShaderLoaded &= SendToGpuSingleShaderSource(m_fragmentShaderID, fsSource);
-    }
-
-    if (gsSource != "") {
-        /*Geometry shader load*/
-        m_geometryShaderID = glCreateShader(GL_GEOMETRY_SHADER);
-        bGeometryShaderLoaded &= SendToGpuSingleShaderSource(m_geometryShaderID, gsSource);
-    }
-
-    return bVertexShaderLoaded && bFragmentShaderLoaded && bGeometryShaderLoaded;
+    return bAllShadersLoaded;
 }
 
 void IShader::WriteShaderSrc(const std::string& pathToShader, const std::string& src) const
@@ -372,24 +360,20 @@ void IShader::ProcessPredefineToFile(
 
 void IShader::CompileShaders()
 {
-    glCompileShader(m_vertexShaderID);
-    glCompileShader(m_fragmentShaderID);
-    glCompileShader(m_geometryShaderID);
+    for (auto& [shaderType, shaderID] : m_shaderIdsMap) {
+        glCompileShader(shaderID);
+    }
 }
 
 void IShader::LinkShaders() const
 {
-    glAttachShader(m_shaderProgramID, m_vertexShaderID);
-    glAttachShader(m_shaderProgramID, m_fragmentShaderID);
-    if (m_geometryShaderID != -1) {
-        glAttachShader(m_shaderProgramID, m_geometryShaderID);
+    for (const auto& [shaderType, shaderID] : m_shaderIdsMap) {
+        glAttachShader(m_shaderProgramID, shaderID);
     }
     glLinkProgram(m_shaderProgramID);
 
-    glDetachShader(m_shaderProgramID, m_vertexShaderID);
-    glDetachShader(m_shaderProgramID, m_fragmentShaderID);
-    if (m_geometryShaderID != -1) {
-        glDetachShader(m_shaderProgramID, m_geometryShaderID);
+    for (const auto& [shaderType, shaderID] : m_shaderIdsMap) {
+        glDetachShader(m_shaderProgramID, shaderID);
     }
 }
 
@@ -398,52 +382,24 @@ std::string IShader::GetCompileLogInfo() const
     std::string compileLog;
 
     EngineUtility::StringStreamWrapper::FlushString(); // Just to clear stream
-    GLint vertex_compiled = 0;
-    if (m_vertexShaderID != -1) {
-        glGetShaderiv(m_vertexShaderID, GL_COMPILE_STATUS, &vertex_compiled);
-        if (vertex_compiled != GL_TRUE) {
+    bool allShadersCompiled = true;
+    for (const auto& [shaderType, shaderID] : m_shaderIdsMap) {
+        GLint shader_compiled;
+        glGetShaderiv(shaderID, GL_COMPILE_STATUS, &shader_compiled);
+        const bool is_compiled = (shader_compiled == GL_TRUE);
+        allShadersCompiled &= is_compiled;
+        if (not is_compiled) {
             GLint log_length = 0;
-            glGetShaderiv(m_vertexShaderID, GL_INFO_LOG_LENGTH, &log_length);
-
+            glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &log_length);
             std::vector<char> message(log_length);
-            glGetShaderInfoLog(m_vertexShaderID, log_length, nullptr, message.data());
+            glGetShaderInfoLog(shaderID, log_length, nullptr, message.data());
+            const std::string shaderTypeStr = ShaderTypeToString(shaderType);
             EngineUtility::StringStreamWrapper::ToString(
-                "\tVertex shader : ", std::string(message.begin(), message.end()), "\n\t");
+                "\t" + shaderTypeStr + " : ", std::string(message.begin(), message.end()), "\n\t");
         }
     }
 
-    /*Fragment shader log info*/
-    GLint fragment_compiled = 0;
-    if (m_fragmentShaderID != -1) {
-        glGetShaderiv(m_fragmentShaderID, GL_COMPILE_STATUS, &fragment_compiled);
-        if (fragment_compiled != GL_TRUE) {
-            GLint log_length = 0;
-            glGetShaderiv(m_fragmentShaderID, GL_INFO_LOG_LENGTH, &log_length);
-
-            std::vector<char> message(log_length);
-            glGetShaderInfoLog(m_fragmentShaderID, log_length, nullptr, message.data());
-            EngineUtility::StringStreamWrapper::ToString(
-                "\tFragment shader : ", std::string(message.begin(), message.end()), "\n\t");
-        }
-    }
-
-    GLint geometry_compiled = 0;
-    /*Geometry shader log info*/
-    if (m_geometryShaderID != -1) {
-        glGetShaderiv(m_geometryShaderID, GL_COMPILE_STATUS, &geometry_compiled);
-        if (geometry_compiled != GL_TRUE) {
-            GLint log_length = 0;
-            glGetShaderiv(m_geometryShaderID, GL_INFO_LOG_LENGTH, &log_length);
-
-            std::vector<char> message(log_length);
-            glGetShaderInfoLog(m_geometryShaderID, log_length, nullptr, message.data());
-            EngineUtility::StringStreamWrapper::ToString(
-                "\tGeometry shader : ", std::string(message.begin(), message.end()), "\n\t");
-        }
-    }
-
-    if ((m_vertexShaderID != -1 && vertex_compiled != GL_TRUE) || (m_fragmentShaderID != -1 && fragment_compiled != GL_TRUE)
-        || (m_geometryShaderID != -1 && geometry_compiled != GL_TRUE)) {
+    if (not allShadersCompiled) {
         compileLog += std::string("Unresolved mistakes at : " + mShaderName + '\n')
             + EngineUtility::StringStreamWrapper::FlushString() + "\n";
     }
@@ -509,18 +465,13 @@ void IShader::CleanUp(bool bDeleteShaderProgram)
 {
     LogInfo("IShader::CleanUp: shaderName: ", mShaderName, " bDeleteShaderProgram: ", bDeleteShaderProgram);
     StopShader();
-    glDetachShader(m_shaderProgramID, m_vertexShaderID);
-    glDetachShader(m_shaderProgramID, m_fragmentShaderID);
-    if (m_geometryShaderID != -1) {
-        glDetachShader(m_shaderProgramID, m_geometryShaderID);
-        glDeleteShader(m_geometryShaderID);
+    for (const auto& [shaderType, shaderID] : m_shaderIdsMap) {
+        glDetachShader(m_shaderProgramID, shaderID);
+        glDeleteShader(shaderID);
     }
 
-    glDeleteShader(m_vertexShaderID);
-    glDeleteShader(m_fragmentShaderID);
-
     if (bDeleteShaderProgram) {
-        glDeleteShader(m_shaderProgramID);
+        glDeleteProgram(m_shaderProgramID);
     }
 }
 

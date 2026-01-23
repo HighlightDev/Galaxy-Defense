@@ -115,23 +115,25 @@ void SceneRenderer::InitializeCoreShaders()
 {
     const auto shadersPathStr = FolderManager::GetInstance()->GetShadersPath();
 
-    const ShaderParams depthCollectShaderParams(
-        "DepthCollectShader",
+    ShaderParams depthCollectShaderParams("DepthCollectShader");
+    depthCollectShaderParams.SetMainShaders(
         shadersPathStr + "composite_shaders" + SLASH + "depthCollectVS.glsl",
         shadersPathStr + "composite_shaders" + SLASH + "depthCollectFS.glsl");
-    const ShaderParams plDepthCollectShaderParams(
-        "PointLightDepthCollectShader",
+    ShaderParams plDepthCollectShaderParams("PointLightDepthCollectShader");
+    plDepthCollectShaderParams.SetMainShaders(
         shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightVS.glsl",
-        shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightFS.glsl",
-        shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightGS.glsl");
+        shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightFS.glsl");
+    plDepthCollectShaderParams.SetGeometryShader(shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightGS.glsl");
+
     const CompositeShaderParams staticMeshParams("StaticMeshVertexFactory", depthCollectShaderParams);
     const CompositeShaderParams skeletalMeshParams("SkeletalMeshVertexFactory<4>", depthCollectShaderParams);
     const CompositeShaderParams staticMeshCompositeParams("StaticMeshVertexFactory", plDepthCollectShaderParams);
     const CompositeShaderParams skeletalMeshCompositeParams("SkeletalMeshVertexFactory<4>", plDepthCollectShaderParams);
-    const ShaderParams deferredLightShaderParams(
-        "DeferredLight Shader", shadersPathStr + "deferredLightPassVS.glsl", shadersPathStr + "deferredLightPassFS.glsl");
-    const ShaderParams fontRenderingShaderParams(
-        "FontRendering Shader", shadersPathStr + "fontVS.glsl", shadersPathStr + "fontFS.glsl");
+    ShaderParams deferredLightShaderParams("DeferredLight Shader");
+    deferredLightShaderParams.SetMainShaders(
+        shadersPathStr + "deferredLightPassVS.glsl", shadersPathStr + "deferredLightPassFS.glsl");
+    ShaderParams fontRenderingShaderParams("FontRendering Shader");
+    fontRenderingShaderParams.SetMainShaders(shadersPathStr + "fontVS.glsl", shadersPathStr + "fontFS.glsl");
 
     mDepthCollectShaderNonSkeletal
         = std::make_shared<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);

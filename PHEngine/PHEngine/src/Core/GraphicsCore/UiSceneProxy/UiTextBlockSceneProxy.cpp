@@ -60,27 +60,17 @@ void UiTextBlockSceneProxy::Initialize()
 {
     const auto& folderManager = FolderManager::GetInstance();
     {
-        ShaderParams shaderParams(
-            "UiRectangle Shader",
-            folderManager->GetShadersPath() + "uiVS.glsl",
-            folderManager->GetShadersPath() + "uiRectangleFS.glsl",
-            "",
-            "",
-            "",
-            "");
+        ShaderParams shaderParams("UiRectangle Shader");
+        shaderParams.SetMainShaders(
+            folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiRectangleFS.glsl");
         mUiRectangleShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiRectangleShader>(shaderParams);
     }
 
     if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
-            ShaderParams shaderParams(
-                "UiLabel Shader",
-                folderManager->GetShadersPath() + "fontVS.glsl",
-                folderManager->GetShadersPath() + "fontFS.glsl",
-                "",
-                "",
-                "",
-                "");
+            ShaderParams shaderParams("UiLabel Shader");
+            shaderParams.SetMainShaders(
+                folderManager->GetShadersPath() + "fontVS.glsl", folderManager->GetShadersPath() + "fontFS.glsl");
             mUiLabelShader = ShaderPool::GetInstance()->template GetOrAllocateResource<FontRenderingShader>(shaderParams);
             mTextFieldProxy = FreeTypeTextFieldProxy::CreateTextFieldProxyInstance(
                 UniqueFontTextIdGenerator::GenerateUniqueFontTextId(),

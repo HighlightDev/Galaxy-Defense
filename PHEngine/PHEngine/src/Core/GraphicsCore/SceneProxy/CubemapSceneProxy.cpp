@@ -42,11 +42,11 @@ void CubemapSceneProxy::PostConstructorInitialize()
     PrimitiveSceneProxy::PostConstructorInitialize();
     static constexpr uint64_t functionId = Hash64_CT("CubemapSceneProxy::PostConstructorInitialize");
 
-    const ShaderParams shaderParams(
-        "Cubemap Shader",
+    auto cubemapShaderParams = ShaderParams("Cubemap Shader");
+    cubemapShaderParams.SetMainShaders(
         FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl",
         FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl");
-    m_shaderCubemap = ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapShader>(shaderParams);
+    m_shaderCubemap = ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapShader>(cubemapShaderParams);
 
     SimplePrimitivePoolParameters poolParams;
     poolParams.mSimplePrimitiveType = SimplePrimitiveType::CUBE;

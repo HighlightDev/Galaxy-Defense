@@ -59,7 +59,7 @@ public:
     // Init should be called in child constructor!
     virtual void ShaderInit();
 
-    ShaderParams GetShaderParams() const;
+    const ShaderParams& GetShaderParams() const;
 
     void ProcessAllPredefines() override;
 #if DEBUG

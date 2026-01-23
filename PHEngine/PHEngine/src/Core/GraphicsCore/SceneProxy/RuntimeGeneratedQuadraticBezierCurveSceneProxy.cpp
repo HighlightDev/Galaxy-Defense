@@ -124,7 +124,7 @@ void RuntimeGeneratedQuadraticBezierCurveSceneProxy::UpdateGeometry(const glm::m
 
         verticesVBO->BufferSubData(0, verticesBufferSize, (void*)vertices.data());
         textureCoordinatesVBO->BufferSubData(0, texCoordsBufferSize, (void*)texCoords.data());
-        textureCoordinatesVBO->UnbindVBO();
+        textureCoordinatesVBO->UnbindBuffer();
 
         bUpdateLineGeometry = false;
     }

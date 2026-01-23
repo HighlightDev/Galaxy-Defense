@@ -14,7 +14,7 @@
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PointLightComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
@@ -139,8 +139,8 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
 
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
         "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 100);
-    const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
-    const auto& c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(
+    const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<CpuParticleSystemComponent>>();
+    const auto& c_particleSystemComponent = std::static_pointer_cast<CpuParticleSystemComponent>(
         scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
     auto emitter = std::make_shared<ParticleExplosionEmitter>();
     emitter->SetOwner(c_particleSystemComponent);
