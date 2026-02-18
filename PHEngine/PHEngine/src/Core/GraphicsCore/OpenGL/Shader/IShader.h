@@ -51,6 +51,7 @@ public:
     virtual void AccessAllUniformLocations(uint32_t shaderProgramID);
     virtual void AccessAllSubroutineIndices(uint32_t shaderProgramID);
     virtual void SetShaderPredefine(){};
+    virtual void SetShaderCodeSnippets(){};
     virtual void ProcessAllPredefines(){};
     virtual void BindAttributeLocations(const int32_t shaderProgramId)
     {
@@ -60,17 +61,19 @@ public:
     virtual void RecompileShader(){};
 #endif
 
-    void ProcessPredefineToFile(
+    void ModifyShaderFileWithExtraData(
         const std::string& pathToShader,
         const std::vector<ShaderGenericDefineConstant>& constantDefines,
         const std::vector<ShaderGenericDefine>& defines,
-        const std::vector<ShaderGenericConstantArray>& constantArrays) const;
+        const std::vector<ShaderGenericConstantArray>& constantArrays,
+        const std::vector<ShaderCodeSnippet>& codeSnippets) const;
 
-    void ProcessPredefineToSource(
+    void ModifyShaderSourceWithExtraData(
         std::string& shaderSource,
         const std::vector<ShaderGenericDefineConstant>& constantDefines,
         const std::vector<ShaderGenericDefine>& defines,
-        const std::vector<ShaderGenericConstantArray>& constantArrays) const;
+        const std::vector<ShaderGenericConstantArray>& constantArrays,
+        const std::vector<ShaderCodeSnippet>& codeSnippets) const;
 
     void WriteShaderSrc(const std::string& pathToShader, const std::string& src) const;
 
@@ -85,11 +88,14 @@ public:
     std::string LoadShaderSource(const std::string& pathToShader) const;
 
 private:
-    std::string GetPredefinedSource(
-        std::vector<std::string>& shaderSourceVector,
+    std::string InsertPredefinesToSource(
+        const std::vector<std::string>& shaderSourceVector,
         const std::vector<ShaderGenericDefineConstant>& constantDefines,
         const std::vector<ShaderGenericDefine>& defines,
         const std::vector<ShaderGenericConstantArray>& constantArrays) const;
+
+    std::string InsertCodeSnippetsToSource(
+        const std::vector<std::string>& shaderSourceVector, const std::vector<ShaderCodeSnippet>& codeSnippets) const;
 };
 } // namespace OpenGL
 } // namespace Graphics

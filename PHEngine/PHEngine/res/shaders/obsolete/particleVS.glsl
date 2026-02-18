@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 layout(location = 12) in vec4 ParticlePosition;
 

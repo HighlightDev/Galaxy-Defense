@@ -1,6 +1,6 @@
 #include "IEmitter.h"
 
-#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemBaseComponent.h"
 
 namespace EngineCore {
 
@@ -9,7 +9,7 @@ IEmitter::IEmitter()
 {
 }
 
-void IEmitter::SetOwner(const std::weak_ptr<CpuParticleSystemComponent>& owner)
+void IEmitter::SetOwner(const std::weak_ptr<ParticleSystemBaseComponent>& owner)
 {
     mOwner = owner;
 }

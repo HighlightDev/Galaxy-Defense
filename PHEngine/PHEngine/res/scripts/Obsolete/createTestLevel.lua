@@ -449,24 +449,20 @@ function CreateTestLevel(host)
 
     local particlesMat = _CreateMaterial(host, "OpaqueParticleMaterial.m")
     _SetFloatToMaterial(host, particlesMat, 1.0, "opacity")
-    _SetFloatToMaterial(host, particlesMat, 0.35, "clipRadius")
+    _SetFloatToMaterial(host, particlesMat, 0.15, "clipRadius")
 
-    local a_particle = _CreateActor(host, "Actor", "ParticlesActor", 0, 40, 0, 0, 0, 0, 1, 1, 1, "")
-    _CreateAndAttachComponentToActor(host, a_particle, "CpuParticleSystemComponent", Json.encode({
+    local a_particle = _CreateActor(host, "Actor", "ParticlesActor", 0, 60, 0, 0, 0, 0, 1, 1, 1, "")
+    _CreateAndAttachComponentToActor(host, a_particle, "GpuParticleSystemComponent", Json.encode({
         gameObjectName = "c_particleSystem",
         translation = {x = 0.0, y = 0.0, z = 0.0},
         scale = {x = 1.0, y = 1.0, z = 1.0},
-        particlesCount = 100,
+        particlesCount = 1000,
         materialProxyId = particlesMat,
 
-        emitter = {type = "explosion", radius = 1.0, thetaSlicesCount = 10},
-        lifetime = {type = "simple", lifeTime = 2.5},
-        color = {
-            type = "simple",
-            colorBegin = {r = 1.0, g = 0.7, b = 0.2, a = 1.0},
-            colorEnd = {r = 1.0, g = 0.2, b = 0.02, a = 1.0}
-        },
-        size = {type = "simple", sizeBegin = 0.4, sizeEnd = 0.1},
+        emitter = {type = "explosion", radius = 5.0, thetaSlicesCount = 100},
+        lifetime = {type = "simple", lifeTime = 1.0},
+        color = {type = "simple", colorBegin = {r = 1.0, g = 0.7, b = 0.2}, colorEnd = {r = 1.0, g = 0.2, b = 0.02}},
+        size = {type = "simple", sizeBegin = 0.9, sizeEnd = 0.1},
         velocityModules = {
             {type = "explosionInitial"}, {
                 type = "simple",

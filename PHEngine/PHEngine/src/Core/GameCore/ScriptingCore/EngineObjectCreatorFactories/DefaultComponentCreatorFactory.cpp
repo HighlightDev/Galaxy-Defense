@@ -25,6 +25,7 @@
 #include "Core/GameCore/Components/HumanoidPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/LuaScriptComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/GpuParticleSystemComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/RigidBodyPhysicsComponent.h"
@@ -87,6 +88,7 @@ int32_t DefaultComponentCreatorFactory::CreateComponent(
            {"BillboardComponent", std::make_shared<BillboardComponentCreator<BillboardComponent>>()},
            {"ElectricBeamComponent", std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>()},
            {"CpuParticleSystemComponent", std::make_shared<ParticleSystemComponentCreator<CpuParticleSystemComponent>>()},
+           {"GpuParticleSystemComponent", std::make_shared<ParticleSystemComponentCreator<GpuParticleSystemComponent>>()},
            {"LuaScriptComponent", std::make_shared<ScriptComponentCreator<LuaScriptComponent>>()}};
 
     ext_assert(creatorsMap.count(componentType), "Unknown component type: " + componentType);
@@ -363,13 +365,14 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             material,
             isEnabled,
             isVisible);
-    } else if ("CpuParticleSystemComponent" == componentType) {
+    } else if ("CpuParticleSystemComponent" == componentType || "GpuParticleSystemComponent" == componentType) {
         const auto translation = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["translation"]);
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
         const auto particlesCount = nlohmann_utilities::GetIntFromJson(jsonObj, "particlesCount");
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
-        ext_assert(material, "Material not found for CpuParticleSystemComponent, proxy ID: " + std::to_string(materialProxyId));
+        ext_assert(
+            material, std::string("Material not found for ") + componentType + ", proxy ID: " + std::to_string(materialProxyId));
 
         componentData = std::make_shared<ParticleSystemComponentData>(objectName, material, translation, scale, particlesCount);
         const auto& particleData = std::static_pointer_cast<ParticleSystemComponentData>(componentData);
@@ -405,8 +408,8 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             const auto moduleType = nlohmann_utilities::GetStringFromJson(colorJson, "type");
             auto colorData = std::make_shared<ColorModuleData>();
             colorData->moduleType = moduleType;
-            colorData->colorBegin = nlohmann_utilities::GetRgbaFromJsonMap(colorJson["colorBegin"]);
-            colorData->colorEnd = nlohmann_utilities::GetRgbaFromJsonMap(colorJson["colorEnd"]);
+            colorData->colorBegin = nlohmann_utilities::GetRgbFromJsonMap(colorJson["colorBegin"]);
+            colorData->colorEnd = nlohmann_utilities::GetRgbFromJsonMap(colorJson["colorEnd"]);
             particleData->colorData = colorData;
         }
 

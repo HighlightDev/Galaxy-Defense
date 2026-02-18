@@ -147,7 +147,7 @@ void TestFeaturesLevel::Tick(const float deltaTimeSec)
             if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
                 const auto particlesActor = sceneSp->GetActorByName("ParticlesActor");
                 assert(particlesActor);
-                particlesActor->GetComponentsByType<CpuParticleSystemComponent>().back()->EmitParticles();
+                particlesActor->GetComponentsByType<ParticleSystemBaseComponent>().back()->EmitParticles();
             }
         }
     }

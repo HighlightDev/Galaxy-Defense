@@ -686,8 +686,8 @@ _CreateAndAttachComponentToActor(actorId, "ElectricBeamComponent", Json.encode({
 
 **Color (Цвет):**
 - `simple` - линейная интерполяция между двумя цветами
-  - `colorBegin` - начальный цвет (r, g, b, a)
-  - `colorEnd` - конечный цвет (r, g, b, a)
+  - `colorBegin` - начальный цвет (r, g, b)
+  - `colorEnd` - конечный цвет (r, g, b)
 
 **Size (Размер):**
 - `simple` - линейная интерполяция между двумя размерами
@@ -727,8 +727,8 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
     
     color = {
         type = "simple",
-        colorBegin = {r = 1.0, g = 0.7, b = 0.2, a = 1.0},
-        colorEnd = {r = 1.0, g = 0.2, b = 0.02, a = 1.0}
+        colorBegin = {r = 1.0, g = 0.7, b = 0.2},
+        colorEnd = {r = 1.0, g = 0.2, b = 0.02}
     },
     
     size = {
@@ -771,7 +771,7 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
     
     color = {
         type = "simple",
-        colorBegin = {r = 0.2, g = 0.5, b = 1.0, a = 1.0},
+        colorBegin = {r = 0.2, g = 0.5, b = 1.0},
         colorEnd = {r = 1.0, g = 0.8, b = 0.2, a = 0.5}
     },
     
@@ -827,7 +827,7 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
     
     color = {
         type = "simple",
-        colorBegin = {r = 1.0, g = 1.0, b = 1.0, a = 1.0},
+        colorBegin = {r = 1.0, g = 1.0, b = 1.0},
         colorEnd = {r = 0.5, g = 0.0, b = 0.0, a = 0.0}
     },
     
@@ -854,6 +854,37 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
 - Можно использовать несколько velocity модулей одновременно - они применяются последовательно
 - Material должен быть создан и зарегистрирован до создания компонента
 - MaterialProxyId получается через `material:GetMaterialProxyWp():lock():GetSceneProxyId()`
+
+#### GpuParticleSystemComponent
+GPU-компонент системы частиц. Использует тот же JSON-схема, что и `CpuParticleSystemComponent`, но обновление частиц происходит на GPU.
+
+**Пример:**
+```lua
+_CreateAndAttachComponentToActor(actorId, "GpuParticleSystemComponent", Json.encode({
+    gameObjectName = "c_gpu_particles",
+    translation = {x = 0.0, y = 0.0, z = 0.0},
+    scale = {x = 1.0, y = 1.0, z = 1.0},
+    particlesCount = 300,
+    materialProxyId = materialId,
+
+    emitter = {
+        type = "explosion",
+        radius = 1.5,
+        thetaSlicesCount = 12
+    },
+
+    lifetime = {
+        type = "simple",
+        lifeTime = 3.0
+    },
+
+    color = {
+        type = "simple",
+        colorBegin = {r = 0.3, g = 0.8, b = 1.0},
+        colorEnd = {r = 0.1, g = 0.2, b = 0.7, a = 0.0}
+    }
+}))
+```
 
 ---
 

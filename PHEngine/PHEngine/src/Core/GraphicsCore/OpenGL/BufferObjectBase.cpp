@@ -3,8 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/ThreadHelper.h"
 
-namespace Graphics {
-namespace OpenGL {
+namespace Graphics::OpenGL {
 BufferObjectBase::BufferObjectBase(const std::string& attribArrayIndexName, const GLint bufferTarget)
     : m_bufferTarget(bufferTarget)
     , mAttribArrayIndexName(attribArrayIndexName)
@@ -68,5 +67,26 @@ size_t BufferObjectBase::GetAllocatedBufferSize() const
 {
     return m_allocatedBufferSize;
 }
-} // namespace OpenGL
-} // namespace Graphics
+
+void BufferObjectBase::CopyFromBuffer(
+    const GLuint sourceBufferId,
+    const size_t sourceOffset,
+    const size_t destOffset,
+    const size_t size,
+    const eMemoryBarrierType barrierBit) const
+{
+    ext_assert(
+        m_allocatedBufferSize >= destOffset + size,
+        "Destination buffer size is too small for copy operation, available allocated: " + std::to_string(m_allocatedBufferSize)
+            + ", required size: " + std::to_string(destOffset + size));
+    glBindBuffer(m_bufferTarget, m_descriptor);
+    glCopyBufferSubData(sourceBufferId, m_descriptor, sourceOffset, destOffset, size);
+    glBindBuffer(m_bufferTarget, 0);
+    glMemoryBarrier(static_cast<GLbitfield>(barrierBit));
+}
+
+std::vector<uint32_t> BufferObjectBase::GetBufferStorageFlags() const
+{
+    return {};
+}
+} // namespace Graphics::OpenGL

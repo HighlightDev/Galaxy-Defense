@@ -1,7 +1,7 @@
-#version 440
+#version 440 core
 
 out vec2 vs_out_rotation_size;
-out vec4 vs_out_particle_color;
+out vec3 vs_out_particle_color;
 
 out MATERIAL_VS_OUTPUT VsOutput;
 

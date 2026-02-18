@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 in vec3 VertexPosition;
 in vec3 VertexNormal;
@@ -7,7 +7,7 @@ in vec3 VertexTangent;
 in vec3 VertexBitangent;
 in vec3 ParticleRelativeOffset;
 in vec2 ParticleRotationAndSize;
-in vec4 ParticleColor;
+in vec3 ParticleColor;
 
 #include "materialCommon.incl.glsl"
 
@@ -53,7 +53,7 @@ vec2 GetParticleRotationAndSize()
     return ParticleRotationAndSize;
 }
 
-vec4 GetParticleColor()
+vec3 GetParticleColor()
 {
     return ParticleColor;
 }

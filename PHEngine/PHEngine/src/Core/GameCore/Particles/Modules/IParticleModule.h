@@ -10,11 +10,11 @@
 namespace EngineCore {
 enum class eParticleModuleType : uint8_t { LIFETIME, INITIAL_VELOCITY, VELOCITY, COLOR, SIZE };
 
-class CpuParticleSystemComponent;
+class ParticleSystemBaseComponent;
 
 class IParticleModule {
 protected:
-    std::weak_ptr<CpuParticleSystemComponent> mOwner;
+    std::weak_ptr<ParticleSystemBaseComponent> mOwner;
 
 public:
     IParticleModule();
@@ -25,7 +25,7 @@ public:
 
     virtual void OnEmitParticles() = 0;
 
-    void SetOwner(const std::weak_ptr<CpuParticleSystemComponent>& owner);
+    void SetOwner(const std::weak_ptr<ParticleSystemBaseComponent>& owner);
 
 protected:
     std::vector<Particle>& GetParticlesPool();

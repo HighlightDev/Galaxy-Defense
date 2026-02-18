@@ -80,6 +80,18 @@ std::vector<std::string> Split(const std::string& source, char splitChar)
     return seglist;
 }
 
+std::string Join(const std::vector<std::string>& source, char joinChar)
+{
+    std::string result;
+    for (size_t i = 0; i < source.size(); ++i) {
+        result += source[i];
+        if (i != source.size() - 1) {
+            result += joinChar;
+        }
+    }
+    return result;
+}
+
 std::string ToLower(const std::string& source)
 {
     std::string result = source;

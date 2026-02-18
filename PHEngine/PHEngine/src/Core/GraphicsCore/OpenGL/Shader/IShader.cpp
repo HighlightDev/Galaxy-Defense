@@ -198,8 +198,8 @@ void IShader::WriteShaderSrc(const std::string& pathToShader, const std::string&
     writeStream << src;
 }
 
-std::string IShader::GetPredefinedSource(
-    std::vector<std::string>& shaderSourceVector,
+std::string IShader::InsertPredefinesToSource(
+    const std::vector<std::string>& shaderSourceVector,
     const std::vector<ShaderGenericDefineConstant>& constantDefines,
     const std::vector<ShaderGenericDefine>& defines,
     const std::vector<ShaderGenericConstantArray>& constantArrays) const
@@ -208,14 +208,16 @@ std::string IShader::GetPredefinedSource(
     std::vector<ShaderGenericDefineConstant> existingConstantDefines;
     std::vector<ShaderGenericDefine> existingDefines;
 
-    for (auto it = shaderSourceVector.begin(); it != shaderSourceVector.end();) {
+    auto shaderSourceVectorCopy = shaderSourceVector;
+
+    for (auto it = shaderSourceVectorCopy.begin(); it != shaderSourceVectorCopy.end();) {
         const auto foundArrayIt = std::find_if(constantArrays.begin(), constantArrays.end(), [=](const auto& array) {
             const auto arrayBeginningStr = "const " + array.m_InnerTypeName + " " + array.m_Name;
             return (it->find(arrayBeginningStr) != std::string::npos);
         });
 
         if (foundArrayIt != constantArrays.end()) {
-            it = shaderSourceVector.erase(it);
+            it = shaderSourceVectorCopy.erase(it);
         } else if (EngineUtility::StartsWith(*it, "#define")) {
             size_t indexName = EngineUtility::IndexOf(*it, " ");
             size_t indexValue = EngineUtility::IndexOf(*it, " ", indexName + 1);
@@ -230,7 +232,7 @@ std::string IShader::GetPredefinedSource(
             }
 
             // remove all macros from code
-            it = shaderSourceVector.erase(it);
+            it = shaderSourceVectorCopy.erase(it);
         } else {
             ++it;
         }
@@ -279,50 +281,50 @@ std::string IShader::GetPredefinedSource(
     }
     const std::string arraysResult = std::move(EngineUtility::StringStreamWrapper::FlushString());
 
-    std::vector<std::string>::iterator version_it = shaderSourceVector.begin();
+    std::vector<std::string>::iterator version_it = shaderSourceVectorCopy.begin();
 
-    for (auto it = shaderSourceVector.begin(); it != shaderSourceVector.end(); ++it, ++version_it) {
+    for (auto it = shaderSourceVectorCopy.begin(); it != shaderSourceVectorCopy.end(); ++it, ++version_it) {
         if (EngineUtility::StartsWith(*it, "#version")) {
             version_it += 2;
             break;
         }
     }
 
-    if ("" != constantDefinesResult) {
-        shaderSourceVector.insert(version_it, constantDefinesResult);
+    if (not constantDefinesResult.empty()) {
+        shaderSourceVectorCopy.insert(version_it, constantDefinesResult);
     }
 
-    version_it = shaderSourceVector.begin();
-    for (auto it = shaderSourceVector.begin(); it != shaderSourceVector.end(); ++it, ++version_it) {
+    version_it = shaderSourceVectorCopy.begin();
+    for (auto it = shaderSourceVectorCopy.begin(); it != shaderSourceVectorCopy.end(); ++it, ++version_it) {
         if (EngineUtility::StartsWith(*it, "#version")) {
             version_it += 2;
             break;
         }
     }
 
-    if ("" != definesResult) {
-        shaderSourceVector.insert(version_it, definesResult);
+    if (not definesResult.empty()) {
+        shaderSourceVectorCopy.insert(version_it, definesResult);
     }
 
-    version_it = shaderSourceVector.begin();
-    for (auto it = shaderSourceVector.begin(); it != shaderSourceVector.end(); ++it, ++version_it) {
+    version_it = shaderSourceVectorCopy.begin();
+    for (auto it = shaderSourceVectorCopy.begin(); it != shaderSourceVectorCopy.end(); ++it, ++version_it) {
         if (EngineUtility::StartsWith(*it, "#version")) {
             version_it += 2;
             break;
         }
     }
 
-    if ("" != arraysResult) {
-        shaderSourceVector.insert(version_it, arraysResult);
+    if (not arraysResult.empty()) {
+        shaderSourceVectorCopy.insert(version_it, arraysResult);
     }
 
     std::string codeResult = "";
 
-    for (std::vector<std::string>::iterator it = shaderSourceVector.begin(); it != shaderSourceVector.end(); ++it) {
+    for (std::vector<std::string>::iterator it = shaderSourceVectorCopy.begin(); it != shaderSourceVectorCopy.end(); ++it) {
         std::string& str = *it;
         str = EngineUtility::TrimEnd(str);
 
-        if (shaderSourceVector.end() - 1 != it)
+        if (shaderSourceVectorCopy.end() - 1 != it)
             codeResult += str + "\n";
         else
             codeResult += str;
@@ -331,31 +333,51 @@ std::string IShader::GetPredefinedSource(
     return codeResult;
 }
 
-void IShader::ProcessPredefineToSource(
+std::string IShader::InsertCodeSnippetsToSource(
+    const std::vector<std::string>& shaderSourceVector, const std::vector<ShaderCodeSnippet>& codeSnippets) const
+{
+    auto shaderSourceVectorCopy = shaderSourceVector;
+    auto it = std::lower_bound(
+        shaderSourceVectorCopy.begin(),
+        shaderSourceVectorCopy.end(),
+        "main()",
+        [](const std::string& str, const std::string& lookfor) { return str < lookfor; });
+    ext_assert(
+        it != shaderSourceVectorCopy.end(),
+        "IShader::InsertCodeSnippetsToSource: Could not find main() function in shader source");
+    for (const auto& snippet : codeSnippets) {
+        shaderSourceVectorCopy.insert(it, snippet.m_CodeLines.begin(), snippet.m_CodeLines.end());
+    }
+    return EngineUtility::Join(shaderSourceVectorCopy, '\n');
+}
+
+void IShader::ModifyShaderSourceWithExtraData(
     std::string& shaderSource,
     const std::vector<ShaderGenericDefineConstant>& constantDefines,
     const std::vector<ShaderGenericDefine>& defines,
-    const std::vector<ShaderGenericConstantArray>& constantArrays) const
+    const std::vector<ShaderGenericConstantArray>& constantArrays,
+    const std::vector<ShaderCodeSnippet>& codeSnippets) const
 {
-    auto shaderSrc = EngineUtility::Split(shaderSource, '\n');
-
-    shaderSource = GetPredefinedSource(shaderSrc, constantDefines, defines, constantArrays);
+    shaderSource = InsertPredefinesToSource(EngineUtility::Split(shaderSource, '\n'), constantDefines, defines, constantArrays);
+    shaderSource = InsertCodeSnippetsToSource(EngineUtility::Split(shaderSource, '\n'), codeSnippets);
 }
 
-void IShader::ProcessPredefineToFile(
+void IShader::ModifyShaderFileWithExtraData(
     const std::string& pathToShader,
     const std::vector<ShaderGenericDefineConstant>& constantDefines,
     const std::vector<ShaderGenericDefine>& defines,
-    const std::vector<ShaderGenericConstantArray>& constantArrays) const
+    const std::vector<ShaderGenericConstantArray>& constantArrays,
+    const std::vector<ShaderCodeSnippet>& codeSnippets) const
 {
     if (pathToShader == "")
         return;
 
     auto shaderSrc = LoadShaderSrcVector(pathToShader);
 
-    const std::string& result = GetPredefinedSource(shaderSrc, constantDefines, defines, constantArrays);
+    const std::string& result = InsertPredefinesToSource(shaderSrc, constantDefines, defines, constantArrays);
+    const std::string& finalResult = InsertCodeSnippetsToSource(EngineUtility::Split(result, '\n'), codeSnippets);
 
-    WriteShaderSrc(pathToShader, result);
+    WriteShaderSrc(pathToShader, finalResult);
 }
 
 void IShader::CompileShaders()

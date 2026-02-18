@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/GameCore/Particles/Particle.h"
 
 #include <glm/vec4.hpp>
@@ -9,16 +8,16 @@
 #include <vector>
 
 namespace EngineCore {
-class CpuParticleSystemComponent;
+class ParticleSystemBaseComponent;
 
 class IEmitter {
 protected:
-    std::weak_ptr<CpuParticleSystemComponent> mOwner;
+    std::weak_ptr<ParticleSystemBaseComponent> mOwner;
 
 public:
     IEmitter();
 
-    void SetOwner(const std::weak_ptr<CpuParticleSystemComponent>& owner);
+    void SetOwner(const std::weak_ptr<ParticleSystemBaseComponent>& owner);
 
     virtual void EmitParticles(const size_t particlesCount) = 0;
 

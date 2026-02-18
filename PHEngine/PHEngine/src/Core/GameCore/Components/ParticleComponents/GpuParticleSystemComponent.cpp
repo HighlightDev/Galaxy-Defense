@@ -43,25 +43,20 @@ GpuParticleSystemComponent::~GpuParticleSystemComponent()
 
 void GpuParticleSystemComponent::Tick(const float deltaTimeSec)
 {
-    static constexpr float particleMoveSpeed = 15.0f;
-
-    size_t activeParticlesCount = 0;
-
-    for (auto particleIt = mParticlesPool.begin(); particleIt != mParticlesPool.end(); ++particleIt) {
-        if (!particleIt->isActive)
+    for (auto& particle : mParticlesPool) {
+        if (!particle.isActive)
             continue;
 
-        if ((particleIt->LifeRemaining - deltaTimeSec) > 0.0f) {
-            particleIt->LifeRemaining -= deltaTimeSec;
-
-            ++activeParticlesCount;
-        } else {
-            particleIt->isActive = false;
+        for (const auto& module : mParticleModules) {
+            module->Update(particle, deltaTimeSec);
         }
     }
 
-    bParticlesCountChanged = (mPrevActiveParticles != activeParticlesCount);
-    if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && bParticlesCountChanged) {
+    const size_t activeParticlesCount = std::count_if(
+        mParticlesPool.cbegin(), mParticlesPool.cend(), [](const Particle& particle) { return particle.isActive; });
+
+    SetIsParticleCountChanged(mPrevActiveParticles != activeParticlesCount);
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && IsParticlesCountChanged()) {
         SyncDataWithRenderThread(activeParticlesCount);
         mPrevActiveParticles = activeParticlesCount;
     }
@@ -70,8 +65,7 @@ void GpuParticleSystemComponent::Tick(const float deltaTimeSec)
 void GpuParticleSystemComponent::EmitParticles()
 {
     ParticleSystemBaseComponent::EmitParticles();
-    bParticlesPositionDataDirty = true;
-    SyncDataWithRenderThread(mPrevActiveParticles);
+    SetIsParticlePositionDataDirty(true);
 }
 
 std::shared_ptr<PrimitiveSceneProxy> GpuParticleSystemComponent::CreateSceneProxy() const
@@ -81,9 +75,8 @@ std::shared_ptr<PrimitiveSceneProxy> GpuParticleSystemComponent::CreateSceneProx
 
 std::shared_ptr<Scripts::LuaProxy> GpuParticleSystemComponent::ReplicateLuaProxy()
 {
-    return nullptr;
-    // return std::make_shared<ParticleSystemComponentLuaProxy>(
-    //     std::static_pointer_cast<GpuParticleSystemComponent>(shared_from_this()));
+    return std::make_shared<ParticleSystemComponentLuaProxy>(
+        std::static_pointer_cast<GpuParticleSystemComponent>(shared_from_this()));
 }
 
 void GpuParticleSystemComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
@@ -115,6 +108,26 @@ void GpuParticleSystemComponent::UpdateWorldMatrix(const glm::mat4& parentWorldM
     }
 }
 
+void GpuParticleSystemComponent::SetIsParticleCountChanged(const bool isChanged)
+{
+    bParticlesCountChanged = isChanged;
+}
+
+void GpuParticleSystemComponent::SetIsParticlePositionDataDirty(const bool isDirty)
+{
+    bParticlesPositionDataDirty = isDirty;
+}
+
+bool GpuParticleSystemComponent::IsParticlesCountChanged() const
+{
+    return bParticlesCountChanged;
+}
+
+bool GpuParticleSystemComponent::IsParticlePositionDataDirty() const
+{
+    return bParticlesPositionDataDirty;
+}
+
 void GpuParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData)
 {
     static const uint64_t functionId = Hash("GpuParticleSystemComponent: SyncDataWithRenderThread");
@@ -123,11 +136,7 @@ void GpuParticleSystemComponent::SyncDataWithRenderThread(const size_t activePar
             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
             GetObjectId(),
             functionId,
-            [weak = weak_from_this(),
-             activeParticlesCount,
-             sceneProxyId = mSceneProxyId,
-             isParticleCountChanged = bParticlesCountChanged,
-             isParticlePositionDataDirty = bParticlesPositionDataDirty](
+            [weak = weak_from_this(), activeParticlesCount, sceneProxyId = mSceneProxyId](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) mutable {
@@ -137,30 +146,27 @@ void GpuParticleSystemComponent::SyncDataWithRenderThread(const size_t activePar
                         const auto& proxyPtr = std::static_pointer_cast<GpuParticleSystemSceneProxy>(
                             sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId));
                         if (proxyPtr) {
-                            if (isParticlePositionDataDirty) {
+                            if (particleComponentPtr->IsParticlePositionDataDirty()) {
                                 const auto& particlesPool = particleComponentPtr->GetParticlesPool();
-                                std::vector<glm::vec3> positionsData;
+                                std::vector<glm::vec4> positionsData;
                                 positionsData.reserve(particlesPool.size());
                                 std::transform(
                                     particlesPool.begin(),
                                     particlesPool.end(),
                                     std::back_inserter(positionsData),
-                                    [](const Particle& particle) { return particle.Position; });
+                                    [](const Particle& particle) { return glm::vec4(particle.Position, 1.0f); });
 
                                 proxyPtr->SetParticlesPositionsData(
                                     reinterpret_cast<const void*>(positionsData.data()),
-                                    positionsData.size() * sizeof(glm::vec3));
+                                    positionsData.size() * sizeof(glm::vec4));
+                                particleComponentPtr->SetIsParticlePositionDataDirty(false);
                             }
-                            if (isParticleCountChanged) {
-                                proxyPtr->SetActiveParticlesCount(activeParticlesCount);
-                            }
+                            proxyPtr->SetActiveParticlesCount(activeParticlesCount);
+                            particleComponentPtr->SetIsParticleCountChanged(false);
                         }
                     }
                 }
             });
     }
-
-    bParticlesCountChanged = false;
-    bParticlesPositionDataDirty = false;
 }
 } // namespace EngineCore

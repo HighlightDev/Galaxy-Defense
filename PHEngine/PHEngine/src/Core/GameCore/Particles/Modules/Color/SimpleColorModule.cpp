@@ -13,15 +13,15 @@ SimpleColorModule::SimpleColorModule()
 
 void SimpleColorModule::Update(Particle& particle, const float deltaTimeSec)
 {
-    particle.Color = LerpVec4(particle.LifeTime - particle.LifeRemaining, 0.0f, particle.LifeTime, mColorBegin, mColorEnd);
+    particle.Color = LerpVec3(particle.LifeTime - particle.LifeRemaining, 0.0f, particle.LifeTime, mColorBegin, mColorEnd);
 }
 
-void SimpleColorModule::SetColorBegin(const glm::vec4& colorBegin)
+void SimpleColorModule::SetColorBegin(const glm::vec3& colorBegin)
 {
     mColorBegin = colorBegin;
 }
 
-void SimpleColorModule::SetColorEnd(const glm::vec4& colorEnd)
+void SimpleColorModule::SetColorEnd(const glm::vec3& colorEnd)
 {
     mColorEnd = colorEnd;
 }

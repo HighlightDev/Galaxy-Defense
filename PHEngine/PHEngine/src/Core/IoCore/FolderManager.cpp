@@ -6,8 +6,6 @@
 #include <filesystem>
 
 namespace IO {
-std::shared_ptr<FolderManager> FolderManager::m_instance;
-
 FolderManager::FolderManager()
     : mFilesPathMap()
     , m_pathToExe("")

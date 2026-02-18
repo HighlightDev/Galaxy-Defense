@@ -11,12 +11,16 @@ class ShaderStorageBufferObject : public BufferObjectBase {
 
     std::vector<uint8_t> m_data;
 
-public:
-    explicit ShaderStorageBufferObject(const int32_t bindingPoint, const std::vector<uint8_t>& data);
+    GLbitfield m_flags;
 
-    explicit ShaderStorageBufferObject(const int32_t bindingPoint, const uint32_t dataSize);
+public:
+    explicit ShaderStorageBufferObject(const int32_t bindingPoint, const uint32_t flags, const std::vector<uint8_t>& data);
+
+    explicit ShaderStorageBufferObject(const int32_t bindingPoint, const uint32_t flags, const uint32_t dataSize);
 
     ~ShaderStorageBufferObject() override;
+
+    void GenBuffer() override;
 
     void SendDataToGPU() override;
 
@@ -32,6 +36,17 @@ public:
 
     void CleanUp() override;
 
-    void BindSSBO() const;
+    void BindBuffer() const override;
+
+    void BufferSubData(const size_t offset, const size_t size, const void* data) const override;
+
+    void CopyFromBuffer(
+        const GLuint sourceBufferId,
+        const size_t sourceOffset,
+        const size_t destOffset,
+        const size_t size,
+        const eMemoryBarrierType barrierBit) const override;
+
+    std::vector<uint32_t> GetBufferStorageFlags() const override;
 };
 } // namespace Graphics::OpenGL

@@ -25,7 +25,8 @@ void VertexFactoryShader::ProcessAllPredefines()
 {
     if (mConstantDefines.size() > 0 || mDefines.size() > 0) {
         if ("" != mShaderSource) {
-            ProcessPredefineToSource(mShaderSource, mConstantDefines, mDefines, mDefineConstantArrays);
+            ModifyShaderSourceWithExtraData(
+                mShaderSource, mConstantDefines, mDefines, mDefineConstantArrays, std::vector<ShaderCodeSnippet>());
         }
     }
 }

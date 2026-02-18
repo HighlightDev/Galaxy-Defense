@@ -16,19 +16,15 @@ private:
 
     std::string m_pathToExe;
 
-    static std::shared_ptr<FolderManager> m_instance;
-
 public:
     FolderManager();
 
     ~FolderManager();
 
-    static std::shared_ptr<FolderManager> GetInstance()
+    static FolderManager* GetInstance()
     {
-        if (m_instance == nullptr)
-            m_instance = std::make_shared<FolderManager>();
-
-        return m_instance;
+        static FolderManager instance;
+        return &instance;
     }
 
     void BuildSystemPathToFolders();

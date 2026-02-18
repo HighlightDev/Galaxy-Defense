@@ -53,7 +53,7 @@ void ParticlesRawDataHandler::SubRotationSizeData(const size_t byteDataOffset, c
     f_data[1] = size;
 }
 
-void ParticlesRawDataHandler::SubColorData(const size_t byteDataOffset, const glm::vec4& color)
+void ParticlesRawDataHandler::SubColorData(const size_t byteDataOffset, const glm::vec3& color)
 {
     ext_assert(mColorData, "ParticlesRawDataHandler::SubColorData: mColorData is null");
     ext_assert(
@@ -64,7 +64,6 @@ void ParticlesRawDataHandler::SubColorData(const size_t byteDataOffset, const gl
     f_data[0] = color.x;
     f_data[1] = color.y;
     f_data[2] = color.z;
-    f_data[3] = color.w;
 }
 
 void* ParticlesRawDataHandler::CopyToDstActiveTranslationData(void* dst)

@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 out MATERIAL_VS_OUTPUT VsOutput;
 

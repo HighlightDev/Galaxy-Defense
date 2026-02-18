@@ -64,23 +64,18 @@ void CpuParticleSystemComponent::Tick(const float deltaTimeSec)
         if (!particleIt->isActive)
             continue;
 
-        if ((particleIt->LifeRemaining - deltaTimeSec) > 0.0f) {
-            particleIt->Position
-                += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * deltaTimeSec * particleMoveSpeed;
-            particleIt->LifeRemaining -= deltaTimeSec;
+        particleIt->Position
+            += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * deltaTimeSec * particleMoveSpeed;
 
-            mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particleIt->Position);
-            particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
+        mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particleIt->Position);
+        particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
 
-            mParticlesRawDataHandler.SubRotationSizeData(particleRotationSizeByteOffset, particleIt->Rotation, particleIt->Size);
-            particleRotationSizeByteOffset += mParticlesRawDataHandler.GetRotationSizeByteDataOffset();
+        mParticlesRawDataHandler.SubRotationSizeData(particleRotationSizeByteOffset, particleIt->Rotation, particleIt->Size);
+        particleRotationSizeByteOffset += mParticlesRawDataHandler.GetRotationSizeByteDataOffset();
 
-            mParticlesRawDataHandler.SubColorData(particleColorByteOffset, particleIt->Color);
-            particleColorByteOffset += mParticlesRawDataHandler.GetColorByteDataOffset();
-            ++activeParticlesCount;
-        } else {
-            particleIt->isActive = false;
-        }
+        mParticlesRawDataHandler.SubColorData(particleColorByteOffset, particleIt->Color);
+        particleColorByteOffset += mParticlesRawDataHandler.GetColorByteDataOffset();
+        ++activeParticlesCount;
     }
 
     mParticlesRawDataHandler.SetTranslationActiveDataChunkSize(particleTranslationByteOffset);

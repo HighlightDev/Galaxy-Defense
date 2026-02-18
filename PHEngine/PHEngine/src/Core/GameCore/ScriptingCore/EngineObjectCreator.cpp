@@ -32,6 +32,7 @@ EngineObjectCreator::EngineObjectCreator()
            "BillboardComponent",
            "ElectricBeamComponent",
            "CpuParticleSystemComponent",
+           "GpuParticleSystemComponent",
            "LuaScriptComponent"};
 }
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemBaseComponent.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/ComponentProxies/PrimitiveComponentLuaProxy.h"
 
 namespace EngineCore::Scripts {
 
 class ParticleSystemComponentLuaProxy : public PrimitiveComponentLuaProxy {
 public:
-    explicit ParticleSystemComponentLuaProxy(const std::shared_ptr<CpuParticleSystemComponent>& baseComponent);
+    explicit ParticleSystemComponentLuaProxy(const std::shared_ptr<ParticleSystemBaseComponent>& baseComponent);
 
     ~ParticleSystemComponentLuaProxy() override;
 

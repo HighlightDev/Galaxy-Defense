@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 #define MaxWeights 3
 #define MaxBones 55

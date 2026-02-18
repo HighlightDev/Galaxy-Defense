@@ -43,7 +43,7 @@ void CpuParticleSystemSceneProxy::PostConstructorInitialize()
 
     CompositeShaderParams particlesCompositeShaderParams("ParticleVertexFactory_SimpleShader", particlesShaderParams);
 
-    m_shader = CreateMaterialShader<ParticleVertexFactory, SimpleShader>(
+    m_shader = CreateMaterialShader<CpuParticleVertexFactory, SimpleShader>(
         "ParticleVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, particlesShaderParams, mMaterialProxy);
 
     mRenderData.mParticleMeshParams.mVertexAttributes = GetShader()->GetVertexAttributes();

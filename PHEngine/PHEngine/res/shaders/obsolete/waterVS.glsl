@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 #define MAX_LIGHT_COUNT 5
 #define tiling 15

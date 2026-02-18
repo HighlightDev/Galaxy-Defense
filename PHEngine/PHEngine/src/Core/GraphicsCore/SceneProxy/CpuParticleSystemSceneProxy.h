@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/ParticleVertexFactory.h"
+#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/CpuParticleVertexFactory.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GraphicsCore/RenderData/CpuParticleSystemRenderData.h"
@@ -32,7 +32,7 @@ class CpuParticleSystemSceneProxy : public PrimitiveSceneProxy {
     bool bIsParticlesTransformDirty{false};
 
     using Base = PrimitiveSceneProxy;
-    using ParticleShader_t = VertexFactoryMaterialCompositeShader<ParticleVertexFactory, SimpleShader>;
+    using ParticleShader_t = VertexFactoryMaterialCompositeShader<CpuParticleVertexFactory, SimpleShader>;
 
 private:
     std::shared_ptr<ParticleShader_t> GetShader() const;

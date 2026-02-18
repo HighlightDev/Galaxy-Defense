@@ -1,7 +1,8 @@
 #pragma once
 
+#include "Core/GameCore/ShaderImplementation/GpuParticleComputeShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/ParticleVertexFactory.h"
+#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/CpuParticleVertexFactory.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GraphicsCore/RenderData/GpuParticleSystemRenderData.h"
@@ -27,14 +28,15 @@ namespace Graphics {
 namespace Proxy {
 class GpuParticleSystemSceneProxy : public PrimitiveSceneProxy {
     using Base = PrimitiveSceneProxy;
-    using ParticleShader_t = VertexFactoryMaterialCompositeShader<ParticleVertexFactory, SimpleShader>;
+    using ParticleShader_t = VertexFactoryMaterialCompositeShader<CpuParticleVertexFactory, SimpleShader>;
+    using ParticleComputeShader_t = GpuParticleComputeShader;
 
     GpuParticleSystemRenderData mRenderData;
     size_t mActiveParticlesCount;
 
-    bool bIsParticlesTransformDirty{false};
+    std::shared_ptr<ShaderStorageBufferObject> m_gpuParticlePositionsSSBO;
 
-    std::shared_ptr<ShaderStorageBufferObject> m_gpuParticlesSSBO;
+    std::shared_ptr<ParticleComputeShader_t> m_computeShader;
 
 private:
     std::shared_ptr<ParticleShader_t> GetShader() const;
@@ -65,9 +67,6 @@ public:
     void SetParticlesPositionsData(const void* positionsData, const size_t byteChunkSize);
 
     RenderInfo GetRenderInfo() const override;
-
-private:
-    void PrepareParticlesInstancedBuffer();
 };
 } // namespace Proxy
 } // namespace Graphics

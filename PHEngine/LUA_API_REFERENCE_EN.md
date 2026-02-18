@@ -686,8 +686,8 @@ Particle system component with modular architecture. Supports various emitter ty
 
 **Color:**
 - `simple` - linear interpolation between two colors
-  - `colorBegin` - starting color (r, g, b, a)
-  - `colorEnd` - ending color (r, g, b, a)
+  - `colorBegin` - starting color (r, g, b)
+  - `colorEnd` - ending color (r, g, b)
 
 **Size:**
 - `simple` - linear interpolation between two sizes
@@ -727,8 +727,8 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
     
     color = {
         type = "simple",
-        colorBegin = {r = 1.0, g = 0.7, b = 0.2, a = 1.0},
-        colorEnd = {r = 1.0, g = 0.2, b = 0.02, a = 1.0}
+        colorBegin = {r = 1.0, g = 0.7, b = 0.2},
+        colorEnd = {r = 1.0, g = 0.2, b = 0.02}
     },
     
     size = {
@@ -771,8 +771,8 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
     
     color = {
         type = "simple",
-        colorBegin = {r = 0.2, g = 0.5, b = 1.0, a = 1.0},
-        colorEnd = {r = 1.0, g = 0.8, b = 0.2, a = 0.5}
+        colorBegin = {r = 0.2, g = 0.5, b = 1.0},
+        colorEnd = {r = 1.0, g = 0.8, b = 0.2}
     },
     
     size = {
@@ -827,8 +827,8 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
     
     color = {
         type = "simple",
-        colorBegin = {r = 1.0, g = 1.0, b = 1.0, a = 1.0},
-        colorEnd = {r = 0.5, g = 0.0, b = 0.0, a = 0.0}
+        colorBegin = {r = 1.0, g = 1.0, b = 1.0},
+        colorEnd = {r = 0.5, g = 0.0, b = 0.0}
     },
     
     size = {
@@ -854,6 +854,37 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
 - Multiple velocity modules can be used simultaneously - they are applied sequentially
 - Material must be created and registered before creating the component
 - MaterialProxyId is obtained via `material:GetMaterialProxyWp():lock():GetSceneProxyId()`
+
+#### GpuParticleSystemComponent
+GPU particle system component. Uses the same JSON schema as `CpuParticleSystemComponent` but runs particle updates on the GPU.
+
+**Example:**
+```lua
+_CreateAndAttachComponentToActor(actorId, "GpuParticleSystemComponent", Json.encode({
+    gameObjectName = "c_gpu_particles",
+    translation = {x = 0.0, y = 0.0, z = 0.0},
+    scale = {x = 1.0, y = 1.0, z = 1.0},
+    particlesCount = 300,
+    materialProxyId = materialId,
+
+    emitter = {
+        type = "explosion",
+        radius = 1.5,
+        thetaSlicesCount = 12
+    },
+
+    lifetime = {
+        type = "simple",
+        lifeTime = 3.0
+    },
+
+    color = {
+        type = "simple",
+        colorBegin = {r = 0.3, g = 0.8, b = 1.0},
+        colorEnd = {r = 0.1, g = 0.2, b = 0.7}
+    }
+}))
+```
 
 ---
 

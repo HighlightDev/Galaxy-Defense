@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 #define HDR_ON
 #define BLOOM_ON

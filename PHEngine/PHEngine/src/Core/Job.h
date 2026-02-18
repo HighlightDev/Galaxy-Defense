@@ -14,12 +14,20 @@ class Job {
     int32_t mCreatorObjectId;
     uint64_t mFunctionId;
     callback_t mCallback;
+    uint64_t mHash;
+
+    static uint64_t HashCombine(uint64_t seed, uint64_t value)
+    {
+        seed ^= value + 0x9e3779b97f4a7c15ULL + (seed << 12) + (seed >> 4);
+        return seed;
+    }
 
 public:
     Job(const int32_t creatorObjectId, const uint64_t functionId, callback_t callback)
         : mCreatorObjectId(creatorObjectId)
         , mFunctionId(functionId)
         , mCallback(callback)
+        , mHash(HashCombine(static_cast<uint64_t>(creatorObjectId), functionId))
     {
     }
 
@@ -42,6 +50,11 @@ public:
     void operator()(ArgumentsT&&... arguments) const
     {
         mCallback(std::forward<ArgumentsT>(arguments)...);
+    }
+
+    uint64_t GetHash() const
+    {
+        return mHash;
     }
 };
 

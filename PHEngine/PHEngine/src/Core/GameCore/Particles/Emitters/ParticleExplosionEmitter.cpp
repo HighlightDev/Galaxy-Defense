@@ -20,6 +20,16 @@ void ParticleExplosionEmitter::EmitParticles(const size_t particlesCount)
     const auto& ownerSp = mOwner.lock();
     ext_assert(ownerSp, "ParticleExplosionEmitter::EmitParticles: owner is null");
 
+    LogInfo(
+        "ParticleExplosionEmitter::EmitParticles: particles count: ",
+        particlesCount,
+        ", radius: ",
+        mRadius,
+        ", theta slices count: ",
+        mThetaSlicesCount,
+        ", owner ID: ",
+        ownerSp->GetObjectId());
+
     auto& particlePool = GetParticlesPool();
     const auto& poolSize = particlePool.size();
 

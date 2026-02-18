@@ -71,6 +71,9 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
+    const std::string version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    LogInfo("OpenGL version: ", version);
+
     LogInfo("Engine::Initialize");
     GameThreadEventDispatcher::GetInstance()
         ->RegisterEventsByType<

@@ -2,21 +2,21 @@
 
 #include "Core/GameCore/Particles/Modules/Color/IColorModule.h"
 
-#include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 
 namespace EngineCore {
 class SimpleColorModule : public IColorModule {
-    glm::vec4 mColorBegin;
-    glm::vec4 mColorEnd;
+    glm::vec3 mColorBegin;
+    glm::vec3 mColorEnd;
 
 public:
     SimpleColorModule();
 
     void Update(Particle& particle, const float deltaTimeSec) override;
 
-    void SetColorBegin(const glm::vec4& colorBegin);
+    void SetColorBegin(const glm::vec3& colorBegin);
 
-    void SetColorEnd(const glm::vec4& colorEnd);
+    void SetColorEnd(const glm::vec3& colorEnd);
 
     void OnEmitParticles() override;
 };

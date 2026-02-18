@@ -1,0 +1,80 @@
+#version 440 core
+
+#include "materialCommon.incl.glsl"
+
+in vec4 VertexPosition;
+
+layout(std430, binding = 0) buffer ParticleRelativePositions
+{
+    vec4 ParticleRelativeOffsets[];
+};
+
+layout(std140) uniform Matrices
+{
+    mat4 worldMatrix;
+    mat4 viewMatrix;
+    mat4 projectionMatrix;
+};
+
+vec4 GetLocalToWorldSpacePosition()
+{
+    return worldMatrix * ParticleRelativeOffsets[gl_InstanceID];
+}
+
+vec3 GetLocalToWorldSpaceNormal()
+{
+    return vec3(0);
+}
+
+vec3 GetLocalToWorldSpaceTangent()
+{
+    return vec3(0);
+}
+
+vec3 GetLocalToWorldSpaceBitangent()
+{
+    return vec3(0);
+}
+
+vec2 GetLocalTexCoords()
+{
+    return vec2(0);
+}
+
+vec3 GetParticleRelativeOffset()
+{
+    return ParticleRelativeOffsets[gl_InstanceID].xyz;
+}
+
+vec2 GetParticleRotationAndSize()
+{
+    return vec2(0, 0.5);
+}
+
+vec3 GetParticleColor()
+{
+    return vec3(1.0, 0.0, 0.0);
+}
+
+MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput()
+{
+    MATERIAL_VS_OUTPUT result;
+
+    result.TextureCoordinates = vec3(vec2(0.0), 0.0);
+
+    vec4 world_pos = GetLocalToWorldSpacePosition();
+    vec4 view_pos = viewMatrix * world_pos;
+    vec4 projected_pos = projectionMatrix * view_pos;
+
+    result.WorldCoordinates = world_pos;
+    result.ViewCoordinates = view_pos;
+    result.ProjectedCoordinates = projected_pos;
+
+    result.WorldNormal = GetLocalToWorldSpaceNormal();
+    result.WorldTangent = GetLocalToWorldSpaceTangent();
+    result.WorldBitangent = GetLocalToWorldSpaceBitangent();
+
+    result.InstanceID = float(gl_InstanceID);
+
+    return result;
+}

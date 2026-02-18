@@ -7,7 +7,8 @@ namespace Resources {
 std::shared_ptr<Graphics::OpenGL::ShaderStorageBufferObject>
 SSBOPoolAllocationPolicy::AllocateMemory(const SSBOPoolParameters& params)
 {
-    return std::make_shared<Graphics::OpenGL::ShaderStorageBufferObject>(params.bindingPoint, params.bytesToAllocate);
+    return std::make_shared<Graphics::OpenGL::ShaderStorageBufferObject>(
+        params.bindingPoint, params.flags, params.bytesToAllocate);
 }
 
 void SSBOPoolAllocationPolicy::DeallocateMemory(const std::shared_ptr<Graphics::OpenGL::ShaderStorageBufferObject>& value)

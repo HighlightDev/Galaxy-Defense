@@ -43,5 +43,12 @@ struct ShaderDefine : public ShaderGenericDefine {
     eShaderType m_ShaderType;
     ShaderDefine(const std::string& name, const bool isDefined, const eShaderType shaderType);
 };
+
+struct ShaderCodeSnippet {
+    eShaderType m_ShaderType;
+    std::vector<std::string> m_CodeLines;
+
+    ShaderCodeSnippet(const eShaderType shaderType, const std::vector<std::string>& codeLines);
+};
 } // namespace OpenGL
 } // namespace Graphics

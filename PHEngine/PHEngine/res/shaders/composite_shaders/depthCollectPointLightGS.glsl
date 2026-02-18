@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 #define CubemapFaces 6
 layout(triangles) in;

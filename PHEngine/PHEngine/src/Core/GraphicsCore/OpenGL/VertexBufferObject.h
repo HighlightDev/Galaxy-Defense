@@ -14,7 +14,7 @@ using namespace EngineCore;
 
 namespace Graphics {
 namespace OpenGL {
-template<typename DataType, int32_t buffer_usage = GL_STATIC_DRAW>
+template<typename DataType, int32_t buffer_usage = GL_DYNAMIC_DRAW>
 class VertexBufferObject : public BufferObjectBase {
 protected:
     std::vector<DataType> m_data;

@@ -26,6 +26,7 @@ private:
     std::vector<ShaderDefineConstant> m_defineConstantParameters;
     std::vector<ShaderDefine> m_defines;
     std::vector<ShaderConstantArray> m_defineConstantArrays;
+    std::vector<ShaderCodeSnippet> m_codeSnippets;
 
 protected:
     void LoadSubroutineIndex(const int32_t shaderType, int32_t countIndices, uint32_t* subroutineIndices) const;
@@ -46,6 +47,11 @@ protected:
         const auto formatedValue = MacroConverter<ArrayInternalType>::GetArrayValue(varName, vectorValue);
         const auto innerTypeName = TypeToString<ArrayInternalType>::value;
         m_defineConstantArrays.emplace_back(varName, innerTypeName, formatedValue, shaderType);
+    }
+
+    void AddCodeSnippet(eShaderType shaderType, const std::string& codeSnippet)
+    {
+        m_codeSnippets.emplace_back(shaderType, EngineUtility::Split(codeSnippet, '\n'));
     }
 
     void Define(eShaderType shaderType, const std::string& name);

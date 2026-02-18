@@ -51,7 +51,7 @@ void GameThreadTimersHolder::UnpausableTick(const float deltaSeconds)
 {
     const float deltaMilliseconds = deltaSeconds * 1000.0f;
     for (const auto& timerWp : mTimerInstances) {
-        if (const auto& timerSp = timerWp.lock()) {
+        if (const auto timerSp = timerWp.lock()) {
             if (!timerSp->m_isPausable) {
                 timerSp->TimerPulse(deltaMilliseconds);
             }

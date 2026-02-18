@@ -5,7 +5,8 @@
 #include <json/json.hpp>
 
 namespace EngineCore::Scripts {
-ParticleSystemComponentLuaProxy::ParticleSystemComponentLuaProxy(const std::shared_ptr<CpuParticleSystemComponent>& baseComponent)
+ParticleSystemComponentLuaProxy::ParticleSystemComponentLuaProxy(
+    const std::shared_ptr<ParticleSystemBaseComponent>& baseComponent)
     : PrimitiveComponentLuaProxy(baseComponent)
 {
 }
@@ -21,7 +22,7 @@ bool ParticleSystemComponentLuaProxy::InvokeFunction(const std::string& function
 
     if (!baseInvokeResult) {
         if (const auto ownerComponentSp = mOwnerComponentWp.lock()) {
-            const auto particleSystemComponentSp = std::dynamic_pointer_cast<CpuParticleSystemComponent>(ownerComponentSp);
+            const auto particleSystemComponentSp = std::dynamic_pointer_cast<ParticleSystemBaseComponent>(ownerComponentSp);
             if (particleSystemComponentSp) {
                 if ("EmitParticles" == functionName) {
                     particleSystemComponentSp->EmitParticles();

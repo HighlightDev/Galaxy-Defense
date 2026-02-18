@@ -43,5 +43,12 @@ ShaderDefine::ShaderDefine(const std::string& name, const bool isDefined, eShade
     , m_ShaderType(shaderType)
 {
 }
+
+/* ************* ShaderCodeSnippet ************************/
+ShaderCodeSnippet::ShaderCodeSnippet(const eShaderType shaderType, const std::vector<std::string>& codeLines)
+    : m_ShaderType(shaderType)
+    , m_CodeLines(codeLines)
+{
+}
 } // namespace OpenGL
 } // namespace Graphics

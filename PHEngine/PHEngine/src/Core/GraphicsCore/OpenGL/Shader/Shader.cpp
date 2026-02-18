@@ -72,6 +72,7 @@ void Shader::ProcessAllPredefines()
     std::unordered_map<eShaderType, std::vector<ShaderGenericDefineConstant>> constantPredefines;
     std::unordered_map<eShaderType, std::vector<ShaderGenericConstantArray>> arrayConstants;
     std::unordered_map<eShaderType, std::vector<ShaderGenericDefine>> predefines;
+    std::unordered_map<eShaderType, std::vector<ShaderCodeSnippet>> codeSnippets;
 
     for (const auto& define : m_defineConstantParameters) {
         constantPredefines[define.m_ShaderType].emplace_back(define);
@@ -83,6 +84,10 @@ void Shader::ProcessAllPredefines()
 
     for (const auto& define_it : m_defines) {
         predefines[define_it.m_ShaderType].emplace_back(define_it);
+    }
+
+    for (const auto& codeSnippet : m_codeSnippets) {
+        codeSnippets[codeSnippet.m_ShaderType].emplace_back(codeSnippet);
     }
 
     const auto& inShaderFiles = m_shaderParams.ShaderFiles;
@@ -97,11 +102,12 @@ void Shader::ProcessAllPredefines()
 
         if (inShaderFiles.count(shaderType)) {
 
-            ProcessPredefineToFile(
+            ModifyShaderFileWithExtraData(
                 m_shaderParams.ShaderFiles.at(shaderType),
                 constantPredefines[shaderType],
                 predefines[shaderType],
-                arrayConstants[shaderType]);
+                arrayConstants[shaderType],
+                codeSnippets[shaderType]);
         }
     }
 }

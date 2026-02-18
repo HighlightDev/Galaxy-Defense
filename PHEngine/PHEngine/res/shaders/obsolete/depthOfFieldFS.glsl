@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 #define HAS_PREVIOUS_STAGE 0
 #define zNearPlane 0.1

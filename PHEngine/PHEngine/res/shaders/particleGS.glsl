@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 #include "materialCommon.incl.glsl"
 
@@ -13,11 +13,11 @@ layout(std140) uniform Matrices
 };
 
 in vec2 vs_out_rotation_size[];
-in vec4 vs_out_particle_color[];
+in vec3 vs_out_particle_color[];
 
 in MATERIAL_VS_OUTPUT VsOutput[];
 
-out vec4 out_color;
+out vec3 out_color;
 out MATERIAL_VS_OUTPUT GsOutput;
 
 mat4 rollMatrix(float angle)

@@ -2,9 +2,7 @@
 
 #include "Job.h"
 
-#include <array>
 #include <atomic>
-#include <deque>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -45,10 +43,10 @@ enum eWriteChainType : uint8_t { WRITE_1 = 0, WRITE_2 = 1 };
  * @brief Manages two job queues (swap chains) for inter-thread communication, ensuring thread safety and minimizing false
  * sharing.
  *
- * This structure provides two separate job deques (`Jobs1` and `Jobs2`), each aligned to avoid hardware destructive interference,
- * which helps prevent performance degradation due to false sharing in multi-threaded environments. The `StoreOperationMutex`
- * protects operations on the swap chain. The `ReadChainType` and `WriteChainType` indicate which chain is currently used for
- * reading and writing.
+ * This structure provides two separate job vectors (`Jobs1` and `Jobs2`), each aligned to avoid hardware destructive
+ * interference, which helps prevent performance degradation due to false sharing in multi-threaded environments. The
+ * `StoreOperationMutex` protects operations on the swap chain. The `ReadChainType` and `WriteChainType` indicate which chain is
+ * currently used for reading and writing.
  *
  * @var std::mutex StoreOperationMutex
  *      Mutex to synchronize access to the swap chain operations.
@@ -56,15 +54,15 @@ enum eWriteChainType : uint8_t { WRITE_1 = 0, WRITE_2 = 1 };
  *      Indicates the current read chain type.
  * @var uint8_t WriteChainType
  *      Indicates the current write chain type.
- * @var std::deque<Job> Jobs1
+ * @var std::vector<TaskJob_t> Jobs1
  *      First job queue, aligned to avoid false sharing.
- * @var std::deque<Job> Jobs2
+ * @var std::vector<TaskJob_t> Jobs2
  *      Second job queue, aligned to avoid false sharing.
  *
- * @fn std::deque<Job>& GetDequeByIndex(const uint8_t index)
- * @brief Returns a reference to the job deque specified by the index (0 for Jobs1, otherwise Jobs2).
- * @param index Index of the job deque to retrieve.
- * @return Reference to the selected job deque.
+ * @fn std::vector<TaskJob_t>& GetTasksByIndex(const uint8_t index)
+ * @brief Returns a reference to the job vector specified by the index (0 for Jobs1, otherwise Jobs2).
+ * @param index Index of the job vector to retrieve.
+ * @return Reference to the selected job vector.
  */
 
 using TaskJob_t = Job<
@@ -77,10 +75,10 @@ struct TasksSwapChain {
     uint8_t WriteChainType = {eWriteChainType::WRITE_2};
 
     // make sure we won't get false sharing for our jobs
-    alignas(hardware_destructive_interference_size) std::deque<TaskJob_t> Jobs1;
-    alignas(hardware_destructive_interference_size) std::deque<TaskJob_t> Jobs2;
+    alignas(hardware_destructive_interference_size) std::vector<TaskJob_t> Jobs1;
+    alignas(hardware_destructive_interference_size) std::vector<TaskJob_t> Jobs2;
 
-    inline std::deque<TaskJob_t>& GetDequeByIndex(const uint8_t index)
+    inline std::vector<TaskJob_t>& GetTasksByIndex(const uint8_t index)
     {
         return index == 0 ? Jobs1 : Jobs2;
     }
@@ -115,14 +113,17 @@ class InterThreadCommunicationMgr {
     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> mLuaScriptProcessor;
 
     std::mutex m_gameThreadMutex;
-
-    std::deque<TaskJob_t> m_gameThreadJobs;
-
-    std::deque<TaskJob_t> m_luaThreadJobs;
+    std::vector<TaskJob_t> m_gameThreadPendingJobs;
+    std::vector<TaskJob_t> m_gameThreadExecutingJobs;
+    std::unordered_map<uint64_t, std::vector<int32_t>> m_gameThreadJobsHashes;
 
     std::mutex m_luaThreadMutex;
+    std::vector<TaskJob_t> m_luaThreadPendingJobs;
+    std::vector<TaskJob_t> m_luaThreadExecutingJobs;
+    std::unordered_map<uint64_t, std::vector<int32_t>> m_luaThreadJobsHashes;
 
     TasksSwapChain mRenderThreadSwapChain;
+    std::unordered_map<uint64_t, std::vector<int32_t>> m_renderThreadJobsHashes;
 
     std::atomic_bool mIsAllowedPushGameThreadJobs{true};
 
@@ -195,7 +196,11 @@ private:
 
     void ProcessPushLuaThreadJob(const eEnqueueJobPolicy policy, TaskJob_t&& job);
 
-    void ProcessPushJob(const eEnqueueJobPolicy policy, TaskJob_t&& job, std::deque<TaskJob_t>& jobs);
+    void ProcessPushJob(
+        const eEnqueueJobPolicy policy,
+        TaskJob_t&& job,
+        std::vector<TaskJob_t>& jobs,
+        std::unordered_map<uint64_t, std::vector<int32_t>>& jobsHashes);
 
     void SwapRenderThreadChain();
 };

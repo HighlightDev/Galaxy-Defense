@@ -38,6 +38,14 @@ public:
         return mRenderData;
     }
 
+    void SetIsParticleCountChanged(const bool isChanged);
+
+    void SetIsParticlePositionDataDirty(const bool isDirty);
+
+    bool IsParticlesCountChanged() const;
+
+    bool IsParticlePositionDataDirty() const;
+
 private:
     void SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData = false) override;
 };

@@ -1,9 +1,7 @@
 #pragma once
 
-#include <gl/glew.h>
-#include <stdint.h>
+#include "Core/GraphicsCore/OpenGL/Shader/ShaderType.h"
 
-#include <cstddef>
 #include <string>
 
 namespace Graphics {
@@ -23,11 +21,11 @@ public:
 
     virtual ~BufferObjectBase();
 
-    void GenBuffer();
+    virtual void GenBuffer();
 
-    void BindBuffer() const;
+    virtual void BindBuffer() const;
 
-    void UnbindBuffer() const;
+    virtual void UnbindBuffer() const;
 
     virtual void SendDataToGPU() = 0;
 
@@ -54,6 +52,15 @@ public:
     GLint GetBufferTarget() const;
 
     size_t GetAllocatedBufferSize() const;
+
+    virtual void CopyFromBuffer(
+        const GLuint sourceBufferId,
+        const size_t sourceOffset,
+        const size_t destOffset,
+        const size_t size,
+        const eMemoryBarrierType barrierBit) const;
+
+    virtual std::vector<uint32_t> GetBufferStorageFlags() const;
 };
 } // namespace OpenGL
 } // namespace Graphics

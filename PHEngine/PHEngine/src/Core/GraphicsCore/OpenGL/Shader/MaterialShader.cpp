@@ -32,7 +32,8 @@ void MaterialShader::ProcessAllPredefines()
     if (mConstantDefines.size() > 0 || mDefines.size() > 0) {
         if ("" != mShaderSource) {
             std::vector<ShaderGenericConstantArray> defineConstantArrays;
-            ProcessPredefineToSource(mShaderSource, mConstantDefines, mDefines, defineConstantArrays);
+            ModifyShaderSourceWithExtraData(
+                mShaderSource, mConstantDefines, mDefines, defineConstantArrays, std::vector<ShaderCodeSnippet>());
         }
     }
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <stdint.h>
@@ -26,7 +27,7 @@ public:
 
     void SubTranslationData(const size_t byteDataOffset, const glm::vec3& translation);
     void SubRotationSizeData(const size_t byteDataOffset, const float rotation, const float size);
-    void SubColorData(const size_t byteDataOffset, const glm::vec4& color);
+    void SubColorData(const size_t byteDataOffset, const glm::vec3& color);
 
     void SetTranslationActiveDataChunkSize(const size_t activeDataChunkSize);
     void SetRotationSizeActiveDataChunkSize(const size_t activeDataChunkSize);
@@ -58,17 +59,17 @@ public:
 
     inline static constexpr size_t GetTranslationVectorByteDataOffset()
     {
-        return sizeof(float) * 3;
+        return sizeof(glm::vec3);
     }
 
     inline static constexpr size_t GetRotationSizeByteDataOffset()
     {
-        return sizeof(float) * 2;
+        return sizeof(glm::vec2);
     }
 
     inline static constexpr size_t GetColorByteDataOffset()
     {
-        return sizeof(float) * 4;
+        return sizeof(glm::vec3);
     }
 
 private:

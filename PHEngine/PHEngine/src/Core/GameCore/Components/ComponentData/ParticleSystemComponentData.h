@@ -27,8 +27,8 @@ struct LifeTimeModuleData {
 
 struct ColorModuleData {
     std::string moduleType; // "simple"
-    glm::vec4 colorBegin = glm::vec4(1.0f);
-    glm::vec4 colorEnd = glm::vec4(1.0f);
+    glm::vec3 colorBegin = glm::vec3(1.0f);
+    glm::vec3 colorEnd = glm::vec3(1.0f);
 };
 
 struct SizeModuleData {

@@ -1,4 +1,4 @@
-#version 440
+#version 440 core
 
 #define UPPER_LIMIT 30
 #define LOWER_LIMIT 0
