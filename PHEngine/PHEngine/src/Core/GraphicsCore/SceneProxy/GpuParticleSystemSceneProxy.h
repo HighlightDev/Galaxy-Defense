@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/CommonCore/TimeHelper.h"
 #include "Core/GameCore/ShaderImplementation/GpuParticleComputeShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/CpuParticleVertexFactory.h"
@@ -32,19 +33,24 @@ class GpuParticleSystemSceneProxy : public PrimitiveSceneProxy {
     using ParticleComputeShader_t = GpuParticleComputeShader;
 
     GpuParticleSystemRenderData mRenderData;
-    size_t mActiveParticlesCount;
+
+    bool mParticlesEmitted;
+
+    uint32_t mPrevActiveParticlesCount;
 
     std::shared_ptr<ShaderStorageBufferObject> m_gpuParticlePositionsSSBO;
+    std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleColorsSSBO;
+    std::shared_ptr<ShaderStorageBufferObject> m_aliveCounterSSBO;
 
     std::shared_ptr<ParticleComputeShader_t> m_computeShader;
+
+    Moment_t m_lastDispatchTime;
 
 private:
     std::shared_ptr<ParticleShader_t> GetShader() const;
 
 public:
     GpuParticleSystemSceneProxy(const ::EngineCore::GpuParticleSystemComponent* component);
-
-    ~GpuParticleSystemSceneProxy() override;
 
     void CleanUp() override;
 
@@ -62,9 +68,8 @@ public:
 
     bool IsFrustumCullTestNeeded() const override;
 
-    void SetActiveParticlesCount(const size_t activeParticlesCount);
-
-    void SetParticlesPositionsData(const void* positionsData, const size_t byteChunkSize);
+    void ResetParticlesData(
+        const void* positionsData, const size_t positionsDataSize, const void* colorsData, const size_t colorsDataSize);
 
     RenderInfo GetRenderInfo() const override;
 };

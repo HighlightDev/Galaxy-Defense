@@ -35,7 +35,6 @@ local function onPressedKeyboardButtons(host, pressedKeyNames)
 end
 
 function System_OnStart(host)
-    print("Billboard Rotation Script Started")
     particlesLuaProxyId = _GetLuaProxyIdForComponent(host, "c_particleSystem")
     assert(particlesLuaProxyId ~= nil, "Particle system Lua proxy ID is nil")
 

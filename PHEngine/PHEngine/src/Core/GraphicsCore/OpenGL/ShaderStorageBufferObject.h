@@ -20,6 +20,8 @@ public:
 
     ~ShaderStorageBufferObject() override;
 
+    bool operator==(const ShaderStorageBufferObject& right) const;
+
     void GenBuffer() override;
 
     void SendDataToGPU() override;
@@ -48,5 +50,14 @@ public:
         const eMemoryBarrierType barrierBit) const override;
 
     std::vector<uint32_t> GetBufferStorageFlags() const override;
+
+    template<typename TypeOut>
+    TypeOut* GetMappedData() const
+    {
+        TypeOut* mappedData
+            = static_cast<TypeOut*>(glMapNamedBufferRange(m_descriptor, 0, m_allocatedBufferSize, GL_MAP_READ_BIT));
+        glUnmapNamedBuffer(m_descriptor);
+        return mappedData;
+    }
 };
 } // namespace Graphics::OpenGL

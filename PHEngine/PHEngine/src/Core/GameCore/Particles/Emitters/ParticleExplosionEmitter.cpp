@@ -47,7 +47,7 @@ void ParticleExplosionEmitter::EmitParticles(const size_t particlesCount)
             const float phi = phiStep * (float)phiParticeIndex;
 
             Particle& p = particlePool[particleIndex];
-            p = Particle();
+            p.Reset();
             p.Position = glm::vec3(
                 mRadius * std::cos(theta) * std::sin(phi), mRadius * std::sin(theta) * std::sin(phi), mRadius * std::cos(phi));
             p.Rotation = Random::Float() * EngineMath::PI * 2;

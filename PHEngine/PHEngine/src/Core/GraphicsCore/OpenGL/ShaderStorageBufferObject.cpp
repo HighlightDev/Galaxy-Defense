@@ -26,6 +26,12 @@ ShaderStorageBufferObject::~ShaderStorageBufferObject()
 {
 }
 
+bool ShaderStorageBufferObject::operator==(const ShaderStorageBufferObject& right) const
+{
+    return this->m_descriptor == right.m_descriptor && this->mBindingPoint == right.mBindingPoint && this->m_data == right.m_data
+        && this->m_flags == right.m_flags;
+}
+
 void ShaderStorageBufferObject::SendDataToGPU()
 {
     GenBuffer();

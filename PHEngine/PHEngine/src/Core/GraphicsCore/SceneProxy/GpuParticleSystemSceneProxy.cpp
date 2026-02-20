@@ -26,7 +26,8 @@ namespace Graphics::Proxy {
 GpuParticleSystemSceneProxy::GpuParticleSystemSceneProxy(const GpuParticleSystemComponent* component)
     : PrimitiveSceneProxy(component, component->GetRenderData().mMaterialProxy)
     , mRenderData(component->GetRenderData())
-    , mActiveParticlesCount(0)
+    , mParticlesEmitted(false)
+    , mPrevActiveParticlesCount(0)
 {
 }
 
@@ -45,9 +46,9 @@ void GpuParticleSystemSceneProxy::PostConstructorInitialize()
     m_shader = CreateMaterialShader<GpuParticleVertexFactory, SimpleShader>(
         "GpuParticleVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, particlesShaderParams, mMaterialProxy);
 
-    ShaderParams computeShaderParams("ComputeShader");
+    ShaderParams computeShaderParams("GpuParticleComputeShader");
     computeShaderParams.SetComputeShader(
-        FolderManager::GetInstance()->GetShadersPath() + SLASH + "compute" + SLASH + "gpuParticleComputeShader.glsl");
+        FolderManager::GetInstance()->GetShadersPath() + SLASH + "compute" + SLASH + "gpuParticleCS.glsl");
     m_computeShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleComputeShader_t>(computeShaderParams);
 
     mRenderData.mParticleMeshParams.mVertexAttributes = GetShader()->GetVertexAttributes();
@@ -57,11 +58,15 @@ void GpuParticleSystemSceneProxy::PostConstructorInitialize()
     m_gpuParticlePositionsSSBO = SSBOPool::GetInstance()->GetOrAllocateResource(positionSSBOParams);
     m_gpuParticlePositionsSSBO->SendDataToGPU();
 
-    m_skin = ParticlesPool::GetInstance()->GetOrAllocateResource(mRenderData.mParticleMeshParams);
-}
+    SSBOPoolParameters colorSSBOParams{bytesToAllocate, 1, GL_DYNAMIC_STORAGE_BIT};
+    m_gpuParticleColorsSSBO = SSBOPool::GetInstance()->GetOrAllocateResource(colorSSBOParams);
+    m_gpuParticleColorsSSBO->SendDataToGPU();
 
-GpuParticleSystemSceneProxy::~GpuParticleSystemSceneProxy()
-{
+    SSBOPoolParameters aliveCounterSSBOParams{sizeof(uint32_t), 2, GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT};
+    m_aliveCounterSSBO = SSBOPool::GetInstance()->GetOrAllocateResource(aliveCounterSSBOParams);
+    m_aliveCounterSSBO->SendDataToGPU();
+
+    m_skin = ParticlesPool::GetInstance()->GetOrAllocateResource(mRenderData.mParticleMeshParams);
 }
 
 std::shared_ptr<typename GpuParticleSystemSceneProxy::ParticleShader_t> GpuParticleSystemSceneProxy::GetShader() const
@@ -72,6 +77,26 @@ std::shared_ptr<typename GpuParticleSystemSceneProxy::ParticleShader_t> GpuParti
 void GpuParticleSystemSceneProxy::CleanUp()
 {
     PrimitiveSceneProxy::CleanUp();
+
+    if (m_computeShader) {
+        ShaderPool::GetInstance()->TryToFreeMemory(m_computeShader);
+        m_computeShader = nullptr;
+    }
+
+    if (m_gpuParticlePositionsSSBO) {
+        SSBOPool::GetInstance()->TryToFreeMemory(m_gpuParticlePositionsSSBO);
+        m_gpuParticlePositionsSSBO = nullptr;
+    }
+
+    if (m_gpuParticleColorsSSBO) {
+        SSBOPool::GetInstance()->TryToFreeMemory(m_gpuParticleColorsSSBO);
+        m_gpuParticleColorsSSBO = nullptr;
+    }
+
+    if (m_aliveCounterSSBO) {
+        SSBOPool::GetInstance()->TryToFreeMemory(m_aliveCounterSSBO);
+        m_aliveCounterSSBO = nullptr;
+    }
 }
 
 void GpuParticleSystemSceneProxy::Render(
@@ -80,16 +105,45 @@ void GpuParticleSystemSceneProxy::Render(
     const glm::mat4& projectionMatrix,
     ActiveBindedState& activeBindedState)
 {
-    if (!mActiveParticlesCount)
+    if (not mPrevActiveParticlesCount && not mParticlesEmitted) {
         return;
+    }
+
+    if (mParticlesEmitted) {
+        mParticlesEmitted = false;
+    }
 
     m_gpuParticlePositionsSSBO->BindBuffer();
+    m_gpuParticleColorsSSBO->BindBuffer();
+    m_aliveCounterSSBO->BindBuffer();
+
+    uint32_t zero = 0;
+    m_aliveCounterSSBO->BufferSubData(0, sizeof(uint32_t), &zero); // drop counter to zero before compute shader execution
+
     const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(m_computeShader->GetShaderName());
     if (needToRebindShader) {
         m_computeShader->ExecuteShader();
     }
-    m_computeShader->Dispatch(mActiveParticlesCount, 1, 1);
+    // update dispatch delta time
+    {
+        const auto currentTime = EngineTime::GetCurrentTime();
+        const double timeSinceLastDispatch = EngineTime::GetTimeDifferenceInSeconds(currentTime - m_lastDispatchTime);
+        m_lastDispatchTime = currentTime;
+        m_computeShader->SetDispatchDeltaTime(timeSinceLastDispatch);
+        m_computeShader->SetParticleLifetime(4.0f);
+    }
+
+    m_computeShader->Dispatch(mRenderData.mParticleMeshParams.mParticleCount, 1, 1);
     m_computeShader->SetMemoryBarrier(eMemoryBarrierType::ShaderStorageBarrierBit);
+
+    GLsync fence = glFenceSync(
+        GL_SYNC_GPU_COMMANDS_COMPLETE, 0); // ensure compute shader has finished execution before reading back alive counter
+    glWaitSync(fence, 0, GL_TIMEOUT_IGNORED);
+    glDeleteSync(fence);
+
+    uint32_t* countOfAliveParticles = m_aliveCounterSSBO->GetMappedData<uint32_t>();
+    ext_assert(countOfAliveParticles != nullptr, "Failed to map alive counter SSBO");
+    mPrevActiveParticlesCount = *countOfAliveParticles;
 
     const auto& shader = GetShader();
     activeBindedState.TryUpdateActiveShaderName(m_shader->GetShaderName());
@@ -97,7 +151,7 @@ void GpuParticleSystemSceneProxy::Render(
 
     shader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
-    m_skin->GetBuffer()->RenderInstanced(GL_POINTS, mActiveParticlesCount);
+    m_skin->GetBuffer()->RenderInstanced(GL_POINTS, *countOfAliveParticles);
 }
 
 bool GpuParticleSystemSceneProxy::IsDeferred() const
@@ -115,24 +169,28 @@ bool GpuParticleSystemSceneProxy::IsFrustumCullTestNeeded() const
     return false;
 }
 
-void GpuParticleSystemSceneProxy::SetActiveParticlesCount(const size_t activeParticlesCount)
-{
-    mActiveParticlesCount = activeParticlesCount;
-}
-
-void GpuParticleSystemSceneProxy::SetParticlesPositionsData(const void* positionsData, const size_t byteChunkSize)
+void GpuParticleSystemSceneProxy::ResetParticlesData(
+    const void* positionsData, const size_t positionsDataSize, const void* colorsData, const size_t colorsDataSize)
 {
     ext_assert(
-        positionsData != nullptr && byteChunkSize > 0,
+        colorsData != nullptr && colorsDataSize > 0, "Data pointer is null or byte chunk size is zero in SetParticlesColorsData");
+    ext_assert(
+        positionsData != nullptr && positionsDataSize > 0,
         "Data pointer is null or byte chunk size is zero in SetParticlesPositionsData");
     ext_assert(
         m_gpuParticlePositionsSSBO,
         "SSBO is null in SetParticlesPositionsData, make sure PostConstructorInitialize was called before");
     ext_assert(
-        m_gpuParticlePositionsSSBO->GetAllocatedBufferSize() >= byteChunkSize,
+        m_gpuParticlePositionsSSBO->GetAllocatedBufferSize() >= positionsDataSize,
         "Byte chunk size exceeds max allocated SSBO buffer size in SetParticlesPositionsData");
+    ext_assert(
+        m_gpuParticleColorsSSBO->GetAllocatedBufferSize() >= colorsDataSize,
+        "Byte chunk size exceeds max allocated SSBO buffer size in SetParticlesColorsData");
 
-    m_gpuParticlePositionsSSBO->BufferSubData(0, byteChunkSize, positionsData);
+    m_gpuParticlePositionsSSBO->BufferSubData(0, positionsDataSize, positionsData);
+    m_gpuParticleColorsSSBO->BufferSubData(0, colorsDataSize, colorsData);
+
+    mParticlesEmitted = true;
 }
 
 RenderInfo GpuParticleSystemSceneProxy::GetRenderInfo() const

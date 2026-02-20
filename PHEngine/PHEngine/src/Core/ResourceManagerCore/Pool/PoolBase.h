@@ -31,8 +31,18 @@ concept Allocatable = requires(const KeyType& k)
     ->std::same_as<std::shared_ptr<ValueType>>;
 };
 
+template<typename ValueType>
+concept Comparable = requires(const ValueType& a, const ValueType& b)
+{
+    {
+        a == b
+    }
+    ->std::convertible_to<bool>;
+};
+
 template<typename ValueType, typename KeyType, typename AllocationPolicyType>
-requires Deallocatable<AllocationPolicyType, ValueType>&& Allocatable<AllocationPolicyType, KeyType, ValueType> class PoolBase {
+requires Deallocatable<AllocationPolicyType, ValueType>&& Allocatable<AllocationPolicyType, KeyType, ValueType>&&
+    Comparable<ValueType> class PoolBase {
 public:
     using value_t = ValueType;
     using key_t = KeyType;

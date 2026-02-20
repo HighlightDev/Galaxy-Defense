@@ -366,7 +366,7 @@ void Engine::LuaThreadPulse()
     ThreadHelper::GetInstance()->RegisterThread("Lua");
 
     while (bLuaThreadExecution.load(std::memory_order::seq_cst)) {
-        const auto ltStartTimePoint = EngineTime::GetNowTime();
+        const auto ltStartTimePoint = EngineTime::GetCurrentTime();
         if (!bLevelIsLoading.load()) {
             ProcessLuaThreadEvents(eExecutionOrder::PRE_EXECUTION);
             m_interThreadMgr.SpinLuaThreadJob();
@@ -375,7 +375,8 @@ void Engine::LuaThreadPulse()
             ProcessLuaThreadEvents(eExecutionOrder::POST_EXECUTION);
         }
         std::this_thread::sleep_for(20ms);
-        mLuaThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(ltStartTimePoint));
+        mLuaThreadDeltaTimeSeconds
+            = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(ltStartTimePoint));
 
 #ifdef DEBUG
         if (sumLtSeconds >= 1.0f) {
@@ -399,7 +400,7 @@ void Engine::GameThreadPulse()
     ThreadHelper::GetInstance()->RegisterThread("Game");
 
     while (bGameThreadExecution.load(std::memory_order::seq_cst)) {
-        const auto gtStartTimePoint = EngineTime::GetNowTime();
+        const auto gtStartTimePoint = EngineTime::GetCurrentTime();
 
         if (!bLevelIsLoading.load()) {
             /* Events: pre execution */
@@ -421,7 +422,8 @@ void Engine::GameThreadPulse()
             /* Events: post execution */
             ProcessGameThreadEvents(eExecutionOrder::POST_EXECUTION);
         }
-        mGameThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(gtStartTimePoint));
+        mGameThreadDeltaTimeSeconds
+            = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(gtStartTimePoint));
 
 #ifdef DEBUG
         if (sumGtSeconds >= 1.0f) { // duration is >= than one second
@@ -453,11 +455,12 @@ void Engine::ProcessLuaThreadEvents(const eExecutionOrder order)
 
 void Engine::RenderThreadPulse()
 {
-    const auto rtStartTimePoint = EngineTime::GetNowTime();
+    const auto rtStartTimePoint = EngineTime::GetCurrentTime();
     m_interThreadMgr.SpinRenderThreadJobs();
     m_sceneRenderer->RenderScene_RenderThread();
 
-    mRenderThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(rtStartTimePoint));
+    mRenderThreadDeltaTimeSeconds
+        = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(rtStartTimePoint));
 
 #ifdef DEBUG
     if (sumRtSeconds >= 1.0f) {

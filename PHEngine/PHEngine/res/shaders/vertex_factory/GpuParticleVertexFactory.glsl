@@ -4,9 +4,14 @@
 
 in vec4 VertexPosition;
 
-layout(std430, binding = 0) buffer ParticleRelativePositions
+layout(std430, binding = 0) buffer ParticlePositionBuffer
 {
-    vec4 ParticleRelativeOffsets[];
+    vec4 ParticleRelativePositions[];
+};
+
+layout(std430, binding = 1) buffer ParticleColorBuffer
+{
+    vec4 ParticleColors[];
 };
 
 layout(std140) uniform Matrices
@@ -18,7 +23,7 @@ layout(std140) uniform Matrices
 
 vec4 GetLocalToWorldSpacePosition()
 {
-    return worldMatrix * ParticleRelativeOffsets[gl_InstanceID];
+    return worldMatrix * ParticleRelativePositions[gl_InstanceID];
 }
 
 vec3 GetLocalToWorldSpaceNormal()
@@ -43,7 +48,7 @@ vec2 GetLocalTexCoords()
 
 vec3 GetParticleRelativeOffset()
 {
-    return ParticleRelativeOffsets[gl_InstanceID].xyz;
+    return ParticleRelativePositions[gl_InstanceID].xyz;
 }
 
 vec2 GetParticleRotationAndSize()
@@ -53,7 +58,7 @@ vec2 GetParticleRotationAndSize()
 
 vec3 GetParticleColor()
 {
-    return vec3(1.0, 0.0, 0.0);
+    return ParticleColors[gl_InstanceID].rgb;
 }
 
 MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput()

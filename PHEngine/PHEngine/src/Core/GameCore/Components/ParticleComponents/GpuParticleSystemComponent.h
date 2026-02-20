@@ -13,9 +13,7 @@ class GpuParticleSystemComponent : public ParticleSystemBaseComponent {
 
     GpuParticleSystemRenderData mRenderData;
 
-    bool bParticlesPositionDataDirty{false};
-
-    bool bParticlesCountChanged{false};
+    std::atomic_bool isParticlesDataDirty{false};
 
 public:
     GpuParticleSystemComponent(
@@ -38,13 +36,9 @@ public:
         return mRenderData;
     }
 
-    void SetIsParticleCountChanged(const bool isChanged);
+    void SetIsParticlesDataDirty(const bool isDirty);
 
-    void SetIsParticlePositionDataDirty(const bool isDirty);
-
-    bool IsParticlesCountChanged() const;
-
-    bool IsParticlePositionDataDirty() const;
+    bool IsParticlesDataDirty() const;
 
 private:
     void SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData = false) override;

@@ -13,6 +13,7 @@ ParticleSystemBaseComponent::ParticleSystemBaseComponent(
     size_t particlesCount)
     : PrimitiveComponent(name, translation, rotation, scale)
     , mParticlesCount(particlesCount)
+    , mPrevActiveParticles(0)
 {
     mParticlesPool.resize(particlesCount);
     mSortOrderValue = std::numeric_limits<int32_t>::max(); // draw this primitive the last one

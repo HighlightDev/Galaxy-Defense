@@ -8,14 +8,14 @@ using Moment_t = std::chrono::time_point<std::chrono::system_clock>;
 
 namespace EngineCore {
 struct EngineTime {
-    static Moment_t GetNowTime();
+    static Moment_t GetCurrentTime();
 
     static Duration_t GetPassedDuration(const Moment_t lastTime);
 
-    static double GetSecondsFromDuration(const Duration_t duration);
+    static double GetTimeDifferenceInSeconds(const Duration_t duration);
 
-    static double GetMillisecondsFromDuration(const Duration_t duration);
+    static double GetTimeDifferenceInMilliseconds(const Duration_t duration);
 
-    static double GetMicrosecondsFromDuration(const Duration_t duration);
+    static double GetTimeDifferenceInMicroseconds(const Duration_t duration);
 };
 } // namespace EngineCore

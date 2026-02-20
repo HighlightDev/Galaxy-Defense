@@ -17,11 +17,11 @@ class ParticleSystemBaseComponent : public PrimitiveComponent {
     friend class IParticleModule;
 
 protected:
-    size_t mParticlesCount{0};
+    size_t mParticlesCount;
 
     std::vector<Particle> mParticlesPool;
 
-    size_t mPrevActiveParticles = 0;
+    size_t mPrevActiveParticles;
 
     std::vector<std::shared_ptr<IParticleModule>> mParticleModules;
 
