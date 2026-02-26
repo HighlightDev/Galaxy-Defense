@@ -10,7 +10,6 @@ namespace ShaderImpl {
 ComputeShaderBase::ComputeShaderBase(const ShaderParams& params)
     : Shader(params)
 {
-    ShaderInit();
 }
 
 ComputeShaderBase::~ComputeShaderBase()

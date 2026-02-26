@@ -26,7 +26,6 @@
 #include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
 #include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
 #include "Core/GameCore/Particles/Modules/Size/SimpleSizeModule.h"
-#include "Core/GameCore/Particles/Modules/Velocity/ExplosionInitialVelocityModule.h"
 #include "Core/GameCore/Particles/Modules/Velocity/SimpleVelocityModule.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
@@ -157,10 +156,6 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     sizeModule->SetSizeBegin(0.4f);
     sizeModule->SetSizeEnd(0.1f);
     c_particleSystemComponent->AddParticleModule(sizeModule);
-
-    auto initialVelocityModule = std::make_shared<ExplosionInitialVelocityModule>();
-    initialVelocityModule->SetOwner(c_particleSystemComponent);
-    c_particleSystemComponent->AddParticleModule(initialVelocityModule);
 
     auto velocityModule = std::make_shared<SimpleVelocityModule>();
     velocityModule->SetOwner(c_particleSystemComponent);

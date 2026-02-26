@@ -4,6 +4,7 @@
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Components/ParticleComponents/GpuParticleSystemComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
+#include "Core/GameCore/Particles/Modules/ModuleGpuProxy/IGpuParticleModuleProxy.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/GpuParticleVertexFactory.h"
 #include "Core/GraphicsCore/OpenGL/ShaderStorageBufferObject.h"
@@ -28,7 +29,9 @@ GpuParticleSystemSceneProxy::GpuParticleSystemSceneProxy(const GpuParticleSystem
     , mRenderData(component->GetRenderData())
     , mParticlesEmitted(false)
     , mPrevActiveParticlesCount(0)
+    , m_gpuParticleModulesProxies()
 {
+    m_gpuParticleModulesProxies = component->GetParticleModulesProxies();
 }
 
 void GpuParticleSystemSceneProxy::PostConstructorInitialize()
@@ -49,20 +52,40 @@ void GpuParticleSystemSceneProxy::PostConstructorInitialize()
     ShaderParams computeShaderParams("GpuParticleComputeShader");
     computeShaderParams.SetComputeShader(
         FolderManager::GetInstance()->GetShadersPath() + SLASH + "compute" + SLASH + "gpuParticleCS.glsl");
+    for (const auto& moduleProxy : m_gpuParticleModulesProxies) {
+        computeShaderParams.AddShaderCodeSnippet(
+            moduleProxy->GetModuleTypeHash(), eShaderType::ComputeShader, moduleProxy->GetShaderSnippet());
+    }
+
     m_computeShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleComputeShader_t>(computeShaderParams);
 
     mRenderData.mParticleMeshParams.mVertexAttributes = GetShader()->GetVertexAttributes();
 
-    const uint32_t bytesToAllocate = static_cast<uint32_t>(mRenderData.mParticleMeshParams.mParticleCount * sizeof(glm::vec4));
-    SSBOPoolParameters positionSSBOParams{bytesToAllocate, 0, GL_DYNAMIC_STORAGE_BIT};
+    const uint32_t vec4BytesToAllocate
+        = static_cast<uint32_t>(mRenderData.mParticleMeshParams.mParticleCount * sizeof(glm::vec4));
+    const uint32_t vec2BytesToAllocate
+        = static_cast<uint32_t>(mRenderData.mParticleMeshParams.mParticleCount * sizeof(glm::vec2));
+    SSBOPoolParameters positionSSBOParams{vec4BytesToAllocate, 0, GL_DYNAMIC_STORAGE_BIT};
     m_gpuParticlePositionsSSBO = SSBOPool::GetInstance()->GetOrAllocateResource(positionSSBOParams);
     m_gpuParticlePositionsSSBO->SendDataToGPU();
 
-    SSBOPoolParameters colorSSBOParams{bytesToAllocate, 1, GL_DYNAMIC_STORAGE_BIT};
+    SSBOPoolParameters velocitySSBOParams{vec4BytesToAllocate, 1, GL_DYNAMIC_STORAGE_BIT};
+    m_gpuParticleVelocitiesSSBO = SSBOPool::GetInstance()->GetOrAllocateResource(velocitySSBOParams);
+    m_gpuParticleVelocitiesSSBO->SendDataToGPU();
+
+    SSBOPoolParameters initialVelocitySSBOParams{vec4BytesToAllocate, 2, GL_DYNAMIC_STORAGE_BIT};
+    m_gpuParticleInitialVelocitiesSSBO = SSBOPool::GetInstance()->GetOrAllocateResource(initialVelocitySSBOParams);
+    m_gpuParticleInitialVelocitiesSSBO->SendDataToGPU();
+
+    SSBOPoolParameters colorSSBOParams{vec4BytesToAllocate, 3, GL_DYNAMIC_STORAGE_BIT};
     m_gpuParticleColorsSSBO = SSBOPool::GetInstance()->GetOrAllocateResource(colorSSBOParams);
     m_gpuParticleColorsSSBO->SendDataToGPU();
 
-    SSBOPoolParameters aliveCounterSSBOParams{sizeof(uint32_t), 2, GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT};
+    SSBOPoolParameters rotationAndSizeSSBOParams{vec2BytesToAllocate, 4, GL_DYNAMIC_STORAGE_BIT};
+    m_gpuParticleRotationAndSizeSSBO = SSBOPool::GetInstance()->GetOrAllocateResource(rotationAndSizeSSBOParams);
+    m_gpuParticleRotationAndSizeSSBO->SendDataToGPU();
+
+    SSBOPoolParameters aliveCounterSSBOParams{sizeof(uint32_t), 5, GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT};
     m_aliveCounterSSBO = SSBOPool::GetInstance()->GetOrAllocateResource(aliveCounterSSBOParams);
     m_aliveCounterSSBO->SendDataToGPU();
 
@@ -88,9 +111,24 @@ void GpuParticleSystemSceneProxy::CleanUp()
         m_gpuParticlePositionsSSBO = nullptr;
     }
 
+    if (m_gpuParticleVelocitiesSSBO) {
+        SSBOPool::GetInstance()->TryToFreeMemory(m_gpuParticleVelocitiesSSBO);
+        m_gpuParticleVelocitiesSSBO = nullptr;
+    }
+
+    if (m_gpuParticleInitialVelocitiesSSBO) {
+        SSBOPool::GetInstance()->TryToFreeMemory(m_gpuParticleInitialVelocitiesSSBO);
+        m_gpuParticleInitialVelocitiesSSBO = nullptr;
+    }
+
     if (m_gpuParticleColorsSSBO) {
         SSBOPool::GetInstance()->TryToFreeMemory(m_gpuParticleColorsSSBO);
         m_gpuParticleColorsSSBO = nullptr;
+    }
+
+    if (m_gpuParticleRotationAndSizeSSBO) {
+        SSBOPool::GetInstance()->TryToFreeMemory(m_gpuParticleRotationAndSizeSSBO);
+        m_gpuParticleRotationAndSizeSSBO = nullptr;
     }
 
     if (m_aliveCounterSSBO) {
@@ -115,6 +153,9 @@ void GpuParticleSystemSceneProxy::Render(
 
     m_gpuParticlePositionsSSBO->BindBuffer();
     m_gpuParticleColorsSSBO->BindBuffer();
+    m_gpuParticleVelocitiesSSBO->BindBuffer();
+    m_gpuParticleInitialVelocitiesSSBO->BindBuffer();
+    m_gpuParticleRotationAndSizeSSBO->BindBuffer();
     m_aliveCounterSSBO->BindBuffer();
 
     uint32_t zero = 0;
@@ -170,7 +211,16 @@ bool GpuParticleSystemSceneProxy::IsFrustumCullTestNeeded() const
 }
 
 void GpuParticleSystemSceneProxy::ResetParticlesData(
-    const void* positionsData, const size_t positionsDataSize, const void* colorsData, const size_t colorsDataSize)
+    const void* positionsData,
+    const size_t positionsDataSize,
+    const void* velocitiesData,
+    const size_t velocitiesDataSize,
+    const void* initialVelocitiesData,
+    const size_t initialVelocitiesDataSize,
+    const void* colorsData,
+    const size_t colorsDataSize,
+    const void* rotationAndSizeData,
+    const size_t rotationAndSizeDataSize)
 {
     ext_assert(
         colorsData != nullptr && colorsDataSize > 0, "Data pointer is null or byte chunk size is zero in SetParticlesColorsData");
@@ -184,11 +234,34 @@ void GpuParticleSystemSceneProxy::ResetParticlesData(
         m_gpuParticlePositionsSSBO->GetAllocatedBufferSize() >= positionsDataSize,
         "Byte chunk size exceeds max allocated SSBO buffer size in SetParticlesPositionsData");
     ext_assert(
+        m_gpuParticleVelocitiesSSBO,
+        "SSBO is null in SetParticlesVelocitiesData, make sure PostConstructorInitialize was called before");
+    ext_assert(
+        m_gpuParticleVelocitiesSSBO->GetAllocatedBufferSize() >= velocitiesDataSize,
+        "Byte chunk size exceeds max allocated SSBO buffer size in SetParticlesVelocitiesData");
+    ext_assert(
+        m_gpuParticleInitialVelocitiesSSBO,
+        "SSBO is null in SetParticlesInitialVelocitiesData, make sure PostConstructorInitialize was called before");
+    ext_assert(
+        m_gpuParticleInitialVelocitiesSSBO->GetAllocatedBufferSize() >= initialVelocitiesDataSize,
+        "Byte chunk size exceeds max allocated SSBO buffer size in SetParticlesInitialVelocitiesData");
+    ext_assert(
+        m_gpuParticleRotationAndSizeSSBO,
+        "SSBO is null in SetParticlesRotationAndSizeData, make sure PostConstructorInitialize was called before");
+    ext_assert(
+        m_gpuParticleRotationAndSizeSSBO->GetAllocatedBufferSize() >= rotationAndSizeDataSize,
+        "Byte chunk size exceeds max allocated SSBO buffer size in SetParticlesRotationAndSizeData");
+    ext_assert(
+        m_gpuParticleColorsSSBO, "SSBO is null in SetParticlesColorsData, make sure PostConstructorInitialize was called before");
+    ext_assert(
         m_gpuParticleColorsSSBO->GetAllocatedBufferSize() >= colorsDataSize,
         "Byte chunk size exceeds max allocated SSBO buffer size in SetParticlesColorsData");
 
     m_gpuParticlePositionsSSBO->BufferSubData(0, positionsDataSize, positionsData);
+    m_gpuParticleVelocitiesSSBO->BufferSubData(0, velocitiesDataSize, velocitiesData);
+    m_gpuParticleInitialVelocitiesSSBO->BufferSubData(0, initialVelocitiesDataSize, initialVelocitiesData);
     m_gpuParticleColorsSSBO->BufferSubData(0, colorsDataSize, colorsData);
+    m_gpuParticleRotationAndSizeSSBO->BufferSubData(0, rotationAndSizeDataSize, rotationAndSizeData);
 
     mParticlesEmitted = true;
 }
@@ -196,5 +269,28 @@ void GpuParticleSystemSceneProxy::ResetParticlesData(
 RenderInfo GpuParticleSystemSceneProxy::GetRenderInfo() const
 {
     return RenderInfo{m_shader->GetShaderName()};
+}
+
+void GpuParticleSystemSceneProxy::ResetParticleModulesProxies(
+    const std::vector<std::shared_ptr<IGpuParticleModuleProxy>>& gpuParticleModulesProxies)
+{
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("RenderThread"),
+        "ResetParticleModulesProxies can be called only from RenderThread");
+    ext_assert(
+        m_computeShader,
+        "Compute shader is null in ResetParticleModulesProxies, make sure PostConstructorInitialize was called before");
+
+    ShaderPool::GetInstance()->TryToFreeMemory(m_computeShader);
+
+    m_gpuParticleModulesProxies = gpuParticleModulesProxies;
+    ShaderParams computeShaderParams("GpuParticleComputeShader");
+    computeShaderParams.SetComputeShader(
+        FolderManager::GetInstance()->GetShadersPath() + SLASH + "compute" + SLASH + "gpuParticleCS.glsl");
+    for (const auto& moduleProxy : m_gpuParticleModulesProxies) {
+        computeShaderParams.AddShaderCodeSnippet(
+            moduleProxy->GetModuleTypeHash(), eShaderType::ComputeShader, moduleProxy->GetShaderSnippet());
+        m_computeShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleComputeShader_t>(computeShaderParams);
+    }
 }
 } // namespace Graphics::Proxy

@@ -16,7 +16,6 @@
 #include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
 #include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
 #include "Core/GameCore/Particles/Modules/Size/SimpleSizeModule.h"
-#include "Core/GameCore/Particles/Modules/Velocity/ExplosionInitialVelocityModule.h"
 #include "Core/GameCore/Particles/Modules/Velocity/SimpleVelocityModule.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"

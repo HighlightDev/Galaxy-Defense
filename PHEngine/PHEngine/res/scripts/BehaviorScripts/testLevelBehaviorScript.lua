@@ -25,18 +25,22 @@ setup()
 
 local EngineInputReceiver = require("Ui/Core/engineInputReceiver")
 
-local particlesLuaProxyId = nil
+local particlesLuaProxyIds = {}
 local engineReceiver = nil
 
 local function onPressedKeyboardButtons(host, pressedKeyNames)
     for _, keyName in pairs(pressedKeyNames) do
-        if keyName == "F" then _InvokeFunction(host, particlesLuaProxyId, "EmitParticles", "") end
+        if keyName == "F" then
+            for _, luaProxyId in ipairs(particlesLuaProxyIds) do
+                _InvokeFunction(host, luaProxyId, "EmitParticles", "")
+            end
+        end
     end
 end
 
 function System_OnStart(host)
-    particlesLuaProxyId = _GetLuaProxyIdForComponent(host, "c_particleSystem")
-    assert(particlesLuaProxyId ~= nil, "Particle system Lua proxy ID is nil")
+    particlesLuaProxyIds = { _GetLuaProxyIdForComponent(host, "c_particleSystem") }
+    assert(particlesLuaProxyIds[1] ~= nil, "Particle system Lua proxy ID is nil")
 
     engineReceiver = EngineInputReceiver:new()
     engineReceiver.subscribeToMouseEvents = false

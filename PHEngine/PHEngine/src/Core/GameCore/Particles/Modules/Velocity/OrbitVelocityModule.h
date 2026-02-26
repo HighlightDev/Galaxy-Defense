@@ -21,5 +21,7 @@ public:
     void SetExtraVelocityDirectionType(const eOrbitExtraVelocityDirectionType velocityType);
 
     void SetExtraVelocityPower(const float velocityPower);
+
+    std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const override;
 };
 } // namespace EngineCore

@@ -2,6 +2,7 @@
 
 #include "Core/CommonCore/Random.h"
 #include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
+#include "Core/GameCore/Particles/Modules/ModuleGpuProxy/Velocity/OrbitVelocityModuleGpuProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -49,5 +50,10 @@ void OrbitVelocityModule::SetExtraVelocityDirectionType(const eOrbitExtraVelocit
 void OrbitVelocityModule::SetExtraVelocityPower(const float velocityPower)
 {
     mExtraVelocityPower = velocityPower;
+}
+
+std::shared_ptr<IGpuParticleModuleProxy> OrbitVelocityModule::GetGpuProxy() const
+{
+    return std::make_shared<OrbitVelocityModuleGpuProxy>(mExtraVelocityDirectionType, mExtraVelocityPower);
 }
 } // namespace EngineCore

@@ -19,6 +19,10 @@ Shader::Shader(const ShaderParams& params)
     , m_defines()
     , m_defineConstantArrays()
 {
+    m_codeSnippets.reserve(params.ShaderCodeSnippets.size());
+    for (const auto& [snippetId, codeSnippet] : params.ShaderCodeSnippets) {
+        m_codeSnippets.emplace_back(codeSnippet.first, EngineUtility::Split(codeSnippet.second, '\n'));
+    }
 }
 
 Shader::~Shader()
@@ -33,6 +37,10 @@ bool Shader::operator==(const Shader& right) const
 
 void Shader::ShaderInit()
 {
+    ext_assert(
+        m_shaderProgramID == std::numeric_limits<uint32_t>::max(),
+        "Attempt to initialize shader that has already been initialized. Shader name: " + mShaderName);
+
     SetShaderPredefine(); // start precompile shader customization
     ProcessAllPredefines();
 
@@ -61,6 +69,35 @@ bool Shader::LoadShadersSourceToGpu()
 
         auto shaderSource = LoadShaderSource(shaderFile);
         ProcessShaderIncludes(shaderSource);
+
+        std::unordered_map<eShaderType, std::vector<ShaderGenericDefineConstant>> constantPredefines;
+        std::unordered_map<eShaderType, std::vector<ShaderGenericConstantArray>> arrayConstants;
+        std::unordered_map<eShaderType, std::vector<ShaderGenericDefine>> predefines;
+        std::unordered_map<eShaderType, std::vector<ShaderCodeSnippet>> codeSnippets;
+
+        for (const auto& define : m_defineConstantParameters) {
+            constantPredefines[define.m_ShaderType].emplace_back(define);
+        }
+
+        for (const auto& arrayConstant : m_defineConstantArrays) {
+            arrayConstants[arrayConstant.m_ShaderType].emplace_back(arrayConstant);
+        }
+
+        for (const auto& define_it : m_defines) {
+            predefines[define_it.m_ShaderType].emplace_back(define_it);
+        }
+
+        for (const auto& codeSnippet : m_codeSnippets) {
+            codeSnippets[codeSnippet.m_ShaderType].emplace_back(codeSnippet);
+        }
+
+        ModifyShaderSourceWithExtraData(
+            shaderSource,
+            constantPredefines[shaderType],
+            predefines[shaderType],
+            arrayConstants[shaderType],
+            codeSnippets[shaderType]);
+
         shaderSources[shaderType] = shaderSource;
     }
 
@@ -69,47 +106,6 @@ bool Shader::LoadShadersSourceToGpu()
 
 void Shader::ProcessAllPredefines()
 {
-    std::unordered_map<eShaderType, std::vector<ShaderGenericDefineConstant>> constantPredefines;
-    std::unordered_map<eShaderType, std::vector<ShaderGenericConstantArray>> arrayConstants;
-    std::unordered_map<eShaderType, std::vector<ShaderGenericDefine>> predefines;
-    std::unordered_map<eShaderType, std::vector<ShaderCodeSnippet>> codeSnippets;
-
-    for (const auto& define : m_defineConstantParameters) {
-        constantPredefines[define.m_ShaderType].emplace_back(define);
-    }
-
-    for (const auto& arrayConstant : m_defineConstantArrays) {
-        arrayConstants[arrayConstant.m_ShaderType].emplace_back(arrayConstant);
-    }
-
-    for (const auto& define_it : m_defines) {
-        predefines[define_it.m_ShaderType].emplace_back(define_it);
-    }
-
-    for (const auto& codeSnippet : m_codeSnippets) {
-        codeSnippets[codeSnippet.m_ShaderType].emplace_back(codeSnippet);
-    }
-
-    const auto& inShaderFiles = m_shaderParams.ShaderFiles;
-
-    for (const auto shaderType :
-         {eShaderType::VertexShader,
-          eShaderType::FragmentShader,
-          eShaderType::GeometryShader,
-          eShaderType::TesselationControlShader,
-          eShaderType::TesselationEvaluationShader,
-          eShaderType::ComputeShader}) {
-
-        if (inShaderFiles.count(shaderType)) {
-
-            ModifyShaderFileWithExtraData(
-                m_shaderParams.ShaderFiles.at(shaderType),
-                constantPredefines[shaderType],
-                predefines[shaderType],
-                arrayConstants[shaderType],
-                codeSnippets[shaderType]);
-        }
-    }
 }
 
 uint32_t Shader::GetSubroutineIndex(const int32_t shaderType, const std::string& subroutineName) const

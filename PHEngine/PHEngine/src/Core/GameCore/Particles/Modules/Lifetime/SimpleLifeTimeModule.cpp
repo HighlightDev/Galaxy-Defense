@@ -1,5 +1,6 @@
 #include "SimpleLifeTimeModule.h"
 
+#include "Core/GameCore/Particles/Modules/ModuleGpuProxy/Lifetime/SimpleLifeTimeModuleGpuProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 using namespace EngineMath;
@@ -33,5 +34,10 @@ void SimpleLifeTimeModule::OnEmitParticles()
         particle.LifeRemaining = mLifeTime;
         particle.isActive = true;
     }
+}
+
+std::shared_ptr<IGpuParticleModuleProxy> SimpleLifeTimeModule::GetGpuProxy() const
+{
+    return std::make_shared<SimpleLifeTimeModuleGpuProxy>(mLifeTime);
 }
 } // namespace EngineCore

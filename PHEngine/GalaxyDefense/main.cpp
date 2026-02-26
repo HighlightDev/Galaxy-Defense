@@ -150,12 +150,13 @@ int32_t main(int32_t argc, char** argv)
 #endif
 
     ThreadHelper::GetInstance()->RegisterThread("Render");
-    FolderManager::GetInstance()->BuildSystemPathToFolders();
-    EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
     // Logger::InitLog(std::make_shared<LoggerClientConsole>());
     Logger::InitLog(std::make_shared<LoggerClientFile>());
     Logger::StartLogThread();
+
+    FolderManager::GetInstance()->BuildSystemPathToFolders();
+    EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
     GLFWwindow* window;
     // Initialize the library

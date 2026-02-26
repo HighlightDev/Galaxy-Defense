@@ -1,5 +1,6 @@
 #include "SimpleColorModule.h"
 
+#include "Core/GameCore/Particles/Modules/ModuleGpuProxy/Color/SimpleColorModuleGpuProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 using namespace EngineMath;
@@ -28,5 +29,10 @@ void SimpleColorModule::SetColorEnd(const glm::vec3& colorEnd)
 
 void SimpleColorModule::OnEmitParticles()
 {
+}
+
+std::shared_ptr<IGpuParticleModuleProxy> SimpleColorModule::GetGpuProxy() const
+{
+    return std::make_shared<SimpleColorModuleGpuProxy>(mColorBegin, mColorEnd);
 }
 } // namespace EngineCore

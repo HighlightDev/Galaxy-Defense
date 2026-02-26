@@ -24,6 +24,33 @@ GeneralSystemSettingsDataProvider::~GeneralSystemSettingsDataProvider()
     Event::BroadcastGameThreadEvent::GetInstance()->RemoveListener(Event::BroadcastGameThreadEvent::GetInstanceId());
 }
 
+void GeneralSystemSettingsDataProvider::SetOpenGLMajorVersion(const float version)
+{
+    m_openglMajorVersion = version;
+    LogInfo("GeneralSystemSettingsDataProvider::SetOpenGLMajorVersion: version: ", version);
+}
+
+void GeneralSystemSettingsDataProvider::SetOpenGLMinorVersion(const float version)
+{
+    m_openglMinorVersion = version;
+    LogInfo("GeneralSystemSettingsDataProvider::SetOpenGLMinorVersion: version: ", version);
+}
+
+float GeneralSystemSettingsDataProvider::GetOpenGLMajorVersion() const
+{
+    return m_openglMajorVersion;
+}
+
+float GeneralSystemSettingsDataProvider::GetOpenGLMinorVersion() const
+{
+    return m_openglMinorVersion;
+}
+
+float GeneralSystemSettingsDataProvider::GetOpenGLVersion() const
+{
+    return m_openglMajorVersion + (m_openglMinorVersion * 0.1f);
+}
+
 const std::shared_ptr<GeneralSystemSettingsDataProvider>& GeneralSystemSettingsDataProvider::GetInstance()
 {
     static const std::shared_ptr<GeneralSystemSettingsDataProvider>& settings

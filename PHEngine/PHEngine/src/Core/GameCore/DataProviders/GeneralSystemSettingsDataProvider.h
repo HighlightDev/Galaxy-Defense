@@ -27,6 +27,10 @@ class GeneralSystemSettingsDataProvider : public Event::BroadcastGameThreadEvent
     float m_soundGain{1.0f}; // Default gain level (1.0 = 100%)
     float m_musicGain{1.0f}; // Default music gain level (1.0 = 100%)
 
+    float m_openglMajorVersion{1.0f};
+    float m_openglMinorVersion{0.0f};
+    float m_openglVersion{1.0f};
+
 public:
     GeneralSystemSettingsDataProvider();
     static const std::shared_ptr<GeneralSystemSettingsDataProvider>& GetInstance();
@@ -38,6 +42,14 @@ public:
     void ProcessEvent(
         const Event::BroadcastGameThreadEvent* sender,
         const typename Event::BroadcastGameThreadEvent::EventData_t& eventData) override;
+
+    void SetOpenGLMajorVersion(const float version);
+    void SetOpenGLMinorVersion(const float version);
+
+    float GetOpenGLMajorVersion() const;
+    float GetOpenGLMinorVersion() const;
+
+    float GetOpenGLVersion() const;
 
     void SetWindowSize(const int32_t width, const int32_t height);
 

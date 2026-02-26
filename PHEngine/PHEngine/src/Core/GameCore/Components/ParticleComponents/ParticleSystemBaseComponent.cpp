@@ -10,7 +10,7 @@ ParticleSystemBaseComponent::ParticleSystemBaseComponent(
     const glm::vec3& translation,
     const glm::vec3& rotation,
     const glm::vec3& scale,
-    size_t particlesCount)
+    const size_t particlesCount)
     : PrimitiveComponent(name, translation, rotation, scale)
     , mParticlesCount(particlesCount)
     , mPrevActiveParticles(0)
@@ -38,6 +38,12 @@ void ParticleSystemBaseComponent::AddParticleModule(const std::shared_ptr<IParti
     std::sort(mParticleModules.begin(), mParticleModules.end(), [](const auto& leftModule, const auto& rightModule) {
         return (uint8_t)leftModule->GetParticleModuleType() < (uint8_t)rightModule->GetParticleModuleType();
     });
+
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
+        isParticleModulesProxiesDirty = true;
+        SyncDataWithRenderThread(0, true);
+        isParticleModulesProxiesDirty = false;
+    }
 }
 
 void ParticleSystemBaseComponent::EmitParticles()
@@ -75,5 +81,22 @@ void ParticleSystemBaseComponent::SetParticleEmitter(const std::shared_ptr<IEmit
 const std::vector<Particle>& ParticleSystemBaseComponent::GetParticlesPool() const
 {
     return mParticlesPool;
+}
+
+std::vector<std::shared_ptr<IParticleModule>> ParticleSystemBaseComponent::GetParticleModules() const
+{
+    return mParticleModules;
+}
+
+std::vector<std::shared_ptr<IGpuParticleModuleProxy>> ParticleSystemBaseComponent::GetParticleModulesProxies() const
+{
+    std::vector<std::shared_ptr<IGpuParticleModuleProxy>> gpuProxies;
+    gpuProxies.reserve(mParticleModules.size());
+    std::transform(
+        mParticleModules.cbegin(),
+        mParticleModules.cend(),
+        std::back_inserter(gpuProxies),
+        [](const std::shared_ptr<IParticleModule>& module) { return module->GetGpuProxy(); });
+    return gpuProxies;
 }
 } // namespace EngineCore

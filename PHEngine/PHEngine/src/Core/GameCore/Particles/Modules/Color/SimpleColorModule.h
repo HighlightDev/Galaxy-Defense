@@ -19,5 +19,7 @@ public:
     void SetColorEnd(const glm::vec3& colorEnd);
 
     void OnEmitParticles() override;
+
+    std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const override;
 };
 } // namespace EngineCore

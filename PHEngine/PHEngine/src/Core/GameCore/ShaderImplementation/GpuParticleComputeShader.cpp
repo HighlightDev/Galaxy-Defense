@@ -16,6 +16,7 @@ GpuParticleComputeShader::~GpuParticleComputeShader()
 
 void GpuParticleComputeShader::AccessAllUniformLocations(uint32_t shaderProgramID)
 {
+    ComputeShaderBase::AccessAllUniformLocations(shaderProgramID);
     m_deltaTimeUniform = GetUniform("deltaTimeSec", shaderProgramID);
     m_particleLifetimeUniform = GetUniform("particleLifetime", shaderProgramID);
 }

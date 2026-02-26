@@ -14,7 +14,7 @@ namespace Graphics {
 namespace OpenGL {
 class Shader : public IShader {
 public:
-    Shader(const ShaderParams& params);
+    explicit Shader(const ShaderParams& params);
 
     virtual ~Shader();
 

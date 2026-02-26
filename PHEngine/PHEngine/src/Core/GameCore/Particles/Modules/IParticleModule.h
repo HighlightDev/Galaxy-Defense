@@ -8,9 +8,10 @@
 #include <vector>
 
 namespace EngineCore {
-enum class eParticleModuleType : uint8_t { LIFETIME, INITIAL_VELOCITY, VELOCITY, COLOR, SIZE };
+enum class eParticleModuleType : uint8_t { LIFETIME, VELOCITY, COLOR, SIZE };
 
 class ParticleSystemBaseComponent;
+class IGpuParticleModuleProxy;
 
 class IParticleModule {
 protected:
@@ -24,6 +25,8 @@ public:
     virtual void Update(Particle& particle, const float deltaTimeSec) = 0;
 
     virtual void OnEmitParticles() = 0;
+
+    virtual std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const = 0;
 
     void SetOwner(const std::weak_ptr<ParticleSystemBaseComponent>& owner);
 

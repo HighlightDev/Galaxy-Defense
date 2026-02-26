@@ -9,9 +9,14 @@ layout(std430, binding = 0) buffer ParticlePositionBuffer
     vec4 ParticleRelativePositions[];
 };
 
-layout(std430, binding = 1) buffer ParticleColorBuffer
+layout(std430, binding = 3) buffer ParticleColorBuffer
 {
     vec4 ParticleColors[];
+};
+
+layout(std430, binding = 4) buffer ParticleRotationAndSizeBuffer
+{
+    vec2 ParticleRotationAndSizes[]; // x - rotation and y - size
 };
 
 layout(std140) uniform Matrices
@@ -53,7 +58,7 @@ vec3 GetParticleRelativeOffset()
 
 vec2 GetParticleRotationAndSize()
 {
-    return vec2(0, 0.5);
+    return ParticleRotationAndSizes[gl_InstanceID];
 }
 
 vec3 GetParticleColor()

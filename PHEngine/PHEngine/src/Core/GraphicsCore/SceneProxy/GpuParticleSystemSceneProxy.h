@@ -19,7 +19,8 @@ using namespace EngineCore::ShaderImpl;
 
 namespace EngineCore {
 class GpuParticleSystemComponent;
-}
+class IGpuParticleModuleProxy;
+} // namespace EngineCore
 
 namespace Graphics::OpenGL {
 class ShaderStorageBufferObject;
@@ -39,12 +40,17 @@ class GpuParticleSystemSceneProxy : public PrimitiveSceneProxy {
     uint32_t mPrevActiveParticlesCount;
 
     std::shared_ptr<ShaderStorageBufferObject> m_gpuParticlePositionsSSBO;
+    std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleVelocitiesSSBO;
+    std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleInitialVelocitiesSSBO;
     std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleColorsSSBO;
+    std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleRotationAndSizeSSBO;
     std::shared_ptr<ShaderStorageBufferObject> m_aliveCounterSSBO;
 
     std::shared_ptr<ParticleComputeShader_t> m_computeShader;
 
     Moment_t m_lastDispatchTime;
+
+    std::vector<std::shared_ptr<IGpuParticleModuleProxy>> m_gpuParticleModulesProxies;
 
 private:
     std::shared_ptr<ParticleShader_t> GetShader() const;
@@ -69,9 +75,20 @@ public:
     bool IsFrustumCullTestNeeded() const override;
 
     void ResetParticlesData(
-        const void* positionsData, const size_t positionsDataSize, const void* colorsData, const size_t colorsDataSize);
+        const void* positionsData,
+        const size_t positionsDataSize,
+        const void* velocitiesData,
+        const size_t velocitiesDataSize,
+        const void* initialVelocitiesData,
+        const size_t initialVelocitiesDataSize,
+        const void* colorsData,
+        const size_t colorsDataSize,
+        const void* rotationAndSizeData,
+        const size_t rotationAndSizeDataSize);
 
     RenderInfo GetRenderInfo() const override;
+
+    void ResetParticleModulesProxies(const std::vector<std::shared_ptr<IGpuParticleModuleProxy>>& gpuParticleModulesProxies);
 };
 } // namespace Proxy
 } // namespace Graphics

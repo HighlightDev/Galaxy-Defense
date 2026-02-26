@@ -1,5 +1,6 @@
 #include "SimpleSizeModule.h"
 
+#include "Core/GameCore/Particles/Modules/ModuleGpuProxy/Size/SimpleSizeModuleGpuProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 using namespace EngineMath;
@@ -29,5 +30,14 @@ void SimpleSizeModule::SetSizeEnd(const float sizeEnd)
 
 void SimpleSizeModule::OnEmitParticles()
 {
+    auto& particles = GetParticlesPool();
+    for (auto& particle : particles) {
+        particle.Size = mSizeBegin;
+    }
+}
+
+std::shared_ptr<IGpuParticleModuleProxy> SimpleSizeModule::GetGpuProxy() const
+{
+    return std::make_shared<SimpleSizeModuleGpuProxy>(mSizeBegin, mSizeEnd);
 }
 } // namespace EngineCore

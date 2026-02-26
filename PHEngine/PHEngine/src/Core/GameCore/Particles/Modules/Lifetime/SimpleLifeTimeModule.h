@@ -14,5 +14,7 @@ public:
     void SetLifeTime(const float lifeTime);
 
     void OnEmitParticles() override;
+
+    std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const override;
 };
 } // namespace EngineCore

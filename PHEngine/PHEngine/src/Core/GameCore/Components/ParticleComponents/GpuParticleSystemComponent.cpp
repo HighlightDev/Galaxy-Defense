@@ -116,6 +116,7 @@ void GpuParticleSystemComponent::SyncDataWithRenderThread(
             [weak = weak_from_this(),
              activeParticlesCount,
              isParticlesDataDirty = IsParticlesDataDirty(),
+             isParticleModulesProxiesDirty = isParticleModulesProxiesDirty,
              sceneProxyId = mSceneProxyId](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
@@ -128,27 +129,36 @@ void GpuParticleSystemComponent::SyncDataWithRenderThread(
                         if (proxyPtr) {
                             if (isParticlesDataDirty) {
                                 const auto& particlesPool = particleComponentPtr->GetParticlesPool();
-                                std::vector<glm::vec4> positionsData;
-                                std::vector<glm::vec4> colorsData;
+                                std::vector<glm::vec4> positionsData, velocitiesData, initialVelocitiesData, colorsData;
+                                std::vector<glm::vec2> rotationAndSizeData;
                                 positionsData.reserve(particlesPool.size());
+                                velocitiesData.reserve(particlesPool.size());
+                                initialVelocitiesData.reserve(particlesPool.size());
                                 colorsData.reserve(particlesPool.size());
-                                std::transform(
-                                    particlesPool.begin(),
-                                    particlesPool.end(),
-                                    std::back_inserter(positionsData),
-                                    [](const Particle& particle) { return glm::vec4(particle.Position, 0.0f); });
-                                std::transform(
-                                    particlesPool.begin(),
-                                    particlesPool.end(),
-                                    std::back_inserter(colorsData),
-                                    [](const Particle& particle) { return glm::vec4(particle.Color, 1.0f); });
+                                rotationAndSizeData.reserve(particlesPool.size());
+                                for (const auto& particle : particlesPool) {
+                                    positionsData.emplace_back(particle.Position, 0.0f);
+                                    velocitiesData.emplace_back(particle.Velocity, 0.0f);
+                                    initialVelocitiesData.emplace_back(particle.InitialVelocity, 0.0f);
+                                    colorsData.emplace_back(particle.Color, 1.0f);
+                                    rotationAndSizeData.emplace_back(particle.Rotation, particle.Size);
+                                }
 
                                 proxyPtr->ResetParticlesData(
                                     reinterpret_cast<const void*>(positionsData.data()),
                                     positionsData.size() * sizeof(glm::vec4),
+                                    reinterpret_cast<const void*>(velocitiesData.data()),
+                                    velocitiesData.size() * sizeof(glm::vec4),
+                                    reinterpret_cast<const void*>(initialVelocitiesData.data()),
+                                    initialVelocitiesData.size() * sizeof(glm::vec4),
                                     reinterpret_cast<const void*>(colorsData.data()),
-                                    colorsData.size() * sizeof(glm::vec4));
+                                    colorsData.size() * sizeof(glm::vec4),
+                                    reinterpret_cast<const void*>(rotationAndSizeData.data()),
+                                    rotationAndSizeData.size() * sizeof(glm::vec2));
                                 particleComponentPtr->SetIsParticlesDataDirty(false);
+                            }
+                            if (isParticleModulesProxiesDirty) {
+                                proxyPtr->ResetParticleModulesProxies(particleComponentPtr->GetParticleModulesProxies());
                             }
                         }
                     }

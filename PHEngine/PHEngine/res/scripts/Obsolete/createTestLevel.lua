@@ -464,7 +464,7 @@ function CreateTestLevel(host)
         color = {type = "simple", colorBegin = {r = 1.0, g = 0.7, b = 0.2}, colorEnd = {r = 1.0, g = 0.2, b = 0.02}},
         size = {type = "simple", sizeBegin = 0.9, sizeEnd = 0.1},
         velocityModules = {
-            {type = "explosionInitial"}, {
+            {
                 type = "simple",
                 velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
                 velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
@@ -472,6 +472,28 @@ function CreateTestLevel(host)
             }
         }
     }))
+
+    -- local a_particle2 = _CreateActor(host, "Actor", "ParticlesActor1", 30, 60, 0, 0, 0, 0, 1, 1, 1, "")
+    -- _CreateAndAttachComponentToActor(host, a_particle2, "GpuParticleSystemComponent", Json.encode({
+    --     gameObjectName = "c_particleSystem2",
+    --     translation = {x = 0.0, y = 0.0, z = 0.0},
+    --     scale = {x = 1.0, y = 1.0, z = 1.0},
+    --     particlesCount = 1000,
+    --     materialProxyId = particlesMat,
+
+    --     emitter = {type = "explosion", radius = 5.0, thetaSlicesCount = 100},
+    --     lifetime = {type = "simple", lifeTime = 1.0},
+    --     color = {type = "simple", colorBegin = {r = 1.0, g = 0.7, b = 0.2}, colorEnd = {r = 1.0, g = 0.2, b = 0.02}},
+    --     size = {type = "simple", sizeBegin = 0.9, sizeEnd = 0.1},
+    --     velocityModules = {
+    --         {
+    --             type = "simple",
+    --             velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
+    --             velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
+    --             extraVelocityPower = 1.0
+    --         }
+    --     }
+    -- }))
 
     -- **************************** Billboard ***************************** --
     local billboardMat = _CreateMaterial(host, "BillboardMaterial.m")
@@ -493,8 +515,8 @@ function CreateTestLevel(host)
 
     _CreateAndAttachComponentToActor(host, a_billboard, "LuaScriptComponent", Json.encode(
                                          {
-            gameObjectName = "BillboardRotationScript",
-            scriptName = "billboardRotationScript.lua"
+            gameObjectName = "TestLevelBehaviorScript",
+            scriptName = "testLevelBehaviorScript.lua"
         }))
 end
 

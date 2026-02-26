@@ -17,7 +17,10 @@ CompositeShaderPool* CompositeShaderPool::GetInstance()
 void CompositeShaderPool::RecompileShaders()
 {
     for (const auto& shader_pair : resourceMap) {
-        shader_pair.second->RecompileShader();
+        auto shader = shader_pair.second;
+        if (shader) {
+            shader->RecompileShader();
+        }
     }
 }
 

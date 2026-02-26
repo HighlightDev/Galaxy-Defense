@@ -16,7 +16,7 @@ using namespace EngineCore;
 namespace Graphics {
 namespace OpenGL {
 IShader::IShader(const std::string& shaderName)
-    : m_shaderProgramID(-1)
+    : m_shaderProgramID(std::numeric_limits<uint32_t>::max())
     , mShaderName(shaderName)
 {
 }
@@ -68,7 +68,9 @@ UniformArray IShader::GetUniformArray(
 
 int32_t IShader::GetAttributeLocationByName(const std::string& attributeName) const
 {
-    ext_assert(-1 != m_shaderProgramID, "IShader::GetAttributeLocationByName: Shader program ID is invalid");
+    ext_assert(
+        std::numeric_limits<uint32_t>::max() != m_shaderProgramID,
+        "IShader::GetAttributeLocationByName: Shader program ID is invalid");
     const auto attribLocation = glGetAttribLocation(m_shaderProgramID, attributeName.c_str());
     return attribLocation;
 }
@@ -337,16 +339,22 @@ std::string IShader::InsertCodeSnippetsToSource(
     const std::vector<std::string>& shaderSourceVector, const std::vector<ShaderCodeSnippet>& codeSnippets) const
 {
     auto shaderSourceVectorCopy = shaderSourceVector;
-    auto it = std::lower_bound(
-        shaderSourceVectorCopy.begin(),
-        shaderSourceVectorCopy.end(),
-        "main()",
-        [](const std::string& str, const std::string& lookfor) { return str < lookfor; });
-    ext_assert(
-        it != shaderSourceVectorCopy.end(),
-        "IShader::InsertCodeSnippetsToSource: Could not find main() function in shader source");
-    for (const auto& snippet : codeSnippets) {
-        shaderSourceVectorCopy.insert(it, snippet.m_CodeLines.begin(), snippet.m_CodeLines.end());
+
+    int mainIndex = -1;
+    int index = 0;
+    for (const auto& shaderSource : shaderSourceVectorCopy) {
+        if (EngineUtility::StartsWith(shaderSource, "void main()")) {
+            mainIndex = index;
+            break;
+        }
+        ++index;
+    }
+
+    if (-1 != mainIndex) {
+        for (const auto& snippet : codeSnippets) {
+            shaderSourceVectorCopy.insert(
+                shaderSourceVectorCopy.begin() + mainIndex, snippet.m_CodeLines.begin(), snippet.m_CodeLines.end());
+        }
     }
     return EngineUtility::Join(shaderSourceVectorCopy, '\n');
 }
@@ -360,6 +368,10 @@ void IShader::ModifyShaderSourceWithExtraData(
 {
     shaderSource = InsertPredefinesToSource(EngineUtility::Split(shaderSource, '\n'), constantDefines, defines, constantArrays);
     shaderSource = InsertCodeSnippetsToSource(EngineUtility::Split(shaderSource, '\n'), codeSnippets);
+
+#if DEBUG
+    LogInfo("IShader::ModifyShaderSourceWithExtraData: shader code: \n", shaderSource, "\n");
+#endif
 }
 
 void IShader::ModifyShaderFileWithExtraData(
@@ -378,6 +390,11 @@ void IShader::ModifyShaderFileWithExtraData(
     const std::string& finalResult = InsertCodeSnippetsToSource(EngineUtility::Split(result, '\n'), codeSnippets);
 
     WriteShaderSrc(pathToShader, finalResult);
+
+#if DEBUG
+    LogInfo(
+        "IShader::ModifyShaderFileWithExtraData: Modified shader file: ", pathToShader, " shader code: \n", finalResult, "\n");
+#endif
 }
 
 void IShader::CompileShaders()

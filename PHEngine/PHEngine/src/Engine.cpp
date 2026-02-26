@@ -2,6 +2,7 @@
 
 #include "Core/AudioCore/SoundDevice.h"
 #include "Core/CommonCore/Timer.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
@@ -71,8 +72,11 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
-    const std::string version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-    LogInfo("OpenGL version: ", version);
+    GLint majorVersion, minorVersion;
+    glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+    glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+    DataProviders::GeneralSystemSettingsDataProvider::GetInstance()->SetOpenGLMajorVersion(majorVersion);
+    DataProviders::GeneralSystemSettingsDataProvider::GetInstance()->SetOpenGLMinorVersion(minorVersion);
 
     LogInfo("Engine::Initialize");
     GameThreadEventDispatcher::GetInstance()

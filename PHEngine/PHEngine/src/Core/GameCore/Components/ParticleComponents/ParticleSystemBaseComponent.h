@@ -27,13 +27,15 @@ protected:
 
     std::shared_ptr<IEmitter> mParticleEmitter;
 
+    bool isParticleModulesProxiesDirty{false};
+
 public:
     ParticleSystemBaseComponent(
         const std::string& name,
         const glm::vec3& translation,
         const glm::vec3& rotation,
         const glm::vec3& scale,
-        size_t particlesCount);
+        const size_t particlesCount);
 
     virtual ~ParticleSystemBaseComponent() = default;
 
@@ -50,6 +52,10 @@ public:
     void SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter);
 
     const std::vector<Particle>& GetParticlesPool() const;
+
+    std::vector<std::shared_ptr<IParticleModule>> GetParticleModules() const;
+
+    std::vector<std::shared_ptr<IGpuParticleModuleProxy>> GetParticleModulesProxies() const;
 
 protected:
     virtual void SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData = false) = 0;

@@ -7,7 +7,6 @@
 #include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
 #include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
 #include "Core/GameCore/Particles/Modules/Size/SimpleSizeModule.h"
-#include "Core/GameCore/Particles/Modules/Velocity/ExplosionInitialVelocityModule.h"
 #include "Core/GameCore/Particles/Modules/Velocity/OrbitVelocityModule.h"
 #include "Core/GameCore/Particles/Modules/Velocity/SimpleVelocityModule.h"
 #include "Core/GameCore/Scene.h"
@@ -102,10 +101,6 @@ public:
                 module->SetVelocityDirection(velData->velocityDirection);
                 module->SetVelocityDeviation(velData->velocityDeviation);
                 module->SetExtraVelocityPower(velData->extraVelocityPower);
-                component->AddParticleModule(module);
-            } else if (velData->moduleType == "explosionInitial") {
-                auto module = std::make_shared<ExplosionInitialVelocityModule>();
-                module->SetOwner(component);
                 component->AddParticleModule(module);
             } else if (velData->moduleType == "orbit") {
                 auto module = std::make_shared<OrbitVelocityModule>();

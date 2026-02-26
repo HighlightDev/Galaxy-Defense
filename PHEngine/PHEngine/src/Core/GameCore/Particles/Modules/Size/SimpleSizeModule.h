@@ -18,5 +18,7 @@ public:
     void SetSizeEnd(const float sizeEnd);
 
     void OnEmitParticles() override;
+
+    std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const override;
 };
 } // namespace EngineCore
