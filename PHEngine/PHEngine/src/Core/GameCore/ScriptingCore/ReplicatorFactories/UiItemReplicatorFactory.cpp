@@ -1,6 +1,7 @@
 #include "UiItemReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/GUI/UiElements/UiItem.h"
 #include "Core/GameCore/Scene.h"
@@ -21,7 +22,7 @@ int32_t UiItemReplicatorFactory::CreateReplicator(
     const std::string& jsonParamsStr) const
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
         "UiItemReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto uiItemLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
@@ -44,7 +45,7 @@ int32_t UiItemReplicatorFactory::CreateReplicator(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ext_assert(
-                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_gameThreadName),
                     "UiItemReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiItem = std::make_shared<UiItem>(name);
                 createdUiItem->Initialize();

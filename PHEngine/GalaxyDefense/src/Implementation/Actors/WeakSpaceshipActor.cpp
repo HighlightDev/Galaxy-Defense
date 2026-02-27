@@ -2,7 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/LightComponent.h"
-#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemBaseComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -94,7 +94,7 @@ void WeakSpaceshipActor::TriggerExplosion()
     const auto& c_physics = GetPhysicsComponent();
     c_physics->SetIsEnabled(false);
 
-    const auto c_particle = GetComponentsByType<CpuParticleSystemComponent>().back();
+    const auto c_particle = GetComponentsByType<ParticleSystemBaseComponent>().back();
     c_particle->EmitParticles();
 
     const auto c_light = GetComponentsByType<LightComponent>().back();
@@ -107,7 +107,7 @@ void WeakSpaceshipActor::TriggerExplosion()
 void WeakSpaceshipActor::TriggerDisabled()
 {
     SpaceshipActor::TriggerDisabled();
-    const auto c_particle = GetComponentsByType<CpuParticleSystemComponent>().back();
+    const auto c_particle = GetComponentsByType<ParticleSystemBaseComponent>().back();
     c_particle->ResetParticles();
     mWeakSpaceshipTweener->InitRootState();
     mUiComponent->SetHealthBarFillPercent(1.0f);

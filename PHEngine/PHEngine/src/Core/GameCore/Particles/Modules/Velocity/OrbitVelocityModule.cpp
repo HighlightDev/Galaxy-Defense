@@ -1,7 +1,7 @@
 #include "OrbitVelocityModule.h"
 
 #include "Core/CommonCore/Random.h"
-#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemBaseComponent.h"
 #include "Core/GameCore/Particles/Modules/ModuleGpuProxy/Velocity/OrbitVelocityModuleGpuProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 

@@ -27,18 +27,25 @@ layout(std430, binding = 4) buffer RotationAndSizeBuffer
     vec2 RotationAndSizes[]; // x - rotation and y - size
 };
 
-layout(std430, binding = 5) buffer AliveCounterBuffer
+layout(std430, binding = 5) buffer ParticleLifetimeBuffer
+{
+    float ParticleLifetimes[];
+};
+
+layout(std430, binding = 6) buffer AliveCounterBuffer
 {
     uint AliveCounter;
 };
 
-uniform float particleLifetime;
 uniform float deltaTimeSec;
+uniform float particleMoveSpeed;
 
 void main()
 {
     uint index = gl_GlobalInvocationID.x;
-    float currentLifeDuration = ParticlePositions[index].w;
+    float particleLifetime = ParticleLifetimes[index];
+    vec4 currentParticlePositionAndLifeDuration = ParticlePositions[index];
+    float currentLifeDuration = currentParticlePositionAndLifeDuration.w;
     bool particleAlive = currentLifeDuration < particleLifetime;
     if (particleAlive) {
         atomicAdd(AliveCounter, 1);
@@ -56,6 +63,9 @@ void main()
     vec2 updatedRotationAndSize = updateRotationAndSize(RotationAndSizes[index], particleLifeFactor, deltaTimeSec);
     RotationAndSizes[index] = updatedRotationAndSize;
 
-    const float particleSpeed = 15.0f;
-    ParticlePositions[index] += vec4(normalize(initialVelocity + updatedVelocity) * deltaTimeSec * particleSpeed, deltaTimeSec);
+    float updatedLifeDuration = updateLifeTime(currentLifeDuration, deltaTimeSec);
+    ParticlePositions[index] = vec4(
+        currentParticlePositionAndLifeDuration.xyz
+            + normalize(initialVelocity + updatedVelocity) * deltaTimeSec * particleMoveSpeed,
+        updatedLifeDuration);
 }

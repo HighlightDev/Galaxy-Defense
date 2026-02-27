@@ -1,6 +1,7 @@
 #include "LuaScriptExecutorBase.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/IoCore/FolderManager.h"
 
@@ -101,7 +102,7 @@ void LuaScriptExecutorBase::OnUpdate(const float deltaTimeSec)
 {
     if (mHasOnUpdate) {
         ext_assert(
-            ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+            ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
             "LuaScriptExecutorBase::OnUpdate: Current thread is not Lua thread");
         LuaFunctionInvoker<void(void*, float)>::Invoke(mLuaInstance, "System_OnUpdate", (void*)this, deltaTimeSec);
     }

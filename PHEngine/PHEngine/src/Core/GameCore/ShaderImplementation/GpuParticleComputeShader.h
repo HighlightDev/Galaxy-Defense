@@ -5,7 +5,7 @@
 namespace EngineCore::ShaderImpl {
 class GpuParticleComputeShader : public ComputeShaderBase {
 private:
-    Uniform m_deltaTimeUniform, m_particleLifetimeUniform;
+    Uniform m_deltaTimeUniform, m_particleMoveSpeedUniform;
 
 public:
     GpuParticleComputeShader(const ShaderParams& params);
@@ -16,7 +16,7 @@ public:
 
     void SetDispatchDeltaTime(const double deltaTimeSec);
 
-    void SetParticleLifetime(const float lifetime);
+    void SetParticleMoveSpeed(const float moveSpeed);
 };
 
 } // namespace EngineCore::ShaderImpl

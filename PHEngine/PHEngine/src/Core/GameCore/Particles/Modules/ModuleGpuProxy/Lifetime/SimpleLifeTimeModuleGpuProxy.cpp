@@ -1,6 +1,9 @@
 #include "SimpleLifeTimeModuleGpuProxy.h"
 
 #include "Core/CommonCore/StringHash.h"
+#include "Core/UtilityCore/StringExtendedFunctions.h"
+
+#include <cstdio>
 
 namespace EngineCore {
 SimpleLifeTimeModuleGpuProxy::SimpleLifeTimeModuleGpuProxy(const float lifeTime)
@@ -10,12 +13,19 @@ SimpleLifeTimeModuleGpuProxy::SimpleLifeTimeModuleGpuProxy(const float lifeTime)
 
 std::string SimpleLifeTimeModuleGpuProxy::GetShaderSnippet() const
 {
+    const auto fmtStr = R"(
+    float updateLifeTime(in float currentLifeTime, in float dt) {
+        return currentLifeTime + dt;
+    })";
+    char buffer[256];
+    std::snprintf(buffer, sizeof(buffer), fmtStr);
+    return EngineUtility::Trim(buffer);
     return "";
 }
 
-constexpr uint64_t SimpleLifeTimeModuleGpuProxy::GetModuleTypeHash() const
+uint64_t SimpleLifeTimeModuleGpuProxy::GetModuleTypeHash() const
 {
-    return Hash64_CT("SimpleLifeTimeModuleGpuProxy");
+    return Hash64_CT("SimpleLifeTimeModuleGpuProxy") ^ std::hash<float>{}(mLifeTime);
 }
 
 } // namespace EngineCore

@@ -1,5 +1,6 @@
 #include "CombatLevelUiController.h"
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Event/PauseGameEvent.h"
@@ -72,7 +73,7 @@ void CombatLevelUiController::CleanUp()
 void CombatLevelUiController::RestartLuaScripts()
 {
     ext_assert(
-        !ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        !ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
         "CombatLevelUiController::RestartLuaScripts cannot be called from Lua thread");
 
     if (const auto& sceneSp = mSceneWp.lock()) {

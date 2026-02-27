@@ -1,6 +1,7 @@
 #include "Engine.h"
 
 #include "Core/AudioCore/SoundDevice.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Event/BroadcastEvent.h"
@@ -223,7 +224,7 @@ void Engine::PlayLevel(const std::string& levelName)
 {
     LogInfo("Engine::PlayLevel: ", levelName);
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "Engine::PlayLevel must be called from Render thread");
     ext_assert(m_levelFactory, "Level factory is not initialized");
 
@@ -253,7 +254,7 @@ void Engine::RestartLevel()
 {
     LogInfo("Engine::RestartLevel");
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "Engine::RestartLevel must be called from Render thread");
     ext_assert(m_levelFactory, "Level factory is not initialized");
     ext_assert(m_level, "Current level is null, cannot restart");

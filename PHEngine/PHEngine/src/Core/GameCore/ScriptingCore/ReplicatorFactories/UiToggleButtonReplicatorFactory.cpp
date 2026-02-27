@@ -1,6 +1,7 @@
 #include "UiToggleButtonReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/GUI/UiElements/UiToggleButton.h"
 #include "Core/GameCore/Scene.h"
@@ -20,7 +21,7 @@ int32_t UiToggleButtonReplicatorFactory::CreateReplicator(
     const std::string& jsonParamsStr) const
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
         "UiToggleButtonReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto& jsonObj = nlohmann::json::parse(jsonParamsStr);
     const auto isStateOn = jsonObj["is_state_on"].get<bool>();
@@ -42,7 +43,7 @@ int32_t UiToggleButtonReplicatorFactory::CreateReplicator(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ext_assert(
-                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_gameThreadName),
                     "UiToggleButtonReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiToggleButton = std::make_shared<UiToggleButton>(isStateOn, name);
                 createdUiToggleButton->Initialize();

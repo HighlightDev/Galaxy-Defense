@@ -1,6 +1,7 @@
 #include "UiTextBlockReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/GUI/UiElements/UiTextBlock.h"
 #include "Core/GameCore/Scene.h"
@@ -20,7 +21,7 @@ int32_t UiTextBlockReplicatorFactory::CreateReplicator(
     const std::string& jsonParamsStr) const
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
         "UiTextBlockReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto uiTextBlockLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
@@ -47,7 +48,7 @@ int32_t UiTextBlockReplicatorFactory::CreateReplicator(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ext_assert(
-                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_gameThreadName),
                     "UiTextBlockReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiTextBlock = std::make_shared<UiTextBlock>(fontName, name);
                 createdUiTextBlock->Initialize();

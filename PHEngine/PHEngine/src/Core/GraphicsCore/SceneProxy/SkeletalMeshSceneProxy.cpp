@@ -1,5 +1,6 @@
 #include "SkeletalMeshSceneProxy.h"
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
@@ -203,7 +204,7 @@ void SkeletalMeshSceneProxy::SetMeshModelPath(const std::string& modelPath)
 {
     m_renderData.mModelPath = modelPath;
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "SkeletalMeshSceneProxy::SetMeshModelPath must be called from Render thread");
 
     MeshPoolParameters poolParameters;

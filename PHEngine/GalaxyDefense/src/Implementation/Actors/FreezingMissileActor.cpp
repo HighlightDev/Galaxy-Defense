@@ -3,7 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
-#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemBaseComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Implementation/Actors/SpaceStationActor.h"
@@ -43,7 +43,7 @@ void FreezingMissileActor::TriggerExplosion()
     ext_assert(c_soundList.size(), "FreezingMissileActor has no sound components for explosion");
     c_soundList.back()->PlayBuffer("explosion");
 
-    const auto c_particle = GetComponentsByType<CpuParticleSystemComponent>().back();
+    const auto c_particle = GetComponentsByType<ParticleSystemBaseComponent>().back();
     c_particle->EmitParticles();
 
     const auto c_mesh = GetComponentsByType<StaticMeshComponent>().back();
@@ -79,7 +79,7 @@ void FreezingMissileActor::TriggerDisabled()
 {
     mActivityState = eMissileActivityState::IDLE;
 
-    const auto c_particle = GetComponentsByType<CpuParticleSystemComponent>().back();
+    const auto c_particle = GetComponentsByType<ParticleSystemBaseComponent>().back();
     c_particle->ResetParticles();
 
     SetIsEnabled(false);

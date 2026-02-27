@@ -18,7 +18,7 @@ void GpuParticleComputeShader::AccessAllUniformLocations(uint32_t shaderProgramI
 {
     ComputeShaderBase::AccessAllUniformLocations(shaderProgramID);
     m_deltaTimeUniform = GetUniform("deltaTimeSec", shaderProgramID);
-    m_particleLifetimeUniform = GetUniform("particleLifetime", shaderProgramID);
+    m_particleMoveSpeedUniform = GetUniform("particleMoveSpeed", shaderProgramID);
 }
 
 void GpuParticleComputeShader::SetDispatchDeltaTime(const double deltaTimeSec)
@@ -26,9 +26,9 @@ void GpuParticleComputeShader::SetDispatchDeltaTime(const double deltaTimeSec)
     m_deltaTimeUniform.LoadUniform(static_cast<float>(deltaTimeSec));
 }
 
-void GpuParticleComputeShader::SetParticleLifetime(const float lifetime)
+void GpuParticleComputeShader::SetParticleMoveSpeed(const float moveSpeed)
 {
-    m_particleLifetimeUniform.LoadUniform(lifetime);
+    m_particleMoveSpeedUniform.LoadUniform(moveSpeed);
 }
 
 } // namespace EngineCore::ShaderImpl

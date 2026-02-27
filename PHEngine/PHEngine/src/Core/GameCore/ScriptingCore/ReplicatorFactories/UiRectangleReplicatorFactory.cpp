@@ -1,6 +1,7 @@
 #include "UiRectangleReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/GUI/UiElements/UiRectangle.h"
 #include "Core/GameCore/Scene.h"
@@ -21,7 +22,7 @@ int32_t UiRectangleReplicatorFactory::CreateReplicator(
     const std::string& jsonParamsStr) const
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
         "UiRectangleReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto uiRectangleLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
@@ -44,7 +45,7 @@ int32_t UiRectangleReplicatorFactory::CreateReplicator(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ext_assert(
-                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_gameThreadName),
                     "UiRectangleReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiRectangle = std::make_shared<UiRectangle>(name);
                 createdUiRectangle->Initialize();

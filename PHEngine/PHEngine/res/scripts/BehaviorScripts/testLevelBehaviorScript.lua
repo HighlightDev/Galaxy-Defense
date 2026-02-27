@@ -39,9 +39,12 @@ local function onPressedKeyboardButtons(host, pressedKeyNames)
 end
 
 function System_OnStart(host)
-    particlesLuaProxyIds = { _GetLuaProxyIdForComponent(host, "c_particleSystem") }
-    assert(particlesLuaProxyIds[1] ~= nil, "Particle system Lua proxy ID is nil")
-
+    particlesLuaProxyIds = {
+        _GetLuaProxyIdForComponent(host, "c_particleSystem"), _GetLuaProxyIdForComponent(host, "c_particleSystem_2")
+    }
+    for _, luaProxyId in ipairs(particlesLuaProxyIds) do
+        assert(luaProxyId ~= nil and luaProxyId ~= -1, "Particle system Lua proxy ID is nil")
+    end
     engineReceiver = EngineInputReceiver:new()
     engineReceiver.subscribeToMouseEvents = false
     engineReceiver:subscribeOnPressedKeyboardButton(onPressedKeyboardButtons)

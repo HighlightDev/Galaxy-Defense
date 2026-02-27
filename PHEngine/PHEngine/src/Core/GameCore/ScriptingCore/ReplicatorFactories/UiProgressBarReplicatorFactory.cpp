@@ -1,6 +1,7 @@
 #include "UiProgressBarReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/GUI/UiElements/UiProgressBar.h"
 #include "Core/GameCore/Scene.h"
@@ -20,7 +21,7 @@ int32_t UiProgressBarReplicatorFactory::CreateReplicator(
     const std::string& jsonParamsStr) const
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
         "UiProgressBarReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto uiProgressBarLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
@@ -43,7 +44,7 @@ int32_t UiProgressBarReplicatorFactory::CreateReplicator(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ext_assert(
-                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_gameThreadName),
                     "UiProgressBarReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiProgressBar = std::make_shared<UiProgressBar>(name);
                 createdUiProgressBar->Initialize();

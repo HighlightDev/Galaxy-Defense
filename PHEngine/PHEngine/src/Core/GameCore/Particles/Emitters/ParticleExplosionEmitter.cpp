@@ -2,7 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/Random.h"
-#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemBaseComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
 

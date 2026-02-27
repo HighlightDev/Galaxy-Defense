@@ -137,9 +137,9 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "clipRadius", 0.35f);
 
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
-        "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 100);
-    const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<CpuParticleSystemComponent>>();
-    const auto& c_particleSystemComponent = std::static_pointer_cast<CpuParticleSystemComponent>(
+        "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 500);
+    const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<GpuParticleSystemComponent>>();
+    const auto& c_particleSystemComponent = std::static_pointer_cast<GpuParticleSystemComponent>(
         scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
     auto emitter = std::make_shared<ParticleExplosionEmitter>();
     emitter->SetOwner(c_particleSystemComponent);

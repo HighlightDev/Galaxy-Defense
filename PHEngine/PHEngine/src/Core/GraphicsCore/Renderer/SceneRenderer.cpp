@@ -1234,7 +1234,7 @@ void SceneRenderer::AddMaterialProxy_OnRenderThread(const std::shared_ptr<Materi
 {
     static const uint64_t functionId = Hash64_CT("SceneRenderer::AddMaterialProxy_OnRenderThread");
 
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         ext_assert(
             !GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()),
             "Material proxy with id {} already exists" + std::to_string(materialProxy->GetSceneProxyId()));
@@ -1271,7 +1271,7 @@ void SceneRenderer::AddMaterialProxy_OnRenderThread(const std::shared_ptr<Materi
 void SceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(
     const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
         if (primitiveSp) {
             primitiveSp->SetEnabled(bEnabled);
@@ -1298,7 +1298,7 @@ void SceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(
 void SceneRenderer::UpdateLightComponentEnable_OnRenderThread(
     const int32_t lightSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
         if (lightSp) {
             lightSp->SetEnabled(bEnabled);
@@ -1325,7 +1325,7 @@ void SceneRenderer::UpdateLightComponentEnable_OnRenderThread(
 void SceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(
     const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool visibility)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
         if (primitiveSp) {
             primitiveSp->SetVisibility(visibility);
@@ -1352,7 +1352,7 @@ void SceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(
 void SceneRenderer::UpdateLightComponentIsVisible_OnRenderThread(
     const int32_t lightSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool visibility)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
         if (lightSp) {
             lightSp->SetIsVisible(visibility);
@@ -1382,7 +1382,7 @@ void SceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(
     const uint64_t functionId,
     const int32_t sortOrderValue)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
         if (primitiveSp) {
             primitiveSp->SetSortOrderValue(sortOrderValue);
@@ -1414,7 +1414,7 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
     const glm::mat4& newOutlineMatrix,
     const BoundingBox3D& newTransformedBoundingBox)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
         if (primitiveSp) {
             primitiveSp->SetWorldMatrix(newworldMatrix);
@@ -1445,7 +1445,7 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
 void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
     const int32_t lightSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const glm::mat4& newworldMatrix)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
         if (lightSp) {
             lightSp->SetWorldMatrix(newworldMatrix);
@@ -1471,7 +1471,7 @@ void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
 
 void SceneRenderer::RemovePrimitiveSceneProxy_OnRenderThread(const int32_t primitiveSceneProxyIndex)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
         SetProxiesAreDirty(true);
     } else {
@@ -1493,7 +1493,7 @@ void SceneRenderer::RemovePrimitiveSceneProxy_OnRenderThread(const int32_t primi
 
 void SceneRenderer::UpdatePrimitiveSceneProxies_OnRenderThread()
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         SetProxiesAreDirty(true);
     } else {
         m_interThreadMgr.ExecuteOnRenderThread(
@@ -1513,7 +1513,7 @@ void SceneRenderer::UpdatePrimitiveSceneProxies_OnRenderThread()
 
 void SceneRenderer::DeleteLightSceneProxy_OnRenderThread(const int32_t lightSceneProxyIndex)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         RemoveLightProxyByProxyId(lightSceneProxyIndex);
         SetLightProxiesAreDirty(true);
     } else {
@@ -1535,7 +1535,7 @@ void SceneRenderer::DeleteLightSceneProxy_OnRenderThread(const int32_t lightScen
 
 void SceneRenderer::UpdateLightSceneProxies_OnRenderThread()
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         SetLightProxiesAreDirty(true);
     } else {
         constexpr int32_t creatorObjectId = 0;
@@ -1558,7 +1558,7 @@ void SceneRenderer::UpdateLightSceneProxies_OnRenderThread()
 void SceneRenderer::AddCameraSceneProxy_OnRenderThread(
     const std::shared_ptr<ACamera>& camera, const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, GetPrimitiveProxies()));
         camera->SetIsCameraProxyReady(true);
     } else {
@@ -1585,7 +1585,7 @@ void SceneRenderer::AddCameraSceneProxy_OnRenderThread(
 void SceneRenderer::RemoveCameraSceneProxy_OnRenderThread(const int32_t cameraSceneProxyId)
 {
     LogInfo("SceneRenderer::RemoveCameraSceneProxy_OnRenderThread: camera proxyId: ", cameraSceneProxyId);
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         SceneViewsVector.erase(
             std::remove_if(
                 SceneViewsVector.begin(),
@@ -1624,7 +1624,7 @@ void SceneRenderer::AddPrimitiveSceneProxy_OnRenderThread(
     constexpr int32_t creatorObjectId = 0;
     static const uint64_t functionId = Hash64_CT("SceneRenderer::AddPrimitiveSceneProxy_OnRenderThread");
 
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         ext_assert(
             !GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()),
             "Primitive proxy with id {} already exists" + std::to_string(primitiveSceneProxy->GetSceneProxyId()));
@@ -1660,7 +1660,7 @@ void SceneRenderer::AddLightSceneProxy_OnRenderThread(
     constexpr int32_t creatorObjectId = 0;
     static const uint64_t functionId = Hash64_CT("SceneRenderer::AddLightSceneProxy_OnRenderThread");
 
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         ext_assert(
             !GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()),
             "Light proxy with id {} already exists" + std::to_string(lightSceneProxy->GetSceneProxyId()));
@@ -1695,7 +1695,7 @@ void SceneRenderer::RegisterUiCanvasProxy_OnRenderThread(
 {
     LogInfo("SceneRenderer::RegisterUiCanvasProxy_OnRenderThread: UId = ", uiCanvasProxy->GetUiItemUId());
 
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         RegisterUiCanvasProxy(uiCanvasProxy);
         uiCanvas->SetIsSceneProxyReady(true);
     } else {
@@ -1722,7 +1722,7 @@ void SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUi
 {
     LogInfo("SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread: UId = ", canvasUiId);
 
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         UnregisterUiCanvasProxy(canvasUiId);
     } else {
         constexpr int32_t creatorObjectId = 0;
@@ -1746,7 +1746,7 @@ void SceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUi
 void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
     const std::shared_ptr<UiItemBase>& uiItem, const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         RegisterUiSceneProxy(uiSceneProxy, canvasUId);
         uiItem->SetIsSceneProxyReady(true);
     } else {
@@ -1771,7 +1771,7 @@ void SceneRenderer::RegisterUiSceneProxy_OnRenderThread(
 
 void SceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         UnregisterUiSceneProxy(uiItemUId, canvasUId);
     } else {
         constexpr int32_t creatorObjectId = 0;
@@ -1795,7 +1795,7 @@ void SceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId
 void SceneRenderer::MaterialPropertiesUpdated_OnRenderThread(
     const int32_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>>&& properties)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& materialProxySp = GetMaterialProxyByProxyId(materialProxyIndex);
         if (materialProxySp) {
             materialProxySp->UpdateProperties(std::move(properties));
@@ -1834,7 +1834,7 @@ void SceneRenderer::AddPlanarReflectionSceneProxy_OnRenderThread(
     const std::shared_ptr<PlanarReflectionComponent>& planarReflectionComponent,
     const std::shared_ptr<PlanarReflectionProxy>& proxy)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& reflectionProxySp = GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
         ext_assert(
             !reflectionProxySp, "Planar reflection proxy with id {} already exists" + std::to_string(proxy->GetSceneProxyId()));
@@ -1866,7 +1866,7 @@ void SceneRenderer::AddPlanarReflectionSceneProxy_OnRenderThread(
 
 void SceneRenderer::RemovePlanarReflectionSceneProxy_OnRenderThread(const int32_t planarReflectionProxyIndex)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         RemovePlanarReflectionSceneProxyByProxyId(planarReflectionProxyIndex);
         SetPlanarReflectionProxiesAreDirty(true);
     } else {
@@ -1890,7 +1890,7 @@ void SceneRenderer::RemovePlanarReflectionSceneProxy_OnRenderThread(const int32_
 void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
     const std::shared_ptr<PlanarReflectionProxy>& planarReflectionProxy, const int32_t cameraSceneProxyId)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& sceneViewSp = GetSceneViewByProxyId(cameraSceneProxyId);
         if (sceneViewSp) {
             planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
@@ -1928,7 +1928,7 @@ void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
 void SceneRenderer::UpdateMeshModelPath_OnRenderThread(
     const int32_t primitiveSceneProxyIndex, const ePrimitiveProxyType primitiveProxyType, const std::string& newModelPath)
 {
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render")) {
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         const auto& primitiveProxy = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
         if (primitiveProxy) {
             if (primitiveProxyType == ePrimitiveProxyType::STATIC_MESH_PROXY) {
@@ -2031,7 +2031,7 @@ void SceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasScenePro
 void SceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "SceneRenderer::UnregisterUiCanvasProxy: This function must be called from Render thread");
     mUiCanvasProxies.erase(
         std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [canvasUiId](const auto& canvasProxy) {
@@ -2042,7 +2042,7 @@ void SceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)
 void SceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>& sceneProxy, const size_t canvasUId)
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "SceneRenderer::RegisterUiSceneProxy: This function must be called from Render thread");
     ext_assert(sceneProxy, "SceneRenderer::RegisterUiSceneProxy: sceneProxy is nullptr");
     auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto& canvasProxy) {
@@ -2060,7 +2060,7 @@ void SceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>
 void SceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t canvasUId)
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "SceneRenderer::UnregisterUiSceneProxy: This function must be called from Render thread");
     auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto& canvasProxy) {
         return canvasUId == canvasProxy->GetUiItemUId();

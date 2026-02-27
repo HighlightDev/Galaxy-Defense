@@ -1,6 +1,7 @@
 #include "FramebufferObject.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 
@@ -40,7 +41,7 @@ void FramebufferObject::ReassignRenderTexture(
 void FramebufferObject::CreateFramebuffer()
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "FramebufferObject::CreateFramebuffer: Not called from Render thread");
     glGenFramebuffers(1, &mFramebufferId);
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
@@ -61,7 +62,7 @@ void FramebufferObject::CreateFramebuffer()
 void FramebufferObject::RebindFramebufferTextures()
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "FramebufferObject::RebindFramebufferTextures: Not called from Render thread");
     glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
     for (const auto& [attachment, textureSp] : mRenderTextures) {
@@ -170,7 +171,7 @@ void FramebufferObject::CreateRenderBuffer(
         mRenderBufferId == std::numeric_limits<uint32_t>::max(),
         "FramebufferObject::CreateRenderBuffer: Renderbuffer already created");
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "FramebufferObject::CreateRenderBuffer: Not called from Render thread");
 
     glGenRenderbuffers(1, &mRenderBufferId);
@@ -189,7 +190,7 @@ void FramebufferObject::CreateRenderBuffer(
         mRenderBufferId == std::numeric_limits<uint32_t>::max(),
         "FramebufferObject::CreateRenderBuffer: Renderbuffer already created");
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "FramebufferObject::CreateRenderBuffer: Not called from Render thread");
 
     glGenRenderbuffers(1, &mRenderBufferId);

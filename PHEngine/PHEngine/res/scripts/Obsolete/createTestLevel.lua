@@ -451,7 +451,7 @@ function CreateTestLevel(host)
     _SetFloatToMaterial(host, particlesMat, 1.0, "opacity")
     _SetFloatToMaterial(host, particlesMat, 0.15, "clipRadius")
 
-    local a_particle = _CreateActor(host, "Actor", "ParticlesActor", 0, 60, 0, 0, 0, 0, 1, 1, 1, "")
+    local a_particle = _CreateActor(host, "Actor", "ParticlesActor", 0, 30, 0, 0, 0, 0, 1, 1, 1, "")
     _CreateAndAttachComponentToActor(host, a_particle, "GpuParticleSystemComponent", Json.encode({
         gameObjectName = "c_particleSystem",
         translation = {x = 0.0, y = 0.0, z = 0.0},
@@ -460,7 +460,7 @@ function CreateTestLevel(host)
         materialProxyId = particlesMat,
 
         emitter = {type = "explosion", radius = 5.0, thetaSlicesCount = 100},
-        lifetime = {type = "simple", lifeTime = 1.0},
+        lifetime = {type = "simple", lifeTime = 2.0},
         color = {type = "simple", colorBegin = {r = 1.0, g = 0.7, b = 0.2}, colorEnd = {r = 1.0, g = 0.2, b = 0.02}},
         size = {type = "simple", sizeBegin = 0.9, sizeEnd = 0.1},
         velocityModules = {
@@ -473,27 +473,27 @@ function CreateTestLevel(host)
         }
     }))
 
-    -- local a_particle2 = _CreateActor(host, "Actor", "ParticlesActor1", 30, 60, 0, 0, 0, 0, 1, 1, 1, "")
-    -- _CreateAndAttachComponentToActor(host, a_particle2, "GpuParticleSystemComponent", Json.encode({
-    --     gameObjectName = "c_particleSystem2",
-    --     translation = {x = 0.0, y = 0.0, z = 0.0},
-    --     scale = {x = 1.0, y = 1.0, z = 1.0},
-    --     particlesCount = 1000,
-    --     materialProxyId = particlesMat,
+    local a_particle_2 = _CreateActor(host, "Actor", "ParticlesActor_2", 0, 50, 0, 0, 0, 0, 1, 1, 1, "")
+    _CreateAndAttachComponentToActor(host, a_particle_2, "GpuParticleSystemComponent", Json.encode({
+        gameObjectName = "c_particleSystem_2",
+        translation = {x = 0.0, y = 0.0, z = 0.0},
+        scale = {x = 1.0, y = 1.0, z = 1.0},
+        particlesCount = 1000,
+        materialProxyId = particlesMat,
 
-    --     emitter = {type = "explosion", radius = 5.0, thetaSlicesCount = 100},
-    --     lifetime = {type = "simple", lifeTime = 1.0},
-    --     color = {type = "simple", colorBegin = {r = 1.0, g = 0.7, b = 0.2}, colorEnd = {r = 1.0, g = 0.2, b = 0.02}},
-    --     size = {type = "simple", sizeBegin = 0.9, sizeEnd = 0.1},
-    --     velocityModules = {
-    --         {
-    --             type = "simple",
-    --             velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
-    --             velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
-    --             extraVelocityPower = 1.0
-    --         }
-    --     }
-    -- }))
+        emitter = {type = "explosion", radius = 5.0, thetaSlicesCount = 100},
+        lifetime = {type = "simple", lifeTime = 2.0},
+        color = {type = "simple", colorBegin = {r = 0.0, g = 0.7, b = 1.0}, colorEnd = {r = 0.0, g = 0.02, b = 0.8}},
+        size = {type = "simple", sizeBegin = 0.9, sizeEnd = 0.1},
+        velocityModules = {
+            {
+                type = "simple",
+                velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
+                velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
+                extraVelocityPower = 1.0
+            }
+        }
+    }))
 
     -- **************************** Billboard ***************************** --
     local billboardMat = _CreateMaterial(host, "BillboardMaterial.m")

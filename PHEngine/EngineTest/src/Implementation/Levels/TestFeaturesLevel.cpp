@@ -5,7 +5,6 @@
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
-#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
 #include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
 #include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
@@ -72,16 +71,9 @@ void TestFeaturesLevel::RunLuaBuildLevelScript()
     mLuaLevelBuilder.StopScript();
 }
 
-std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
-
 void TestFeaturesLevel::PostLevelInit()
 {
     Base::PostLevelInit();
-
-    if (const auto& sceneSp = mSceneWp.lock()) {
-        mInputComponent = std::make_unique<InputComponent>(std::make_shared<ComponentData>("GameFlowController_InputComponent"));
-    }
-
 #ifdef DEBUG
     if (EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic) {
         if (const auto& sceneSp = mSceneWp.lock()) {
@@ -120,7 +112,9 @@ void TestFeaturesLevel::PostPlayLevelFinished()
 void TestFeaturesLevel::InitLevel()
 {
     Base::InitLevel();
+
     CreateScene();
+
     if (mUiController) {
         mUiController->OnLevelInit();
     }
@@ -136,19 +130,6 @@ void TestFeaturesLevel::Tick(const float deltaTimeSec)
 {
     if (mUiController) {
         mUiController->Tick(deltaTimeSec);
-    }
-
-    if (mInputComponent) {
-        const auto& mouseBindings = mInputComponent->GetMouseBindings();
-
-        if (const auto& sceneSp = mSceneWp.lock()) {
-
-            if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
-                const auto particlesActor = sceneSp->GetActorByName("ParticlesActor");
-                assert(particlesActor);
-                particlesActor->GetComponentsByType<ParticleSystemBaseComponent>().back()->EmitParticles();
-            }
-        }
     }
 }
 

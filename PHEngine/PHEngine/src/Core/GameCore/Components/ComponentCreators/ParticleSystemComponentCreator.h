@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
-#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/GpuParticleSystemComponent.h"
 #include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
 #include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"

@@ -9,6 +9,6 @@ public:
 
     virtual std::string GetShaderSnippet() const = 0;
 
-    virtual constexpr uint64_t GetModuleTypeHash() const = 0;
+    virtual uint64_t GetModuleTypeHash() const = 0;
 };
 } // namespace EngineCore

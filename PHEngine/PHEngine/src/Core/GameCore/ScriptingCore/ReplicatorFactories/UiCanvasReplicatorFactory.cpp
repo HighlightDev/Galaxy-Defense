@@ -1,6 +1,7 @@
 #include "UiCanvasReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/GameCore/Scene.h"
@@ -21,7 +22,7 @@ int32_t UiCanvasReplicatorFactory::CreateReplicator(
     const std::string& jsonParamsStr) const
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
         "UiCanvasReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto& jsonObj = nlohmann::json::parse(jsonParamsStr);
     const auto& originX = jsonObj["originX"].get<int32_t>();
@@ -46,7 +47,7 @@ int32_t UiCanvasReplicatorFactory::CreateReplicator(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ext_assert(
-                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_gameThreadName),
                     "UiCanvasReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiCanvas
                     = sceneSp->GetUiHandler()->CreateCanvas(ViewPortInfo(originX, originY, width, height), name);

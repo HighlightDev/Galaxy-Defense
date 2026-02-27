@@ -3,6 +3,8 @@
 #include "Core/CommonCore/StringHash.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
+#include <glm/gtx/hash.hpp>
+
 #include <cstdio>
 
 namespace EngineCore {
@@ -20,15 +22,15 @@ std::string SimpleColorModuleGpuProxy::GetShaderSnippet() const
         return mix(vec3(%f, %f, %f), vec3(%f, %f, %f), particleLifeProgress);
     }
     )";
-    char buffer[512];
+    char buffer[256];
     std::snprintf(
         buffer, sizeof(buffer), fmtStr, mColorBegin.r, mColorBegin.g, mColorBegin.b, mColorEnd.r, mColorEnd.g, mColorEnd.b);
     return EngineUtility::Trim(buffer);
 }
 
-constexpr uint64_t SimpleColorModuleGpuProxy::GetModuleTypeHash() const
+uint64_t SimpleColorModuleGpuProxy::GetModuleTypeHash() const
 {
-    return Hash64_CT("SimpleColorModuleGpuProxy");
+    return Hash64_CT("SimpleColorModuleGpuProxy") ^ std::hash<glm::vec3>{}(mColorBegin) ^ std::hash<glm::vec3>{}(mColorEnd);
 }
 
 } // namespace EngineCore

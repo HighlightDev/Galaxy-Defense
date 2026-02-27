@@ -15,6 +15,6 @@ public:
 
     std::string GetShaderSnippet() const override;
 
-    constexpr uint64_t GetModuleTypeHash() const override;
+    uint64_t GetModuleTypeHash() const override;
 };
 } // namespace EngineCore

@@ -1,6 +1,7 @@
 #include "UiOverlayReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/GUI/OverlayManagement/OverlayManager.h"
 #include "Core/GameCore/GUI/OverlayManagement/UiOverlay.h"
@@ -22,7 +23,7 @@ int32_t UiOverlayReplicatorFactory::CreateReplicator(
     const std::string& jsonParamsStr) const
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
         "UiOverlayReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto& jsonObj = nlohmann::json::parse(jsonParamsStr);
     const auto canvasLuaProxyId = jsonObj["canvasLuaProxyId"].get<int32_t>();
@@ -44,7 +45,7 @@ int32_t UiOverlayReplicatorFactory::CreateReplicator(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ext_assert(
-                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_gameThreadName),
                     "UiOverlayReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& uiOverlay = std::make_shared<UiOverlay>(overlayName, sceneSp, luaScriptProcessorWp);
                 const auto& uiCanvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(

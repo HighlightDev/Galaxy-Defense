@@ -1,6 +1,7 @@
 #include "UiLabelReplicatorFactory.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/Scene.h"
@@ -20,7 +21,7 @@ int32_t UiLabelReplicatorFactory::CreateReplicator(
     const std::string& jsonParamsStr) const
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
         "UiLabelReplicatorFactory::CreateReplicator: Not called from Lua thread");
     const auto& jsonObj = nlohmann::json::parse(jsonParamsStr);
     const auto& fontName = jsonObj["font_name"].get<std::string>();
@@ -41,7 +42,7 @@ int32_t UiLabelReplicatorFactory::CreateReplicator(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 ext_assert(
-                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"),
+                    ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_gameThreadName),
                     "UiLabelReplicatorFactory::CreateReplicator: Not called from Game thread");
                 const auto& createdUiLabel = std::make_shared<UiLabel>(fontName, name);
                 createdUiLabel->Initialize();

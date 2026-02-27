@@ -1,5 +1,6 @@
 #include "ShaderStorageBufferObject.h"
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/LoggerExtension.h"
 
 using namespace EngineCore;
@@ -99,7 +100,7 @@ void ShaderStorageBufferObject::CleanUp()
 void ShaderStorageBufferObject::GenBuffer()
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "ShaderStorageBufferObject::GenBuffer must be called from Render thread");
     glCreateBuffers(1, &m_descriptor);
 }

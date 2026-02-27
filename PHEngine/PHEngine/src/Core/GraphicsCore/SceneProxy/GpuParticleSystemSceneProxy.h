@@ -44,7 +44,8 @@ class GpuParticleSystemSceneProxy : public PrimitiveSceneProxy {
     std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleInitialVelocitiesSSBO;
     std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleColorsSSBO;
     std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleRotationAndSizeSSBO;
-    std::shared_ptr<ShaderStorageBufferObject> m_aliveCounterSSBO;
+    std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleLifetimeSSBO;
+    std::shared_ptr<ShaderStorageBufferObject> m_gpuParticlesAliveCounterSSBO;
 
     std::shared_ptr<ParticleComputeShader_t> m_computeShader;
 
@@ -84,7 +85,9 @@ public:
         const void* colorsData,
         const size_t colorsDataSize,
         const void* rotationAndSizeData,
-        const size_t rotationAndSizeDataSize);
+        const size_t rotationAndSizeDataSize,
+        const void* lifetimeData,
+        const size_t lifetimeDataSize);
 
     RenderInfo GetRenderInfo() const override;
 

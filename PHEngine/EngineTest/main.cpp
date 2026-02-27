@@ -1,3 +1,4 @@
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
@@ -154,7 +155,7 @@ int32_t main(int32_t argc, char** argv)
     std::signal(SIGSEGV, handler); // install our handler
 #endif
 
-    ThreadHelper::GetInstance()->RegisterThread("Render");
+    ThreadHelper::GetInstance()->RegisterThread(EngineConstants::c_renderThreadName);
 
     // Logger::InitLog(std::make_shared<LoggerClientConsole>());
     Logger::InitLog(std::make_shared<LoggerClientFile>());

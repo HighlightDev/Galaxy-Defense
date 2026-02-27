@@ -3,6 +3,7 @@
 #include "IShader.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/IoCore/FolderManager.h"
@@ -182,7 +183,7 @@ bool IShader::SendToGpuShadersSources(const std::unordered_map<eShaderType, std:
 {
     bool bAllShadersLoaded = true;
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "IShader::SendToGpuShadersSources: Not called from Render thread");
 
     for (const auto& [shaderType, shaderSource] : shaderSources) {

@@ -20,14 +20,14 @@ std::string SimpleSizeModuleGpuProxy::GetShaderSnippet() const
         return vec2(currentRotationAndSize.x, mix(%f, %f, particleLifeProgress));
     }
     )";
-    char buffer[512];
+    char buffer[256];
     std::snprintf(buffer, sizeof(buffer), fmtStr, mSizeBegin, mSizeEnd);
     return EngineUtility::Trim(buffer);
 }
 
-constexpr uint64_t SimpleSizeModuleGpuProxy::GetModuleTypeHash() const
+uint64_t SimpleSizeModuleGpuProxy::GetModuleTypeHash() const
 {
-    return Hash64_CT("SimpleSizeModuleGpuProxy");
+    return Hash64_CT("SimpleSizeModuleGpuProxy") ^ std::hash<float>{}(mSizeBegin) ^ std::hash<float>{}(mSizeEnd);
 }
 
 } // namespace EngineCore

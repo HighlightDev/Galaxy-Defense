@@ -23,6 +23,8 @@ struct TexParams {
     int32_t TexWrapMode;
     bool bIsGrayscale;
 
+    bool bIsUniqueResource;
+
     TexParams(
         int32_t texBufferWidth,
         int32_t texBufferHeight,
@@ -94,13 +96,13 @@ private:
 public:
     bool operator==(const TexParams& other) const
     {
-
-        return this->UniqueIndex == other.UniqueIndex && this->TexBufferWidth == other.TexBufferWidth
-            && this->TexBufferHeight == other.TexBufferHeight && this->TexTarget == other.TexTarget
-            && this->TexMagFilter == other.TexMagFilter && this->TexMinFilter == other.TexMinFilter
-            && this->TexMipLvl == other.TexMipLvl && this->TexPixelInternalFormat == other.TexPixelInternalFormat
-            && this->TexPixelFormat == other.TexPixelFormat && this->TexPixelType == other.TexPixelType
-            && this->TexWrapMode == other.TexWrapMode;
+        return this->TexBufferWidth == other.TexBufferWidth && this->TexBufferHeight == other.TexBufferHeight
+            && this->TexTarget == other.TexTarget && this->TexMagFilter == other.TexMagFilter
+            && this->TexMinFilter == other.TexMinFilter && this->TexMipLvl == other.TexMipLvl
+            && this->TexPixelInternalFormat == other.TexPixelInternalFormat && this->TexPixelFormat == other.TexPixelFormat
+            && this->TexPixelType == other.TexPixelType && this->TexWrapMode == other.TexWrapMode
+            && this->bIsGrayscale == other.bIsGrayscale
+            && ((this->bIsUniqueResource || other.bIsUniqueResource) ? this->UniqueIndex == other.UniqueIndex : true);
     }
 };
 } // namespace Texture

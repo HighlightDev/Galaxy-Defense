@@ -11,12 +11,16 @@ struct SSBOPoolParameters {
     uint32_t bytesToAllocate;
     uint32_t bindingPoint;
     uint32_t flags;
+    bool bUniqueResource;
 
-    bool operator==(const SSBOPoolParameters& other) const
-    {
-        return this->bytesToAllocate == other.bytesToAllocate && this->bindingPoint == other.bindingPoint
-            && this->flags == other.flags;
-    }
+private:
+    static uint32_t unique_index;
+    uint32_t uniqueIndex;
+
+public:
+    explicit SSBOPoolParameters(uint32_t bytesToAllocate, uint32_t bindingPoint, uint32_t flags, bool bUniqueResource = true);
+
+    bool operator==(const SSBOPoolParameters& other) const;
 };
 
 } // namespace Resources

@@ -1,6 +1,7 @@
 #include "VertexArrayObject.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 
@@ -53,7 +54,8 @@ const std::vector<std::pair<BufferObjectBase*, std::string>>& VertexArrayObject:
 void VertexArrayObject::GenVAO()
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"), "GenVAO must be called from Render thread");
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
+        "GenVAO must be called from Render thread");
     glGenVertexArrays(1, &m_descriptor);
 }
 

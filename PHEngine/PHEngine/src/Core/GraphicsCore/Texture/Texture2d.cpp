@@ -1,6 +1,7 @@
 #include "Texture2d.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
@@ -49,7 +50,9 @@ Texture2d::~Texture2d()
 
 void Texture2d::InitEmptyTexture()
 {
-    ext_assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"), "Render thread required");
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
+        "Render thread required");
     glGenTextures(1, &m_texDescriptor);
     glBindTexture(GL_TEXTURE_2D, m_texDescriptor);
 
@@ -119,7 +122,9 @@ uint32_t Texture2d::CreateTexture(const void* pixelsData)
     uint32_t texObject = -1;
     int32_t& textureTarget = m_textureParams.TexTarget;
 
-    ext_assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"), "Render thread required");
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
+        "Render thread required");
     glGenTextures(1, &texObject);
 
     glBindTexture(textureTarget, texObject);

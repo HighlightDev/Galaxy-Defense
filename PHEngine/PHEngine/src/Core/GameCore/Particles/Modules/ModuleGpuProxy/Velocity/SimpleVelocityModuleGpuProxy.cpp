@@ -4,6 +4,8 @@
 #include "Core/CommonCore/StringHash.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
+#include <glm/gtx/hash.hpp>
+
 #include <cstdio>
 
 namespace EngineCore {
@@ -27,7 +29,7 @@ std::string SimpleVelocityModuleGpuProxy::GetShaderSnippet() const
         vec3 currentVelocityFromModule = (velocityDirection * dt * extraVelocityPower) + (velocityDeviation * dt);
         return currentVelocityFromModule;
     })";
-    char buffer[1024];
+    char buffer[512];
     std::snprintf(
         buffer,
         sizeof(buffer),
@@ -42,9 +44,10 @@ std::string SimpleVelocityModuleGpuProxy::GetShaderSnippet() const
     return EngineUtility::Trim(buffer);
 }
 
-constexpr uint64_t SimpleVelocityModuleGpuProxy::GetModuleTypeHash() const
+uint64_t SimpleVelocityModuleGpuProxy::GetModuleTypeHash() const
 {
-    return Hash64_CT("SimpleVelocityModuleGpuProxy");
+    return Hash64_CT("SimpleVelocityModuleGpuProxy") ^ std::hash<glm::vec3>{}(mVelocityDirection)
+        ^ std::hash<glm::vec3>{}(mVelocityDeviation) ^ std::hash<float>{}(mExtraVelocityPower);
 }
 
 } // namespace EngineCore

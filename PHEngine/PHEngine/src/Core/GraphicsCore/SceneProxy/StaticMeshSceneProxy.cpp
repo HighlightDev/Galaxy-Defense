@@ -1,5 +1,6 @@
 #include "StaticMeshSceneProxy.h"
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
@@ -197,7 +198,7 @@ void StaticMeshSceneProxy::SetMeshModelPath(const std::string& modelPath)
 {
     m_renderData.mModelPath = modelPath;
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "StaticMeshSceneProxy::SetMeshModelPath must be called from Render thread");
 
     MeshPoolParameters poolParameters;

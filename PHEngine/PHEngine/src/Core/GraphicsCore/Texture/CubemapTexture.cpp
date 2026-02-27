@@ -1,6 +1,7 @@
 #include "CubemapTexture.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
@@ -32,7 +33,9 @@ CubemapTexture::CubemapTexture(TexParams cubemapTexParams, const std::string& te
 uint32_t CubemapTexture::CreateEmptyCubemapTexture()
 {
     uint32_t resultTextureDescriptor = -1;
-    ext_assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"), "Render thread required");
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
+        "Render thread required");
 
     glGenTextures(1, &resultTextureDescriptor);
     glBindTexture(GL_TEXTURE_CUBE_MAP, resultTextureDescriptor);
@@ -66,7 +69,9 @@ uint32_t CubemapTexture::CreateCubemapTexture(const std::vector<std::string>& pa
 {
     uint32_t resultTextureDescriptor = -1;
     size_t mutualPixelFormat = -1;
-    ext_assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"), "Render thread required");
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
+        "Render thread required");
 
     glGenTextures(1, &resultTextureDescriptor);
     glBindTexture(GL_TEXTURE_CUBE_MAP, resultTextureDescriptor);

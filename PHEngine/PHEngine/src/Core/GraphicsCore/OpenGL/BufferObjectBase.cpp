@@ -1,6 +1,7 @@
 #include "BufferObjectBase.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
 
 namespace Graphics::OpenGL {
@@ -17,7 +18,7 @@ BufferObjectBase::~BufferObjectBase()
 void BufferObjectBase::GenBuffer()
 {
     ext_assert(
-        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"),
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "GenBuffer must be called from Render thread");
     glGenBuffers(1, &m_descriptor);
 }

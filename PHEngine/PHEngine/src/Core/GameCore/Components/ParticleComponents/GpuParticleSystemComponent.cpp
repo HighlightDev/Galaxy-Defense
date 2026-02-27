@@ -131,17 +131,20 @@ void GpuParticleSystemComponent::SyncDataWithRenderThread(
                                 const auto& particlesPool = particleComponentPtr->GetParticlesPool();
                                 std::vector<glm::vec4> positionsData, velocitiesData, initialVelocitiesData, colorsData;
                                 std::vector<glm::vec2> rotationAndSizeData;
+                                std::vector<float> lifetimeData;
                                 positionsData.reserve(particlesPool.size());
                                 velocitiesData.reserve(particlesPool.size());
                                 initialVelocitiesData.reserve(particlesPool.size());
                                 colorsData.reserve(particlesPool.size());
                                 rotationAndSizeData.reserve(particlesPool.size());
+                                lifetimeData.reserve(particlesPool.size());
                                 for (const auto& particle : particlesPool) {
                                     positionsData.emplace_back(particle.Position, 0.0f);
                                     velocitiesData.emplace_back(particle.Velocity, 0.0f);
                                     initialVelocitiesData.emplace_back(particle.InitialVelocity, 0.0f);
                                     colorsData.emplace_back(particle.Color, 1.0f);
                                     rotationAndSizeData.emplace_back(particle.Rotation, particle.Size);
+                                    lifetimeData.emplace_back(particle.LifeTime);
                                 }
 
                                 proxyPtr->ResetParticlesData(
@@ -154,7 +157,9 @@ void GpuParticleSystemComponent::SyncDataWithRenderThread(
                                     reinterpret_cast<const void*>(colorsData.data()),
                                     colorsData.size() * sizeof(glm::vec4),
                                     reinterpret_cast<const void*>(rotationAndSizeData.data()),
-                                    rotationAndSizeData.size() * sizeof(glm::vec2));
+                                    rotationAndSizeData.size() * sizeof(glm::vec2),
+                                    reinterpret_cast<const void*>(lifetimeData.data()),
+                                    lifetimeData.size() * sizeof(float));
                                 particleComponentPtr->SetIsParticlesDataDirty(false);
                             }
                             if (isParticleModulesProxiesDirty) {
