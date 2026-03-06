@@ -90,36 +90,34 @@ std::shared_ptr<MissileActor> FreezingMissileFactory::CreateMissile(
 
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
         "c_freezeParticleSystemComponent_" + shipBulletIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 500);
+    d_particle->emitterData = std::make_shared<ParticleEmitterData>();
+    d_particle->emitterData->emitterType = "explosion";
+    d_particle->emitterData->radius = 3.0f;
+    d_particle->emitterData->thetaSlicesCount = 10;
+
+    d_particle->velocityModules.push_back(std::make_shared<VelocityModuleData>());
+    d_particle->velocityModules.back()->moduleType = "simple";
+    d_particle->velocityModules.back()->velocityDirection = glm::vec3(0, -25.0f, 0);
+    d_particle->velocityModules.back()->velocityDeviation = glm::vec3(2.0f, 0.0f, 2.0f);
+    d_particle->velocityModules.back()->extraVelocityPower = 1.0f;
+
+    d_particle->colorData = std::make_shared<ColorModuleData>();
+    d_particle->colorData->moduleType = "simple";
+    d_particle->colorData->colorBegin = glm::vec4(0.5f, 0.5f, 1.0f, 1.0f);
+    d_particle->colorData->colorEnd = glm::vec4(0.3f, 0.3f, 0.7f, 1.0f);
+
+    d_particle->lifeTimeData = std::make_shared<LifeTimeModuleData>();
+    d_particle->lifeTimeData->moduleType = "simple";
+    d_particle->lifeTimeData->lifeTime = 1.5f;
+
+    d_particle->sizeData = std::make_shared<SizeModuleData>();
+    d_particle->sizeData->moduleType = "simple";
+    d_particle->sizeData->sizeBegin = 0.4f;
+    d_particle->sizeData->sizeEnd = 0.1f;
+
     const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<GpuParticleSystemComponent>>();
     const auto& c_particleSystemComponent = std::static_pointer_cast<GpuParticleSystemComponent>(
         scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
-    auto emitter = std::make_shared<ParticleExplosionEmitter>();
-    emitter->SetOwner(c_particleSystemComponent);
-    emitter->SetThetaSlicesCount(10);
-    c_particleSystemComponent->SetParticleEmitter(emitter);
-
-    auto lifeTimeModule = std::make_shared<SimpleLifeTimeModule>();
-    lifeTimeModule->SetOwner(c_particleSystemComponent);
-    lifeTimeModule->SetLifeTime(1.5f);
-    c_particleSystemComponent->AddParticleModule(lifeTimeModule);
-
-    auto sizeModule = std::make_shared<SimpleSizeModule>();
-    sizeModule->SetOwner(c_particleSystemComponent);
-    sizeModule->SetSizeBegin(0.4f);
-    sizeModule->SetSizeEnd(0.1f);
-    c_particleSystemComponent->AddParticleModule(sizeModule);
-
-    auto velocityModule = std::make_shared<SimpleVelocityModule>();
-    velocityModule->SetOwner(c_particleSystemComponent);
-    velocityModule->SetVelocityDirection(glm::vec3(0, -25.0f, 0));
-    velocityModule->SetVelocityDeviation(glm::vec3(2.0f, 0.0f, 2.0f));
-    c_particleSystemComponent->AddParticleModule(velocityModule);
-
-    auto colorModule = std::make_shared<SimpleColorModule>();
-    colorModule->SetOwner(c_particleSystemComponent);
-    colorModule->SetColorBegin(glm::vec4(0.5f, 0.5f, 1.0f, 1.0f));
-    colorModule->SetColorEnd(glm::vec4(0.3f, 0.3f, 0.7f, 1.0f));
-    c_particleSystemComponent->AddParticleModule(colorModule);
 
     a_missile->AddComponent(c_particleSystemComponent);
 

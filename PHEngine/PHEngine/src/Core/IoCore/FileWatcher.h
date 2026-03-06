@@ -14,7 +14,7 @@ class FileWatcher {
 public:
     FileWatcher(
         std::string _path_to_watch,
-        std::chrono::duration<int, std::milli> _delay,
+        std::chrono::duration<int32_t, std::milli> _delay,
         std::function<void(std::string, FileStatus)> callback);
 
     ~FileWatcher();
@@ -31,9 +31,14 @@ private:
     int32_t mInstanceId;
     std::thread mListenerThread;
     std::string mPathToWatch;
-    std::chrono::duration<int, std::milli> mDelay;
+    std::chrono::duration<int32_t, std::milli> mDelay;
     std::function<void(std::string, FileStatus)> mCallback;
     std::unordered_map<std::string, std::filesystem::file_time_type> mPaths;
-    bool mIsRunning = true;
+    std::atomic_bool mIsRunning = true;
+
+#ifdef __linux__
+    struct Impl;
+    std::unique_ptr<Impl> mImpl;
+#endif
 };
 } // namespace IO

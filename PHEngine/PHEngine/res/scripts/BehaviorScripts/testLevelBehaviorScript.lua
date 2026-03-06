@@ -40,7 +40,8 @@ end
 
 function System_OnStart(host)
     particlesLuaProxyIds = {
-        _GetLuaProxyIdForComponent(host, "c_particleSystem"), _GetLuaProxyIdForComponent(host, "c_particleSystem_2")
+        _GetLuaProxyIdForComponent(host, "c_particleSystem"), _GetLuaProxyIdForComponent(host, "c_particleSystem_2"),
+        _GetLuaProxyIdForComponent(host, "c_particleSystem_3")
     }
     for _, luaProxyId in ipairs(particlesLuaProxyIds) do
         assert(luaProxyId ~= nil and luaProxyId ~= -1, "Particle system Lua proxy ID is nil")
