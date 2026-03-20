@@ -1038,6 +1038,7 @@ void SceneRenderer::GroupLightsByShadowMap()
 
 void SceneRenderer::RenderScene_RenderThread()
 {
+    ext_assert(mPostFxRenderer, "PostFxRenderer is not initialized!");
     PrepareSceneProxiesForRender();
 
     for (const auto& sceneView : SceneViewsVector) {
@@ -1060,11 +1061,10 @@ void SceneRenderer::RenderScene_RenderThread()
 
                 DeferredLightPass_RenderThread(cameraProxy);
 
-                if (mForwardRenderingProxiesVec.size())
+                if (not mForwardRenderingProxiesVec.empty())
                     ForwardBasePass_RenderThread(sceneView);
 
-                if (mPostFxRenderer)
-                    mPostFxRenderer->Execute(m_resolvedSceneFramebuffer);
+                mPostFxRenderer->Execute(m_resolvedSceneFramebuffer);
 
                 FontPass(sceneView);
 

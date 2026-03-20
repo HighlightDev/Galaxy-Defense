@@ -43,8 +43,6 @@ public:
 
     virtual void CleanUp() = 0;
 
-    virtual void* GetData();
-
     GLuint GetDescriptor() const;
 
     std::string GetAttribArrayIndexName() const;
@@ -61,6 +59,8 @@ public:
         const eMemoryBarrierType barrierBit) const;
 
     virtual std::vector<uint32_t> GetBufferStorageFlags() const;
+
+    size_t GetElementByteSizeForGLType(const int32_t glType) const;
 };
 } // namespace OpenGL
 } // namespace Graphics

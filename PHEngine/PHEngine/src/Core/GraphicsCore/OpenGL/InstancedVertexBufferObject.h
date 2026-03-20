@@ -83,18 +83,13 @@ private:
     }
 
     // For current implementation pointer offset is zero
-    virtual void SetVertexAttribPointerWithSpecificParams()
+    void SetVertexAttribPointerWithSpecificParams()
     {
         size_t stride = GetElementByteSize() * m_vectorSize;
         SetVertexAttribPointer(m_vertexAttribIndex, m_vectorSize, false, stride, 0);
     }
 
 public:
-    virtual void* GetData()
-    {
-        return m_data.data();
-    }
-
     std::vector<DataType>& GetCastedDataRef()
     {
         return m_data;

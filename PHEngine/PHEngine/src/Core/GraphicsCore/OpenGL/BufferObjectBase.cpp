@@ -33,11 +33,6 @@ void BufferObjectBase::UnbindBuffer() const
     glBindBuffer(m_bufferTarget, 0);
 }
 
-void* BufferObjectBase::GetData()
-{
-    return nullptr;
-}
-
 GLuint BufferObjectBase::GetDescriptor() const
 {
     return m_descriptor;
@@ -89,5 +84,27 @@ void BufferObjectBase::CopyFromBuffer(
 std::vector<uint32_t> BufferObjectBase::GetBufferStorageFlags() const
 {
     return {};
+}
+
+size_t BufferObjectBase::GetElementByteSizeForGLType(const int32_t glType) const
+{
+    switch (glType) {
+    case GL_BYTE:
+    case GL_UNSIGNED_BYTE:
+        return 1;
+    case GL_SHORT:
+    case GL_UNSIGNED_SHORT:
+        return 2;
+    case GL_INT:
+    case GL_UNSIGNED_INT:
+        return 4;
+    case GL_FLOAT:
+        return 4;
+    case GL_DOUBLE:
+        return 8;
+    default:
+        ext_assert(false, "Unsupported GL type");
+        return 0;
+    }
 }
 } // namespace Graphics::OpenGL
