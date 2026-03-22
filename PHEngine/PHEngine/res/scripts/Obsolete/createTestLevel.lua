@@ -181,6 +181,7 @@ function CreateTestLevel(host)
     -- 			diffuse = { r = 0.68, g = 0.5, b = 0.2 },
     -- 			specular = { r = 0.4, g = 0.4, b = 0.4 },
     -- 			attenuation = {x = 1, y = 1, z = 1},
+    --          radianceRadius = 100.0,
     -- 			is_enabled = true,
     -- 			is_visible = true,
     -- 			shadowAtlasSize = 256

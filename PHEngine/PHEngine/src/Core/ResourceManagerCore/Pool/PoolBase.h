@@ -133,6 +133,13 @@ public:
     void CleanUp()
     {
         EngineCore::LogInfo(ToString(), "::CleanUp");
+
+        for (const auto& [key, resource] : resourceMap) {
+            if (resource) {
+                allocationPolicy_t::DeallocateMemory(resource);
+            }
+        }
+
         resourceMap.clear();
         referenceMap.clear();
 

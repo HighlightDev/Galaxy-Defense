@@ -43,18 +43,11 @@ void FramebufferObject::CreateFramebuffer()
     ext_assert(
         ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "FramebufferObject::CreateFramebuffer: Not called from Render thread");
-    glGenFramebuffers(1, &mFramebufferId);
-    glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
+    glCreateFramebuffers(1, &mFramebufferId);
 
     for (const auto& [attachment, textureSp] : mRenderTextures) {
-        if (textureSp->GetTextureType() == eTextureType::TEXTURE_2D) {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, textureSp->GetTextureDescriptor(), 0);
-        } else if (textureSp->GetTextureType() == eTextureType::TEXTURE_CUBE) {
-            glFramebufferTexture(GL_FRAMEBUFFER, attachment, textureSp->GetTextureDescriptor(), 0);
-        }
+        glNamedFramebufferTexture(mFramebufferId, attachment, textureSp->GetTextureDescriptor(), 0);
     }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     CollectAttachments();
 }
@@ -64,15 +57,9 @@ void FramebufferObject::RebindFramebufferTextures()
     ext_assert(
         ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "FramebufferObject::RebindFramebufferTextures: Not called from Render thread");
-    glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
     for (const auto& [attachment, textureSp] : mRenderTextures) {
-        if (textureSp->GetTextureType() == eTextureType::TEXTURE_2D) {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, textureSp->GetTextureDescriptor(), 0);
-        } else if (textureSp->GetTextureType() == eTextureType::TEXTURE_CUBE) {
-            glFramebufferTexture(GL_FRAMEBUFFER, attachment, textureSp->GetTextureDescriptor(), 0);
-        }
+        glNamedFramebufferTexture(mFramebufferId, attachment, textureSp->GetTextureDescriptor(), 0);
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void FramebufferObject::CheckErrors()
@@ -174,10 +161,9 @@ void FramebufferObject::CreateRenderBuffer(
         ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "FramebufferObject::CreateRenderBuffer: Not called from Render thread");
 
-    glGenRenderbuffers(1, &mRenderBufferId);
-    glBindRenderbuffer(GL_FRAMEBUFFER, mRenderBufferId);
-    glRenderbufferStorage(GL_RENDERBUFFER, renderbufferDataType, screenResX, screenResY);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
+    glCreateRenderbuffers(1, &mRenderBufferId);
+    glNamedRenderbufferStorage(mRenderBufferId, renderbufferDataType, screenResX, screenResY);
+    glNamedFramebufferRenderbuffer(mFramebufferId, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
 }
 
 void FramebufferObject::CreateRenderBuffer(
@@ -193,10 +179,9 @@ void FramebufferObject::CreateRenderBuffer(
         ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "FramebufferObject::CreateRenderBuffer: Not called from Render thread");
 
-    glGenRenderbuffers(1, &mRenderBufferId);
-    glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferId);
-    glRenderbufferStorage(GL_RENDERBUFFER, renderbufferDataType, screenResolution.x, screenResolution.y);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
+    glCreateRenderbuffers(1, &mRenderBufferId);
+    glNamedRenderbufferStorage(mRenderBufferId, renderbufferDataType, screenResolution.x, screenResolution.y);
+    glNamedFramebufferRenderbuffer(mFramebufferId, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
 }
 
 void FramebufferObject::ResizeRenderBufferStorage(const int32_t renderbufferDataType, const glm::ivec2& screenResolution)
@@ -204,8 +189,7 @@ void FramebufferObject::ResizeRenderBufferStorage(const int32_t renderbufferData
     ext_assert(
         mRenderBufferId != std::numeric_limits<uint32_t>::max(),
         "FramebufferObject::ResizeRenderBufferStorage: Renderbuffer not created yet");
-    glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferId);
-    glRenderbufferStorage(GL_RENDERBUFFER, renderbufferDataType, screenResolution.x, screenResolution.y);
+    glNamedRenderbufferStorage(mRenderBufferId, renderbufferDataType, screenResolution.x, screenResolution.y);
 }
 
 void FramebufferObject::BindFramebuffer(uint32_t framebufferTarget, bool bBindFramebuffer, bool enableAttachmentDrawBuffers) const
