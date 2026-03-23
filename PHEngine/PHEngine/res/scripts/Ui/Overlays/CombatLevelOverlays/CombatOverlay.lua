@@ -30,19 +30,12 @@ local UiRowLayout = require("Ui/Core/uiRowLayout")
 local ImageAndLabelTile = require("Ui/Widgets/ImageAndLabelTile")
 local Styles = require("Ui/Common/styles")
 local UiTextBlock = require("Ui/Core/uiTextBlock")
-local UiGridLayout = require("Ui/Core/uiGridLayout")
-local ImageButton = require("Ui/Widgets/ImageButton")
 local UiRectangle = require("Ui/Core/uiRectangle")
-local UiImageButton = require("Ui/Widgets/ImageButton")
+local EventsHelper = require("Ui/Core/eventsHelper")
+local UiOverlayManager = require("Ui/Core/uiOverlayManager")
+local TowerGridPanel = require("Ui/Widgets/TowerGridPanel")
 
 local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}
-
-local MissileType = {BOMB = 0, FREEZING_BOMB = 1, ELECTRO_RAY = 2, FREEZING_RAY = 3, BLACK_HOLE = 4}
-
-local function valueToMissileType(value)
-    for k, v in pairs(MissileType) do if v == value then return k end end
-    return nil
-end
 
 local CombatOverlay = {levelProgressContainer = nil, levelProgressRowLayout = nil}
 
@@ -50,8 +43,6 @@ local RequirementTrackers = {}
 local RequirementTrackersIdle = {}
 
 local RequirementTrackerHint = nil
-
-local createTowerButtons = {}
 
 local function showTileRequirementAchived(requirementTile)
     requirementTile:setTextureSource("check.png")
@@ -181,132 +172,20 @@ function CombatOverlay:new(host)
 
     fillRequirementTilesPool(host, combatOverlay, 10)
 
-    local panelHeight = windowHeight * 0.15
-    local mainButtonSize = panelHeight * 0.8
-    local smallButtonSize = windowHeight * 0.07
-    local panelWidth = (mainButtonSize) + 50
-    local gridHeader = smallButtonSize * 0.5
-    local gridWidth = smallButtonSize * 3 + (smallButtonSize * 0.5) * 3
-    local gridHeight = smallButtonSize * 3 + (smallButtonSize * 0.5) * 3 + gridHeader
-
-    local backgroundRect = UiRectangle:new(host)
-    combatOverlay:addWidget(backgroundRect)
-
-    local combatPreparationRowLayout = UiRowLayout:new(host, "CombatPreparationRowLayout")
-    combatOverlay:addWidget(combatPreparationRowLayout)
-
-    local createObjectButton = ImageButton:new(host, combatOverlay, "CreateObjectButton")
-    combatOverlay:addCompoundWidget(createObjectButton)
-
-    local combatPreparationRowLayout = UiRowLayout:new(host, "CombatPreparationRowLayout")
-    combatOverlay:addWidget(combatPreparationRowLayout)
-
-    local removeObjectButton = ImageButton:new(host, combatOverlay, "RemoveObjectButton")
-    combatOverlay:addCompoundWidget(removeObjectButton)
-
-    local barrierManagementButton = ImageButton:new(host, combatOverlay, "BarrierManagementButton")
-    combatOverlay:addCompoundWidget(barrierManagementButton)
-
-    local gridBackground = UiRectangle:new(host, "GridBackground")
-    combatOverlay:addWidget(gridBackground)
-
-    local gridBackgroundHeader = UiRectangle:new(host, "GridBackgroundHeader")
-    combatOverlay:addWidget(gridBackgroundHeader)
-
-    local createMenuDropDownGridLayout = UiGridLayout:new(host, "CreateMenuDropDownGridLayout")
-    combatOverlay:addWidget(createMenuDropDownGridLayout)
-
     local removeDropDownPanel = UiItem:new(host, "RemoveDropDownPanel")
     combatOverlay:addWidget(removeDropDownPanel)
 
     local removeMenuDropDownRowLayout = UiRowLayout:new(host, "RemoveMenuDropDownRowLayout")
     combatOverlay:addWidget(removeMenuDropDownRowLayout)
 
-    for i = MissileType.BOMB, MissileType.BLACK_HOLE do
-        local button = ImageButton:new(host, combatOverlay, "CreateTowerButton" .. tostring(i))
-        combatOverlay:addCompoundWidget(button)
-        createTowerButtons[#createTowerButtons + 1] = button
-        local missileType = valueToMissileType(i)
+    local towerGridPanel = TowerGridPanel:new(host, combatOverlay, {
+        buttonRadius = TowerGridPanel.DEFAULT_BUTTON_RADIUS,
+        onRemoveObjectClicked = function() removeDropDownPanel:setIsVisible(true) end
+    })
+    combatOverlay:addCompoundWidget(towerGridPanel)
 
-        button:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-            if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-                button:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-            else
-                button:setButtonColorHexValue(Styles.Colors.buttonColor)
-            end
-        end)
-
-        button:subscribeOnMouseInputClickedCallback(function()
-            EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
-                                                      "CombatLevelEvents", json.encode(
-                                                          {
-                    action = "ghost_tower_visibility",
-                    tower_type = tostring(missileType),
-                    visible = true
-                }))
-        end)
-    end
-
-    local closeTowerCreatePanelButton = UiImageButton:new(host, combatOverlay, "closeTowerCreatePanelButton")
-    combatOverlay:addCompoundWidget(closeTowerCreatePanelButton)
-
-    local hideCreatePanel = function() gridBackground:setIsVisible(false) end
-
-    createObjectButton:subscribeOnMouseInputClickedCallback(function()
-        gridBackground:setIsVisible(true)
-        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-                                                  json.encode(
-                                                      {action = "remove_tower_marker_visibility", visible = false}))
-    end)
-
-    createObjectButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            createObjectButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-        else
-            createObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        end
-    end)
-
-    closeTowerCreatePanelButton:subscribeOnMouseInputClickedCallback(function()
-        hideCreatePanel()
-        closeTowerCreatePanelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-                                                  json.encode({action = "ghost_tower_visibility", visible = false}))
-    end)
-
-    closeTowerCreatePanelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            closeTowerCreatePanelButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-        else
-            closeTowerCreatePanelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        end
-    end)
-
-    removeObjectButton:subscribeOnMouseInputClickedCallback(function()
-        hideCreatePanel()
-        removeDropDownPanel:setIsVisible(true);
-        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-                                                  json.encode(
-                                                      {action = "remove_tower_marker_visibility", visible = true}))
-    end)
-
-    removeObjectButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            removeObjectButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-        else
-            removeObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        end
-    end)
-
-    barrierManagementButton:subscribeOnMouseInputClickedCallback(function() hideCreatePanel() end)
-
-    barrierManagementButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            barrierManagementButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-        else
-            barrierManagementButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        end
-    end)
+    local smallButtonSize = towerGridPanel.smallButtonSize
+    local panelHeight = towerGridPanel.panelHeight
 
     combatOverlay.onCurrentLevelProgressStageChanged = function()
         local currentProgressRequirementsCount = _GetCurrentProgressRequirementsCount(host)
@@ -376,115 +255,14 @@ function CombatOverlay:new(host)
         RequirementTrackerHint:setIsVisible(false)
         RequirementTrackerHint:setBorderThickness(40)
 
-        backgroundRect:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
-        backgroundRect:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                                 combatOverlayCanvas.widgetName)
-        backgroundRect:setWidth(panelWidth)
-        backgroundRect:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-                                 combatOverlayCanvas.widgetName, 0)
-        backgroundRect:setColorHexValue(Styles.Colors.panelColor)
-        backgroundRect:setZOrder(1)
-        backgroundRect:setHeight(panelHeight)
-        backgroundRect:setBorderRadius(CombatPreparationOverlay.buttonRadius)
+        towerGridPanel:setupLayout(combatOverlayCanvas.widgetName)
 
-        combatPreparationRowLayout:setParent(host, combatOverlayCanvas.widgetName, backgroundRect.widgetName)
-        combatPreparationRowLayout:fill(backgroundRect.widgetName)
-        combatPreparationRowLayout:setSpacing(45)
-        combatPreparationRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
-
-        createObjectButton:setParent(host, combatOverlayCanvas.widgetName, combatPreparationRowLayout.widgetName)
-        createObjectButton:setWidth(mainButtonSize)
-        createObjectButton:setHeight(mainButtonSize)
-        createObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        createObjectButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        createObjectButton:setImageTextureSource("hammer.png")
-        createObjectButton:setImageRotationDegrees(180)
-
-        gridBackground:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
-        gridBackground:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName,
-                                 50)
-        gridBackground:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                                 backgroundRect.widgetName)
-        gridBackground:setWidth(gridWidth)
-        gridBackground:setHeight(gridHeight)
-        gridBackground:setColorHexValue(Styles.Colors.panelColor)
-        gridBackground:setBorderRadius(CombatPreparationOverlay.buttonRadius)
-        gridBackground:setIsVisible(false)
-        gridBackground:setZOrder(2)
-
-        gridBackgroundHeader:setParent(host, combatOverlayCanvas.widgetName, gridBackground.widgetName)
-        gridBackgroundHeader:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-                                       gridBackground.widgetName)
-        gridBackgroundHeader:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                                       UiItemBase.UiAnchorType.HORIZONTAL_CENTER, gridBackground.widgetName)
-        gridBackgroundHeader:setWidth(gridWidth)
-        gridBackgroundHeader:setHeight(gridHeader)
-        gridBackgroundHeader:setColorHexValue(Styles.Colors.headerPanelColor)
-        gridBackgroundHeader:setBorderRadius(CombatPreparationOverlay.buttonRadius)
-        gridBackgroundHeader:setIsRoundBottom(false)
-        gridBackgroundHeader:setZOrder(3)
-
-        createMenuDropDownGridLayout:setParent(host, combatOverlayCanvas.widgetName, gridBackground.widgetName)
-        createMenuDropDownGridLayout:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-                                               gridBackgroundHeader.widgetName, 0)
-        createMenuDropDownGridLayout:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-                                               gridBackground.widgetName)
-        createMenuDropDownGridLayout:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-                                               gridBackground.widgetName)
-        createMenuDropDownGridLayout:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-                                               gridBackground.widgetName)
-        createMenuDropDownGridLayout:setZOrder(3)
-        createMenuDropDownGridLayout:setHorizontalSpacing(smallButtonSize * 0.5)
-        createMenuDropDownGridLayout:setVerticalSpacing(smallButtonSize * 0.5)
-        createMenuDropDownGridLayout:setColumnsCount(3)
-        createMenuDropDownGridLayout:setRowsCount(3)
-        createMenuDropDownGridLayout:setAlignment(UiGridLayout.UiGridHorizontalAlignmentType.CENTER,
-                                                  UiGridLayout.UiGridVerticalAlignmentType.CENTER)
-
-        removeObjectButton:setParent(host, combatOverlayCanvas.widgetName, createMenuDropDownGridLayout.widgetName)
-        removeObjectButton:setWidth(smallButtonSize)
-        removeObjectButton:setHeight(smallButtonSize)
-        removeObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        removeObjectButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        removeObjectButton:setImageTextureSource("trash.png")
-        removeObjectButton:setImageRotationDegrees(180)
-
-        for i = 1, #createTowerButtons do
-            createTowerButtons[i]:setParent(host, combatOverlayCanvas.widgetName,
-                                            createMenuDropDownGridLayout.widgetName)
-            createTowerButtons[i]:setWidth(smallButtonSize)
-            createTowerButtons[i]:setHeight(smallButtonSize)
-            createTowerButtons[i]:setButtonColorHexValue(Styles.Colors.buttonColor)
-            createTowerButtons[i]:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-            createTowerButtons[i]:setImageTextureSource("space_station_img.png")
-            createTowerButtons[i]:setImageRotationDegrees(180)
-        end
-
-        closeTowerCreatePanelButton:setParent(host, combatOverlayCanvas.widgetName, gridBackgroundHeader.widgetName)
-        closeTowerCreatePanelButton:setWidth(smallButtonSize * 0.4)
-        closeTowerCreatePanelButton:setHeight(smallButtonSize * 0.4)
-        closeTowerCreatePanelButton:setUseImageCustomColor(true)
-        closeTowerCreatePanelButton:setImageColorHexValue(0x000000)
-        closeTowerCreatePanelButton:setImageTextureSource("cancel.png")
-        closeTowerCreatePanelButton:setIsBackgroundVisible(false)
-        closeTowerCreatePanelButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-                                              gridBackgroundHeader.widgetName, 0)
-        closeTowerCreatePanelButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-                                              gridBackgroundHeader.widgetName, 0)
-        closeTowerCreatePanelButton:setZOrder(4)
-
-        barrierManagementButton:setParent(host, combatOverlayCanvas.widgetName, createMenuDropDownGridLayout.widgetName)
-        barrierManagementButton:setWidth(smallButtonSize)
-        barrierManagementButton:setHeight(smallButtonSize)
-        barrierManagementButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        barrierManagementButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
-        barrierManagementButton:setImageTextureSource("warning.png")
-
-        removeDropDownPanel:setParent(host, combatOverlayCanvas.widgetName, backgroundRect.widgetName)
+        removeDropDownPanel:setParent(host, combatOverlayCanvas.widgetName, towerGridPanel.backgroundRect.widgetName)
         removeDropDownPanel:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                                      UiItemBase.UiAnchorType.HORIZONTAL_CENTER, backgroundRect.widgetName)
+                                      UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+                                      towerGridPanel.backgroundRect.widgetName)
         removeDropDownPanel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                                      backgroundRect.widgetName)
+                                      towerGridPanel.backgroundRect.widgetName)
         removeDropDownPanel:setWidth(smallButtonSize * 2 + 40)
         removeDropDownPanel:setHeight(smallButtonSize)
         removeDropDownPanel:setVerticalCenterOffset(panelHeight)
@@ -530,15 +308,7 @@ function CombatOverlay:new(host)
                 local action = tostring(parsedJson["action"])
                 if action == "switch_mode" then
                     local mode = tostring(parsedJson["mode"])
-                    if mode == "IDLE" then
-                        hideCreatePanel()
-                        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
-                                                                  "CombatLevelEvents", json.encode(
-                                                                      {
-                                action = "ghost_tower_visibility",
-                                visible = false
-                            }))
-                    end
+                    if mode == "IDLE" then towerGridPanel:handleBroadcastSwitchModeIdle(host) end
                 end
             end
         end
