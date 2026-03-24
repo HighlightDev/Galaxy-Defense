@@ -122,6 +122,11 @@ const std::vector<std::shared_ptr<PortalActor>> CombatActorsPoolHandler::GetPort
     return mSpawnPortals;
 }
 
+const std::vector<std::shared_ptr<BarrierActor>>& CombatActorsPoolHandler::GetBarrierActors() const
+{
+    return mBarriersPool;
+}
+
 void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count)
 {
     const auto& sceneSp = mSceneWp.lock();
@@ -181,8 +186,9 @@ std::shared_ptr<PortalActor> CombatActorsPoolHandler::GetFreePortalActor() const
 
 std::shared_ptr<BarrierActor> CombatActorsPoolHandler::GetFreeBarrierActor() const
 {
-    const auto idleBarrierIt = std::find_if(
-        mBarriersPool.cbegin(), mBarriersPool.cend(), [](const auto& barrierSp) { return !barrierSp->IsEnabled(); });
+    const auto idleBarrierIt = std::find_if(mBarriersPool.cbegin(), mBarriersPool.cend(), [](const auto& barrierSp) {
+        return eBarrierActivityState::IDLE == barrierSp->GetState();
+    });
 
     return idleBarrierIt == mBarriersPool.cend() ? nullptr : *idleBarrierIt;
 }

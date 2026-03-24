@@ -30,6 +30,7 @@ class Actor;
 } // namespace EngineCore
 
 namespace Game {
+class BarrierActor;
 class CombatActorsPoolHandler;
 class SmartPicker;
 class SpaceStationActor;
@@ -40,7 +41,7 @@ class UserInteractionController : public ILevelController,
                                   public BroadcastGameThreadEvent,
                                   public std::enable_shared_from_this<UserInteractionController> {
 
-    enum class eUserInteractionType { IDLE, TOWER_PLACE_SELECTION, TOWER_REMOVEMENT_SELECTION };
+    enum class eUserInteractionType { IDLE, TOWER_PLACE_SELECTION, TOWER_REMOVEMENT_SELECTION, BARRIER_PLACEMENT };
 
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
@@ -88,6 +89,12 @@ class UserInteractionController : public ILevelController,
 
     eMissileType mTowerMissileType{eMissileType::NONE};
 
+    std::shared_ptr<Actor> mGhostBarrierPillarActor;
+
+    std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostBarrierPillarBlendColorProperty;
+
+    std::shared_ptr<BarrierActor> mCurrentBarrierActor;
+
 public:
     UserInteractionController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
@@ -134,6 +141,8 @@ public:
 
     std::shared_ptr<SpaceStationActor> GetSpaceStationAtPosition(const glm::vec3& position) const;
 
+    std::shared_ptr<BarrierActor> GetBarrierAtPosition(const glm::vec3& position) const;
+
     void SetUserInteractionType(const eUserInteractionType interactionType);
 
 private:
@@ -142,6 +151,8 @@ private:
     void InitializePlacementAllowedArea();
 
     void InitializeGhostTower();
+
+    void InitializeGhostBarrierPillar();
 
     void InitializeRemoveTowerMarker();
 

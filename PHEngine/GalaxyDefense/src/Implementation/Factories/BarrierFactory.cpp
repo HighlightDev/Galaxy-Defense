@@ -84,6 +84,7 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
         ++rayIndex;
     }
 
+    a_barrier->SetBarrierMaterials(barrierPbs_mat, electroRay_material);
     a_barrier->SetScene(scene);
 
     return a_barrier;

@@ -93,12 +93,6 @@ function TowerGridPanel:new(host, overlay, config)
     obj.createObjectButton = ImageButton:new(host, overlay, "CreateObjectButton")
     overlay:addCompoundWidget(obj.createObjectButton)
 
-    obj.removeObjectButton = ImageButton:new(host, overlay, "RemoveObjectButton")
-    overlay:addCompoundWidget(obj.removeObjectButton)
-
-    obj.barrierManagementButton = ImageButton:new(host, overlay, "BarrierManagementButton")
-    overlay:addCompoundWidget(obj.barrierManagementButton)
-
     obj.gridBackground = UiRectangle:new(host, "GridBackground")
     overlay:addWidget(obj.gridBackground)
 
@@ -133,6 +127,12 @@ function TowerGridPanel:new(host, overlay, config)
         end)
     end
 
+    obj.barrierManagementButton = ImageButton:new(host, overlay, "BarrierManagementButton")
+    overlay:addCompoundWidget(obj.barrierManagementButton)
+
+    obj.removeObjectButton = ImageButton:new(host, overlay, "RemoveObjectButton")
+    overlay:addCompoundWidget(obj.removeObjectButton)
+
     obj.closeTowerCreatePanelButton = UiImageButton:new(host, overlay, "closeTowerCreatePanelButton")
     overlay:addCompoundWidget(obj.closeTowerCreatePanelButton)
 
@@ -145,6 +145,8 @@ function TowerGridPanel:new(host, overlay, config)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                                   json.encode(
                                                       {action = "remove_tower_marker_visibility", visible = false}))
+        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
+                                                  json.encode({action = "barrier_placement_visibility", visible = false}))
     end)
 
     obj.createObjectButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
@@ -186,7 +188,11 @@ function TowerGridPanel:new(host, overlay, config)
         end
     end)
 
-    obj.barrierManagementButton:subscribeOnMouseInputClickedCallback(function() obj.hideCreatePanel() end)
+    obj.barrierManagementButton:subscribeOnMouseInputClickedCallback(function()
+        obj.hideCreatePanel()
+        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
+                                                  json.encode({action = "barrier_placement_visibility", visible = true}))
+    end)
 
     obj.barrierManagementButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -331,6 +337,8 @@ function TowerGridPanel:handleBroadcastSwitchModeIdle(host)
     self.hideCreatePanel()
     EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                               json.encode({action = "ghost_tower_visibility", visible = false}))
+    EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
+                                              json.encode({action = "barrier_placement_visibility", visible = false}))
 end
 
 return TowerGridPanel

@@ -82,6 +82,8 @@ public:
 
     const std::vector<std::shared_ptr<PortalActor>> GetPortalActors() const;
 
+    const std::vector<std::shared_ptr<BarrierActor>>& GetBarrierActors() const;
+
     eGameObjectsType GetGameObjectTypeByActorId(const int32_t actorId) const;
 
     eGameObjectsCollisionType

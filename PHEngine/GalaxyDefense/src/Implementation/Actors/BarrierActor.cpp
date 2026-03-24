@@ -1,9 +1,13 @@
 #include "BarrierActor.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentData/ElectricBeamComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
+#include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/gtx/quaternion.hpp>
@@ -19,6 +23,75 @@ BarrierActor::BarrierActor(const std::string& gameObjectName, const std::shared_
 void BarrierActor::Tick(const float deltaTimeSec)
 {
     Actor::Tick(deltaTimeSec);
+}
+
+void BarrierActor::SetBarrierMaterials(
+    const std::shared_ptr<::Graphics::IMaterial>& pillarMaterial, const std::shared_ptr<::Graphics::IMaterial>& rayMaterial)
+{
+    mPillarMaterial = pillarMaterial;
+    mRayMaterial = rayMaterial;
+}
+
+void BarrierActor::CreateNewBarrierPillar(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
+{
+    const auto& sceneSp = GetSceneOwner().lock();
+    ext_assert(sceneSp, "Scene pointer is null in BarrierActor::CreateNewBarrierPillar");
+    ext_assert(mPillarMaterial, "Pillar material is null in BarrierActor::CreateNewBarrierPillar");
+
+    const auto pillarIndex = mBarrierPillars.size();
+    const auto& barrierName = GetEngineObjectName();
+
+    const auto d_mesh = std::make_shared<MeshComponentData>(
+        "c_barrier_mesh_" + barrierName + "_pillar_" + std::to_string(pillarIndex),
+        "ufo.obj",
+        position,
+        rotation,
+        scale,
+        mPillarMaterial);
+    const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
+    const auto& c_mesh
+        = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+    AddBarrierPillarMesh(c_mesh);
+
+    if (pillarIndex > 0 && mRayMaterial) {
+        const auto rayIndex = mBarrierRays.size();
+        const auto d_ray = std::make_shared<ElectricBeamComponentData>(
+            "c_barrier_mesh_" + barrierName + "_ray_" + std::to_string(rayIndex),
+            glm::vec3(0),
+            glm::vec3(0),
+            1.0f,
+            3,
+            1.0f,
+            0.05f,
+            mRayMaterial);
+        const auto& rayComponentCreator = std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>();
+        const auto& c_ray
+            = std::static_pointer_cast<ElectricBeamComponent>(sceneSp->CreateComponent_GameThread(rayComponentCreator, d_ray));
+        c_ray->SetSortOrderValue(200 + static_cast<int32_t>(rayIndex));
+        AddRayLineMesh(c_ray);
+    }
+
+    TrySetBarrierPillarMeshRelativeTransform(static_cast<int32_t>(pillarIndex), position, rotation, scale);
+}
+
+void BarrierActor::RemoveAllBarrierPillars()
+{
+    const auto& sceneSp = GetSceneOwner().lock();
+
+    for (const auto& pillar : mBarrierPillars) {
+        RemoveComponent(pillar);
+        if (sceneSp) {
+            sceneSp->RemoveComponent(pillar);
+        }
+    }
+    for (const auto& ray : mBarrierRays) {
+        RemoveComponent(ray);
+        if (sceneSp) {
+            sceneSp->RemoveComponent(ray);
+        }
+    }
+    mBarrierPillars.clear();
+    mBarrierRays.clear();
 }
 
 void BarrierActor::AddBarrierPillarMesh(const std::shared_ptr<StaticMeshComponent>& meshComponent)
@@ -69,5 +142,24 @@ int32_t BarrierActor::GetBarrierRaysCount() const
 std::vector<std::shared_ptr<StaticMeshComponent>> BarrierActor::GetBarrierPillarsMeshComponents() const
 {
     return mBarrierPillars;
+}
+
+void BarrierActor::SetState(const eBarrierActivityState barrierState)
+{
+    mBarrierState = barrierState;
+    if (mBarrierState == eBarrierActivityState::IDLE) {
+        for (const auto& pillar : mBarrierPillars) {
+            pillar->SetIsEnabled(false);
+        }
+        for (const auto& ray : mBarrierRays) {
+            ray->SetIsEnabled(false);
+        }
+    }
+    SetIsEnabled(barrierState == eBarrierActivityState::ACTIVE);
+}
+
+eBarrierActivityState BarrierActor::GetState() const
+{
+    return mBarrierState;
 }
 } // namespace Game

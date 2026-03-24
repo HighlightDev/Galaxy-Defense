@@ -137,7 +137,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
             a_barrier->TrySetBarrierPillarMeshRelativeTransform(
                 pillarIndex++, pillarPosition, glm::vec3(), glm::vec3(3.0f, 12.0f, 3.0f));
         }
-        a_barrier->SetIsEnabled(true);
+        a_barrier->SetState(eBarrierActivityState::ACTIVE);
     }
 
     for (const auto& [stationName, spaceStationData] : levelData.TowersData) {
@@ -182,7 +182,7 @@ void CombatController::OnPostLevelInit()
     const auto& lvlBoundaryMax = extendedLevelBoundaries.GetMax();
     const auto& lvlBoundaryOrigin = extendedLevelBoundaries.GetOrigin();
     if (const auto& a_barrierSp = mCombatActorsPoolHandler->GetFreeBarrierActor()) {
-        a_barrierSp->SetIsEnabled(true);
+        a_barrierSp->SetState(eBarrierActivityState::ACTIVE);
         a_barrierSp->GetRootComponent()->SetTranslation(glm::vec3(0, lvlBoundaryOrigin.y, 0));
         a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(
             0, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));

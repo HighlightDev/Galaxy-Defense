@@ -24,6 +24,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Implementation/ActorLeveling/LevelAttributeDataProvider.h"
+#include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
@@ -60,9 +61,15 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mRemoveTowerMarkerBlendColorProperty(
           std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_transparency_color_filler"))
+    , mGhostBarrierPillarActor(std::make_shared<Actor>(
+          "GhostBarrierPillarActor",
+          std::make_shared<SceneComponent>(
+              "GhostBarrierPillarActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mGhostBarrierPillarBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
 {
     mGhostTowerActor->AddEngineProperty(mGhostTowerBlendColorProperty);
     mRemoveTowerMarkerActor->AddEngineProperty(mRemoveTowerMarkerBlendColorProperty);
+    mGhostBarrierPillarActor->AddEngineProperty(mGhostBarrierPillarBlendColorProperty);
 
     mReadyToShootTimer->Initialize();
     mReadyToShootTimer->SetIsPausable(true);
@@ -85,12 +92,21 @@ void UserInteractionController::SetUserInteractionType(const eUserInteractionTyp
         mTowerPlacementGridActor->SetIsEnabled(true);
         mPlacementAllowedAreaActor->SetIsEnabled(true);
         mRemoveTowerMarkerActor->SetIsEnabled(false);
+        mGhostBarrierPillarActor->SetIsEnabled(false);
         break;
     case eUserInteractionType::TOWER_REMOVEMENT_SELECTION:
         mRemoveTowerMarkerActor->SetIsEnabled(true);
         mTowerPlacementGridActor->SetIsEnabled(true);
         mPlacementAllowedAreaActor->SetIsEnabled(true);
         mGhostTowerActor->SetIsEnabled(false);
+        mGhostBarrierPillarActor->SetIsEnabled(false);
+        break;
+    case eUserInteractionType::BARRIER_PLACEMENT:
+        mGhostBarrierPillarActor->SetIsEnabled(true);
+        mTowerPlacementGridActor->SetIsEnabled(true);
+        mPlacementAllowedAreaActor->SetIsEnabled(false);
+        mGhostTowerActor->SetIsEnabled(false);
+        mRemoveTowerMarkerActor->SetIsEnabled(false);
         break;
     case eUserInteractionType::IDLE:
     default:
@@ -98,6 +114,7 @@ void UserInteractionController::SetUserInteractionType(const eUserInteractionTyp
         mPlacementAllowedAreaActor->SetIsEnabled(false);
         mGhostTowerActor->SetIsEnabled(false);
         mRemoveTowerMarkerActor->SetIsEnabled(false);
+        mGhostBarrierPillarActor->SetIsEnabled(false);
         break;
     }
 }
@@ -148,6 +165,7 @@ void UserInteractionController::Initialize()
     InitializeTowerGrid();
     InitializePlacementAllowedArea();
     InitializeGhostTower();
+    InitializeGhostBarrierPillar();
     InitializeRemoveTowerMarker();
     SetUserInteractionType(eUserInteractionType::IDLE);
 }
@@ -232,6 +250,28 @@ std::shared_ptr<SpaceStationActor> UserInteractionController::GetSpaceStationAtP
         : nullptr;
 }
 
+std::shared_ptr<BarrierActor> UserInteractionController::GetBarrierAtPosition(const glm::vec3& position) const
+{
+    static constexpr float c_barrierPillarDetectionRadius = 5.0f;
+    const auto& barriers = mCombatActorsPoolHandler->GetBarrierActors();
+    for (const auto& barrier : barriers) {
+        if (!barrier->IsEnabled()) {
+            continue;
+        }
+        for (int32_t i = 0; i < barrier->GetBarrierPillarsCount(); ++i) {
+            const auto& pillarPos = barrier->GetBarrierPillarPosition(i);
+            if (pillarPos == glm::vec3(0.0f)) {
+                continue;
+            }
+            const float dist = glm::distance(glm::vec2(pillarPos.x, pillarPos.z), glm::vec2(position.x, position.z));
+            if (dist < c_barrierPillarDetectionRadius) {
+                return barrier;
+            }
+        }
+    }
+    return nullptr;
+}
+
 void UserInteractionController::Tick(const float deltaTimeSec)
 {
     if (eGameModeType::SPACE_STATION_PLACEMENT == mCurrentGameModeType) {
@@ -257,33 +297,41 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
         const glm::ivec2& screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
 
         if (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType
-            || eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
+            || eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType
+            || eUserInteractionType::BARRIER_PLACEMENT == mInteractionType) {
             const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
             const auto& worldSpaceRay
                 = mSmartPicker->CreateWorldSpaceRayFromScreenSpacePosition(sceneCameraSp, screenSpacePosition);
             const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
             if (tParam >= 0.0f) {
                 const auto& placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
-                const auto& cellOriginPosition
-                    = mLevelPlacementGrid
-                          ->GetNearestToPositionTowerCellBoundingBox(glm::vec2(placementPosition.x, placementPosition.z))
-                          .GetOrigin();
-                const auto cellPositionVec3 = glm::vec3(cellOriginPosition.x, 0.0f, cellOriginPosition.y);
 
                 if (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType) {
+                    const auto& cellOriginPosition
+                        = mLevelPlacementGrid
+                              ->GetNearestToPositionTowerCellBoundingBox(glm::vec2(placementPosition.x, placementPosition.z))
+                              .GetOrigin();
+                    const auto cellPositionVec3 = glm::vec3(cellOriginPosition.x, 0.0f, cellOriginPosition.y);
                     mGhostTowerActor->GetRootComponent()->SetTranslation(cellPositionVec3);
 
                     const glm::vec3 ghostTowerPositionValidationColor
                         = IsTowerPositionValid(cellPositionVec3) ? glm::vec3(0, 1, 0) : glm::vec3(1, 0, 0);
                     mGhostTowerBlendColorProperty->SetValue(ghostTowerPositionValidationColor);
                 } else if (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
-                    const glm::vec3 removeTowerPositionValidationColor
-                        = GetSpaceStationAtPosition(placementPosition) == nullptr ? glm::vec3(0.3) : glm::vec3(1);
+                    const bool hasTargetAtPosition = GetSpaceStationAtPosition(placementPosition) != nullptr
+                        || GetBarrierAtPosition(placementPosition) != nullptr;
+                    const glm::vec3 removeTowerPositionValidationColor = hasTargetAtPosition ? glm::vec3(1) : glm::vec3(0.3);
                     mRemoveTowerMarkerBlendColorProperty->SetValue(removeTowerPositionValidationColor);
                     const glm::vec3 movedUpPosition = placementPosition + EngineMath::AXIS_UP * 3.0f;
                     const auto ndcSpacePosition = sceneCameraSp->GetConvertedToNDCSpacePosition(glm::vec4(movedUpPosition, 1.0f));
                     mRemoveTowerMarkerActor->GetRootComponent()->SetTranslation(
                         glm::vec3(ndcSpacePosition.x, ndcSpacePosition.y, 0.0f));
+                } else if (eUserInteractionType::BARRIER_PLACEMENT == mInteractionType) {
+                    const auto& routeEdgeNode = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
+                        glm::vec2(placementPosition.x, placementPosition.z));
+                    const auto snappedPosition = glm::vec3(routeEdgeNode.x, 0.0f, routeEdgeNode.y);
+                    mGhostBarrierPillarActor->GetRootComponent()->SetTranslation(snappedPosition);
+                    mGhostBarrierPillarBlendColorProperty->SetValue(glm::vec3(0, 1, 0));
                 }
             }
         }
@@ -323,6 +371,12 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     const auto& spaceStationSp = GetSpaceStationAtPosition(cellPositionVec3);
                     if (spaceStationSp) {
                         spaceStationSp->SetState(eSpaceStationActivityState::IDLE);
+                    } else {
+                        const auto& barrierSp = GetBarrierAtPosition(placementPosition);
+                        if (barrierSp) {
+                            barrierSp->RemoveAllBarrierPillars();
+                            barrierSp->SetState(eBarrierActivityState::IDLE);
+                        }
                     }
                 }
                 nlohmann::json root;
@@ -331,10 +385,42 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                 TriggerPlayerStatusChangedEvent(eMainPlayerStatusType::TOWERS_COUNT_CHANGED, root.dump());
                 mReloadPlacementTower->StartTimer();
             }
+        } else if (!mReloadPlacementTower->IsRunning() && eUserInteractionType::BARRIER_PLACEMENT == mInteractionType) {
+            const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
+            const auto& lastMousePosition = mouseBindings->GetLastMouseCursorPosition();
+            const glm::ivec2& screenSpacePosition = glm::ivec2(lastMousePosition.x, lastMousePosition.y);
+            const auto& worldSpaceRay
+                = mSmartPicker->CreateWorldSpaceRayFromScreenSpacePosition(sceneCameraSp, screenSpacePosition);
+            const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
+            if (tParam >= 0.0f) {
+                const auto& placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
+                const auto& routeEdgeNode
+                    = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(placementPosition.x, placementPosition.z));
+                const auto snappedPosition = glm::vec3(routeEdgeNode.x, 0.0f, routeEdgeNode.y);
+
+                if (!mCurrentBarrierActor) {
+                    if (not(mCurrentBarrierActor = mCombatActorsPoolHandler->GetFreeBarrierActor())) {
+                        mCombatActorsPoolHandler->SpawnBarriers(1, 0);
+                        mCurrentBarrierActor = mCombatActorsPoolHandler->GetFreeBarrierActor();
+                    }
+
+                    mCurrentBarrierActor->SetState(eBarrierActivityState::ACTIVE);
+                }
+
+                if (mCurrentBarrierActor) {
+                    mCurrentBarrierActor->CreateNewBarrierPillar(snappedPosition, glm::vec3(), glm::vec3(3.0f, 12.0f, 3.0f));
+                }
+                mReloadPlacementTower->StartTimer();
+            }
         }
     } else if (
         mouseBindings->GetKeyState(eMouseKeys::MouseButtonRight) == KeyState::PRESSED
-        && eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
+        && (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType
+            || eUserInteractionType::BARRIER_PLACEMENT == mInteractionType)) {
+        if (mCurrentBarrierActor) {
+            mCurrentBarrierActor->RemoveAllBarrierPillars();
+            mCurrentBarrierActor->SetState(eBarrierActivityState::IDLE);
+        }
         TriggerSwitchToIdleInteractionMode();
     }
 }
@@ -421,6 +507,13 @@ void UserInteractionController::ProcessEvent(
             mTowerMissileType = eMissileType::NONE;
             SetUserInteractionType(
                 isTowerEraserMarkerVisible ? eUserInteractionType::TOWER_REMOVEMENT_SELECTION : eUserInteractionType::IDLE);
+        } else if (jsonRoot.at("action").get<std::string>() == "barrier_placement_visibility") {
+            const bool isBarrierPlacementActive = jsonRoot.at("visible").get<bool>();
+            if (isBarrierPlacementActive) {
+                mCurrentBarrierActor = nullptr;
+            }
+            SetUserInteractionType(
+                isBarrierPlacementActive ? eUserInteractionType::BARRIER_PLACEMENT : eUserInteractionType::IDLE);
         }
     }
 }
@@ -604,6 +697,36 @@ void UserInteractionController::InitializeGhostTower()
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     mGhostTowerActor->AddComponent(c_mesh);
+}
+
+void UserInteractionController::InitializeGhostBarrierPillar()
+{
+    const auto& sceneSp = mSceneWp.lock();
+    ext_assert(sceneSp, "Scene pointer is null in InitializeGhostBarrierPillar");
+    sceneSp->AddActor(mGhostBarrierPillarActor);
+
+    MaterialParser materialParser;
+    const std::shared_ptr<IMaterial>& ghostBarrierMaterial = materialParser.ParseMaterialDescriptor("GhostTowerMaterial.m");
+    sceneSp->RegisterMaterialInstance(ghostBarrierMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostBarrierMaterial, "opacity", 0.5f);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostBarrierMaterial, "uvScale", 1.0f);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostBarrierMaterial, "blendFactor", 0.5f);
+    MaterialPropertySetter::SetMaterialPropertyValue(
+        ghostBarrierMaterial, mGhostBarrierPillarActor, "p_blendColor", "b_blendColor");
+
+    const auto& d_mesh = std::make_shared<MeshComponentData>(
+        "GhostBarrierPillarMeshComponent",
+        "ufo.obj",
+        glm::vec3(),
+        glm::vec3(),
+        glm::vec3(3.0f, 12.0f, 3.0f),
+        ghostBarrierMaterial,
+        true,
+        true);
+    const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
+    const auto& c_mesh
+        = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+    mGhostBarrierPillarActor->AddComponent(c_mesh);
 }
 
 void UserInteractionController::InitializeRemoveTowerMarker()

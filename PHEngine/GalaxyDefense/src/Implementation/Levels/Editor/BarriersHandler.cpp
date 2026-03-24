@@ -124,7 +124,7 @@ void BarriersHandler::UndoLastBarrier()
     if ("" != mCurrentActiveBarrierName && mBarrierActors.count(mCurrentActiveBarrierName)) {
         const auto lastBarrierSp = mBarrierActors.at(mCurrentActiveBarrierName);
         mBarrierActors.erase(mCurrentActiveBarrierName);
-        lastBarrierSp->SetIsEnabled(false);
+        lastBarrierSp->SetState(eBarrierActivityState::IDLE);
         const auto& sceneSp = mSceneWp.lock();
         ext_assert(sceneSp, "BarriersHandler scene pointer is null in RemoveSelectedBarrier");
         sceneSp->RemoveActor(lastBarrierSp);
