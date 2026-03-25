@@ -9,6 +9,7 @@ namespace EngineCore {
 GameThreadTimersHolder::GameThreadTimersHolder()
     : mTimerInstances()
 {
+    mLastExpiredTimersCheckTime = EngineTime::GetCurrentTime();
     mTimerInstances.reserve(1000);
 }
 
@@ -28,15 +29,30 @@ void GameThreadTimersHolder::RegisterTimerInstance(std::shared_ptr<GameThreadTim
     mTimerInstances.emplace_back(instance);
 }
 
+void GameThreadTimersHolder::checkTimersForExpiration()
+{
+    mCheckForExpiredTimersInProgress.store(true);
+    const auto currentTime = EngineTime::GetCurrentTime();
+    const auto expiredTimersCheckDuration = EngineTime::GetPassedDuration(mLastExpiredTimersCheckTime);
+    if (EngineTime::GetTimeDifferenceInMilliseconds(expiredTimersCheckDuration) > 2000.0) {
+        mTimerInstances.erase(
+            std::remove_if(
+                mTimerInstances.begin(),
+                mTimerInstances.end(),
+                [](const std::weak_ptr<GameThreadTimer>& timerWp) { return timerWp.expired(); }),
+            mTimerInstances.end());
+        mLastExpiredTimersCheckTime = currentTime;
+    }
+    mCheckForExpiredTimersInProgress.store(false);
+}
+
 void GameThreadTimersHolder::Tick(const float deltaSeconds)
 {
-    mTimerInstances.erase(
-        std::remove_if(
-            mTimerInstances.begin(),
-            mTimerInstances.end(),
-            [](const std::weak_ptr<GameThreadTimer>& timerWp) { return timerWp.expired(); }),
-        mTimerInstances.end());
+    checkTimersForExpiration();
 
+    if (mCheckForExpiredTimersInProgress.load()) {
+        return;
+    }
     const float deltaMilliseconds = deltaSeconds * 1000.0f;
     for (const auto& timerWp : mTimerInstances) {
         if (const auto& timerSp = timerWp.lock()) {
@@ -49,6 +65,11 @@ void GameThreadTimersHolder::Tick(const float deltaSeconds)
 
 void GameThreadTimersHolder::UnpausableTick(const float deltaSeconds)
 {
+    checkTimersForExpiration();
+
+    if (mCheckForExpiredTimersInProgress.load()) {
+        return;
+    }
     const float deltaMilliseconds = deltaSeconds * 1000.0f;
     for (const auto& timerWp : mTimerInstances) {
         if (const auto timerSp = timerWp.lock()) {
@@ -70,6 +91,15 @@ GameThreadTimer::GameThreadTimer()
     , m_isPausable(true)
     , m_isInitialized(false)
 {
+}
+
+GameThreadTimer::~GameThreadTimer()
+{
+    LogInfo(
+        "GameThreadTimer::~GameThreadTimer: instanceID: ",
+        m_instanceId,
+        ", threadName: ",
+        ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads());
 }
 
 void GameThreadTimer::Initialize()

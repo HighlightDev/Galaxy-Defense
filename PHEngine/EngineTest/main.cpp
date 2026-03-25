@@ -1,5 +1,6 @@
 #include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
+#include "Core/GameCore/Event/ExitGameEvent.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -90,7 +91,7 @@ void key_pressed_callback(GLFWwindow* window, int32_t key, int32_t scancode, int
 
     if (key == ESCAPE_KEY) {
         key = static_cast<int32_t>(eKeyboardKeys::Escape);
-        exit(1);
+        Event::ExitGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION);
     }
 
     if (actionType == GLFW_PRESS) {

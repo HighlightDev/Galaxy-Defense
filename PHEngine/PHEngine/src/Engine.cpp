@@ -323,7 +323,7 @@ void Engine::ProcessEvent(const PauseGameThreadEvent* sender, const PauseGameThr
 void Engine::ProcessEvent(const ExitGameThreadEvent* sender, const ExitGameThreadEvent::EventData_t& data)
 {
     LogInfo("Engine::ProcessEvent::ExitGameThreadEvent");
-    bExitGame = true;
+    bExitGame.store(true, std::memory_order::seq_cst);
     StopGameThreadExecution();
     StopLuaThreadExecution();
 }
@@ -393,8 +393,8 @@ void Engine::LuaThreadPulse()
         sumLtSeconds += mLuaThreadDeltaTimeSeconds;
         ++ltCounter;
 #endif
-        if (mIsLevelUnloading) {
-            mIsLuaThreadIdle = true;
+        if (mIsLevelUnloading.load(std::memory_order::seq_cst)) {
+            mIsLuaThreadIdle.store(true, std::memory_order::seq_cst);
             mUnloadLevelCv.notify_all(); // notify all waiting threads to resume
         }
     }
@@ -441,8 +441,8 @@ void Engine::GameThreadPulse()
         ++gtCounter;
 #endif
 
-        if (mIsLevelUnloading) {
-            mIsGameThreadIdle = true;
+        if (mIsLevelUnloading.load(std::memory_order::seq_cst)) {
+            mIsGameThreadIdle.store(true, std::memory_order::seq_cst);
             mUnloadLevelCv.notify_all(); // notify all waiting threads to resume
         }
     }
@@ -499,9 +499,9 @@ float Engine::GetLuaThreadDeltaTime() const
     return mLuaThreadDeltaTimeSeconds;
 }
 
-bool Engine::IsExitGameState() const
+std::atomic_bool Engine::IsExitGameState() const
 {
-    return bExitGame;
+    return bExitGame.load(std::memory_order::seq_cst);
 }
 
 std::shared_ptr<Scene> Engine::GetSceneSp() const

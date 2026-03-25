@@ -417,10 +417,6 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
         mouseBindings->GetKeyState(eMouseKeys::MouseButtonRight) == KeyState::PRESSED
         && (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType
             || eUserInteractionType::BARRIER_PLACEMENT == mInteractionType)) {
-        if (mCurrentBarrierActor) {
-            mCurrentBarrierActor->RemoveAllBarrierPillars();
-            mCurrentBarrierActor->SetState(eBarrierActivityState::IDLE);
-        }
         TriggerSwitchToIdleInteractionMode();
     }
 }

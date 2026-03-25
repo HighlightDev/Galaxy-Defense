@@ -139,6 +139,7 @@ void VertexArrayObject::CleanUp()
     m_vbos.clear();
 
     delete m_ibo;
+    m_ibo = nullptr;
 }
 } // namespace OpenGL
 } // namespace Graphics

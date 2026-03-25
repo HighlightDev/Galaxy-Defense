@@ -50,6 +50,8 @@ void FramebufferObject::CreateFramebuffer()
     }
 
     CollectAttachments();
+
+    CheckErrors();
 }
 
 void FramebufferObject::RebindFramebufferTextures()
@@ -164,6 +166,8 @@ void FramebufferObject::CreateRenderBuffer(
     glCreateRenderbuffers(1, &mRenderBufferId);
     glNamedRenderbufferStorage(mRenderBufferId, renderbufferDataType, screenResX, screenResY);
     glNamedFramebufferRenderbuffer(mFramebufferId, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
+
+    CheckErrors();
 }
 
 void FramebufferObject::CreateRenderBuffer(
@@ -182,6 +186,8 @@ void FramebufferObject::CreateRenderBuffer(
     glCreateRenderbuffers(1, &mRenderBufferId);
     glNamedRenderbufferStorage(mRenderBufferId, renderbufferDataType, screenResolution.x, screenResolution.y);
     glNamedFramebufferRenderbuffer(mFramebufferId, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
+
+    CheckErrors();
 }
 
 void FramebufferObject::ResizeRenderBufferStorage(const int32_t renderbufferDataType, const glm::ivec2& screenResolution)

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Core/CommonCore/TimeHelper.h"
 #include "Core/GameCore/ITickable.h"
 
 #include <algorithm>
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -14,7 +16,13 @@ class GameThreadTimersHolder : public ITickable {
 private:
     std::vector<std::weak_ptr<GameThreadTimer>> mTimerInstances;
 
-    GameThreadTimersHolder();
+    std::atomic_bool mCheckForExpiredTimersInProgress{false};
+
+    Moment_t mLastExpiredTimersCheckTime;
+
+    explicit GameThreadTimersHolder();
+
+    void checkTimersForExpiration();
 
 public:
     static GameThreadTimersHolder* GetInstance();
@@ -50,7 +58,7 @@ class GameThreadTimer : public std::enable_shared_from_this<GameThreadTimer> {
 public:
     GameThreadTimer();
 
-    virtual ~GameThreadTimer() = default;
+    virtual ~GameThreadTimer();
 
     GameThreadTimer(const GameThreadTimer&) = delete;
 

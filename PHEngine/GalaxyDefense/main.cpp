@@ -72,8 +72,6 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
     engineInputManager->TriggerOnMouseMove(xPos, yPos);
 }
 
-#define ESCAPE_KEY 256
-
 void key_pressed_callback(GLFWwindow* window, int32_t key, int32_t scancode, int32_t actionType, int32_t modifierKey)
 {
     static const std::unordered_map<int32_t, eKeyboardKeys> s_modifierKeysMap
@@ -84,9 +82,11 @@ void key_pressed_callback(GLFWwindow* window, int32_t key, int32_t scancode, int
            {GLFW_KEY_LEFT_ALT, eKeyboardKeys::Alt},
            {GLFW_KEY_RIGHT_ALT, eKeyboardKeys::Alt}};
 
+#define ESCAPE_KEY 256
     if (key == ESCAPE_KEY) {
         key = static_cast<int32_t>(eKeyboardKeys::Escape);
     }
+#undef ESCAPE_KEY
 
     if (actionType == GLFW_PRESS) {
         if (key == 'R' || key == 'r') {

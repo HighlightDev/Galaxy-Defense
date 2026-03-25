@@ -68,7 +68,7 @@ class Engine : public PauseGameThreadEvent,
 
     std::atomic_bool bLevelIsLoading{true};
 
-    bool bExitGame{false};
+    std::atomic_bool bExitGame{false};
 
 #if DEBUG
     std::shared_ptr<GameThreadTimer> m_resourceConsumptionLogTimer;
@@ -85,9 +85,9 @@ class Engine : public PauseGameThreadEvent,
     std::condition_variable mUnloadLevelCv;
     std::mutex mUnloadLevelMutex;
 
-    bool mIsLevelUnloading{false};
-    bool mIsGameThreadIdle{false};
-    bool mIsLuaThreadIdle{false};
+    std::atomic_bool mIsLevelUnloading{false};
+    std::atomic_bool mIsGameThreadIdle{false};
+    std::atomic_bool mIsLuaThreadIdle{false};
 
 public:
     Engine();
@@ -142,7 +142,7 @@ public:
 
     InterThreadCommunicationMgr& GetThreadCommunicationManager();
 
-    bool IsExitGameState() const;
+    std::atomic_bool IsExitGameState() const;
 
     std::shared_ptr<Scene> GetSceneSp() const;
 
