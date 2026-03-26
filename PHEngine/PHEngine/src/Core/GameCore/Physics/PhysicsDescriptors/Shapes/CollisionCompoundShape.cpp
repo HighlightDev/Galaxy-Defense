@@ -31,6 +31,15 @@ void CollisionCompoundShape::AddChildShape(
         childShape, NoScaleEulerRotationTransform(childTransform.Translation, childTransform.RotationEulerAngles)));
 }
 
+void CollisionCompoundShape::RemoveAllChildShapes()
+{
+    auto* compoundShape = static_cast<btCompoundShape*>(mCollisionShape);
+    for (int i = compoundShape->getNumChildShapes() - 1; i >= 0; --i) {
+        compoundShape->removeChildShapeByIndex(i);
+    }
+    mChildShapes.clear();
+}
+
 const std::vector<std::pair<std::shared_ptr<CollisionShapeBase>, NoScaleEulerRotationTransform>>&
 CollisionCompoundShape::GetChildShapes() const
 {

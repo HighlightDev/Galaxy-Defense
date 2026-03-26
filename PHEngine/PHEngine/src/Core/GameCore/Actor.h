@@ -82,6 +82,8 @@ public:
 
     void RemoveInputComponent();
 
+    void RemovePhysicsComponent();
+
     void SetIsEnabled(bool isEnabled);
 
     void SetIsVisible(bool isVisible);

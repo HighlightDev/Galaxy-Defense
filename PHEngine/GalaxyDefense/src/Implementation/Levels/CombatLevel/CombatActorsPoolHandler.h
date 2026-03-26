@@ -74,6 +74,8 @@ public:
 
     std::shared_ptr<SpaceStationActor> GetSpaceStationOwnerActorById(const int32_t actorId) const;
 
+    std::shared_ptr<BarrierActor> GetBarrierOwnerActorById(const int32_t actorId) const;
+
     const std::vector<std::shared_ptr<SpaceshipActor>>& GetEnemySpaceshipActors() const;
 
     const std::vector<std::shared_ptr<MissileActor>>& GetMissileActors() const;
@@ -107,6 +109,8 @@ public:
 
     std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>>
     GetMissilePhysicsComponents(const eMissileType missileType) const;
+
+    std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> GetBarriersPhysicsComponents() const;
 
     int32_t GetSpaceStationsCountWithState(const eSpaceStationActivityState state) const;
 

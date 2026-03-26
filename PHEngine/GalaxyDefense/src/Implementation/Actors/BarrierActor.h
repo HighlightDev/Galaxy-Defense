@@ -13,6 +13,10 @@ class StaticMeshComponent;
 class ElectricBeamComponent;
 } // namespace EngineCore
 
+namespace EnginePhysics {
+struct CollisionCompoundShape;
+}
+
 namespace Graphics {
 class IMaterial;
 } // namespace Graphics
@@ -34,6 +38,8 @@ class BarrierActor : public Actor {
     std::shared_ptr<::Graphics::IMaterial> mPillarMaterial;
 
     std::shared_ptr<::Graphics::IMaterial> mRayMaterial;
+
+    std::shared_ptr<::EnginePhysics::CollisionCompoundShape> mCompoundShape;
 
 public:
     BarrierActor(const std::string& gameObjectName, const std::shared_ptr<::EngineCore::SceneComponent>& rootComponent);
@@ -65,5 +71,7 @@ public:
     void SetState(const eBarrierActivityState barrierState);
 
     eBarrierActivityState GetState() const;
+
+    void SetCompoundShape(const std::shared_ptr<::EnginePhysics::CollisionCompoundShape>& compoundShape);
 };
 } // namespace Game

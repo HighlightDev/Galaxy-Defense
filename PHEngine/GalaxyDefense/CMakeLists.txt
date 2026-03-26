@@ -48,6 +48,7 @@ set(HEADERS
     src/Implementation/Factories/IMissileFactory.h
     src/Implementation/Factories/ISpaceObjectFactory.h
     src/Implementation/Factories/WeakSpaceShipFactory.h
+    src/Implementation/Factories/FighterSpaceShipFactory.h
     src/Implementation/Factories/BombMissileFactory.h
     src/Implementation/Factories/FreezingMissileFactory.h
     src/Implementation/Factories/BlackHoleMissileFactory.h
@@ -62,6 +63,7 @@ set(HEADERS
     src/Implementation/Factories/SpawnPortalFactory.h
     src/Implementation/ActorLeveling/SpaceStationLevel.h
     src/Implementation/ActorLeveling/SpaceshipLevel.h
+    src/Implementation/ActorLeveling/FighterSpaceshipLevel.h
     src/Implementation/ActorLeveling/LevelAttributeDataProvider.h
     src/Implementation/Modifiers/IModifiable.h
     src/Implementation/Modifiers/GravityModifier.h
@@ -76,6 +78,7 @@ set(HEADERS
     src/Implementation/Actors/BlackHoleMissileActor.h
     src/Implementation/Actors/SpaceshipActor.h
     src/Implementation/Actors/WeakSpaceshipActor.h
+    src/Implementation/Actors/FighterSpaceshipActor.h
     src/Implementation/Actors/SpaceObjectActor.h
     src/Implementation/Actors/AsteroidActor.h
     src/Implementation/Actors/ElectroRayActor.h
@@ -142,6 +145,7 @@ set(SOURCES
     src/Implementation/Events/ChangeEditModeEvent.cpp
     src/Implementation/Events/LevelProgressChangedEvent.cpp
     src/Implementation/Factories/WeakSpaceShipFactory.cpp
+    src/Implementation/Factories/FighterSpaceShipFactory.cpp
     src/Implementation/Factories/BombMissileFactory.cpp
     src/Implementation/Factories/FreezingMissileFactory.cpp
     src/Implementation/Factories/BlackHoleMissileFactory.cpp
@@ -155,6 +159,7 @@ set(SOURCES
     src/Implementation/Factories/SpawnPortalFactory.cpp
     src/Implementation/ActorLeveling/SpaceStationLevel.cpp
     src/Implementation/ActorLeveling/SpaceshipLevel.cpp
+    src/Implementation/ActorLeveling/FighterSpaceshipLevel.cpp
     src/Implementation/ActorLeveling/LevelAttributeDataProvider.cpp
     src/Implementation/Modifiers/GravityModifier.cpp
     src/Implementation/Modifiers/FreezingModifier.cpp
@@ -168,6 +173,7 @@ set(SOURCES
     src/Implementation/Actors/BlackHoleMissileActor.cpp
     src/Implementation/Actors/SpaceshipActor.cpp
     src/Implementation/Actors/WeakSpaceshipActor.cpp
+    src/Implementation/Actors/FighterSpaceshipActor.cpp
     src/Implementation/Actors/SpaceObjectActor.cpp
     src/Implementation/Actors/AsteroidActor.cpp
     src/Implementation/Actors/ElectroRayActor.cpp

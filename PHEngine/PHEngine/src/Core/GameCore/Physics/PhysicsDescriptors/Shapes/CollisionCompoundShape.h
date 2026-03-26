@@ -21,6 +21,8 @@ public:
     void
     AddChildShape(const NoScaleEulerRotationTransform& childTransform, const std::shared_ptr<CollisionShapeBase>& childShape);
 
+    void RemoveAllChildShapes();
+
     const std::vector<std::pair<std::shared_ptr<CollisionShapeBase>, NoScaleEulerRotationTransform>>& GetChildShapes() const;
 };
 

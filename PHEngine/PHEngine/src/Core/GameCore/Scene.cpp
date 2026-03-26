@@ -535,6 +535,8 @@ void Scene::RemoveComponent(std::shared_ptr<Component> component)
             spOwner->RemoveMovementComponent();
         } else if ((type & eComponentType::INPUT_COMPONENT) == eComponentType::INPUT_COMPONENT) {
             spOwner->RemoveInputComponent();
+        } else if ((type & eComponentType::PHYSICS_COMPONENT) == eComponentType::PHYSICS_COMPONENT) {
+            spOwner->RemovePhysicsComponent();
         } else {
             spOwner->RemoveComponent(component);
         }

@@ -1,4 +1,4 @@
-OPTSTRING=":amlst"
+OPTSTRING=":amlstc"
 PATH_TO_ROOT=/home/dzinoviev/MyProjects/phengine/PHEngine
 BUILD_PROJECT1=GalaxyDefense
 BUILD_PROJECT2=EngineTest
@@ -29,6 +29,11 @@ while getopts ${OPTSTRING} opt; do
         echo "Copy textures."
         cp -a ${PATH_TO_ROOT}/PHEngine/res/texture/. ${PATH_TO_ROOT}/build/${BUILD_PROJECT1}/res/texture/
         cp -a ${PATH_TO_ROOT}/PHEngine/res/texture/. ${PATH_TO_ROOT}/build/${BUILD_PROJECT2}/res/texture/
+        ;;
+    c)
+        echo "Copy config files."
+        cp -a ${PATH_TO_ROOT}/PHEngine/res/config/. ${PATH_TO_ROOT}/build/${BUILD_PROJECT1}/res/config/
+        cp -a ${PATH_TO_ROOT}/PHEngine/res/config/. ${PATH_TO_ROOT}/build/${BUILD_PROJECT2}/res/config/
         ;;
     ?)
         echo "Invalid option: -${OPTARG}."

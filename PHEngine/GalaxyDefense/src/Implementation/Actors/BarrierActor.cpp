@@ -2,17 +2,27 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/ElectricBeamComponentData.h"
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+#include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionBoxShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCompoundShape.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/UtilityCore/GlmToBulletConverter.h"
 
+#include <BulletPhys/btBulletCollisionCommon.h>
 #include <glm/gtx/quaternion.hpp>
 
 using namespace EngineMath;
+using namespace EnginePhysics;
 
 namespace Game {
 BarrierActor::BarrierActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent)
@@ -72,6 +82,23 @@ void BarrierActor::CreateNewBarrierPillar(const glm::vec3& position, const glm::
     }
 
     TrySetBarrierPillarMeshRelativeTransform(static_cast<int32_t>(pillarIndex), position, rotation, scale);
+
+    // Add collision box child to compound shape; create shape & physics component if first pillar
+    const glm::vec3 pillarHalfExtent = scale * 0.5f;
+    if (!mCompoundShape) {
+        mCompoundShape = std::make_shared<CollisionCompoundShape>();
+    }
+    const auto& childBoxShape = std::make_shared<CollisionBoxShape>(pillarHalfExtent);
+    mCompoundShape->AddChildShape(
+        NoScaleEulerRotationTransform(glm::vec3(position.x, position.y, -position.z), glm::vec3(0)), childBoxShape);
+
+    if (!GetPhysicsComponent()) {
+        const auto& ghostController = std::make_shared<GhostController>(sceneSp->GetPhysicsWorld(), mCompoundShape, 0.0f);
+        const auto physData = std::make_shared<PhysicsComponentData>("c_barrierPhysics_" + barrierName, ghostController);
+        const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
+        const auto& c_ghostPhysics = sceneSp->CreateComponent_GameThread(physicsComponentCreator, physData);
+        AddComponent(c_ghostPhysics);
+    }
 }
 
 void BarrierActor::RemoveAllBarrierPillars()
@@ -92,6 +119,10 @@ void BarrierActor::RemoveAllBarrierPillars()
     }
     mBarrierPillars.clear();
     mBarrierRays.clear();
+
+    if (mCompoundShape) {
+        mCompoundShape->RemoveAllChildShapes();
+    }
 }
 
 void BarrierActor::AddBarrierPillarMesh(const std::shared_ptr<StaticMeshComponent>& meshComponent)
@@ -113,6 +144,19 @@ bool BarrierActor::TrySetBarrierPillarMeshRelativeTransform(
         pillarMesh->SetTranslation(translation);
         pillarMesh->SetRotator(glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))));
         pillarMesh->SetScale(scale);
+
+        if (mCompoundShape) {
+            const auto& childShapes = mCompoundShape->GetChildShapes();
+            if (pillarIndex < static_cast<int32_t>(childShapes.size())) {
+                btTransform childTransform;
+                childTransform.setIdentity();
+                childTransform.setOrigin(Converter::glmToBullet(glm::vec3(translation.x, translation.y, -translation.z)));
+                childTransform.setRotation(Converter::glmToBullet(
+                    glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z)))));
+                auto* compoundBtShape = static_cast<btCompoundShape*>(mCompoundShape->GetCollisionShape());
+                compoundBtShape->updateChildTransform(pillarIndex, childTransform, true);
+            }
+        }
 
         int32_t rayIndex = 0;
         for (const auto& raySp : mBarrierRays) {
@@ -161,5 +205,10 @@ void BarrierActor::SetState(const eBarrierActivityState barrierState)
 eBarrierActivityState BarrierActor::GetState() const
 {
     return mBarrierState;
+}
+
+void BarrierActor::SetCompoundShape(const std::shared_ptr<CollisionCompoundShape>& compoundShape)
+{
+    mCompoundShape = compoundShape;
 }
 } // namespace Game

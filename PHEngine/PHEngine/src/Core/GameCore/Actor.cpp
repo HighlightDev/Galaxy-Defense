@@ -315,18 +315,33 @@ void Actor::RemoveComponent(std::shared_ptr<EngineCore::Component> component)
     auto componentIt = std::find(m_allComponents.begin(), m_allComponents.end(), component);
     if (componentIt != m_allComponents.end()) {
         component->RemoveOwner();
+        component->CleanUp();
         m_allComponents.erase(componentIt);
     }
 }
 
 void Actor::RemoveMovementComponent()
 {
-    m_movementComponent = std::shared_ptr<MovementComponent>(nullptr);
+    if (m_movementComponent) {
+        m_movementComponent->CleanUp();
+    }
+    m_movementComponent.reset();
 }
 
 void Actor::RemoveInputComponent()
 {
-    m_inputComponent = std::shared_ptr<InputComponent>(nullptr);
+    if (m_inputComponent) {
+        m_inputComponent->CleanUp();
+    }
+    m_inputComponent.reset();
+}
+
+void Actor::RemovePhysicsComponent()
+{
+    if (m_physicsComponent) {
+        m_physicsComponent->CleanUp();
+    }
+    m_physicsComponent.reset();
 }
 
 void Actor::SetParent(const std::weak_ptr<Actor>& actor)

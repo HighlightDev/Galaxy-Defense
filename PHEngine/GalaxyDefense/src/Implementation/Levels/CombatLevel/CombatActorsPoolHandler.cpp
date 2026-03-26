@@ -271,18 +271,31 @@ std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::GetSpaceStationOwner
     return foundIt != mSpaceStations.cend() ? (*foundIt) : nullptr;
 }
 
+std::shared_ptr<BarrierActor> CombatActorsPoolHandler::GetBarrierOwnerActorById(const int32_t actorId) const
+{
+    const auto foundIt = std::find_if(mBarriersPool.cbegin(), mBarriersPool.cend(), [actorId](const auto& barrier) {
+        return barrier->HasEngineObjectIdInHierarchy(actorId);
+    });
+    return foundIt != mBarriersPool.cend() ? (*foundIt) : nullptr;
+}
+
 eGameObjectsType CombatActorsPoolHandler::GetGameObjectTypeByActorId(const int32_t actorId) const
 {
-    const auto result = GetEnemyShipOwnerActorById(actorId)
-        ? eGameObjectsType::SPACESHIP
-        : GetMissileOwnerActorById(actorId) ? eGameObjectsType::MISSILE
-                                            : GetSpaceObjectOwnerActorById(actorId)
-                ? eGameObjectsType::NEUTRAL_SPACE_OBJECT
-                : GetSpaceStationOwnerActorById(actorId) ? eGameObjectsType::SPACE_STATION : eGameObjectsType::UNDEFINED;
-
-    ext_assert(eGameObjectsType::UNDEFINED != result, "Game object type is UNDEFINED for actor ID");
-
-    return result;
+    const auto enemyShipSp = GetEnemyShipOwnerActorById(actorId);
+    if (enemyShipSp) {
+        return eGameObjectsType::SPACESHIP;
+    } else if (const auto missileSp = GetMissileOwnerActorById(actorId)) {
+        return eGameObjectsType::MISSILE;
+    } else if (const auto spaceObjectSp = GetSpaceObjectOwnerActorById(actorId)) {
+        return eGameObjectsType::NEUTRAL_SPACE_OBJECT;
+    } else if (const auto spaceStationSp = GetSpaceStationOwnerActorById(actorId)) {
+        return eGameObjectsType::SPACE_STATION;
+    } else if (const auto barrierSp = GetBarrierOwnerActorById(actorId)) {
+        return eGameObjectsType::BARRIER;
+    } else {
+        ext_assert(false, "Game object type is UNDEFINED for actor ID");
+        return eGameObjectsType::UNDEFINED;
+    }
 }
 
 eGameObjectsCollisionType CombatActorsPoolHandler::GetGameObjectsCollisionType(
@@ -299,6 +312,10 @@ eGameObjectsCollisionType CombatActorsPoolHandler::GetGameObjectsCollisionType(
     if ((eGameObjectsType::MISSILE == firstObject && eGameObjectsType::NEUTRAL_SPACE_OBJECT == secondObject)
         || (eGameObjectsType::NEUTRAL_SPACE_OBJECT == firstObject && eGameObjectsType::MISSILE == secondObject))
         return eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT;
+
+    if ((eGameObjectsType::MISSILE == firstObject && eGameObjectsType::BARRIER == secondObject)
+        || (eGameObjectsType::BARRIER == firstObject && eGameObjectsType::MISSILE == secondObject))
+        return eGameObjectsCollisionType::MISSILE_WITH_BARRIER;
 
     return eGameObjectsCollisionType::UNDEFINED;
 }
@@ -360,5 +377,17 @@ int32_t CombatActorsPoolHandler::GetSpaceStationsCountWithState(const eSpaceStat
     return std::count_if(mSpaceStations.cbegin(), mSpaceStations.cend(), [seekState = state](const auto& spaceStationSp) {
         return seekState == spaceStationSp->GetState();
     });
+}
+
+std::vector<std::shared_ptr<PhysicsComponent>> CombatActorsPoolHandler::GetBarriersPhysicsComponents() const
+{
+    std::vector<std::shared_ptr<PhysicsComponent>> physicsComponents;
+    physicsComponents.reserve(mBarriersPool.size());
+    for (const auto& barrier : mBarriersPool) {
+        if (const auto& physComp = barrier->GetPhysicsComponent()) {
+            physicsComponents.emplace_back(physComp);
+        }
+    }
+    return physicsComponents;
 }
 } // namespace Game

@@ -343,6 +343,9 @@ void CombatController::ProcessEvent(
         } else {
             explosionVisitor->EndExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor);
         }
+    } else if (eGameObjectsCollisionType::MISSILE_WITH_BARRIER == objectsCollisionType) {
+        // Skip collision between missiles and barriers
+        return;
     }
 }
 
@@ -577,62 +580,72 @@ void CombatController::ProcessAiAction()
         return;
     }
 
+    const auto& enemySpaceshipActors = mCombatActorsPoolHandler->GetEnemySpaceshipActors();
     const auto& spaceStations = mCombatActorsPoolHandler->GetSpaceStationActors();
-    std::vector<std::shared_ptr<PhysicsComponent>> excludedPhysicsComponents;
     const auto& spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
     const auto& bombMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BOMB);
     const auto& freezeMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING_BOMB);
     const auto& blackHoleMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
-    excludedPhysicsComponents.reserve(spaceStations.size() + mCombatActorsPoolHandler->GetMissileActors().size());
-    excludedPhysicsComponents.insert(
-        excludedPhysicsComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
-    excludedPhysicsComponents.insert(
-        excludedPhysicsComponents.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
-    excludedPhysicsComponents.insert(
-        excludedPhysicsComponents.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
-    excludedPhysicsComponents.insert(
-        excludedPhysicsComponents.end(), blackHoleMissilePhysComponents.begin(), blackHoleMissilePhysComponents.end());
+    const auto& enemySpaceshipPhysComponents = mCombatActorsPoolHandler->GetSpaceShipsPhysicsComponents();
+    const auto& barriersPhysComponents = mCombatActorsPoolHandler->GetBarriersPhysicsComponents();
 
-    for (const auto& spaceStation : spaceStations) {
-        if (eSpaceStationActivityState::ACTIVE == spaceStation->GetState() && spaceStation->CanShoot()) {
-            SphereCollisionTestWithFilterAdapter collisionTest(
-                spaceStation->GetSpaceStationLevel()->GetShootRadius(), excludedPhysicsComponents);
-            collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceStation->GetRootComponent()->GetTranslation());
-            const auto& collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
-            std::vector<int32_t> descriptorActorIds;
-            std::transform(
-                collidedDescriptors.begin(),
-                collidedDescriptors.end(),
-                std::back_inserter(descriptorActorIds),
-                [](const auto& collidedDescriptor) { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
+    // Spacestations
+    {
+        std::vector<std::shared_ptr<PhysicsComponent>> excludedPhysicsComponents;
+        excludedPhysicsComponents.reserve(spaceStations.size() + mCombatActorsPoolHandler->GetMissileActors().size());
+        excludedPhysicsComponents.insert(
+            excludedPhysicsComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
+        excludedPhysicsComponents.insert(
+            excludedPhysicsComponents.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
+        excludedPhysicsComponents.insert(
+            excludedPhysicsComponents.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
+        excludedPhysicsComponents.insert(
+            excludedPhysicsComponents.end(), blackHoleMissilePhysComponents.begin(), blackHoleMissilePhysComponents.end());
+        excludedPhysicsComponents.insert(
+            excludedPhysicsComponents.end(), barriersPhysComponents.begin(), barriersPhysComponents.end());
 
-            if (descriptorActorIds.size()) {
-                const auto& spaceStationTranslation = spaceStation->GetRootComponent()->GetTranslation();
-                const auto foundNearestIt = std::min_element(
-                    descriptorActorIds.begin(),
-                    descriptorActorIds.end(),
-                    [this, spaceStationTranslation](const auto& leftActorId, const auto& rightActorId) {
-                        const auto& leftShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(leftActorId);
-                        const auto& rightShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(rightActorId);
-                        ext_assert(leftShipActor && rightShipActor, "Failed to find enemy ship actors for distance comparison");
-                        const auto sqrDistanceToLeft
-                            = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
-                        const auto sqrDistanceToRight
-                            = glm::distance2(rightShipActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
-                        return sqrDistanceToLeft < sqrDistanceToRight;
-                    });
-                if (foundNearestIt != descriptorActorIds.end()) {
-                    const auto gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(*foundNearestIt);
-                    ext_assert(eGameObjectsType::SPACESHIP == gameObjectType, "Expected game object type to be SPACESHIP");
-                    const auto& nearestEnemy = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
-                    const auto& enemyPosition = nearestEnemy->GetRootComponent()->GetTranslation();
-                    const auto& projectileShootDirection = glm::normalize(enemyPosition - spaceStationTranslation);
-                    LaunchMisile(
-                        spaceStation,
-                        spaceStationTranslation,
-                        projectileShootDirection,
-                        spaceStation->GetSpaceStationLevel()->GetMissileType());
-                    spaceStation->RestartTimerSinceLastShoot();
+        for (const auto& spaceStation : spaceStations) {
+            if (eSpaceStationActivityState::ACTIVE == spaceStation->GetState() && spaceStation->CanShoot()) {
+                SphereCollisionTestWithFilterAdapter collisionTest(
+                    spaceStation->GetSpaceStationLevel()->GetShootRadius(), excludedPhysicsComponents);
+                collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceStation->GetRootComponent()->GetTranslation());
+                const auto& collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
+                std::vector<int32_t> descriptorActorIds;
+                std::transform(
+                    collidedDescriptors.begin(),
+                    collidedDescriptors.end(),
+                    std::back_inserter(descriptorActorIds),
+                    [](const auto& collidedDescriptor) { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
+
+                if (descriptorActorIds.size()) {
+                    const auto& spaceStationTranslation = spaceStation->GetRootComponent()->GetTranslation();
+                    const auto foundNearestIt = std::min_element(
+                        descriptorActorIds.begin(),
+                        descriptorActorIds.end(),
+                        [this, spaceStationTranslation](const auto& leftActorId, const auto& rightActorId) {
+                            const auto& leftShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(leftActorId);
+                            const auto& rightShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(rightActorId);
+                            ext_assert(
+                                leftShipActor && rightShipActor, "Failed to find enemy ship actors for distance comparison");
+                            const auto sqrDistanceToLeft
+                                = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
+                            const auto sqrDistanceToRight
+                                = glm::distance2(rightShipActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
+                            return sqrDistanceToLeft < sqrDistanceToRight;
+                        });
+                    if (foundNearestIt != descriptorActorIds.end()) {
+                        const auto gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(*foundNearestIt);
+                        ext_assert(eGameObjectsType::SPACESHIP == gameObjectType, "Expected game object type to be SPACESHIP");
+                        const auto& nearestEnemy = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
+                        const auto& enemyPosition = nearestEnemy->GetRootComponent()->GetTranslation();
+                        const auto& projectileShootDirection = glm::normalize(enemyPosition - spaceStationTranslation);
+                        LaunchMisile(
+                            spaceStation,
+                            spaceStationTranslation,
+                            projectileShootDirection,
+                            spaceStation->GetSpaceStationLevel()->GetMissileType());
+                        spaceStation->RestartTimerSinceLastShoot();
+                    }
                 }
             }
         }

@@ -1802,7 +1802,7 @@ void SceneRenderer::MaterialPropertiesUpdated_OnRenderThread(
         } else {
             LogInfo(
                 "SceneRenderer::MaterialPropertiesUpdated_OnRenderThread: "
-                "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                "Warning! Current proxy index doesn't exist on RT. Proxy index = ",
                 materialProxyIndex);
         }
     } else {
@@ -1822,7 +1822,7 @@ void SceneRenderer::MaterialPropertiesUpdated_OnRenderThread(
                     } else {
                         LogInfo(
                             "SceneRenderer::MaterialPropertiesUpdated_OnRenderThread: "
-                            "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                            "Warning! Current proxy index doesn't exist on RT. Proxy index = ",
                             materialProxyIndex);
                     }
                 }

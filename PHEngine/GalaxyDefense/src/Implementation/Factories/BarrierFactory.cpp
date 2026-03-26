@@ -2,10 +2,17 @@
 
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+#include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionBoxShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCompoundShape.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
@@ -15,6 +22,7 @@
 using namespace Resources;
 using namespace EngineCore;
 using namespace Graphics;
+using namespace EnginePhysics;
 
 namespace Game {
 size_t BarrierFactory::s_barrierCounter = 0;
@@ -85,6 +93,21 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
     }
 
     a_barrier->SetBarrierMaterials(barrierPbs_mat, electroRay_material);
+
+    const auto& compoundShape = std::make_shared<CollisionCompoundShape>();
+    const glm::vec3 pillarHalfExtent = scale * 0.5f;
+    for (int32_t i = 0; i < pillarsMeshCount; ++i) {
+        const auto& childBoxShape = std::make_shared<CollisionBoxShape>(pillarHalfExtent);
+        compoundShape->AddChildShape(NoScaleEulerRotationTransform(glm::vec3(0), glm::vec3(0)), childBoxShape);
+    }
+    a_barrier->SetCompoundShape(compoundShape);
+
+    const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), compoundShape, 0.0f);
+    const auto physData = std::make_shared<PhysicsComponentData>("c_barrierPhysics_" + barrierIndexStr, ghostController);
+    const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
+    const auto& c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
+    a_barrier->AddComponent(c_ghostPhysics);
+
     a_barrier->SetScene(scene);
 
     return a_barrier;
