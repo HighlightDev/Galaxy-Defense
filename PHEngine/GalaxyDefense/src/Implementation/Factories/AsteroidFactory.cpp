@@ -70,7 +70,8 @@ std::shared_ptr<SpaceObjectActor> AsteroidFactory::CreateSpaceObject(
     const auto d_mesh = std::make_shared<MeshComponentData>(
         "c_asteroid_mesh_" + asteroidIndexStr, "asteroid.fbx", glm::vec3(0), rotation, scale, asteroidPbs_mat, true, true);
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
-    const auto& c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
+    const auto& c_mesh
+        = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     a_asteroid->AddComponent(c_mesh);
 
     const auto d_movement = std::make_shared<MovementComponentData>(
@@ -83,12 +84,13 @@ std::shared_ptr<SpaceObjectActor> AsteroidFactory::CreateSpaceObject(
     c_movement->SetDirection(glm::vec3(1.0f, .0f, 0.0f));
     a_asteroid->AddComponent(c_movement);
 
-    const auto& ghostController
-        = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(3.0f), 0.0f);
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(3.0f);
+    const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-    const auto& c_ghostPhysics = scene->CreateComponent_GameThread(
+    const auto& c_ghostPhysics = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(
         physicsComponentCreator,
-        std::make_shared<PhysicsComponentData>("c_asteroid_physics_" + asteroidIndexStr, ghostController));
+        std::make_shared<PhysicsComponentData>("c_asteroid_physics_" + asteroidIndexStr, ghostController)));
+    sphereShape->SetParentPhysicsComponent(c_ghostPhysics);
     a_asteroid->AddComponent(c_ghostPhysics);
 
     scene->AddActorController(std::make_shared<AiActorController>(a_asteroid));

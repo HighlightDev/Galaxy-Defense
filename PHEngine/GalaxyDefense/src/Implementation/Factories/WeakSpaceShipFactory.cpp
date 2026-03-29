@@ -122,12 +122,14 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     c_movement->SetCurrentSpeedToReferenceValue();
     a_enemySpaceship->AddComponent(c_movement);
 
-    const auto& ghostController = std::make_shared<GhostController>(
-        scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f), 0.0f);
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f);
+    const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
     const auto physData
         = std::make_shared<PhysicsComponentData>("c_spaceShipPhysicsComponent_" + enemyShipIndexStr, ghostController);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-    const auto& c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
+    const auto& c_ghostPhysics
+        = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(physicsComponentCreator, physData));
+    sphereShape->SetParentPhysicsComponent(c_ghostPhysics);
     a_enemySpaceship->AddComponent(c_ghostPhysics);
 
     MaterialParser materialParser;

@@ -44,6 +44,8 @@ public:
 
     void SetIsCollisionEnabled(const bool isCollisionEnabled) override;
 
+    void ForceUpdateBroadphaseAabb() override;
+
     ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 
     std::vector<btCollisionObject*> GetCollisionObjects() const override;

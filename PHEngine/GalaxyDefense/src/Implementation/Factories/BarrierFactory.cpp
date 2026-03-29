@@ -1,18 +1,7 @@
 #include "BarrierFactory.h"
 
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
-#include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionBoxShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCompoundShape.h"
-#include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
@@ -39,6 +28,7 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
         "c_barrier_root_" + barrierIndexStr, translation, glm::vec3(), glm::vec3(1.0), true);
     const auto& a_barrier = std::make_shared<BarrierActor>("a_barrier_" + barrierIndexStr, rootComponent);
     scene->AddActor(a_barrier);
+    a_barrier->SetScene(scene);
 
     MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& barrierPbs_mat = materialParser.ParseMaterialDescriptor("PbrSingleValueMaterial.m");
@@ -48,22 +38,6 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
     MaterialPropertySetter::SetMaterialPropertyValue(barrierPbs_mat, "metallicValue", 1.8f);
     MaterialPropertySetter::SetMaterialPropertyValue(barrierPbs_mat, "roughnessValue", 0.5f);
 
-    int32_t pillarIndex = 0;
-    while (pillarIndex < pillarsMeshCount) {
-        const auto d_mesh = std::make_shared<MeshComponentData>(
-            "c_barrier_mesh_barrier_" + barrierIndexStr + "_pillar_" + std::to_string(pillarIndex),
-            "ufo.obj",
-            glm::vec3(0),
-            rotation,
-            scale,
-            barrierPbs_mat);
-        const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
-        const auto& c_mesh
-            = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-        a_barrier->AddBarrierPillarMesh(c_mesh);
-        ++pillarIndex;
-    }
-
     const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise_128x128.png");
     const std::shared_ptr<IMaterial>& electroRay_material = materialParser.ParseMaterialDescriptor("ElectroBeamMaterial.m");
     scene->RegisterMaterialInstance(electroRay_material);
@@ -72,43 +46,11 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamMainColor", glm::vec3(0.6, 0.4, 1.0));
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, scene, "GT_DeltaSec", "gt_timeSec");
 
-    int32_t rayIndex = 0;
-    const auto currentBarrierIndex = s_barrierCounter - 1;
-    while (rayIndex < (pillarsMeshCount - 1)) {
-        const auto d_mesh = std::make_shared<ElectricBeamComponentData>(
-            "c_barrier_mesh_line_" + barrierIndexStr + "_ray_" + std::to_string(rayIndex),
-            glm::vec3(),
-            glm::vec3(),
-            1.2f,
-            2,
-            1.0f,
-            0.05f,
-            electroRay_material);
-        const std::shared_ptr<IComponentCreatable>& meshComponentCreator
-            = std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>();
-        const auto& c_mesh
-            = std::static_pointer_cast<ElectricBeamComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-        a_barrier->AddRayLineMesh(c_mesh);
-        ++rayIndex;
-    }
-
     a_barrier->SetBarrierMaterials(barrierPbs_mat, electroRay_material);
 
-    const auto& compoundShape = std::make_shared<CollisionCompoundShape>();
-    const glm::vec3 pillarHalfExtent = scale * 0.5f;
     for (int32_t i = 0; i < pillarsMeshCount; ++i) {
-        const auto& childBoxShape = std::make_shared<CollisionBoxShape>(pillarHalfExtent);
-        compoundShape->AddChildShape(NoScaleEulerRotationTransform(glm::vec3(0), glm::vec3(0)), childBoxShape);
+        a_barrier->CreateNewBarrierPillar(glm::vec3(0), rotation, scale);
     }
-    a_barrier->SetCompoundShape(compoundShape);
-
-    const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), compoundShape, 0.0f);
-    const auto physData = std::make_shared<PhysicsComponentData>("c_barrierPhysics_" + barrierIndexStr, ghostController);
-    const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-    const auto& c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
-    a_barrier->AddComponent(c_ghostPhysics);
-
-    a_barrier->SetScene(scene);
 
     return a_barrier;
 }

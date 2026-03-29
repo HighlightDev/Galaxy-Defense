@@ -10,6 +10,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/BlackHoleMissileActor.h"
+#include "Implementation/Actors/FighterSpaceshipActor.h"
 #include "Implementation/Actors/PortalActor.h"
 #include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
@@ -135,7 +136,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
         int32_t pillarIndex = 0;
         for (const auto& pillarPosition : barrierData) {
             a_barrier->TrySetBarrierPillarMeshRelativeTransform(
-                pillarIndex++, pillarPosition, glm::vec3(), glm::vec3(3.0f, 12.0f, 3.0f));
+                pillarIndex++, pillarPosition, glm::vec3(), Game::Constants::c_barrierPillarScale);
         }
         a_barrier->SetState(eBarrierActivityState::ACTIVE);
     }
@@ -147,7 +148,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     }
 
     const int32_t c_bombMissilesCount = 5 * levelData.TowersData.size();
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, c_bombMissilesCount);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, c_bombMissilesCount + 10);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_BOMB, 2);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1);
@@ -174,7 +175,8 @@ void CombatController::OnPostLevelInit()
            {eMissileType::BLACK_HOLE, 2}};
     PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 
-    mCombatActorsPoolHandler->SpawnEnemySpaceships(10);
+    mCombatActorsPoolHandler->SpawnEnemySpaceships(5, eSpaceshipType::PAWN);
+    mCombatActorsPoolHandler->SpawnEnemySpaceships(5, eSpaceshipType::FIGHTER);
     mCombatActorsPoolHandler->SpawnAsteroids(20);
     mCombatActorsPoolHandler->SpawnBarriers(1, 5);
     const auto& extendedLevelBoundaries = BoundingBox3D(mLevelBounds.GetOrigin(), mLevelBounds.GetHalfExtent() * 1.25f);
@@ -185,15 +187,15 @@ void CombatController::OnPostLevelInit()
         a_barrierSp->SetState(eBarrierActivityState::ACTIVE);
         a_barrierSp->GetRootComponent()->SetTranslation(glm::vec3(0, lvlBoundaryOrigin.y, 0));
         a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(
-            0, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+            0, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), Game::Constants::c_barrierPillarScale);
         a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(
-            1, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMax.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+            1, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMax.z), glm::vec3(), Game::Constants::c_barrierPillarScale);
         a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(
-            2, glm::vec3(lvlBoundaryMax.x, 0, lvlBoundaryMax.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+            2, glm::vec3(lvlBoundaryMax.x, 0, lvlBoundaryMax.z), glm::vec3(), Game::Constants::c_barrierPillarScale);
         a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(
-            3, glm::vec3(lvlBoundaryMax.x, 0, lvlBoundaryMin.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+            3, glm::vec3(lvlBoundaryMax.x, 0, lvlBoundaryMin.z), glm::vec3(), Game::Constants::c_barrierPillarScale);
         a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(
-            4, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), glm::vec3(6.0, 12.0, 6.0));
+            4, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), Game::Constants::c_barrierPillarScale);
     }
 }
 
@@ -237,7 +239,7 @@ void CombatController::OnReadyToShoot()
     const auto& activeSpaceStationPosition = activeSpaceStationActor->GetRootComponent()->GetTranslation();
     const auto& projectileShootDirection = glm::normalize(projectileMarkerPosition - activeSpaceStationPosition);
     const auto selectedMissileType = PlayerDataProvider::GetInstance()->GetSelectedMissileType();
-    LaunchMisile(activeSpaceStationActor, activeSpaceStationPosition, projectileShootDirection, selectedMissileType);
+    LaunchMissile(activeSpaceStationActor, activeSpaceStationPosition, projectileShootDirection, selectedMissileType);
 }
 
 void CombatController::ProcessEvent(
@@ -344,7 +346,15 @@ void CombatController::ProcessEvent(
             explosionVisitor->EndExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor);
         }
     } else if (eGameObjectsCollisionType::MISSILE_WITH_BARRIER == objectsCollisionType) {
-        // Skip collision between missiles and barriers
+        // Skip collision between player missiles and barriers
+        return;
+    } else if (eGameObjectsCollisionType::ENEMY_MISSILE_WITH_BARRIER == objectsCollisionType) {
+        const auto& ownerMissileActor = eGameObjectsType::ENEMY_MISSILE == thisActorGameObjectType
+            ? mCombatActorsPoolHandler->GetMissileOwnerActorById(this_actor_id)
+            : mCombatActorsPoolHandler->GetMissileOwnerActorById(that_actor_id);
+        if (ownerMissileActor && ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType) {
+            ownerMissileActor->TriggerExplosion();
+        }
         return;
     }
 }
@@ -504,7 +514,7 @@ void CombatController::Tick(const float deltaTimeSec)
     mUserInteractionController->Tick(deltaTimeSec);
 }
 
-void CombatController::LaunchMisile(
+void CombatController::LaunchMissile(
     const std::shared_ptr<SpaceStationActor>& missileOwner,
     const glm::vec3& missileStartPosition,
     const glm::vec3& missileDirection,
@@ -515,6 +525,16 @@ void CombatController::LaunchMisile(
     const auto yawRad = std::atan2(missileDirection.x, missileDirection.z);
     const auto yawDeg = RAD_TO_DEG(yawRad);
     missile->TriggerSpawn(missileStartPosition, missileDirection, yawDeg, eDamageDealerType::MAIN_PLAYER, missileOwner);
+    mNavigationController->PutMissileToNavigate(missile);
+}
+
+void CombatController::LaunchEnemyMissile(const glm::vec3& missileStartPosition, const glm::vec3& missileDirection)
+{
+    const auto& missile = mCombatActorsPoolHandler->GetFreeMissile(eMissileType::BOMB);
+    ext_assert(missile, "Failed to get free missile from pool for enemy");
+    const auto yawRad = std::atan2(missileDirection.x, missileDirection.z);
+    const auto yawDeg = RAD_TO_DEG(yawRad);
+    missile->TriggerSpawn(missileStartPosition, missileDirection, yawDeg, eDamageDealerType::ENEMY_SPACESHIP, nullptr);
     mNavigationController->PutMissileToNavigate(missile);
 }
 
@@ -639,12 +659,70 @@ void CombatController::ProcessAiAction()
                         const auto& nearestEnemy = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
                         const auto& enemyPosition = nearestEnemy->GetRootComponent()->GetTranslation();
                         const auto& projectileShootDirection = glm::normalize(enemyPosition - spaceStationTranslation);
-                        LaunchMisile(
+                        LaunchMissile(
                             spaceStation,
                             spaceStationTranslation,
                             projectileShootDirection,
                             spaceStation->GetSpaceStationLevel()->GetMissileType());
                         spaceStation->RestartTimerSinceLastShoot();
+                    }
+                }
+            }
+        }
+    }
+
+    // Spaceships
+    {
+        for (const auto& enemySpaceship : enemySpaceshipActors) {
+            if (eSpaceshipType::FIGHTER == enemySpaceship->GetSpaceshipType()
+                && eSpaceshipActivityState::ACTIVE == enemySpaceship->GetSpaceshipActivityState()) {
+                const auto& fighter = std::static_pointer_cast<FighterSpaceshipActor>(enemySpaceship);
+                if (fighter->CanShoot()) {
+                    const auto& fighterTranslation = fighter->GetRootComponent()->GetTranslation();
+                    const float shootRadius = fighter->GetFighterLevel().GetShootRadius();
+
+                    std::vector<std::shared_ptr<PhysicsComponent>> fighterExcludedPhysics;
+                    fighterExcludedPhysics.insert(
+                        fighterExcludedPhysics.end(), enemySpaceshipPhysComponents.begin(), enemySpaceshipPhysComponents.end());
+                    fighterExcludedPhysics.insert(
+                        fighterExcludedPhysics.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
+                    fighterExcludedPhysics.insert(
+                        fighterExcludedPhysics.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
+                    fighterExcludedPhysics.insert(
+                        fighterExcludedPhysics.end(),
+                        blackHoleMissilePhysComponents.begin(),
+                        blackHoleMissilePhysComponents.end());
+                    fighterExcludedPhysics.insert(
+                        fighterExcludedPhysics.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
+
+                    SphereCollisionTestWithFilterAdapter collisionTest(shootRadius, fighterExcludedPhysics);
+                    collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), fighterTranslation);
+                    const auto& collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
+
+                    std::vector<int32_t> targetActorIds;
+                    for (const auto& descriptor : collidedDescriptors) {
+                        const auto targetId = descriptor->GetOwnerActorEngineObjectId();
+                        const auto targetType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(targetId);
+                        if (eGameObjectsType::BARRIER == targetType) {
+                            targetActorIds.emplace_back(targetId);
+                        }
+                    }
+
+                    if (not targetActorIds.empty()) {
+                        const auto nearestIt = std::min_element(
+                            targetActorIds.begin(),
+                            targetActorIds.end(),
+                            [this, &fighterTranslation](const auto& leftId, const auto& rightId) {
+                                const auto& left = mCombatActorsPoolHandler->GetBarrierOwnerActorById(leftId);
+                                const auto& right = mCombatActorsPoolHandler->GetBarrierOwnerActorById(rightId);
+                                return glm::distance2(left->GetRootComponent()->GetTranslation(), fighterTranslation)
+                                    < glm::distance2(right->GetRootComponent()->GetTranslation(), fighterTranslation);
+                            });
+                        const auto& nearestBarrier = mCombatActorsPoolHandler->GetBarrierOwnerActorById(*nearestIt);
+                        const auto& barrierPos = nearestBarrier->GetRootComponent()->GetTranslation();
+                        const auto& shootDirection = glm::normalize(barrierPos - fighterTranslation);
+                        LaunchEnemyMissile(fighterTranslation, shootDirection);
+                        fighter->RestartTimerSinceLastShoot();
                     }
                 }
             }

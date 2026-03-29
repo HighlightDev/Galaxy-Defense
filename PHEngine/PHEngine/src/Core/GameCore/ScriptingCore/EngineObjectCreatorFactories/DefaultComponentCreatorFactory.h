@@ -12,6 +12,7 @@ struct CollisionShapeBase;
 
 namespace EngineCore {
 class Scene;
+class Component;
 struct ComponentData;
 
 namespace Scripts {
@@ -34,6 +35,11 @@ private:
 
     std::shared_ptr<::EnginePhysics::CollisionShapeBase>
     CreateCollisionShapeFromJson(const nlohmann::json& shapeRoot, const std::string& collisionShapeName) const;
+
+    void PostProcessCreatedComponent(
+        const std::shared_ptr<::EngineCore::Scene>& sceneSp,
+        const std::shared_ptr<::EngineCore::Component>& component,
+        const std::string& componentType) const;
 };
 } // namespace Scripts
 } // namespace EngineCore

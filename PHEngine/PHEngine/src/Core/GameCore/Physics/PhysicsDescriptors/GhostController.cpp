@@ -85,6 +85,13 @@ void GhostController::SetIsCollisionEnabled(const bool isCollisionEnabled)
     }
 }
 
+void GhostController::ForceUpdateBroadphaseAabb()
+{
+    if (mGhostObject && mGhostObject->getBroadphaseHandle()) {
+        mPhysicsWorld->GetWorld()->updateSingleAabb(mGhostObject);
+    }
+}
+
 void GhostController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTimeSec)
 {
     // Sync ghost with actually object
@@ -124,7 +131,7 @@ btScalar GhostController::addSingleResult(
 
 void GhostController::ParseGhostContacts()
 {
-    if (mCollisionCooldown > sCollisionCooldownTimeout) {
+    if (mGhostObject && mCollisionCooldown > sCollisionCooldownTimeout) {
         mPhysicsWorld->GetWorld()->contactTest(mGhostObject, *this);
         mCollisionCooldown = fmod(mCollisionCooldown, sCollisionCooldownTimeout);
     }

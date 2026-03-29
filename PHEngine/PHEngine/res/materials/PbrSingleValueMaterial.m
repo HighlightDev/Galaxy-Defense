@@ -16,4 +16,8 @@
 		name: "roughnessValue"
 		type: "float"
 	</property>
+	<property>
+		name: "opacity"
+		type: "float"
+	</property>
 </properties>

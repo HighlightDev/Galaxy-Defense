@@ -17,6 +17,8 @@ using namespace EngineCore;
 
 enum class eSpaceshipActivityState { IDLE, ACTIVE, PENDING_DISABLE };
 
+enum class eSpaceshipType { PAWN, FIGHTER, BOMBER, INTERCEPTOR };
+
 namespace Game {
 
 class SpaceObjectUiComponent;
@@ -24,6 +26,8 @@ class SpaceObjectUiComponent;
 class SpaceshipActor : public Actor {
 protected:
     eSpaceshipActivityState mActivityState{eSpaceshipActivityState::IDLE};
+
+    eSpaceshipType mSpaceshipType{eSpaceshipType::PAWN};
 
     std::unique_ptr<ModifiersHandler> mModifiersHandler;
 
@@ -97,5 +101,7 @@ public:
     void SetFreezingEffectValue(const float value);
 
     std::shared_ptr<OnRouteMovementComponent> GetOnRouteMovementComponent() const;
+
+    eSpaceshipType GetSpaceshipType() const;
 };
 } // namespace Game

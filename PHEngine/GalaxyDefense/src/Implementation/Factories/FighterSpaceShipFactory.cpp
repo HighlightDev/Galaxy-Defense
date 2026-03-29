@@ -63,7 +63,7 @@ std::shared_ptr<SpaceshipActor> FighterSpaceShipFactory::CreateSpaceShip(
     const auto& fighterShipIndexStr = std::to_string(s_fighterSpaceShipCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_fighterShip_rootComponent_" + fighterShipIndexStr, translation, rotation, scale, true);
-    const FighterSpaceshipLevel fighterLevel(health, eMissileType::BOMB, 1, 10.0f, 1000);
+    const FighterSpaceshipLevel fighterLevel(health, eMissileType::BOMB, 1, 100.0f, 1000);
     const auto& a_fighterSpaceship
         = std::make_shared<FighterSpaceshipActor>("a_fighterShip_" + fighterShipIndexStr, rootComponent, fighterLevel);
     scene->AddActor(a_fighterSpaceship);
@@ -122,12 +122,14 @@ std::shared_ptr<SpaceshipActor> FighterSpaceShipFactory::CreateSpaceShip(
     c_movement->SetCurrentSpeedToReferenceValue();
     a_fighterSpaceship->AddComponent(c_movement);
 
-    const auto& ghostController = std::make_shared<GhostController>(
-        scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f), 0.0f);
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f);
+    const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
     const auto physData
         = std::make_shared<PhysicsComponentData>("c_fighterSpaceShipPhysicsComponent_" + fighterShipIndexStr, ghostController);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-    const auto& c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
+    const auto& c_ghostPhysics
+        = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(physicsComponentCreator, physData));
+    sphereShape->SetParentPhysicsComponent(c_ghostPhysics);
     a_fighterSpaceship->AddComponent(c_ghostPhysics);
 
     MaterialParser materialParser;

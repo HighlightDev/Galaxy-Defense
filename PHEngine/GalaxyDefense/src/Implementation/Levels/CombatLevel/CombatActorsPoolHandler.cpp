@@ -18,6 +18,7 @@
 #include "Implementation/Factories/BombMissileFactory.h"
 #include "Implementation/Factories/ElectroRayChainFactory.h"
 #include "Implementation/Factories/ElectroRayFactory.h"
+#include "Implementation/Factories/FighterSpaceShipFactory.h"
 #include "Implementation/Factories/FreezingMissileFactory.h"
 #include "Implementation/Factories/FreezingRayFactory.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
@@ -77,29 +78,40 @@ std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayCh
     return spawnedActor;
 }
 
-void CombatActorsPoolHandler::SpawnEnemySpaceships(const int32_t count)
+void CombatActorsPoolHandler::SpawnEnemySpaceships(const int32_t count, const eSpaceshipType spaceshipType)
 {
     for (size_t i = 0; i < count; ++i) {
-        SpawnSpaceshipActor()->SetIsEnabled(false);
+        SpawnSpaceshipActor(spaceshipType)->SetIsEnabled(false);
     }
 }
 
-std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor() const
+std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor(const eSpaceshipType spaceshipType) const
 {
     const auto& sceneSp = mSceneWp.lock();
     ext_assert(sceneSp, "Scene pointer is null in SpawnSpaceshipActor");
-    WeakSpaceShipFactory spaceShipFactory;
 
-    return mEnemySpaceships.emplace_back(spaceShipFactory.CreateSpaceShip(
+    std::unique_ptr<ISpaceShipFactory> spaceShipFactory;
+    switch (spaceshipType) {
+    case eSpaceshipType::FIGHTER:
+        spaceShipFactory = std::make_unique<FighterSpaceShipFactory>();
+        break;
+    default:
+        spaceShipFactory = std::make_unique<WeakSpaceShipFactory>();
+        break;
+    }
+
+    return mEnemySpaceships.emplace_back(spaceShipFactory->CreateSpaceShip(
         sceneSp, glm::vec3(), glm::vec3(), glm::vec3(Game::Constants::c_spaceshipSize), Game::Constants::c_spaceshipFontSize));
 }
 
-std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor() const
+std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor(const eSpaceshipType spaceshipType) const
 {
-    const auto freeShipIt = std::find_if(mEnemySpaceships.cbegin(), mEnemySpaceships.cend(), [](const auto& spaceship) {
-        return spaceship->GetSpaceshipActivityState() == eSpaceshipActivityState::IDLE;
-    });
-    return freeShipIt == mEnemySpaceships.cend() ? SpawnSpaceshipActor() : *freeShipIt;
+    const auto freeShipIt
+        = std::find_if(mEnemySpaceships.cbegin(), mEnemySpaceships.cend(), [spaceshipType](const auto& spaceship) {
+              return spaceship->GetSpaceshipActivityState() == eSpaceshipActivityState::IDLE
+                  && spaceship->GetSpaceshipType() == spaceshipType;
+          });
+    return freeShipIt == mEnemySpaceships.cend() ? SpawnSpaceshipActor(spaceshipType) : *freeShipIt;
 }
 
 const std::vector<std::shared_ptr<SpaceshipActor>>& CombatActorsPoolHandler::GetEnemySpaceshipActors() const
@@ -158,8 +170,8 @@ void CombatActorsPoolHandler::SpawnBarriers(const int32_t barriersCount, const i
     ext_assert(sceneSp, "Scene pointer is null in SpawnBarriers");
     const auto& barriersFactory = std::make_unique<BarrierFactory>();
     for (int32_t i = 0; i < barriersCount; ++i) {
-        const auto& barrier = mBarriersPool.emplace_back(
-            barriersFactory->CreateBarrier(pillarsCount, sceneSp, glm::vec3(), glm::vec3(), glm::vec3(6.0f)));
+        const auto& barrier = mBarriersPool.emplace_back(barriersFactory->CreateBarrier(
+            pillarsCount, sceneSp, glm::vec3(), glm::vec3(), Game::Constants::c_barrierPillarScale));
         barrier->SetIsEnabled(false);
     }
 }
@@ -285,7 +297,8 @@ eGameObjectsType CombatActorsPoolHandler::GetGameObjectTypeByActorId(const int32
     if (enemyShipSp) {
         return eGameObjectsType::SPACESHIP;
     } else if (const auto missileSp = GetMissileOwnerActorById(actorId)) {
-        return eGameObjectsType::MISSILE;
+        return missileSp->GetDamageDealerType() == eDamageDealerType::ENEMY_SPACESHIP ? eGameObjectsType::ENEMY_MISSILE
+                                                                                      : eGameObjectsType::MISSILE;
     } else if (const auto spaceObjectSp = GetSpaceObjectOwnerActorById(actorId)) {
         return eGameObjectsType::NEUTRAL_SPACE_OBJECT;
     } else if (const auto spaceStationSp = GetSpaceStationOwnerActorById(actorId)) {
@@ -316,6 +329,10 @@ eGameObjectsCollisionType CombatActorsPoolHandler::GetGameObjectsCollisionType(
     if ((eGameObjectsType::MISSILE == firstObject && eGameObjectsType::BARRIER == secondObject)
         || (eGameObjectsType::BARRIER == firstObject && eGameObjectsType::MISSILE == secondObject))
         return eGameObjectsCollisionType::MISSILE_WITH_BARRIER;
+
+    if ((eGameObjectsType::ENEMY_MISSILE == firstObject && eGameObjectsType::BARRIER == secondObject)
+        || (eGameObjectsType::BARRIER == firstObject && eGameObjectsType::ENEMY_MISSILE == secondObject))
+        return eGameObjectsCollisionType::ENEMY_MISSILE_WITH_BARRIER;
 
     return eGameObjectsCollisionType::UNDEFINED;
 }
@@ -382,11 +399,9 @@ int32_t CombatActorsPoolHandler::GetSpaceStationsCountWithState(const eSpaceStat
 std::vector<std::shared_ptr<PhysicsComponent>> CombatActorsPoolHandler::GetBarriersPhysicsComponents() const
 {
     std::vector<std::shared_ptr<PhysicsComponent>> physicsComponents;
-    physicsComponents.reserve(mBarriersPool.size());
     for (const auto& barrier : mBarriersPool) {
-        if (const auto& physComp = barrier->GetPhysicsComponent()) {
-            physicsComponents.emplace_back(physComp);
-        }
+        const auto& pillarComponents = barrier->GetPillarPhysicsComponents();
+        physicsComponents.insert(physicsComponents.end(), pillarComponents.begin(), pillarComponents.end());
     }
     return physicsComponents;
 }

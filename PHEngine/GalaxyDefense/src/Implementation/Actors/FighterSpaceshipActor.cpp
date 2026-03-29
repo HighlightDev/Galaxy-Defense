@@ -10,6 +10,7 @@ FighterSpaceshipActor::FighterSpaceshipActor(
     : WeakSpaceshipActor(gameObjectName, rootComponent, fighterLevel)
     , mFighterLevel(fighterLevel)
 {
+    mSpaceshipType = eSpaceshipType::FIGHTER;
 }
 
 void FighterSpaceshipActor::Tick(const float deltaTimeSec)

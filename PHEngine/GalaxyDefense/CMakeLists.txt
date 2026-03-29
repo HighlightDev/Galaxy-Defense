@@ -132,6 +132,7 @@ set(SOURCES
     src/Implementation/Levels/Editor/TowersHandler.cpp
     src/Implementation/Levels/Editor/BarriersHandler.cpp
     src/Implementation/GalaxySceneCamera.cpp
+    src/Implementation/GameObjectsType.cpp
     src/Implementation/Controllers/CombatController.cpp
     src/Implementation/Controllers/AiActorController.cpp
     src/Implementation/Controllers/AiSpaceshipActorController.cpp

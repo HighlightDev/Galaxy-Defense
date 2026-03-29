@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Implementation/Actors/SpaceStationActor.h"
+#include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/GameObjectsCollisionType.h"
 #include "Implementation/GameObjectsType.h"
 #include "Implementation/MissileType.h"
@@ -60,7 +61,7 @@ public:
 
     std::shared_ptr<MissileActor> GetMissileOwnerActorById(const int32_t actorId) const;
 
-    std::shared_ptr<SpaceshipActor> GetFreeSpaceshipActor() const;
+    std::shared_ptr<SpaceshipActor> GetFreeSpaceshipActor(const eSpaceshipType spaceshipType) const;
 
     std::shared_ptr<BarrierActor> GetFreeBarrierActor() const;
 
@@ -91,7 +92,7 @@ public:
     eGameObjectsCollisionType
     GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const;
 
-    void SpawnEnemySpaceships(const int32_t count);
+    void SpawnEnemySpaceships(const int32_t count, const eSpaceshipType spaceshipType);
 
     void SpawnMissiles(const eMissileType missileType, const int32_t count);
 
@@ -119,6 +120,6 @@ private:
 
     std::shared_ptr<ElectroRayChainActor> SpawnElectroRayChainActor();
 
-    std::shared_ptr<SpaceshipActor> SpawnSpaceshipActor() const;
+    std::shared_ptr<SpaceshipActor> SpawnSpaceshipActor(const eSpaceshipType spaceshipType) const;
 };
 } // namespace Game

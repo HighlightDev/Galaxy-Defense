@@ -188,6 +188,11 @@ bool PhysicsDescriptor::GetIsCollisionEnabled() const
     return mIsCollisionEnabled;
 }
 
+void PhysicsDescriptor::ForceUpdateBroadphaseAabb()
+{
+    // Default: no-op. Overridden in GhostController.
+}
+
 void PhysicsDescriptor::SetOwnerComponentEngineObjectId(const int32_t ownerComponentEngineObjectId)
 {
     mOwnerComponentEngineObjectId = ownerComponentEngineObjectId;

@@ -14,7 +14,7 @@ class PhysicsComponent;
 
 class SphereCollisionTestWithFilterAdapter : public BulletSphereCollisionTestWithFilter {
 public:
-    SphereCollisionTestWithFilterAdapter(const float sphereRadius);
+    explicit SphereCollisionTestWithFilterAdapter(const float sphereRadius);
 
     explicit SphereCollisionTestWithFilterAdapter(
         const float sphereRadius, std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);

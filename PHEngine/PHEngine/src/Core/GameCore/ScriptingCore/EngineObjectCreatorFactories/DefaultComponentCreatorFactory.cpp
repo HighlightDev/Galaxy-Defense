@@ -57,8 +57,7 @@
 
 using namespace EngineCore;
 
-namespace EngineCore {
-namespace Scripts {
+namespace EngineCore::Scripts {
 int32_t DefaultComponentCreatorFactory::CreateComponent(
     const std::weak_ptr<::EngineCore::Scene>& sceneWp,
     const int32_t actorObjectId,
@@ -96,6 +95,7 @@ int32_t DefaultComponentCreatorFactory::CreateComponent(
     const auto componentDataSp = CreateComponentData(sceneSp, componentType, componentDataJsonStr);
     const auto& component = sceneSp->CreateComponent_GameThread(creatorsMap.at(componentType), componentDataSp);
     actor->AddComponent(component);
+    PostProcessCreatedComponent(sceneSp, component, componentType);
     return component->GetObjectId();
 }
 
@@ -480,5 +480,16 @@ std::shared_ptr<CollisionShapeBase> DefaultComponentCreatorFactory::CreateCollis
     }
     return collisionShape;
 }
-} // namespace Scripts
-} // namespace EngineCore
+
+void DefaultComponentCreatorFactory::PostProcessCreatedComponent(
+    const std::shared_ptr<::EngineCore::Scene>& sceneSp,
+    const std::shared_ptr<Component>& component,
+    const std::string& componentType) const
+{
+    if (component->GetComponentType() == PHYSICS_COMPONENT) {
+        const auto& physicsComponent = std::dynamic_pointer_cast<PhysicsComponent>(component);
+        ext_assert(physicsComponent, "Failed to cast to PhysicsComponentBase in PostProcessCreatedComponent");
+        physicsComponent->GetDescriptor()->GetShape()->SetParentPhysicsComponent(physicsComponent);
+    }
+}
+} // namespace EngineCore::Scripts

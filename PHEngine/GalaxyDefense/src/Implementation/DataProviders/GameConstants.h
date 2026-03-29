@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/vec3.hpp>
 #include <stdint.h>
 
 #include <cstdint>
@@ -12,4 +13,5 @@ extern const uint32_t c_spawnSpaceshipTimeoutMs;
 extern const float c_portalSize;
 extern const uint32_t c_dmgTextShowDuration;
 extern const uint32_t c_shakeDurationMs;
+extern const glm::vec3 c_barrierPillarScale;
 } // namespace Game::Constants

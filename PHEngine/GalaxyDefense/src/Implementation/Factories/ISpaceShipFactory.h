@@ -12,6 +12,7 @@ namespace Game {
 class SpaceshipActor;
 
 class ISpaceShipFactory {
+public:
     virtual std::shared_ptr<SpaceshipActor> CreateSpaceShip(
         const std::shared_ptr<::EngineCore::Scene>& scene,
         const glm::vec3& translation,

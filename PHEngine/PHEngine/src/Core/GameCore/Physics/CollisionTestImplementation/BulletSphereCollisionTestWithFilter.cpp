@@ -41,11 +41,11 @@ btScalar BulletSphereCollisionTestWithFilter::addSingleResult(
     if (mGhostSphereObject.get() != collidedObject && collidedObject->getUserPointer()) {
         if (const auto& collidedObjDescriptor = reinterpret_cast<const PhysicsDescriptor*>(collidedObject->getUserPointer())) {
             if (collidedObjDescriptor->GetIsCollisionEnabled()) {
-                const auto isExludedBody = std::any_of(
+                const auto isExcludedBody = std::any_of(
                     mExcludeFilterBodies.cbegin(), mExcludeFilterBodies.cend(), [collidedObject](const auto& excludeCollObj) {
                         return collidedObject == excludeCollObj;
                     });
-                if (!isExludedBody) {
+                if (!isExcludedBody) {
                     mCollisionResult.emplace_back(collidedObject);
                 }
             }

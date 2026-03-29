@@ -85,6 +85,8 @@ class UserInteractionController : public ILevelController,
 
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mRemoveTowerMarkerBlendColorProperty;
 
+    std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostBarrierBlendColorProperty;
+
     eUserInteractionType mInteractionType{eUserInteractionType::IDLE};
 
     eMissileType mTowerMissileType{eMissileType::NONE};

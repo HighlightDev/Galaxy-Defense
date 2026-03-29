@@ -2,27 +2,27 @@
 
 #include <BulletPhys/btBulletDynamicsCommon.h>
 
+#include <memory>
+
 namespace EnginePhysics {
+
+class PhysicsComponent;
 
 struct CollisionShapeBase {
 protected:
     btCollisionShape* mCollisionShape = nullptr;
 
+    std::weak_ptr<PhysicsComponent> mParentPhysicsComponent;
+
 public:
-    CollisionShapeBase(btCollisionShape* shape)
-        : mCollisionShape(shape)
-    {
-    }
+    explicit CollisionShapeBase(btCollisionShape* shape);
 
-    virtual ~CollisionShapeBase()
-    {
-        delete mCollisionShape;
-    }
+    virtual ~CollisionShapeBase();
 
-    inline btCollisionShape* GetCollisionShape() const
-    {
+    btCollisionShape* GetCollisionShape() const;
 
-        return mCollisionShape;
-    }
+    void SetParentPhysicsComponent(const std::weak_ptr<PhysicsComponent>& parentPhysicsComponent);
+
+    std::weak_ptr<PhysicsComponent> GetParentPhysicsComponent() const;
 };
 } // namespace EnginePhysics

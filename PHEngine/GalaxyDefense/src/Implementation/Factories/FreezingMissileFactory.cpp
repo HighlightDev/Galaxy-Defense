@@ -138,12 +138,14 @@ std::shared_ptr<MissileActor> FreezingMissileFactory::CreateMissile(
     c_sound->GetSoundSource()->SetGain(0.2f);
     a_missile->AddComponent(c_sound);
 
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(3.0f);
     const auto& ghostController
         = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(3.0f), 0.0f);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-    const auto& c_ghostPhysics = scene->CreateComponent_GameThread(
+    const auto& c_ghostPhysics = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(
         physicsComponentCreator,
-        std::make_shared<PhysicsComponentData>("c_freezingMissilePhysics_" + shipBulletIndexStr, ghostController));
+        std::make_shared<PhysicsComponentData>("c_freezingMissilePhysics_" + shipBulletIndexStr, ghostController)));
+    sphereShape->SetParentPhysicsComponent(c_ghostPhysics);
     a_missile->AddComponent(c_ghostPhysics);
 
     const auto& bulletActorController = std::make_shared<AiActorController>(a_missile);

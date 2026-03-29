@@ -21,6 +21,7 @@ WeakSpaceshipActor::WeakSpaceshipActor(
     , ITweenStateChangeNotifyable()
     , mWeakSpaceshipTweener()
 {
+    mSpaceshipType = eSpaceshipType::PAWN;
 }
 
 void WeakSpaceshipActor::AttachTweener(std::shared_ptr<Tweener> tweener)

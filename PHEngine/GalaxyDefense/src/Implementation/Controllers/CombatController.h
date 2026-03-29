@@ -94,11 +94,13 @@ protected:
 private:
     void ProcessAiAction();
 
-    void LaunchMisile(
+    void LaunchMissile(
         const std::shared_ptr<SpaceStationActor>& missileOwner,
         const glm::vec3& missileStartPosition,
         const glm::vec3& missileDirection,
         const eMissileType missileType);
+
+    void LaunchEnemyMissile(const glm::vec3& missileStartPosition, const glm::vec3& missileDirection);
 
     void ValidatePoolObjects();
 

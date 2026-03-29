@@ -1,0 +1,150 @@
+🚀 1. Быстро найти bottleneck
+perf top
+
+
+👉 показывает:
+
+где CPU тратится прямо сейчас
+горячие функции
+📊 2. Полный профиль программы
+perf record -g ./app
+perf report
+
+
+👉 показывает:
+
+call stacks
+кто вызывает что
+где время уходит
+🔬 3. Cache misses (очень важно)
+perf stat -e cache-misses,cache-references ./app
+
+
+👉 смотри:
+
+cache-misses / cache-references
+📌 расширенно:
+perf stat -d ./app
+
+
+👉 даёт:
+
+L1 / LLC misses
+IPC
+branch misses
+🔥 4. False sharing (твой кейс)
+perf c2c record -g -- ./app
+perf c2c report
+
+📊 с call stacks:
+perf c2c report -g
+
+
+👉 показывает:
+
+какие функции дерутся за cache line
+load vs store
+🧭 5. Найти адрес в коде
+addr2line -f -C -e ./app <offset>
+
+📌 если есть абсолютный адрес:
+cat /proc/<pid>/maps
+
+
+→ найти base → вычесть → получить offset
+
+🔍 6. Memory access profiling
+perf mem record ./app
+perf mem report
+
+
+👉 показывает:
+
+где идут memory accesses
+latency
+⚙️ 7. Системные вызовы
+perf record -e syscalls:sys_enter_* -g ./app
+perf report
+
+пример:
+perf record -e syscalls:sys_enter_epoll_wait -g ./app
+
+🧵 8. Потоки и синхронизация
+perf sched record ./app
+perf sched report
+
+
+👉 показывает:
+
+переключения потоков
+ожидания
+🧱 9. Lock contention
+perf lock record ./app
+perf lock report
+
+
+👉 показывает:
+
+mutex bottlenecks
+📉 10. Flame graph (очень удобно)
+perf record -g ./app
+perf script | stackcollapse-perf.pl | flamegraph.pl > flame.svg
+
+
+👉 визуализация CPU времени
+
+🧪 11. Проверка false sharing вручную
+вариант A (плохо):
+struct Data {
+    int a;
+    int b;
+};
+
+вариант B (хорошо):
+struct Data {
+    alignas(64) int a;
+    alignas(64) int b;
+};
+
+
+👉 если стало быстрее → был false sharing
+
+⚠️ 12. perf permissions
+
+Если ошибка:
+
+perf_event_paranoid = 4
+
+временно:
+sudo sh -c 'echo -1 > /proc/sys/kernel/perf_event_paranoid'
+
+постоянно:
+sudo nano /etc/sysctl.conf
+
+kernel.perf_event_paranoid = -1
+
+🧠 13. Быстрая диагностика (мой workflow)
+
+Вот как я бы делал:
+
+1️⃣
+perf top
+
+2️⃣
+perf record -g ./app
+perf report
+
+3️⃣
+perf stat -d ./app
+
+4️⃣ (если подозрение на память)
+perf c2c record -g ./app
+perf c2c report -g
+
+💡 14. Как читать результаты быстро
+Симптом	Причина
+высокий CPU	алгоритм / циклы
+cache misses	плохой layout
+HITM	false sharing
+syscalls	kernel bottleneck
+lock report	mutex

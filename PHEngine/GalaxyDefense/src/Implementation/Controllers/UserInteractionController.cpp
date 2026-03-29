@@ -26,6 +26,7 @@
 #include "Implementation/ActorLeveling/LevelAttributeDataProvider.h"
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/SpaceStationActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
@@ -408,7 +409,8 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                 }
 
                 if (mCurrentBarrierActor) {
-                    mCurrentBarrierActor->CreateNewBarrierPillar(snappedPosition, glm::vec3(), glm::vec3(3.0f, 12.0f, 3.0f));
+                    mCurrentBarrierActor->CreateNewBarrierPillar(
+                        snappedPosition, glm::vec3(), Game::Constants::c_barrierPillarScale);
                 }
                 mReloadPlacementTower->StartTimer();
             }
@@ -702,21 +704,22 @@ void UserInteractionController::InitializeGhostBarrierPillar()
     sceneSp->AddActor(mGhostBarrierPillarActor);
 
     MaterialParser materialParser;
-    const std::shared_ptr<IMaterial>& ghostBarrierMaterial = materialParser.ParseMaterialDescriptor("GhostTowerMaterial.m");
-    sceneSp->RegisterMaterialInstance(ghostBarrierMaterial);
-    MaterialPropertySetter::SetMaterialPropertyValue(ghostBarrierMaterial, "opacity", 0.5f);
-    MaterialPropertySetter::SetMaterialPropertyValue(ghostBarrierMaterial, "uvScale", 1.0f);
-    MaterialPropertySetter::SetMaterialPropertyValue(ghostBarrierMaterial, "blendFactor", 0.5f);
+    const std::shared_ptr<IMaterial>& ghostBarrierPbs_mat = materialParser.ParseMaterialDescriptor("GhostBarrierMaterial.m");
+    sceneSp->RegisterMaterialInstance(ghostBarrierPbs_mat);
+
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostBarrierPbs_mat, "albedoColor", glm::vec3(1.0, 1.0, 0.0));
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostBarrierPbs_mat, "opacity", 0.5f);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostBarrierPbs_mat, "blendFactor", 0.5f);
     MaterialPropertySetter::SetMaterialPropertyValue(
-        ghostBarrierMaterial, mGhostBarrierPillarActor, "p_blendColor", "b_blendColor");
+        ghostBarrierPbs_mat, mGhostBarrierPillarActor, "p_blendColor", "b_blendColor");
 
     const auto& d_mesh = std::make_shared<MeshComponentData>(
         "GhostBarrierPillarMeshComponent",
         "ufo.obj",
         glm::vec3(),
         glm::vec3(),
-        glm::vec3(3.0f, 12.0f, 3.0f),
-        ghostBarrierMaterial,
+        Game::Constants::c_barrierPillarScale,
+        ghostBarrierPbs_mat,
         true,
         true);
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);

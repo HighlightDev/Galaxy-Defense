@@ -98,12 +98,14 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
         const auto& c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_missileCombatActivePhase->AddComponent(c_mesh);
 
-        const auto& ghostController
-            = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(3.0f), 0.0f);
+        const auto& sphereShape = std::make_shared<CollisionSphereShape>(3.0f);
+        const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
         const auto physData
             = std::make_shared<PhysicsComponentData>("c_missileCombatActivePhasePhysics_" + missileIndexStr, ghostController);
         const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-        const auto& c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
+        const auto& c_ghostPhysics
+            = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(physicsComponentCreator, physData));
+        sphereShape->SetParentPhysicsComponent(c_ghostPhysics);
         a_missileCombatActivePhase->AddComponent(c_ghostPhysics);
 
         const auto d_movement = std::make_shared<MovementComponentData>(

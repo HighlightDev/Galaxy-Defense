@@ -26,13 +26,16 @@ void PortalActor::Tick(const float deltaTimeSec)
 {
     Actor::Tick(deltaTimeSec);
 
+    const eSpaceshipType spaceshipType
+        = static_cast<eSpaceshipType>(std::round(Random::Float() * static_cast<float>(eSpaceshipType::FIGHTER)));
+
     const auto poolSp = mCombatActorsPoolHandlerWp.lock();
     const auto navController = mNavigationControllerWp.lock();
     if (poolSp && navController) {
         if (mIsSpawnActive && mPathNames.size() > 0) {
             mAccumulatedDeltaTime += deltaTimeSec;
             if (mAccumulatedDeltaTime >= mSpawnInterval) {
-                if (const auto& freeShip = poolSp->GetFreeSpaceshipActor()) {
+                if (const auto& freeShip = poolSp->GetFreeSpaceshipActor(spaceshipType)) {
                     const auto randomIndex
                         = static_cast<int32_t>(std::round(Random::Float() * static_cast<float>(mPathNames.size() - 1)));
                     navController->PutSpaceshipOnRoute(mPathNames[randomIndex], freeShip);

@@ -57,11 +57,13 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     c_mesh->SetOutlineThickness(3.0f);
     towerActor->AddComponent(c_mesh);
 
-    const auto& ghostController = std::make_shared<GhostController>(
-        scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f), 0.0f);
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f);
+    const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
     const auto physData = std::make_shared<PhysicsComponentData>("c_physics_" + towerName, ghostController);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-    const auto& c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
+    const auto& c_ghostPhysics
+        = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(physicsComponentCreator, physData));
+    sphereShape->SetParentPhysicsComponent(c_ghostPhysics);
     towerActor->AddComponent(c_ghostPhysics);
 
     const auto& radiusMeshMaterial = materialParser.ParseMaterialDescriptor("SpaceStationRadiusMarkerMaterial.m");

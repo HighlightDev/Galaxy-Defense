@@ -112,6 +112,8 @@ public:
 
     virtual void SetIsCollisionEnabled(const bool isEnabled);
 
+    virtual void ForceUpdateBroadphaseAabb();
+
     bool GetIsCollisionEnabled() const;
 
     void SetOwnerComponentEngineObjectId(const int32_t ownerComponentEngineObjectId);

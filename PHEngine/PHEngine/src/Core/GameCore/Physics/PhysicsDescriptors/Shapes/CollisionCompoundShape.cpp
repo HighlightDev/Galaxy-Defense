@@ -34,7 +34,8 @@ void CollisionCompoundShape::AddChildShape(
 void CollisionCompoundShape::RemoveAllChildShapes()
 {
     auto* compoundShape = static_cast<btCompoundShape*>(mCollisionShape);
-    for (int i = compoundShape->getNumChildShapes() - 1; i >= 0; --i) {
+    const int32_t childCount = compoundShape->getNumChildShapes();
+    for (int32_t i = childCount - 1; i >= 0; --i) {
         compoundShape->removeChildShapeByIndex(i);
     }
     mChildShapes.clear();

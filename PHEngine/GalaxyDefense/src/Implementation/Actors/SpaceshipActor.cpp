@@ -231,4 +231,9 @@ std::shared_ptr<OnRouteMovementComponent> SpaceshipActor::GetOnRouteMovementComp
     return std::dynamic_pointer_cast<OnRouteMovementComponent>(GetMovementComponent());
 }
 
+eSpaceshipType SpaceshipActor::GetSpaceshipType() const
+{
+    return mSpaceshipType;
+}
+
 } // namespace Game

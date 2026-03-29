@@ -12,6 +12,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Implementation/Actors/BarrierActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 
 #include <algorithm>
 
@@ -108,7 +109,8 @@ void BarriersController::CreateNewBarrierPillar(const glm::vec3& position)
         c_mesh->SetSortOrderValue(200 + rayIndex);
         a_barrier->AddRayLineMesh(c_mesh);
     }
-    a_barrier->TrySetBarrierPillarMeshRelativeTransform(pillarsSize, position, glm::vec3(), glm::vec3(3.0, 12.0, 3.0));
+    a_barrier->TrySetBarrierPillarMeshRelativeTransform(
+        pillarsSize, position, glm::vec3(), Game::Constants::c_barrierPillarScale);
 }
 
 } // namespace Game
