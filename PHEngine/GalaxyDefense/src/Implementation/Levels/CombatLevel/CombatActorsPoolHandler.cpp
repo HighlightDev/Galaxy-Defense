@@ -42,6 +42,7 @@ void CombatActorsPoolHandler::CleanUp()
     mElectroRayChainActorPool.clear();
     mBarriersPool.clear();
     mSpawnPortals.clear();
+    mActorTypeCache.clear();
 }
 
 std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::GetFreeElectroChainActor()
@@ -293,18 +294,23 @@ std::shared_ptr<BarrierActor> CombatActorsPoolHandler::GetBarrierOwnerActorById(
 
 eGameObjectsType CombatActorsPoolHandler::GetGameObjectTypeByActorId(const int32_t actorId) const
 {
-    const auto enemyShipSp = GetEnemyShipOwnerActorById(actorId);
-    if (enemyShipSp) {
-        return eGameObjectsType::SPACESHIP;
+    const auto cacheIt = mActorTypeCache.find(actorId);
+    if (cacheIt != mActorTypeCache.end()) {
+        return cacheIt->second;
+    }
+
+    if (const auto enemyShipSp = GetEnemyShipOwnerActorById(actorId)) {
+        return mActorTypeCache.emplace(actorId, eGameObjectsType::SPACESHIP).first->second;
     } else if (const auto missileSp = GetMissileOwnerActorById(actorId)) {
+        // Don't cache missiles — DamageDealerType can change when missile is recycled from pool
         return missileSp->GetDamageDealerType() == eDamageDealerType::ENEMY_SPACESHIP ? eGameObjectsType::ENEMY_MISSILE
                                                                                       : eGameObjectsType::MISSILE;
     } else if (const auto spaceObjectSp = GetSpaceObjectOwnerActorById(actorId)) {
-        return eGameObjectsType::NEUTRAL_SPACE_OBJECT;
+        return mActorTypeCache.emplace(actorId, eGameObjectsType::NEUTRAL_SPACE_OBJECT).first->second;
     } else if (const auto spaceStationSp = GetSpaceStationOwnerActorById(actorId)) {
-        return eGameObjectsType::SPACE_STATION;
+        return mActorTypeCache.emplace(actorId, eGameObjectsType::SPACE_STATION).first->second;
     } else if (const auto barrierSp = GetBarrierOwnerActorById(actorId)) {
-        return eGameObjectsType::BARRIER;
+        return mActorTypeCache.emplace(actorId, eGameObjectsType::BARRIER).first->second;
     } else {
         ext_assert(false, "Game object type is UNDEFINED for actor ID");
         return eGameObjectsType::UNDEFINED;

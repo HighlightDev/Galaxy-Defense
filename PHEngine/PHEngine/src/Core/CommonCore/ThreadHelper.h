@@ -19,8 +19,8 @@ public:
 
     static ThreadHelper* GetInstance()
     {
-        static ThreadHelper helper;
-        return &helper;
+        static ThreadHelper* helper = new ThreadHelper();
+        return helper;
     }
 
     void RegisterThread(const std::string& threadName)

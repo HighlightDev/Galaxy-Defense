@@ -67,7 +67,7 @@ struct BindingAttachmentBuilder {
             break;
         }
         case eEnginePropertyBindingType::Vec3: {
-            const auto vec3Binding = std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindingSp);
+            const auto vec3Binding = std::static_pointer_cast<Vec3PropertyBinding>(bindingSp);
             auto gameObjectProperty
                 = CastBasePropertyToType<glm::vec3>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
             vec3Binding->SetEngineObjectProperty(gameObjectProperty);

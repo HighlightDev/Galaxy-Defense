@@ -34,7 +34,7 @@ public:
     const aiScene* mScene;
 
     std::map<std::string /* Node Name */, MeshNode*> MeshNodeMapping;
-    MeshNode* meshRootNode = nullptr;
+    std::shared_ptr<MeshNode> meshRootNode;
 
     std::map<std::string /* Bone Name */, MeshBoneInfo> BoneMapping;
 

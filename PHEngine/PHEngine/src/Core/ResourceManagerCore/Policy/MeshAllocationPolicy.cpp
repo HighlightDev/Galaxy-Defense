@@ -42,7 +42,7 @@ std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParamet
         ext_assert(bResourceValid, "Mesh resource not found: " + arg.mModelPath);
 
         const MeshResource* meshResource = static_cast<MeshResource*>(outResource);
-        const MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
+        MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
 
         MeshAttributes* meshAttributes = meshInfo->meshAttributes;
         const auto& vertexAttributes = arg.mVertexAttributes;
@@ -139,9 +139,9 @@ std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParamet
         vao->BindBuffersToVao();
 
         if (meshInfo->meshAnimatedData) {
-            // meshAnimatedData* will be deleted in MeshResourceInfo destructor when ResourceMap will be cleaned up
             resultSkin = std::make_shared<AnimatedSkin>(
                 vao, std::shared_ptr<AnimatedMeshData>(meshInfo->meshAnimatedData), boundingBox, arg.mModelPath);
+            meshInfo->meshAnimatedData = nullptr; // ownership transferred to shared_ptr
         } else {
             resultSkin = std::make_shared<Skin>(vao, boundingBox, arg.mModelPath);
         }

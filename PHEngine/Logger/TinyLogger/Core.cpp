@@ -26,8 +26,8 @@ LoggerServer::LoggerServer()
 
 LoggerServer* LoggerServer::GetInstance_()
 {
-    static LoggerServer loggerInstance;
-    return &loggerInstance;
+    static LoggerServer* loggerInstance = new LoggerServer();
+    return loggerInstance;
 }
 
 void LoggerServer::AddLoggerClient(const std::shared_ptr<LoggerClientBase>& clientBase)

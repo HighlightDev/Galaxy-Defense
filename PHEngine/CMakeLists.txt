@@ -7,6 +7,9 @@ project(
   VERSION 1.0
   LANGUAGES CXX)
 
+option(ENABLE_ASAN "Enable Address Sanitizer." OFF)
+option(ENABLE_TSAN "Enable Thread Sanitizer." OFF)
+option(PROFILE_BUILD "Build with debug symbols and no optimizations." OFF)
 option(BUILD_GALAXY_DEFENSE "Build GalaxyDefense game." ON)
 option(BUILD_ENGINE_TEST "Build test scene." OFF)
 option(BUILD_UBO_TEST "Build test UBO." OFF)
@@ -33,7 +36,8 @@ file(GLOB_RECURSE LUA_FILES ${PROJECT_SOURCE_DIR}/PHEngine/res/scripts/*.lua)
 add_custom_target(
   codeformat
   COMMAND clang-format -i ${SOURCE_FILES}
-  COMMAND lua-format ${LUA_FILES} -i --align-args --config=${CMAKE_SOURCE_DIR}/lua_format_config
+  COMMAND lua-format ${LUA_FILES} -i --align-args
+          --config=${CMAKE_SOURCE_DIR}/lua_format_config
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Formatting source files...")
 
@@ -91,6 +95,10 @@ if(ENABLE_LIBUNWIND)
 endif(ENABLE_LIBUNWIND)
 
 add_compile_definitions(GLM_ENABLE_EXPERIMENTAL BT_USE_DOUBLE_PRECISION)
+
+if(PROFILE_BUILD)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+endif()
 
 add_subdirectory(PHEngine)
 add_subdirectory(Logger/TinyLogger)

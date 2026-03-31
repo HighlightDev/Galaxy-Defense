@@ -13,10 +13,10 @@ namespace Mesh {
 
 AnimatedMeshData::AnimatedMeshData(const MeshDataCollector& collector)
     : RootNode(collector.meshRootNode)
-    , BoneMapping(std::move(collector.BoneMapping))
-    , AnimationMapping(std::move(collector.AnimationMapping))
-    , AnimationIndices(std::move(collector.AnimationIndices))
-    , GlobalInverseTransform(std::move(collector.GlobalInverseTransform))
+    , BoneMapping(collector.BoneMapping)
+    , AnimationMapping(collector.AnimationMapping)
+    , AnimationIndices(collector.AnimationIndices)
+    , GlobalInverseTransform(collector.GlobalInverseTransform)
 {
 }
 
@@ -35,7 +35,8 @@ AnimatedMeshData::GetAnimatedMatricesWithBlendedBoneData(const std::map<std::str
     std::vector<glm::mat4> FinalTransformationMatrices;
     FinalTransformationMatrices.reserve(BoneMapping.size());
 
-    ReadNodeHierarchyWithBlendedBoneData(RootNode, blendedBoneData, glm::mat4(1) /* identity */, FinalTransformationMatrices);
+    ReadNodeHierarchyWithBlendedBoneData(
+        RootNode.get(), blendedBoneData, glm::mat4(1) /* identity */, FinalTransformationMatrices);
 
     return FinalTransformationMatrices;
 }
@@ -47,7 +48,7 @@ std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatrices(const std::string& 
 
     float time = fmod(animationTime, AnimationMapping.at(animationName).AnimationDuration);
 
-    ReadNodeHierarchy(time, animationName, RootNode, glm::mat4(1) /* identity */, FinalTransformationMatrices);
+    ReadNodeHierarchy(time, animationName, RootNode.get(), glm::mat4(1) /* identity */, FinalTransformationMatrices);
 
     return FinalTransformationMatrices;
 }
@@ -72,7 +73,7 @@ std::map<std::string, AnimatedMeshData::BoneData> AnimatedMeshData::GetBoneMappi
     const float dstTime = fmod(dstAnimationTime, AnimationMapping.at(dstAnimationName).AnimationDuration);
 
     GetBlendedBoneDataNodeHierarchy(
-        srcTime, dstTime, srcAnimationName, dstAnimationName, blendFactor, RootNode, animationBoneData);
+        srcTime, dstTime, srcAnimationName, dstAnimationName, blendFactor, RootNode.get(), animationBoneData);
 
     return animationBoneData;
 }
@@ -103,7 +104,8 @@ void AnimatedMeshData::GetBlendedBoneDataNodeHierarchy(
     }
 
     for (size_t i = 0; i < node->Children.size(); ++i) {
-        GetBlendedBoneDataNodeHierarchy(srcTime, dstTime, srcAnimName, dstAnimName, blendFactor, node->Children[i], boneData);
+        GetBlendedBoneDataNodeHierarchy(
+            srcTime, dstTime, srcAnimName, dstAnimName, blendFactor, node->Children[i].get(), boneData);
     }
 }
 
@@ -140,7 +142,7 @@ void AnimatedMeshData::ReadNodeHierarchyWithBlendedBoneData(
     }
 
     for (size_t i = 0; i < node->Children.size(); ++i) {
-        ReadNodeHierarchyWithBlendedBoneData(node->Children[i], blendedBoneData, globalTransformation, finalOutput);
+        ReadNodeHierarchyWithBlendedBoneData(node->Children[i].get(), blendedBoneData, globalTransformation, finalOutput);
     }
 }
 
@@ -180,7 +182,7 @@ void AnimatedMeshData::ReadNodeHierarchy(
     }
 
     for (size_t i = 0; i < node->Children.size(); ++i) {
-        ReadNodeHierarchy(animationTime, animationName, node->Children[i], globalTransformation, finalOutput);
+        ReadNodeHierarchy(animationTime, animationName, node->Children[i].get(), globalTransformation, finalOutput);
     }
 }
 

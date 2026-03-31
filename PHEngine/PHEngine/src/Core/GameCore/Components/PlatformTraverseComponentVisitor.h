@@ -32,6 +32,7 @@ protected:
 
 public:
     PlatformTraverseComponentVisitorBase(std::weak_ptr<SceneComponent> ownerRootComponent);
+    virtual ~PlatformTraverseComponentVisitorBase() = default;
 
     void Init();
 
@@ -55,6 +56,7 @@ class PlatformTraverseComponentVisitorNoPhys : public PlatformTraverseComponentV
 
 public:
     PlatformTraverseComponentVisitorNoPhys(std::weak_ptr<SceneComponent> ownerRootComponent);
+    ~PlatformTraverseComponentVisitorNoPhys() override = default;
 
     void CommitMove() override;
 };
@@ -66,6 +68,7 @@ class PlatformTraverseComponentVisitorWithPhys : public PlatformTraverseComponen
 public:
     PlatformTraverseComponentVisitorWithPhys(
         std::weak_ptr<SceneComponent> ownerRootComponent, std::weak_ptr<PhysicsComponent> ownerPhysComponent);
+    ~PlatformTraverseComponentVisitorWithPhys() override = default;
 
     void CommitMove() override;
 };

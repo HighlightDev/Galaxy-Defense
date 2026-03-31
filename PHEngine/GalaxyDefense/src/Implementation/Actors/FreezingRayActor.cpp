@@ -126,14 +126,16 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                         [this](const auto& leftActorId, const auto& rightActorId) {
                             const auto& leftShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(leftActorId);
                             const auto& rightShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(rightActorId);
-                            ext_assert(
-                                leftShipActor && rightShipActor,
-                                "FreezingRayActor left or right ship actor is null during distance comparison");
-                            const auto sqrDistanceToLeft
-                                = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), mFreezingLineBegin);
-                            const auto sqrDistanceToRight
-                                = glm::distance2(rightShipActor->GetRootComponent()->GetTranslation(), mFreezingLineBegin);
-                            return sqrDistanceToLeft < sqrDistanceToRight;
+                            if (leftShipActor && rightShipActor) {
+                                const auto sqrDistanceToLeft
+                                    = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), mFreezingLineBegin);
+                                const auto sqrDistanceToRight
+                                    = glm::distance2(rightShipActor->GetRootComponent()->GetTranslation(), mFreezingLineBegin);
+                                return sqrDistanceToLeft < sqrDistanceToRight;
+                            } else {
+                                LogInfo("FreezingRayActor::Tick: left or right ship actor is null during distance comparison");
+                                return false;
+                            }
                         });
                     if (foundNearestIt != descriptorActorIds.end()) {
                         const auto& collidedActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);

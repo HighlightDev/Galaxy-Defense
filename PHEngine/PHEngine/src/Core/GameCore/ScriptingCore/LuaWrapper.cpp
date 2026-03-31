@@ -23,7 +23,10 @@ LuaWrapper::LuaWrapper()
 
 LuaWrapper::~LuaWrapper()
 {
-    StopExecution();
+    if (mState) {
+        lua_close(mState);
+        mState = nullptr;
+    }
 }
 
 bool LuaWrapper::ExecuteScript(const std::string& absPath)

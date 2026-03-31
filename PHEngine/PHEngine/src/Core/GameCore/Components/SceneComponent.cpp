@@ -84,7 +84,6 @@ void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentWorldMatrix)
     m_outlineMatrix = identityMatrix;
     m_outlineMatrix *= parentWorldMatrix;
     m_outlineMatrix *= glm::translate(identityMatrix, mTransform->Translation);
-    m_outlineMatrix *= glm::scale(identityMatrix, mTransform->Scale + thicknessScale);
 
     if (bIsRootComponent) {
         const auto& additionalRotation = m_additionalRotationEuler->GetValue();
@@ -99,6 +98,7 @@ void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentWorldMatrix)
 
     const auto nRotator = glm::normalize(mTransform->Rotator);
     m_outlineMatrix *= glm::toMat4(nRotator);
+    m_outlineMatrix *= glm::scale(identityMatrix, mTransform->Scale + thicknessScale);
 
     SetIsTransformationDirty(false);
 }
@@ -118,7 +118,6 @@ void SceneComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
     m_worldMatrix = identityMatrix;
     m_worldMatrix *= parentWorldMatrix;
     m_worldMatrix *= glm::translate(identityMatrix, mTransform->Translation);
-    m_worldMatrix *= glm::scale(identityMatrix, mTransform->Scale);
 
     if (bIsRootComponent) {
         const auto& additionalRotation = m_additionalRotationEuler->GetValue();
@@ -133,6 +132,7 @@ void SceneComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
 
     const auto nRotator = glm::normalize(mTransform->Rotator);
     m_worldMatrix *= glm::toMat4(nRotator);
+    m_worldMatrix *= glm::scale(identityMatrix, mTransform->Scale);
 
     SetIsTransformationDirty(false);
 }

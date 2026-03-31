@@ -52,8 +52,8 @@ public:
 
     static DerivedEventType* GetInstance()
     {
-        static DerivedEventType m_instance;
-        return &m_instance;
+        static DerivedEventType* m_instance = new DerivedEventType();
+        return m_instance;
     }
 
     std::string ToString() const override

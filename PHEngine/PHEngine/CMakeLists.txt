@@ -1,21 +1,39 @@
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(Utility)
 
-add_compile_definitions(
-  GLM_ENABLE_EXPERIMENTAL
-  SHADING_MODEL_PBR
-  DEBUG
-  #NO_LIT
-)
+set(PROJECT_NAME PHEngine)
 
-file(GLOB_RECURSE SOURCES
-  ${PROJECT_SOURCE_DIR}/PHEngine/src/*.cpp)
+add_compile_definitions(GLM_ENABLE_EXPERIMENTAL SHADING_MODEL_PBR)
 
-file(GLOB_RECURSE HEADERS
-  ${PROJECT_SOURCE_DIR}/PHEngine/src/*.h)
+if(DEBUG_BUILD)
+  add_compile_definitions(
+    DEBUG
+    # NO_LIT
+  )
+endif()
+
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/PHEngine/src/*.cpp)
+
+file(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/PHEngine/src/*.h)
 
 add_library(PHEngine STATIC ${SOURCES} ${HEADERS})
+
+if(ENABLE_ASAN)
+  message(STATUS "ASAN enabled for ${PROJECT_NAME}")
+  target_compile_options(${PROJECT_NAME} PRIVATE -fsanitize=address -g -O1
+                                                 -fno-omit-frame-pointer)
+  target_compile_options(${PROJECT_NAME} PRIVATE -fsanitize=undefined -g -O1)
+endif()
+
+if(ENABLE_ASAN AND ENABLE_TSAN)
+  message(
+    WARNING
+      "ASAN enabled for ${PROJECT_NAME}, Thread sanitizer will be disabled")
+elseif(ENABLE_TSAN)
+  message(STATUS "TSAN enabled for ${PROJECT_NAME}")
+  target_compile_options(${PROJECT_NAME} PRIVATE -fsanitize=thread -g -O1)
+  target_link_options(${PROJECT_NAME} PRIVATE -fsanitize=thread)
+endif()
 
 set(ENGINE_DEPENDENCIES_DIR ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies)
 
@@ -32,7 +50,8 @@ set(LOGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
 set(SNDFILE_INCLUDE ${ENGINE_DEPENDENCIES_DIR}/SndFile/include/)
 set(FREE_TYPE_INCLUDE ${ENGINE_DEPENDENCIES_DIR}/FreeType/include/)
 
-target_include_directories(PHEngine
+target_include_directories(
+  ${PROJECT_NAME}
   PUBLIC ${ENGINE_CORE_INCLUDE}
   PUBLIC ${LOGER_DEPENDENCE_INCLUDE}
   PRIVATE ${STB_DEPENDENCE_INCLUDE}
@@ -44,21 +63,17 @@ target_include_directories(PHEngine
   PUBLIC ${LUA_DEPENDENCE_INCLUDE}
   PUBLIC ${SNDFILE_INCLUDE}
   PUBLIC ${NLOHMANN_JSON_INCLUDE}
-  PUBLIC ${FREE_TYPE_INCLUDE}
-)
+  PUBLIC ${FREE_TYPE_INCLUDE})
 
 set(BULLET_LIBS
-  Bullet3Collision
-  BulletCollision
-  Bullet3Common
-  Bullet3Dynamics
-  Bullet3Geometry
-  BulletDynamics
-  LinearMath
-  BulletInverseDynamics
-  ConvexDecomposition
-  BulletRobotics
-  BulletSoftBody)
+    Bullet3Collision
+    BulletCollision
+    Bullet3Common
+    Bullet3Dynamics
+    Bullet3Geometry
+    BulletDynamics
+    LinearMath
+    ConvexDecomposition)
 
 if(WIN32)
   message("ARCH_x64: ${ARCH_x64}")
@@ -69,44 +84,67 @@ if(WIN32)
   endif(ARCH_x64)
 
   set(OPENAL_INCLUDE_DIR ${ENGINE_DEPENDENCIES_DIR}/OpenAL/include)
-  target_include_directories(PHEngine PUBLIC ${OPENAL_INCLUDE_DIR})
+  target_include_directories(${PROJECT_NAME} PUBLIC ${OPENAL_INCLUDE_DIR})
 
-  findLibraryAndLinkToTarget(PHEngine PUBLIC OpenAL32 ${ENGINE_DEPENDENCIES_DIR}/OpenAL/lib/${LIB_LOCATION_PREFIX})
-  findLibraryAndLinkToTarget(PHEngine PUBLIC glew32 ${ENGINE_DEPENDENCIES_DIR}/GLEW/lib/${LIB_LOCATION_PREFIX}/Release/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC lua54 ${ENGINE_DEPENDENCIES_DIR}/Lua54/lib/${LIB_LOCATION_PREFIX}/Debug/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC assimp-vc143-mtd ${ENGINE_DEPENDENCIES_DIR}/Assimp/lib/${LIB_LOCATION_PREFIX}/Debug/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC sndfile ${ENGINE_DEPENDENCIES_DIR}/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC glfw3 ${ENGINE_DEPENDENCIES_DIR}/GLFW/lib/${LIB_LOCATION_PREFIX}/)
-  findLibrariesAndLinkToTarget(PHEngine PUBLIC BULLET_LIBS ${ENGINE_DEPENDENCIES_DIR}/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC freetype ${ENGINE_DEPENDENCIES_DIR}/FreeType/lib/${LIB_LOCATION_PREFIX}/Release/)
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC OpenAL32
+    ${ENGINE_DEPENDENCIES_DIR}/OpenAL/lib/${LIB_LOCATION_PREFIX})
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC glew32
+    ${ENGINE_DEPENDENCIES_DIR}/GLEW/lib/${LIB_LOCATION_PREFIX}/Release/)
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC lua54
+    ${ENGINE_DEPENDENCIES_DIR}/Lua54/lib/${LIB_LOCATION_PREFIX}/Debug/)
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC assimp-vc143-mtd
+    ${ENGINE_DEPENDENCIES_DIR}/Assimp/lib/${LIB_LOCATION_PREFIX}/Debug/)
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC sndfile
+    ${ENGINE_DEPENDENCIES_DIR}/SndFile/lib/${LIB_LOCATION_PREFIX}/Debug/)
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC glfw3
+    ${ENGINE_DEPENDENCIES_DIR}/GLFW/lib/${LIB_LOCATION_PREFIX}/)
+  findlibrariesandlinktotarget(
+    ${PROJECT_NAME} PUBLIC BULLET_LIBS
+    ${ENGINE_DEPENDENCIES_DIR}/BulletPhysics/lib/${LIB_LOCATION_PREFIX}/Debug/)
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC freetype
+    ${ENGINE_DEPENDENCIES_DIR}/FreeType/lib/${LIB_LOCATION_PREFIX}/Release/)
 
 elseif(UNIX)
 
-  target_link_libraries(PHEngine PRIVATE X11)
-  target_link_libraries(PHEngine PRIVATE Threads::Threads)
+  target_link_libraries(${PROJECT_NAME} PRIVATE X11)
+  target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
   if(NOT CMAKE_DL_LIBS)
     message(FATAL_ERROR "DL library wasn't found!")
   else()
-    target_link_libraries(PHEngine
-      PUBLIC ${CMAKE_DL_LIBS}
-    )
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
   endif()
 
-  target_link_libraries(PHEngine
-    PUBLIC ${OPENAL_LIBRARY}
-  )
+  target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENAL_LIBRARY})
 
-  findLibraryAndLinkToTarget(PHEngine PUBLIC assimp ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/lib/Unix/Release/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC lua ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/lib/Unix/Release/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC GLEW ${ENGINE_DEPENDENCIES_DIR}/GLEW/lib/Unix/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC sndfile ${ENGINE_DEPENDENCIES_DIR}/SndFile/lib/Unix/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC glfw3 ${ENGINE_DEPENDENCIES_DIR}/GLFW/lib/Unix/)
-  findLibrariesAndLinkToTarget(PHEngine PUBLIC BULLET_LIBS ${ENGINE_DEPENDENCIES_DIR}/BulletPhysics/lib/Unix/Release/)
-  findLibraryAndLinkToTarget(PHEngine PUBLIC freetype ${ENGINE_DEPENDENCIES_DIR}/FreeType/lib/Unix/Release/)
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC assimp
+    ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/lib/Unix/Release/)
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC lua
+    ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/lib/Unix/Release/)
+  findlibraryandlinktotarget(${PROJECT_NAME} PUBLIC GLEW
+                             ${ENGINE_DEPENDENCIES_DIR}/GLEW/lib/Unix/)
+  findlibraryandlinktotarget(${PROJECT_NAME} PUBLIC sndfile
+                             ${ENGINE_DEPENDENCIES_DIR}/SndFile/lib/Unix/)
+  findlibraryandlinktotarget(${PROJECT_NAME} PUBLIC glfw3
+                             ${ENGINE_DEPENDENCIES_DIR}/GLFW/lib/Unix/)
+  findlibrariesandlinktotarget(
+    ${PROJECT_NAME} PUBLIC BULLET_LIBS
+    ${ENGINE_DEPENDENCIES_DIR}/BulletPhysics/lib/Unix/Release/)
+  findlibraryandlinktotarget(
+    ${PROJECT_NAME} PUBLIC freetype
+    ${ENGINE_DEPENDENCIES_DIR}/FreeType/lib/Unix/Release/)
 endif()
 
-target_link_libraries(PHEngine
+target_link_libraries(
+  ${PROJECT_NAME}
   PUBLIC ${OPENGL_LIBRARIES}
-  PUBLIC TinyLogger
-)
+  PUBLIC TinyLogger)

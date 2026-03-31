@@ -89,9 +89,9 @@ void FreezingExplosionVisitor::ProcessProjectileWithSpaceshipsCollision(const gl
                 [](const auto& collidedDescriptor) { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
 
             for (const auto& descriptorActorId : descriptorActorIds) {
-                const auto& shipSp = combatActorsPoolHandlerSp->GetEnemyShipOwnerActorById(descriptorActorId);
-                ext_assert(shipSp, "FreezingExplosionVisitor enemy ship pointer is null");
-                AddOrResetFreezingModifier(shipSp);
+                if (const auto& shipSp = combatActorsPoolHandlerSp->GetEnemyShipOwnerActorById(descriptorActorId)) {
+                    AddOrResetFreezingModifier(shipSp);
+                }
             }
         }
     }

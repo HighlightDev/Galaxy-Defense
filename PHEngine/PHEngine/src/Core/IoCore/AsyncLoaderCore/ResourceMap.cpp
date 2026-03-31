@@ -49,12 +49,10 @@ void ResourceMap::CleanUp()
     ext_assert(!bResourceWasntLoaded, "ResourceMap::CleanUp: Some resources are still loading or havent been loaded yet!");
 
     for (auto& [resourceName, resource] : ReadyToReadResources) {
-        resource->Clear();
         delete resource;
     }
 
     for (auto& [streamName, audioStreamResouce] : AudioStreamResources) {
-        audioStreamResouce->Clear();
         delete audioStreamResouce;
     }
 
@@ -72,6 +70,7 @@ void ResourceMap::CleanUp()
 
 ResourceMap::~ResourceMap()
 {
+    CleanUp();
 }
 
 bool ResourceMap::TryGetResource(Resource*& outResource, const std::string& key)
@@ -89,7 +88,6 @@ bool ResourceMap::TryGetResource(Resource*& outResource, const std::string& key)
 void ResourceMap::UnloadResource(const std::string& key)
 {
     if (ReadyToReadResources.count(key) > 0) {
-        ReadyToReadResources[key]->Clear();
         delete ReadyToReadResources[key];
         ReadyToReadResources.erase(key);
     }

@@ -10,6 +10,8 @@ enum class eLevelRequirementTrackerType { NEED_TO_ACHIVE, NEED_NOT_TO_FAIL };
 
 class ILevelRequirementTracker : public ITickable {
 public:
+    virtual ~ILevelRequirementTracker() = default;
+
     virtual void Init() = 0;
 
     virtual bool IsRequirementAchived() const = 0;

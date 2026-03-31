@@ -213,6 +213,26 @@ set(EXECUTABLE_NAME GalaxyDefense)
 
 add_executable(${EXECUTABLE_NAME} ${HEADERS} ${SOURCES})
 
+if(ENABLE_ASAN)
+  message(STATUS "ASAN enabled for ${EXECUTABLE_NAME}")
+  target_compile_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=address -g -O1
+                                                    -fno-omit-frame-pointer)
+  target_link_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=address)
+
+  target_compile_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=undefined -g -O1)
+  target_link_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=undefined)
+endif()
+
+if(ENABLE_ASAN AND ENABLE_TSAN)
+  message(
+    WARNING
+      "ASAN enabled for ${EXECUTABLE_NAME}, Thread sanitizer will be disabled")
+elseif(ENABLE_TSAN)
+  message(STATUS "TSAN enabled for ${EXECUTABLE_NAME}")
+  target_compile_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=thread -g -O1)
+  target_link_options(${EXECUTABLE_NAME} PRIVATE -fsanitize=thread)
+endif()
+
 add_custom_command(
   TARGET ${EXECUTABLE_NAME}
   POST_BUILD
@@ -267,10 +287,7 @@ set(BULLET_LIBS
     Bullet3Geometry
     BulletDynamics
     LinearMath
-    BulletInverseDynamics
-    ConvexDecomposition
-    BulletRobotics
-    BulletSoftBody)
+    ConvexDecomposition)
 
 if(WIN32)
   message("ARCH_x64: ${ARCH_x64}")

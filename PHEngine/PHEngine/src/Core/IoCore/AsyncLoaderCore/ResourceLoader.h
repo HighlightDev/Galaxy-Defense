@@ -13,6 +13,8 @@ public:
     ResourceLoader();
 
     virtual Resource* LoadResource(const std::string& key) = 0;
+
+    virtual ~ResourceLoader() = default;
 };
 
 class TextureResourceLoader : public ResourceLoader {
@@ -33,7 +35,7 @@ class AudioResourceLoader : public ResourceLoader {
 public:
     AudioResourceLoader();
 
-    virtual Resource* LoadResource(const std::string& key);
+    Resource* LoadResource(const std::string& key) override;
 
     Resource* GetStreamResource(const std::string& key);
 };

@@ -215,7 +215,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         "ufo.obj",
         glm::vec3(0, -0.05f, 1.2f),
         glm::vec3(90, 0, 0.0f),
-        glm::vec3(0.2f, 0.2f, 1.1f),
+        glm::vec3(0.2f, 1.1f, 0.2f),
         engineMaterial);
     const auto& engineComponent
         = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(engineComponentCreator, data));

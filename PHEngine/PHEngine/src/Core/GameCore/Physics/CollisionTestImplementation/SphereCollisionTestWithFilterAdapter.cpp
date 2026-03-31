@@ -17,10 +17,10 @@ SphereCollisionTestWithFilterAdapter::SphereCollisionTestWithFilterAdapter(const
 }
 
 SphereCollisionTestWithFilterAdapter::SphereCollisionTestWithFilterAdapter(
-    const float sphereRadius, std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents)
+    const float sphereRadius, const std::vector<std::shared_ptr<PhysicsComponent>>& excludeCollisionComponents)
     : BulletSphereCollisionTestWithFilter(sphereRadius)
 {
-    Initialize(std::move(excludeCollisionComponents));
+    Initialize(excludeCollisionComponents);
 }
 
 void SphereCollisionTestWithFilterAdapter::SphereCollisionTest(
@@ -40,7 +40,8 @@ std::vector<const PhysicsDescriptor*> SphereCollisionTestWithFilterAdapter::GetC
     return result;
 }
 
-void SphereCollisionTestWithFilterAdapter::Initialize(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents)
+void SphereCollisionTestWithFilterAdapter::Initialize(
+    const std::vector<std::shared_ptr<PhysicsComponent>>& excludeCollisionComponents)
 {
     if (excludeCollisionComponents.size()) {
         std::vector<btCollisionObject*> excludeCollisionObjects;

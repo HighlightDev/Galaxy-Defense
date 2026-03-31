@@ -3,7 +3,7 @@
 #include "Core/CommonCore/TimeHelper.h"
 #include "Core/GameCore/ShaderImplementation/GpuParticleComputeShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/CpuParticleVertexFactory.h"
+#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/GpuParticleVertexFactory.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GraphicsCore/RenderData/GpuParticleSystemRenderData.h"
@@ -30,7 +30,7 @@ namespace Graphics {
 namespace Proxy {
 class GpuParticleSystemSceneProxy : public PrimitiveSceneProxy {
     using Base = PrimitiveSceneProxy;
-    using ParticleShader_t = VertexFactoryMaterialCompositeShader<CpuParticleVertexFactory, SimpleShader>;
+    using ParticleShader_t = VertexFactoryMaterialCompositeShader<GpuParticleVertexFactory, SimpleShader>;
     using ParticleComputeShader_t = GpuParticleComputeShader;
 
     GpuParticleSystemRenderData mRenderData;

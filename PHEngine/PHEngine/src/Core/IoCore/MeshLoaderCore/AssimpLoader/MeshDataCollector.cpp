@@ -30,7 +30,7 @@ void MeshDataCollector::VertexBoneData::AddBoneData(size_t boneIndex, float weig
 MeshDataCollector::MeshDataCollector(const aiScene* scene)
     : mScene(scene)
     , MeshNodeMapping()
-    , meshRootNode(nullptr)
+    , meshRootNode()
     , BoneMapping()
     , GlobalInverseTransform(1)
     , AnimationMapping()
@@ -56,10 +56,10 @@ void MeshDataCollector::Collect()
     {
         aiNode* rootNode = mScene->mRootNode;
 
-        meshRootNode = new MeshNode();
+        meshRootNode = std::make_shared<MeshNode>();
         meshRootNode->Name = rootNode->mName.data;
         meshRootNode->NodeTransformation = AssimpToGlmConverter::ConvertAssimpMatrix4x4ToGlmMat4(rootNode->mTransformation);
-        MeshNodeMapping[meshRootNode->Name] = meshRootNode;
+        MeshNodeMapping[meshRootNode->Name] = meshRootNode.get();
 
         const aiMatrix4x4 invertedGlobalTransform = rootNode->mTransformation.Inverse();
 
@@ -67,7 +67,7 @@ void MeshDataCollector::Collect()
             GlobalInverseTransform = AssimpToGlmConverter::ConvertAssimpMatrix4x4ToGlmMat4(invertedGlobalTransform);
         }
 
-        CollectNodeHierarchy(rootNode, meshRootNode);
+        CollectNodeHierarchy(rootNode, meshRootNode.get());
     }
 
     // Bones
@@ -300,13 +300,13 @@ void MeshDataCollector::CollectNodeHierarchy(const aiNode* pNode, MeshNode* mesh
 
     for (size_t i = 0; i < pNode->mNumChildren; ++i) {
         aiNode* pChildNode = pNode->mChildren[i];
-        MeshNode* meshChildNode = new MeshNode();
+        auto meshChildNode = std::make_shared<MeshNode>();
         meshChildNode->Name = pChildNode->mName.data;
         meshChildNode->NodeTransformation = AssimpToGlmConverter::ConvertAssimpMatrix4x4ToGlmMat4(pChildNode->mTransformation);
         meshNode->Children.push_back(meshChildNode);
-        MeshNodeMapping[meshChildNode->Name] = meshChildNode;
+        MeshNodeMapping[meshChildNode->Name] = meshChildNode.get();
 
-        CollectNodeHierarchy(pChildNode, meshChildNode);
+        CollectNodeHierarchy(pChildNode, meshChildNode.get());
     }
 }
 } // namespace Assimp

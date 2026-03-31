@@ -23,7 +23,14 @@ SpaceObjectUiComponent::SpaceObjectUiComponent(const std::shared_ptr<ComponentDa
     mOwnerRootComponent = spaceObjectData->mOwnerRootComponent;
 }
 
-SpaceObjectUiComponent::~SpaceObjectUiComponent() = default;
+SpaceObjectUiComponent::~SpaceObjectUiComponent()
+{
+    if (mHealthBar) {
+        if (const auto& canvasSp = mCanvas) {
+            canvasSp->RemoveUiItem(mHealthBar);
+        }
+    }
+}
 
 void SpaceObjectUiComponent::CreateUiElements(
     const std::string& fontName,

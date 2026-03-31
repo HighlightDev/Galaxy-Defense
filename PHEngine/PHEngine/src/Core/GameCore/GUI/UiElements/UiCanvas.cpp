@@ -396,9 +396,10 @@ void UiCanvas::RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem)
     const auto foundIt = std::find_if(
         mChildren.begin(), mChildren.end(), [&](const auto& childItem) { return uiItem->GetUId() == childItem->GetUId(); });
     (*foundIt)->OnUnregistered();
-    const auto it = std::remove_if(
-        mChildren.begin(), mChildren.end(), [&](const auto& childUi) { return childUi->GetUId() == uiItem->GetUId(); });
-    mChildren.erase(it);
+    mChildren.erase(
+        std::remove_if(
+            mChildren.begin(), mChildren.end(), [&](const auto& childUi) { return childUi->GetUId() == uiItem->GetUId(); }),
+        mChildren.end());
 }
 
 void UiCanvas::UnpausableTick(const float deltaTimeSec)

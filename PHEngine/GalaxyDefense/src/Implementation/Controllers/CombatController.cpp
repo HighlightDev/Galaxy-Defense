@@ -673,6 +673,21 @@ void CombatController::ProcessAiAction()
 
     // Spaceships
     {
+        std::vector<std::shared_ptr<PhysicsComponent>> fighterExcludedPhysics;
+        fighterExcludedPhysics.reserve(
+            enemySpaceshipPhysComponents.size() + bombMissilePhysComponents.size() + freezeMissilePhysComponents.size()
+            + blackHoleMissilePhysComponents.size() + spaceStationsPhysComponents.size());
+        fighterExcludedPhysics.insert(
+            fighterExcludedPhysics.end(), enemySpaceshipPhysComponents.begin(), enemySpaceshipPhysComponents.end());
+        fighterExcludedPhysics.insert(
+            fighterExcludedPhysics.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
+        fighterExcludedPhysics.insert(
+            fighterExcludedPhysics.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
+        fighterExcludedPhysics.insert(
+            fighterExcludedPhysics.end(), blackHoleMissilePhysComponents.begin(), blackHoleMissilePhysComponents.end());
+        fighterExcludedPhysics.insert(
+            fighterExcludedPhysics.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
+
         for (const auto& enemySpaceship : enemySpaceshipActors) {
             if (eSpaceshipType::FIGHTER == enemySpaceship->GetSpaceshipType()
                 && eSpaceshipActivityState::ACTIVE == enemySpaceship->GetSpaceshipActivityState()) {
@@ -680,20 +695,6 @@ void CombatController::ProcessAiAction()
                 if (fighter->CanShoot()) {
                     const auto& fighterTranslation = fighter->GetRootComponent()->GetTranslation();
                     const float shootRadius = fighter->GetFighterLevel().GetShootRadius();
-
-                    std::vector<std::shared_ptr<PhysicsComponent>> fighterExcludedPhysics;
-                    fighterExcludedPhysics.insert(
-                        fighterExcludedPhysics.end(), enemySpaceshipPhysComponents.begin(), enemySpaceshipPhysComponents.end());
-                    fighterExcludedPhysics.insert(
-                        fighterExcludedPhysics.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
-                    fighterExcludedPhysics.insert(
-                        fighterExcludedPhysics.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
-                    fighterExcludedPhysics.insert(
-                        fighterExcludedPhysics.end(),
-                        blackHoleMissilePhysComponents.begin(),
-                        blackHoleMissilePhysComponents.end());
-                    fighterExcludedPhysics.insert(
-                        fighterExcludedPhysics.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
 
                     SphereCollisionTestWithFilterAdapter collisionTest(shootRadius, fighterExcludedPhysics);
                     collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), fighterTranslation);

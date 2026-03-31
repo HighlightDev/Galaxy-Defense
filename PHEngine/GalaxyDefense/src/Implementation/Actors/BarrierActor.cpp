@@ -33,9 +33,9 @@ void BarrierActor::Tick(const float deltaTimeSec)
     Actor::Tick(deltaTimeSec);
 
     // Actor can have only one physics component, so we can directly update it here without iterating through the list of pillars
+    const auto& rootTranslation = GetRootComponent()->GetTranslation();
     for (size_t i = 0; i < mPillarPhysicsComponents.size() && i < mBarrierPillars.size(); ++i) {
-        const auto& pillarWorldPos
-            = mBarrierPillars[i]->GetHierarchyAccumulatedTranslation() + GetRootComponent()->GetTranslation();
+        const auto& pillarWorldPos = mBarrierPillars[i]->GetHierarchyAccumulatedTranslation() + rootTranslation;
         mPillarPhysicsComponents[i]->GetDescriptor()->SetMotionStateWorldTransform(
             Converter::glmToBullet(glm::quat(1, 0, 0, 0)), Converter::glmToBullet(pillarWorldPos));
         bool dirty;

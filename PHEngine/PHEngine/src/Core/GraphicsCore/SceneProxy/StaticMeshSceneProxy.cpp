@@ -61,7 +61,7 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
                 outlineShaderParams.SetMainShaders(
                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
-                m_outlineShader = CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(
+                m_outlineShader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
                     "StaticMeshVertexFactory_OutlineShader_OutlineMaterial", outlineShaderParams, outlineMatProxySp);
             }
 

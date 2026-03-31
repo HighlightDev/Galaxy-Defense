@@ -19,9 +19,10 @@ struct Resource {
 
     void* mData;
 
-    virtual void Clear()
+    virtual ~Resource()
     {
         free(mData);
+        mData = nullptr;
     }
 };
 
@@ -34,9 +35,10 @@ struct TextureResource : public Resource {
         mResourceType = eResourceType::TEXTURE;
     }
 
-    void Clear() override
+    ~TextureResource() override
     {
         free(mData);
+        mData = nullptr;
     }
 };
 
@@ -47,10 +49,11 @@ struct MeshResource : public Resource {
         mResourceType = eResourceType::MESH;
     }
 
-    void Clear() override
+    ~MeshResource() override
     {
         MeshResourceInfo* data = GetMeshResourceInfo();
         delete data;
+        mData = nullptr;
     }
 
     MeshResourceInfo* GetMeshResourceInfo() const
@@ -69,9 +72,10 @@ struct AudioResource : public Resource {
         mResourceType = eResourceType::AUDIO;
     }
 
-    void Clear() override
+    ~AudioResource() override
     {
         free(mData);
+        mData = nullptr;
     }
 };
 
@@ -84,9 +88,11 @@ struct AudioStreamResource : public AudioResource {
         mResourceType = eResourceType::AUDIO_STREAM;
     }
 
-    void Clear() override
+    ~AudioStreamResource() override
     {
+        mStream.reset();
         free(mData);
+        mData = nullptr;
     }
 };
 

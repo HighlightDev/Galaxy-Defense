@@ -26,6 +26,8 @@ struct BaseStateProperty {
         : Binding(propertyBinding)
     {
     }
+
+    virtual ~BaseStateProperty() = default;
 };
 
 template<eEnginePropertyBindingType bindingType>

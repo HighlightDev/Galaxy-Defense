@@ -7,6 +7,7 @@
  */
 class ITickable {
 public:
+    virtual ~ITickable() = default;
     /**
      * @brief Called every frame to update the object.
      * @param deltaTimeSec Time elapsed since the last tick, in seconds.

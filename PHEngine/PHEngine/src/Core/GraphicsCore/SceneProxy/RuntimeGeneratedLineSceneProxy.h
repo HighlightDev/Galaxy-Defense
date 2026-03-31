@@ -18,8 +18,6 @@ namespace Proxy {
 class RuntimeGeneratedLineSceneProxy : public StaticMeshSceneProxy {
     using Base = StaticMeshSceneProxy;
     using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
-    using PlanarReflectionShaderType
-        = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
 
 protected:
     RuntimeGeneratedMeshPoolParameters mRtMeshPoolParams;

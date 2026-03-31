@@ -22,7 +22,7 @@ struct AnimatedMeshData {
     };
 
     // Node hierarchy root
-    MeshNode* RootNode = nullptr;
+    std::shared_ptr<MeshNode> RootNode;
 
     // Bone info
     std::map<std::string /* Bone Name */, MeshBoneInfo> BoneMapping;
@@ -33,11 +33,6 @@ struct AnimatedMeshData {
     glm::mat4 GlobalInverseTransform;
 
     AnimatedMeshData(const struct MeshDataCollector& collector);
-
-    ~AnimatedMeshData()
-    {
-        delete RootNode;
-    }
 
     std::vector<glm::mat4> GetAnimatedMatrices(const std::string& animationName, const float animationTime) const;
 

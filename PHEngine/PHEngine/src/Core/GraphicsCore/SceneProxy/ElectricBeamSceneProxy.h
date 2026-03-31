@@ -26,8 +26,6 @@ namespace Proxy {
 class ElectricBeamSceneProxy : public PrimitiveSceneProxy {
     using Base = PrimitiveSceneProxy;
     using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
-    using PlanarReflectionShaderType
-        = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
 
 protected:
     RuntimeGeneratedMeshPoolParameters mBeamMeshPoolParams;

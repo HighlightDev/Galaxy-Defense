@@ -175,7 +175,8 @@
         "_GetSoundGain",
         "_GetMusicGain",
         "_GetEditorLevelAreaBoundingBoxWidth",
-        "_GetEditorLevelAreaBoundingBoxLength"
+        "_GetEditorLevelAreaBoundingBoxLength",
+        "_SetVec3ToMaterial"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

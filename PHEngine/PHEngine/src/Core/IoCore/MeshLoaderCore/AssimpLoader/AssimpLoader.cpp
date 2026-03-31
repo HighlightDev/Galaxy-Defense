@@ -22,6 +22,7 @@ AssimpLoader::AssimpLoader(const std::string& modelFilePath)
 
     ext_assert(scene, "AssimpLoader::AssimpLoader: Failed to load model file: " + modelFilePath);
     LoadMeshAndAnimations(scene);
+    importer.FreeScene();
 }
 
 AssimpLoader::~AssimpLoader()

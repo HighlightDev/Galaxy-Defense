@@ -2,6 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentData/UiComponentData.h"
+#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
@@ -21,6 +22,11 @@ UiComponent::UiComponent(const std::shared_ptr<ComponentData>& data)
 
 UiComponent::~UiComponent()
 {
+    if (mLabel) {
+        if (const auto& canvasSp = mCanvas) {
+            canvasSp->RemoveUiItem(mLabel);
+        }
+    }
 }
 
 eComponentType UiComponent::GetComponentType() const

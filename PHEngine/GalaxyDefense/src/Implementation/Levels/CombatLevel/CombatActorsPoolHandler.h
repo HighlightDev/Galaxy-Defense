@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace EngineCore {
@@ -46,6 +47,8 @@ class CombatActorsPoolHandler : public std::enable_shared_from_this<CombatActors
     std::vector<std::shared_ptr<BarrierActor>> mBarriersPool;
 
     std::vector<std::shared_ptr<PortalActor>> mSpawnPortals;
+
+    mutable std::unordered_map<int32_t, eGameObjectsType> mActorTypeCache;
 
 public:
     explicit CombatActorsPoolHandler(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
