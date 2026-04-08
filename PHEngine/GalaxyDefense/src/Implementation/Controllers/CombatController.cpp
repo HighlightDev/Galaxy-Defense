@@ -8,6 +8,7 @@
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
+#include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/BlackHoleMissileActor.h"
 #include "Implementation/Actors/FighterSpaceshipActor.h"
@@ -247,7 +248,9 @@ void CombatController::ProcessEvent(
 {
     const ePhysicsCollisionStateType collisionEventType = std::get<0>(data);
     const ePhysicsBodyType physBodyType = std::get<1>(data);
+    const auto this_phys_descriptor_id = std::get<2>(data);
     const auto this_actor_id = std::get<3>(data);
+    const auto that_phys_descriptor_id = std::get<4>(data);
     const auto that_actor_id = std::get<5>(data);
 
     const auto& sceneSp = mScene.lock();
@@ -352,8 +355,18 @@ void CombatController::ProcessEvent(
         const auto& ownerMissileActor = eGameObjectsType::ENEMY_MISSILE == thisActorGameObjectType
             ? mCombatActorsPoolHandler->GetMissileOwnerActorById(this_actor_id)
             : mCombatActorsPoolHandler->GetMissileOwnerActorById(that_actor_id);
-        if (ownerMissileActor && ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType) {
+        const auto barrierActorId = eGameObjectsType::BARRIER == thisActorGameObjectType ? this_actor_id : that_actor_id;
+        const auto barrierPhysDescId
+            = eGameObjectsType::BARRIER == thisActorGameObjectType ? this_phys_descriptor_id : that_phys_descriptor_id;
+        const auto& barrierActor = mCombatActorsPoolHandler->GetBarrierOwnerActorById(barrierActorId);
+
+        if (ownerMissileActor && barrierActor && ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType) {
             ownerMissileActor->TriggerExplosion();
+            const int32_t pillarIndex = barrierActor->FindPillarIndexByPhysDescriptorId(barrierPhysDescId);
+            if (pillarIndex >= 0) {
+                constexpr uint32_t c_enemyMissileDamage = 10;
+                barrierActor->TriggerPillarDamage(pillarIndex, c_enemyMissileDamage);
+            }
         }
         return;
     }
@@ -700,28 +713,26 @@ void CombatController::ProcessAiAction()
                     collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), fighterTranslation);
                     const auto& collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
 
-                    std::vector<int32_t> targetActorIds;
+                    std::vector<const PhysicsDescriptor*> barrierPillarDescriptors;
                     for (const auto& descriptor : collidedDescriptors) {
                         const auto targetId = descriptor->GetOwnerActorEngineObjectId();
                         const auto targetType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(targetId);
                         if (eGameObjectsType::BARRIER == targetType) {
-                            targetActorIds.emplace_back(targetId);
+                            barrierPillarDescriptors.emplace_back(descriptor);
                         }
                     }
 
-                    if (not targetActorIds.empty()) {
+                    if (not barrierPillarDescriptors.empty()) {
                         const auto nearestIt = std::min_element(
-                            targetActorIds.begin(),
-                            targetActorIds.end(),
-                            [this, &fighterTranslation](const auto& leftId, const auto& rightId) {
-                                const auto& left = mCombatActorsPoolHandler->GetBarrierOwnerActorById(leftId);
-                                const auto& right = mCombatActorsPoolHandler->GetBarrierOwnerActorById(rightId);
-                                return glm::distance2(left->GetRootComponent()->GetTranslation(), fighterTranslation)
-                                    < glm::distance2(right->GetRootComponent()->GetTranslation(), fighterTranslation);
+                            barrierPillarDescriptors.begin(),
+                            barrierPillarDescriptors.end(),
+                            [&fighterTranslation](const auto& left, const auto& right) {
+                                const auto leftPos = Converter::bulletToGlm(left->GetTranslation());
+                                const auto rightPos = Converter::bulletToGlm(right->GetTranslation());
+                                return glm::distance2(leftPos, fighterTranslation) < glm::distance2(rightPos, fighterTranslation);
                             });
-                        const auto& nearestBarrier = mCombatActorsPoolHandler->GetBarrierOwnerActorById(*nearestIt);
-                        const auto& barrierPos = nearestBarrier->GetRootComponent()->GetTranslation();
-                        const auto& shootDirection = glm::normalize(barrierPos - fighterTranslation);
+                        const auto& nearestPillarPos = Converter::bulletToGlm((*nearestIt)->GetTranslation());
+                        const auto& shootDirection = glm::normalize(nearestPillarPos - fighterTranslation);
                         LaunchEnemyMissile(fighterTranslation, shootDirection);
                         fighter->RestartTimerSinceLastShoot();
                     }

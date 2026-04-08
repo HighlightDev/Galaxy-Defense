@@ -23,7 +23,6 @@ UiInputSystem::UiInputSystem(const std::weak_ptr<UiCanvas>& owner)
     mMousePressedTimer->Initialize();
     mMousePressedTimer->SetIntervalMs(300);
     mMousePressedTimer->SetIsRepeat(false);
-    mMousePressedTimer->SetCallback(std::bind(&UiInputSystem::OnMousePressedTimerTimeout, this));
     mMousePressedTimer->SetIsPausable(false);
 }
 
@@ -35,6 +34,12 @@ UiInputSystem::~UiInputSystem()
 void UiInputSystem::Initialize()
 {
     WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
+
+    mMousePressedTimer->SetCallback([weak_me = std::weak_ptr<UiInputSystem>(shared_from_this())]() {
+        if (auto shared_me = weak_me.lock()) {
+            shared_me->OnMousePressedTimerTimeout();
+        }
+    });
 }
 
 void UiInputSystem::Tick(const float deltaTimeSec)

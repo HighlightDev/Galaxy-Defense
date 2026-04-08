@@ -14,7 +14,11 @@ set(SOURCES
     src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
     main.cpp)
 
-add_compile_definitions(DEBUG GLM_ENABLE_EXPERIMENTAL)
+add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
+
+if(DEBUG_BUILD)
+  add_compile_definitions(DEBUG)
+endif()
 
 set(EXECUTABLE_NAME EngineTest)
 add_executable(${EXECUTABLE_NAME} ${HEADERS} ${SOURCES})

@@ -99,7 +99,7 @@ function CreateLevelProgressStages(host)
     local trackers = {}
     trackers[1] = {
         type = "MissedSpaceshipsTracker",
-        spaceships_count = 20,
+        spaceships_count = 200,
         hint = string.format("Не пропустите более %d космических кораблей", 20)
     }
     trackers[2] = {

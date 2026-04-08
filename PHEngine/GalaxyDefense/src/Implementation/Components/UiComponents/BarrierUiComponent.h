@@ -5,28 +5,22 @@
 
 using namespace EngineCore;
 
-namespace EngineCore {
-namespace GUI {
+namespace EngineCore::GUI {
 class UiCanvas;
 class UiProgressBar;
-} // namespace GUI
-} // namespace EngineCore
-
-namespace EngineCore {
-class SceneComponent;
-}
+} // namespace EngineCore::GUI
 
 namespace Game {
-class SpaceObjectUiComponent : public UiComponent {
-
-    std::weak_ptr<::EngineCore::SceneComponent> mOwnerRootComponent;
+class BarrierUiComponent : public UiComponent {
 
     std::shared_ptr<::EngineCore::GUI::UiProgressBar> mHealthBar;
 
-public:
-    explicit SpaceObjectUiComponent(const std::shared_ptr<ComponentData>& data);
+    glm::vec3 mWorldPosition{0.0f};
 
-    ~SpaceObjectUiComponent() override;
+public:
+    explicit BarrierUiComponent(const std::shared_ptr<ComponentData>& data);
+
+    ~BarrierUiComponent() override;
 
     void Tick(const float deltaTimeSec) override;
 
@@ -38,6 +32,8 @@ public:
         const glm::ivec2& lineMaxWidthHeight,
         const eTextHorizontalAlignmentType textHorizontalAlignment,
         const eTextVerticalAlignmentType textVericalAlignment) override;
+
+    void SetWorldPosition(const glm::vec3& worldPosition);
 
     void SetHealthBarVisibility(const bool isVisible);
 

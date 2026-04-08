@@ -96,6 +96,7 @@ void GhostController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransfo
 {
     // Sync ghost with actually object
     mGhostObject->setWorldTransform(mMotionTransform);
+    mTranslation = mMotionTransform.getOrigin();
     bIsWorldTransformDiry = false;
 }
 

@@ -47,8 +47,17 @@ void ElectroRayActor::Initialize()
     mElectroLineOriginStartMovementDelayTimer->SetIsPausable(true);
     mElectroLineOriginStartMovementDelayTimer->SetIsRepeat(false);
     mElectroLineOriginStartMovementDelayTimer->SetIntervalMs(1000);
+}
+
+void ElectroRayActor::OnSceneOwnerInitialized()
+{
+    Actor::OnSceneOwnerInitialized();
     mElectroLineOriginStartMovementDelayTimer->SetCallback(
-        std::bind(&ElectroRayActor::OnElectroLineOriginStartMovementDelayTimerTimeout, this));
+        [weak_me = std::weak_ptr<ElectroRayActor>(std::static_pointer_cast<ElectroRayActor>(shared_from_this()))]() {
+            if (auto shared_me = weak_me.lock()) {
+                shared_me->OnElectroLineOriginStartMovementDelayTimerTimeout();
+            }
+        });
 }
 
 bool ElectroRayActor::IsInsideLevel(const BoundingBox3D& boundingBox) const
@@ -118,7 +127,12 @@ void ElectroRayActor::Tick(const float deltaTimeSec)
             electroLineDirection = glm::normalize(mElectroLineEnd - mElectroLineBegin);
         } else {
             mCollidedSpaceship.reset();
+            TriggerDisabled();
+            return;
         }
+    } else {
+        TriggerDisabled();
+        return;
     }
 
     if (bLineOriginStartMovement) {
@@ -205,6 +219,7 @@ void ElectroRayActor::DropState()
     mCollidedSpaceship.reset();
     bLineOriginStartMovement = false;
     bElectroLineCollided = false;
+    mElectroLineDirection = glm::vec3(0.0f);
     if (const auto& spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock()) {
         const bool bSpaceshipIsEnabledAndVisible = spaceshipWhoSpawnedMeSp->IsEnabled() && spaceshipWhoSpawnedMeSp->IsVisible();
         if (bSpaceshipIsEnabledAndVisible) {
@@ -213,6 +228,8 @@ void ElectroRayActor::DropState()
             mElectroLineEnd = mElectroLineBegin = glm::vec3(0.0f);
             mSpaceshipWhoSpawnedMeWp.reset();
         }
+    } else {
+        mElectroLineEnd = mElectroLineBegin = glm::vec3(0.0f);
     }
 }
 } // namespace Game

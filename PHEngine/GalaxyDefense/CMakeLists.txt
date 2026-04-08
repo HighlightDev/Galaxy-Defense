@@ -4,6 +4,7 @@ include(Utility)
 set(HEADERS
     src/Implementation/Components/MovementComponents/OnRouteMovementComponent.h
     src/Implementation/Components/UiComponents/SpaceObjectUiComponent.h
+    src/Implementation/Components/UiComponents/BarrierUiComponent.h
     src/Implementation/Components/ComponentData/SpaceObjectUiComponentData.h
     src/Implementation/Levels/GameLevelFactory.h
     src/Implementation/Levels/LevelBase.h
@@ -64,6 +65,7 @@ set(HEADERS
     src/Implementation/ActorLeveling/SpaceStationLevel.h
     src/Implementation/ActorLeveling/SpaceshipLevel.h
     src/Implementation/ActorLeveling/FighterSpaceshipLevel.h
+    src/Implementation/ActorLeveling/BarrierLevel.h
     src/Implementation/ActorLeveling/LevelAttributeDataProvider.h
     src/Implementation/Modifiers/IModifiable.h
     src/Implementation/Modifiers/GravityModifier.h
@@ -114,6 +116,7 @@ set(HEADERS
 set(SOURCES
     src/Implementation/Components/MovementComponents/OnRouteMovementComponent.cpp
     src/Implementation/Components/UiComponents/SpaceObjectUiComponent.cpp
+    src/Implementation/Components/UiComponents/BarrierUiComponent.cpp
     src/Implementation/Levels/GameLevelFactory.cpp
     src/Implementation/Levels/LevelBase.cpp
     src/Implementation/Levels/LevelSerializationHelper.cpp
@@ -161,6 +164,7 @@ set(SOURCES
     src/Implementation/ActorLeveling/SpaceStationLevel.cpp
     src/Implementation/ActorLeveling/SpaceshipLevel.cpp
     src/Implementation/ActorLeveling/FighterSpaceshipLevel.cpp
+    src/Implementation/ActorLeveling/BarrierLevel.cpp
     src/Implementation/ActorLeveling/LevelAttributeDataProvider.cpp
     src/Implementation/Modifiers/GravityModifier.cpp
     src/Implementation/Modifiers/FreezingModifier.cpp
@@ -207,7 +211,11 @@ set(SOURCES
     src/Implementation/Navigation/Path.cpp
     main.cpp)
 
-add_compile_definitions(DEBUG GLM_ENABLE_EXPERIMENTAL)
+add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
+
+if(DEBUG_BUILD)
+  add_compile_definitions(DEBUG)
+endif()
 
 set(EXECUTABLE_NAME GalaxyDefense)
 

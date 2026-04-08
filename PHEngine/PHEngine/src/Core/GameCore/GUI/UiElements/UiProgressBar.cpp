@@ -130,6 +130,8 @@ void UiProgressBar::SetFillPercentValue(const float value)
 {
     if (!EngineMath::FloatsNearEqual(value, mFillPercentValue)) {
         mFillPercentValue = value;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
 }
 

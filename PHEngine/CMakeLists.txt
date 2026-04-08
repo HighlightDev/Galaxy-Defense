@@ -7,11 +7,13 @@ project(
   VERSION 1.0
   LANGUAGES CXX)
 
+
+option(DEBUG_BUILD "Enable debug build" ON)
 option(ENABLE_ASAN "Enable Address Sanitizer." OFF)
 option(ENABLE_TSAN "Enable Thread Sanitizer." OFF)
 option(PROFILE_BUILD "Build with debug symbols and no optimizations." OFF)
 option(BUILD_GALAXY_DEFENSE "Build GalaxyDefense game." ON)
-option(BUILD_ENGINE_TEST "Build test scene." OFF)
+option(BUILD_ENGINE_TEST "Build test scene." ON)
 option(BUILD_UBO_TEST "Build test UBO." OFF)
 
 file(

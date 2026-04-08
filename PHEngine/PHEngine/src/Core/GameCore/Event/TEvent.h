@@ -41,6 +41,7 @@ private:
 protected:
     TEvent(const bool _bLogEvent = false)
         : IEvent()
+        , mPolicy()
         , bLogEvent(_bLogEvent)
     {
     }
@@ -70,7 +71,7 @@ public:
     void ProcessCachedEvents(const eExecutionOrder currentOrder) override
     {
         while (mPolicy[currentOrder].HasData()) {
-            const EventData_t& packedData = mPolicy[currentOrder].PopData();
+            const EventData_t packedData = mPolicy[currentOrder].PopData();
             if (bLogEvent) {
                 LogInfo(ToString(), "::ProcessCachedEvents: ", packedData);
             }

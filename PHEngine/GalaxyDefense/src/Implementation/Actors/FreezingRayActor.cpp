@@ -45,7 +45,17 @@ void FreezingRayActor::Initialize()
     mSwitchTargetMinTimer->SetIsPausable(true);
     mSwitchTargetMinTimer->SetIsRepeat(false);
     mSwitchTargetMinTimer->SetIntervalMs(s_switchTargetMinTimeout);
-    mSwitchTargetMinTimer->SetCallback(std::bind(&FreezingRayActor::OnCanSwitchTargetTimeout, this));
+}
+
+void FreezingRayActor::OnSceneOwnerInitialized()
+{
+    Actor::OnSceneOwnerInitialized();
+    mSwitchTargetMinTimer->SetCallback(
+        [weak_me = std::weak_ptr<FreezingRayActor>(std::static_pointer_cast<FreezingRayActor>(shared_from_this()))]() {
+            if (auto shared_me = weak_me.lock()) {
+                shared_me->OnCanSwitchTargetTimeout();
+            }
+        });
 }
 
 void FreezingRayActor::OnCanSwitchTargetTimeout()
@@ -132,10 +142,8 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                                 const auto sqrDistanceToRight
                                     = glm::distance2(rightShipActor->GetRootComponent()->GetTranslation(), mFreezingLineBegin);
                                 return sqrDistanceToLeft < sqrDistanceToRight;
-                            } else {
-                                LogInfo("FreezingRayActor::Tick: left or right ship actor is null during distance comparison");
-                                return false;
                             }
+                            return false;
                         });
                     if (foundNearestIt != descriptorActorIds.end()) {
                         const auto& collidedActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
@@ -145,21 +153,27 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                         if (mCollideWithOldActor) {
                             const auto& previousCollidedActor
                                 = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
-                            ext_assert(
-                                previousCollidedActor,
-                                "FreezingRayActor previous collided actor is null when colliding with old actor");
-                            SendShootRayCollisionEvent(
-                                previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
-                            mFreezingLineEnd = previousCollidedActor->GetRootComponent()->GetTranslation();
+                            if (previousCollidedActor && previousCollidedActor->IsEnabled()
+                                && previousCollidedActor->IsVisible()) {
+                                SendShootRayCollisionEvent(
+                                    previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
+                                mFreezingLineEnd = previousCollidedActor->GetRootComponent()->GetTranslation();
+                            } else {
+                                if (previousCollidedActor) {
+                                    SendShootRayCollisionEvent(
+                                        previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
+                                }
+                                mLastCollidedActorId = -1;
+                                mSwitchTargetMinTimer->StopTimer();
+                            }
                         } else {
                             if (mLastCollidedActorId != -1) {
                                 const auto& previousCollidedActor
                                     = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
-                                ext_assert(
-                                    previousCollidedActor,
-                                    "FreezingRayActor previous collided actor is null when switching targets");
-                                SendShootRayCollisionEvent(
-                                    previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
+                                if (previousCollidedActor) {
+                                    SendShootRayCollisionEvent(
+                                        previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
+                                }
                             }
 
                             mLastCollidedActorId = collidedActor->GetObjectId();
@@ -174,10 +188,10 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                     if (mLastCollidedActorId != -1) {
                         const auto& previousCollidedActor
                             = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
-                        ext_assert(
-                            previousCollidedActor, "FreezingRayActor previous collided actor is null when finishing collision");
-                        SendShootRayCollisionEvent(
-                            previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
+                        if (previousCollidedActor) {
+                            SendShootRayCollisionEvent(
+                                previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
+                        }
                         mLastCollidedActorId = -1;
                     }
                 }
@@ -200,6 +214,11 @@ void FreezingRayActor::TriggerSpawn(
     mDamageDealerType = ownerType;
     mActorWhoSpawnedMeWp = spawnerActor;
     DropState();
+
+    const auto spawnerPosition = spawnerActor->GetRootComponent()->GetTranslation();
+    mFreezingLineBegin = spawnerPosition;
+    mFreezingLineEnd = spawnerPosition;
+
     SetIsEnabled(true);
     mActivityState = eMissileActivityState::ACTIVE;
 }
@@ -234,6 +253,10 @@ void FreezingRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::Elec
 
 void FreezingRayActor::DropState()
 {
+    mFreezingLineBegin = glm::vec3(0.0f);
+    mFreezingLineEnd = glm::vec3(0.0f);
+    mLastCollidedActorId = -1;
+    mSwitchTargetMinTimer->StopTimer();
 }
 
 std::weak_ptr<SpaceStationActor> FreezingRayActor::GetActorWhoSpawnedMeWp() const

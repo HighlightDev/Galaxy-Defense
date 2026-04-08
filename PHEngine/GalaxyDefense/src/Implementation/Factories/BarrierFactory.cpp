@@ -1,12 +1,16 @@
 #include "BarrierFactory.h"
 
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
+#include "Core/GameCore/Components/ComponentData/UiComponentData.h"
 #include "Core/GameCore/Components/SceneComponent.h"
+#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Actors/BarrierActor.h"
+#include "Implementation/Components/UiComponents/BarrierUiComponent.h"
 
 using namespace Resources;
 using namespace EngineCore;
@@ -47,6 +51,18 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, scene, "GT_DeltaSec", "gt_timeSec");
 
     a_barrier->SetBarrierMaterials(barrierPbs_mat, electroRay_material);
+
+    constexpr uint32_t c_pillarHealth = 50;
+    a_barrier->SetNominalPillarHealth(c_pillarHealth);
+
+    a_barrier->setBarrierProtoData(
+        {"Lora-VariableFont_wght",
+         16,
+         "",
+         glm::vec3(0.3f, 0.5f, 1.0f),
+         glm::ivec2(50),
+         eTextHorizontalAlignmentType::CENTER,
+         eTextVerticalAlignmentType::CENTER});
 
     for (int32_t i = 0; i < pillarsMeshCount; ++i) {
         a_barrier->CreateNewBarrierPillar(glm::vec3(0), rotation, scale);

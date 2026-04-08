@@ -44,6 +44,8 @@ public:
 
     bool IsInsideLevel(const BoundingBox3D& boundingBox) const override;
 
+    void OnSceneOwnerInitialized() override;
+
     void Tick(const float deltaTimeSec) override;
 
     void TriggerSpawn(

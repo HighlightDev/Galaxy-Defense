@@ -8,7 +8,7 @@ struct NoDataEventPolicy {
     using TupleData_t = std::tuple<>;
 
 private:
-    bool bHasData;
+    bool bHasData{false};
     TupleData_t value;
 
 public:
@@ -18,7 +18,7 @@ public:
         bHasData = true;
     }
 
-    const TupleData_t& PopData()
+    TupleData_t PopData()
     {
         bHasData = false;
         return value;
@@ -35,7 +35,7 @@ struct SingleDataEventPolicy {
     using TupleData_t = std::tuple<Args...>;
 
 private:
-    bool bHasData;
+    bool bHasData{false};
     TupleData_t value;
 
 public:
@@ -46,10 +46,10 @@ public:
         bHasData = true;
     }
 
-    const TupleData_t& PopData()
+    TupleData_t PopData()
     {
         bHasData = false;
-        return value;
+        return std::move(value);
     }
 
     bool HasData() const
@@ -63,7 +63,7 @@ struct MultipleDataEventPolicy {
     using TupleData_t = std::tuple<Args...>;
 
 private:
-    bool bHasData;
+    bool bHasData{false};
     std::queue<TupleData_t> values;
 
 public:

@@ -51,6 +51,11 @@ void ElectroRayChainActor::Tick(const float deltaTimeSec)
     mElectroLineBegin = GetStartLinePosition();
     mElectroLineEnd = GetEndLinePosition();
 
+    if (mStartLineSpaceship.expired() || mEndLineSpaceship.expired()) {
+        TriggerDisabled();
+        return;
+    }
+
     if (mIsChainingAnimationPlaying && mChainingAnimationTime >= mChainingAnimationTimeDuration) {
         mChainingAnimationTime = mChainingAnimationTimeDuration;
         TriggerLifecycle_OnFadeOutStarted();
@@ -169,6 +174,8 @@ void ElectroRayChainActor::DropState()
     mIsChainingAnimationPlaying = true;
     mIsPendingDisable = false;
     mChainingAnimationTime = 0.0f;
+    mStartLineSpaceship.reset();
+    mEndLineSpaceship.reset();
     mElectroLineBegin = mElectroLineEnd = glm::vec3();
 }
 

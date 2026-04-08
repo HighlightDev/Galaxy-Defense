@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Implementation/ActorLeveling/BarrierLevel.h"
 
 #include <glm/vec3.hpp>
 
@@ -25,10 +28,24 @@ using namespace EngineCore;
 
 namespace Game {
 
+class BarrierUiComponent;
+
 enum class eBarrierActivityState { IDLE, ACTIVE };
 
 class BarrierActor : public Actor {
 
+public:
+    struct BarrierUiProtoData {
+        std::string font;
+        uint32_t fontSize;
+        std::string text;
+        glm::vec3 color;
+        glm::ivec2 lineMaxWidthHeight;
+        eTextHorizontalAlignmentType textHorizontalAlignment;
+        eTextVerticalAlignmentType textVerticalAlignment;
+    };
+
+private:
     std::vector<std::shared_ptr<::EngineCore::StaticMeshComponent>> mBarrierPillars;
 
     std::vector<std::shared_ptr<::EngineCore::ElectricBeamComponent>> mBarrierRays;
@@ -41,10 +58,24 @@ class BarrierActor : public Actor {
 
     std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> mPillarPhysicsComponents;
 
+    std::vector<BarrierLevel> mPillarLevels;
+
+    uint32_t mNominalPillarHealth{0};
+
+    std::vector<bool> mPillarAlive;
+
+    BarrierUiProtoData mUiProtoData;
+
+    std::vector<std::shared_ptr<BarrierUiComponent>> mUiComponents;
+
+    std::unordered_map<int32_t, std::shared_ptr<GameThreadTimer>> mDamageMessageTimers;
+
 public:
     BarrierActor(const std::string& gameObjectName, const std::shared_ptr<::EngineCore::SceneComponent>& rootComponent);
 
     void Tick(const float deltaTimeSec) override;
+
+    void setBarrierProtoData(const BarrierUiProtoData& protoData);
 
     void SetBarrierMaterials(
         const std::shared_ptr<::Graphics::IMaterial>& pillarMaterial, const std::shared_ptr<::Graphics::IMaterial>& rayMaterial);
@@ -73,5 +104,20 @@ public:
     eBarrierActivityState GetState() const;
 
     std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> GetPillarPhysicsComponents() const;
+
+    void SetNominalPillarHealth(const uint32_t pillarHealth);
+
+    void TriggerPillarDamage(const int32_t pillarIndex, const uint32_t damage);
+
+    int32_t FindPillarIndexByPhysDescriptorId(const int32_t physDescriptorId) const;
+
+private:
+    void DestroyPillar(const int32_t pillarIndex);
+
+    void UpdateRaysConnectivity();
+
+    void UpdateHealthBars();
+
+    bool AreAllPillarsDestroyed() const;
 };
 } // namespace Game

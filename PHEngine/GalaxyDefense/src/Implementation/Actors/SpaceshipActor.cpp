@@ -36,27 +36,36 @@ SpaceshipActor::SpaceshipActor(
     AddEngineProperty(mDamageTimeProperty);
     AddEngineProperty(mFreezingEffectProperty);
 
-    mDamageMessageTimer->Initialize();
-    mDamageMessageTimer->SetIntervalMs(Game::Constants::c_dmgTextShowDuration);
-    mDamageMessageTimer->SetIsRepeat(false);
-    mDamageMessageTimer->SetIsPausable(true);
-    mDamageMessageTimer->SetCallback([this]() { mUiComponent->FadeOut(); });
-
     mDmgShakeTimer->Initialize();
     mDmgShakeTimer->SetIntervalMs(Game::Constants::c_shakeDurationMs);
     mDmgShakeTimer->SetIsRepeat(false);
     mDmgShakeTimer->SetIsPausable(true);
-    mDmgShakeTimer->SetCallback([this]() {
-        const auto& rootComponent = GetRootComponent();
-        ext_assert(rootComponent, "SpaceshipActor root component is null in damage shake callback");
-        rootComponent->SetRotator(glm::quat()); // reset rotation
-        mShakeTimePassed = 0.0f;
-    });
 }
 
 void SpaceshipActor::OnSceneOwnerInitialized()
 {
     mUiComponent = GetComponentsByType<SpaceObjectUiComponent>().back();
+
+    mDamageMessageTimer->Initialize();
+    mDamageMessageTimer->SetIntervalMs(Game::Constants::c_dmgTextShowDuration);
+    mDamageMessageTimer->SetIsRepeat(false);
+    mDamageMessageTimer->SetIsPausable(true);
+    mDamageMessageTimer->SetCallback(
+        [weak_me = std::weak_ptr<SpaceshipActor>(std::static_pointer_cast<SpaceshipActor>(shared_from_this()))]() {
+            if (auto shared_me = weak_me.lock()) {
+                shared_me->mUiComponent->FadeOut();
+            }
+        });
+
+    mDmgShakeTimer->SetCallback(
+        [weak_me = std::weak_ptr<SpaceshipActor>(std::static_pointer_cast<SpaceshipActor>(shared_from_this()))]() {
+            if (auto shared_me = weak_me.lock()) {
+                const auto& rootComponent = shared_me->GetRootComponent();
+                ext_assert(rootComponent, "SpaceshipActor root component is null in damage shake callback");
+                rootComponent->SetRotator(glm::quat());
+                shared_me->mShakeTimePassed = 0.0f;
+            }
+        });
 }
 
 void SpaceshipActor::TriggerSpawn(const glm::vec3& position)

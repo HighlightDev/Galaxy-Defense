@@ -35,7 +35,6 @@ GalaxySceneCamera::GalaxySceneCamera(
     mFallbackToStartPositionTimer->SetIsPausable(true);
     mFallbackToStartPositionTimer->SetIsRepeat(true);
     mFallbackToStartPositionTimer->SetIntervalMs(s_userIdleTimeLimit);
-    mFallbackToStartPositionTimer->SetCallback(std::bind(&GalaxySceneCamera::OnFallbackToStartPositionTimerTimeout, this));
 }
 
 void GalaxySceneCamera::Initialize()
@@ -44,6 +43,13 @@ void GalaxySceneCamera::Initialize()
 
     Event::LevelAreaBBChangedGameThreadEvent::GetInstance()->AddListener(
         std::dynamic_pointer_cast<Event::LevelAreaBBChangedGameThreadEvent>(shared_from_this()));
+
+    mFallbackToStartPositionTimer->SetCallback(
+        [weak_me = std::weak_ptr<GalaxySceneCamera>(std::dynamic_pointer_cast<GalaxySceneCamera>(shared_from_this()))]() {
+            if (auto shared_me = weak_me.lock()) {
+                shared_me->OnFallbackToStartPositionTimerTimeout();
+            }
+        });
 }
 
 GalaxySceneCamera::~GalaxySceneCamera()
