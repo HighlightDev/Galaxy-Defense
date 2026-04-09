@@ -7,6 +7,8 @@
 #include "Core/GameCore/Input/Keys.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 
+#include <glm/vec2.hpp>
+
 #include <string>
 #include <vector>
 
@@ -32,6 +34,7 @@ class EngineInputLuaProxy : public LuaProxy,
     std::string mKeyboardJsonData;
 
     // mouse event data
+    glm::ivec2 mMouseCursorPosition{0, 0};
 
 public:
     EngineInputLuaProxy();
@@ -70,6 +73,8 @@ public:
     bool GetIsReleasedKeyboardKeys() const;
 
     std::string GetKeyboardJsonData() const;
+
+    glm::ivec2 GetMouseCursorPosition() const;
 
 private:
     void PrepareKeyboardJsonData();

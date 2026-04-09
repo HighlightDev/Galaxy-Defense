@@ -104,7 +104,7 @@ function UiImage:sendDataToReplicator(host)
     end
 end
 
-function UiImage:update(host) end
+function UiImage:update(host, deltaTimeSec) end
 
 function UiImage:setTextureSource(textureSource)
     assert(textureSource ~= nil and type(textureSource) == "string")

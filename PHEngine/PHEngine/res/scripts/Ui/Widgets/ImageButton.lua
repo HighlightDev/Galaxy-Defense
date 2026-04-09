@@ -62,7 +62,7 @@ end
 
 function ImageButton:subscribeOnLuaProxiesReady(callback) self.luaProxiesReadyCallback = callback end
 
-function ImageButton:update(host) end
+function ImageButton:update(host, deltaTimeSec) end
 
 function ImageButton:setParent(host, overlayCanvasName, parentName)
     assert(

@@ -109,7 +109,7 @@ function UiLabel:sendDataToReplicator(host)
     end
 end
 
-function UiLabel:update(host) end
+function UiLabel:update(host, deltaTimeSec) end
 
 function UiLabel:setText(text)
     assert(text ~= nil and type(text) == "string")

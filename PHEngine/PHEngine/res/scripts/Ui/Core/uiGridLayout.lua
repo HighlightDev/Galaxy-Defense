@@ -107,7 +107,7 @@ function UiGridLayout:sendDataToReplicator(host)
     end
 end
 
-function UiGridLayout:update(host) end
+function UiGridLayout:update(host, deltaTimeSec) end
 
 function UiGridLayout:setHorizontalSpacing(spacing)
     assert(spacing ~= nil and type(spacing) == "number")

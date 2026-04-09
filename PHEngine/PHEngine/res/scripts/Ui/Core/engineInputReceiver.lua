@@ -42,7 +42,7 @@ function EngineInputReceiver:new()
     return setmetatable(localObj, self)
 end
 
-function EngineInputReceiver:update(host)
+function EngineInputReceiver:update(host, deltaTimeSec)
     self.hasPressedKeyboardButtons = _HasPressedKeyboardButtons(host)
     self.hasReleasedKeyboardButtons = _HasReleasedKeyboardButtons(host)
 

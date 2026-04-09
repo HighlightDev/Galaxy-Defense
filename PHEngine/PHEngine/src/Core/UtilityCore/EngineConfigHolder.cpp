@@ -126,6 +126,9 @@ void EngineConfigHolder::FillEngineConfig(const std::list<std::string>& configLi
                           })),
            std::make_pair("enable_debug_ui_widget_naming", std::function([=, this](const std::string& valueStr) {
                               mEngineConfig.EnableDebugUiWidgetNaming = parseBool(valueStr);
+                          })),
+           std::make_pair("enable_debug_shader_source_print", std::function([=, this](const std::string& valueStr) {
+                              mEngineConfig.EnableDebugShaderSourcePrint = parseBool(valueStr);
                           }))
 #endif
         };
@@ -136,6 +139,7 @@ void EngineConfigHolder::FillEngineConfig(const std::list<std::string>& configLi
             if (config_values_map.count(key)) {
                 const auto fn = config_values_map[key];
                 fn(value);
+                EngineCore::LogInfo("EngineConfigHolder::FillEngineConfig: Loaded config: ", key, " with value: ", value);
             } else {
                 EngineCore::LogInfo("EngineConfigHolder::FillEngineConfig: unknown key: ", key, ". Skip.");
             }

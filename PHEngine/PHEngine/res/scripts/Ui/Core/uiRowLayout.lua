@@ -90,7 +90,7 @@ function UiRowLayout:sendDataToReplicator(host)
     end
 end
 
-function UiRowLayout:update(host) end
+function UiRowLayout:update(host, deltaTimeSec) end
 
 function UiRowLayout:setSpacing(spacing)
     assert(spacing ~= nil and type(spacing) == "number")

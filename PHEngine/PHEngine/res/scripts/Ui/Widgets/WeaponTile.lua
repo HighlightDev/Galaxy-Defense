@@ -60,7 +60,7 @@ end
 
 function WeaponTile:subscribeOnLuaProxiesReady(callback) self.luaProxiesReadyCallback = callback end
 
-function WeaponTile:update(host) end
+function WeaponTile:update(host, deltaTimeSec) end
 
 function WeaponTile:setWidth(width)
     assert(width ~= nil and type(width) == "number")

@@ -120,7 +120,7 @@ function UiSlider:sendDataToReplicator(host)
         _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(propertiesData));
     end
 end
-function UiSlider:update(host) end
+function UiSlider:update(host, deltaTimeSec) end
 function UiSlider:enableSliderMouseInputReceiver(host)
     assert(host ~= nil and type(host) == "userdata");
     _EnableSliderMouseInputReceiver(host, self.luaProxyId);

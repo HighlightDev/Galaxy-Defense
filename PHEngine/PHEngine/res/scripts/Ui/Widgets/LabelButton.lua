@@ -60,7 +60,7 @@ end
 
 function LabelButton:subscribeOnLuaProxiesReady(callback) self.luaProxiesReadyCallback = callback end
 
-function LabelButton:update(host) end
+function LabelButton:update(host, deltaTimeSec) end
 
 function LabelButton:setParent(host, overlayCanvasName, parentName)
     assert(

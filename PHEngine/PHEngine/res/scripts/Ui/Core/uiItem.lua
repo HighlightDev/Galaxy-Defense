@@ -63,6 +63,6 @@ function UiItem:sendDataToReplicator(host)
     if isPropsDirty then _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(basePropertiesData)) end
 end
 
-function UiItem:update(host) end
+function UiItem:update(host, deltaTimeSec) end
 
 return UiItem

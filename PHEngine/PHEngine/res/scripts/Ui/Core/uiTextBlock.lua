@@ -149,7 +149,7 @@ function UiTextBlock:sendDataToReplicator(host)
     end
 end
 
-function UiTextBlock:update(host) end
+function UiTextBlock:update(host, deltaTimeSec) end
 
 function UiTextBlock:setRectangleColorHexValue(colorHex)
     assert(colorHex ~= nil and type(colorHex) == "number")

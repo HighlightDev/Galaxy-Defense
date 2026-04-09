@@ -175,9 +175,9 @@ function UiOverlay:update(host, deltaTimeSec)
 
     self.timerManager:updateTimers()
 
-    for _, value in pairs(self.widgets) do value:update(host) end
+    for _, value in pairs(self.widgets) do value:update(host, deltaTimeSec) end
 
-    for _, value in pairs(self.compoundWidgets) do value:update(host) end
+    for _, value in pairs(self.compoundWidgets) do value:update(host, deltaTimeSec) end
 
     if self.derivedUpdateCallback ~= nil then self.derivedUpdateCallback() end
 end

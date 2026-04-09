@@ -75,7 +75,8 @@ void EngineInputLuaProxy::ProcessEvent(
 void EngineInputLuaProxy::ProcessEvent(
     const MouseMovedLuaThreadEvent* sender, const typename MouseMovedLuaThreadEvent::EventData_t& data)
 {
-    // todo: to be implemented later
+    const auto& mouseData = std::get<0>(data);
+    mMouseCursorPosition = glm::ivec2(mouseData.x, mouseData.y);
 }
 
 void EngineInputLuaProxy::ProcessEvent(
@@ -103,6 +104,11 @@ bool EngineInputLuaProxy::GetIsReleasedKeyboardKeys() const
 std::string EngineInputLuaProxy::GetKeyboardJsonData() const
 {
     return mKeyboardJsonData;
+}
+
+glm::ivec2 EngineInputLuaProxy::GetMouseCursorPosition() const
+{
+    return mMouseCursorPosition;
 }
 
 void EngineInputLuaProxy::PrepareKeyboardJsonData()

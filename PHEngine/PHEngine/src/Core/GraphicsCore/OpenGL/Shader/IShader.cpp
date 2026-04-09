@@ -7,6 +7,7 @@
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 
 #include <algorithm>
 #include <fstream>
@@ -371,7 +372,9 @@ void IShader::ModifyShaderSourceWithExtraData(
     shaderSource = InsertCodeSnippetsToSource(EngineUtility::Split(shaderSource, '\n'), codeSnippets);
 
 #if DEBUG
-    LogInfo("IShader::ModifyShaderSourceWithExtraData: shader code: \n", shaderSource, "\n");
+    if (EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig().EnableDebugShaderSourcePrint) {
+        LogInfo("IShader::ModifyShaderSourceWithExtraData: shader code: \n", shaderSource, "\n");
+    }
 #endif
 }
 
@@ -393,8 +396,14 @@ void IShader::ModifyShaderFileWithExtraData(
     WriteShaderSrc(pathToShader, finalResult);
 
 #if DEBUG
-    LogInfo(
-        "IShader::ModifyShaderFileWithExtraData: Modified shader file: ", pathToShader, " shader code: \n", finalResult, "\n");
+    if (EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig().EnableDebugShaderSourcePrint) {
+        LogInfo(
+            "IShader::ModifyShaderFileWithExtraData: Modified shader file: ",
+            pathToShader,
+            " shader code: \n",
+            finalResult,
+            "\n");
+    }
 #endif
 }
 
@@ -487,14 +496,12 @@ void IShader::StopShader() const
 void IShader::AccessAllUniformLocations(uint32_t shaderProgramId)
 {
     m_shaderProgramID = shaderProgramId;
-#if DEBUG
     const auto compileErrorString = GetCompileLogInfo();
     const auto linkErrorString = GetLinkLogInfo();
     if (compileErrorString != "" || linkErrorString != "") {
         LogInfo("ERROR: Shader compilation errors: ", compileErrorString);
         LogInfo("ERROR: Shader linkage errors: ", linkErrorString);
     }
-#endif
 }
 
 void IShader::AccessAllSubroutineIndices(uint32_t shaderProgramID)

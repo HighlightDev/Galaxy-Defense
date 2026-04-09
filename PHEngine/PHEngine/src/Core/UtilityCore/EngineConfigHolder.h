@@ -46,6 +46,7 @@ struct EngineConfig {
     bool EnableAmbientMusic{true};
     bool RenderDebugPhysicsData{false};
     bool EnableDebugUiWidgetNaming{false};
+    bool EnableDebugShaderSourcePrint{false};
 #endif
 };
 

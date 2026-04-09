@@ -107,7 +107,7 @@ function UiProgressBar:sendDataToReplicator(host)
     end
 end
 
-function UiProgressBar:update(host) end
+function UiProgressBar:update(host, deltaTimeSec) end
 
 function UiProgressBar:setEmptyColorHexValue(colorHex)
     assert(colorHex ~= nil and type(colorHex) == "number")

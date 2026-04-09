@@ -103,7 +103,7 @@ function UiRectangle:sendDataToReplicator(host)
     end
 end
 
-function UiRectangle:update(host) end
+function UiRectangle:update(host, deltaTimeSec) end
 
 function UiRectangle:setColorHexValue(colorHex)
     assert(colorHex ~= nil and type(colorHex) == "number")

@@ -368,6 +368,7 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                         LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
                     spaceStationSp->SetState(eSpaceStationActivityState::ACTIVE);
                     SetUserInteractionType(eUserInteractionType::IDLE);
+                    TriggerSwitchToIdleInteractionMode();
                 } else if (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
                     const auto& spaceStationSp = GetSpaceStationAtPosition(cellPositionVec3);
                     if (spaceStationSp) {

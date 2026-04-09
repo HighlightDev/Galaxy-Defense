@@ -115,7 +115,7 @@ function UiToggleButton:sendDataToReplicator(host)
     end
 end
 
-function UiToggleButton:update(host) end
+function UiToggleButton:update(host, deltaTimeSec) end
 
 function UiToggleButton:setIsStateOn(isStateOn)
     assert(isStateOn ~= nil and type(isStateOn) == "boolean")

@@ -64,7 +64,7 @@ function ImageAndLabelTile:subscribeOnLuaProxiesReady(callback)
     self.luaProxiesReadyCallback = callback
 end
 
-function ImageAndLabelTile:update(host) end
+function ImageAndLabelTile:update(host, deltaTimeSec) end
 
 function ImageAndLabelTile:setWidth(width)
     assert(width ~= nil and type(width) == "number")

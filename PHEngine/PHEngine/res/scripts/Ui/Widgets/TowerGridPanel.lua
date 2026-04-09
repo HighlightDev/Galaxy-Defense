@@ -78,7 +78,8 @@ function TowerGridPanel:new(host, overlay, config)
         hideCreatePanel = nil,
         backgroundTile = nil,
         widgetName = "",
-        luaProxiesReadyCallback = nil
+        luaProxiesReadyCallback = nil,
+        isPlacementMode = false
     }
 
     self.__index = self
@@ -117,6 +118,7 @@ function TowerGridPanel:new(host, overlay, config)
         end)
 
         button:subscribeOnMouseInputClickedCallback(function()
+            obj.isPlacementMode = true
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
                                                       "CombatLevelEvents", json.encode(
                                                           {
@@ -141,6 +143,7 @@ function TowerGridPanel:new(host, overlay, config)
 
     -- Event handlers
     obj.createObjectButton:subscribeOnMouseInputClickedCallback(function()
+        obj.isPlacementMode = false
         obj.gridBackground:setIsVisible(true)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                                   json.encode(
@@ -158,6 +161,7 @@ function TowerGridPanel:new(host, overlay, config)
     end)
 
     obj.closeTowerCreatePanelButton:subscribeOnMouseInputClickedCallback(function()
+        obj.isPlacementMode = false
         obj.hideCreatePanel()
         obj.closeTowerCreatePanelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
@@ -173,6 +177,7 @@ function TowerGridPanel:new(host, overlay, config)
     end)
 
     obj.removeObjectButton:subscribeOnMouseInputClickedCallback(function()
+        obj.isPlacementMode = true
         obj.hideCreatePanel()
         if onRemoveObjectClicked then onRemoveObjectClicked() end
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
@@ -189,6 +194,7 @@ function TowerGridPanel:new(host, overlay, config)
     end)
 
     obj.barrierManagementButton:subscribeOnMouseInputClickedCallback(function()
+        obj.isPlacementMode = false
         obj.hideCreatePanel()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                                   json.encode({action = "barrier_placement_visibility", visible = true}))
@@ -217,7 +223,35 @@ end
 
 function TowerGridPanel:onCompoundWidgetInitialize() end
 
-function TowerGridPanel:update(host) end
+function TowerGridPanel:update(host, deltaTimeSec)
+    if not self.gridBackground:getIsVisible() or self.isPlacementMode then return end
+
+    local mouseX = _GetMouseCursorPositionX(host)
+    local mouseY = _GetMouseCursorPositionY(host)
+    local windowWidth = _GetWindowWidth(host)
+
+    local gridOffsetX = self.gridBackground:getHorizontalCenterOffset()
+    local gridOffsetY = self.gridBackground:getVerticalCenterOffset()
+
+    local gridCenterX = windowWidth / 2 + gridOffsetX
+    local gridBottom = self.panelHeight + 50 + gridOffsetY
+    local gridTop = gridBottom + self.gridHeight
+    local gridLeft = gridCenterX - self.gridWidth / 2
+    local gridRight = gridCenterX + self.gridWidth / 2
+
+    if mouseX >= gridLeft and mouseX <= gridRight and mouseY >= gridBottom and mouseY <= gridTop then return end
+
+    local targetOffsetX = mouseX - windowWidth / 2
+    local targetOffsetY = mouseY - self.panelHeight - 50 - self.gridHeight / 2
+
+    local smoothSpeed = 5.0
+    local t = 1.0 - math.exp(-smoothSpeed * deltaTimeSec)
+    local newOffsetX = gridOffsetX + (targetOffsetX - gridOffsetX) * t
+    local newOffsetY = gridOffsetY + (targetOffsetY - gridOffsetY) * t
+
+    self.gridBackground:setHorizontalCenterOffset(math.floor(newOffsetX + 0.5))
+    self.gridBackground:setVerticalCenterOffset(math.floor(newOffsetY + 0.5))
+end
 
 function TowerGridPanel:setupLayout(canvasName)
     local host = self.host
@@ -334,6 +368,7 @@ function TowerGridPanel:setupLayout(canvasName)
 end
 
 function TowerGridPanel:handleBroadcastSwitchModeIdle(host)
+    self.isPlacementMode = false
     self.hideCreatePanel()
     EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                               json.encode({action = "ghost_tower_visibility", visible = false}))

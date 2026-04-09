@@ -59,6 +59,10 @@ private:
     bool HasReleasedKeyboardButtons(const std::tuple<>& data) const;
 
     std::string GetKeyboardJsonData(const std::tuple<>& data) const;
+
+    int32_t GetMouseCursorPositionX(const std::tuple<>& data) const;
+
+    int32_t GetMouseCursorPositionY(const std::tuple<>& data) const;
 };
 } // namespace Scripts
 } // namespace EngineCore

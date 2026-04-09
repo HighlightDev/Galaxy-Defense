@@ -74,6 +74,18 @@ void LuaCommonEngineFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
 
     LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetSoundGain"), float(void)>::Bind(
         luaWrapper, mOwnerPtr, std::bind(&LuaCommonEngineFunctions::GetSoundGain, this, std::placeholders::_1), "_GetSoundGain");
+
+    LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetMouseCursorPositionX"), int32_t(void)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaCommonEngineFunctions::GetMouseCursorPositionX, this, std::placeholders::_1),
+        "_GetMouseCursorPositionX");
+
+    LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetMouseCursorPositionY"), int32_t(void)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaCommonEngineFunctions::GetMouseCursorPositionY, this, std::placeholders::_1),
+        "_GetMouseCursorPositionY");
 }
 
 int32_t LuaCommonEngineFunctions::GetWindowHeight(const std::tuple<>& data) const
@@ -118,6 +130,23 @@ float LuaCommonEngineFunctions::GetMusicGain(const std::tuple<>& data) const
 float LuaCommonEngineFunctions::GetSoundGain(const std::tuple<>& data) const
 {
     return GeneralSystemSettingsDataProvider::GetInstance()->GetSoundGain();
+}
+
+int32_t LuaCommonEngineFunctions::GetMouseCursorPositionX(const std::tuple<>& data) const
+{
+    if (const auto& luaProcessorSp = mLuaScriptProcessor.lock()) {
+        return luaProcessorSp->GetEngineInputLuaProxy()->GetMouseCursorPosition().x;
+    }
+    return 0;
+}
+
+int32_t LuaCommonEngineFunctions::GetMouseCursorPositionY(const std::tuple<>& data) const
+{
+    if (const auto& luaProcessorSp = mLuaScriptProcessor.lock()) {
+        const int32_t windowHeight = GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight();
+        return windowHeight - luaProcessorSp->GetEngineInputLuaProxy()->GetMouseCursorPosition().y;
+    }
+    return 0;
 }
 
 } // namespace Scripts
