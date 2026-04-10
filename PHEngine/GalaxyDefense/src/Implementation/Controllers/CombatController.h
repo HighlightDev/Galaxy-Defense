@@ -75,6 +75,8 @@ public:
 
     void InitFromLevelData(const LevelData& levelData);
 
+    std::shared_ptr<NavigationController> GetNavigationController() const;
+
 protected:
     void ProcessEvent(
         const PhysicsCollisionGameThreadEvent* sender,

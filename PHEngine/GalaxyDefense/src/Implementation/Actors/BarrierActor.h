@@ -111,6 +111,8 @@ public:
 
     int32_t FindPillarIndexByPhysDescriptorId(const int32_t physDescriptorId) const;
 
+    std::vector<std::pair<glm::vec3, glm::vec3>> GetBarrierActiveRaysWorldPositions() const;
+
 private:
     void DestroyPillar(const int32_t pillarIndex);
 

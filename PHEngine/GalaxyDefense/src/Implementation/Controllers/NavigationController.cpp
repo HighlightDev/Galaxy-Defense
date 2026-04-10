@@ -5,14 +5,17 @@
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedQuadraticBezierCurveComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/DataProviders/GameConstants.h"
@@ -106,6 +109,7 @@ void NavigationController::SetPathRoutes(const std::unordered_map<std::string, P
 void NavigationController::SetLevelBounds(const BoundingBox3D& levelBounds)
 {
     mLevelBounds = levelBounds;
+    InitializeNavMesh();
 }
 
 void NavigationController::OnPreLevelInit()
@@ -119,6 +123,9 @@ void NavigationController::OnLevelInit()
     if (cEnableDebugPathRendering) { // todo: make it runtime configurable
         InitializePathDebugRendering(); // for debug visualisation purpose
     }
+#ifdef DEBUG
+    InitializeNavMeshDebugRendering();
+#endif
 }
 
 void NavigationController::OnPostLevelInit()
@@ -263,4 +270,170 @@ const BarriersController& NavigationController::GetBarriersController() const
 {
     return mBarriersController;
 }
+
+void NavigationController::InitializeNavMesh()
+{
+    constexpr float s_gridCellSizeForRoute = 5.0f;
+
+    BoundingBox2D<glm::vec2> levelBoundingBox2D(
+        glm::vec2(mLevelBounds.GetOrigin().x, mLevelBounds.GetOrigin().z),
+        glm::vec2(mLevelBounds.GetHalfExtent().x, mLevelBounds.GetHalfExtent().z));
+    mNavMesh = std::make_unique<EngineCore::NavigationMesh::NavMesh2D>(levelBoundingBox2D, s_gridCellSizeForRoute);
+}
+
+void NavigationController::PutActiveBarrierOnLevel(const std::shared_ptr<BarrierActor>& barrierActor)
+{
+    const auto seekBarrierIt = std::find_if(
+        mActiveBarriersOnLevel.cbegin(), mActiveBarriersOnLevel.cend(), [barrierActor](const auto& barrierActorWp) {
+            const auto barrierActorSp = barrierActorWp.lock();
+            return barrierActorSp && barrierActor->GetObjectId() == barrierActorSp->GetObjectId();
+        });
+    if (seekBarrierIt == mActiveBarriersOnLevel.cend()) {
+        mActiveBarriersOnLevel.emplace_back(barrierActor);
+    }
+
+    const auto& barrierRaysWorldPositions = barrierActor->GetBarrierActiveRaysWorldPositions();
+    for (const auto& [startPosition, endPosition] : barrierRaysWorldPositions) {
+        mNavMesh->FillCellStatesBetweenWorldPositions(
+            glm::vec2(startPosition.x, startPosition.z), glm::vec2(endPosition.x, endPosition.z), false);
+    }
+#ifdef DEBUG
+    RefreshNavMeshDebugRendering();
+#endif
+}
+
+void NavigationController::RemoveActiveBarrierFromLevel(const std::shared_ptr<BarrierActor>& barrierActor)
+{
+    mActiveBarriersOnLevel.erase(
+        std::remove_if(mActiveBarriersOnLevel.begin(), mActiveBarriersOnLevel.end(), [barrierActor](const auto& barrierActorWp) {
+            const auto barrierActorSp = barrierActorWp.lock();
+            return !barrierActorSp || (barrierActorSp && barrierActor->GetObjectId() == barrierActorSp->GetObjectId());
+        }));
+
+    mNavMesh->ResetAllCellsWalkable();
+
+    for (const auto& remainingBarrierWp : mActiveBarriersOnLevel) {
+        if (const auto remainingBarrier = remainingBarrierWp.lock()) {
+            const auto& rayPositions = remainingBarrier->GetBarrierActiveRaysWorldPositions();
+            for (const auto& [startPosition, endPosition] : rayPositions) {
+                mNavMesh->FillCellStatesBetweenWorldPositions(
+                    glm::vec2(startPosition.x, startPosition.z), glm::vec2(endPosition.x, endPosition.z), false);
+            }
+        }
+    }
+#ifdef DEBUG
+    RefreshNavMeshDebugRendering();
+#endif
+}
+
+#ifdef DEBUG
+void NavigationController::InitializeNavMeshDebugRendering()
+{
+    const auto sceneSp = mSceneWp.lock();
+    if (!sceneSp || !mNavMesh) {
+        LogInfo("NavigationController::InitializeNavMeshDebugRendering: cannot initialize nav mesh debug rendering, because "
+                "scene pointer or nav mesh is null");
+        return;
+    }
+
+    mNavMeshDebugActor = std::make_shared<Actor>(
+        "NavMeshDebugActor",
+        std::make_shared<EngineCore::SceneComponent>("NavMeshDebug_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true));
+    sceneSp->AddActor(mNavMeshDebugActor);
+
+    MaterialParser materialParser;
+
+    const auto& greenMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
+    sceneSp->RegisterMaterialInstance(greenMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(greenMaterial, "opacity", 0.35f);
+    MaterialPropertySetter::SetMaterialPropertyValue(greenMaterial, "color", glm::vec3(0.0f, 0.8f, 0.0f));
+
+    const auto& redMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
+    sceneSp->RegisterMaterialInstance(redMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(redMaterial, "opacity", 0.35f);
+    MaterialPropertySetter::SetMaterialPropertyValue(redMaterial, "color", glm::vec3(0.8f, 0.0f, 0.0f));
+
+    const auto& meshCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
+
+    const auto& walkableCells = mNavMesh->GetWalkableCells();
+    const auto& levelMin = mNavMesh->GetLevelBoundingBox().GetMin();
+    const float cellSize = mNavMesh->GetCellSize();
+    const float cellScale = cellSize * 0.9f;
+
+    const int32_t colsCount = static_cast<int32_t>(walkableCells.size());
+    mNavMeshDebugGreenCells.resize(colsCount);
+    mNavMeshDebugRedCells.resize(colsCount);
+
+    for (int32_t x = 0; x < colsCount; ++x) {
+        const int32_t rowsCount = static_cast<int32_t>(walkableCells[x].size());
+        mNavMeshDebugGreenCells[x].resize(rowsCount);
+        mNavMeshDebugRedCells[x].resize(rowsCount);
+
+        for (int32_t y = 0; y < rowsCount; ++y) {
+            const float worldX = levelMin.x + (static_cast<float>(x) + 0.5f) * cellSize;
+            const float worldZ = levelMin.y + (static_cast<float>(y) + 0.5f) * cellSize;
+            const glm::vec3 cellPos(worldX, 0.1f, worldZ);
+            const bool isWalkable = walkableCells[x][y];
+            const std::string suffix = std::to_string(x) + "_" + std::to_string(y);
+
+            const auto& d_green = std::make_shared<MeshComponentData>(
+                "navmesh_debug_green_" + suffix,
+                "plane.obj",
+                cellPos,
+                glm::vec3(),
+                glm::vec3(cellScale, 1.0f, cellScale),
+                greenMaterial,
+                isWalkable,
+                isWalkable);
+            const auto& c_green
+                = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshCreator, d_green));
+            c_green->SetSortOrderValue(0);
+            mNavMeshDebugActor->AddComponent(c_green);
+            mNavMeshDebugGreenCells[x][y] = c_green;
+
+            const auto& d_red = std::make_shared<MeshComponentData>(
+                "navmesh_debug_red_" + suffix,
+                "plane.obj",
+                cellPos,
+                glm::vec3(),
+                glm::vec3(cellScale, 1.0f, cellScale),
+                redMaterial,
+                !isWalkable,
+                !isWalkable);
+            const auto& c_red
+                = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshCreator, d_red));
+            c_red->SetSortOrderValue(0);
+            mNavMeshDebugActor->AddComponent(c_red);
+            mNavMeshDebugRedCells[x][y] = c_red;
+        }
+    }
+}
+
+void NavigationController::RefreshNavMeshDebugRendering()
+{
+    if (!mNavMesh) {
+        return;
+    }
+
+    const auto& walkableCells = mNavMesh->GetWalkableCells();
+    const int32_t colsCount = static_cast<int32_t>(walkableCells.size());
+
+    for (int32_t x = 0; x < colsCount && x < static_cast<int32_t>(mNavMeshDebugGreenCells.size()); ++x) {
+        const int32_t rowsCount = static_cast<int32_t>(walkableCells[x].size());
+        for (int32_t y = 0; y < rowsCount && y < static_cast<int32_t>(mNavMeshDebugGreenCells[x].size()); ++y) {
+            const bool isWalkable = walkableCells[x][y];
+
+            if (const auto greenSp = mNavMeshDebugGreenCells[x][y].lock()) {
+                greenSp->SetIsVisible(isWalkable);
+                greenSp->SetIsEnabled(isWalkable);
+            }
+            if (const auto redSp = mNavMeshDebugRedCells[x][y].lock()) {
+                redSp->SetIsVisible(!isWalkable);
+                redSp->SetIsEnabled(!isWalkable);
+            }
+        }
+    }
+}
+#endif
+
 } // namespace Game

@@ -63,6 +63,7 @@ void CombatController::OnPreLevelInit()
     BroadcastGameThreadEvent::GetInstance()->AddListener(thisSp);
     ChangeGameModeEvent::GetInstance()->AddListener(thisSp);
     mNavigationController->OnPreLevelInit();
+    mUserInteractionController->SetParentController(shared_from_this());
     mUserInteractionController->OnPreLevelInit();
 }
 
@@ -140,6 +141,8 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
                 pillarIndex++, pillarPosition, glm::vec3(), Game::Constants::c_barrierPillarScale);
         }
         a_barrier->SetState(eBarrierActivityState::ACTIVE);
+        mNavigationController->PutActiveBarrierOnLevel(
+            a_barrier); // Add barrier to navigation controller to update nav mesh with barrier rays positions
     }
 
     for (const auto& [stationName, spaceStationData] : levelData.TowersData) {
@@ -154,6 +157,11 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_RAY, 1);
+}
+
+std::shared_ptr<NavigationController> CombatController::GetNavigationController() const
+{
+    return mNavigationController;
 }
 
 void CombatController::OnLevelInit()
@@ -197,6 +205,8 @@ void CombatController::OnPostLevelInit()
             3, glm::vec3(lvlBoundaryMax.x, 0, lvlBoundaryMin.z), glm::vec3(), Game::Constants::c_barrierPillarScale);
         a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(
             4, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), Game::Constants::c_barrierPillarScale);
+        mNavigationController->PutActiveBarrierOnLevel(
+            a_barrierSp); // Add barrier to navigation controller to update nav mesh with barrier rays positions
     }
 }
 

@@ -119,6 +119,7 @@ function TowerGridPanel:new(host, overlay, config)
 
         button:subscribeOnMouseInputClickedCallback(function()
             obj.isPlacementMode = true
+            obj.hideCreatePanel()
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
                                                       "CombatLevelEvents", json.encode(
                                                           {

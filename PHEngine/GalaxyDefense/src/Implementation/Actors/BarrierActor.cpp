@@ -374,4 +374,22 @@ bool BarrierActor::AreAllPillarsDestroyed() const
 {
     return std::all_of(mPillarAlive.cbegin(), mPillarAlive.cend(), [](bool alive) { return !alive; });
 }
+
+std::vector<std::pair<glm::vec3, glm::vec3>> BarrierActor::GetBarrierActiveRaysWorldPositions() const
+{
+    std::vector<std::pair<glm::vec3, glm::vec3>> pillarWorldPositions;
+    if (!AreAllPillarsDestroyed()) {
+        pillarWorldPositions.reserve(mBarrierPillars.size());
+        for (size_t rayIdx = 0; rayIdx < mBarrierRays.size(); ++rayIdx) {
+            const bool startAlive = mPillarAlive[rayIdx];
+            const bool endAlive = mPillarAlive[rayIdx + 1];
+            if (startAlive && endAlive) {
+                const auto& startWorldPos = GetBarrierPillarPosition(rayIdx);
+                const auto& endWorldPos = GetBarrierPillarPosition(rayIdx + 1);
+                pillarWorldPositions.emplace_back(std::make_pair(startWorldPos, endWorldPos));
+            }
+        }
+    }
+    return pillarWorldPositions;
+}
 } // namespace Game

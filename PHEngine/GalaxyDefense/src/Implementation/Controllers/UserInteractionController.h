@@ -34,6 +34,7 @@ class BarrierActor;
 class CombatActorsPoolHandler;
 class SmartPicker;
 class SpaceStationActor;
+class CombatController;
 
 class UserInteractionController : public ILevelController,
                                   public ITickable,
@@ -44,6 +45,8 @@ class UserInteractionController : public ILevelController,
     enum class eUserInteractionType { IDLE, TOWER_PLACE_SELECTION, TOWER_REMOVEMENT_SELECTION, BARRIER_PLACEMENT };
 
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
+
+    std::weak_ptr<CombatController> mParentController;
 
     BoundingBox3D mLevelBounds;
 
@@ -101,6 +104,8 @@ public:
     UserInteractionController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
     ~UserInteractionController() override;
+
+    void SetParentController(const std::weak_ptr<CombatController>& parentController);
 
     void Tick(const float deltaTimeSec) override;
 

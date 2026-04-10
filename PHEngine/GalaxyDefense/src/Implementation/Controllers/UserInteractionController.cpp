@@ -26,6 +26,8 @@
 #include "Implementation/ActorLeveling/LevelAttributeDataProvider.h"
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/SpaceStationActor.h"
+#include "Implementation/Controllers/CombatController.h"
+#include "Implementation/Controllers/NavigationController.h"
 #include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
@@ -81,6 +83,11 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     mReloadPlacementTower->SetIsPausable(true);
     mReloadPlacementTower->SetIsRepeat(false);
     mReloadPlacementTower->SetIntervalMs(200);
+}
+
+void UserInteractionController::SetParentController(const std::weak_ptr<CombatController>& parentController)
+{
+    mParentController = parentController;
 }
 
 void UserInteractionController::SetUserInteractionType(const eUserInteractionType interactionType)
@@ -376,6 +383,11 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     } else {
                         const auto& barrierSp = GetBarrierAtPosition(placementPosition);
                         if (barrierSp) {
+                            if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+                                parentControllerSp->GetNavigationController()->RemoveActiveBarrierFromLevel(
+                                    barrierSp); // Remove barrier from navigation controller to update nav mesh with removed
+                                                // barrier rays positions
+                            }
                             barrierSp->RemoveAllBarrierPillars();
                             barrierSp->SetState(eBarrierActivityState::IDLE);
                         }
@@ -412,13 +424,19 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                 if (mCurrentBarrierActor) {
                     mCurrentBarrierActor->CreateNewBarrierPillar(
                         snappedPosition, glm::vec3(), Game::Constants::c_barrierPillarScale);
+                    if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+                        parentControllerSp->GetNavigationController()->PutActiveBarrierOnLevel(
+                            mCurrentBarrierActor); // Add barrier to navigation controller to update nav mesh with barrier rays
+                                                   // positions
+                    }
                 }
                 mReloadPlacementTower->StartTimer();
             }
         }
     } else if (
         mouseBindings->GetKeyState(eMouseKeys::MouseButtonRight) == KeyState::PRESSED
-        && (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType
+        && (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType
+            || eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType
             || eUserInteractionType::BARRIER_PLACEMENT == mInteractionType)) {
         TriggerSwitchToIdleInteractionMode();
     }

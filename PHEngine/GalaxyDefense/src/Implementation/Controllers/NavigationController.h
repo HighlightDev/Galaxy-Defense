@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/NavigationMesh/NavMesh2D.h"
 #include "ILevelController.h"
 #include "Implementation/Controllers/BarriersController.h"
 #include "Implementation/DamageDealerType.h"
@@ -13,6 +14,7 @@
 namespace EngineCore {
 class Scene;
 class Actor;
+class StaticMeshComponent;
 } // namespace EngineCore
 
 using namespace EngineCore;
@@ -20,6 +22,7 @@ using namespace EngineCore;
 namespace Game {
 class SpaceshipActor;
 class MissileActor;
+class BarrierActor;
 
 class NavigationController : public ITickable, public ILevelController {
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
@@ -37,6 +40,16 @@ class NavigationController : public ITickable, public ILevelController {
     static constexpr bool cEnableDebugPathRendering{false};
 
     BarriersController mBarriersController;
+
+    std::unique_ptr<EngineCore::NavigationMesh::NavMesh2D> mNavMesh;
+
+    std::vector<std::weak_ptr<BarrierActor>> mActiveBarriersOnLevel;
+
+#ifdef DEBUG
+    std::shared_ptr<::EngineCore::Actor> mNavMeshDebugActor;
+    std::vector<std::vector<std::weak_ptr<::EngineCore::StaticMeshComponent>>> mNavMeshDebugGreenCells;
+    std::vector<std::vector<std::weak_ptr<::EngineCore::StaticMeshComponent>>> mNavMeshDebugRedCells;
+#endif
 
 public:
     explicit NavigationController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
@@ -69,6 +82,10 @@ public:
 
     void PutMissileToNavigate(const std::shared_ptr<MissileActor>& missile);
 
+    void PutActiveBarrierOnLevel(const std::shared_ptr<BarrierActor>& barrierActor);
+
+    void RemoveActiveBarrierFromLevel(const std::shared_ptr<BarrierActor>& barrierActor);
+
     void RemoveSpaceshipFromRoute(const int32_t spaceshipActorId);
 
     void RemoveMissileFromNavigation(const int32_t missileActorId);
@@ -81,5 +98,13 @@ private:
     void Initialize();
 
     void InitializePathDebugRendering();
+
+    void InitializeNavMesh();
+
+#ifdef DEBUG
+    void InitializeNavMeshDebugRendering();
+
+    void RefreshNavMeshDebugRendering();
+#endif
 };
 } // namespace Game

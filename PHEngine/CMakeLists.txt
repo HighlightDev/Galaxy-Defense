@@ -7,7 +7,6 @@ project(
   VERSION 1.0
   LANGUAGES CXX)
 
-
 option(DEBUG_BUILD "Enable debug build" ON)
 option(ENABLE_ASAN "Enable Address Sanitizer." OFF)
 option(ENABLE_TSAN "Enable Thread Sanitizer." OFF)
@@ -15,6 +14,7 @@ option(PROFILE_BUILD "Build with debug symbols and no optimizations." OFF)
 option(BUILD_GALAXY_DEFENSE "Build GalaxyDefense game." ON)
 option(BUILD_ENGINE_TEST "Build test scene." ON)
 option(BUILD_UBO_TEST "Build test UBO." OFF)
+option(ENABLE_LIBUNWIND "Enables compilation of libunwind dependent code" ON)
 
 file(
   GLOB_RECURSE
@@ -89,8 +89,6 @@ elseif(WIN32)
 endif()
 
 find_package(OpenGL REQUIRED)
-
-option(ENABLE_LIBUNWIND "Enables compilation of libunwind dependent code" OFF)
 
 if(ENABLE_LIBUNWIND)
   add_compile_definitions(USE_LIBUNWIND)
