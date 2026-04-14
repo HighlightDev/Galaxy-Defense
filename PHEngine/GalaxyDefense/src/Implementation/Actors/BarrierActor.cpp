@@ -310,7 +310,11 @@ int32_t BarrierActor::FindPillarIndexByPhysDescriptorId(const int32_t physDescri
     return -1;
 }
 
-void BarrierActor::TriggerPillarDamage(const int32_t pillarIndex, const uint32_t damage)
+void BarrierActor::TriggerPillarDamage(
+    const int32_t pillarIndex,
+    const uint32_t damage,
+    const std::function<void(const std::shared_ptr<BarrierActor>&)>& onPillarDestroyedCallback,
+    const std::function<void(const std::shared_ptr<BarrierActor>&)>& onBarrierDestroyedCallback)
 {
     ext_assert(pillarIndex >= 0, "BarrierActor pillar index cannot be negative");
     ext_assert(pillarIndex < mPillarLevels.size(), "BarrierActor pillar index out of bounds");
@@ -328,12 +332,19 @@ void BarrierActor::TriggerPillarDamage(const int32_t pillarIndex, const uint32_t
 
     mDamageMessageTimers[static_cast<int32_t>(pillarIndex)]->RestartTimer();
 
+    bool pillarsChanged = false;
     if (mPillarLevels[pillarIndex].GetPillarHealth() == 0) {
         DestroyPillar(pillarIndex);
+        pillarsChanged = true;
     }
 
     if (AreAllPillarsDestroyed()) {
         SetState(eBarrierActivityState::IDLE);
+        if (onBarrierDestroyedCallback) {
+            onBarrierDestroyedCallback(std::static_pointer_cast<BarrierActor>(shared_from_this()));
+        }
+    } else if (pillarsChanged && onPillarDestroyedCallback) {
+        onPillarDestroyedCallback(std::static_pointer_cast<BarrierActor>(shared_from_this()));
     }
 }
 

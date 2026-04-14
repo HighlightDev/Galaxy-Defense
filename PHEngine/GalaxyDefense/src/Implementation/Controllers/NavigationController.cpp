@@ -106,6 +106,11 @@ void NavigationController::SetPathRoutes(const std::unordered_map<std::string, P
     }
 }
 
+void NavigationController::SetFinalDestinationPoint(const glm::vec3& destinationPoint)
+{
+    mFinalDestinationPoint = destinationPoint;
+}
+
 void NavigationController::SetLevelBounds(const BoundingBox3D& levelBounds)
 {
     mLevelBounds = levelBounds;

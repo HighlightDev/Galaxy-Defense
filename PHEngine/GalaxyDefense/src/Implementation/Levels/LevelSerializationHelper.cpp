@@ -1,5 +1,7 @@
 #include "LevelSerializationHelper.h"
 
+#include "Core/CommonCore/Assertion.h"
+
 #include <json/json.hpp>
 
 #include <algorithm>
@@ -18,6 +20,8 @@ std::string LevelSerializationHelper::DumpLevelToJsonString(const LevelData& lev
     jsonObj["routes"] = preparedRoutesData;
     jsonObj["towers"] = preparedTowersData;
     jsonObj["barriers"] = preparedBarriersData;
+    ext_assert(levelData.DestinationPoint.has_value(), "Level data must contain destination point");
+    jsonObj["destination_point"] = JsonVec3(levelData.DestinationPoint.value());
 
     return jsonObj.dump();
 }
@@ -38,6 +42,11 @@ LevelData LevelSerializationHelper::RestoreLevelFromJsonString(const std::string
     lvlData.TowersData = RestoreTowers(preparedTowersData);
     auto preparedBarriersData = jsonObj.at("barriers").get<std::unordered_map<std::string, std::vector<JsonVec3>>>();
     lvlData.BarriersData = RestoreBarriers(preparedBarriersData);
+
+    ext_assert(jsonObj.contains("destination_point"), "Level data json must contain destination point data");
+    const auto& dp = jsonObj.at("destination_point").get<JsonVec3>();
+    lvlData.DestinationPoint = glm::vec3(dp.x, dp.y, dp.z);
+
     return lvlData;
 }
 

@@ -45,7 +45,10 @@ std::string TrimStart(const std::string& sourceStr)
 {
     std::string str = sourceStr;
     auto trim = [](std::string& s) -> void {
-        s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int32_t ch) { return !std::isspace(ch); }));
+        auto it = std::find_if(s.begin(), s.end(), [](int32_t ch) { return !std::isspace(ch); });
+        if (it != s.end()) {
+            s.erase(s.begin(), it);
+        }
     };
 
     trim(str);
@@ -56,7 +59,10 @@ std::string TrimEnd(const std::string& sourceStr)
 {
     std::string str = sourceStr;
     auto trim = [](std::string& s) -> void {
-        s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) { return !std::isspace(ch); }).base(), s.end());
+        auto it = std::find_if(s.rbegin(), s.rend(), [](int ch) { return !std::isspace(ch); });
+        if (it != s.rend()) {
+            s.erase(it.base(), s.end());
+        }
     };
 
     trim(str);

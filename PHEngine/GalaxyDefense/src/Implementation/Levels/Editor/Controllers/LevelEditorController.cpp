@@ -2,9 +2,12 @@
 
 #include "Core/CommonCore/JsonHelper.h"
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/InputComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedQuadraticBezierCurveComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
@@ -175,6 +178,15 @@ void LevelEditorController::Tick(const float deltaTimeSec)
                         = glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y);
                     mGhostTowerActor->GetRootComponent()->SetTranslation(markerPosition);
                     mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(markerPosition);
+                } else if (eEditModeType::EDIT_DESTINATION_POINT == mCurrentEditModeType) {
+                    const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
+                        glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                    mRouteNodePickerActor->GetRootComponent()->SetTranslation(
+                        glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y));
+                    if (!mDestinationPoint.has_value()) {
+                        mDestinationPointActor->GetRootComponent()->SetTranslation(
+                            glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y));
+                    }
                 } else {
                     const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                         glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
@@ -212,6 +224,12 @@ void LevelEditorController::Tick(const float deltaTimeSec)
                             glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                         const auto& pillarPosition = glm::vec3(nearestBarrierNodePosition.x, 0.0f, nearestBarrierNodePosition.y);
                         mBarriersHandler.CreateNewBarrierPillar(pillarPosition, glm::vec3());
+                    } else if (eEditModeType::EDIT_DESTINATION_POINT == mCurrentEditModeType) {
+                        const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
+                            glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                        const auto& destPosition = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
+                        mDestinationPointActor->GetRootComponent()->SetTranslation(destPosition);
+                        mDestinationPoint = destPosition;
                     }
                 }
             }
@@ -275,6 +293,10 @@ void LevelEditorController::ProcessEvent(
                 lvlData.TowersData = mTowersHandler.CollectTowerPoints();
                 lvlData.BarriersData = mBarriersHandler.CollectBarrierPoints();
 
+                if (mDestinationPoint.has_value()) {
+                    lvlData.DestinationPoint = mDestinationPoint.value();
+                }
+
                 ext_assert(lvlData.isDataValid(), "Some data is missing. Level has to include name, routes and towers");
                 LevelSerializationHelper lvlSerialization;
                 const std::string& serializedPathJsonStr = lvlSerialization.DumpLevelToJsonString(lvlData);
@@ -310,11 +332,15 @@ void LevelEditorController::UpdateVisibility()
     const bool isVisibleTowerPlacementGridActor = eEditModeType::EDIT_TOWERS == mCurrentEditModeType;
     const bool isVisibleRoutePlacementGridActor = eEditModeType::EDIT_ROUTES == mCurrentEditModeType;
     const bool isVisibleBarrierPlacementGridActor = eEditModeType::EDIT_BARRIERS == mCurrentEditModeType;
+    const bool isVisibleDestinationPointMode = eEditModeType::EDIT_DESTINATION_POINT == mCurrentEditModeType;
     mTowerPlacementGridActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
     mGhostTowerActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
     mTowerPlacementPickerActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
-    mRoutePlacementGridActor->SetIsEnabled(isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor);
-    mRouteNodePickerActor->SetIsEnabled(isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor);
+    mRoutePlacementGridActor->SetIsEnabled(
+        isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor || isVisibleDestinationPointMode);
+    mRouteNodePickerActor->SetIsEnabled(
+        isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor || isVisibleDestinationPointMode);
+    mDestinationPointActor->SetIsEnabled(isVisibleDestinationPointMode || mDestinationPoint.has_value());
 }
 
 void LevelEditorController::ProcessEvent(const ChangeEditModeEvent* sender, const ChangeEditModeEvent::EventData_t& data)
@@ -334,6 +360,7 @@ void LevelEditorController::Initialize()
     mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(mLevelAreaBoundingBox);
     InitializeGhostTower();
     InitializeInternalActors();
+    InitializeDestinationPointActor();
     ReAllocateLineComponents();
     UpdateVisibility();
 }
@@ -600,6 +627,36 @@ void LevelEditorController::InitializeGhostTower()
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_pickerMesh));
     c_pickerMesh->SetSortOrderValue(1);
     mTowerPlacementPickerActor->AddComponent(c_pickerMesh);
+}
+
+void LevelEditorController::InitializeDestinationPointActor()
+{
+    const auto& sceneSp = mSceneWp.lock();
+    ext_assert(sceneSp, "LevelEditorController scene pointer is null in InitializeDestinationPointActor");
+
+    mDestinationPointActor = std::make_shared<Actor>(
+        "DestinationPointActor",
+        std::make_shared<SceneComponent>("DestinationPointActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true));
+    sceneSp->AddActor(mDestinationPointActor);
+
+    MaterialParser materialParser;
+    const std::shared_ptr<IMaterial>& redPortalMaterial = materialParser.ParseMaterialDescriptor("PortalMaterial.m");
+    sceneSp->RegisterMaterialInstance(redPortalMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(redPortalMaterial, sceneSp, "GT_DeltaSec", "gt_timeSec");
+    MaterialPropertySetter::SetMaterialPropertyValue(redPortalMaterial, sceneSp, "ScreenResolution", "screenResolution");
+    MaterialPropertySetter::SetMaterialPropertyValue(redPortalMaterial, "colorIntensity", glm::vec3(8.0f, 2.0f, 2.0f));
+
+    const float billboardSize = 15.0f;
+    auto portalComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
+    const auto data = std::make_shared<BillboardComponentData>(
+        "c_billboard_destination_portal", billboardSize, true, glm::vec3(), 0.0f, false, glm::vec3(1.0f), redPortalMaterial);
+    const auto& portalComponent
+        = std::static_pointer_cast<BillboardComponent>(sceneSp->CreateComponent_GameThread(portalComponentCreator, data));
+    portalComponent->SetSortOrderValue(-1000);
+    portalComponent->SetDepthWriteMaskEnabled(false);
+    mDestinationPointActor->AddComponent(portalComponent);
+
+    mDestinationPointActor->SetIsEnabled(false);
 }
 
 } // namespace Game

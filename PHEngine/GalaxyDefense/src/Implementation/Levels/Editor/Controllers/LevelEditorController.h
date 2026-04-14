@@ -13,6 +13,7 @@
 #include "Implementation/Levels/Editor/TowersHandler.h"
 
 #include <memory>
+#include <optional>
 #include <stack>
 #include <unordered_map>
 
@@ -77,6 +78,10 @@ class LevelEditorController : public std::enable_shared_from_this<LevelEditorCon
 
     BarriersHandler mBarriersHandler;
 
+    std::shared_ptr<Actor> mDestinationPointActor;
+
+    std::optional<glm::vec3> mDestinationPoint;
+
     std::stack<std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>> mIdleRuntimeGeneratedLineComponents;
 
 public:
@@ -112,6 +117,8 @@ private:
     void InitializeTowerPlacementGrid();
 
     void InitializeGhostTower();
+
+    void InitializeDestinationPointActor();
 
     void RestoreLineComponentsPool();
 

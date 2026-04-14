@@ -30,4 +30,17 @@
 			</no_op>
 		</operation>
 	</dynamic_property>
+	<dynamic_property>
+		name: "colorIntensity"
+		type: "vec3"
+		incremental: "false"
+		<operation>
+			<no_op>
+				<property>
+					name: "b_colorIntensity"
+					type: "binding_vec3"
+				</property>
+			</no_op>
+		</operation>
+	</dynamic_property>
 </properties>

@@ -27,6 +27,8 @@ class PortalActor : public Actor {
 
     bool mIsSpawnActive{false};
 
+    std::shared_ptr<EngineObjectProperty<glm::vec3>> mColorIntensity;
+
 public:
     PortalActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
@@ -38,10 +40,10 @@ public:
 
     void SetupSpaceshipSpawn(const std::string& pathName, const size_t spawnIntervalMilliseconds);
 
-    void StopSpawn();
-
-    void StartSpawn();
+    void SetSpawnState(const bool isActive);
 
     bool IsSpawnActive() const;
+
+    void SetColorIntensity(const glm::vec3& colorIntensity);
 };
 } // namespace Game

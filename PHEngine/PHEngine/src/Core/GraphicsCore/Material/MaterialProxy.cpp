@@ -86,4 +86,13 @@ void MaterialProxy::UpdateProperties(std::vector<std::shared_ptr<MaterialPropert
         UpdateProperty(property);
     }
 }
+
+std::shared_ptr<MaterialProperty> MaterialProxy::GetPropertyByName(const std::string& propertyName) const
+{
+    auto propertyIt = std::find_if(mProperties.cbegin(), mProperties.cend(), [&](const auto& property) {
+        return property->GetPropertyName() == propertyName;
+    });
+
+    return propertyIt != mProperties.cend() ? *propertyIt : nullptr;
+}
 } // namespace Graphics

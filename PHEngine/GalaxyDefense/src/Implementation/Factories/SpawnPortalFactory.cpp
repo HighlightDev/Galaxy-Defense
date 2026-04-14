@@ -34,6 +34,7 @@ std::shared_ptr<PortalActor> SpawnPortalFactory::CreatePortal(
     scene->RegisterMaterialInstance(billboard_material);
     MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, scene, "GT_DeltaSec", "gt_timeSec");
     MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, scene, "ScreenResolution", "screenResolution");
+    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, a_portal, "p_colorIntensity", "b_colorIntensity");
     auto portalComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
     const auto data = std::make_shared<BillboardComponentData>(
         "c_billboard_portal", billboardSize, true, glm::vec3(), 0.0f, false, glm::vec3(1.0f), billboard_material);

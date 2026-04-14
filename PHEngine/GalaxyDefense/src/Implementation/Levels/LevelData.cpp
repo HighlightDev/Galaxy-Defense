@@ -5,7 +5,7 @@
 namespace Game {
 bool LevelData::isDataValid() const
 {
-    return LevelName != "" && TowersData.size() && RoutesData.size() && IsLevelBoundariesValid();
+    return LevelName != "" && TowersData.size() && RoutesData.size() && IsLevelBoundariesValid() && DestinationPoint.has_value();
 }
 
 bool LevelData::IsLevelBoundariesValid() const

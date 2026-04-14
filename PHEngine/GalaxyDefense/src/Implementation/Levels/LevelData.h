@@ -3,6 +3,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -22,6 +23,8 @@ struct LevelData {
         RoutesData;
 
     std::unordered_map<std::string, std::vector<glm::vec3>> BarriersData;
+
+    std::optional<glm::vec3> DestinationPoint;
 
     bool isDataValid() const;
 

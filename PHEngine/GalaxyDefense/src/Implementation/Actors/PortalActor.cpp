@@ -9,7 +9,9 @@
 namespace Game {
 PortalActor::PortalActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent)
     : Actor(gameObjectName, rootComponent)
+    , mColorIntensity(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(1.0f, 1.0f, 1.0f), "p_colorIntensity"))
 {
+    AddEngineProperty(mColorIntensity);
 }
 
 void PortalActor::SetCombatActorsPoolsHandler(const std::weak_ptr<CombatActorsPoolHandler>& poolHandlerWp)
@@ -53,19 +55,19 @@ void PortalActor::SetupSpaceshipSpawn(const std::string& pathName, const size_t 
     mSpawnInterval = static_cast<float>(spawnIntervalMilliseconds) * c_millisecondToSecondsMul;
 }
 
-void PortalActor::StopSpawn()
+void PortalActor::SetSpawnState(const bool isActive)
 {
-    mIsSpawnActive = false;
-}
-
-void PortalActor::StartSpawn()
-{
-    mIsSpawnActive = true;
+    mIsSpawnActive = isActive;
 }
 
 bool PortalActor::IsSpawnActive() const
 {
     return mIsSpawnActive;
+}
+
+void PortalActor::SetColorIntensity(const glm::vec3& colorIntensity)
+{
+    mColorIntensity->SetValue(colorIntensity);
 }
 
 } // namespace Game

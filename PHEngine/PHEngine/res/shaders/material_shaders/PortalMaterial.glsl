@@ -5,6 +5,8 @@
 uniform float timeSec;
 uniform vec2 resolution;
 
+uniform vec3 colorIntensity;
+
 vec2 hash(vec2 p)
 {
     mat2 m = mat2(15.32, 83.43, 117.38, 289.59);
@@ -61,7 +63,7 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
     uv.y *= resolution.x / resolution.y;
     float t = pow(fbm(uv * 0.3), 2.0);
     alpha = 1.0 - smoothstep(0.5, 1.0, length(uv));
-    return vec3(t * 2.0, t * 4.0, t * 8.0);
+    return vec3(t) * colorIntensity;
 }
 
 vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)

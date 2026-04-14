@@ -102,7 +102,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     mNavigationController->SetPathRoutes(pathRoutes);
 
     ext_assert(pathRoutes.size() > 0, " No path routes found in level data in CombatController::InitFromLevelData");
-    mCombatActorsPoolHandler->SpawnPortals(pathRoutes.size(), Game::Constants::c_portalSize);
+    mCombatActorsPoolHandler->SpawnPortals(pathRoutes.size() + 1, Game::Constants::c_portalSize);
     std::vector<glm::vec3> realPortalPositions;
     for (const auto& [pathName, pathRoute] : pathRoutes) {
         if (realPortalPositions.empty()) {
@@ -127,7 +127,17 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
         portalSp->GetRootComponent()->SetTranslation(portalPos);
         portalSp->SetNavigationController(mNavigationController);
         portalSp->SetCombatActorsPoolsHandler(mCombatActorsPoolHandler);
+        portalSp->SetColorIntensity(glm::vec3(2.0f, 4.0f, 8.0f));
+        portalSp->SetSpawnState(true);
     }
+
+    mNavigationController->SetFinalDestinationPoint(levelData.DestinationPoint.value_or(glm::vec3(0.0f, 0.0f, 0.0f)));
+    const auto& destinationPortal = mCombatActorsPoolHandler->GetFreePortalActor();
+    ext_assert(destinationPortal, "Failed to get free portal actor for destination point");
+    destinationPortal->SetIsEnabled(true);
+    destinationPortal->GetRootComponent()->SetTranslation(levelData.DestinationPoint.value_or(glm::vec3(0.0f, 0.0f, 0.0f)));
+    destinationPortal->SetSpawnState(false);
+    destinationPortal->SetColorIntensity(glm::vec3(8.0f, 2.0f, 2.0f));
 
     for (const auto& [barrierName, barrierData] : levelData.BarriersData) {
         mCombatActorsPoolHandler->SpawnBarriers(1, barrierData.size());
@@ -220,22 +230,27 @@ void CombatController::PostPlayLevelFinished()
 
 void CombatController::OnCombatPreparationCompleted()
 {
-    const auto& spawnPortals = mCombatActorsPoolHandler->GetPortalActors();
+    const auto& allPortals = mCombatActorsPoolHandler->GetPortalActors();
     const auto& pathNames = mNavigationController->GetPathNames();
+    std::vector<std::shared_ptr<PortalActor>> spawnPortals;
+    spawnPortals.reserve(pathNames.size());
+    for (const auto& portal : allPortals) {
+        if (portal->IsSpawnActive()) {
+            spawnPortals.emplace_back(portal);
+        }
+    }
     ext_assert(
-        pathNames.size() >= spawnPortals.size(),
+        pathNames.size() == spawnPortals.size(),
         "Not enough paths for spawn portals in CombatController::OnCombatPreparationCompleted");
     for (int i = 0; i < pathNames.size(); ++i) {
         const auto& pathName = pathNames[i];
         const Path& path = mNavigationController->GetPath(pathName);
         const auto& spawnPortal = spawnPortals[i];
         spawnPortal->SetupSpaceshipSpawn(pathName, Game::Constants::c_spawnSpaceshipTimeoutMs);
-        spawnPortal->StartSpawn();
         const auto& extendedPaths = mNavigationController->GetExtendedPaths();
         const auto& [extendedPathsBegin, extendedPathsEnd] = extendedPaths.equal_range(pathName);
         std::for_each(extendedPathsBegin, extendedPathsEnd, [&](const auto& extPath) {
             spawnPortal->SetupSpaceshipSpawn(extPath.second.first, Game::Constants::c_spawnSpaceshipTimeoutMs);
-            spawnPortal->StartSpawn();
         });
     }
 }
@@ -375,7 +390,17 @@ void CombatController::ProcessEvent(
             const int32_t pillarIndex = barrierActor->FindPillarIndexByPhysDescriptorId(barrierPhysDescId);
             if (pillarIndex >= 0) {
                 constexpr uint32_t c_enemyMissileDamage = 10;
-                barrierActor->TriggerPillarDamage(pillarIndex, c_enemyMissileDamage);
+                barrierActor->TriggerPillarDamage(
+                    pillarIndex,
+                    c_enemyMissileDamage,
+                    [&](const std::shared_ptr<BarrierActor>& destroyedPillarBarrier) {
+                        mNavigationController->RemoveActiveBarrierFromLevel(destroyedPillarBarrier);
+                        mNavigationController->PutActiveBarrierOnLevel(
+                            destroyedPillarBarrier); // Update nav mesh with new pillar state
+                    },
+                    [&](const std::shared_ptr<BarrierActor>& destroyedBarrier) {
+                        mNavigationController->RemoveActiveBarrierFromLevel(destroyedBarrier);
+                    });
             }
         }
         return;

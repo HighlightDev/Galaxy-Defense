@@ -107,7 +107,11 @@ public:
 
     void SetNominalPillarHealth(const uint32_t pillarHealth);
 
-    void TriggerPillarDamage(const int32_t pillarIndex, const uint32_t damage);
+    void TriggerPillarDamage(
+        const int32_t pillarIndex,
+        const uint32_t damage,
+        const std::function<void(const std::shared_ptr<BarrierActor>&)>& onPillarDestroyedCallback = nullptr,
+        const std::function<void(const std::shared_ptr<BarrierActor>&)>& onBarrierDestroyedCallback = nullptr);
 
     int32_t FindPillarIndexByPhysDescriptorId(const int32_t physDescriptorId) const;
 

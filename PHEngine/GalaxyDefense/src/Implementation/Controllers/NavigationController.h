@@ -45,6 +45,8 @@ class NavigationController : public ITickable, public ILevelController {
 
     std::vector<std::weak_ptr<BarrierActor>> mActiveBarriersOnLevel;
 
+    glm::vec3 mFinalDestinationPoint;
+
 #ifdef DEBUG
     std::shared_ptr<::EngineCore::Actor> mNavMeshDebugActor;
     std::vector<std::vector<std::weak_ptr<::EngineCore::StaticMeshComponent>>> mNavMeshDebugGreenCells;
@@ -53,6 +55,8 @@ class NavigationController : public ITickable, public ILevelController {
 
 public:
     explicit NavigationController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
+
+    void SetFinalDestinationPoint(const glm::vec3& destinationPoint);
 
     void SetPathRoutes(const std::unordered_map<std::string, Path>& paths);
 
