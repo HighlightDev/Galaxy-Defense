@@ -100,7 +100,7 @@ void NavigationController::Tick(const float deltaTimeSec)
             && eMissileActivityState::OUT_OF_LEVEL != missile->GetMissileActivityState()) {
             if (!missile->IsInsideLevel(mLevelBounds)) {
                 missile->SetMissileActivityState(eMissileActivityState::OUT_OF_LEVEL);
-                LogInfo("NavigationController::Tick: missile ", missile->GetName(), " is out of level.");
+                LogInfo("NavigationController::Tick: missile ", missile->GetObjectId(), " is out of level.");
             }
         }
     }
@@ -116,7 +116,7 @@ void NavigationController::Tick(const float deltaTimeSec)
             levelDataProviderPtr->SetCurrentStageSurvivedEnemySpaceshipsCount(
                 levelDataProviderPtr->GetCurrentStageSurvivedEnemySpaceshipsCount() + 1);
             spaceship->SetSpaceshipActivityState(eSpaceshipActivityState::PENDING_DISABLE);
-            LogInfo("NavigationController::Tick: spaceship ", spaceship->GetName(), " reached destination.");
+            LogInfo("NavigationController::Tick: spaceship ", spaceship->GetObjectId(), " reached destination.");
         }
     }
 }
@@ -143,7 +143,7 @@ void NavigationController::PutSpaceshipOnRoute(const glm::vec3& startPosition, c
 {
     LogInfo(
         "NavigationController::PutSpaceshipOnRoute: putting spaceship ",
-        spaceship->GetName(),
+        spaceship->GetObjectId(),
         " on route from position: ",
         startPosition);
     const auto route = BuildNavMeshRoute(startPosition);
@@ -234,6 +234,7 @@ void NavigationController::PutMissileToNavigate(const std::shared_ptr<MissileAct
 
 void NavigationController::RemoveSpaceshipFromRoute(const int32_t spaceshipActorId)
 {
+    LogInfo("NavigationController::RemoveSpaceshipFromRoute: removing spaceship with id ", spaceshipActorId, " from route");
     if (mEnemies.size()) {
         mEnemies.erase(std::remove_if(mEnemies.begin(), mEnemies.end(), [spaceshipActorId](const auto& enemy) {
             return spaceshipActorId == enemy->GetObjectId();

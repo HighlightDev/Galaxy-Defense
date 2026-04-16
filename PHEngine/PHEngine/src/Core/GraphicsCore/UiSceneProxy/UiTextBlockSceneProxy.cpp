@@ -120,7 +120,6 @@ void UiTextBlockSceneProxy::SetText(const std::string& text)
                 onTextChanged();
             }
         }
-        CalculateTextAlignmentOffset();
         SchrinkToFitText();
     }
 }
@@ -136,7 +135,6 @@ void UiTextBlockSceneProxy::SetTextLineWidthHeight(const glm::ivec2& textLineWid
                 onTextChanged();
             }
         }
-        CalculateTextAlignmentOffset();
         SchrinkToFitText();
     }
 }
@@ -155,7 +153,6 @@ void UiTextBlockSceneProxy::SetFontSize(const int32_t fontSize)
                 mFontTexture = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize))->GetFontTextureAtlas();
             }
         }
-        CalculateTextAlignmentOffset();
         SchrinkToFitText();
     }
 }
@@ -177,7 +174,6 @@ void UiTextBlockSceneProxy::SetTextHorizontalAlignment(const eTextHorizontalAlig
                 onTextChanged();
             }
         }
-        CalculateTextAlignmentOffset();
         SchrinkToFitText();
     }
 }
@@ -187,7 +183,6 @@ void UiTextBlockSceneProxy::SetTextVerticalAlignment(const eTextVerticalAlignmen
     if (mTextVerticalAlignment != textVerticalAlignment) {
         mTextVerticalAlignment = textVerticalAlignment;
         mTextFieldProxy->SetTextVerticalAlignment(textVerticalAlignment);
-        CalculateTextAlignmentOffset();
         SchrinkToFitText();
     }
 }
@@ -244,26 +239,29 @@ void UiTextBlockSceneProxy::CleanUp()
     }
 }
 
-void UiTextBlockSceneProxy::CalculateTextAlignmentOffset()
+glm::vec2 UiTextBlockSceneProxy::CalculateTextAlignmentOffset(
+    const glm::vec2& normalizedWidthHeight, const glm::vec2& textNormalizedSize) const
 {
+    glm::vec2 offset(0.0f);
+
     if (mTextHorizontalAlignment == eTextHorizontalAlignmentType::LEFT) {
-        mTextAlignmentOffset.x = 0.0f;
+        offset.x = 0.0f;
     } else if (mTextHorizontalAlignment == eTextHorizontalAlignmentType::CENTER) {
-        mTextAlignmentOffset.x
-            = (GetNormalizedWidthHeight().x * 0.5f) - (mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().x * 0.5f);
+        offset.x = (normalizedWidthHeight.x * 0.5f) - (textNormalizedSize.x * 0.5f);
     } else if (mTextHorizontalAlignment == eTextHorizontalAlignmentType::RIGHT) {
-        mTextAlignmentOffset.x = GetNormalizedWidthHeight().x - mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().x;
+        offset.x = normalizedWidthHeight.x - textNormalizedSize.x;
     }
 
     // Free type text start coordinates are from the bottom left corner
     if (mTextVerticalAlignment == eTextVerticalAlignmentType::BOTTOM) {
-        mTextAlignmentOffset.y = 0.0f;
+        offset.y = 0.0f;
     } else if (mTextVerticalAlignment == eTextVerticalAlignmentType::CENTER) {
-        mTextAlignmentOffset.y
-            = (GetNormalizedWidthHeight().y * 0.5f) - (mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().y * 0.5f);
+        offset.y = (normalizedWidthHeight.y * 0.5f) - (textNormalizedSize.y * 0.5f);
     } else if (mTextVerticalAlignment == eTextVerticalAlignmentType::TOP) {
-        mTextAlignmentOffset.y = GetNormalizedWidthHeight().y - mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().y;
+        offset.y = normalizedWidthHeight.y - textNormalizedSize.y;
     }
+
+    return offset;
 }
 
 void UiTextBlockSceneProxy::SchrinkToFitText()
@@ -292,10 +290,14 @@ void UiTextBlockSceneProxy::RenderText()
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
             const auto& renderDataSp = fontHandlerSp->GetFontBatcher(FreeTypeFontParams(mFontName, mFontSize));
             mUiLabelShader->ExecuteShader();
-            const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized().y;
+
+            const auto normalizedWidthHeight = GetNormalizedWidthHeight();
+            const auto textNormSize = mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized();
+            const auto textAlignmentOffset = CalculateTextAlignmentOffset(normalizedWidthHeight, textNormSize);
+
             mUiLabelShader->SetPosition(glm::vec2(
-                mNormalizedTranslation.x + mCenterOffset.x + mTextAlignmentOffset.x,
-                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textHeightScreenSpace + mTextAlignmentOffset.y)));
+                mNormalizedTranslation.x + mCenterOffset.x + textAlignmentOffset.x,
+                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textNormSize.y + textAlignmentOffset.y)));
             mFontTexture->BindTexture(0);
             mUiLabelShader->SetFontAtlasSlot(0);
             mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);

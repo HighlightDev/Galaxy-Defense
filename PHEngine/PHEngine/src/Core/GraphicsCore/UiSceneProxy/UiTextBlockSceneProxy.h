@@ -45,8 +45,6 @@ class UiTextBlockSceneProxy : public UiSceneProxyBase {
 
     glm::vec3 mTextColor;
 
-    glm::vec2 mTextAlignmentOffset;
-
     glm::vec3 mRectangleColor;
 
     float mRectangleOpacity;
@@ -107,7 +105,7 @@ public:
 private:
     void Initialize();
 
-    void CalculateTextAlignmentOffset();
+    glm::vec2 CalculateTextAlignmentOffset(const glm::vec2& normalizedWidthHeight, const glm::vec2& textNormalizedSize) const;
 
     /**
      * @brief Calculates and updates the scale of the text block boundaries to fit the rendered text.

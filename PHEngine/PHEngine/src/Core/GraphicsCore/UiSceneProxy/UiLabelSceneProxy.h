@@ -43,8 +43,6 @@ class UiLabelSceneProxy : public UiSceneProxyBase {
 
     glm::vec3 mTextColor;
 
-    glm::vec2 mTextAlignmentOffset;
-
 public:
     UiLabelSceneProxy(const ::EngineCore::GUI::UiLabel* uiLabel);
 
@@ -73,7 +71,7 @@ public:
 private:
     void Initialize();
 
-    void CalculateTextAlignmentOffset();
+    glm::vec2 CalculateTextAlignmentOffset(const glm::vec2& normalizedWidthHeight, const glm::vec2& textNormalizedSize) const;
 
     void onTextChanged();
 };
