@@ -30,6 +30,8 @@ public:
 
     void SetRoutePoints(const std::vector<glm::vec3>& routePoints);
 
+    void ReplaceRouteFromCurrentPosition(const std::vector<glm::vec3>& newRoutePoints);
+
     std::vector<glm::vec3> GetRoutePoints() const;
 
     void TeleportToMovementProgressOnRoute(const float seekDistance);

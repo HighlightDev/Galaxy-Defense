@@ -34,13 +34,12 @@ void PortalActor::Tick(const float deltaTimeSec)
     const auto poolSp = mCombatActorsPoolHandlerWp.lock();
     const auto navController = mNavigationControllerWp.lock();
     if (poolSp && navController) {
-        if (mIsSpawnActive && mPathNames.size() > 0) {
+        if (mIsSpawnActive && mSpawnInterval > 0.0f) {
             mAccumulatedDeltaTime += deltaTimeSec;
             if (mAccumulatedDeltaTime >= mSpawnInterval) {
                 if (const auto& freeShip = poolSp->GetFreeSpaceshipActor(spaceshipType)) {
-                    const auto randomIndex
-                        = static_cast<int32_t>(std::round(Random::Float() * static_cast<float>(mPathNames.size() - 1)));
-                    navController->PutSpaceshipOnRoute(mPathNames[randomIndex], freeShip);
+                    const auto portalPosition = GetRootComponent()->GetTranslation();
+                    navController->PutSpaceshipOnRoute(portalPosition, freeShip);
                 }
                 mAccumulatedDeltaTime = std::fmod(mAccumulatedDeltaTime, mSpawnInterval);
             }
@@ -48,11 +47,11 @@ void PortalActor::Tick(const float deltaTimeSec)
     }
 }
 
-void PortalActor::SetupSpaceshipSpawn(const std::string& pathName, const size_t spawnIntervalMilliseconds)
+void PortalActor::SetupSpaceshipSpawn(const size_t spawnIntervalMilliseconds)
 {
-    mPathNames.emplace_back(pathName);
     constexpr float c_millisecondToSecondsMul = 0.001F;
     mSpawnInterval = static_cast<float>(spawnIntervalMilliseconds) * c_millisecondToSecondsMul;
+    mAccumulatedDeltaTime = 0.0f;
 }
 
 void PortalActor::SetSpawnState(const bool isActive)

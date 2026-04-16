@@ -78,7 +78,8 @@ function LevelEditorOverlay:new(host)
     local editBarriersButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName, "EditBarriersButton")
     overlay:addCompoundWidget(editBarriersButton)
 
-    local editDestinationButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName, "EditDestinationButton")
+    local editDestinationButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName,
+                                                  "EditDestinationButton")
     overlay:addCompoundWidget(editDestinationButton)
 
     local undoLastActionButton = ImageButton:new(host, overlay, "EditStationSocketsButton")
@@ -175,8 +176,9 @@ function LevelEditorOverlay:new(host)
     end)
 
     editDestinationButton:subscribeOnMouseInputClickedCallback(function()
-        self.currentEditModeType = EditModeType.EDIT_DESTINATION_POINT == self.currentEditModeType and EditModeType.IDLE or
-                                       EditModeType.EDIT_DESTINATION_POINT
+        self.currentEditModeType =
+            EditModeType.EDIT_DESTINATION_POINT == self.currentEditModeType and EditModeType.IDLE or
+                EditModeType.EDIT_DESTINATION_POINT
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                        self.currentEditModeType)
     end)
@@ -441,9 +443,9 @@ function LevelEditorOverlay:new(host)
 
         editDestinationButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editDestinationButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-                                     editorContainer.widgetName, 10)
+                                        editorContainer.widgetName, 10)
         editDestinationButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-                                     editBarriersButton.widgetName, 10)
+                                        editBarriersButton.widgetName, 10)
         editDestinationButton:setWidth(buttonWidth)
         editDestinationButton:setHeight(buttonHeight)
         editDestinationButton:setButtonBorderRadius(8)

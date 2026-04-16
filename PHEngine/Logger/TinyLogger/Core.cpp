@@ -12,8 +12,11 @@ LogMessage::LogMessage(std::vector<std::string>&& messages)
 std::string LogMessage::GetLog() const
 {
     std::string result;
+    result.reserve(mLogs.size() * 256);
 
-    std::for_each(mLogs.begin(), mLogs.end(), [&](const std::string& logArg) { result += " " + logArg; });
+    for (const auto& logArg : mLogs) {
+        result += logArg;
+    }
 
     return result;
 }

@@ -147,24 +147,26 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                         });
                     if (foundNearestIt != descriptorActorIds.end()) {
                         const auto& collidedActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
-                        ext_assert(collidedActor, "FreezingRayActor collided actor is null");
-                        const bool mCollideWithOldActor
-                            = mLastCollidedActorId == collidedActor->GetObjectId() || mSwitchTargetMinTimer->IsRunning();
-                        if (mCollideWithOldActor) {
-                            const auto& previousCollidedActor
-                                = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
-                            if (previousCollidedActor && previousCollidedActor->IsEnabled()
-                                && previousCollidedActor->IsVisible()) {
-                                SendShootRayCollisionEvent(
-                                    previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
-                                mFreezingLineEnd = previousCollidedActor->GetRootComponent()->GetTranslation();
-                            } else {
-                                if (previousCollidedActor) {
+                        if (collidedActor) {
+                            LogInfo("FreezingRayActor::Tick: collided with actor ", collidedActor->GetName());
+                            const bool mCollideWithOldActor
+                                = mLastCollidedActorId == collidedActor->GetObjectId() || mSwitchTargetMinTimer->IsRunning();
+                            if (mCollideWithOldActor) {
+                                const auto& previousCollidedActor
+                                    = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
+                                if (previousCollidedActor && previousCollidedActor->IsEnabled()
+                                    && previousCollidedActor->IsVisible()) {
                                     SendShootRayCollisionEvent(
-                                        previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
+                                        previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
+                                    mFreezingLineEnd = previousCollidedActor->GetRootComponent()->GetTranslation();
+                                } else {
+                                    if (previousCollidedActor) {
+                                        SendShootRayCollisionEvent(
+                                            previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
+                                    }
+                                    mLastCollidedActorId = -1;
+                                    mSwitchTargetMinTimer->StopTimer();
                                 }
-                                mLastCollidedActorId = -1;
-                                mSwitchTargetMinTimer->StopTimer();
                             }
                         } else {
                             if (mLastCollidedActorId != -1) {

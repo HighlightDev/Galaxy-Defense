@@ -47,6 +47,8 @@ LevelEditorController::LevelEditorController(const std::weak_ptr<Scene>& sceneWp
           "GhostTowerActor",
           std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
+    , mFinalDestinationPointColorProperty(
+          std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(8.0f, 2.0f, 2.0f), "p_colorIntensity"))
     , mRoutesHandler(mSceneWp, mBezierCurvesActor)
     , mTowersHandler(mSceneWp, mTowersActor)
     , mBarriersHandler(mSceneWp)
@@ -209,6 +211,7 @@ void LevelEditorController::Tick(const float deltaTimeSec)
                             glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                         const auto& newControlPoint = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
                         mRoutesHandler.AddPointToActiveRoute(mSplineMaterialPrefab, newControlPoint);
+                        LogInfo("LevelEditorController::Tick: added new point to route: ", newControlPoint);
                     } else if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType) {
                         const auto& nearestCellBoundingBox = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(
                             glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
@@ -218,18 +221,21 @@ void LevelEditorController::Tick(const float deltaTimeSec)
                         if (IsTowerPositionValid(cellPositionVec3)) {
                             mTowersHandler.CreateNewTower(
                                 glm::vec3(tower2DPosition.x, 0.0f, tower2DPosition.y), glm::vec3(pickerCellSize * 0.5f));
+                            LogInfo("LevelEditorController::Tick: added new tower at position: ", cellPositionVec3);
                         }
                     } else if (eEditModeType::EDIT_BARRIERS == mCurrentEditModeType) {
                         const auto& nearestBarrierNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                             glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                         const auto& pillarPosition = glm::vec3(nearestBarrierNodePosition.x, 0.0f, nearestBarrierNodePosition.y);
                         mBarriersHandler.CreateNewBarrierPillar(pillarPosition, glm::vec3());
+                        LogInfo("LevelEditorController::Tick: added new barrier pillar at position: ", pillarPosition);
                     } else if (eEditModeType::EDIT_DESTINATION_POINT == mCurrentEditModeType) {
                         const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                             glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                         const auto& destPosition = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
                         mDestinationPointActor->GetRootComponent()->SetTranslation(destPosition);
                         mDestinationPoint = destPosition;
+                        LogInfo("LevelEditorController::Tick: moved destination point to position: ", destPosition);
                     }
                 }
             }
@@ -308,6 +314,7 @@ void LevelEditorController::ProcessEvent(
                 if (jsonObj.contains("width")) {
                     const auto width = nlohmann_utilities::GetFloatFromJson(jsonObj, "width");
                     mLevelAreaBoundingBox.SetHalfExtentX(width * 0.5f);
+                    LogInfo("LevelEditorController::ProcessBroadcastEvent: level width set to ", width);
                     LevelDataProvider::GetInstance()->SetEditorLevelAreaBoundingBox(mLevelAreaBoundingBox, true, false);
                     mLevelPlacementGrid->UpdateLevelAreaBoundingBox(mLevelAreaBoundingBox);
                     ReAllocateLineComponents();
@@ -317,6 +324,7 @@ void LevelEditorController::ProcessEvent(
                 if (jsonObj.contains("length")) {
                     const auto length = nlohmann_utilities::GetFloatFromJson(jsonObj, "length");
                     mLevelAreaBoundingBox.SetHalfExtentY(length * 0.5f);
+                    LogInfo("LevelEditorController::ProcessBroadcastEvent: level length set to ", length);
                     LevelDataProvider::GetInstance()->SetEditorLevelAreaBoundingBox(mLevelAreaBoundingBox, true, false);
                     mLevelPlacementGrid->UpdateLevelAreaBoundingBox(mLevelAreaBoundingBox);
                     ReAllocateLineComponents();
@@ -639,12 +647,15 @@ void LevelEditorController::InitializeDestinationPointActor()
         std::make_shared<SceneComponent>("DestinationPointActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true));
     sceneSp->AddActor(mDestinationPointActor);
 
+    mDestinationPointActor->AddEngineProperty(mFinalDestinationPointColorProperty);
+
     MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& redPortalMaterial = materialParser.ParseMaterialDescriptor("PortalMaterial.m");
     sceneSp->RegisterMaterialInstance(redPortalMaterial);
     MaterialPropertySetter::SetMaterialPropertyValue(redPortalMaterial, sceneSp, "GT_DeltaSec", "gt_timeSec");
     MaterialPropertySetter::SetMaterialPropertyValue(redPortalMaterial, sceneSp, "ScreenResolution", "screenResolution");
-    MaterialPropertySetter::SetMaterialPropertyValue(redPortalMaterial, "colorIntensity", glm::vec3(8.0f, 2.0f, 2.0f));
+    MaterialPropertySetter::SetMaterialPropertyValue(
+        redPortalMaterial, mDestinationPointActor, "p_colorIntensity", "b_colorIntensity");
 
     const float billboardSize = 15.0f;
     auto portalComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();

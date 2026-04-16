@@ -374,11 +374,17 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                         LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(mTowerMissileType, 1),
                         LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
                     spaceStationSp->SetState(eSpaceStationActivityState::ACTIVE);
+                    if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+                        parentControllerSp->GetNavigationController()->PutActiveSpaceStationOnLevel(spaceStationSp);
+                    }
                     SetUserInteractionType(eUserInteractionType::IDLE);
                     TriggerSwitchToIdleInteractionMode();
                 } else if (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
                     const auto& spaceStationSp = GetSpaceStationAtPosition(cellPositionVec3);
                     if (spaceStationSp) {
+                        if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+                            parentControllerSp->GetNavigationController()->RemoveActiveSpaceStationFromLevel(spaceStationSp);
+                        }
                         spaceStationSp->SetState(eSpaceStationActivityState::IDLE);
                     } else {
                         const auto& barrierSp = GetBarrierAtPosition(placementPosition);
@@ -418,6 +424,7 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                         mCurrentBarrierActor = mCombatActorsPoolHandler->GetFreeBarrierActor();
                     }
 
+                    mCurrentBarrierActor->RemoveAllBarrierPillars();
                     mCurrentBarrierActor->SetState(eBarrierActivityState::ACTIVE);
                 }
 

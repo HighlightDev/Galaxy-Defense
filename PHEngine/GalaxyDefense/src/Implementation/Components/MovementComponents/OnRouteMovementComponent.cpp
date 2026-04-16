@@ -14,6 +14,7 @@ OnRouteMovementComponent::OnRouteMovementComponent(const std::shared_ptr<Movemen
 
 void OnRouteMovementComponent::SetRoutePoints(const std::vector<glm::vec3>& routePoints)
 {
+    mRoutePoints.clear();
     const auto newRoutePointsSize = routePoints.size();
     if (newRoutePointsSize) {
         float totalDistance = 0.0f;
@@ -28,6 +29,18 @@ void OnRouteMovementComponent::SetRoutePoints(const std::vector<glm::vec3>& rout
         }
         mRouteTotalDistance = totalDistance;
     }
+}
+
+void OnRouteMovementComponent::ReplaceRouteFromCurrentPosition(const std::vector<glm::vec3>& newRoutePoints)
+{
+    if (newRoutePoints.empty()) {
+        return;
+    }
+    mRoutePoints.clear();
+    mMovementProgressOnRoute = 0.0f;
+    mRouteTotalDistance = 0.0f;
+    mIsDistanceCompleted = false;
+    SetRoutePoints(newRoutePoints);
 }
 
 std::vector<glm::vec3> OnRouteMovementComponent::GetRoutePoints() const

@@ -18,8 +18,6 @@
 #include "Implementation/Levels/LevelSerializationHelper.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 #include "Implementation/Modifiers/ElectroRayChainModifier.h"
-#include "Implementation/Navigation/Path.h"
-#include "Implementation/Navigation/PathSegment.h"
 
 #include <json/json.hpp>
 
@@ -85,42 +83,33 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     mUserInteractionController->SetLevelBounds(mLevelBounds);
     mUserInteractionController->SetTowersData(levelData.TowersData);
 
-    std::unordered_map<std::string, Path> pathRoutes;
+    mNavigationController->SetFinalDestinationPoint(levelData.DestinationPoint.value_or(glm::vec3(0.0f, 0.0f, 0.0f)));
 
+    // Extract portal positions from RoutesData (first control point of each route)
+    std::vector<glm::vec3> portalPositions;
     for (const auto& [routeName, route] : levelData.RoutesData) {
-        Path path;
-        PathSegment segment;
-        segment.SetSubdivisionsCount(50);
-        for (const auto& routeControlPoint : route) {
-            segment.SetControlPoints(
-                {{std::get<0>(routeControlPoint), std::get<1>(routeControlPoint), std::get<2>(routeControlPoint)}});
-            path.AppendPathSegmentToTheEnd(segment);
-        }
-        pathRoutes.emplace(routeName, path);
-        pathRoutes[routeName].CalculateRoutePoints();
-    }
-    mNavigationController->SetPathRoutes(pathRoutes);
-
-    ext_assert(pathRoutes.size() > 0, " No path routes found in level data in CombatController::InitFromLevelData");
-    mCombatActorsPoolHandler->SpawnPortals(pathRoutes.size() + 1, Game::Constants::c_portalSize);
-    std::vector<glm::vec3> realPortalPositions;
-    for (const auto& [pathName, pathRoute] : pathRoutes) {
-        if (realPortalPositions.empty()) {
-            realPortalPositions.emplace_back(pathRoute.GetRouteFirstPoint());
-        } else {
-            const auto& newPortalPos = pathRoute.GetRouteFirstPoint();
+        if (!route.empty()) {
+            const auto& startPoint = std::get<0>(route.front());
+            ext_assert(
+                glm::all(glm::greaterThanEqual(glm::vec2(startPoint.x, startPoint.z), levelData.LevelBoundaryMin))
+                    && glm::all(glm::lessThanEqual(glm::vec2(startPoint.x, startPoint.z), levelData.LevelBoundaryMax)),
+                "Invalid portal position in level data in CombatController::InitFromLevelData");
             const bool bIsTooCloseToAnotherPortal
-                = std::any_of(realPortalPositions.cbegin(), realPortalPositions.cend(), [&](const auto& existingPortalPos) {
-                      return glm::distance2(existingPortalPos, newPortalPos)
+                = std::any_of(portalPositions.cbegin(), portalPositions.cend(), [&](const auto& existingPortalPos) {
+                      return glm::distance2(existingPortalPos, startPoint)
                           < (Game::Constants::c_portalSize * Game::Constants::c_portalSize);
                   });
             if (!bIsTooCloseToAnotherPortal) {
-                realPortalPositions.emplace_back(newPortalPos);
+                portalPositions.emplace_back(startPoint);
             }
         }
     }
+    mNavigationController->SetPortalPositions(portalPositions);
 
-    for (const auto& portalPos : realPortalPositions) {
+    ext_assert(!portalPositions.empty(), " No portal positions found in level data in CombatController::InitFromLevelData");
+    mCombatActorsPoolHandler->SpawnPortals(portalPositions.size() + 1, Game::Constants::c_portalSize);
+
+    for (const auto& portalPos : portalPositions) {
         const auto& portalSp = mCombatActorsPoolHandler->GetFreePortalActor();
         ext_assert(portalSp, "Failed to get free portal actor");
         portalSp->SetIsEnabled(true);
@@ -131,7 +120,6 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
         portalSp->SetSpawnState(true);
     }
 
-    mNavigationController->SetFinalDestinationPoint(levelData.DestinationPoint.value_or(glm::vec3(0.0f, 0.0f, 0.0f)));
     const auto& destinationPortal = mCombatActorsPoolHandler->GetFreePortalActor();
     ext_assert(destinationPortal, "Failed to get free portal actor for destination point");
     destinationPortal->SetIsEnabled(true);
@@ -151,8 +139,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
                 pillarIndex++, pillarPosition, glm::vec3(), Game::Constants::c_barrierPillarScale);
         }
         a_barrier->SetState(eBarrierActivityState::ACTIVE);
-        mNavigationController->PutActiveBarrierOnLevel(
-            a_barrier); // Add barrier to navigation controller to update nav mesh with barrier rays positions
+        mNavigationController->PutActiveBarrierOnLevel(a_barrier);
     }
 
     for (const auto& [stationName, spaceStationData] : levelData.TowersData) {
@@ -231,27 +218,10 @@ void CombatController::PostPlayLevelFinished()
 void CombatController::OnCombatPreparationCompleted()
 {
     const auto& allPortals = mCombatActorsPoolHandler->GetPortalActors();
-    const auto& pathNames = mNavigationController->GetPathNames();
-    std::vector<std::shared_ptr<PortalActor>> spawnPortals;
-    spawnPortals.reserve(pathNames.size());
     for (const auto& portal : allPortals) {
         if (portal->IsSpawnActive()) {
-            spawnPortals.emplace_back(portal);
+            portal->SetupSpaceshipSpawn(Game::Constants::c_spawnSpaceshipTimeoutMs);
         }
-    }
-    ext_assert(
-        pathNames.size() == spawnPortals.size(),
-        "Not enough paths for spawn portals in CombatController::OnCombatPreparationCompleted");
-    for (int i = 0; i < pathNames.size(); ++i) {
-        const auto& pathName = pathNames[i];
-        const Path& path = mNavigationController->GetPath(pathName);
-        const auto& spawnPortal = spawnPortals[i];
-        spawnPortal->SetupSpaceshipSpawn(pathName, Game::Constants::c_spawnSpaceshipTimeoutMs);
-        const auto& extendedPaths = mNavigationController->GetExtendedPaths();
-        const auto& [extendedPathsBegin, extendedPathsEnd] = extendedPaths.equal_range(pathName);
-        std::for_each(extendedPathsBegin, extendedPathsEnd, [&](const auto& extPath) {
-            spawnPortal->SetupSpaceshipSpawn(extPath.second.first, Game::Constants::c_spawnSpaceshipTimeoutMs);
-        });
     }
 }
 

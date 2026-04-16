@@ -2,12 +2,10 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedQuadraticBezierCurveComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -17,11 +15,9 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/MissileActor.h"
+#include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
-#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/LevelDataProvider.h"
-#include "Implementation/Navigation/Path.h"
-#include "Implementation/Navigation/PathSegment.h"
 
 #include <glm/vec3.hpp>
 
@@ -48,67 +44,14 @@ void NavigationController::Initialize()
     sceneSp->AddActor(mNavPathDummyActor);
 }
 
-void NavigationController::InitializePathDebugRendering()
-{
-    const auto sceneSp = mSceneWp.lock();
-    ext_assert(sceneSp, "Scene pointer is null in NavigationController::InitializePathDebugRendering");
-    MaterialParser materialParser;
-    const std::shared_ptr<IMaterial>& splineMaterial = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
-    sceneSp->RegisterMaterialInstance(splineMaterial);
-
-    MaterialPropertySetter::SetMaterialPropertyValue(splineMaterial, "opacity", 1.0f);
-    MaterialPropertySetter::SetMaterialPropertyValue(splineMaterial, "color", glm::vec3(0.5f, 0.7f, 0.2f));
-
-    const auto& paths = mNavPathBuilder.GetPaths();
-    const auto& extendedPaths = mNavPathBuilder.GetExtendedPaths();
-    std::unordered_map<std::string, Path> allPaths;
-    std::transform(paths.cbegin(), paths.cend(), std::inserter(allPaths, allPaths.end()), [](const auto& pathPair) {
-        return std::make_pair(pathPair.first, pathPair.second);
-    });
-    std::transform(
-        extendedPaths.cbegin(), extendedPaths.cend(), std::inserter(allPaths, allPaths.end()), [](const auto& extendedPathPair) {
-            return std::make_pair(extendedPathPair.second.first, extendedPathPair.second.second);
-        });
-
-    for (const auto& [pathName, path] : allPaths) {
-        const auto pathSegments = path.GetPathSegments();
-        for (int i = 0; i < pathSegments.size(); ++i) {
-            const auto bezierControlPoints = pathSegments.at(i).GetQuadraticBezierControlPoints();
-            auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(
-                "c_bezierCurveLineMesh_" + pathName + "_" + std::to_string(i),
-                150,
-                glm::vec3(),
-                glm::vec3(),
-                glm::vec3(1),
-                splineMaterial,
-                true,
-                true);
-            const auto& meshComponentCreator
-                = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
-            auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(
-                sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            c_mesh->SetLineWidth(0.75f);
-            c_mesh->SetSortOrderValue(100);
-            c_mesh->SetCurveSegmentsCount(50);
-            c_mesh->SetLineBeginWorldSpacePosition(bezierControlPoints.at(0));
-            c_mesh->SetBezierControlPointWorldSpacePosition(bezierControlPoints.at(1));
-            c_mesh->SetLineEndWorldSpacePosition(bezierControlPoints.at(2));
-            mNavPathDummyActor->AddComponent(c_mesh);
-        }
-    }
-}
-
-void NavigationController::SetPathRoutes(const std::unordered_map<std::string, Path>& paths)
-{
-    for (const auto& [pathName, pathSegment] : paths) {
-        mNavPathBuilder.AddPath(pathName, pathSegment);
-        mNavPathBuilder.ExtendPath(pathName, Game::Constants::c_extraPathPerSideCount);
-    }
-}
-
 void NavigationController::SetFinalDestinationPoint(const glm::vec3& destinationPoint)
 {
     mFinalDestinationPoint = destinationPoint;
+}
+
+void NavigationController::SetPortalPositions(const std::vector<glm::vec3>& portalPositions)
+{
+    mPortalPositions = portalPositions;
 }
 
 void NavigationController::SetLevelBounds(const BoundingBox3D& levelBounds)
@@ -123,13 +66,12 @@ void NavigationController::OnPreLevelInit()
 
 void NavigationController::OnLevelInit()
 {
-    ext_assert(mNavPathBuilder.GetPaths().size(), " No path routes found in NavigationController::OnLevelInit");
     Initialize();
-    if (cEnableDebugPathRendering) { // todo: make it runtime configurable
-        InitializePathDebugRendering(); // for debug visualisation purpose
-    }
 #ifdef DEBUG
-    InitializeNavMeshDebugRendering();
+    if (cEnableDebugPathRendering) {
+        InitializeNavMeshDebugRendering();
+        InitializeDebugPathRendering();
+    }
 #endif
 }
 
@@ -157,8 +99,8 @@ void NavigationController::Tick(const float deltaTimeSec)
             eMissileActivityState::IDLE != missile->GetMissileActivityState()
             && eMissileActivityState::OUT_OF_LEVEL != missile->GetMissileActivityState()) {
             if (!missile->IsInsideLevel(mLevelBounds)) {
-                LogInfo("NavigationController::Tick: missile ", missile->GetName(), " is out of level.");
                 missile->SetMissileActivityState(eMissileActivityState::OUT_OF_LEVEL);
+                LogInfo("NavigationController::Tick: missile ", missile->GetName(), " is out of level.");
             }
         }
     }
@@ -174,6 +116,7 @@ void NavigationController::Tick(const float deltaTimeSec)
             levelDataProviderPtr->SetCurrentStageSurvivedEnemySpaceshipsCount(
                 levelDataProviderPtr->GetCurrentStageSurvivedEnemySpaceshipsCount() + 1);
             spaceship->SetSpaceshipActivityState(eSpaceshipActivityState::PENDING_DISABLE);
+            LogInfo("NavigationController::Tick: spaceship ", spaceship->GetName(), " reached destination.");
         }
     }
 }
@@ -182,54 +125,98 @@ void NavigationController::UnpausableTick(const float deltaTimeSec)
 {
 }
 
-std::vector<std::string> NavigationController::GetPathNames() const
+std::vector<glm::vec3> NavigationController::BuildNavMeshRoute(const glm::vec3& startPosition) const
 {
-    const auto& spacePaths = mNavPathBuilder.GetPaths();
-    std::vector<std::string> pathNames;
-    pathNames.reserve(spacePaths.size());
-    std::transform(
-        spacePaths.cbegin(), spacePaths.cend(), std::back_inserter(pathNames), [](const auto& spacePathPair) -> std::string {
-            return spacePathPair.first;
-        });
-    return pathNames;
-}
-
-const Path& NavigationController::GetPath(const std::string& pathName) const
-{
-    const auto& spacePaths = mNavPathBuilder.GetPaths();
-    ext_assert(spacePaths.count(pathName), "Path not found: " + pathName + " in NavigationController::GetPath");
-    return spacePaths.at(pathName);
-}
-
-const std::unordered_multimap<std::string, std::pair<std::string, Path>>& NavigationController::GetExtendedPaths() const
-{
-    return mNavPathBuilder.GetExtendedPaths();
-}
-
-void NavigationController::PutSpaceshipOnRoute(const std::string& routeName, const std::shared_ptr<SpaceshipActor>& spaceship)
-{
-    const auto& spacePaths = mNavPathBuilder.GetPaths();
-    const auto& extendedSpacePaths = mNavPathBuilder.GetExtendedPaths();
-    std::optional<Path> spacePath;
-    if (spacePaths.count(routeName)) {
-        spacePath = spacePaths.at(routeName);
-    } else {
-        for (const auto& [originalPathName, extendedPathPair] : extendedSpacePaths) {
-            if (extendedPathPair.first == routeName) {
-                spacePath = extendedPathPair.second;
-                break;
-            }
-        }
+    ext_assert(mNavMesh, "NavMesh is null in NavigationController::BuildNavMeshRoute");
+    const glm::vec2 start2D(startPosition.x, startPosition.z);
+    const glm::vec2 end2D(mFinalDestinationPoint.x, mFinalDestinationPoint.z);
+    const auto route2D = mNavMesh->BuildRouteBetweenPoints(start2D, end2D);
+    std::vector<glm::vec3> route3D;
+    route3D.reserve(route2D.size());
+    for (const auto& point : route2D) {
+        route3D.emplace_back(point.x, startPosition.y, point.y);
     }
+    return route3D;
+}
 
-    ext_assert(spacePath.has_value(), "Route not found: " + routeName + " in NavigationController::PutSpaceshipOnRoute");
+void NavigationController::PutSpaceshipOnRoute(const glm::vec3& startPosition, const std::shared_ptr<SpaceshipActor>& spaceship)
+{
+    LogInfo(
+        "NavigationController::PutSpaceshipOnRoute: putting spaceship ",
+        spaceship->GetName(),
+        " on route from position: ",
+        startPosition);
+    const auto route = BuildNavMeshRoute(startPosition);
+    ext_assert(!route.empty(), "Failed to build NavMesh route in NavigationController::PutSpaceshipOnRoute");
     const auto enemyMovementComponent = spaceship->GetOnRouteMovementComponent();
     ext_assert(enemyMovementComponent, "Enemy movement component is null");
     enemyMovementComponent->ResetStates();
     enemyMovementComponent->SetIsMovementOnRouteAllowed(true);
-    enemyMovementComponent->SetRoutePoints(spacePath->GetRoutePoints());
-    spaceship->TriggerSpawn(spacePath->GetRouteFirstPoint());
+    enemyMovementComponent->SetRoutePoints(route);
+    spaceship->TriggerSpawn(route.front());
     mEnemies.emplace_back(spaceship);
+#ifdef DEBUG
+    if (cEnableDebugPathRendering) {
+        CreateDebugPathForSpaceship(spaceship->GetObjectId(), route);
+    }
+#endif
+}
+
+void NavigationController::RebuildActiveShipRoutes()
+{
+    for (const auto& spaceship : mEnemies) {
+        if (eSpaceshipActivityState::ACTIVE != spaceship->GetSpaceshipActivityState()) {
+            continue;
+        }
+        const auto& routeMoveComp = spaceship->GetOnRouteMovementComponent();
+        if (!routeMoveComp || routeMoveComp->GetIsDistanceCompleted()) {
+            continue;
+        }
+        const auto currentPosition = spaceship->GetWorldPosition();
+        const auto newRoute = BuildNavMeshRoute(currentPosition);
+        if (!newRoute.empty()) {
+            routeMoveComp->ReplaceRouteFromCurrentPosition(newRoute);
+#ifdef DEBUG
+            if (cEnableDebugPathRendering) {
+                CreateDebugPathForSpaceship(spaceship->GetObjectId(), newRoute);
+            }
+#endif
+        }
+    }
+}
+
+void NavigationController::ReapplyAllObstaclesToNavMesh()
+{
+    mNavMesh->ResetAllCellsWalkable();
+
+    for (const auto& barrierWp : mActiveBarriersOnLevel) {
+        if (const auto barrier = barrierWp.lock()) {
+            const auto& rayPositions = barrier->GetBarrierActiveRaysWorldPositions();
+            for (const auto& [startPosition, endPosition] : rayPositions) {
+                mNavMesh->FillCellStatesBetweenWorldPositions(
+                    glm::vec2(startPosition.x, startPosition.z), glm::vec2(endPosition.x, endPosition.z), false);
+            }
+        }
+    }
+
+    for (const auto& stationWp : mActiveSpaceStationsOnLevel) {
+        if (const auto station = stationWp.lock()) {
+            MarkSpaceStationCellsOnNavMesh(station, false);
+        }
+    }
+}
+
+void NavigationController::MarkSpaceStationCellsOnNavMesh(
+    const std::shared_ptr<SpaceStationActor>& spaceStationActor, const bool isWalkable)
+{
+    const auto& pos = spaceStationActor->GetRootComponent()->GetTranslation();
+    const glm::vec2 center(pos.x, pos.z);
+    const float halfNavCell = mNavMesh->GetCellSize() * 0.5f;
+
+    mNavMesh->SetCellStateByWorldPosition(center + glm::vec2(-halfNavCell, -halfNavCell), isWalkable);
+    mNavMesh->SetCellStateByWorldPosition(center + glm::vec2(+halfNavCell, -halfNavCell), isWalkable);
+    mNavMesh->SetCellStateByWorldPosition(center + glm::vec2(-halfNavCell, +halfNavCell), isWalkable);
+    mNavMesh->SetCellStateByWorldPosition(center + glm::vec2(+halfNavCell, +halfNavCell), isWalkable);
 }
 
 void NavigationController::PutMissileToNavigate(const std::shared_ptr<MissileActor>& missile)
@@ -252,6 +239,11 @@ void NavigationController::RemoveSpaceshipFromRoute(const int32_t spaceshipActor
             return spaceshipActorId == enemy->GetObjectId();
         }));
     }
+#ifdef DEBUG
+    if (cEnableDebugPathRendering) {
+        RemoveDebugPathForSpaceship(spaceshipActorId);
+    }
+#endif
 }
 
 void NavigationController::RemoveMissileFromNavigation(const int32_t missileActorId)
@@ -303,32 +295,73 @@ void NavigationController::PutActiveBarrierOnLevel(const std::shared_ptr<Barrier
             glm::vec2(startPosition.x, startPosition.z), glm::vec2(endPosition.x, endPosition.z), false);
     }
 #ifdef DEBUG
-    RefreshNavMeshDebugRendering();
+    if (cEnableDebugPathRendering) {
+        RefreshNavMeshDebugRendering();
+    }
 #endif
+    RebuildActiveShipRoutes();
 }
 
 void NavigationController::RemoveActiveBarrierFromLevel(const std::shared_ptr<BarrierActor>& barrierActor)
 {
     mActiveBarriersOnLevel.erase(
-        std::remove_if(mActiveBarriersOnLevel.begin(), mActiveBarriersOnLevel.end(), [barrierActor](const auto& barrierActorWp) {
-            const auto barrierActorSp = barrierActorWp.lock();
-            return !barrierActorSp || (barrierActorSp && barrierActor->GetObjectId() == barrierActorSp->GetObjectId());
-        }));
+        std::remove_if(
+            mActiveBarriersOnLevel.begin(),
+            mActiveBarriersOnLevel.end(),
+            [barrierActor](const auto& barrierActorWp) {
+                const auto barrierActorSp = barrierActorWp.lock();
+                return !barrierActorSp || (barrierActorSp && barrierActor->GetObjectId() == barrierActorSp->GetObjectId());
+            }),
+        mActiveBarriersOnLevel.end());
 
-    mNavMesh->ResetAllCellsWalkable();
-
-    for (const auto& remainingBarrierWp : mActiveBarriersOnLevel) {
-        if (const auto remainingBarrier = remainingBarrierWp.lock()) {
-            const auto& rayPositions = remainingBarrier->GetBarrierActiveRaysWorldPositions();
-            for (const auto& [startPosition, endPosition] : rayPositions) {
-                mNavMesh->FillCellStatesBetweenWorldPositions(
-                    glm::vec2(startPosition.x, startPosition.z), glm::vec2(endPosition.x, endPosition.z), false);
-            }
-        }
-    }
+    ReapplyAllObstaclesToNavMesh();
 #ifdef DEBUG
-    RefreshNavMeshDebugRendering();
+    if (cEnableDebugPathRendering) {
+        RefreshNavMeshDebugRendering();
+    }
 #endif
+    RebuildActiveShipRoutes();
+}
+
+void NavigationController::PutActiveSpaceStationOnLevel(const std::shared_ptr<SpaceStationActor>& spaceStationActor)
+{
+    const auto seekIt = std::find_if(
+        mActiveSpaceStationsOnLevel.cbegin(), mActiveSpaceStationsOnLevel.cend(), [spaceStationActor](const auto& stationWp) {
+            const auto stationSp = stationWp.lock();
+            return stationSp && spaceStationActor->GetObjectId() == stationSp->GetObjectId();
+        });
+    if (seekIt == mActiveSpaceStationsOnLevel.cend()) {
+        mActiveSpaceStationsOnLevel.emplace_back(spaceStationActor);
+    }
+
+    MarkSpaceStationCellsOnNavMesh(spaceStationActor, false);
+#ifdef DEBUG
+    if (cEnableDebugPathRendering) {
+        RefreshNavMeshDebugRendering();
+    }
+#endif
+    RebuildActiveShipRoutes();
+}
+
+void NavigationController::RemoveActiveSpaceStationFromLevel(const std::shared_ptr<SpaceStationActor>& spaceStationActor)
+{
+    mActiveSpaceStationsOnLevel.erase(
+        std::remove_if(
+            mActiveSpaceStationsOnLevel.begin(),
+            mActiveSpaceStationsOnLevel.end(),
+            [spaceStationActor](const auto& stationWp) {
+                const auto stationSp = stationWp.lock();
+                return !stationSp || (stationSp && spaceStationActor->GetObjectId() == stationSp->GetObjectId());
+            }),
+        mActiveSpaceStationsOnLevel.end());
+
+    ReapplyAllObstaclesToNavMesh();
+#ifdef DEBUG
+    if (cEnableDebugPathRendering) {
+        RefreshNavMeshDebugRendering();
+    }
+#endif
+    RebuildActiveShipRoutes();
 }
 
 #ifdef DEBUG
@@ -360,17 +393,16 @@ void NavigationController::InitializeNavMeshDebugRendering()
 
     const auto& meshCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
 
-    const auto& walkableCells = mNavMesh->GetWalkableCells();
     const auto& levelMin = mNavMesh->GetLevelBoundingBox().GetMin();
     const float cellSize = mNavMesh->GetCellSize();
     const float cellScale = cellSize * 0.9f;
 
-    const int32_t colsCount = static_cast<int32_t>(walkableCells.size());
+    const int32_t colsCount = mNavMesh->GetCellsCountX();
+    const int32_t rowsCount = mNavMesh->GetCellsCountY();
     mNavMeshDebugGreenCells.resize(colsCount);
     mNavMeshDebugRedCells.resize(colsCount);
 
     for (int32_t x = 0; x < colsCount; ++x) {
-        const int32_t rowsCount = static_cast<int32_t>(walkableCells[x].size());
         mNavMeshDebugGreenCells[x].resize(rowsCount);
         mNavMeshDebugRedCells[x].resize(rowsCount);
 
@@ -378,7 +410,7 @@ void NavigationController::InitializeNavMeshDebugRendering()
             const float worldX = levelMin.x + (static_cast<float>(x) + 0.5f) * cellSize;
             const float worldZ = levelMin.y + (static_cast<float>(y) + 0.5f) * cellSize;
             const glm::vec3 cellPos(worldX, 0.1f, worldZ);
-            const bool isWalkable = walkableCells[x][y];
+            const bool isWalkable = mNavMesh->IsCellWalkable(x, y);
             const std::string suffix = std::to_string(x) + "_" + std::to_string(y);
 
             const auto& d_green = std::make_shared<MeshComponentData>(
@@ -420,13 +452,12 @@ void NavigationController::RefreshNavMeshDebugRendering()
         return;
     }
 
-    const auto& walkableCells = mNavMesh->GetWalkableCells();
-    const int32_t colsCount = static_cast<int32_t>(walkableCells.size());
+    const int32_t colsCount = mNavMesh->GetCellsCountX();
+    const int32_t rowsCount = mNavMesh->GetCellsCountY();
 
     for (int32_t x = 0; x < colsCount && x < static_cast<int32_t>(mNavMeshDebugGreenCells.size()); ++x) {
-        const int32_t rowsCount = static_cast<int32_t>(walkableCells[x].size());
         for (int32_t y = 0; y < rowsCount && y < static_cast<int32_t>(mNavMeshDebugGreenCells[x].size()); ++y) {
-            const bool isWalkable = walkableCells[x][y];
+            const bool isWalkable = mNavMesh->IsCellWalkable(x, y);
 
             if (const auto greenSp = mNavMeshDebugGreenCells[x][y].lock()) {
                 greenSp->SetIsVisible(isWalkable);
@@ -436,6 +467,87 @@ void NavigationController::RefreshNavMeshDebugRendering()
                 redSp->SetIsVisible(!isWalkable);
                 redSp->SetIsEnabled(!isWalkable);
             }
+        }
+    }
+}
+
+void NavigationController::InitializeDebugPathRendering()
+{
+    const auto sceneSp = mSceneWp.lock();
+    if (!sceneSp) {
+        return;
+    }
+
+    mDebugPathActor = std::make_shared<Actor>(
+        "DebugPathActor",
+        std::make_shared<EngineCore::SceneComponent>("DebugPath_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true));
+    sceneSp->AddActor(mDebugPathActor);
+
+    MaterialParser materialParser;
+    mDebugPathMaterial = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
+    sceneSp->RegisterMaterialInstance(mDebugPathMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(mDebugPathMaterial, "opacity", 1.0f);
+    MaterialPropertySetter::SetMaterialPropertyValue(mDebugPathMaterial, "color", glm::vec3(0.5f, 0.7f, 0.2f));
+}
+
+void NavigationController::CreateDebugPathForSpaceship(const int32_t spaceshipId, const std::vector<glm::vec3>& routePoints)
+{
+    const auto sceneSp = mSceneWp.lock();
+    if (!sceneSp || !mDebugPathActor || !mDebugPathMaterial || routePoints.size() < 2) {
+        return;
+    }
+
+    RemoveDebugPathForSpaceship(spaceshipId);
+
+    const auto& meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
+
+    std::vector<std::shared_ptr<RuntimeGeneratedLineComponent>> lineSegments;
+    lineSegments.reserve(routePoints.size() - 1);
+
+    for (size_t i = 0; i + 1 < routePoints.size(); ++i) {
+        auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(
+            "debug_path_" + std::to_string(spaceshipId) + "_seg_" + std::to_string(i),
+            150,
+            glm::vec3(),
+            glm::vec3(),
+            glm::vec3(1),
+            mDebugPathMaterial,
+            true,
+            true);
+        auto c_line = std::static_pointer_cast<RuntimeGeneratedLineComponent>(
+            sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        c_line->SetLineWidth(0.5f);
+        c_line->SetSortOrderValue(100);
+        c_line->SetLineBeginWorldSpacePosition(routePoints[i] + glm::vec3(0.0f, 0.3f, 0.0f));
+        c_line->SetLineEndWorldSpacePosition(routePoints[i + 1] + glm::vec3(0.0f, 0.3f, 0.0f));
+        mDebugPathActor->AddComponent(c_line);
+        lineSegments.emplace_back(c_line);
+    }
+
+    mDebugPathLines[spaceshipId] = std::move(lineSegments);
+}
+
+void NavigationController::RemoveDebugPathForSpaceship(const int32_t spaceshipId)
+{
+    const auto it = mDebugPathLines.find(spaceshipId);
+    if (it != mDebugPathLines.end()) {
+        for (auto& lineComp : it->second) {
+            lineComp->SetIsVisible(false);
+            lineComp->SetIsEnabled(false);
+        }
+        mDebugPathLines.erase(it);
+    }
+}
+
+void NavigationController::RefreshAllDebugPaths()
+{
+    for (const auto& spaceship : mEnemies) {
+        if (eSpaceshipActivityState::ACTIVE != spaceship->GetSpaceshipActivityState()) {
+            continue;
+        }
+        const auto& routeMoveComp = spaceship->GetOnRouteMovementComponent();
+        if (routeMoveComp) {
+            CreateDebugPathForSpaceship(spaceship->GetObjectId(), routeMoveComp->GetRoutePoints());
         }
     }
 }

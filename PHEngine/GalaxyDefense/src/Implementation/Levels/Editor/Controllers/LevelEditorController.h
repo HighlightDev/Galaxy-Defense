@@ -68,6 +68,8 @@ class LevelEditorController : public std::enable_shared_from_this<LevelEditorCon
 
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostTowerBlendColorProperty;
 
+    std::shared_ptr<EngineObjectProperty<glm::vec3>> mFinalDestinationPointColorProperty;
+
     std::shared_ptr<::Graphics::IMaterial> mSplineMaterialPrefab;
 
     std::shared_ptr<::Graphics::IMaterial> mGridLineMaterialPrefab;

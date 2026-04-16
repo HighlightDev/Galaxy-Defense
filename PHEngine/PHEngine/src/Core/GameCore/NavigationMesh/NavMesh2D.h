@@ -14,7 +14,11 @@ class NavMesh2D {
 
     const float mCellSize;
 
-    std::vector<std::vector<bool>> mWalkableCells;
+    int32_t mCellsCountX{0};
+
+    int32_t mCellsCountY{0};
+
+    std::vector<bool> mWalkableCells;
 
 public:
     explicit NavMesh2D(const BoundingBox2D<glm::vec2>& levelBoundingBox, const float cellSize);
@@ -38,9 +42,19 @@ public:
         return mCellSize;
     }
 
-    const std::vector<std::vector<bool>>& GetWalkableCells() const
+    int32_t GetCellsCountX() const
     {
-        return mWalkableCells;
+        return mCellsCountX;
+    }
+
+    int32_t GetCellsCountY() const
+    {
+        return mCellsCountY;
+    }
+
+    bool IsCellWalkable(const int32_t x, const int32_t y) const
+    {
+        return mWalkableCells[x * mCellsCountY + y];
     }
 
     void ResetAllCellsWalkable();

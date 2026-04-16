@@ -19,8 +19,6 @@ class PortalActor : public Actor {
 
     std::weak_ptr<NavigationController> mNavigationControllerWp;
 
-    std::vector<std::string> mPathNames;
-
     float mAccumulatedDeltaTime{0.0f};
 
     float mSpawnInterval{0.0f};
@@ -38,7 +36,7 @@ public:
 
     void SetNavigationController(const std::weak_ptr<NavigationController>& navigationControllerWp);
 
-    void SetupSpaceshipSpawn(const std::string& pathName, const size_t spawnIntervalMilliseconds);
+    void SetupSpaceshipSpawn(const size_t spawnIntervalMilliseconds);
 
     void SetSpawnState(const bool isActive);
 
