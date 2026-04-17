@@ -121,6 +121,11 @@ bool OnRouteMovementComponent::GetIsDistanceCompleted() const
     return mIsDistanceCompleted;
 }
 
+void OnRouteMovementComponent::SetIsDistanceCompleted(const bool isCompleted)
+{
+    mIsDistanceCompleted = isCompleted;
+}
+
 void OnRouteMovementComponent::ResetStates()
 {
     mIsDistanceCompleted = false;

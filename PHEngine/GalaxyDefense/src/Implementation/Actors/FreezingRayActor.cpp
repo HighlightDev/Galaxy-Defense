@@ -9,6 +9,7 @@
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
@@ -112,7 +113,8 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
     ext_assert(mLineComponent, "FreezingRayActor line component is null");
 
     if (const auto& sceneSp = mSceneOwner.lock()) {
-        if (const auto& actorWhoSpawnedMeSp = mActorWhoSpawnedMeWp.lock()) {
+        if (const auto& actorWhoSpawnedMeSp = mActorWhoSpawnedMeWp.lock();
+            actorWhoSpawnedMeSp && actorWhoSpawnedMeSp->GetState() == eSpaceStationActivityState::ACTIVE) {
             mFreezingLineBegin = actorWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
             const auto& ownerPhysComp = actorWhoSpawnedMeSp->GetPhysicsComponent();
             const auto freezingRayHitRadius = actorWhoSpawnedMeSp->GetSpaceStationLevel()->GetShootRadius();
@@ -167,8 +169,25 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                                     mLastCollidedActorId = -1;
                                     mSwitchTargetMinTimer->StopTimer();
                                 }
+                            } else {
+                                // Switching to a new target
+                                if (mLastCollidedActorId != -1) {
+                                    const auto& previousCollidedActor
+                                        = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
+                                    if (previousCollidedActor) {
+                                        SendShootRayCollisionEvent(
+                                            previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
+                                    }
+                                }
+
+                                mLastCollidedActorId = collidedActor->GetObjectId();
+                                SendShootRayCollisionEvent(
+                                    collidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
+                                mSwitchTargetMinTimer->StartTimer();
+                                mFreezingLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                             }
                         } else {
+                            // Nearest physics descriptor has no valid actor — clean up previous target
                             if (mLastCollidedActorId != -1) {
                                 const auto& previousCollidedActor
                                     = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
@@ -176,13 +195,9 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                                     SendShootRayCollisionEvent(
                                         previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
                                 }
+                                mLastCollidedActorId = -1;
+                                mSwitchTargetMinTimer->StopTimer();
                             }
-
-                            mLastCollidedActorId = collidedActor->GetObjectId();
-                            SendShootRayCollisionEvent(
-                                collidedActor->shared_from_this(), eCollisionActionType::COLLISION_STARTED);
-                            mSwitchTargetMinTimer->StartTimer();
-                            mFreezingLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                         }
                     }
                 } else {
@@ -198,6 +213,17 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                     }
                 }
             }
+        } else {
+            // Owning station was removed or deactivated — disable this ray
+            TriggerDisabled();
+            if (mLastCollidedActorId != -1) {
+                const auto& previousCollidedActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(mLastCollidedActorId);
+                if (previousCollidedActor) {
+                    SendShootRayCollisionEvent(
+                        previousCollidedActor->shared_from_this(), eCollisionActionType::COLLISION_FINISHED);
+                }
+                mLastCollidedActorId = -1;
+            }
         }
     }
 
@@ -212,7 +238,15 @@ void FreezingRayActor::TriggerSpawn(
     const eDamageDealerType ownerType,
     const std::shared_ptr<SpaceStationActor>& spawnerActor)
 {
-    LogInfo("FreezingRayActor::TriggerSpawn");
+    LogInfo(
+        "FreezingRayActor::TriggerSpawn: id: ",
+        GetObjectId(),
+        ", position: ",
+        position,
+        ", direction: ",
+        direction,
+        ", yawDegrees: ",
+        yawDegrees);
     mDamageDealerType = ownerType;
     mActorWhoSpawnedMeWp = spawnerActor;
     DropState();
@@ -237,7 +271,7 @@ void FreezingRayActor::TriggerExplosionFinished()
 
 void FreezingRayActor::TriggerDisabled()
 {
-    LogInfo("FreezingRayActor::TriggerDisabled");
+    LogInfo("FreezingRayActor::TriggerDisabled: id: ", GetObjectId());
     mActivityState = eMissileActivityState::IDLE;
     DropState();
     SetIsEnabled(false);

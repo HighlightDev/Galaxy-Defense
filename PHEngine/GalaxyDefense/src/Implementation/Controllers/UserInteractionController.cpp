@@ -237,6 +237,15 @@ bool UserInteractionController::IsTowerPositionValid(const glm::vec3 position) c
     return isPlaceAllowedForTower;
 }
 
+bool UserInteractionController::IsBarrierPositionValid(const glm::vec3& position) const
+{
+    if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+        return not parentControllerSp->GetNavigationController()->IsPositionNearFinalDestination(
+            position, Game::Constants::c_barrierExclusionRadiusFromDestination);
+    }
+    return false;
+}
+
 std::shared_ptr<SpaceStationActor> UserInteractionController::GetSpaceStationAtPosition(const glm::vec3& position) const
 {
     const glm::vec2& cellBoundingBoxOrigin
@@ -338,8 +347,10 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     const auto& routeEdgeNode = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                         glm::vec2(placementPosition.x, placementPosition.z));
                     const auto snappedPosition = glm::vec3(routeEdgeNode.x, 0.0f, routeEdgeNode.y);
+                    const glm::vec3 ghostBarrierPositionValidationColor
+                        = IsBarrierPositionValid(snappedPosition) ? glm::vec3(0, 1, 0) : glm::vec3(1, 0, 0);
                     mGhostBarrierPillarActor->GetRootComponent()->SetTranslation(snappedPosition);
-                    mGhostBarrierPillarBlendColorProperty->SetValue(glm::vec3(0, 1, 0));
+                    mGhostBarrierPillarBlendColorProperty->SetValue(ghostBarrierPositionValidationColor);
                 }
             }
         }
@@ -429,15 +440,17 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                 }
 
                 if (mCurrentBarrierActor) {
-                    mCurrentBarrierActor->CreateNewBarrierPillar(
-                        snappedPosition, glm::vec3(), Game::Constants::c_barrierPillarScale);
-                    if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
-                        parentControllerSp->GetNavigationController()->PutActiveBarrierOnLevel(
-                            mCurrentBarrierActor); // Add barrier to navigation controller to update nav mesh with barrier rays
-                                                   // positions
+                    if (IsBarrierPositionValid(snappedPosition)) {
+                        mCurrentBarrierActor->CreateNewBarrierPillar(
+                            snappedPosition, glm::vec3(), Game::Constants::c_barrierPillarScale);
+                        if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+                            parentControllerSp->GetNavigationController()->PutActiveBarrierOnLevel(
+                                mCurrentBarrierActor); // Add barrier to navigation controller to update nav mesh with barrier
+                                                       // rays positions
+                        }
                     }
+                    mReloadPlacementTower->StartTimer();
                 }
-                mReloadPlacementTower->StartTimer();
             }
         }
     } else if (

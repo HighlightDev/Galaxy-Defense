@@ -165,6 +165,8 @@ private:
 
     bool IsTowerPositionValid(const glm::vec3 position) const;
 
+    bool IsBarrierPositionValid(const glm::vec3& position) const;
+
     void ProcessSpaceStationPlacementStage();
 
     void ProcessCombatStage();

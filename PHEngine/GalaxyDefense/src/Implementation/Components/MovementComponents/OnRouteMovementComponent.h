@@ -44,6 +44,8 @@ public:
 
     bool GetIsDistanceCompleted() const;
 
+    void SetIsDistanceCompleted(const bool isCompleted);
+
     void ResetStates();
 };
 } // namespace Game

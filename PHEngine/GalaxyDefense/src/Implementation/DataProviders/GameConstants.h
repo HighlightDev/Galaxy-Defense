@@ -14,4 +14,5 @@ extern const float c_portalSize;
 extern const uint32_t c_dmgTextShowDuration;
 extern const uint32_t c_shakeDurationMs;
 extern const glm::vec3 c_barrierPillarScale;
+extern const float c_barrierExclusionRadiusFromDestination;
 } // namespace Game::Constants

@@ -58,7 +58,7 @@ class NavigationController : public ITickable, public ILevelController {
     std::vector<std::vector<std::weak_ptr<::EngineCore::StaticMeshComponent>>> mNavMeshDebugGreenCells;
     std::vector<std::vector<std::weak_ptr<::EngineCore::StaticMeshComponent>>> mNavMeshDebugRedCells;
 
-    static constexpr bool cEnableDebugPathRendering{true};
+    static constexpr bool cEnableDebugPathRendering{false};
     std::shared_ptr<::EngineCore::Actor> mDebugPathActor;
     std::shared_ptr<Graphics::IMaterial> mDebugPathMaterial;
     std::unordered_map<int32_t, std::vector<std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>>> mDebugPathLines;
@@ -102,6 +102,8 @@ public:
     void RemoveSpaceshipFromRoute(const int32_t spaceshipActorId);
 
     void RemoveMissileFromNavigation(const int32_t missileActorId);
+
+    bool IsPositionNearFinalDestination(const glm::vec3& position, const float radius) const;
 
     BarriersController& GetBarriersController();
 

@@ -54,6 +54,13 @@ void NavigationController::SetPortalPositions(const std::vector<glm::vec3>& port
     mPortalPositions = portalPositions;
 }
 
+bool NavigationController::IsPositionNearFinalDestination(const glm::vec3& position, const float radius) const
+{
+    const float dist
+        = glm::distance(glm::vec2(position.x, position.z), glm::vec2(mFinalDestinationPoint.x, mFinalDestinationPoint.z));
+    return dist < radius;
+}
+
 void NavigationController::SetLevelBounds(const BoundingBox3D& levelBounds)
 {
     mLevelBounds = levelBounds;
@@ -174,13 +181,17 @@ void NavigationController::RebuildActiveShipRoutes()
         }
         const auto currentPosition = spaceship->GetWorldPosition();
         const auto newRoute = BuildNavMeshRoute(currentPosition);
-        if (!newRoute.empty()) {
+        if (newRoute.size() > 1) {
             routeMoveComp->ReplaceRouteFromCurrentPosition(newRoute);
 #ifdef DEBUG
             if (cEnableDebugPathRendering) {
                 CreateDebugPathForSpaceship(spaceship->GetObjectId(), newRoute);
             }
 #endif
+        } else {
+            // Ship is already at the destination cell — mark route as completed
+            routeMoveComp->SetIsDistanceCompleted(true);
+            continue;
         }
     }
 }
