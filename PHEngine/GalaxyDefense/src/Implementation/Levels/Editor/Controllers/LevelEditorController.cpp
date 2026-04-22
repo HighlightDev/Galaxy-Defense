@@ -9,7 +9,6 @@
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedQuadraticBezierCurveComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
@@ -22,7 +21,10 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/JsonUtilities.h"
 #include "Core/UtilityCore/ScreenRayCaster.h"
+#include "Implementation/Actors/PortalActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/LevelDataProvider.h"
+#include "Implementation/Factories/SpawnPortalFactory.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
 
 #include <json/json.hpp>
@@ -37,23 +39,25 @@ namespace Game {
 LevelEditorController::LevelEditorController(const std::weak_ptr<Scene>& sceneWp)
     : mSceneWp(sceneWp)
     , mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent")))
-    , mBezierCurvesActor(std::make_shared<Actor>(
-          "BezierCurvesActor",
-          std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mTowersActor(std::make_shared<Actor>(
           "TowersActor",
           std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostTowerActor(std::make_shared<Actor>(
           "GhostTowerActor",
           std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mGhostPortalActor(std::make_shared<Actor>(
+          "GhostPortalActor",
+          std::make_shared<SceneComponent>("GhostPortalActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
+    , mGhostPortalColorProperty(
+          std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(2.0f, 8.0f, 2.0f), "p_colorIntensity"))
     , mFinalDestinationPointColorProperty(
           std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(8.0f, 2.0f, 2.0f), "p_colorIntensity"))
-    , mRoutesHandler(mSceneWp, mBezierCurvesActor)
     , mTowersHandler(mSceneWp, mTowersActor)
     , mBarriersHandler(mSceneWp)
 {
     mGhostTowerActor->AddEngineProperty(mGhostTowerBlendColorProperty);
+    mGhostPortalActor->AddEngineProperty(mGhostPortalColorProperty);
 }
 
 LevelEditorController::~LevelEditorController()
@@ -81,13 +85,7 @@ void LevelEditorController::OnPostLevelInit()
     ext_assert(mainCameraSp, "LevelEditorController main camera is null or not a ThirdPersonCamera");
     mMainSceneCamera = mainCameraSp;
 
-    sceneSp->AddActor(mBezierCurvesActor);
     sceneSp->AddActor(mTowersActor);
-
-    MaterialParser materialParser;
-    mSplineMaterialPrefab = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
-    MaterialPropertySetter::SetMaterialPropertyValue(mSplineMaterialPrefab, "opacity", 1.0f);
-    sceneSp->RegisterMaterialInstance(mSplineMaterialPrefab);
 
     mBarriersHandler.OnPostLevelInit();
 }
@@ -152,7 +150,23 @@ bool LevelEditorController::IsTowerPositionValid(const glm::vec3 position) const
             return EngineMath::TestPointInAABB(validCellMin, validCellMax, cellBoundingBoxOrigin);
         });
 
-    return !isPlaceOccupiedByTower;
+    if (isPlaceOccupiedByTower) {
+        return false;
+    }
+
+    const float stationCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
+    const float stationMinDistance = stationCellSize * 4.0f;
+    const float stationMinDistanceSq = stationMinDistance * stationMinDistance;
+    for (const auto& portal : mSpawnPortals) {
+        const glm::vec3& portalPosition = portal->GetRootComponent()->GetTranslation();
+        const glm::vec3 diff = position - portalPosition;
+        const float distSq = glm::dot(diff, diff);
+        if (distSq < stationMinDistanceSq) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void LevelEditorController::Tick(const float deltaTimeSec)
@@ -189,6 +203,16 @@ void LevelEditorController::Tick(const float deltaTimeSec)
                         mDestinationPointActor->GetRootComponent()->SetTranslation(
                             glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y));
                     }
+                } else if (eEditModeType::EDIT_SPAWN_PORTALS == mCurrentEditModeType) {
+                    const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
+                        glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                    const auto ghostPortalPosition = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
+                    mRouteNodePickerActor->GetRootComponent()->SetTranslation(ghostPortalPosition);
+                    mGhostPortalActor->GetRootComponent()->SetTranslation(ghostPortalPosition);
+                    const glm::vec3 ghostPortalPositionValidationColor = IsSpawnPortalPositionValid(ghostPortalPosition)
+                        ? glm::vec3(2.0f, 8.0f, 2.0f)
+                        : glm::vec3(8.0f, 2.0f, 2.0f);
+                    mGhostPortalColorProperty->SetValue(ghostPortalPositionValidationColor);
                 } else {
                     const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                         glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
@@ -206,13 +230,7 @@ void LevelEditorController::Tick(const float deltaTimeSec)
                 bool rayCastWasSuccessfull;
                 const auto& rayIntersectionPosition = RaycastLevelPlane(rayCastWasSuccessfull, screenSpacePosition);
                 if (rayCastWasSuccessfull) {
-                    if (eEditModeType::EDIT_ROUTES == mCurrentEditModeType) {
-                        const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
-                            glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
-                        const auto& newControlPoint = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
-                        mRoutesHandler.AddPointToActiveRoute(mSplineMaterialPrefab, newControlPoint);
-                        LogInfo("LevelEditorController::Tick: added new point to route: ", newControlPoint);
-                    } else if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType) {
+                    if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType) {
                         const auto& nearestCellBoundingBox = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(
                             glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                         const auto pickerCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
@@ -233,9 +251,19 @@ void LevelEditorController::Tick(const float deltaTimeSec)
                         const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                             glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                         const auto& destPosition = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
-                        mDestinationPointActor->GetRootComponent()->SetTranslation(destPosition);
-                        mDestinationPoint = destPosition;
-                        LogInfo("LevelEditorController::Tick: moved destination point to position: ", destPosition);
+                        if (IsPortalPositionValidAgainstStationsAndBarriers(destPosition)) {
+                            mDestinationPointActor->GetRootComponent()->SetTranslation(destPosition);
+                            mDestinationPoint = destPosition;
+                            LogInfo("LevelEditorController::Tick: moved destination point to position: ", destPosition);
+                        }
+                    } else if (eEditModeType::EDIT_SPAWN_PORTALS == mCurrentEditModeType) {
+                        const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
+                            glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                        const auto& portalPosition = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
+                        if (IsSpawnPortalPositionValid(portalPosition)) {
+                            CreateSpawnPortal(portalPosition);
+                            LogInfo("LevelEditorController::Tick: added spawn portal at position: ", portalPosition);
+                        }
                     }
                 }
             }
@@ -259,21 +287,12 @@ void LevelEditorController::ProcessEvent(
         if (jsonObj.contains("action")) {
             const auto& doneAction = jsonObj["action"].get<std::string>();
             if ("undo" == doneAction) {
-                if (eEditModeType::EDIT_ROUTES == mCurrentEditModeType) {
-                    mRoutesHandler.UndoLastBezierCurveComponent();
-                } else if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType) {
+                if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType) {
                     mTowersHandler.UndoLastTowerComponent();
                 } else if (eEditModeType::EDIT_BARRIERS == mCurrentEditModeType) {
                     mBarriersHandler.UndoLastBarrier();
-                }
-            } else if ("new_route" == doneAction) {
-                if (jsonObj.contains("route_name")) {
-                    const auto& newRouteName = nlohmann_utilities::GetStringFromJson(jsonObj, "route_name");
-                    mRoutesHandler.SelectNewRouteAsActive(newRouteName);
-                }
-                if (jsonObj.contains("route_color")) {
-                    const glm::vec3 newRouteColor = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["route_color"]);
-                    mRoutesHandler.SetNewBezierCurveColor(newRouteColor);
+                } else if (eEditModeType::EDIT_SPAWN_PORTALS == mCurrentEditModeType) {
+                    UndoLastSpawnPortal();
                 }
             } else if ("new_barrier" == doneAction) {
                 if (jsonObj.contains("barrier_name")) {
@@ -295,9 +314,9 @@ void LevelEditorController::ProcessEvent(
                 lvlData.LevelName = lvlName;
                 lvlData.LevelBoundaryMin = mLevelAreaBoundingBox.GetMin();
                 lvlData.LevelBoundaryMax = mLevelAreaBoundingBox.GetMax();
-                lvlData.RoutesData = mRoutesHandler.CollectRoutesControlPoints();
                 lvlData.TowersData = mTowersHandler.CollectTowerPoints();
                 lvlData.BarriersData = mBarriersHandler.CollectBarrierPoints();
+                lvlData.SpawnPortalsData = CollectSpawnPortalPoints();
 
                 if (mDestinationPoint.has_value()) {
                     lvlData.DestinationPoint = mDestinationPoint.value();
@@ -338,16 +357,17 @@ void LevelEditorController::ProcessEvent(
 void LevelEditorController::UpdateVisibility()
 {
     const bool isVisibleTowerPlacementGridActor = eEditModeType::EDIT_TOWERS == mCurrentEditModeType;
-    const bool isVisibleRoutePlacementGridActor = eEditModeType::EDIT_ROUTES == mCurrentEditModeType;
     const bool isVisibleBarrierPlacementGridActor = eEditModeType::EDIT_BARRIERS == mCurrentEditModeType;
     const bool isVisibleDestinationPointMode = eEditModeType::EDIT_DESTINATION_POINT == mCurrentEditModeType;
+    const bool isVisibleSpawnPortalsMode = eEditModeType::EDIT_SPAWN_PORTALS == mCurrentEditModeType;
     mTowerPlacementGridActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
     mGhostTowerActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
+    mGhostPortalActor->SetIsEnabled(isVisibleSpawnPortalsMode);
     mTowerPlacementPickerActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
     mRoutePlacementGridActor->SetIsEnabled(
-        isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor || isVisibleDestinationPointMode);
+        isVisibleBarrierPlacementGridActor || isVisibleDestinationPointMode || isVisibleSpawnPortalsMode);
     mRouteNodePickerActor->SetIsEnabled(
-        isVisibleRoutePlacementGridActor || isVisibleBarrierPlacementGridActor || isVisibleDestinationPointMode);
+        isVisibleBarrierPlacementGridActor || isVisibleDestinationPointMode || isVisibleSpawnPortalsMode);
     mDestinationPointActor->SetIsEnabled(isVisibleDestinationPointMode || mDestinationPoint.has_value());
 }
 
@@ -367,6 +387,7 @@ void LevelEditorController::Initialize()
         mLevelAreaBoundingBox.GetHalfExtent().length() > 0.001, "LevelEditorController level area bounding box has zero size");
     mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(mLevelAreaBoundingBox);
     InitializeGhostTower();
+    InitializeGhostPortal();
     InitializeInternalActors();
     InitializeDestinationPointActor();
     ReAllocateLineComponents();
@@ -637,6 +658,39 @@ void LevelEditorController::InitializeGhostTower()
     mTowerPlacementPickerActor->AddComponent(c_pickerMesh);
 }
 
+void LevelEditorController::InitializeGhostPortal()
+{
+    const auto& sceneSp = mSceneWp.lock();
+    ext_assert(sceneSp, "LevelEditorController scene pointer is null in InitializeGhostPortal");
+    sceneSp->AddActor(mGhostPortalActor);
+
+    MaterialParser materialParser;
+    const std::shared_ptr<IMaterial>& ghostPortalMaterial = materialParser.ParseMaterialDescriptor("PortalMaterial.m");
+    sceneSp->RegisterMaterialInstance(ghostPortalMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostPortalMaterial, sceneSp, "GT_DeltaSec", "gt_timeSec");
+    MaterialPropertySetter::SetMaterialPropertyValue(ghostPortalMaterial, sceneSp, "ScreenResolution", "screenResolution");
+    MaterialPropertySetter::SetMaterialPropertyValue(
+        ghostPortalMaterial, mGhostPortalActor, "p_colorIntensity", "b_colorIntensity");
+
+    auto portalComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
+    const auto data = std::make_shared<BillboardComponentData>(
+        "c_billboard_ghost_portal",
+        Game::Constants::c_portalSize,
+        true,
+        glm::vec3(),
+        0.0f,
+        false,
+        glm::vec3(1.0f),
+        ghostPortalMaterial);
+    const auto& portalComponent
+        = std::static_pointer_cast<BillboardComponent>(sceneSp->CreateComponent_GameThread(portalComponentCreator, data));
+    portalComponent->SetSortOrderValue(-1000);
+    portalComponent->SetDepthWriteMaskEnabled(false);
+    mGhostPortalActor->AddComponent(portalComponent);
+
+    mGhostPortalActor->SetIsEnabled(false);
+}
+
 void LevelEditorController::InitializeDestinationPointActor()
 {
     const auto& sceneSp = mSceneWp.lock();
@@ -668,6 +722,90 @@ void LevelEditorController::InitializeDestinationPointActor()
     mDestinationPointActor->AddComponent(portalComponent);
 
     mDestinationPointActor->SetIsEnabled(false);
+}
+
+void LevelEditorController::CreateSpawnPortal(const glm::vec3& position)
+{
+    const auto& sceneSp = mSceneWp.lock();
+    ext_assert(sceneSp, "LevelEditorController scene pointer is null in CreateSpawnPortal");
+    SpawnPortalFactory portalFactory;
+    auto portal = portalFactory.CreatePortal(sceneSp, position, glm::vec3(0.0f), glm::vec3(1.0f), Game::Constants::c_portalSize);
+    portal->SetColorIntensity(glm::vec3(2.0f, 4.0f, 8.0f));
+    mSpawnPortals.emplace_back(std::move(portal));
+}
+
+bool LevelEditorController::IsSpawnPortalPositionValid(const glm::vec3& position) const
+{
+    if (!IsPortalPositionValidAgainstStationsAndBarriers(position)) {
+        return false;
+    }
+
+    const float portalMinDistanceSq = (Game::Constants::c_portalSize * 1.5f) * (Game::Constants::c_portalSize * 1.5f);
+
+    for (const auto& portal : mSpawnPortals) {
+        const glm::vec3& existingPosition = portal->GetRootComponent()->GetTranslation();
+        const glm::vec3 diff = position - existingPosition;
+        const float distSq = glm::dot(diff, diff);
+        if (distSq < portalMinDistanceSq) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool LevelEditorController::IsPortalPositionValidAgainstStationsAndBarriers(const glm::vec3& position) const
+{
+    const float stationCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
+    const float minDistance = stationCellSize * 4.0f;
+    const float minDistanceSq = minDistance * minDistance;
+
+    const auto& allTowerPoints = mTowersHandler.CollectTowerPoints();
+    for (const auto& [towerName, towerData] : allTowerPoints) {
+        const glm::vec3& towerPosition = std::get<0>(towerData);
+        const glm::vec3 diff = position - towerPosition;
+        const float distSq = glm::dot(diff, diff);
+        if (distSq < minDistanceSq) {
+            return false;
+        }
+    }
+
+    const auto& allBarrierPoints = mBarriersHandler.CollectBarrierPoints();
+    for (const auto& [barrierName, barrierPillars] : allBarrierPoints) {
+        for (const auto& pillarPosition : barrierPillars) {
+            const glm::vec3 diff = position - pillarPosition;
+            const float distSq = glm::dot(diff, diff);
+            if (distSq < minDistanceSq) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+void LevelEditorController::UndoLastSpawnPortal()
+{
+    if (mSpawnPortals.empty()) {
+        return;
+    }
+
+    const auto& sceneSp = mSceneWp.lock();
+    ext_assert(sceneSp, "LevelEditorController scene pointer is null in UndoLastSpawnPortal");
+
+    const auto& lastPortal = mSpawnPortals.back();
+    sceneSp->RemoveActor(lastPortal);
+    mSpawnPortals.pop_back();
+}
+
+std::vector<glm::vec3> LevelEditorController::CollectSpawnPortalPoints() const
+{
+    std::vector<glm::vec3> result;
+    result.reserve(mSpawnPortals.size());
+    for (const auto& portal : mSpawnPortals) {
+        result.push_back(portal->GetRootComponent()->GetTranslation());
+    }
+    return result;
 }
 
 } // namespace Game

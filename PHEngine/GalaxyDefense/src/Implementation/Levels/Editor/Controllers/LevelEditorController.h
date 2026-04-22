@@ -9,7 +9,6 @@
 #include "Implementation/Events/ChangeEditModeEvent.h"
 #include "Implementation/Levels/Editor/BarriersHandler.h"
 #include "Implementation/Levels/Editor/LevelPlacementGrid.h"
-#include "Implementation/Levels/Editor/RoutesHandler.h"
 #include "Implementation/Levels/Editor/TowersHandler.h"
 
 #include <memory>
@@ -33,6 +32,8 @@ using namespace EngineCore::GUI;
 using namespace Event;
 
 namespace Game {
+class PortalActor;
+
 class LevelEditorController : public std::enable_shared_from_this<LevelEditorController>,
                               public ILevelController,
                               public ITickable,
@@ -60,21 +61,19 @@ class LevelEditorController : public std::enable_shared_from_this<LevelEditorCon
 
     eEditModeType mCurrentEditModeType{eEditModeType::IDLE};
 
-    std::shared_ptr<Actor> mBezierCurvesActor;
-
     std::shared_ptr<Actor> mTowersActor;
 
     std::shared_ptr<Actor> mGhostTowerActor;
 
+    std::shared_ptr<Actor> mGhostPortalActor;
+
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostTowerBlendColorProperty;
+
+    std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostPortalColorProperty;
 
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mFinalDestinationPointColorProperty;
 
-    std::shared_ptr<::Graphics::IMaterial> mSplineMaterialPrefab;
-
     std::shared_ptr<::Graphics::IMaterial> mGridLineMaterialPrefab;
-
-    RoutesHandler mRoutesHandler;
 
     TowersHandler mTowersHandler;
 
@@ -85,6 +84,8 @@ class LevelEditorController : public std::enable_shared_from_this<LevelEditorCon
     std::optional<glm::vec3> mDestinationPoint;
 
     std::stack<std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>> mIdleRuntimeGeneratedLineComponents;
+
+    std::vector<std::shared_ptr<PortalActor>> mSpawnPortals;
 
 public:
     explicit LevelEditorController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
@@ -120,6 +121,8 @@ private:
 
     void InitializeGhostTower();
 
+    void InitializeGhostPortal();
+
     void InitializeDestinationPointActor();
 
     void RestoreLineComponentsPool();
@@ -131,5 +134,15 @@ private:
     glm::vec3 RaycastLevelPlane(bool& raycastWasSuccessfull, const glm::ivec2& screenSpacePoint);
 
     void UpdateVisibility();
+
+    void CreateSpawnPortal(const glm::vec3& position);
+
+    bool IsSpawnPortalPositionValid(const glm::vec3& position) const;
+
+    bool IsPortalPositionValidAgainstStationsAndBarriers(const glm::vec3& position) const;
+
+    void UndoLastSpawnPortal();
+
+    std::vector<glm::vec3> CollectSpawnPortalPoints() const;
 };
 } // namespace Game

@@ -27,6 +27,9 @@ using namespace Graphics;
 using namespace Resources;
 
 namespace Game {
+
+bool NavigationController::cEnableDebugPathRendering = false;
+
 NavigationController::NavigationController(const std::weak_ptr<::EngineCore::Scene>& sceneWp)
     : mSceneWp(sceneWp)
     , mNavPathDummyActor(std::make_shared<Actor>(
@@ -117,8 +120,9 @@ void NavigationController::Tick(const float deltaTimeSec)
     }
 
     for (const auto& spaceship : mEnemies) {
-        const auto& routeMoveComp = spaceship->GetOnRouteMovementComponent();
-        if (routeMoveComp->GetIsDistanceCompleted()) {
+        auto* handler = spaceship->GetRouteHandler();
+        if (handler && handler->UpdateRoutesAndCheckIfCompleted()) {
+            handler->ResetState();
             const auto& levelDataProviderPtr = LevelDataProvider::GetInstance();
             levelDataProviderPtr->SetCurrentStageSurvivedEnemySpaceshipsCount(
                 levelDataProviderPtr->GetCurrentStageSurvivedEnemySpaceshipsCount() + 1);
@@ -134,9 +138,15 @@ void NavigationController::UnpausableTick(const float deltaTimeSec)
 
 std::vector<glm::vec3> NavigationController::BuildNavMeshRoute(const glm::vec3& startPosition) const
 {
+    return BuildNavMeshRouteTo(startPosition, mFinalDestinationPoint);
+}
+
+std::vector<glm::vec3>
+NavigationController::BuildNavMeshRouteTo(const glm::vec3& startPosition, const glm::vec3& endPosition) const
+{
     ext_assert(mNavMesh, "NavMesh is null in NavigationController::BuildNavMeshRoute");
     const glm::vec2 start2D(startPosition.x, startPosition.z);
-    const glm::vec2 end2D(mFinalDestinationPoint.x, mFinalDestinationPoint.z);
+    const glm::vec2 end2D(endPosition.x, endPosition.z);
     const auto route2D = mNavMesh->BuildRouteBetweenPoints(start2D, end2D);
     std::vector<glm::vec3> route3D;
     route3D.reserve(route2D.size());
@@ -146,6 +156,45 @@ std::vector<glm::vec3> NavigationController::BuildNavMeshRoute(const glm::vec3& 
     return route3D;
 }
 
+std::vector<glm::vec3> NavigationController::BuildNavMeshRouteToNearestBarrier(const glm::vec3& startPosition) const
+{
+    std::vector<glm::vec3> bestRoute;
+
+    for (const auto& barrierWp : mActiveBarriersOnLevel) {
+        const auto barrier = barrierWp.lock();
+        if (!barrier || eBarrierActivityState::ACTIVE != barrier->GetState()) {
+            continue;
+        }
+
+        const auto pillars = barrier->GetBarrierPillarsMeshComponents();
+        for (size_t pillarIndex = 0; pillarIndex < pillars.size(); ++pillarIndex) {
+            if (!pillars[pillarIndex] || !pillars[pillarIndex]->IsEnabled()) {
+                continue;
+            }
+
+            const auto pillarPosition = barrier->GetBarrierPillarPosition(static_cast<int32_t>(pillarIndex));
+            const auto dirFromPillar = glm::normalize(startPosition - pillarPosition);
+            const float cellSize = mNavMesh->GetCellSize();
+
+            // Try cells approaching the pillar from our side: 1, 2, 3 cells back.
+            // The pillar cell itself is non-walkable, so approach from the near side.
+            for (int32_t offset = 1; offset <= 3; ++offset) {
+                const auto candidate = pillarPosition + dirFromPillar * (cellSize * static_cast<float>(offset));
+                if (!mNavMesh->IsCellWalkableByWorldPosition(glm::vec2(candidate.x, candidate.z))) {
+                    continue;
+                }
+                const auto route = BuildNavMeshRouteTo(startPosition, candidate);
+                if (!route.empty() && (bestRoute.empty() || route.size() < bestRoute.size())) {
+                    bestRoute = route;
+                }
+                break;
+            }
+        }
+    }
+
+    return bestRoute;
+}
+
 void NavigationController::PutSpaceshipOnRoute(const glm::vec3& startPosition, const std::shared_ptr<SpaceshipActor>& spaceship)
 {
     LogInfo(
@@ -153,18 +202,30 @@ void NavigationController::PutSpaceshipOnRoute(const glm::vec3& startPosition, c
         spaceship->GetObjectId(),
         " on route from position: ",
         startPosition);
-    const auto route = BuildNavMeshRoute(startPosition);
-    ext_assert(!route.empty(), "Failed to build NavMesh route in NavigationController::PutSpaceshipOnRoute");
-    const auto enemyMovementComponent = spaceship->GetOnRouteMovementComponent();
-    ext_assert(enemyMovementComponent, "Enemy movement component is null");
-    enemyMovementComponent->ResetStates();
-    enemyMovementComponent->SetIsMovementOnRouteAllowed(true);
-    enemyMovementComponent->SetRoutePoints(route);
-    spaceship->TriggerSpawn(route.front());
+    auto* handler = spaceship->GetRouteHandler();
+    ext_assert(handler, "SpaceshipRouteHandler is null in PutSpaceshipOnRoute");
+    handler->SetRouteBuildFunctions(
+        [weakMe = std::weak_ptr<NavigationController>(shared_from_this())](const glm::vec3& fromPosition) {
+            if (const auto& sharedMe = weakMe.lock()) {
+                return sharedMe->BuildNavMeshRoute(fromPosition);
+            }
+            return std::vector<glm::vec3>{};
+        },
+        [weakMe = std::weak_ptr<NavigationController>(shared_from_this())](const glm::vec3& fromPosition) {
+            if (const auto& sharedMe = weakMe.lock()) {
+                return sharedMe->BuildNavMeshRouteToNearestBarrier(fromPosition);
+            }
+            return std::vector<glm::vec3>{};
+        });
+    handler->InitializeAndStartFrom(startPosition);
+
     mEnemies.emplace_back(spaceship);
 #ifdef DEBUG
     if (cEnableDebugPathRendering) {
-        CreateDebugPathForSpaceship(spaceship->GetObjectId(), route);
+        const auto route = handler->GetCurrentRoutePoints();
+        if (route.size() > 1) {
+            CreateDebugPathForSpaceship(spaceship->GetObjectId(), route);
+        }
     }
 #endif
 }
@@ -175,24 +236,21 @@ void NavigationController::RebuildActiveShipRoutes()
         if (eSpaceshipActivityState::ACTIVE != spaceship->GetSpaceshipActivityState()) {
             continue;
         }
-        const auto& routeMoveComp = spaceship->GetOnRouteMovementComponent();
-        if (!routeMoveComp || routeMoveComp->GetIsDistanceCompleted()) {
+        auto* handler = spaceship->GetRouteHandler();
+        if (!handler) {
             continue;
         }
-        const auto currentPosition = spaceship->GetWorldPosition();
-        const auto newRoute = BuildNavMeshRoute(currentPosition);
-        if (newRoute.size() > 1) {
-            routeMoveComp->ReplaceRouteFromCurrentPosition(newRoute);
+        handler->RebuildFromCurrentPosition();
 #ifdef DEBUG
-            if (cEnableDebugPathRendering) {
-                CreateDebugPathForSpaceship(spaceship->GetObjectId(), newRoute);
+        if (cEnableDebugPathRendering) {
+            const auto route = handler->GetCurrentRoutePoints();
+            if (route.size() > 1) {
+                CreateDebugPathForSpaceship(spaceship->GetObjectId(), route);
+            } else {
+                RemoveDebugPathForSpaceship(spaceship->GetObjectId());
             }
-#endif
-        } else {
-            // Ship is already at the destination cell — mark route as completed
-            routeMoveComp->SetIsDistanceCompleted(true);
-            continue;
         }
+#endif
     }
 }
 
@@ -251,6 +309,7 @@ void NavigationController::RemoveSpaceshipFromRoute(const int32_t spaceshipActor
             return spaceshipActorId == enemy->GetObjectId();
         }));
     }
+
 #ifdef DEBUG
     if (cEnableDebugPathRendering) {
         RemoveDebugPathForSpaceship(spaceshipActorId);
@@ -557,9 +616,12 @@ void NavigationController::RefreshAllDebugPaths()
         if (eSpaceshipActivityState::ACTIVE != spaceship->GetSpaceshipActivityState()) {
             continue;
         }
-        const auto& routeMoveComp = spaceship->GetOnRouteMovementComponent();
-        if (routeMoveComp) {
-            CreateDebugPathForSpaceship(spaceship->GetObjectId(), routeMoveComp->GetRoutePoints());
+        auto* handler = spaceship->GetRouteHandler();
+        if (handler) {
+            const auto route = handler->GetCurrentRoutePoints();
+            if (route.size() > 1) {
+                CreateDebugPathForSpaceship(spaceship->GetObjectId(), route);
+            }
         }
     }
 }

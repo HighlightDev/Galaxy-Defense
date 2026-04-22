@@ -22,6 +22,7 @@ enum class eSpaceshipType { PAWN, FIGHTER, BOMBER, INTERCEPTOR };
 namespace Game {
 
 class SpaceObjectUiComponent;
+class SpaceshipRouteHandler;
 
 class SpaceshipActor : public Actor {
 protected:
@@ -49,6 +50,8 @@ protected:
 
     std::shared_ptr<EngineObjectProperty<float>> mDamageTimeProperty;
     std::shared_ptr<EngineObjectProperty<float>> mFreezingEffectProperty;
+
+    std::unique_ptr<SpaceshipRouteHandler> mRouteHandler;
 
 public:
     SpaceshipActor(
@@ -103,5 +106,9 @@ public:
     std::shared_ptr<OnRouteMovementComponent> GetOnRouteMovementComponent() const;
 
     eSpaceshipType GetSpaceshipType() const;
+
+    SpaceshipRouteHandler* GetRouteHandler() const;
+
+    ~SpaceshipActor();
 };
 } // namespace Game

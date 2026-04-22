@@ -1,5 +1,7 @@
 #include "FighterSpaceshipActor.h"
 
+#include "Implementation/Controllers/FighterSpaceshipRouteHandler.h"
+
 #include <cmath>
 
 namespace Game {
@@ -11,6 +13,7 @@ FighterSpaceshipActor::FighterSpaceshipActor(
     , mFighterLevel(fighterLevel)
 {
     mSpaceshipType = eSpaceshipType::FIGHTER;
+    mRouteHandler = std::make_unique<FighterSpaceshipRouteHandler>(this);
 }
 
 void FighterSpaceshipActor::Tick(const float deltaTimeSec)

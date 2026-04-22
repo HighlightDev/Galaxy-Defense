@@ -85,25 +85,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
 
     mNavigationController->SetFinalDestinationPoint(levelData.DestinationPoint.value_or(glm::vec3(0.0f, 0.0f, 0.0f)));
 
-    // Extract portal positions from RoutesData (first control point of each route)
-    std::vector<glm::vec3> portalPositions;
-    for (const auto& [routeName, route] : levelData.RoutesData) {
-        if (!route.empty()) {
-            const auto& startPoint = std::get<0>(route.front());
-            ext_assert(
-                glm::all(glm::greaterThanEqual(glm::vec2(startPoint.x, startPoint.z), levelData.LevelBoundaryMin))
-                    && glm::all(glm::lessThanEqual(glm::vec2(startPoint.x, startPoint.z), levelData.LevelBoundaryMax)),
-                "Invalid portal position in level data in CombatController::InitFromLevelData");
-            const bool bIsTooCloseToAnotherPortal
-                = std::any_of(portalPositions.cbegin(), portalPositions.cend(), [&](const auto& existingPortalPos) {
-                      return glm::distance2(existingPortalPos, startPoint)
-                          < (Game::Constants::c_portalSize * Game::Constants::c_portalSize);
-                  });
-            if (!bIsTooCloseToAnotherPortal) {
-                portalPositions.emplace_back(startPoint);
-            }
-        }
-    }
+    const auto& portalPositions = levelData.SpawnPortalsData;
     mNavigationController->SetPortalPositions(portalPositions);
 
     ext_assert(!portalPositions.empty(), " No portal positions found in level data in CombatController::InitFromLevelData");
@@ -202,8 +184,6 @@ void CombatController::OnPostLevelInit()
             3, glm::vec3(lvlBoundaryMax.x, 0, lvlBoundaryMin.z), glm::vec3(), Game::Constants::c_barrierPillarScale);
         a_barrierSp->TrySetBarrierPillarMeshRelativeTransform(
             4, glm::vec3(lvlBoundaryMin.x, 0, lvlBoundaryMin.z), glm::vec3(), Game::Constants::c_barrierPillarScale);
-        mNavigationController->PutActiveBarrierOnLevel(
-            a_barrierSp); // Add barrier to navigation controller to update nav mesh with barrier rays positions
     }
 }
 

@@ -5,6 +5,7 @@
 #include "Core/GameCore/NavigationMesh/NavMesh2D.h"
 #include "ILevelController.h"
 #include "Implementation/Controllers/BarriersController.h"
+#include "Implementation/Controllers/SpaceshipRouteHandler.h"
 #include "Implementation/DamageDealerType.h"
 
 #include <memory>
@@ -30,7 +31,9 @@ class MissileActor;
 class BarrierActor;
 class SpaceStationActor;
 
-class NavigationController : public ITickable, public ILevelController {
+class NavigationController : public ITickable,
+                             public ILevelController,
+                             public std::enable_shared_from_this<NavigationController> {
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
     std::vector<std::shared_ptr<SpaceshipActor>> mEnemies;
@@ -58,7 +61,7 @@ class NavigationController : public ITickable, public ILevelController {
     std::vector<std::vector<std::weak_ptr<::EngineCore::StaticMeshComponent>>> mNavMeshDebugGreenCells;
     std::vector<std::vector<std::weak_ptr<::EngineCore::StaticMeshComponent>>> mNavMeshDebugRedCells;
 
-    static constexpr bool cEnableDebugPathRendering{false};
+    static bool cEnableDebugPathRendering;
     std::shared_ptr<::EngineCore::Actor> mDebugPathActor;
     std::shared_ptr<Graphics::IMaterial> mDebugPathMaterial;
     std::unordered_map<int32_t, std::vector<std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent>>> mDebugPathLines;
@@ -115,6 +118,10 @@ private:
     void InitializeNavMesh();
 
     std::vector<glm::vec3> BuildNavMeshRoute(const glm::vec3& startPosition) const;
+
+    std::vector<glm::vec3> BuildNavMeshRouteTo(const glm::vec3& startPosition, const glm::vec3& endPosition) const;
+
+    std::vector<glm::vec3> BuildNavMeshRouteToNearestBarrier(const glm::vec3& startPosition) const;
 
     void ReapplyAllObstaclesToNavMesh();
 

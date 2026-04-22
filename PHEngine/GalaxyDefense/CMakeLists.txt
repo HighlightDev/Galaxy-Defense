@@ -37,6 +37,9 @@ set(HEADERS
     src/Implementation/Controllers/UserInteractionController.h
     src/Implementation/Controllers/NavigationController.h
     src/Implementation/Controllers/BarriersController.h
+    src/Implementation/Controllers/SpaceshipRouteHandler.h
+      src/Implementation/Controllers/WeakSpaceshipRouteHandler.h
+      src/Implementation/Controllers/FighterSpaceshipRouteHandler.h
     src/Implementation/Events/ElectroRaySphereContactCollisionEvent.h
     src/Implementation/Events/ShootRayCollisionEvent.h
     src/Implementation/Events/MainPlayerStatusChangedEvent.h
@@ -142,6 +145,9 @@ set(SOURCES
     src/Implementation/Controllers/UserInteractionController.cpp
     src/Implementation/Controllers/NavigationController.cpp
     src/Implementation/Controllers/BarriersController.cpp
+    src/Implementation/Controllers/SpaceshipRouteHandler.cpp
+      src/Implementation/Controllers/WeakSpaceshipRouteHandler.cpp
+      src/Implementation/Controllers/FighterSpaceshipRouteHandler.cpp
     src/Implementation/Events/ElectroRaySphereContactCollisionEvent.cpp
     src/Implementation/Events/ShootRayCollisionEvent.cpp
     src/Implementation/Events/MainPlayerStatusChangedEvent.cpp

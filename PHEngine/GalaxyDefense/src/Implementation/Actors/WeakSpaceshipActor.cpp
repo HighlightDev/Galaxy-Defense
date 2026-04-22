@@ -9,6 +9,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Implementation/Components/UiComponents/SpaceObjectUiComponent.h"
+#include "Implementation/Controllers/WeakSpaceshipRouteHandler.h"
 #include "Implementation/DamageDealerType.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 
@@ -22,6 +23,7 @@ WeakSpaceshipActor::WeakSpaceshipActor(
     , mWeakSpaceshipTweener()
 {
     mSpaceshipType = eSpaceshipType::PAWN;
+    mRouteHandler = std::make_unique<WeakSpaceshipRouteHandler>(this);
 }
 
 void WeakSpaceshipActor::AttachTweener(std::shared_ptr<Tweener> tweener)

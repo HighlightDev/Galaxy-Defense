@@ -19,12 +19,11 @@ struct LevelData {
 
     std::unordered_map<std::string, std::tuple<glm::vec3 /*position*/, glm::vec3 /*scale*/>> TowersData;
 
-    std::unordered_map<std::string, std::vector<std::tuple<glm::vec3 /*start*/, glm::vec3 /*control point*/, glm::vec3 /*end*/>>>
-        RoutesData;
-
     std::unordered_map<std::string, std::vector<glm::vec3>> BarriersData;
 
     std::optional<glm::vec3> DestinationPoint;
+
+    std::vector<glm::vec3> SpawnPortalsData;
 
     bool isDataValid() const;
 

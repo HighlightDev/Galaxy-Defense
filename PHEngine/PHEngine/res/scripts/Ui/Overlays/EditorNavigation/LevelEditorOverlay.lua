@@ -32,7 +32,7 @@ local LabelButton = require("Ui/Widgets/LabelButton")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local Styles = require("Ui/Common/styles")
 
-EditModeType = {IDLE = 0, EDIT_TOWERS = 1, EDIT_ROUTES = 2, EDIT_BARRIERS = 3, EDIT_DESTINATION_POINT = 4}
+EditModeType = {IDLE = 0, EDIT_TOWERS = 1, EDIT_BARRIERS = 2, EDIT_DESTINATION_POINT = 3, EDIT_SPAWN_PORTALS = 4}
 
 local EditorContainerState = {Expanded = 0, Hided = 1}
 
@@ -51,7 +51,6 @@ local function getRandomColor()
     return {r = r, g = g, b = b}
 end
 
-RouteName = 1
 BarrierName = 1
 
 function LevelEditorOverlay:new(host)
@@ -72,9 +71,6 @@ function LevelEditorOverlay:new(host)
                                                      "EditStationSocketsButton")
     overlay:addCompoundWidget(editStationSocketsButton)
 
-    local editRoutesButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName, "EditRoutesButton");
-    overlay:addCompoundWidget(editRoutesButton)
-
     local editBarriersButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName, "EditBarriersButton")
     overlay:addCompoundWidget(editBarriersButton)
 
@@ -82,14 +78,15 @@ function LevelEditorOverlay:new(host)
                                                   "EditDestinationButton")
     overlay:addCompoundWidget(editDestinationButton)
 
+    local editSpawnPortalsButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName,
+                                                   "EditSpawnPortalsButton")
+    overlay:addCompoundWidget(editSpawnPortalsButton)
+
     local undoLastActionButton = ImageButton:new(host, overlay, "EditStationSocketsButton")
     overlay:addCompoundWidget(undoLastActionButton)
 
     local saveLevelButton = ImageButton:new(host, overlay, "SaveLevelButton")
     overlay:addCompoundWidget(saveLevelButton)
-
-    local newRouteButton = ImageButton:new(host, overlay, "NewRouteButton")
-    overlay:addCompoundWidget(newRouteButton)
 
     local newBarrierButton = ImageButton:new(host, overlay, "NewBarrierButton")
     overlay:addCompoundWidget(newBarrierButton)
@@ -115,12 +112,11 @@ function LevelEditorOverlay:new(host)
                                                                    180.0, 360.0))
         local buttonsVisible = self.editorContainerState == EditorContainerState.Expanded
         editStationSocketsButton:setIsVisible(buttonsVisible)
-        editRoutesButton:setIsVisible(buttonsVisible)
         editBarriersButton:setIsVisible(buttonsVisible)
         editDestinationButton:setIsVisible(buttonsVisible)
+        editSpawnPortalsButton:setIsVisible(buttonsVisible)
         undoLastActionButton:setIsVisible(buttonsVisible)
         saveLevelButton:setIsVisible(buttonsVisible)
-        newRouteButton:setIsVisible(buttonsVisible)
         newBarrierButton:setIsVisible(buttonsVisible)
     end)
 
@@ -144,20 +140,6 @@ function LevelEditorOverlay:new(host)
             editStationSocketsButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
             editStationSocketsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        end
-    end)
-
-    editRoutesButton:subscribeOnMouseInputClickedCallback(function()
-        self.currentEditModeType = EditModeType.EDIT_ROUTES == self.currentEditModeType and EditModeType.IDLE or
-                                       EditModeType.EDIT_ROUTES
-        EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                                                       self.currentEditModeType)
-    end)
-    editRoutesButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            editRoutesButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-        else
-            editRoutesButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
@@ -190,6 +172,20 @@ function LevelEditorOverlay:new(host)
         end
     end)
 
+    editSpawnPortalsButton:subscribeOnMouseInputClickedCallback(function()
+        self.currentEditModeType = EditModeType.EDIT_SPAWN_PORTALS == self.currentEditModeType and EditModeType.IDLE or
+                                       EditModeType.EDIT_SPAWN_PORTALS
+        EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+                                                       self.currentEditModeType)
+    end)
+    editSpawnPortalsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            editSpawnPortalsButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            editSpawnPortalsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
+    end)
+
     undoLastActionButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                   "EditorLevelEvents", json.encode({action = "undo"}))
@@ -205,24 +201,6 @@ function LevelEditorOverlay:new(host)
             saveLevelButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
         else
             saveLevelButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        end
-    end)
-
-    newRouteButton:subscribeOnMouseInputClickedCallback(function()
-        local newRouteColor = getRandomColor()
-        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                                                  "EditorLevelEvents", json.encode({
-            action = "new_route",
-            route_name = "route_" .. tostring(RouteName),
-            route_color = {r = newRouteColor.r, g = newRouteColor.g, b = newRouteColor.b}
-        }))
-        RouteName = RouteName + 1
-    end)
-    newRouteButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            newRouteButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-        else
-            newRouteButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         end
     end)
 
@@ -258,23 +236,20 @@ function LevelEditorOverlay:new(host)
         editStationSocketsButton:setWidth(buttonWidth)
         editStationSocketsButton:setHeight(buttonHeight)
 
-        editRoutesButton:setWidth(buttonWidth)
-        editRoutesButton:setHeight(buttonHeight)
-
         editBarriersButton:setWidth(buttonWidth)
         editBarriersButton:setHeight(buttonHeight)
 
         editDestinationButton:setWidth(buttonWidth)
         editDestinationButton:setHeight(buttonHeight)
 
+        editSpawnPortalsButton:setWidth(buttonWidth)
+        editSpawnPortalsButton:setHeight(buttonHeight)
+
         undoLastActionButton:setWidth(buttonWidth)
         undoLastActionButton:setHeight(buttonHeight)
 
         saveLevelButton:setWidth(buttonWidth)
         saveLevelButton:setHeight(buttonHeight)
-
-        newRouteButton:setWidth(buttonWidth)
-        newRouteButton:setHeight(buttonHeight)
 
         newBarrierButton:setWidth(buttonWidth)
         newBarrierButton:setHeight(buttonHeight)
@@ -409,27 +384,11 @@ function LevelEditorOverlay:new(host)
         editStationSocketsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         editStationSocketsButton:setLabelFontSize(13)
 
-        editRoutesButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
-        editRoutesButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-                                   editorContainer.widgetName, 10)
-        editRoutesButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-                                   editStationSocketsButton.widgetName, 10)
-        editRoutesButton:setWidth(buttonWidth)
-        editRoutesButton:setHeight(buttonHeight)
-        editRoutesButton:setButtonBorderRadius(8)
-        editRoutesButton:setLabelText("Edit routes")
-        editRoutesButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
-        editRoutesButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
-        editRoutesButton:setLabelTextColorHexValue(0x000000)
-        editRoutesButton:setZOrder(2)
-        editRoutesButton:setButtonColorHexValue(Styles.Colors.buttonColor)
-        editRoutesButton:setLabelFontSize(13)
-
         editBarriersButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editBarriersButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
                                      editorContainer.widgetName, 10)
         editBarriersButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-                                     editRoutesButton.widgetName, 10)
+                                     editStationSocketsButton.widgetName, 10)
         editBarriersButton:setWidth(buttonWidth)
         editBarriersButton:setHeight(buttonHeight)
         editBarriersButton:setButtonBorderRadius(8)
@@ -457,23 +416,27 @@ function LevelEditorOverlay:new(host)
         editDestinationButton:setButtonColorHexValue(Styles.Colors.buttonColor)
         editDestinationButton:setLabelFontSize(13)
 
-        newRouteButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
-        newRouteButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-                                 editorContainer.widgetName, 10)
-        newRouteButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-                                 editDestinationButton.widgetName, 40)
-        newRouteButton:setWidth(buttonWidth)
-        newRouteButton:setHeight(buttonHeight)
-        newRouteButton:setButtonBorderRadius(8)
-        newRouteButton:setImageTextureSource("route.png")
-        newRouteButton:setZOrder(2)
-        newRouteButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        editSpawnPortalsButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
+        editSpawnPortalsButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+                                         editorContainer.widgetName, 10)
+        editSpawnPortalsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+                                         editDestinationButton.widgetName, 10)
+        editSpawnPortalsButton:setWidth(buttonWidth)
+        editSpawnPortalsButton:setHeight(buttonHeight)
+        editSpawnPortalsButton:setButtonBorderRadius(8)
+        editSpawnPortalsButton:setLabelText("Edit portals")
+        editSpawnPortalsButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        editSpawnPortalsButton:setLabelTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
+        editSpawnPortalsButton:setLabelTextColorHexValue(0x000000)
+        editSpawnPortalsButton:setZOrder(2)
+        editSpawnPortalsButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        editSpawnPortalsButton:setLabelFontSize(13)
 
         newBarrierButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         newBarrierButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
                                    editorContainer.widgetName, 10)
         newBarrierButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-                                   newRouteButton.widgetName, 10)
+                                   editSpawnPortalsButton.widgetName, 10)
         newBarrierButton:setWidth(buttonWidth)
         newBarrierButton:setHeight(buttonHeight)
         newBarrierButton:setButtonBorderRadius(8)
