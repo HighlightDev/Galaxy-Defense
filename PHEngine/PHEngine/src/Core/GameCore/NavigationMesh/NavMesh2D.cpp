@@ -32,15 +32,26 @@ void NavMesh2D::ResetAllCellsWalkable()
     std::fill(mWalkableCells.begin(), mWalkableCells.end(), true);
 }
 
-void NavMesh2D::SetCellStateByWorldPosition(const glm::vec2& worldPosition, const bool isWalkable)
+void NavMesh2D::SetCellsStateByWorldPosition(const glm::vec2& worldPosition, const glm::vec2& size, const bool isWalkable)
 {
     const auto& levelMin = mLevelBoundingBox.GetMin();
 
-    const int32_t cellX = std::min(static_cast<int32_t>((worldPosition.x - levelMin.x) / mCellSize), mCellsCountX - 1);
-    const int32_t cellY = std::min(static_cast<int32_t>((worldPosition.y - levelMin.y) / mCellSize), mCellsCountY - 1);
+    const auto& maxCornerPos = worldPosition + (size * 0.5f);
+    const auto& minCornerPos = worldPosition - (size * 0.5f);
+    const int32_t occupiedCellsX = static_cast<int32_t>(std::ceil(size.x / mCellSize));
+    const int32_t occupiedCellsY = static_cast<int32_t>(std::ceil(size.y / mCellSize));
 
-    if (cellX >= 0 && cellX < mCellsCountX && cellY >= 0 && cellY < mCellsCountY) {
-        mWalkableCells[cellX * mCellsCountY + cellY] = isWalkable;
+    for (int32_t x = 0; x < occupiedCellsX; ++x) {
+        for (int32_t y = 0; y < occupiedCellsY; ++y) {
+            const auto& cellCenter = glm::vec2(
+                minCornerPos.x + mCellSize * (0.5f + static_cast<float>(x)),
+                minCornerPos.y + mCellSize * (0.5f + static_cast<float>(y)));
+            const int32_t cellX = std::min(static_cast<int32_t>((cellCenter.x - levelMin.x) / mCellSize), mCellsCountX - 1);
+            const int32_t cellY = std::min(static_cast<int32_t>((cellCenter.y - levelMin.y) / mCellSize), mCellsCountY - 1);
+            if (cellX >= 0 && cellX < mCellsCountX && cellY >= 0 && cellY < mCellsCountY) {
+                mWalkableCells[cellX * mCellsCountY + cellY] = isWalkable;
+            }
+        }
     }
 }
 
@@ -58,7 +69,7 @@ bool NavMesh2D::IsCellWalkableByWorldPosition(const glm::vec2& worldPosition) co
 }
 
 void NavMesh2D::FillCellStatesBetweenWorldPositions(
-    const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition, const bool isWalkable)
+    const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition, const glm::vec2& size, const bool isWalkable)
 {
     const auto& levelMin = mLevelBoundingBox.GetMin();
     const auto& levelMax = mLevelBoundingBox.GetMax();
@@ -81,7 +92,7 @@ void NavMesh2D::FillCellStatesBetweenWorldPositions(
     const int32_t steps = static_cast<int32_t>(distance * c_invCellSize);
     for (int32_t i = 0; i <= steps; ++i) {
         const glm::vec2 point = startWorldPosition + direction * (i * mCellSize);
-        SetCellStateByWorldPosition(point, isWalkable);
+        SetCellsStateByWorldPosition(point, size, isWalkable);
     }
 }
 

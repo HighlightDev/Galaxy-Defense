@@ -35,7 +35,7 @@ BarrierActor::BarrierActor(const std::string& gameObjectName, const std::shared_
 {
 }
 
-void BarrierActor::setBarrierProtoData(const BarrierUiProtoData& protoData)
+void BarrierActor::SetBarrierProtoData(const BarrierUiProtoData& protoData)
 {
     mUiProtoData = protoData;
 }
@@ -402,5 +402,15 @@ std::vector<std::pair<glm::vec3, glm::vec3>> BarrierActor::GetBarrierActiveRaysW
         }
     }
     return pillarWorldPositions;
+}
+
+void BarrierActor::SetBarrierPillarSize(const glm::vec3& size)
+{
+    mBarrierPillarSize = size;
+}
+
+const glm::vec3& BarrierActor::GetBarrierPillarSize() const
+{
+    return mBarrierPillarSize;
 }
 } // namespace Game

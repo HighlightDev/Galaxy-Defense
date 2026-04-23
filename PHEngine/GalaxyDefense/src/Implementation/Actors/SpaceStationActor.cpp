@@ -80,4 +80,14 @@ void SpaceStationActor::SetRadiusMarkerComponent(const std::shared_ptr<StaticMes
     mRadiusMarkerComponent = radiusMarkerComponent;
     AddComponent(radiusMarkerComponent);
 }
+
+void SpaceStationActor::SetSpaceStationSize(const glm::vec3& size)
+{
+    mSpaceStationSize = size;
+}
+
+const glm::vec3& SpaceStationActor::GetSpaceStationSize() const
+{
+    return mSpaceStationSize;
+}
 } // namespace Game

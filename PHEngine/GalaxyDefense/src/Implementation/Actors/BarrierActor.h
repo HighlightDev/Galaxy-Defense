@@ -70,12 +70,14 @@ private:
 
     std::unordered_map<int32_t, std::shared_ptr<GameThreadTimer>> mDamageMessageTimers;
 
+    glm::vec3 mBarrierPillarSize;
+
 public:
     BarrierActor(const std::string& gameObjectName, const std::shared_ptr<::EngineCore::SceneComponent>& rootComponent);
 
     void Tick(const float deltaTimeSec) override;
 
-    void setBarrierProtoData(const BarrierUiProtoData& protoData);
+    void SetBarrierProtoData(const BarrierUiProtoData& protoData);
 
     void SetBarrierMaterials(
         const std::shared_ptr<::Graphics::IMaterial>& pillarMaterial, const std::shared_ptr<::Graphics::IMaterial>& rayMaterial);
@@ -116,6 +118,10 @@ public:
     int32_t FindPillarIndexByPhysDescriptorId(const int32_t physDescriptorId) const;
 
     std::vector<std::pair<glm::vec3, glm::vec3>> GetBarrierActiveRaysWorldPositions() const;
+
+    void SetBarrierPillarSize(const glm::vec3& size);
+
+    const glm::vec3& GetBarrierPillarSize() const;
 
 private:
     void DestroyPillar(const int32_t pillarIndex);

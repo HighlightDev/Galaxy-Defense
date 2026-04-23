@@ -262,8 +262,12 @@ void NavigationController::ReapplyAllObstaclesToNavMesh()
         if (const auto barrier = barrierWp.lock()) {
             const auto& rayPositions = barrier->GetBarrierActiveRaysWorldPositions();
             for (const auto& [startPosition, endPosition] : rayPositions) {
+                const auto& barrierPillarSize = barrier->GetBarrierPillarSize();
                 mNavMesh->FillCellStatesBetweenWorldPositions(
-                    glm::vec2(startPosition.x, startPosition.z), glm::vec2(endPosition.x, endPosition.z), false);
+                    glm::vec2(startPosition.x, startPosition.z),
+                    glm::vec2(endPosition.x, endPosition.z),
+                    glm::vec2(barrierPillarSize.x, barrierPillarSize.z),
+                    false);
             }
         }
     }
@@ -280,12 +284,23 @@ void NavigationController::MarkSpaceStationCellsOnNavMesh(
 {
     const auto& pos = spaceStationActor->GetRootComponent()->GetTranslation();
     const glm::vec2 center(pos.x, pos.z);
-    const float halfNavCell = mNavMesh->GetCellSize() * 0.5f;
+    const float cellSize = mNavMesh->GetCellSize();
+    const auto& spaceStationSize
+        = glm::vec2(spaceStationActor->GetSpaceStationSize().x, spaceStationActor->GetSpaceStationSize().z);
 
-    mNavMesh->SetCellStateByWorldPosition(center + glm::vec2(-halfNavCell, -halfNavCell), isWalkable);
-    mNavMesh->SetCellStateByWorldPosition(center + glm::vec2(+halfNavCell, -halfNavCell), isWalkable);
-    mNavMesh->SetCellStateByWorldPosition(center + glm::vec2(-halfNavCell, +halfNavCell), isWalkable);
-    mNavMesh->SetCellStateByWorldPosition(center + glm::vec2(+halfNavCell, +halfNavCell), isWalkable);
+    const auto& maxCornerPos = center + (spaceStationSize * 0.5f);
+    const auto& minCornerPos = center - (spaceStationSize * 0.5f);
+    const int32_t occupiedCellsX = static_cast<int32_t>(std::ceil(spaceStationSize.x / cellSize));
+    const int32_t occupiedCellsY = static_cast<int32_t>(std::ceil(spaceStationSize.y / cellSize));
+
+    for (int32_t x = 0; x < occupiedCellsX; ++x) {
+        for (int32_t y = 0; y < occupiedCellsY; ++y) {
+            const auto& cellCenter = glm::vec2(
+                minCornerPos.x + cellSize * (0.5f + static_cast<float>(x)),
+                minCornerPos.y + cellSize * (0.5f + static_cast<float>(y)));
+            mNavMesh->SetCellsStateByWorldPosition(cellCenter, glm::vec2(cellSize), isWalkable);
+        }
+    }
 }
 
 void NavigationController::PutMissileToNavigate(const std::shared_ptr<MissileActor>& missile)
@@ -362,8 +377,12 @@ void NavigationController::PutActiveBarrierOnLevel(const std::shared_ptr<Barrier
 
     const auto& barrierRaysWorldPositions = barrierActor->GetBarrierActiveRaysWorldPositions();
     for (const auto& [startPosition, endPosition] : barrierRaysWorldPositions) {
+        const auto& barrierPillarSize = barrierActor->GetBarrierPillarSize();
         mNavMesh->FillCellStatesBetweenWorldPositions(
-            glm::vec2(startPosition.x, startPosition.z), glm::vec2(endPosition.x, endPosition.z), false);
+            glm::vec2(startPosition.x, startPosition.z),
+            glm::vec2(endPosition.x, endPosition.z),
+            glm::vec2(barrierPillarSize.x, barrierPillarSize.z),
+            false);
     }
 #ifdef DEBUG
     if (cEnableDebugPathRendering) {

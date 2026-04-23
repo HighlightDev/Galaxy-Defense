@@ -26,6 +26,8 @@ class SpaceStationActor : public Actor {
 
     std::shared_ptr<EngineObjectProperty<float>> mShootRadiusProperty;
 
+    glm::vec3 mSpaceStationSize;
+
 public:
     SpaceStationActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
@@ -48,5 +50,9 @@ public:
     bool GetIsRayActive() const;
 
     void SetRadiusMarkerComponent(const std::shared_ptr<::EngineCore::StaticMeshComponent>& radiusMarkerComponent);
+
+    void SetSpaceStationSize(const glm::vec3& size);
+
+    const glm::vec3& GetSpaceStationSize() const;
 };
 } // namespace Game

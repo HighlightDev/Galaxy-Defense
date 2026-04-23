@@ -23,10 +23,10 @@ class NavMesh2D {
 public:
     explicit NavMesh2D(const BoundingBox2D<glm::vec2>& levelBoundingBox, const float cellSize);
 
-    void SetCellStateByWorldPosition(const glm::vec2& worldPosition, const bool isWalkable);
+    void SetCellsStateByWorldPosition(const glm::vec2& worldPosition, const glm::vec2& size, const bool isWalkable);
 
     void FillCellStatesBetweenWorldPositions(
-        const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition, const bool isWalkable);
+        const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition, const glm::vec2& size, const bool isWalkable);
 
     bool IsCellWalkableByWorldPosition(const glm::vec2& worldPosition) const;
 

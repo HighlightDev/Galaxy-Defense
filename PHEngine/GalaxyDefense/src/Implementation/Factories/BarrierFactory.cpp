@@ -55,7 +55,8 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
     constexpr uint32_t c_pillarHealth = 50;
     a_barrier->SetNominalPillarHealth(c_pillarHealth);
 
-    a_barrier->setBarrierProtoData(
+    a_barrier->SetBarrierPillarSize(scale);
+    a_barrier->SetBarrierProtoData(
         {"Lora-VariableFont_wght",
          16,
          "",

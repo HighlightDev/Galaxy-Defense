@@ -30,6 +30,8 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     static int32_t index = 0;
     const auto& towerActor = std::make_shared<SpaceStationActor>(
         towerName, std::make_shared<SceneComponent>("c_root_" + towerName, translation, glm::vec3(), glm::vec3(1), true));
+
+    towerActor->SetSpaceStationSize(scale);
     MaterialParser materialParser;
     const auto& towerMaterialPrefab = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
     const auto& albedoName = "Space_Station_COLOR.png";
