@@ -13,6 +13,7 @@
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/UtilityCore/EngineMath.h"
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceStationActor.h"
@@ -153,7 +154,37 @@ NavigationController::BuildNavMeshRouteTo(const glm::vec3& startPosition, const 
     for (const auto& point : route2D) {
         route3D.emplace_back(point.x, startPosition.y, point.y);
     }
-    return route3D;
+
+    if (route3D.size() < 3) {
+        return route3D;
+    }
+
+    // Smooth the path using quadratic Bezier segments.
+    // Triplets (P[i], P[i+1]=control, P[i+2]) with stride 2; P[i+1] is the Bezier control point.
+    static constexpr size_t c_bezierSubdivisions = 3;
+    static constexpr float c_tStep = 1.0f / static_cast<float>(c_bezierSubdivisions + 1);
+
+    std::vector<glm::vec3> smoothRoute;
+    smoothRoute.reserve((route3D.size() / 2) * (c_bezierSubdivisions + 2));
+
+    size_t i = 0;
+    for (; i + 2 < route3D.size(); i += 2) {
+        const auto& p0 = route3D[i];
+        const auto& p1 = route3D[i + 1]; // Bezier control point
+        const auto& p2 = route3D[i + 2]; // end of this segment / start of next
+        smoothRoute.push_back(p0);
+        for (size_t s = 1; s <= c_bezierSubdivisions; ++s) {
+            const float t = static_cast<float>(s) * c_tStep;
+            smoothRoute.push_back(EngineMath::QuadraticBezier(p0, p1, p2, t));
+        }
+        // p2 will be added as p0 of the next iteration, or by the trailing loop below
+    }
+    // Append any remaining points (covers the final endpoint and the even-count remainder)
+    for (; i < route3D.size(); ++i) {
+        smoothRoute.push_back(route3D[i]);
+    }
+
+    return smoothRoute;
 }
 
 std::vector<glm::vec3> NavigationController::BuildNavMeshRouteToNearestBarrier(const glm::vec3& startPosition) const

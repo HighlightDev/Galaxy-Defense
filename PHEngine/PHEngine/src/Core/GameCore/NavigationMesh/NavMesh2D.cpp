@@ -143,7 +143,10 @@ NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const gl
     const int32_t endIdx = cellIndex(endX, endY);
 
     auto heuristic = [](const int32_t ax, const int32_t ay, const int32_t bx, const int32_t by) -> float {
-        return static_cast<float>(std::abs(ax - bx) + std::abs(ay - by));
+        const float dx = static_cast<float>(std::abs(ax - bx));
+        const float dy = static_cast<float>(std::abs(ay - by));
+        // Octile distance: accounts for diagonal moves costing sqrt(2)
+        return std::max(dx, dy) + (1.41421356f - 1.0f) * std::min(dx, dy);
     };
 
     struct AStarNode {
@@ -155,8 +158,10 @@ NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const gl
         }
     };
 
-    static constexpr int32_t c_dx[] = {0, 0, 1, -1};
-    static constexpr int32_t c_dy[] = {1, -1, 0, 0};
+    // Cardinals first (indices 0-3), then diagonals (indices 4-7)
+    static constexpr int32_t c_dx[] = {0, 0, 1, -1, 1, 1, -1, -1};
+    static constexpr int32_t c_dy[] = {1, -1, 0, 0, 1, -1, 1, -1};
+    static constexpr float c_moveCost[] = {1.0f, 1.0f, 1.0f, 1.0f, 1.41421356f, 1.41421356f, 1.41421356f, 1.41421356f};
 
     std::vector<float> gScore(totalCells, std::numeric_limits<float>::max());
     std::vector<int32_t> cameFrom(totalCells, -1);
@@ -192,15 +197,19 @@ NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const gl
             continue;
         }
 
-        for (int32_t d = 0; d < 4; ++d) {
+        for (int32_t d = 0; d < 8; ++d) {
             const int32_t nx = cx + c_dx[d];
             const int32_t ny = cy + c_dy[d];
             if (!isValid(nx, ny)) {
                 continue;
             }
+            // Prevent corner cutting: both cardinal neighbors must be walkable for diagonal moves
+            if (d >= 4 && (!isValid(cx + c_dx[d], cy) || !isValid(cx, cy + c_dy[d]))) {
+                continue;
+            }
 
             const int32_t neighborIdx = cellIndex(nx, ny);
-            const float tentativeG = currentG + 1.0f;
+            const float tentativeG = currentG + c_moveCost[d];
             if (tentativeG < gScore[neighborIdx]) {
                 gScore[neighborIdx] = tentativeG;
                 cameFrom[neighborIdx] = current.idx;
