@@ -2,12 +2,15 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/ElectricBeamComponentData.h"
+#include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Components/ComponentData/UiComponentData.h"
+#include "Core/GameCore/Components/ParticleComponents/GpuParticleSystemComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
@@ -18,6 +21,8 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionBoxShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Implementation/Components/UiComponents/BarrierUiComponent.h"
@@ -156,6 +161,54 @@ void BarrierActor::CreateNewBarrierPillar(const glm::vec3& position, const glm::
             sp->FadeOut();
         }
     });
+
+    // Create a single shared GPU particle component for all pillar destruction effects
+    if (!mExplosionParticleComponent) {
+        if (!mParticleMaterial) {
+            Graphics::MaterialParser materialParser;
+            mParticleMaterial = materialParser.ParseMaterialDescriptor("OpaqueParticleMaterial.m");
+            sceneSp->RegisterMaterialInstance(mParticleMaterial);
+            Graphics::MaterialPropertySetter::SetMaterialPropertyValue(mParticleMaterial, "opacity", 1.0f);
+            Graphics::MaterialPropertySetter::SetMaterialPropertyValue(mParticleMaterial, "clipRadius", 0.35f);
+        }
+
+        const auto d_particle = std::make_shared<ParticleSystemComponentData>(
+            "c_barrier_explosionParticles_" + barrierName,
+            mParticleMaterial,
+            glm::vec3(0.0f),
+            glm::vec3(1.0f),
+            150);
+
+        d_particle->emitterData = std::make_shared<ParticleEmitterData>();
+        d_particle->emitterData->emitterType = "explosion";
+        d_particle->emitterData->radius = 2.5f;
+        d_particle->emitterData->thetaSlicesCount = 10;
+
+        d_particle->lifeTimeData = std::make_shared<LifeTimeModuleData>();
+        d_particle->lifeTimeData->moduleType = "simple";
+        d_particle->lifeTimeData->lifeTime = 2.0f;
+
+        d_particle->colorData = std::make_shared<ColorModuleData>();
+        d_particle->colorData->moduleType = "simple";
+        d_particle->colorData->colorBegin = glm::vec4(1.0f, 1.0f, 0.3f, 1.0f);
+        d_particle->colorData->colorEnd = glm::vec4(1.0f, 0.4f, 0.0f, 1.0f);
+
+        d_particle->sizeData = std::make_shared<SizeModuleData>();
+        d_particle->sizeData->moduleType = "simple";
+        d_particle->sizeData->sizeBegin = 0.5f;
+        d_particle->sizeData->sizeEnd = 0.05f;
+
+        d_particle->velocityModules.push_back(std::make_shared<VelocityModuleData>());
+        d_particle->velocityModules.back()->moduleType = "simple";
+        d_particle->velocityModules.back()->velocityDirection = glm::vec3(0, 5.0f, 0);
+        d_particle->velocityModules.back()->velocityDeviation = glm::vec3(3.0f, 2.0f, 3.0f);
+        d_particle->velocityModules.back()->extraVelocityPower = 1.0f;
+
+        const auto& particleCreator = std::make_shared<ParticleSystemComponentCreator<GpuParticleSystemComponent>>();
+        mExplosionParticleComponent = std::static_pointer_cast<GpuParticleSystemComponent>(
+            sceneSp->CreateComponent_GameThread(particleCreator, d_particle));
+        AddComponent(mExplosionParticleComponent);
+    }
 }
 
 void BarrierActor::RemoveAllBarrierPillars()
@@ -173,6 +226,13 @@ void BarrierActor::RemoveAllBarrierPillars()
         if (sceneSp) {
             sceneSp->RemoveComponent(ray);
         }
+    }
+    if (mExplosionParticleComponent) {
+        RemoveComponent(mExplosionParticleComponent);
+        if (sceneSp) {
+            sceneSp->RemoveComponent(mExplosionParticleComponent);
+        }
+        mExplosionParticleComponent.reset();
     }
     mBarrierPillars.clear();
     mBarrierRays.clear();
@@ -358,6 +418,11 @@ void BarrierActor::DestroyPillar(const int32_t pillarIndex)
     mUiComponents[pillarIndex]->SetHealthBarVisibility(false);
     mUiComponents[pillarIndex]->SetLabelVisibility(false);
     mDamageMessageTimers[static_cast<int32_t>(pillarIndex)]->StopTimer();
+    if (mExplosionParticleComponent) {
+        const auto& pillarWorldPos = GetBarrierPillarPosition(pillarIndex);
+        mExplosionParticleComponent->SetTranslation(pillarWorldPos);
+        mExplosionParticleComponent->EmitParticles();
+    }
     UpdateRaysConnectivity();
 }
 

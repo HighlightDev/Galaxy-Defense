@@ -14,6 +14,7 @@ namespace EngineCore {
 class SceneComponent;
 class StaticMeshComponent;
 class ElectricBeamComponent;
+class GpuParticleSystemComponent;
 } // namespace EngineCore
 
 namespace EnginePhysics {
@@ -55,6 +56,10 @@ private:
     std::shared_ptr<::Graphics::IMaterial> mPillarMaterial;
 
     std::shared_ptr<::Graphics::IMaterial> mRayMaterial;
+
+    std::shared_ptr<::Graphics::IMaterial> mParticleMaterial;
+
+    std::shared_ptr<::EngineCore::GpuParticleSystemComponent> mExplosionParticleComponent;
 
     std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> mPillarPhysicsComponents;
 
