@@ -1,6 +1,6 @@
 #include "FighterSpaceshipActor.h"
 
-#include "Implementation/Controllers/FighterSpaceshipRouteHandler.h"
+#include "Implementation/Actors/RouteHandlers/FighterSpaceshipRouteHandler.h"
 
 #include <cmath>
 

@@ -173,11 +173,7 @@ void BarrierActor::CreateNewBarrierPillar(const glm::vec3& position, const glm::
         }
 
         const auto d_particle = std::make_shared<ParticleSystemComponentData>(
-            "c_barrier_explosionParticles_" + barrierName,
-            mParticleMaterial,
-            glm::vec3(0.0f),
-            glm::vec3(1.0f),
-            150);
+            "c_barrier_explosionParticles_" + barrierName, mParticleMaterial, glm::vec3(0.0f), glm::vec3(1.0f), 150);
 
         d_particle->emitterData = std::make_shared<ParticleEmitterData>();
         d_particle->emitterData->emitterType = "explosion";

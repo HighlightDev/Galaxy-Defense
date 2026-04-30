@@ -112,7 +112,8 @@ BoundingBox3D InstancedStaticMeshComponent::GetTransformedBoundingBox() const
 
 std::string InstancedStaticMeshComponent::GetBatchKey() const
 {
-    return m_renderData.mModelPath + "_" + m_renderData.mMaterialProxy->MaterialName;
+    return m_renderData.mModelPath + "_" + m_renderData.mMaterialProxy->MaterialName + "_deferred_"
+        + std::to_string(m_renderData.mIsDeferredShaded);
 }
 
 std::weak_ptr<::EngineCore::Scene> InstancedStaticMeshComponent::GetSceneWp() const

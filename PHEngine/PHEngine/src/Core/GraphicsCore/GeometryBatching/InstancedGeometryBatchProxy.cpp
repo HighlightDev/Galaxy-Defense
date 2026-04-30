@@ -133,4 +133,9 @@ void InstancedGeometryBatchProxy::UpdateValidInstances(const std::vector<int32_t
 {
     mSceneProxiesRenderOrder = data;
 }
+
+bool InstancedGeometryBatchProxy::IsDeferred() const
+{
+    return m_renderData.mIsDeferredShaded;
+}
 } // namespace Graphics::GeometryBatching

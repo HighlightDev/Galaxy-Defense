@@ -302,6 +302,10 @@ std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialInstancedDyn
         = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, INSTANCED_DYNAMIC_PROPERTY_END_NODE_NAME);
 
     std::string propertyName = "", propertyType = "";
+    bool propertyValueIncremental = false;
+
+    glm::vec2 minMaxRange(std::numeric_limits<float>::min(), std::numeric_limits<float>::max());
+    bool minMaxRangeExists = false;
 
     ++instancedDynamicPropertyStartNode;
 
@@ -311,6 +315,11 @@ std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialInstancedDyn
             propertyName = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
         } else if (EngineUtility::StartsWith(currentNodeStr, "type")) {
             propertyType = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
+        } else if (EngineUtility::StartsWith(currentNodeStr, "incremental")) {
+            propertyValueIncremental = "true" == XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
+        } else if (EngineUtility::StartsWith(currentNodeStr, "range")) {
+            minMaxRange = mMaterialNodeDecorator.GetValueRange(currentNodeStr);
+            minMaxRangeExists = true;
         }
         ++instancedDynamicPropertyStartNode;
     }
@@ -323,7 +332,12 @@ std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialInstancedDyn
 
     std::shared_ptr<DynamicMaterialProperty> dynamicMaterialPropery;
     if ("instanced_binding_float" == propertyType) {
-        dynamicMaterialPropery = std::make_shared<DynamicInstancedFloatMaterialProperty>(propertyName);
+        auto instancedFloatProperty = std::make_shared<DynamicInstancedFloatMaterialProperty>(propertyName);
+        instancedFloatProperty->SetIsValueIncremental(propertyValueIncremental);
+        if (minMaxRangeExists) {
+            instancedFloatProperty->SetRange(minMaxRange);
+        }
+        dynamicMaterialPropery = instancedFloatProperty;
     } else {
         ext_assert(
             false,

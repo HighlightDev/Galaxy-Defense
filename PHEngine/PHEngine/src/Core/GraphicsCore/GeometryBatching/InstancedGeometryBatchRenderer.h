@@ -15,6 +15,8 @@ class ActiveBindedState;
 namespace Graphics::GeometryBatching {
 class InstancedGeometryBatchProxy;
 
+enum class eInstancedGeometryBatchRenderType { DEFERRED, FORWARD };
+
 class InstancedGeometryBatchRenderer {
     std::unordered_map<std::string, std::shared_ptr<InstancedGeometryBatchProxy>> mBatchProxies;
 
@@ -31,7 +33,8 @@ public:
         const std::shared_ptr<::Graphics::CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
         const glm::mat4& projectionMatrix,
-        ActiveBindedState& activeBindedState);
+        ActiveBindedState& activeBindedState,
+        const eInstancedGeometryBatchRenderType renderType);
 
     void UpdateBatchInstancesData(const std::unordered_map<std::string, std::vector<int32_t>>& data);
 

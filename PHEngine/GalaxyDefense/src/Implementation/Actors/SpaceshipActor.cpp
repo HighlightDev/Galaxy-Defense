@@ -10,9 +10,9 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Implementation/Actors/RouteHandlers/SpaceshipRouteHandler.h"
 #include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
 #include "Implementation/Components/UiComponents/SpaceObjectUiComponent.h"
-#include "Implementation/Controllers/SpaceshipRouteHandler.h"
 #include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 

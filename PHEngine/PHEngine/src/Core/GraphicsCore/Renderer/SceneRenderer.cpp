@@ -508,7 +508,8 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
     glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF);
-    mInstancedGeometryBatchRenderer->RenderAllBatches(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
+    mInstancedGeometryBatchRenderer->RenderAllBatches(
+        cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::DEFERRED);
 
     if (mSkeletalProxiesVec.size() > 0) {
         for (auto& proxy : mSkeletalProxiesVec) {
@@ -673,6 +674,12 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
         .SetStencilMask(0xFF);
     renderState.BindRenderState();
 
+    const auto& viewMatrix = cameraProxy->GetViewMatrix();
+    const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
+
+    mInstancedGeometryBatchRenderer->RenderAllBatches(
+        cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::FORWARD);
+
     bool depthTestWriteMask = true;
     bool depthTestWriteMaskDirty = false;
     for (const auto& proxy : mForwardRenderingProxiesVec) {
@@ -691,11 +698,7 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
             const int32_t stencilFuncRefValue
                 = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM : EngineConstants::eStencilValues::DEFAULT;
             glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
-            proxy->Render(
-                sceneView->GetCameraProxy(),
-                sceneView->GetCameraProxy()->GetViewMatrix(),
-                cameraProxy->GetProjectionMatrix(),
-                mActiveBindedState);
+            proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
         }
     }
 

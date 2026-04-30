@@ -27,6 +27,9 @@ public:
         const int32_t textFontSize) override;
 
     std::shared_ptr<::Graphics::IMaterial>
-    GetMaterial(const std::shared_ptr<::EngineCore::Scene>& scene, bool& alreadyExists) const;
+    GetSpaceshipMaterial(const std::shared_ptr<::EngineCore::Scene>& scene, bool& alreadyExists) const;
+
+    std::shared_ptr<::Graphics::IMaterial>
+    GetEngineMaterial(const std::shared_ptr<::EngineCore::Scene>& scene, bool& alreadyExists) const;
 };
 } // namespace Game

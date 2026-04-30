@@ -84,7 +84,8 @@ MeshRenderData InstancedStaticMeshSceneProxy::GetRenderData() const
 
 std::string InstancedStaticMeshSceneProxy::GetBatchKey() const
 {
-    return m_renderData.mModelPath + "_" + m_renderData.mMaterialProxy->MaterialName;
+    return m_renderData.mModelPath + "_" + m_renderData.mMaterialProxy->MaterialName + "_deferred_"
+        + std::to_string(m_renderData.mIsDeferredShaded);
 }
 
 RenderInfo InstancedStaticMeshSceneProxy::GetRenderInfo() const

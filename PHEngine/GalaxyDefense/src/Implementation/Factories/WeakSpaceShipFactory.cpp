@@ -43,7 +43,7 @@
 #include "Implementation/Components/ComponentData/SpaceObjectUiComponentData.h"
 #include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
 #include "Implementation/Components/UiComponents/SpaceObjectUiComponent.h"
-#include "Implementation/Controllers/AiSpaceshipActorController.h"
+#include "Implementation/Controllers/AiActorController.h"
 
 using namespace Resources;
 using namespace EngineCore;
@@ -69,7 +69,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     scene->AddActor(a_enemySpaceship);
 
     bool bAlreadyExists = false;
-    const std::shared_ptr<IMaterial>& spaceshipPbs_mat = GetMaterial(scene, bAlreadyExists);
+    const std::shared_ptr<IMaterial>& spaceshipPbs_mat = GetSpaceshipMaterial(scene, bAlreadyExists);
     if (!bAlreadyExists) {
         const auto& albedo_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource("Ice_Cracked_albedo.jpg");
         const auto& normal_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource("Ice_Cracked_normal.jpg");
@@ -103,7 +103,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         glm::vec3(0),
         glm::vec3(1.0),
         spaceshipPbs_mat);
-    const auto& meshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
+    const auto& meshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>(true);
     const auto& c_mesh
         = std::static_pointer_cast<InstancedStaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     a_enemySpaceship->AddComponent(c_mesh);
@@ -187,7 +187,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     const auto& c_pointLight = scene->CreateComponent_GameThread(lightComponentCreator, lightData);
     a_enemySpaceship->AddComponent(c_pointLight);
 
-    scene->AddActorController(std::make_shared<AiSpaceshipActorController>(a_enemySpaceship));
+    scene->AddActorController(std::make_shared<AiActorController>(a_enemySpaceship));
 
     const auto& hudCanvas = scene->GetUiHandler()->GetHudCanvas();
     ext_assert(hudCanvas != nullptr, "HUD canvas is null in WeakSpaceShipFactory");
@@ -205,20 +205,23 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         eTextHorizontalAlignmentType::CENTER,
         eTextVerticalAlignmentType::CENTER);
 
-    const auto& engineMaterial = materialParser.ParseMaterialDescriptor("BurnMaterial.m");
-    scene->RegisterMaterialInstance(engineMaterial);
-    MaterialPropertySetter::SetMaterialPropertyValue(engineMaterial, scene, "GT_DeltaSec", "gt_timeSec");
+    const auto& engineMaterial = GetEngineMaterial(scene, bAlreadyExists);
+    if (!bAlreadyExists) {
+        MaterialPropertySetter::SetMaterialPropertyValue(engineMaterial, scene, "GT_DeltaSec", "gt_timeSec");
+    }
 
-    auto engineComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
-    const auto data = std::make_shared<MeshComponentData>(
-        "c_mesh_engine" + enemyShipIndexStr,
+    const auto& engineMeshComponentCreator
+        = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>(false);
+    const auto d_engineMesh = std::make_shared<InstancedMeshComponentData>(
+        "c_weak_mesh_engine" + enemyShipIndexStr,
         "ufo.obj",
         glm::vec3(0, -0.05f, 1.2f),
         glm::vec3(90, 0, 0.0f),
         glm::vec3(0.2f, 1.1f, 0.2f),
         engineMaterial);
-    const auto& engineComponent
-        = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(engineComponentCreator, data));
+
+    const auto& engineComponent = std::static_pointer_cast<InstancedStaticMeshComponent>(
+        scene->CreateComponent_GameThread(engineMeshComponentCreator, d_engineMesh));
     a_enemySpaceship->AddComponent(engineComponent);
 
     auto tweenerParser = std::make_unique<TweenerParser>();
@@ -239,7 +242,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
 }
 
 std::shared_ptr<::Graphics::IMaterial>
-WeakSpaceShipFactory::GetMaterial(const std::shared_ptr<Scene>& scene, bool& alreadyExists) const
+WeakSpaceShipFactory::GetSpaceshipMaterial(const std::shared_ptr<Scene>& scene, bool& alreadyExists) const
 {
     MaterialParser materialParser;
     const auto& materialName = materialParser.ReadMaterialNameFromMaterialDescriptor("SpaceshipPBS.m");
@@ -251,6 +254,22 @@ WeakSpaceShipFactory::GetMaterial(const std::shared_ptr<Scene>& scene, bool& alr
         const std::shared_ptr<IMaterial>& spaceshipPbs_mat = materialParser.ParseMaterialDescriptor("SpaceshipPBS.m");
         scene->RegisterMaterialInstance(spaceshipPbs_mat);
         return spaceshipPbs_mat;
+    }
+}
+
+std::shared_ptr<::Graphics::IMaterial>
+WeakSpaceShipFactory::GetEngineMaterial(const std::shared_ptr<Scene>& scene, bool& alreadyExists) const
+{
+    MaterialParser materialParser;
+    const auto& materialName = materialParser.ReadMaterialNameFromMaterialDescriptor("BurnMaterial.m");
+    if (const auto& engineMaterialInstance = scene->GetMaterialByName(materialName)) {
+        alreadyExists = true;
+        return engineMaterialInstance;
+    } else {
+        alreadyExists = false;
+        const std::shared_ptr<IMaterial>& engineMaterial = materialParser.ParseMaterialDescriptor("BurnMaterial.m");
+        scene->RegisterMaterialInstance(engineMaterial);
+        return engineMaterial;
     }
 }
 } // namespace Game

@@ -17,8 +17,8 @@ class InstancedStaticMeshComponentCreator : public IComponentCreatable {
     const bool mIsDeferredShaderUsed;
 
 public:
-    InstancedStaticMeshComponentCreator()
-        : mIsDeferredShaderUsed(true) // for now only deferred shading is supported for instanced geometry
+    InstancedStaticMeshComponentCreator(const bool isDeferredShaderUsed)
+        : mIsDeferredShaderUsed(isDeferredShaderUsed)
     {
     }
 

@@ -67,6 +67,8 @@ public:
 
     std::shared_ptr<IShader> GetBatchShader() const;
 
+    bool IsDeferred() const;
+
 private:
     std::shared_ptr<ShaderType> GetShader() const;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Implementation/LootCategoryType.h"
+
 #include <glm/vec3.hpp>
 
 #include <memory>
@@ -53,6 +55,16 @@ class IPortalFactory {
         const glm::vec3& rotation,
         const glm::vec3& scale,
         const float billboardSize)
+        = 0;
+};
+
+class ILootFactory {
+    virtual std::shared_ptr<PortalActor> CreateLoot(
+        const std::shared_ptr<::EngineCore::Scene>& scene,
+        const glm::vec3& translation,
+        const glm::vec3& rotation,
+        const glm::vec3& scale,
+        const eLootCategory lootCategory)
         = 0;
 };
 } // namespace Game

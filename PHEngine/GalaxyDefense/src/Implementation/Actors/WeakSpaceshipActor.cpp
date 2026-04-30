@@ -8,8 +8,8 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Implementation/Actors/RouteHandlers/WeakSpaceshipRouteHandler.h"
 #include "Implementation/Components/UiComponents/SpaceObjectUiComponent.h"
-#include "Implementation/Controllers/WeakSpaceshipRouteHandler.h"
 #include "Implementation/DamageDealerType.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 
@@ -91,7 +91,7 @@ void WeakSpaceshipActor::TriggerExplosion()
     const auto c_spaceshipMesh = GetComponentsByType<InstancedStaticMeshComponent>().back();
     c_spaceshipMesh->SetIsEnabled(false);
 
-    const auto c_engineMesh = GetComponentsByType<StaticMeshComponent>().back();
+    const auto c_engineMesh = GetComponentsByType<InstancedStaticMeshComponent>().back();
     c_engineMesh->SetIsEnabled(false);
 
     const auto& c_physics = GetPhysicsComponent();

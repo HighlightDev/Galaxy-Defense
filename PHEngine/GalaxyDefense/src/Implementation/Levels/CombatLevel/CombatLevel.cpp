@@ -216,7 +216,7 @@ void CombatLevel::CreateScene()
     constexpr int32_t asteroidsPerDimensionInt = static_cast<int32_t>(asteroidsPerDimension);
 
     const auto& instancedMeshComponentCreator
-        = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>();
+        = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>(true);
     const auto lvlDiffVec = levelBoundary.GetMax() - levelBoundary.GetMin();
     const float xStep = lvlDiffVec.x * (1.0f / asteroidsPerDimension);
     const float zStep = lvlDiffVec.z * (1.0f / asteroidsPerDimension);

@@ -33,13 +33,12 @@ set(HEADERS
     src/Implementation/Controllers/ILevelController.h
     src/Implementation/Controllers/CombatController.h
     src/Implementation/Controllers/AiActorController.h
-    src/Implementation/Controllers/AiSpaceshipActorController.h
     src/Implementation/Controllers/UserInteractionController.h
     src/Implementation/Controllers/NavigationController.h
-    src/Implementation/Controllers/BarriersController.h
-    src/Implementation/Controllers/SpaceshipRouteHandler.h
-      src/Implementation/Controllers/WeakSpaceshipRouteHandler.h
-      src/Implementation/Controllers/FighterSpaceshipRouteHandler.h
+    src/Implementation/Controllers/LootController.h
+    src/Implementation/Actors/RouteHandlers/SpaceshipRouteHandler.h
+    src/Implementation/Actors/RouteHandlers/WeakSpaceshipRouteHandler.h
+    src/Implementation/Actors/RouteHandlers/FighterSpaceshipRouteHandler.h
     src/Implementation/Events/ElectroRaySphereContactCollisionEvent.h
     src/Implementation/Events/ShootRayCollisionEvent.h
     src/Implementation/Events/MainPlayerStatusChangedEvent.h
@@ -141,13 +140,12 @@ set(SOURCES
     src/Implementation/GameObjectsType.cpp
     src/Implementation/Controllers/CombatController.cpp
     src/Implementation/Controllers/AiActorController.cpp
-    src/Implementation/Controllers/AiSpaceshipActorController.cpp
     src/Implementation/Controllers/UserInteractionController.cpp
     src/Implementation/Controllers/NavigationController.cpp
-    src/Implementation/Controllers/BarriersController.cpp
-    src/Implementation/Controllers/SpaceshipRouteHandler.cpp
-      src/Implementation/Controllers/WeakSpaceshipRouteHandler.cpp
-      src/Implementation/Controllers/FighterSpaceshipRouteHandler.cpp
+    src/Implementation/Controllers/LootController.cpp
+    src/Implementation/Actors/RouteHandlers/SpaceshipRouteHandler.cpp
+    src/Implementation/Actors/RouteHandlers/WeakSpaceshipRouteHandler.cpp
+    src/Implementation/Actors/RouteHandlers/FighterSpaceshipRouteHandler.cpp
     src/Implementation/Events/ElectroRaySphereContactCollisionEvent.cpp
     src/Implementation/Events/ShootRayCollisionEvent.cpp
     src/Implementation/Events/MainPlayerStatusChangedEvent.cpp

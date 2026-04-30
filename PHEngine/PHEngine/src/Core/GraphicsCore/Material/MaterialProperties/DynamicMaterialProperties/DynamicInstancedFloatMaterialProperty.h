@@ -26,6 +26,13 @@ struct DynamicInstancedFloatMaterialProperty : public DynamicMaterialProperty {
 private:
     std::vector<std::pair<std::shared_ptr<PropertyBinding>, std::weak_ptr<MaterialInstanceDataProvider>>> mInstancedBindings;
 
+    bool bValueIncremental;
+
+    bool mRangeIsSet{false};
+    glm::vec2 mRangeMinMax;
+
+    std::vector<float> mCachedValues;
+
 public:
     explicit DynamicInstancedFloatMaterialProperty(const std::string& propertyName)
         : DynamicMaterialProperty(propertyName)
@@ -57,8 +64,6 @@ public:
 
     std::vector<float> GetValue()
     {
-        std::vector<float> result;
-        result.reserve(mInstancedBindings.size());
         std::sort(mInstancedBindings.begin(), mInstancedBindings.end(), [](const auto& pairLeft, const auto& pairRight) {
             const auto& leftProviderSp = pairLeft.second.lock();
             const auto& rightProviderSp = pairRight.second.lock();
@@ -67,14 +72,45 @@ public:
             }
             return false;
         });
+        int32_t instanceIndex = 0;
         for (const auto& [bindingSp, instanceDataWp] : mInstancedBindings) {
             const auto& instanceDataSp = instanceDataWp.lock();
             if (instanceDataSp && instanceDataSp->IsInstanceActive() && instanceDataSp->GetRenderInstanceId() >= 0) {
                 const auto& floatBinding = std::static_pointer_cast<FloatPropertyBinding>(bindingSp);
-                result.emplace_back(floatBinding->GetValue());
+                if (instanceIndex < mCachedValues.size()) {
+                    if (bValueIncremental) {
+                        mCachedValues[instanceIndex] += floatBinding->GetValue();
+                    } else {
+                        mCachedValues[instanceIndex] = floatBinding->GetValue();
+                    }
+                } else {
+                    mCachedValues.emplace_back(floatBinding->GetValue());
+                }
+                ++instanceIndex;
             }
         }
-        return result;
+        return mCachedValues;
+    }
+
+    void SetRange(const glm::vec2& range)
+    {
+        mRangeIsSet = true;
+        mRangeMinMax = range;
+    }
+
+    glm::vec2 GetRange() const
+    {
+        return mRangeMinMax;
+    }
+
+    void SetIsValueIncremental(bool isIncremental)
+    {
+        bValueIncremental = isIncremental;
+    }
+
+    bool IsValueIncremental() const
+    {
+        return bValueIncremental;
     }
 };
 } // namespace Graphics

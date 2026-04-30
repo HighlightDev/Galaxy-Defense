@@ -4,8 +4,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/NavigationMesh/NavMesh2D.h"
 #include "ILevelController.h"
-#include "Implementation/Controllers/BarriersController.h"
-#include "Implementation/Controllers/SpaceshipRouteHandler.h"
+#include "Implementation/Actors/RouteHandlers/SpaceshipRouteHandler.h"
 #include "Implementation/DamageDealerType.h"
 
 #include <memory>
@@ -43,8 +42,6 @@ class NavigationController : public ITickable,
     std::shared_ptr<::EngineCore::Actor> mNavPathDummyActor;
 
     BoundingBox3D mLevelBounds;
-
-    BarriersController mBarriersController;
 
     std::unique_ptr<EngineCore::NavigationMesh::NavMesh2D> mNavMesh;
 
@@ -107,10 +104,6 @@ public:
     void RemoveMissileFromNavigation(const int32_t missileActorId);
 
     bool IsPositionNearFinalDestination(const glm::vec3& position, const float radius) const;
-
-    BarriersController& GetBarriersController();
-
-    const BarriersController& GetBarriersController() const;
 
 private:
     void Initialize();

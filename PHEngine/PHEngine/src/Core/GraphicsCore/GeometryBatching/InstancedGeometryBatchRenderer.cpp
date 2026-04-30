@@ -43,10 +43,16 @@ void InstancedGeometryBatchRenderer::RenderAllBatches(
     const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
     const glm::mat4& viewMatrix,
     const glm::mat4& projectionMatrix,
-    ActiveBindedState& activeBindedState)
+    ActiveBindedState& activeBindedState,
+    const eInstancedGeometryBatchRenderType renderType)
 {
-    for (const auto& [key, batchProxySp] : mBatchProxies) {
-        batchProxySp->Render(cameraSceneProxy, viewMatrix, projectionMatrix, activeBindedState);
+    if (not mBatchProxies.empty()) {
+        for (const auto& [key, batchProxySp] : mBatchProxies) {
+            if (batchProxySp->IsDeferred() and renderType != eInstancedGeometryBatchRenderType::FORWARD
+                || not batchProxySp->IsDeferred() and renderType == eInstancedGeometryBatchRenderType::FORWARD) {
+                batchProxySp->Render(cameraSceneProxy, viewMatrix, projectionMatrix, activeBindedState);
+            }
+        }
     }
 }
 
