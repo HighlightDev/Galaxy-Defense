@@ -17,6 +17,7 @@ class BackgroundSpaceObjectActor;
 class SpaceObjectActor;
 class BarrierActor;
 class PortalActor;
+class LootActor;
 
 class IBackgroundSpaceObjectFactory {
     virtual std::shared_ptr<BackgroundSpaceObjectActor> CreateSpaceObject(
@@ -59,7 +60,7 @@ class IPortalFactory {
 };
 
 class ILootFactory {
-    virtual std::shared_ptr<PortalActor> CreateLoot(
+    virtual std::shared_ptr<LootActor> CreateLoot(
         const std::shared_ptr<::EngineCore::Scene>& scene,
         const glm::vec3& translation,
         const glm::vec3& rotation,

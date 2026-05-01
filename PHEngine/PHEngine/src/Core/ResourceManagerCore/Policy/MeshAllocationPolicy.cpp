@@ -49,6 +49,8 @@ std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParamet
 
         const bool isAnimatedMesh = meshInfo->meshAnimatedData != nullptr;
 
+        ext_assert(not meshAttributes->Positions.empty(), "Mesh must have position attribute");
+
         if (not isAnimatedMesh) {
             struct StaticMeshVertex {
                 float position[3];
@@ -74,10 +76,29 @@ std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParamet
             std::vector<StaticMeshVertex> vertexData(meshAttributes->Positions.size() / 3);
             for (size_t i = 0; i < vertexData.size(); ++i) {
                 std::copy_n(&meshAttributes->Positions[i * 3], 3, vertexData[i].position);
-                std::copy_n(&meshAttributes->Normals[i * 3], 3, vertexData[i].normal);
-                std::copy_n(&meshAttributes->TextureCoordinates[i * 2], 2, vertexData[i].texCoords);
-                std::copy_n(&meshAttributes->TangentNormals[i * 3], 3, vertexData[i].tangent);
-                std::copy_n(&meshAttributes->BitangetNormals[i * 3], 3, vertexData[i].bitangent);
+                if (meshAttributes->Normals.empty()) {
+                    std::fill_n(vertexData[i].normal, 3, 0.0f);
+                } else {
+                    std::copy_n(&meshAttributes->Normals[i * 3], 3, vertexData[i].normal);
+                }
+
+                if (meshAttributes->TextureCoordinates.empty()) {
+                    std::fill_n(vertexData[i].texCoords, 2, 0.0f);
+                } else {
+                    std::copy_n(&meshAttributes->TextureCoordinates[i * 2], 2, vertexData[i].texCoords);
+                }
+
+                if (meshAttributes->TangentNormals.empty()) {
+                    std::fill_n(vertexData[i].tangent, 3, 0.0f);
+                } else {
+                    std::copy_n(&meshAttributes->TangentNormals[i * 3], 3, vertexData[i].tangent);
+                }
+
+                if (meshAttributes->BitangetNormals.empty()) {
+                    std::fill_n(vertexData[i].bitangent, 3, 0.0f);
+                } else {
+                    std::copy_n(&meshAttributes->BitangetNormals[i * 3], 3, vertexData[i].bitangent);
+                }
             }
             compositeVBO->SetRawData(std::move(vertexData));
             vao->AddVBO(compositeVBO);
@@ -117,12 +138,36 @@ std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const MeshPoolParamet
             std::vector<AnimatedMeshVertex> vertexData(meshAttributes->Positions.size() / 3);
             for (size_t i = 0; i < vertexData.size(); ++i) {
                 std::copy_n(&meshAttributes->Positions[i * 3], 3, vertexData[i].position);
-                std::copy_n(&meshAttributes->Normals[i * 3], 3, vertexData[i].normal);
-                std::copy_n(&meshAttributes->TextureCoordinates[i * 2], 2, vertexData[i].texCoords);
-                std::copy_n(&meshAttributes->TangentNormals[i * 3], 3, vertexData[i].tangent);
-                std::copy_n(&meshAttributes->BitangetNormals[i * 3], 3, vertexData[i].bitangent);
-                std::copy_n(&meshAttributes->BoneWeights[i * 4], 4, vertexData[i].blendWeights);
-                std::copy_n(&meshAttributes->BoneIndices[i * 4], 4, vertexData[i].blendIndices);
+                if (meshAttributes->Normals.empty()) {
+                    std::fill_n(vertexData[i].normal, 3, 0.0f);
+                } else {
+                    std::copy_n(&meshAttributes->Normals[i * 3], 3, vertexData[i].normal);
+                }
+                if (meshAttributes->TextureCoordinates.empty()) {
+                    std::fill_n(vertexData[i].texCoords, 2, 0.0f);
+                } else {
+                    std::copy_n(&meshAttributes->TextureCoordinates[i * 2], 2, vertexData[i].texCoords);
+                }
+                if (meshAttributes->TangentNormals.empty()) {
+                    std::fill_n(vertexData[i].tangent, 3, 0.0f);
+                } else {
+                    std::copy_n(&meshAttributes->TangentNormals[i * 3], 3, vertexData[i].tangent);
+                }
+                if (meshAttributes->BitangetNormals.empty()) {
+                    std::fill_n(vertexData[i].bitangent, 3, 0.0f);
+                } else {
+                    std::copy_n(&meshAttributes->BitangetNormals[i * 3], 3, vertexData[i].bitangent);
+                }
+                if (meshAttributes->BoneWeights.empty()) {
+                    std::fill_n(vertexData[i].blendWeights, 4, 0.0f);
+                } else {
+                    std::copy_n(&meshAttributes->BoneWeights[i * 4], 4, vertexData[i].blendWeights);
+                }
+                if (meshAttributes->BoneIndices.empty()) {
+                    std::fill_n(vertexData[i].blendIndices, 4, 0);
+                } else {
+                    std::copy_n(&meshAttributes->BoneIndices[i * 4], 4, vertexData[i].blendIndices);
+                }
             }
             compositeVBO->SetRawData(std::move(vertexData));
             vao->AddVBO(compositeVBO);

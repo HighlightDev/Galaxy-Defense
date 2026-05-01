@@ -73,8 +73,6 @@ public:
 
     virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;
 
-    void UpdateWorldMatrix(const glm::mat4& parentWorldMatrix) override;
-
     void SetBoundingBox(const BoundingBox3D& boundingBox);
 
     void SetSortOrderValue(const int32_t orderValue);

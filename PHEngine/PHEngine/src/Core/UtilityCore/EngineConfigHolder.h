@@ -44,6 +44,7 @@ struct EngineConfig {
 
 #ifdef DEBUG
     bool EnableAmbientMusic{true};
+    bool EnableSounds{true};
     bool RenderDebugPhysicsData{false};
     bool EnableDebugUiWidgetNaming{false};
     bool EnableDebugShaderSourcePrint{false};

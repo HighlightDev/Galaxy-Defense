@@ -5,6 +5,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/UtilityCore/JsonUtilities.h"
 
 #include <json/json.hpp>
@@ -17,6 +18,11 @@ SoundComponent::SoundComponent(const std::shared_ptr<ComponentData>& data)
     , mSoundBuffersMap()
     , mSoundSource(std::make_shared<SoundSource>())
 {
+#ifdef DEBUG
+    if (not EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig().EnableSounds) {
+        mSoundSource->SetGain(0.0f);
+    }
+#endif
 }
 
 SoundComponent::~SoundComponent()
@@ -98,6 +104,11 @@ void SoundComponent::PlayBuffer(const std::string& soundName)
 
 void SoundComponent::SetGain(const float gain)
 {
+#ifdef DEBUG
+    if (!EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig().EnableSounds) {
+        return;
+    }
+#endif
     ext_assert(gain >= 0.0f && gain <= 1.0f, "Gain value out of range in SoundComponent::SetGain");
     mSoundSource->SetGain(gain);
 }

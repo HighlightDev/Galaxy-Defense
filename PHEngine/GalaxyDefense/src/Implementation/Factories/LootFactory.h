@@ -7,7 +7,8 @@ class Scene;
 } // namespace EngineCore
 
 namespace Game {
-class PortalActor;
+
+class LootActor;
 
 class LootFactory : public ILootFactory {
     static size_t s_lootCounter;
@@ -15,7 +16,7 @@ class LootFactory : public ILootFactory {
 public:
     LootFactory() = default;
 
-    virtual std::shared_ptr<PortalActor> CreateLoot(
+    virtual std::shared_ptr<LootActor> CreateLoot(
         const std::shared_ptr<::EngineCore::Scene>& scene,
         const glm::vec3& translation,
         const glm::vec3& rotation,

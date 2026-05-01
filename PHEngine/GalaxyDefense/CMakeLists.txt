@@ -64,6 +64,7 @@ set(HEADERS
     src/Implementation/Factories/SpaceStationFactory.h
     src/Implementation/Factories/BarrierFactory.h
     src/Implementation/Factories/SpawnPortalFactory.h
+    src/Implementation/Factories/LootFactory.h
     src/Implementation/ActorLeveling/SpaceStationLevel.h
     src/Implementation/ActorLeveling/SpaceshipLevel.h
     src/Implementation/ActorLeveling/FighterSpaceshipLevel.h
@@ -91,6 +92,7 @@ set(HEADERS
     src/Implementation/Actors/BarrierActor.h
     src/Implementation/Actors/BackgroundSpaceObjectActor.h
     src/Implementation/Actors/PortalActor.h
+    src/Implementation/Actors/LootActor.h
     src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h
     src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h
     src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
@@ -166,6 +168,7 @@ set(SOURCES
     src/Implementation/Factories/BarrierFactory.cpp
     src/Implementation/Factories/SpawnPortalFactory.cpp
     src/Implementation/ActorLeveling/SpaceStationLevel.cpp
+    src/Implementation/Factories/LootFactory.cpp
     src/Implementation/ActorLeveling/SpaceshipLevel.cpp
     src/Implementation/ActorLeveling/FighterSpaceshipLevel.cpp
     src/Implementation/ActorLeveling/BarrierLevel.cpp
@@ -191,6 +194,7 @@ set(SOURCES
     src/Implementation/Actors/BarrierActor.cpp
     src/Implementation/Actors/BackgroundSpaceObjectActor.cpp
     src/Implementation/Actors/PortalActor.cpp
+    src/Implementation/Actors/LootActor.cpp
     src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.cpp
     src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp

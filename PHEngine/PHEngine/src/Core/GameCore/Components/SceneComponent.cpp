@@ -62,7 +62,7 @@ void SceneComponent::SetOutlineThickness(const float outlineThickness)
 {
     if (mOutlineThickness != outlineThickness) {
         mOutlineThickness = outlineThickness;
-        SetIsTransformationDirty(false);
+        SetIsTransformationDirty(true);
     }
 }
 
@@ -99,8 +99,6 @@ void SceneComponent::UpdateOutlineMatrix(const glm::mat4& parentWorldMatrix)
     const auto nRotator = glm::normalize(mTransform->Rotator);
     m_outlineMatrix *= glm::toMat4(nRotator);
     m_outlineMatrix *= glm::scale(identityMatrix, mTransform->Scale + thicknessScale);
-
-    SetIsTransformationDirty(false);
 }
 
 void SceneComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
@@ -133,8 +131,6 @@ void SceneComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
     const auto nRotator = glm::normalize(mTransform->Rotator);
     m_worldMatrix *= glm::toMat4(nRotator);
     m_worldMatrix *= glm::scale(identityMatrix, mTransform->Scale);
-
-    SetIsTransformationDirty(false);
 }
 
 void SceneComponent::SetIsTransformationDirty(const bool isDirty)

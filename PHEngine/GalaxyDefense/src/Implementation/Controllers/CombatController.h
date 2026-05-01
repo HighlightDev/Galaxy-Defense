@@ -10,6 +10,7 @@
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/Controllers/LootController.h"
 #include "Implementation/Controllers/NavigationController.h"
 #include "Implementation/Controllers/UserInteractionController.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
@@ -49,6 +50,8 @@ class CombatController : public ITickable,
     std::shared_ptr<UserInteractionController> mUserInteractionController;
 
     std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
+
+    std::shared_ptr<LootController> mLootController;
 
     BoundingBox3D mLevelBounds;
 

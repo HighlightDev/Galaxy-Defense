@@ -36,10 +36,11 @@ namespace Game {
 
 CombatController::CombatController(const std::weak_ptr<Scene>& scene)
     : mScene(scene)
-    , mLevelBounds(BoundingBox3D(glm::vec3(0), glm::vec3(100, 50, 100)))
     , mNavigationController(std::make_shared<NavigationController>(scene))
     , mUserInteractionController(std::make_shared<UserInteractionController>(scene))
     , mCombatActorsPoolHandler(std::make_shared<CombatActorsPoolHandler>(scene))
+    , mLootController(std::make_shared<LootController>(scene))
+    , mLevelBounds(BoundingBox3D(glm::vec3(0), glm::vec3(100, 50, 100)))
 {
 }
 
@@ -63,6 +64,7 @@ void CombatController::OnPreLevelInit()
     mNavigationController->OnPreLevelInit();
     mUserInteractionController->SetParentController(shared_from_this());
     mUserInteractionController->OnPreLevelInit();
+    mLootController->OnPreLevelInit();
 }
 
 void CombatController::InitFromLevelData(const LevelData& levelData)
@@ -82,6 +84,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     mNavigationController->SetLevelBounds(mLevelBounds);
     mUserInteractionController->SetLevelBounds(mLevelBounds);
     mUserInteractionController->SetTowersData(levelData.TowersData);
+    mLootController->SetLevelBounds(mLevelBounds);
 
     mNavigationController->SetFinalDestinationPoint(levelData.DestinationPoint.value_or(glm::vec3(0.0f, 0.0f, 0.0f)));
 
@@ -149,12 +152,15 @@ void CombatController::OnLevelInit()
     mUserInteractionController->SetActorsPoolHandler(mCombatActorsPoolHandler);
     mUserInteractionController->SetOnShootCallback(std::bind(&CombatController::OnReadyToShoot, this));
     mUserInteractionController->OnLevelInit();
+    mLootController->SetActorsPoolHandler(mCombatActorsPoolHandler);
+    mLootController->OnLevelInit();
 }
 
 void CombatController::OnPostLevelInit()
 {
     mNavigationController->OnPostLevelInit();
     mUserInteractionController->OnPostLevelInit();
+    mLootController->OnPostLevelInit();
 
     const std::unordered_map<eMissileType, size_t> availabeMissileTypes
         = {{eMissileType::BOMB, 10},
@@ -191,6 +197,7 @@ void CombatController::PostPlayLevelFinished()
 {
     mNavigationController->PostPlayLevelFinished();
     mUserInteractionController->PostPlayLevelFinished();
+    mLootController->PostPlayLevelFinished();
 
     ChangeGameModeEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eGameModeType::SPACE_STATION_PLACEMENT);
 }
@@ -510,6 +517,8 @@ void CombatController::Tick(const float deltaTimeSec)
     }
 
     mUserInteractionController->Tick(deltaTimeSec);
+
+    mLootController->Tick(deltaTimeSec);
 }
 
 void CombatController::LaunchMissile(
@@ -742,6 +751,11 @@ void CombatController::CleanUp()
     if (mCombatActorsPoolHandler) {
         mCombatActorsPoolHandler->CleanUp();
         mCombatActorsPoolHandler.reset();
+    }
+
+    if (mLootController) {
+        mLootController->CleanUp();
+        mLootController.reset();
     }
 }
 } // namespace Game

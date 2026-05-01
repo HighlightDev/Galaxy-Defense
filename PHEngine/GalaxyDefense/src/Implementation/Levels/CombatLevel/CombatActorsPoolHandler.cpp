@@ -7,6 +7,7 @@
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/BlackHoleMissileActor.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
+#include "Implementation/Actors/LootActor.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/PortalActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
@@ -21,6 +22,7 @@
 #include "Implementation/Factories/FighterSpaceShipFactory.h"
 #include "Implementation/Factories/FreezingMissileFactory.h"
 #include "Implementation/Factories/FreezingRayFactory.h"
+#include "Implementation/Factories/LootFactory.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Factories/SpawnPortalFactory.h"
 #include "Implementation/Factories/WeakSpaceShipFactory.h"
@@ -43,6 +45,7 @@ void CombatActorsPoolHandler::CleanUp()
     mBarriersPool.clear();
     mSpawnPortals.clear();
     mActorTypeCache.clear();
+    mLootActors.clear();
 }
 
 std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::GetFreeElectroChainActor()
@@ -410,5 +413,35 @@ std::vector<std::shared_ptr<PhysicsComponent>> CombatActorsPoolHandler::GetBarri
         physicsComponents.insert(physicsComponents.end(), pillarComponents.begin(), pillarComponents.end());
     }
     return physicsComponents;
+}
+
+void CombatActorsPoolHandler::SpawnLoot(const int32_t count, const eLootCategory lootCategory)
+{
+    const auto& sceneSp = mSceneWp.lock();
+    ext_assert(sceneSp, "Scene pointer is null in SpawnLoot");
+    const auto& lootFactory = std::make_unique<LootFactory>();
+    for (int32_t i = 0; i < count; ++i) {
+        const auto& loot = mLootActors.emplace_back(
+            lootFactory->CreateLoot(sceneSp, glm::vec3(-100000), glm::vec3(), Game::Constants::c_lootSize, lootCategory));
+        loot->SetIsEnabled(false);
+    }
+}
+
+std::shared_ptr<LootActor> CombatActorsPoolHandler::GetFreeLootActor(const eLootCategory lootCategory)
+{
+    auto idleLootIt = std::find_if(mLootActors.cbegin(), mLootActors.cend(), [lootCategory](const auto& loot) {
+        return !loot->IsEnabled() && loot->GetLootCategory() == lootCategory;
+    });
+    if (idleLootIt == mLootActors.cend()) {
+        SpawnLoot(2, lootCategory);
+    }
+
+    idleLootIt = std::find_if(mLootActors.cbegin(), mLootActors.cend(), [lootCategory](const auto& loot) {
+        return !loot->IsEnabled() && loot->GetLootCategory() == lootCategory;
+    });
+
+    ext_assert(idleLootIt != mLootActors.cend(), "Failed to find free loot actor after spawning new ones");
+
+    return *idleLootIt;
 }
 } // namespace Game

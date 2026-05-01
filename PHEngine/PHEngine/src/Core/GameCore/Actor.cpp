@@ -132,6 +132,7 @@ void Actor::UpdateTransform()
 
         m_rootComponent->UpdateWorldMatrix(parentWorldMatrix);
         UpdateComponentsTransform(true);
+        m_rootComponent->SetIsTransformationDirty(false);
 
         for (const auto& child : m_children) {
             child->GetRootComponent()->SetIsTransformationDirty(true); // force to update children's transform
@@ -153,6 +154,7 @@ void Actor::UpdateComponentsTransform(const bool bForceUpdate)
                 auto sceneComp = std::static_pointer_cast<SceneComponent>(component);
                 if (bForceUpdate || sceneComp->GetIsTransformationDirty()) {
                     sceneComp->UpdateWorldMatrix(parentWorldMatrix);
+                    sceneComp->SetIsTransformationDirty(true);
                 }
             }
         }

@@ -50,47 +50,10 @@ void PrimitiveComponent::UnpausableTick(const float deltaTimeSec)
 {
     SceneComponent::UnpausableTick(deltaTimeSec);
 
-    if (bIsEnabledStateDirty || bIsVisibleStateDirty || bIsSortOrderStateDirty || bIsBloomStateDirty) {
+    if (bTransformationDirty || bIsEnabledStateDirty || bIsVisibleStateDirty || bIsSortOrderStateDirty || bIsBloomStateDirty
+        || bIsDepthTestStateDirty || bIsOutlineStateDirty) {
         SyncRenderData();
     }
-}
-
-void PrimitiveComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
-{
-    Base::UpdateWorldMatrix(parentWorldMatrix);
-
-    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
-        // Update primitives proxy transform
-        static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
-
-        if (const auto& sceneSp = m_sceneWP.lock()) {
-            if (const auto& sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                    eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                    GetObjectId(),
-                    functionId,
-                    [sceneProxyId = mSceneProxyId,
-                     worldMatrix = m_worldMatrix,
-                     outlineMatrix = m_outlineMatrix,
-                     boundingBox = mBoundingBox,
-                     newTransformedBoundingBox = GetTransformedBoundingBox()](
-                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                        std::weak_ptr<EngineCore::Scene> sceneWp,
-                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                        if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
-                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
-                            if (primitiveSp) {
-                                primitiveSp->SetWorldMatrix(worldMatrix);
-                                primitiveSp->SetOutlineMatrix(outlineMatrix);
-                                primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
-                                primitiveSp->SetOriginPosition(boundingBox.GetOrigin());
-                            }
-                        }
-                    });
-            }
-        }
-    }
-    SetIsTransformationDirty(!bIsSceneProxyReady);
 }
 
 void PrimitiveComponent::SetIsEnabled(const bool bEnabled)
@@ -98,7 +61,6 @@ void PrimitiveComponent::SetIsEnabled(const bool bEnabled)
     if (mIsEnabled->GetValue() != bEnabled) {
         mIsEnabled->SetValue(bEnabled, false);
         bIsEnabledStateDirty = true;
-        SyncRenderData();
     }
 }
 
@@ -107,7 +69,6 @@ void PrimitiveComponent::SetIsVisible(bool isVisible)
     if (isVisible != mIsVisible->GetValue()) {
         mIsVisible->SetValue(isVisible);
         bIsVisibleStateDirty = true;
-        SyncRenderData();
     }
 }
 
@@ -126,7 +87,6 @@ void PrimitiveComponent::SetSortOrderValue(const int32_t orderValue)
     if (mSortOrderValue != orderValue) {
         mSortOrderValue = orderValue;
         bIsSortOrderStateDirty = true;
-        SyncRenderData();
     }
 }
 
@@ -161,7 +121,6 @@ void PrimitiveComponent::SetCanBloomBeApplied(const bool value)
     if (mCanBloomBeApplied != value) {
         mCanBloomBeApplied = value;
         bIsBloomStateDirty = true;
-        SyncRenderData();
     }
 }
 
@@ -176,7 +135,6 @@ void PrimitiveComponent::SetIsOutlineApplied(const bool value)
         mIsOutlineApplied = value;
         SetIsTransformationDirty(true);
         bIsOutlineStateDirty = true;
-        SyncRenderData();
     }
 }
 
@@ -195,7 +153,6 @@ void PrimitiveComponent::SetDepthWriteMaskEnabled(const bool isEnabled)
     if (mDepthWriteMaskEnabled != isEnabled) {
         mDepthWriteMaskEnabled = isEnabled;
         bIsDepthTestStateDirty = true;
-        SyncRenderData();
     }
 }
 
@@ -204,6 +161,32 @@ void PrimitiveComponent::SyncRenderData()
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSP = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
+                if (bTransformationDirty) {
+                    static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
+                    sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+                        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                        GetObjectId(),
+                        functionId,
+                        [sceneRendererSp,
+                         sceneProxyId = mSceneProxyId,
+                         worldMatrix = m_worldMatrix,
+                         outlineMatrix = m_outlineMatrix,
+                         boundingBox = mBoundingBox,
+                         newTransformedBoundingBox = GetTransformedBoundingBox()](
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
+                            if (primitiveSp) {
+                                primitiveSp->SetWorldMatrix(worldMatrix);
+                                primitiveSp->SetOutlineMatrix(outlineMatrix);
+                                primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+                                primitiveSp->SetOriginPosition(boundingBox.GetOrigin());
+                            }
+                        });
+                    bTransformationDirty = false;
+                }
+
                 if (bIsEnabledStateDirty) {
                     static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
                     sceneRendererSp->UpdatePrimitiveComponentEnable_OnRenderThread(

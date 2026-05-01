@@ -4,6 +4,7 @@
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/GameObjectsCollisionType.h"
 #include "Implementation/GameObjectsType.h"
+#include "Implementation/LootCategoryType.h"
 #include "Implementation/MissileType.h"
 
 #include <glm/vec3.hpp>
@@ -30,6 +31,7 @@ class SpaceObjectActor;
 class SpaceshipActor;
 class BarrierActor;
 class PortalActor;
+class LootActor;
 
 class CombatActorsPoolHandler : public std::enable_shared_from_this<CombatActorsPoolHandler> {
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
@@ -49,6 +51,8 @@ class CombatActorsPoolHandler : public std::enable_shared_from_this<CombatActors
     std::vector<std::shared_ptr<PortalActor>> mSpawnPortals;
 
     mutable std::unordered_map<int32_t, eGameObjectsType> mActorTypeCache;
+
+    std::vector<std::shared_ptr<LootActor>> mLootActors;
 
 public:
     explicit CombatActorsPoolHandler(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
@@ -95,6 +99,8 @@ public:
     eGameObjectsCollisionType
     GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const;
 
+    std::shared_ptr<LootActor> GetFreeLootActor(const eLootCategory lootCategory);
+
     void SpawnEnemySpaceships(const int32_t count, const eSpaceshipType spaceshipType);
 
     void SpawnMissiles(const eMissileType missileType, const int32_t count);
@@ -104,6 +110,8 @@ public:
     void SpawnBarriers(const int32_t barriersCount, const int32_t pillarsCount);
 
     void SpawnPortals(const int32_t count, const float portalSize);
+
+    void SpawnLoot(const int32_t count, const eLootCategory lootCategory);
 
     int32_t GetSpaceStationsCount() const;
 
