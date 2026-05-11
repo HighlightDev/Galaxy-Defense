@@ -2,6 +2,8 @@
 
 #include "Core/GameCore/Particles/Modules/Velocity/IVelocityModule.h"
 
+#include <glm/vec3.hpp>
+
 namespace EngineCore {
 class SimpleVelocityModule : public IVelocityModule {
 
@@ -10,7 +12,7 @@ class SimpleVelocityModule : public IVelocityModule {
 
     glm::vec3 mCurrentSpawnVelocityDeviation;
 
-    float mExtraVelocityPower{1.0f};
+    float mSpeed{1.0f};
 
 public:
     SimpleVelocityModule();
@@ -23,7 +25,9 @@ public:
 
     void OnEmitParticles() override;
 
-    void SetExtraVelocityPower(const float velocityPower);
+    void EmitSingleParticle(Particle& particle) override;
+
+    void SetSpeed(const float speed);
 
     std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const override;
 };

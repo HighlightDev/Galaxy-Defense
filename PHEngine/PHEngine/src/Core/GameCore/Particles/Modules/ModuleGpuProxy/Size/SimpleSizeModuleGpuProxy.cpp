@@ -19,9 +19,13 @@ std::string SimpleSizeModuleGpuProxy::GetShaderSnippet() const
         vec2 updateRotationAndSize(in vec2 currentRotationAndSize, in float particleLifeProgress, in float dt) {
         return vec2(currentRotationAndSize.x, mix(%f, %f, particleLifeProgress));
     }
+    vec2 resetRotationAndSize(in float dt, in vec3 currentInvokeId) {
+        float rotation = random(vec2(dt * 1000.0, currentInvokeId.x)) * 6.28318;
+        return vec2(rotation, %f);
+    }
     )";
-    char buffer[256];
-    std::snprintf(buffer, sizeof(buffer), fmtStr, mSizeBegin, mSizeEnd);
+    char buffer[512];
+    std::snprintf(buffer, sizeof(buffer), fmtStr, mSizeBegin, mSizeEnd, mSizeBegin);
     return EngineUtility::Trim(buffer);
 }
 

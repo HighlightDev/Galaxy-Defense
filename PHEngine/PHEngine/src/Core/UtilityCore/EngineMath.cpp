@@ -12,7 +12,7 @@ namespace EngineMath {
 float G = 9.8f;
 float PI = 3.14159f;
 float PI_HALF = 1.570795F;
-float ENGINE_FLOAT_EPSILON = 0.00001f;
+float ENGINE_FLOAT_EPSILON = 1e-5f;
 glm::vec3 AXIS_RIGHT = glm::vec3(1, 0, 0);
 glm::vec3 AXIS_UP = glm::vec3(0, 1, 0);
 glm::vec3 AXIS_FORWARD = glm::vec3(0, 0, 1);

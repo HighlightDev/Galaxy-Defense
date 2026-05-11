@@ -60,6 +60,8 @@ public:
 private:
     int32_t GetSelectedMissileType(const std::tuple<>& data) const;
 
+    int32_t GetCollectedCrystalsCount(const std::tuple<>& data) const;
+
     std::string GetAllMissilesData(const std::tuple<>& data) const;
 
     int32_t GetEnemySpaceshipsCountDestroyedByPlayer(const std::tuple<>& data) const;

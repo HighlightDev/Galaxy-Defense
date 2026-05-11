@@ -699,7 +699,7 @@ Particle system component with modular architecture. Supports various emitter ty
 - `simple` - simple velocity with deviation
   - `velocityDirection` - velocity direction (x, y, z)
   - `velocityDeviation` - velocity deviation (x, y, z)
-  - `extraVelocityPower` - extra velocity power
+  - `speed` - extra velocity power
 - `orbit` - orbital movement
   - `orbitRadius` - orbit radius
   - `orbitHeight` - orbit height
@@ -743,7 +743,7 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
             type = "simple",
             velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
             velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
-            extraVelocityPower = 1.0
+            speed = 1.0
         }
     }
 }))
@@ -843,7 +843,7 @@ _CreateAndAttachComponentToActor(actorId, "CpuParticleSystemComponent", Json.enc
             type = "simple",
             velocityDirection = {x = 0.0, y = -10.0, z = 0.0},
             velocityDeviation = {x = 5.0, y = 2.0, z = 5.0},
-            extraVelocityPower = 2.0
+            speed = 2.0
         }
     }
 }))

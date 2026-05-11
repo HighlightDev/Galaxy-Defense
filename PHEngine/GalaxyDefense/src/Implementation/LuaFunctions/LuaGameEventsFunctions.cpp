@@ -67,6 +67,11 @@ void LuaGameEventsFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
         mOwnerPtr,
         std::bind(&LuaGameEventsFunctions::GetSelectedMissileType, this, std::placeholders::_1),
         "_GetSelectedMissileType");
+    LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetCollectedCrystalsCount"), int32_t(void)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaGameEventsFunctions::GetCollectedCrystalsCount, this, std::placeholders::_1),
+        "_GetCollectedCrystalsCount");
     LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetAllMissilesData"), std::string(void)>::Bind(
         luaWrapper,
         mOwnerPtr,
@@ -109,7 +114,7 @@ void LuaGameEventsFunctions::ProcessEvent(
         "System_OnGameEventTriggered",
         (void*)mOwnerPtr,
         std::string("PlayerStatusChanged"),
-        std::get<1>(data));
+        std::get<0>(data));
 }
 
 void LuaGameEventsFunctions::ProcessEvent(
@@ -233,5 +238,10 @@ void LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent(
                     eExecutionOrder::POST_EXECUTION, static_cast<eEditModeType>(editModeType));
             });
     }
+}
+
+int32_t LuaGameEventsFunctions::GetCollectedCrystalsCount(const std::tuple<>& data) const
+{
+    return PlayerDataProvider::GetInstance()->GetCrystalsCount();
 }
 } // namespace Game

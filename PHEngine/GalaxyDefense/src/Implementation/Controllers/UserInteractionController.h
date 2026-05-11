@@ -171,7 +171,7 @@ private:
 
     void ProcessCombatStage();
 
-    void TriggerPlayerStatusChangedEvent(const eMainPlayerStatusType statusChanged, const std::string& jsonArgs);
+    void TriggerPlayerStatusChangedEvent(const std::string& jsonArgs);
 
     void TriggerSwitchToIdleInteractionMode();
 

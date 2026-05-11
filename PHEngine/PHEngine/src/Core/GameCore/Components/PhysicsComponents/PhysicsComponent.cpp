@@ -40,6 +40,15 @@ void PhysicsComponent::SetOwner(const std::weak_ptr<Actor>& ownerActor)
     const auto& ownerActorSp = ownerActor.lock();
     ext_assert(ownerActorSp, "Owner Actor is null in PhysicsComponent::SetOwner");
 
+    LogInfo(
+        "PhysicsComponent::SetOwner: Owner Actor id: ",
+        ownerActorSp->GetObjectId(),
+        ", name: ",
+        ownerActorSp->GetEngineObjectName(),
+        ", PhysicsComponent id: ",
+        GetObjectId(),
+        ", name: ",
+        GetEngineObjectName());
     mDescriptor->SetOwnerActorEngineObjectId(ownerActorSp->GetObjectId());
 }
 

@@ -7,15 +7,12 @@
 using namespace Game;
 
 namespace Event {
-class MainPlayerStatusChangedEvent : public TEvent<
-                                         MainPlayerStatusChangedEvent,
-                                         eEventThreadType::GAME_THREAD,
-                                         MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>> {
+class MainPlayerStatusChangedEvent
+    : public TEvent<MainPlayerStatusChangedEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string /*args*/>> {
 public:
-    using Type_t = TEvent<
-        MainPlayerStatusChangedEvent,
-        eEventThreadType::GAME_THREAD,
-        MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>>::Type_t;
+    using Type_t
+        = TEvent<MainPlayerStatusChangedEvent, eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string /*args*/>>::
+            Type_t;
 
     std::string ToString() const override
     {
@@ -26,12 +23,11 @@ public:
 class LuaMainPlayerStatusChangedEvent : public TEvent<
                                             LuaMainPlayerStatusChangedEvent,
                                             eEventThreadType::LUA_THREAD,
-                                            MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>> {
+                                            MultipleDataEventPolicy<std::string /*args*/>> {
 public:
-    using Type_t = TEvent<
-        LuaMainPlayerStatusChangedEvent,
-        eEventThreadType::LUA_THREAD,
-        MultipleDataEventPolicy<eMainPlayerStatusType, std::string /*args*/>>::Type_t;
+    using Type_t
+        = TEvent<LuaMainPlayerStatusChangedEvent, eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<std::string /*args*/>>::
+            Type_t;
 
     std::string ToString() const override
     {

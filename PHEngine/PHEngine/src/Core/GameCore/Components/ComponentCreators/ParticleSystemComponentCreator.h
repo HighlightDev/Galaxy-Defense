@@ -99,15 +99,14 @@ public:
                 module->SetOwner(component);
                 module->SetVelocityDirection(velData->velocityDirection);
                 module->SetVelocityDeviation(velData->velocityDeviation);
-                module->SetExtraVelocityPower(velData->extraVelocityPower);
+                module->SetSpeed(velData->speed);
                 component->AddParticleModule(module);
             } else if (velData->moduleType == "orbit") {
                 auto module = std::make_shared<OrbitVelocityModule>();
                 module->SetOwner(component);
                 module->SetExtraVelocityDirectionType(
-                    velData->extraVelocityPower > 0.0f ? eOrbitExtraVelocityDirectionType::Outside
-                                                       : eOrbitExtraVelocityDirectionType::Inside);
-                module->SetExtraVelocityPower(velData->extraVelocityPower);
+                    velData->speed > 0.0f ? eOrbitExtraVelocityDirectionType::Outside : eOrbitExtraVelocityDirectionType::Inside);
+                module->SetSpeed(velData->speed);
                 component->AddParticleModule(module);
             }
         }

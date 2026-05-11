@@ -33,18 +33,25 @@ glm::vec3 SmartPicker::CreateWorldSpaceRayFromScreenSpacePosition(
 }
 
 int32_t SmartPicker::CastScreenSpaceRayIntoScene(
-    const std::shared_ptr<Scene>& sceneSp, const std::shared_ptr<ACamera>& camera, const glm::ivec2& screenSpacePosition)
+    const std::shared_ptr<Scene>& sceneSp,
+    const std::shared_ptr<ACamera>& camera,
+    const glm::ivec2& screenSpacePosition,
+    const std::unordered_set<eGameObjectsType>& gameObjectTypesToIgnore) const
 {
     int32_t resultId = -1;
     const auto& worldSpaceRay = CreateWorldSpaceRayFromScreenSpacePosition(camera, screenSpacePosition);
 
-    const auto& enemySpaceships = mCombatActorsPoolHandler->GetEnemySpaceshipActors();
     std::vector<std::shared_ptr<PhysicsComponent>> excludedComponents;
-    excludedComponents.reserve(enemySpaceships.size());
-    std::transform(
-        enemySpaceships.cbegin(), enemySpaceships.cend(), std::back_inserter(excludedComponents), [](const auto& enemySpaceship) {
-            return enemySpaceship->GetPhysicsComponent();
-        });
+    for (auto gameObjectTypeToIgnore : gameObjectTypesToIgnore) {
+        const auto& actorsToIgnore = mCombatActorsPoolHandler->GetActorsByGameObjectType(gameObjectTypeToIgnore);
+        excludedComponents.reserve(excludedComponents.size() + actorsToIgnore.size());
+        std::transform(
+            actorsToIgnore.cbegin(),
+            actorsToIgnore.cend(),
+            std::back_inserter(excludedComponents),
+            [](const auto& actorToIgnore) { return actorToIgnore->GetPhysicsComponent(); });
+    }
+
     auto rayCast = RayCastWithFilterAdapter(excludedComponents);
     const auto &rayCastStartPos = camera->GetEyeVector(),
                rayCastEndPos = glm::vec3(camera->GetEyeVector() + worldSpaceRay * 1000.0f);

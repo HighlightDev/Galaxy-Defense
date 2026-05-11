@@ -97,9 +97,9 @@ std::shared_ptr<MissileActor> FreezingMissileFactory::CreateMissile(
 
     d_particle->velocityModules.push_back(std::make_shared<VelocityModuleData>());
     d_particle->velocityModules.back()->moduleType = "simple";
-    d_particle->velocityModules.back()->velocityDirection = glm::vec3(0, -25.0f, 0);
-    d_particle->velocityModules.back()->velocityDeviation = glm::vec3(2.0f, 0.0f, 2.0f);
-    d_particle->velocityModules.back()->extraVelocityPower = 1.0f;
+    d_particle->velocityModules.back()->velocityDirection = glm::vec3(0, -0.5f, 0);
+    d_particle->velocityModules.back()->velocityDeviation = glm::vec3(0.0f, 0.0f, 0.0f);
+    d_particle->velocityModules.back()->speed = 15.0f;
 
     d_particle->colorData = std::make_shared<ColorModuleData>();
     d_particle->colorData->moduleType = "simple";

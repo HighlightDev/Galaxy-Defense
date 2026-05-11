@@ -2,5 +2,5 @@
 
 namespace Game {
 
-enum class eLootCategory { CRYSTAL };
+enum class eLootCategory { LOOT };
 } // namespace Game

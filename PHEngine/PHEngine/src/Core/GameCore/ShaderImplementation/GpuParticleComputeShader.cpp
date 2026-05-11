@@ -18,7 +18,8 @@ void GpuParticleComputeShader::AccessAllUniformLocations(uint32_t shaderProgramI
 {
     ComputeShaderBase::AccessAllUniformLocations(shaderProgramID);
     m_deltaTimeUniform = GetUniform("deltaTimeSec", shaderProgramID);
-    m_particleMoveSpeedUniform = GetUniform("particleMoveSpeed", shaderProgramID);
+    m_isEndlessRespawnEnabledUniform = GetUniform("isEndlessRespawnEnabled", shaderProgramID);
+    m_emitterPositionUniform = GetUniform("emitterPosition", shaderProgramID);
 }
 
 void GpuParticleComputeShader::SetDispatchDeltaTime(const double deltaTimeSec)
@@ -26,9 +27,14 @@ void GpuParticleComputeShader::SetDispatchDeltaTime(const double deltaTimeSec)
     m_deltaTimeUniform.LoadUniform(static_cast<float>(deltaTimeSec));
 }
 
-void GpuParticleComputeShader::SetParticleMoveSpeed(const float moveSpeed)
+void GpuParticleComputeShader::SetIsEndlessRespawnEnabled(const bool isEnabled)
 {
-    m_particleMoveSpeedUniform.LoadUniform(moveSpeed);
+    m_isEndlessRespawnEnabledUniform.LoadUniform(isEnabled);
+}
+
+void GpuParticleComputeShader::SetEmitterPosition(const glm::vec3& position)
+{
+    m_emitterPositionUniform.LoadUniform(position);
 }
 
 } // namespace EngineCore::ShaderImpl

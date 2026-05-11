@@ -98,12 +98,17 @@ function CombatPreparationOverlay:new(host)
         if "PlayerStatusChanged" == eventName then
             assert(jsonArgs ~= nil and type(jsonArgs) == "string")
             local parsedJson = json.decode(jsonArgs)
-            if parsedJson["towers_count"] ~= nil then
-                local newTowersCount = tonumber(parsedJson["towers_count"])
-                if newTowersCount > 0 then
-                    canCompletePreparationStage = true
-                else
-                    canCompletePreparationStage = false
+            if (parsedJson["player_status_type"] ~= nil) then
+                local statusType = tonumber(parsedJson["player_status_type"])
+                if statusType == PlayerStatusType.TOWERS_COUNT_CHANGED then
+                    if parsedJson["towers_count"] ~= nil then
+                        local newTowersCount = tonumber(parsedJson["towers_count"])
+                        if newTowersCount > 0 then
+                            canCompletePreparationStage = true
+                        else
+                            canCompletePreparationStage = false
+                        end
+                    end
                 end
             end
         end

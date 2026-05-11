@@ -27,7 +27,6 @@ local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
-local PlayerHUDOverlay = require("Ui/Overlays/CombatLevelOverlays/PlayerHUDOverlay")
 local CombatOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatOverlay")
 local LevelFailedOverlay = require("Ui/Overlays/CombatLevelOverlays/LevelFailedOverlay")
 local CombatPreparationOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatPreparationOverlay")
@@ -67,8 +66,6 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
     end
 end
 
-local function createPlayerHUDOverlay(host) return PlayerHUDOverlay:new(host) end
-
 local function createPauseOverlay(host) return PauseOverlay:new(host) end
 
 local function createPauseSettingsOverlay(host) return SettingsOverlay:new(host) end
@@ -85,7 +82,6 @@ local function initialize(host)
     UiOverlays["LevelFailedOverlay"] = createLevelFailedOverlay(host)
     UiOverlays["CombatOverlay"] = createCombatOverlay(host)
     UiOverlays["CombatPreparationOverlay"] = createCombatPreparationOverlay(host)
-    UiBackgroundOverlays["PlayerHUDOverlay"] = createPlayerHUDOverlay(host)
 end
 
 function System_OnStart(host)
@@ -134,9 +130,9 @@ function System_OnGameEventTriggered(host, eventName, jsonArgs)
             if statusType == PlayerStatusType.SELECTED_TOWER_CHANGED then
                 if parsedJson["has_selected_tower"] ~= nil then
                     if parsedJson["has_selected_tower"] == true then
-                        UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
+                        print("Player has selected tower")
                     else
-                        UiOverlayManager:closeBackgroundOverlay(host, "PlayerHUDOverlay")
+                        print("Player has deselected tower")
                     end
                 end
             end

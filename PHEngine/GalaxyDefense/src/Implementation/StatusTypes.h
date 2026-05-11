@@ -2,14 +2,10 @@
 
 namespace Game {
 enum class eMainPlayerStatusType {
-    NONE,
-    LIFE_POINTS_CHANGED,
-    ACTIVE_WEAPON_CHANGED, // changed active type of missiles
-    MISSILES_COUNT_CHANGED, // amount of missiles changed
-    AVAILABLE_MISSILES_CHANGED, // missiles become unlocked or locked,
-    DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED, // total amount of destroyed by player enemy spaceships,
-    SELECTED_TOWER_CHANGED,
-    TOWERS_COUNT_CHANGED
+    CRYSTALS_COUNT_CHANGED = 0,
+    DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED = 1,
+    SELECTED_TOWER_CHANGED = 2,
+    TOWERS_COUNT_CHANGED = 3
 };
 
 enum class eLevelProgressStatusType { NONE, CURRENT_STAGE_CHANGED, REQUIREMENT_TRACKERS_STATUS_CHANGED };

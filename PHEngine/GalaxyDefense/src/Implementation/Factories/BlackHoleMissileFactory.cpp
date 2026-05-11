@@ -200,7 +200,7 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
         auto velocityModule = std::make_shared<OrbitVelocityModule>();
         velocityModule->SetOwner(c_particleSystemComponent);
         velocityModule->SetExtraVelocityDirectionType(eOrbitExtraVelocityDirectionType::Outside);
-        velocityModule->SetExtraVelocityPower(0.1f);
+        velocityModule->SetSpeed(0.1f);
         c_particleSystemComponent->AddParticleModule(velocityModule);
 
         auto colorModule = std::make_shared<SimpleColorModule>();

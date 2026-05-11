@@ -21,6 +21,8 @@ public:
 
     virtual void EmitParticles(const size_t particlesCount) = 0;
 
+    virtual void EmitSingleParticle(Particle& particle) = 0;
+
 protected:
     std::vector<Particle>& GetParticlesPool();
 };

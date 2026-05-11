@@ -38,7 +38,13 @@ layout(std430, binding = 6) buffer AliveCounterBuffer
 };
 
 uniform float deltaTimeSec;
-uniform float particleMoveSpeed;
+uniform bool isEndlessRespawnEnabled;
+uniform vec3 emitterPosition;
+
+float random(in vec2 seed)
+{
+    return fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453);
+}
 
 void main()
 {
@@ -47,25 +53,37 @@ void main()
     vec4 currentParticlePositionAndLifeDuration = ParticlePositions[index];
     float currentLifeDuration = currentParticlePositionAndLifeDuration.w;
     bool particleAlive = currentLifeDuration < particleLifetime;
-    if (particleAlive) {
-        atomicAdd(AliveCounter, 1);
-    }
 
     float particleLifeFactor = currentLifeDuration / particleLifetime; // [0, 1]
-    vec3 updatedColor = updateColor(Colors[index].rgb, particleLifeFactor, deltaTimeSec);
-    Colors[index] = vec4(updatedColor, 1.0);
 
-    vec3 initialVelocity = ParticleInitialVelocities[index].xyz;
-    vec3 currentVelocity = ParticleVelocities[index].xyz;
-    vec3 updatedVelocity = updateVelocity(currentVelocity, particleLifeFactor, deltaTimeSec);
-    ParticleVelocities[index] = vec4(updatedVelocity, 0.0);
+    vec3 initialVelocity, initialColor, position;
+    vec2 initialRotationAndSize;
+    float initialLifeTime;
 
-    vec2 updatedRotationAndSize = updateRotationAndSize(RotationAndSizes[index], particleLifeFactor, deltaTimeSec);
-    RotationAndSizes[index] = updatedRotationAndSize;
+    if (!particleAlive && isEndlessRespawnEnabled) {
+        atomicAdd(AliveCounter, 1);
+        vec3 invokeId = vec3(gl_GlobalInvocationID);
+        initialVelocity = resetVelocity(deltaTimeSec, invokeId);
+        initialColor = resetColor(deltaTimeSec, invokeId);
+        initialRotationAndSize = resetRotationAndSize(deltaTimeSec, invokeId);
+        initialLifeTime = resetLifeTime(deltaTimeSec, invokeId);
+        position = emitterPosition;
+        // Update initial velocity so next-frame updateVelocity gets the correct direction
+        ParticleInitialVelocities[index] = vec4(initialVelocity, 0.0);
+    } else if (particleAlive) {
+        atomicAdd(AliveCounter, 1);
+        initialVelocity = updateVelocity(
+            ParticleInitialVelocities[index].xyz, ParticleVelocities[index].xyz, particleLifeFactor, deltaTimeSec);
+        initialColor = updateColor(Colors[index].rgb, particleLifeFactor, deltaTimeSec);
+        initialRotationAndSize = updateRotationAndSize(RotationAndSizes[index], particleLifeFactor, deltaTimeSec);
+        initialLifeTime = updateLifeTime(currentLifeDuration, deltaTimeSec);
+        position = currentParticlePositionAndLifeDuration.xyz;
+    }
 
-    float updatedLifeDuration = updateLifeTime(currentLifeDuration, deltaTimeSec);
-    ParticlePositions[index] = vec4(
-        currentParticlePositionAndLifeDuration.xyz
-            + normalize(initialVelocity + updatedVelocity) * deltaTimeSec * particleMoveSpeed,
-        updatedLifeDuration);
+    Colors[index] = vec4(initialColor, 1.0);
+    RotationAndSizes[index] = initialRotationAndSize;
+    ParticleVelocities[index] = vec4(initialVelocity, 0.0);
+
+    position += initialVelocity * deltaTimeSec;
+    ParticlePositions[index] = vec4(position, initialLifeTime);
 }

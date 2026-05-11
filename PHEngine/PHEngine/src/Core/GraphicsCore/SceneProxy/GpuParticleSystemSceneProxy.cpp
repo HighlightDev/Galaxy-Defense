@@ -30,6 +30,7 @@ GpuParticleSystemSceneProxy::GpuParticleSystemSceneProxy(const GpuParticleSystem
     , mRenderData(component->GetRenderData())
     , mParticlesEmitted(false)
     , mPrevActiveParticlesCount(0)
+    , mIsEndlessRespawnEnabled(component->IsEndlessRespawnEnabled())
     , m_gpuParticleModulesProxies()
 {
     m_gpuParticleModulesProxies = component->GetParticleModulesProxies();
@@ -58,7 +59,9 @@ void GpuParticleSystemSceneProxy::PostConstructorInitialize()
             moduleProxy->GetModuleTypeHash(), eShaderType::ComputeShader, moduleProxy->GetShaderSnippet());
     }
 
-    m_computeShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleComputeShader_t>(computeShaderParams);
+    if (!m_gpuParticleModulesProxies.empty()) {
+        m_computeShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleComputeShader_t>(computeShaderParams);
+    }
 
     mRenderData.mParticleMeshParams.mVertexAttributes = GetShader()->GetVertexAttributes();
 
@@ -158,6 +161,10 @@ void GpuParticleSystemSceneProxy::Render(
         return;
     }
 
+    if (!m_computeShader) {
+        return;
+    }
+
     if (mParticlesEmitted) {
         mParticlesEmitted = false;
     }
@@ -184,7 +191,8 @@ void GpuParticleSystemSceneProxy::Render(
         const double timeSinceLastDispatch = EngineTime::GetTimeDifferenceInSeconds(currentTime - m_lastDispatchTime);
         m_lastDispatchTime = currentTime;
         m_computeShader->SetDispatchDeltaTime(timeSinceLastDispatch);
-        m_computeShader->SetParticleMoveSpeed(15.0f);
+        m_computeShader->SetIsEndlessRespawnEnabled(mIsEndlessRespawnEnabled);
+        m_computeShader->SetEmitterPosition(glm::vec3(m_worldMatrix[3]));
     }
 
     m_computeShader->Dispatch(mRenderData.mParticleMeshParams.mParticleCount, 1, 1);
@@ -299,11 +307,10 @@ void GpuParticleSystemSceneProxy::ResetParticleModulesProxies(
     ext_assert(
         ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "ResetParticleModulesProxies can be called only from RenderThread");
-    ext_assert(
-        m_computeShader,
-        "Compute shader is null in ResetParticleModulesProxies, make sure PostConstructorInitialize was called before");
 
-    ShaderPool::GetInstance()->TryToFreeMemory(m_computeShader);
+    if (m_computeShader) {
+        ShaderPool::GetInstance()->TryToFreeMemory(m_computeShader);
+    }
 
     m_gpuParticleModulesProxies = gpuParticleModulesProxies;
     ShaderParams computeShaderParams("GpuParticleComputeShader");
@@ -312,7 +319,12 @@ void GpuParticleSystemSceneProxy::ResetParticleModulesProxies(
     for (const auto& moduleProxy : m_gpuParticleModulesProxies) {
         computeShaderParams.AddShaderCodeSnippet(
             moduleProxy->GetModuleTypeHash(), eShaderType::ComputeShader, moduleProxy->GetShaderSnippet());
-        m_computeShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleComputeShader_t>(computeShaderParams);
     }
+    m_computeShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleComputeShader_t>(computeShaderParams);
+}
+
+void GpuParticleSystemSceneProxy::SetIsEndlessRespawnEnabled(const bool isEnabled)
+{
+    mIsEndlessRespawnEnabled = isEnabled;
 }
 } // namespace Graphics::Proxy

@@ -37,12 +37,21 @@ local TowerGridPanel = require("Ui/Widgets/TowerGridPanel")
 
 local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}
 
+PlayerStatusType = {
+    CRYSTALS_COUNT_CHANGED = 0,
+    DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED = 1,
+    SELECTED_TOWER_CHANGED = 2,
+    TOWERS_COUNT_CHANGED = 3
+}
+
 local CombatOverlay = {levelProgressContainer = nil, levelProgressRowLayout = nil}
 
 local RequirementTrackers = {}
 local RequirementTrackersIdle = {}
 
 local RequirementTrackerHint = nil
+
+local TileSize = 80 -- temporary for now
 
 local function showTileRequirementAchived(requirementTile)
     requirementTile:setTextureSource("check.png")
@@ -101,9 +110,8 @@ local function fillRequirementTilesPool(host, combatOverlay, count)
         levelProgressTile:subscribeOnLuaProxiesReady(function(host)
             levelProgressTile:setParent(host, combatOverlay:getOverlayCanvas().widgetName,
                                         combatOverlay.levelProgressRowLayout.widgetName)
-            local tileSize = 100 -- temporary for now
-            levelProgressTile:setWidth(tileSize)
-            levelProgressTile:setHeight(tileSize)
+            levelProgressTile:setWidth(TileSize)
+            levelProgressTile:setHeight(TileSize)
             levelProgressTile:setBackgroundTileOpacity(1.0)
             levelProgressTile:setIsVisible(false)
             levelProgressTile:setBackgroundTileColorHexValue(Styles.Colors.panelColor)
@@ -162,6 +170,9 @@ function CombatOverlay:new(host)
     local levelProgressContainer = UiItem:new(host, "LvlProgressContainer")
     combatOverlay:addWidget(levelProgressContainer)
     combatOverlay.levelProgressContainer = levelProgressContainer
+
+    local crystalsStock = ImageAndLabelTile:new(host, combatOverlay)
+    combatOverlay:addCompoundWidget(crystalsStock)
 
     local levelProgressRowLayout = UiRowLayout:new(host, "LvlProgressRow")
     combatOverlay:addWidget(levelProgressRowLayout)
@@ -255,6 +266,19 @@ function CombatOverlay:new(host)
         RequirementTrackerHint:setIsVisible(false)
         RequirementTrackerHint:setBorderThickness(40)
 
+        crystalsStock:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
+        crystalsStock:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+                                combatOverlayCanvas.widgetName, 30)
+        crystalsStock:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+                                combatOverlayCanvas.widgetName, 30)
+        crystalsStock:setWidth(TileSize)
+        crystalsStock:setHeight(TileSize)
+        crystalsStock:setTextureSource("diamond.png")
+        local crystalsCount = _GetCollectedCrystalsCount(host) -- request current crystals count to correctly initialize crystals stock label
+        crystalsStock:setLabelText(tostring(crystalsCount))
+        crystalsStock:setLabelVisibility(true)
+        crystalsStock:setBackgroundTileColorHexValue(Styles.Colors.panelColor)
+
         towerGridPanel:setupLayout(combatOverlayCanvas.widgetName)
 
         removeDropDownPanel:setParent(host, combatOverlayCanvas.widgetName, towerGridPanel.backgroundRect.widgetName)
@@ -284,6 +308,16 @@ function CombatOverlay:new(host)
                     combatOverlay.onCurrentLevelProgressStageChanged()
                 elseif lvlProgressStatusType == LevelProgressStatusType.REQUIREMENT_TRACKERS_STATUS_CHANGED then
                     combatOverlay.onRequirementTrackersStatusChanged()
+                end
+            end
+        elseif "PlayerStatusChanged" == eventName then
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            local parsedJson = json.decode(jsonArgs)
+            if parsedJson["player_status_type"] ~= nil then
+                local statusType = tonumber(parsedJson["player_status_type"])
+                if statusType == PlayerStatusType.CRYSTALS_COUNT_CHANGED then
+                    local crystalsCount = tonumber(parsedJson["crystals_count"])
+                    crystalsStock:setLabelText(tostring(crystalsCount))
                 end
             end
         end

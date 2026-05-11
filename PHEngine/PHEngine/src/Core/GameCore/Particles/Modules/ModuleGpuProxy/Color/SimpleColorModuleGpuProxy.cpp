@@ -21,10 +21,24 @@ std::string SimpleColorModuleGpuProxy::GetShaderSnippet() const
         vec3 updateColor(in vec3 currentColor, in float particleLifeProgress, in float dt) {
         return mix(vec3(%f, %f, %f), vec3(%f, %f, %f), particleLifeProgress);
     }
+    vec3 resetColor(in float dt, in vec3 currentInvokeId) {
+        return vec3(%f, %f, %f);
+    }
     )";
-    char buffer[256];
+    char buffer[512];
     std::snprintf(
-        buffer, sizeof(buffer), fmtStr, mColorBegin.r, mColorBegin.g, mColorBegin.b, mColorEnd.r, mColorEnd.g, mColorEnd.b);
+        buffer,
+        sizeof(buffer),
+        fmtStr,
+        mColorBegin.r,
+        mColorBegin.g,
+        mColorBegin.b,
+        mColorEnd.r,
+        mColorEnd.g,
+        mColorEnd.b,
+        mColorBegin.r,
+        mColorBegin.g,
+        mColorBegin.b);
     return EngineUtility::Trim(buffer);
 }
 

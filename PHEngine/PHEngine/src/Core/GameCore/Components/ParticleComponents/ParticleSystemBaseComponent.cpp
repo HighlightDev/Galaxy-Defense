@@ -39,10 +39,9 @@ void ParticleSystemBaseComponent::AddParticleModule(const std::shared_ptr<IParti
         return (uint8_t)leftModule->GetParticleModuleType() < (uint8_t)rightModule->GetParticleModuleType();
     });
 
+    SetIsParticleModulesProxiesDirty(true);
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
-        isParticleModulesProxiesDirty = true;
         SyncDataWithRenderThread(0, true);
-        isParticleModulesProxiesDirty = false;
     }
 }
 
@@ -53,6 +52,8 @@ void ParticleSystemBaseComponent::EmitParticles()
     for (const auto& particleModule : mParticleModules) {
         particleModule->OnEmitParticles();
     }
+
+    bIsEmitting = true;
 }
 
 void ParticleSystemBaseComponent::ResetParticles()
@@ -65,6 +66,8 @@ void ParticleSystemBaseComponent::ResetParticles()
         SyncDataWithRenderThread(0, true);
         mPrevActiveParticles = 0;
     }
+
+    bIsEmitting = false;
 }
 
 size_t ParticleSystemBaseComponent::GetParticlesCount() const
@@ -98,5 +101,21 @@ std::vector<std::shared_ptr<IGpuParticleModuleProxy>> ParticleSystemBaseComponen
         std::back_inserter(gpuProxies),
         [](const std::shared_ptr<IParticleModule>& module) { return module->GetGpuProxy(); });
     return gpuProxies;
+}
+
+bool ParticleSystemBaseComponent::IsAnyParticleAlive() const
+{
+    return std::any_of(
+        mParticlesPool.cbegin(), mParticlesPool.cend(), [](const Particle& particle) { return particle.isActive; });
+}
+
+void ParticleSystemBaseComponent::SetIsEndlessRespawnEnabled(const bool isEnabled)
+{
+    isEndlessRespawnEnabled = isEnabled;
+}
+
+bool ParticleSystemBaseComponent::IsEndlessRespawnEnabled() const
+{
+    return isEndlessRespawnEnabled;
 }
 } // namespace EngineCore

@@ -81,7 +81,15 @@ void SpaceshipActor::TriggerSpawn(const glm::vec3& position)
 
 void SpaceshipActor::TriggerExplosion()
 {
+    if (mOnExplosionCallback) {
+        mOnExplosionCallback(GetWorldPosition());
+    }
     SetSpaceshipActivityState(eSpaceshipActivityState::PENDING_DISABLE);
+}
+
+void SpaceshipActor::SetOnExplosionCallback(std::function<void(const glm::vec3&)> callback)
+{
+    mOnExplosionCallback = std::move(callback);
 }
 
 void SpaceshipActor::TriggerDisabled()

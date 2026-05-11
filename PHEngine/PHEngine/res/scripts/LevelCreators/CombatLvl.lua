@@ -75,6 +75,8 @@ function CreateLevel(host)
         ,hammer.png
         ,trash.png
         ,сrystal_1.obj
+        ,diamond.png
+        ,shining_mask.png
 		]])
 
     _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")

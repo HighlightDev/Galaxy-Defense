@@ -44,10 +44,11 @@ CpuParticleSystemComponent::~CpuParticleSystemComponent()
 
 void CpuParticleSystemComponent::Tick(const float deltaTimeSec)
 {
-    static constexpr float particleMoveSpeed = 15.0f;
+    if (!bIsEmitting)
+        return;
 
     for (auto& particle : mParticlesPool) {
-        if (!particle.isActive)
+        if (!particle.isActive && !isEndlessRespawnEnabled)
             continue;
 
         for (const auto& module : mParticleModules) {
@@ -61,11 +62,23 @@ void CpuParticleSystemComponent::Tick(const float deltaTimeSec)
     size_t particleColorByteOffset = 0;
 
     for (auto particleIt = mParticlesPool.begin(); particleIt != mParticlesPool.end(); ++particleIt) {
-        if (!particleIt->isActive)
-            continue;
+        if (not particleIt->isActive && isEndlessRespawnEnabled) {
+            mParticleEmitter->EmitSingleParticle(*particleIt);
 
-        particleIt->Position
-            += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * deltaTimeSec * particleMoveSpeed;
+            for (const auto& particleModule : mParticleModules) {
+                particleModule->EmitSingleParticle(*particleIt);
+            }
+
+            // Run module updates so Velocity is initialized from the new InitialVelocity
+            // before we use it for position update below.
+            for (const auto& particleModule : mParticleModules) {
+                particleModule->Update(*particleIt, deltaTimeSec);
+            }
+        } else if (not particleIt->isActive && !isEndlessRespawnEnabled) {
+            continue;
+        }
+
+        particleIt->Position += particleIt->Velocity * deltaTimeSec;
 
         mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particleIt->Position);
         particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();

@@ -14,7 +14,7 @@ class OrbitVelocityModuleGpuProxy : public IGpuParticleModuleProxy {
 public:
     explicit OrbitVelocityModuleGpuProxy(
         const eOrbitExtraVelocityDirectionType extraVelocityDirectionType = eOrbitExtraVelocityDirectionType::None,
-        const float extraVelocityPower = 0.0f);
+        const float speed = 0.0f);
 
     std::string GetShaderSnippet() const override;
 

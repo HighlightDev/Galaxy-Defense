@@ -25,12 +25,14 @@
 #include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Implementation/ActorLeveling/LevelAttributeDataProvider.h"
 #include "Implementation/Actors/BarrierActor.h"
+#include "Implementation/Actors/LootActor.h"
 #include "Implementation/Actors/SpaceStationActor.h"
 #include "Implementation/Controllers/CombatController.h"
 #include "Implementation/Controllers/NavigationController.h"
 #include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
+#include "Implementation/GameObjectsType.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Implementation/Levels/CombatLevel/SmartPicker.h"
 
@@ -411,9 +413,10 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     }
                 }
                 nlohmann::json root;
+                root["player_status_type"] = static_cast<int32_t>(eMainPlayerStatusType::TOWERS_COUNT_CHANGED);
                 root["towers_count"] = std::to_string(
                     mCombatActorsPoolHandler->GetSpaceStationsCountWithState(eSpaceStationActivityState::ACTIVE));
-                TriggerPlayerStatusChangedEvent(eMainPlayerStatusType::TOWERS_COUNT_CHANGED, root.dump());
+                TriggerPlayerStatusChangedEvent(root.dump());
                 mReloadPlacementTower->StartTimer();
             }
         } else if (!mReloadPlacementTower->IsRunning() && eUserInteractionType::BARRIER_PLACEMENT == mInteractionType) {
@@ -452,6 +455,27 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     mReloadPlacementTower->StartTimer();
                 }
             }
+        } else if (eGameModeType::COMBAT == mCurrentGameModeType) {
+            const auto& lastMousePosition = mouseBindings->GetLastMouseCursorPosition();
+            const glm::ivec2& screenSpacePosition = glm::ivec2(lastMousePosition.x, lastMousePosition.y);
+            const int32_t collidedActorId = mSmartPicker->CastScreenSpaceRayIntoScene(
+                sceneSp,
+                sceneCameraSp,
+                screenSpacePosition,
+                {eGameObjectsType::SPACESHIP,
+                 eGameObjectsType::SPACE_STATION,
+                 eGameObjectsType::TOWER_MISSILE,
+                 eGameObjectsType::SPACESHIP_MISSILE,
+                 eGameObjectsType::BARRIER,
+                 eGameObjectsType::NEUTRAL_SPACE_OBJECT});
+            if (collidedActorId >= 0) {
+                if (mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedActorId) == eGameObjectsType::LOOT) {
+                    const auto& lootActor
+                        = std::static_pointer_cast<LootActor>(mCombatActorsPoolHandler->GetLootOwnerByActorId(collidedActorId));
+                    ext_assert(lootActor, "Loot actor is null for collided loot actor id: " + std::to_string(collidedActorId));
+                    lootActor->CollectLoot();
+                }
+            }
         }
     } else if (
         mouseBindings->GetKeyState(eMouseKeys::MouseButtonRight) == KeyState::PRESSED
@@ -475,7 +499,8 @@ void UserInteractionController::ProcessCombatStage()
     if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
         const auto& mousePosition = mouseBindings->GetLastMouseCursorPosition();
         const glm::ivec2& screenSpacePosition = glm::ivec2(mousePosition.x, mousePosition.y);
-        const int32_t collidedObjectId = mSmartPicker->CastScreenSpaceRayIntoScene(sceneSp, sceneCameraSp, screenSpacePosition);
+        const int32_t collidedObjectId = mSmartPicker->CastScreenSpaceRayIntoScene(
+            sceneSp, sceneCameraSp, screenSpacePosition, {eGameObjectsType::SPACESHIP});
 
         if (-1 != collidedObjectId
             && eGameObjectsType::SPACE_STATION == mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedObjectId)) {
@@ -809,23 +834,22 @@ void UserInteractionController::InitializeRemoveTowerMarker()
     mRemoveTowerMarkerActor->AddComponent(billboardComponent);
 }
 
-void UserInteractionController::TriggerPlayerStatusChangedEvent(
-    const eMainPlayerStatusType statusChanged, const std::string& jsonArgs)
+void UserInteractionController::TriggerPlayerStatusChangedEvent(const std::string& jsonArgs)
 {
-    MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, statusChanged, jsonArgs);
+    MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, jsonArgs);
 
     const auto& sceneSp = mSceneWp.lock();
     ext_assert(sceneSp, "Scene pointer is null in TriggerPlayerStatusChangedEvent");
     static constexpr auto functionId = Hash64_CT("UserInteractionController::TriggerPlayerStatusChangedEvent");
     sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
         eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-        static_cast<int32_t>(statusChanged),
+        0,
         functionId,
-        [statusChanged, jsonArgs](
+        [jsonArgs](
             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
             std::weak_ptr<EngineCore::Scene> sceneWp,
             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, statusChanged, jsonArgs);
+            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, jsonArgs);
         });
 }
 

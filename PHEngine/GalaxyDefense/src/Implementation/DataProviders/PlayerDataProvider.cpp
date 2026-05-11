@@ -25,12 +25,6 @@ eMissileType PlayerDataProvider::GetSelectedMissileType() const
 void PlayerDataProvider::SetSelectedMissileType(const eMissileType missileType)
 {
     mSelectedMissileType.store(missileType, std::memory_order::seq_cst);
-    const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::ACTIVE_WEAPON_CHANGED;
-    nlohmann::json jsonObj;
-    jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
-    const auto& eventParams = jsonObj.dump();
-    MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
-    LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
 }
 
 void PlayerDataProvider::SetMissilesCountForType(const eMissileType missileType, const size_t missilesCount)
@@ -38,12 +32,6 @@ void PlayerDataProvider::SetMissilesCountForType(const eMissileType missileType,
     ext_assert(mAvailableMissiles.count(missileType), "Unknown missile type in SetMissilesCountForType");
     if (mAvailableMissiles.at(missileType) != missilesCount) {
         mAvailableMissiles[missileType] = missilesCount;
-        const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::MISSILES_COUNT_CHANGED;
-        nlohmann::json jsonObj;
-        jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
-        const auto& eventParams = jsonObj.dump();
-        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
-        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
     }
 }
 
@@ -56,14 +44,6 @@ void PlayerDataProvider::SetMissilesCount(const std::unordered_map<eMissileType,
             mAvailableMissiles[missileType] = newCount;
             bDataUpdated = true;
         }
-    }
-    if (bDataUpdated) {
-        const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::MISSILES_COUNT_CHANGED;
-        nlohmann::json jsonObj;
-        jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
-        const auto& eventParams = jsonObj.dump();
-        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
-        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
     }
 }
 
@@ -113,13 +93,33 @@ void PlayerDataProvider::SetSelectedTowerId(const int32_t towerId)
         jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
         jsonObj["has_selected_tower"] = towerId != -1;
         const auto& eventParams = jsonObj.dump();
-        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
-        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, playerStatusType, eventParams);
+        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);
+        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);
     }
 }
 
 int32_t PlayerDataProvider::GetSelectedTowerId() const
 {
     return mSelectedTowerId;
+}
+
+void PlayerDataProvider::SetCrystalsCount(const size_t crystalsCount)
+{
+    LogInfo("PlayerDataProvider::SetCrystalsCount: crystalsCount: ", crystalsCount);
+    if (mCrystalsCount != crystalsCount) {
+        mCrystalsCount = crystalsCount;
+        const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::CRYSTALS_COUNT_CHANGED;
+        nlohmann::json jsonObj;
+        jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
+        jsonObj["crystals_count"] = crystalsCount;
+        const auto& eventParams = jsonObj.dump();
+        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);
+        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);
+    }
+}
+
+size_t PlayerDataProvider::GetCrystalsCount() const
+{
+    return mCrystalsCount;
 }
 } // namespace Game

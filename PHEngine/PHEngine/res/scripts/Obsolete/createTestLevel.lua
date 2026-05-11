@@ -467,9 +467,9 @@ function CreateTestLevel(host)
         velocityModules = {
             {
                 type = "simple",
-                velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
-                velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
-                extraVelocityPower = 1.0
+                velocityDirection = {x = 0.0, y = -1.0, z = 0.0},
+                velocityDeviation = {x = 0.0, y = 0.0, z = 0.0},
+                speed = 15.0
             }
         }
     }))
@@ -489,9 +489,9 @@ function CreateTestLevel(host)
         velocityModules = {
             {
                 type = "simple",
-                velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
-                velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
-                extraVelocityPower = 1.0
+                velocityDirection = {x = 0.0, y = -1.0, z = 0.0},
+                velocityDeviation = {x = 0.0, y = 0.0, z = 0.0},
+                speed = 10.0
             }
         }
     }))
@@ -511,9 +511,9 @@ function CreateTestLevel(host)
         velocityModules = {
             {
                 type = "simple",
-                velocityDirection = {x = 0.0, y = -25.0, z = 0.0},
-                velocityDeviation = {x = 2.0, y = 0.0, z = 2.0},
-                extraVelocityPower = 1.0
+                velocityDirection = {x = 0.0, y = -1.0, z = 0.0},
+                velocityDeviation = {x = 0.0, y = 0.0, z = 0.0},
+                speed = 10.0
             }
         }
     }))

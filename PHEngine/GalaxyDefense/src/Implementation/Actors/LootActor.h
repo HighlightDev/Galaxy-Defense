@@ -11,9 +11,13 @@ class SceneComponent;
 
 namespace Game {
 
+enum class eLootState { NA, IDLE, ACTIVE };
+
 class LootActor : public Actor {
 
     eLootCategory mLootCategory;
+
+    eLootState mLootState;
 
 public:
     LootActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
@@ -23,5 +27,13 @@ public:
     eLootCategory GetLootCategory() const;
 
     void SetLootCategory(const eLootCategory lootCategory);
+
+    void SetLootState(const eLootState lootState);
+
+    eLootState GetLootState() const;
+
+    virtual void CollectLoot();
+
+    virtual void SpawnLoot(const glm::vec3& position);
 };
 } // namespace Game

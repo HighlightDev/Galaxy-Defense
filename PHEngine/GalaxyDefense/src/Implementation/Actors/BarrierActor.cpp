@@ -196,9 +196,9 @@ void BarrierActor::CreateNewBarrierPillar(const glm::vec3& position, const glm::
 
         d_particle->velocityModules.push_back(std::make_shared<VelocityModuleData>());
         d_particle->velocityModules.back()->moduleType = "simple";
-        d_particle->velocityModules.back()->velocityDirection = glm::vec3(0, 5.0f, 0);
-        d_particle->velocityModules.back()->velocityDeviation = glm::vec3(3.0f, 2.0f, 3.0f);
-        d_particle->velocityModules.back()->extraVelocityPower = 1.0f;
+        d_particle->velocityModules.back()->velocityDirection = glm::vec3(0, -0.5f, 0);
+        d_particle->velocityModules.back()->velocityDeviation = glm::vec3(1.0f, 1.0f, 1.0f);
+        d_particle->velocityModules.back()->speed = 15.0f;
 
         const auto& particleCreator = std::make_shared<ParticleSystemComponentCreator<GpuParticleSystemComponent>>();
         mExplosionParticleComponent = std::static_pointer_cast<GpuParticleSystemComponent>(

@@ -42,12 +42,16 @@ void OrbitVelocityModule::OnEmitParticles()
 {
 }
 
+void OrbitVelocityModule::EmitSingleParticle(Particle& /*particle*/)
+{
+}
+
 void OrbitVelocityModule::SetExtraVelocityDirectionType(const eOrbitExtraVelocityDirectionType velocityType)
 {
     mExtraVelocityDirectionType = velocityType;
 }
 
-void OrbitVelocityModule::SetExtraVelocityPower(const float velocityPower)
+void OrbitVelocityModule::SetSpeed(const float velocityPower)
 {
     mExtraVelocityPower = velocityPower;
 }

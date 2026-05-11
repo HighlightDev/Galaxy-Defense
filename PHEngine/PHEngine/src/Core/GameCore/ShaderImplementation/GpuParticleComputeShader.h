@@ -2,10 +2,12 @@
 
 #include "Core/GraphicsCore/OpenGL/Shader/ComputeShaderBase.h"
 
+#include <glm/vec3.hpp>
+
 namespace EngineCore::ShaderImpl {
 class GpuParticleComputeShader : public ComputeShaderBase {
 private:
-    Uniform m_deltaTimeUniform, m_particleMoveSpeedUniform;
+    Uniform m_deltaTimeUniform, m_isEndlessRespawnEnabledUniform, m_emitterPositionUniform;
 
 public:
     GpuParticleComputeShader(const ShaderParams& params);
@@ -16,7 +18,9 @@ public:
 
     void SetDispatchDeltaTime(const double deltaTimeSec);
 
-    void SetParticleMoveSpeed(const float moveSpeed);
+    void SetIsEndlessRespawnEnabled(const bool isEnabled);
+
+    void SetEmitterPosition(const glm::vec3& position);
 };
 
 } // namespace EngineCore::ShaderImpl

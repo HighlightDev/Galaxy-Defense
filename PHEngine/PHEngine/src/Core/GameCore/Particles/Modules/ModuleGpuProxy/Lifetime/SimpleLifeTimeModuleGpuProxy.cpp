@@ -16,11 +16,13 @@ std::string SimpleLifeTimeModuleGpuProxy::GetShaderSnippet() const
     const auto fmtStr = R"(
     float updateLifeTime(in float currentLifeTime, in float dt) {
         return currentLifeTime + dt;
+    }
+    float resetLifeTime(in float dt, in vec3 currentInvokeId) {
+        return %f;
     })";
     char buffer[256];
-    std::snprintf(buffer, sizeof(buffer), fmtStr);
+    std::snprintf(buffer, sizeof(buffer), fmtStr, mLifeTime);
     return EngineUtility::Trim(buffer);
-    return "";
 }
 
 uint64_t SimpleLifeTimeModuleGpuProxy::GetModuleTypeHash() const

@@ -11,6 +11,8 @@ class ParticleExplosionEmitter : public IEmitter {
 
     void EmitParticles(const size_t particlesCount = 0) override;
 
+    void EmitSingleParticle(Particle& particle) override;
+
 public:
     void SetExplosionRadius(const float radius);
 

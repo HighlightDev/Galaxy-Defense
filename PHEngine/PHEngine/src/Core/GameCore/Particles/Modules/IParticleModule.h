@@ -26,6 +26,8 @@ public:
 
     virtual void OnEmitParticles() = 0;
 
+    virtual void EmitSingleParticle(Particle& particle) = 0;
+
     virtual std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const = 0;
 
     void SetOwner(const std::weak_ptr<ParticleSystemBaseComponent>& owner);

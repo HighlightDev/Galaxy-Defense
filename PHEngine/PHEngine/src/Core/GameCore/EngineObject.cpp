@@ -12,6 +12,7 @@ EngineObject::EngineObject(const std::string& gameObjectName)
     : mObjectId(mTotalObjectIdCounter++)
     , EngineObjectName(gameObjectName)
 {
+    LogInfo("EngineObject::ctor: id: ", GetObjectId(), ", name: ", gameObjectName);
 }
 
 int32_t EngineObject::GetObjectId() const

@@ -19,6 +19,8 @@ public:
 
     void OnEmitParticles() override;
 
+    void EmitSingleParticle(Particle& particle) override;
+
     std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const override;
 };
 } // namespace EngineCore

@@ -39,6 +39,8 @@ class GpuParticleSystemSceneProxy : public PrimitiveSceneProxy {
 
     uint32_t mPrevActiveParticlesCount;
 
+    bool mIsEndlessRespawnEnabled;
+
     std::shared_ptr<ShaderStorageBufferObject> m_gpuParticlePositionsSSBO;
     std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleVelocitiesSSBO;
     std::shared_ptr<ShaderStorageBufferObject> m_gpuParticleInitialVelocitiesSSBO;
@@ -92,6 +94,8 @@ public:
     RenderInfo GetRenderInfo() const override;
 
     void ResetParticleModulesProxies(const std::vector<std::shared_ptr<IGpuParticleModuleProxy>>& gpuParticleModulesProxies);
+
+    void SetIsEndlessRespawnEnabled(const bool isEnabled);
 };
 } // namespace Proxy
 } // namespace Graphics

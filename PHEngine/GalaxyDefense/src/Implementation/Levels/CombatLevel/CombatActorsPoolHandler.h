@@ -9,9 +9,11 @@
 
 #include <glm/vec3.hpp>
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace EngineCore {
@@ -54,6 +56,8 @@ class CombatActorsPoolHandler : public std::enable_shared_from_this<CombatActors
 
     std::vector<std::shared_ptr<LootActor>> mLootActors;
 
+    mutable std::function<void(const std::shared_ptr<SpaceshipActor>&)> mOnSpaceshipSpawnedCallback;
+
 public:
     explicit CombatActorsPoolHandler(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
@@ -84,6 +88,8 @@ public:
 
     std::shared_ptr<BarrierActor> GetBarrierOwnerActorById(const int32_t actorId) const;
 
+    std::shared_ptr<LootActor> GetLootOwnerByActorId(const int32_t actorId) const;
+
     const std::vector<std::shared_ptr<SpaceshipActor>>& GetEnemySpaceshipActors() const;
 
     const std::vector<std::shared_ptr<MissileActor>>& GetMissileActors() const;
@@ -103,6 +109,8 @@ public:
 
     void SpawnEnemySpaceships(const int32_t count, const eSpaceshipType spaceshipType);
 
+    void SetOnSpaceshipSpawnedCallback(std::function<void(const std::shared_ptr<SpaceshipActor>&)> callback);
+
     void SpawnMissiles(const eMissileType missileType, const int32_t count);
 
     void SpawnAsteroids(const int32_t count);
@@ -120,11 +128,21 @@ public:
     std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> GetSpaceShipsPhysicsComponents() const;
 
     std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>>
-    GetMissilePhysicsComponents(const eMissileType missileType) const;
+    GetMissilePhysicsComponents(const std::unordered_set<eMissileType>& missileTypes) const;
 
     std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> GetBarriersPhysicsComponents() const;
 
+    std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> GetLootPhysicsComponents() const;
+
     int32_t GetSpaceStationsCountWithState(const eSpaceStationActivityState state) const;
+
+    std::vector<std::shared_ptr<Actor>> GetActorsByGameObjectType(const eGameObjectsType gameObjectType) const;
+
+    std::vector<std::shared_ptr<PhysicsComponent>>
+    GetPhysicsComponentsByGameObjectType(const eGameObjectsType gameObjectType) const;
+
+    std::vector<std::shared_ptr<PhysicsComponent>>
+    GetPhysicsComponentsByGameObjectTypes(const std::unordered_set<eGameObjectsType>& gameObjectTypes) const;
 
 private:
     std::unique_ptr<IMissileFactory> GetMissileFactoryByType(const eMissileType missileType) const;

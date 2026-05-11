@@ -88,20 +88,27 @@ void WeakSpaceshipActor::TriggerSpawn(const glm::vec3& position)
 
 void WeakSpaceshipActor::TriggerExplosion()
 {
-    const auto c_spaceshipMesh = GetComponentsByType<InstancedStaticMeshComponent>().back();
-    c_spaceshipMesh->SetIsEnabled(false);
+    if (mOnExplosionCallback) {
+        mOnExplosionCallback(GetWorldPosition());
+    }
 
-    const auto c_engineMesh = GetComponentsByType<InstancedStaticMeshComponent>().back();
-    c_engineMesh->SetIsEnabled(false);
+    const auto& meshes = GetComponentsByType<InstancedStaticMeshComponent>();
+    for (const auto& mesh : meshes) {
+        mesh->SetIsEnabled(false);
+    }
 
     const auto& c_physics = GetPhysicsComponent();
     c_physics->SetIsEnabled(false);
 
-    const auto c_particle = GetComponentsByType<ParticleSystemBaseComponent>().back();
-    c_particle->EmitParticles();
+    const auto c_particles = GetComponentsByType<ParticleSystemBaseComponent>();
+    for (const auto& c_particle : c_particles) {
+        c_particle->EmitParticles();
+    }
 
-    const auto c_light = GetComponentsByType<LightComponent>().back();
-    c_light->SetIsVisible(true);
+    const auto c_lights = GetComponentsByType<LightComponent>();
+    for (const auto& c_light : c_lights) {
+        c_light->SetIsVisible(true);
+    }
 
     mUiComponent->FadeOut();
     mWeakSpaceshipTweener->ChangeState("s_LifecycleDestroyed");
@@ -110,8 +117,10 @@ void WeakSpaceshipActor::TriggerExplosion()
 void WeakSpaceshipActor::TriggerDisabled()
 {
     SpaceshipActor::TriggerDisabled();
-    const auto c_particle = GetComponentsByType<ParticleSystemBaseComponent>().back();
-    c_particle->ResetParticles();
+    const auto c_particles = GetComponentsByType<ParticleSystemBaseComponent>();
+    for (const auto& c_particle : c_particles) {
+        c_particle->ResetParticles();
+    }
     mWeakSpaceshipTweener->InitRootState();
     mUiComponent->SetHealthBarFillPercent(1.0f);
 }

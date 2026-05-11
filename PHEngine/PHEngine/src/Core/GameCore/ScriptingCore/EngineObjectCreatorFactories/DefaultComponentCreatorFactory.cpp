@@ -437,8 +437,8 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
                     if (velJson.contains("velocityDeviation")) {
                         velData->velocityDeviation = nlohmann_utilities::GetXyzFromJsonMap(velJson["velocityDeviation"]);
                     }
-                    if (velJson.contains("extraVelocityPower")) {
-                        velData->extraVelocityPower = nlohmann_utilities::GetFloatFromJson(velJson, "extraVelocityPower");
+                    if (velJson.contains("speed")) {
+                        velData->speed = nlohmann_utilities::GetFloatFromJson(velJson, "speed");
                     }
                 } else if (moduleType == "orbit") {
                     velData->orbitRadius = nlohmann_utilities::GetFloatFromJson(velJson, "orbitRadius");

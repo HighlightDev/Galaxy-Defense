@@ -25,6 +25,9 @@ void RayCastWithFilterAdapter::Initialize(std::vector<std::shared_ptr<PhysicsCom
         std::vector<btCollisionObject*> excludeCollisionObjects;
         auto insertPosition = excludeCollisionObjects.begin();
         for (const auto& collisionComponent : excludeCollisionComponents) {
+            if (!collisionComponent || !collisionComponent->GetDescriptor()) {
+                continue;
+            }
             auto collisionObjects = collisionComponent->GetDescriptor()->GetCollisionObjects();
             if (collisionObjects.size()) {
                 insertPosition = excludeCollisionObjects.insert(insertPosition, collisionObjects.begin(), collisionObjects.end());

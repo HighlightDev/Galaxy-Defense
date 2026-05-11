@@ -31,6 +31,11 @@ void SimpleColorModule::OnEmitParticles()
 {
 }
 
+void SimpleColorModule::EmitSingleParticle(Particle& particle)
+{
+    particle.Color = mColorBegin;
+}
+
 std::shared_ptr<IGpuParticleModuleProxy> SimpleColorModule::GetGpuProxy() const
 {
     return std::make_shared<SimpleColorModuleGpuProxy>(mColorBegin, mColorEnd);

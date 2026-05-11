@@ -9,11 +9,11 @@ class SimpleLifeTimeModule : public ILifeTimeModule {
 public:
     SimpleLifeTimeModule();
 
-    void Update(Particle& particle, const float deltaTimeSec) override;
-
     void SetLifeTime(const float lifeTime);
 
     void OnEmitParticles() override;
+
+    void EmitSingleParticle(Particle& particle) override;
 
     std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const override;
 };

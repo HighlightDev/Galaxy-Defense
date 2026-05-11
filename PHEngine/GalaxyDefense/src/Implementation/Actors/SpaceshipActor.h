@@ -53,6 +53,8 @@ protected:
 
     std::unique_ptr<SpaceshipRouteHandler> mRouteHandler;
 
+    std::function<void(const glm::vec3&)> mOnExplosionCallback;
+
 public:
     SpaceshipActor(
         const std::string& gameObjectName,
@@ -108,6 +110,8 @@ public:
     eSpaceshipType GetSpaceshipType() const;
 
     SpaceshipRouteHandler* GetRouteHandler() const;
+
+    void SetOnExplosionCallback(std::function<void(const glm::vec3&)> callback);
 
     ~SpaceshipActor();
 };

@@ -18,9 +18,11 @@ public:
 
     void OnEmitParticles() override;
 
+    void EmitSingleParticle(Particle& particle) override;
+
     void SetExtraVelocityDirectionType(const eOrbitExtraVelocityDirectionType velocityType);
 
-    void SetExtraVelocityPower(const float velocityPower);
+    void SetSpeed(const float velocityPower);
 
     std::shared_ptr<IGpuParticleModuleProxy> GetGpuProxy() const override;
 };

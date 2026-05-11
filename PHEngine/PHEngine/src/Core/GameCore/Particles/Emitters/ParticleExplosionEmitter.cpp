@@ -28,7 +28,9 @@ void ParticleExplosionEmitter::EmitParticles(const size_t particlesCount)
         ", theta slices count: ",
         mThetaSlicesCount,
         ", owner ID: ",
-        ownerSp->GetObjectId());
+        ownerSp->GetObjectId(),
+        ", owner name: ",
+        ownerSp->GetEngineObjectName());
 
     auto& particlePool = GetParticlesPool();
     const auto& poolSize = particlePool.size();
@@ -55,6 +57,17 @@ void ParticleExplosionEmitter::EmitParticles(const size_t particlesCount)
             ++particleIndex;
         }
     }
+}
+
+void ParticleExplosionEmitter::EmitSingleParticle(Particle& particle)
+{
+    const float theta = Random::Float() * EngineMath::PI * 2.0f;
+    const float phi = Random::Float() * EngineMath::PI;
+
+    particle.Reset();
+    particle.Position = glm::vec3(
+        mRadius * std::cos(theta) * std::sin(phi), mRadius * std::sin(theta) * std::sin(phi), mRadius * std::cos(phi));
+    particle.Rotation = Random::Float() * EngineMath::PI * 2;
 }
 
 void ParticleExplosionEmitter::SetExplosionRadius(const float radius)

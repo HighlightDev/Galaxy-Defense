@@ -85,7 +85,8 @@ std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayCh
 void CombatActorsPoolHandler::SpawnEnemySpaceships(const int32_t count, const eSpaceshipType spaceshipType)
 {
     for (size_t i = 0; i < count; ++i) {
-        SpawnSpaceshipActor(spaceshipType)->SetIsEnabled(false);
+        const auto& newShip = SpawnSpaceshipActor(spaceshipType);
+        newShip->SetIsEnabled(false);
     }
 }
 
@@ -104,8 +105,17 @@ std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor(con
         break;
     }
 
-    return mEnemySpaceships.emplace_back(spaceShipFactory->CreateSpaceShip(
+    const auto result = mEnemySpaceships.emplace_back(spaceShipFactory->CreateSpaceShip(
         sceneSp, glm::vec3(), glm::vec3(), glm::vec3(Game::Constants::c_spaceshipSize), Game::Constants::c_spaceshipFontSize));
+    if (mOnSpaceshipSpawnedCallback) {
+        mOnSpaceshipSpawnedCallback(result);
+    }
+    return result;
+}
+
+void CombatActorsPoolHandler::SetOnSpaceshipSpawnedCallback(std::function<void(const std::shared_ptr<SpaceshipActor>&)> callback)
+{
+    mOnSpaceshipSpawnedCallback = std::move(callback);
 }
 
 std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor(const eSpaceshipType spaceshipType) const
@@ -115,7 +125,10 @@ std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor(c
               return spaceship->GetSpaceshipActivityState() == eSpaceshipActivityState::IDLE
                   && spaceship->GetSpaceshipType() == spaceshipType;
           });
-    return freeShipIt == mEnemySpaceships.cend() ? SpawnSpaceshipActor(spaceshipType) : *freeShipIt;
+    if (freeShipIt != mEnemySpaceships.cend()) {
+        return *freeShipIt;
+    }
+    return SpawnSpaceshipActor(spaceshipType);
 }
 
 const std::vector<std::shared_ptr<SpaceshipActor>>& CombatActorsPoolHandler::GetEnemySpaceshipActors() const
@@ -295,6 +308,14 @@ std::shared_ptr<BarrierActor> CombatActorsPoolHandler::GetBarrierOwnerActorById(
     return foundIt != mBarriersPool.cend() ? (*foundIt) : nullptr;
 }
 
+std::shared_ptr<LootActor> CombatActorsPoolHandler::GetLootOwnerByActorId(const int32_t actorId) const
+{
+    const auto foundIt = std::find_if(mLootActors.cbegin(), mLootActors.cend(), [actorId](const auto& loot) {
+        return loot->HasEngineObjectIdInHierarchy(actorId);
+    });
+    return foundIt != mLootActors.cend() ? (*foundIt) : nullptr;
+}
+
 eGameObjectsType CombatActorsPoolHandler::GetGameObjectTypeByActorId(const int32_t actorId) const
 {
     const auto cacheIt = mActorTypeCache.find(actorId);
@@ -306,16 +327,18 @@ eGameObjectsType CombatActorsPoolHandler::GetGameObjectTypeByActorId(const int32
         return mActorTypeCache.emplace(actorId, eGameObjectsType::SPACESHIP).first->second;
     } else if (const auto missileSp = GetMissileOwnerActorById(actorId)) {
         // Don't cache missiles — DamageDealerType can change when missile is recycled from pool
-        return missileSp->GetDamageDealerType() == eDamageDealerType::ENEMY_SPACESHIP ? eGameObjectsType::ENEMY_MISSILE
-                                                                                      : eGameObjectsType::MISSILE;
+        return missileSp->GetDamageDealerType() == eDamageDealerType::ENEMY_SPACESHIP ? eGameObjectsType::SPACESHIP_MISSILE
+                                                                                      : eGameObjectsType::TOWER_MISSILE;
     } else if (const auto spaceObjectSp = GetSpaceObjectOwnerActorById(actorId)) {
         return mActorTypeCache.emplace(actorId, eGameObjectsType::NEUTRAL_SPACE_OBJECT).first->second;
     } else if (const auto spaceStationSp = GetSpaceStationOwnerActorById(actorId)) {
         return mActorTypeCache.emplace(actorId, eGameObjectsType::SPACE_STATION).first->second;
     } else if (const auto barrierSp = GetBarrierOwnerActorById(actorId)) {
         return mActorTypeCache.emplace(actorId, eGameObjectsType::BARRIER).first->second;
+    } else if (const auto lootSp = GetLootOwnerByActorId(actorId)) {
+        return mActorTypeCache.emplace(actorId, eGameObjectsType::LOOT).first->second;
     } else {
-        ext_assert(false, "Game object type is UNDEFINED for actor ID");
+        ext_assert(false, ("Game object type is UNDEFINED for actor ID " + std::to_string(actorId)).c_str());
         return eGameObjectsType::UNDEFINED;
     }
 }
@@ -323,24 +346,24 @@ eGameObjectsType CombatActorsPoolHandler::GetGameObjectTypeByActorId(const int32
 eGameObjectsCollisionType CombatActorsPoolHandler::GetGameObjectsCollisionType(
     const eGameObjectsType firstObject, const eGameObjectsType secondObject) const
 {
-    if ((eGameObjectsType::SPACESHIP == firstObject && eGameObjectsType::MISSILE == secondObject)
-        || (eGameObjectsType::MISSILE == firstObject && eGameObjectsType::SPACESHIP == secondObject))
+    if ((eGameObjectsType::SPACESHIP == firstObject && eGameObjectsType::TOWER_MISSILE == secondObject)
+        || (eGameObjectsType::TOWER_MISSILE == firstObject && eGameObjectsType::SPACESHIP == secondObject))
         return eGameObjectsCollisionType::SPACESHIP_WITH_MISSILE;
 
     if ((eGameObjectsType::SPACESHIP == firstObject && eGameObjectsType::NEUTRAL_SPACE_OBJECT == secondObject)
         || (eGameObjectsType::NEUTRAL_SPACE_OBJECT == firstObject && eGameObjectsType::SPACESHIP == secondObject))
         return eGameObjectsCollisionType::SPACESHIP_WITH_NEUTRAL_SPACE_OBJECT;
 
-    if ((eGameObjectsType::MISSILE == firstObject && eGameObjectsType::NEUTRAL_SPACE_OBJECT == secondObject)
-        || (eGameObjectsType::NEUTRAL_SPACE_OBJECT == firstObject && eGameObjectsType::MISSILE == secondObject))
+    if ((eGameObjectsType::TOWER_MISSILE == firstObject && eGameObjectsType::NEUTRAL_SPACE_OBJECT == secondObject)
+        || (eGameObjectsType::NEUTRAL_SPACE_OBJECT == firstObject && eGameObjectsType::TOWER_MISSILE == secondObject))
         return eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT;
 
-    if ((eGameObjectsType::MISSILE == firstObject && eGameObjectsType::BARRIER == secondObject)
-        || (eGameObjectsType::BARRIER == firstObject && eGameObjectsType::MISSILE == secondObject))
+    if ((eGameObjectsType::TOWER_MISSILE == firstObject && eGameObjectsType::BARRIER == secondObject)
+        || (eGameObjectsType::BARRIER == firstObject && eGameObjectsType::TOWER_MISSILE == secondObject))
         return eGameObjectsCollisionType::MISSILE_WITH_BARRIER;
 
-    if ((eGameObjectsType::ENEMY_MISSILE == firstObject && eGameObjectsType::BARRIER == secondObject)
-        || (eGameObjectsType::BARRIER == firstObject && eGameObjectsType::ENEMY_MISSILE == secondObject))
+    if ((eGameObjectsType::SPACESHIP_MISSILE == firstObject && eGameObjectsType::BARRIER == secondObject)
+        || (eGameObjectsType::BARRIER == firstObject && eGameObjectsType::SPACESHIP_MISSILE == secondObject))
         return eGameObjectsCollisionType::ENEMY_MISSILE_WITH_BARRIER;
 
     return eGameObjectsCollisionType::UNDEFINED;
@@ -371,15 +394,17 @@ std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>> CombatActorsPool
 }
 
 std::vector<std::shared_ptr<::EnginePhysics::PhysicsComponent>>
-CombatActorsPoolHandler::GetMissilePhysicsComponents(const eMissileType missileType) const
+CombatActorsPoolHandler::GetMissilePhysicsComponents(const std::unordered_set<eMissileType>& missileTypes) const
 {
-    if (eMissileType::NONE == missileType || eMissileType::ELECTRO_RAY == missileType) {
+    if (missileTypes.empty()) {
         return {};
     }
 
     std::vector<std::shared_ptr<PhysicsComponent>> physicsComponents;
     for (const auto& missile : mMissilesPool) {
-        if (missileType == missile->GetMissileType()) {
+        const auto missileType = missile->GetMissileType();
+        if (missileTypes.contains(missileType)
+            && (missileType != eMissileType::FREEZING_RAY && missileType != eMissileType::ELECTRO_RAY)) {
             if (eMissileType::BLACK_HOLE == missileType) {
                 const auto& blackHoleMissile = std::static_pointer_cast<BlackHoleMissileActor>(missile);
                 ext_assert(
@@ -415,6 +440,51 @@ std::vector<std::shared_ptr<PhysicsComponent>> CombatActorsPoolHandler::GetBarri
     return physicsComponents;
 }
 
+std::vector<std::shared_ptr<PhysicsComponent>> CombatActorsPoolHandler::GetLootPhysicsComponents() const
+{
+    std::vector<std::shared_ptr<PhysicsComponent>> physicsComponents;
+    for (const auto& loot : mLootActors) {
+        ext_assert(loot->GetPhysicsComponent(), "Loot physics component is null");
+        physicsComponents.emplace_back(loot->GetPhysicsComponent());
+    }
+    return physicsComponents;
+}
+
+std::vector<std::shared_ptr<PhysicsComponent>>
+CombatActorsPoolHandler::GetPhysicsComponentsByGameObjectType(const eGameObjectsType gameObjectType) const
+{
+    // SPACESHIP, TOWER_MISSILE, SPACESHIP_MISSILE, NEUTRAL_SPACE_OBJECT, SPACE_STATION, BARRIER, LOOT
+    switch (gameObjectType) {
+    case eGameObjectsType::SPACESHIP:
+        return GetSpaceShipsPhysicsComponents();
+    case eGameObjectsType::TOWER_MISSILE:
+    case eGameObjectsType::SPACESHIP_MISSILE:
+        return GetMissilePhysicsComponents({eMissileType::BOMB, eMissileType::FREEZING_BOMB, eMissileType::BLACK_HOLE});
+    case eGameObjectsType::NEUTRAL_SPACE_OBJECT:
+        return GetSpaceStationsPhysicsComponents();
+    case eGameObjectsType::SPACE_STATION:
+        return GetSpaceStationsPhysicsComponents();
+    case eGameObjectsType::BARRIER:
+        return GetBarriersPhysicsComponents();
+    case eGameObjectsType::LOOT:
+        return GetLootPhysicsComponents();
+    default:
+        ext_assert(false, "Unsupported game object type: " + std::to_string(static_cast<int32_t>(gameObjectType)));
+        return {};
+    }
+}
+
+std::vector<std::shared_ptr<PhysicsComponent>>
+CombatActorsPoolHandler::GetPhysicsComponentsByGameObjectTypes(const std::unordered_set<eGameObjectsType>& gameObjectTypes) const
+{
+    std::vector<std::shared_ptr<PhysicsComponent>> physicsComponents;
+    for (const auto& gameObjectType : gameObjectTypes) {
+        const auto componentsForType = GetPhysicsComponentsByGameObjectType(gameObjectType);
+        physicsComponents.insert(physicsComponents.end(), componentsForType.begin(), componentsForType.end());
+    }
+    return physicsComponents;
+}
+
 void CombatActorsPoolHandler::SpawnLoot(const int32_t count, const eLootCategory lootCategory)
 {
     const auto& sceneSp = mSceneWp.lock();
@@ -423,25 +493,56 @@ void CombatActorsPoolHandler::SpawnLoot(const int32_t count, const eLootCategory
     for (int32_t i = 0; i < count; ++i) {
         const auto& loot = mLootActors.emplace_back(
             lootFactory->CreateLoot(sceneSp, glm::vec3(-100000), glm::vec3(), Game::Constants::c_lootSize, lootCategory));
-        loot->SetIsEnabled(false);
+        loot->SetLootState(eLootState::IDLE);
     }
 }
 
 std::shared_ptr<LootActor> CombatActorsPoolHandler::GetFreeLootActor(const eLootCategory lootCategory)
 {
     auto idleLootIt = std::find_if(mLootActors.cbegin(), mLootActors.cend(), [lootCategory](const auto& loot) {
-        return !loot->IsEnabled() && loot->GetLootCategory() == lootCategory;
+        return loot->GetLootState() == eLootState::IDLE && loot->GetLootCategory() == lootCategory;
     });
     if (idleLootIt == mLootActors.cend()) {
         SpawnLoot(2, lootCategory);
     }
 
     idleLootIt = std::find_if(mLootActors.cbegin(), mLootActors.cend(), [lootCategory](const auto& loot) {
-        return !loot->IsEnabled() && loot->GetLootCategory() == lootCategory;
+        return loot->GetLootState() == eLootState::IDLE && loot->GetLootCategory() == lootCategory;
     });
 
     ext_assert(idleLootIt != mLootActors.cend(), "Failed to find free loot actor after spawning new ones");
 
     return *idleLootIt;
+}
+
+std::vector<std::shared_ptr<Actor>>
+CombatActorsPoolHandler::GetActorsByGameObjectType(const eGameObjectsType gameObjectType) const
+{
+    std::vector<std::shared_ptr<Actor>> actors;
+    switch (gameObjectType) {
+    case eGameObjectsType::SPACESHIP:
+        actors.insert(actors.end(), mEnemySpaceships.cbegin(), mEnemySpaceships.cend());
+        break;
+    case eGameObjectsType::TOWER_MISSILE:
+    case eGameObjectsType::SPACESHIP_MISSILE:
+        actors.insert(actors.end(), mMissilesPool.cbegin(), mMissilesPool.cend());
+        break;
+    case eGameObjectsType::NEUTRAL_SPACE_OBJECT:
+        actors.insert(actors.end(), mSpaceObjectsPool.cbegin(), mSpaceObjectsPool.cend());
+        break;
+    case eGameObjectsType::SPACE_STATION:
+        actors.insert(actors.end(), mSpaceStations.cbegin(), mSpaceStations.cend());
+        break;
+    case eGameObjectsType::BARRIER:
+        actors.insert(actors.end(), mBarriersPool.cbegin(), mBarriersPool.cend());
+        break;
+    case eGameObjectsType::LOOT:
+        actors.insert(actors.end(), mLootActors.cbegin(), mLootActors.cend());
+        break;
+    default:
+        ext_assert(false, "Unsupported game object type in GetActorsByGameObjectType");
+        break;
+    }
+    return actors;
 }
 } // namespace Game

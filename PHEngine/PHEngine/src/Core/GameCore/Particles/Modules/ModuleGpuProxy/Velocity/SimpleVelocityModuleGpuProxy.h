@@ -12,11 +12,10 @@ class SimpleVelocityModuleGpuProxy : public IGpuParticleModuleProxy {
 
     glm::vec3 mCurrentSpawnVelocityDeviation;
 
-    float mExtraVelocityPower{1.0f};
+    float mSpeed{1.0f};
 
 public:
-    SimpleVelocityModuleGpuProxy(
-        const glm::vec3& velocityDirection, const glm::vec3& velocityDeviation, const float extraVelocityPower);
+    SimpleVelocityModuleGpuProxy(const glm::vec3& velocityDirection, const glm::vec3& velocityDeviation, const float speed);
 
     std::string GetShaderSnippet() const override;
 

@@ -2,6 +2,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/PHEngine/cmake)
 include(Utility)
 
 set(HEADERS
+    src/Implementation/Components/MovementComponents/LootDropMovementComponent.h
     src/Implementation/Components/MovementComponents/OnRouteMovementComponent.h
     src/Implementation/Components/UiComponents/SpaceObjectUiComponent.h
     src/Implementation/Components/UiComponents/BarrierUiComponent.h
@@ -118,6 +119,7 @@ set(HEADERS
     src/Implementation/Navigation/Path.h)
 
 set(SOURCES
+    src/Implementation/Components/MovementComponents/LootDropMovementComponent.cpp
     src/Implementation/Components/MovementComponents/OnRouteMovementComponent.cpp
     src/Implementation/Components/UiComponents/SpaceObjectUiComponent.cpp
     src/Implementation/Components/UiComponents/BarrierUiComponent.cpp

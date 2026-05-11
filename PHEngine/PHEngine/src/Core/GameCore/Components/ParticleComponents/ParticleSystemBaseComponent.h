@@ -29,6 +29,10 @@ protected:
 
     bool isParticleModulesProxiesDirty{false};
 
+    bool isEndlessRespawnEnabled{false};
+
+    bool bIsEmitting{false};
+
 public:
     ParticleSystemBaseComponent(
         const std::string& name,
@@ -56,6 +60,17 @@ public:
     std::vector<std::shared_ptr<IParticleModule>> GetParticleModules() const;
 
     std::vector<std::shared_ptr<IGpuParticleModuleProxy>> GetParticleModulesProxies() const;
+
+    bool IsAnyParticleAlive() const;
+
+    void SetIsEndlessRespawnEnabled(const bool isEnabled);
+
+    bool IsEndlessRespawnEnabled() const;
+
+    virtual void SetIsParticleModulesProxiesDirty(const bool isDirty)
+    {
+        isParticleModulesProxiesDirty = isDirty;
+    }
 
 protected:
     virtual void SyncDataWithRenderThread(const size_t activeParticlesCount, const bool forceSyncData = false) = 0;

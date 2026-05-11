@@ -41,7 +41,7 @@ struct VelocityModuleData {
     std::string moduleType; // "simple", "explosionInitial", "orbit"
     glm::vec3 velocityDirection = glm::vec3(0.0f);
     glm::vec3 velocityDeviation = glm::vec3(0.0f);
-    float extraVelocityPower = 1.0f;
+    float speed = 1.0f;
     float orbitRadius = 1.0f; // for orbit module
     float orbitHeight = 1.0f; // for orbit module
     float orbitAngularSpeed = 1.0f; // for orbit module

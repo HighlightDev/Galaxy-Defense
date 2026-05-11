@@ -62,20 +62,12 @@ void FreezingExplosionVisitor::ProcessProjectileWithSpaceshipsCollision(const gl
             const auto& spaceStations = combatActorsPoolHandlerSp->GetSpaceStationActors();
             std::vector<std::shared_ptr<PhysicsComponent>> excludedPhysicsComponents;
             const auto& spaceStationsPhysComponents = combatActorsPoolHandlerSp->GetSpaceStationsPhysicsComponents();
-            const auto& bombMissilePhysComponents = combatActorsPoolHandlerSp->GetMissilePhysicsComponents(eMissileType::BOMB);
-            const auto& freezeMissilePhysComponents
-                = combatActorsPoolHandlerSp->GetMissilePhysicsComponents(eMissileType::FREEZING_BOMB);
-            const auto& blackHoleMissilePhysComponents
-                = combatActorsPoolHandlerSp->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
-            excludedPhysicsComponents.reserve(spaceStations.size() + combatActorsPoolHandlerSp->GetMissileActors().size());
+            const auto& missilePhysComponents = combatActorsPoolHandlerSp->GetMissilePhysicsComponents(
+                {eMissileType::BOMB, eMissileType::FREEZING_BOMB, eMissileType::BLACK_HOLE});
             excludedPhysicsComponents.insert(
                 excludedPhysicsComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
             excludedPhysicsComponents.insert(
-                excludedPhysicsComponents.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
-            excludedPhysicsComponents.insert(
-                excludedPhysicsComponents.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
-            excludedPhysicsComponents.insert(
-                excludedPhysicsComponents.end(), blackHoleMissilePhysComponents.begin(), blackHoleMissilePhysComponents.end());
+                excludedPhysicsComponents.end(), missilePhysComponents.begin(), missilePhysComponents.end());
 
             constexpr float c_collisionSphereRadius = 15.0f;
             SphereCollisionTestWithFilterAdapter collisionTest(c_collisionSphereRadius, excludedPhysicsComponents);

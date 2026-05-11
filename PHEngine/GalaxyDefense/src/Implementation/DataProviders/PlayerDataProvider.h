@@ -16,6 +16,8 @@ class PlayerDataProvider {
 
     int32_t mSelectedTowerId{-1};
 
+    size_t mCrystalsCount{0};
+
 private:
     PlayerDataProvider() = default;
 
@@ -45,5 +47,9 @@ public:
     void SetSelectedTowerId(const int32_t towerId);
 
     int32_t GetSelectedTowerId() const;
+
+    size_t GetCrystalsCount() const;
+
+    void SetCrystalsCount(const size_t crystalsCount);
 };
 } // namespace Game

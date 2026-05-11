@@ -36,6 +36,11 @@ void SimpleSizeModule::OnEmitParticles()
     }
 }
 
+void SimpleSizeModule::EmitSingleParticle(Particle& particle)
+{
+    particle.Size = mSizeBegin;
+}
+
 std::shared_ptr<IGpuParticleModuleProxy> SimpleSizeModule::GetGpuProxy() const
 {
     return std::make_shared<SimpleSizeModuleGpuProxy>(mSizeBegin, mSizeEnd);

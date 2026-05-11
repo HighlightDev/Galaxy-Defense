@@ -92,17 +92,12 @@ std::vector<std::shared_ptr<PhysicsComponent>> FreezingRayActor::CreateExcludedC
         excludeCollisionPhysComponents.emplace_back(collisionComponentOfWhoSpawnedMe);
     }
     const auto& spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
-    const auto& bombMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BOMB);
-    const auto& freezeMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::FREEZING_BOMB);
-    const auto& blackHoleMissilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(eMissileType::BLACK_HOLE);
+    const auto& missilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(
+        {eMissileType::BOMB, eMissileType::FREEZING_BOMB, eMissileType::BLACK_HOLE});
     excludeCollisionPhysComponents.insert(
         excludeCollisionPhysComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
     excludeCollisionPhysComponents.insert(
-        excludeCollisionPhysComponents.end(), bombMissilePhysComponents.begin(), bombMissilePhysComponents.end());
-    excludeCollisionPhysComponents.insert(
-        excludeCollisionPhysComponents.end(), freezeMissilePhysComponents.begin(), freezeMissilePhysComponents.end());
-    excludeCollisionPhysComponents.insert(
-        excludeCollisionPhysComponents.end(), blackHoleMissilePhysComponents.begin(), blackHoleMissilePhysComponents.end());
+        excludeCollisionPhysComponents.end(), missilePhysComponents.begin(), missilePhysComponents.end());
 
     return excludeCollisionPhysComponents;
 }
