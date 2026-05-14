@@ -20,6 +20,8 @@ class SpaceStationActor : public Actor {
 
     eSpaceStationActivityState mSpacestationState{eSpaceStationActivityState::IDLE};
 
+    std::shared_ptr<::EngineCore::StaticMeshComponent> mMainMeshComponent;
+
     std::shared_ptr<::EngineCore::StaticMeshComponent> mRadiusMarkerComponent;
 
     std::shared_ptr<SpaceStationLevel> mSpaceStationLevel;
@@ -49,10 +51,22 @@ public:
 
     bool GetIsRayActive() const;
 
+    void SetMainMeshComponent(const std::shared_ptr<::EngineCore::StaticMeshComponent>& mainMeshComponent);
+
     void SetRadiusMarkerComponent(const std::shared_ptr<::EngineCore::StaticMeshComponent>& radiusMarkerComponent);
 
     void SetSpaceStationSize(const glm::vec3& size);
 
     const glm::vec3& GetSpaceStationSize() const;
+
+    void SetIsEnabled(bool isEnabled) override;
+
+    void SetIsOutlineApplied(const bool isOutlineApplied);
+
+    bool GetIsOutlineApplied() const;
+
+    void SetIsRadiusMarkerActive(const bool isRadiusMarkerActive);
+
+    bool GetIsRadiusMarkerActive() const;
 };
 } // namespace Game

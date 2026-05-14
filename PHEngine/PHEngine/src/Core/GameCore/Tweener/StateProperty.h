@@ -5,6 +5,7 @@
 #include "Core/GameCore/EngineObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/Vec3PropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/Vec3QuadraticBezierPropertyBinding.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -83,6 +84,12 @@ struct StateProperty<eEnginePropertyBindingType::EulerAnglesRotation> : public B
         ConvertInternalEulerAnglesToQuaternion();
     }
 
+    void SetValue(const glm::vec3& value)
+    {
+        Value = value;
+        ConvertInternalEulerAnglesToQuaternion();
+    }
+
 private:
     void ConvertInternalEulerAnglesToQuaternion()
     {
@@ -129,6 +136,27 @@ struct StateProperty<eEnginePropertyBindingType::Vec3> : public BaseStatePropert
     StateProperty(const glm::vec3& value, const std::shared_ptr<Vec3PropertyBinding>& vec3PropertyBinding)
         : BaseStateProperty(vec3PropertyBinding)
         , Value(value)
+    {
+    }
+};
+
+template<>
+struct StateProperty<eEnginePropertyBindingType::Vec3QuadraticBezier> : public BaseStateProperty {
+    glm::vec3 Value;
+    glm::vec3 ControlPoint;
+
+    eEnginePropertyBindingType GetStatePropertyType() const override
+    {
+        return eEnginePropertyBindingType::Vec3QuadraticBezier;
+    }
+
+    StateProperty(
+        const glm::vec3& value,
+        const glm::vec3& controlPoint,
+        const std::shared_ptr<Vec3QuadraticBezierPropertyBinding>& bezierPropertyBinding)
+        : BaseStateProperty(bezierPropertyBinding)
+        , Value(value)
+        , ControlPoint(controlPoint)
     {
     }
 };

@@ -3,7 +3,9 @@
 #include "Core/CommonCore/XMLParserHelper.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/BooleanPropertyBinding.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/Vec3PropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/Vec3QuadraticBezierPropertyBinding.h"
 #include "Core/IoCore/FileFacade.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
@@ -222,6 +224,8 @@ std::shared_ptr<PropertyBinding> CreatePropertyBinding(const TweenerParser::Twee
         result = std::make_shared<BooleanPropertyBinding>(binding.BindingName);
     } else if ("vec3" == binding.Type) {
         result = std::make_shared<Vec3PropertyBinding>(binding.BindingName);
+    } else if ("vec3_quadratic_bezier" == binding.Type) {
+        result = std::make_shared<Vec3QuadraticBezierPropertyBinding>(binding.BindingName);
     } else {
         ext_assert(false, "CreatePropertyBinding: Unsupported binding type: " + binding.Type);
     }
@@ -288,9 +292,16 @@ std::unique_ptr<BaseStateProperty> CreateProperty(
         const glm::vec3 vec3Value = ExtractVec3FromStrings(values);
         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Vec3>>(
             vec3Value, std::static_pointer_cast<Vec3PropertyBinding>(bindings.at(property.BindingName)));
+    } else if ("vec3_quadratic_bezier" == property.Type) {
+        const auto& values = Split(property.Value, ';');
+        const glm::vec3 vec3Value = ExtractVec3FromStrings(values);
+        result = std::make_unique<StateProperty<eEnginePropertyBindingType::Vec3QuadraticBezier>>(
+            vec3Value,
+            glm::vec3(0.0f),
+            std::static_pointer_cast<Vec3QuadraticBezierPropertyBinding>(bindings.at(property.BindingName)));
+    } else {
+        ext_assert(false, "CreateProperty: Unsupported property type: " + property.Type);
     }
-
-    ext_assert(result, "CreateProperty: Failed to create property for binding: " + property.BindingName);
 
     return result;
 }

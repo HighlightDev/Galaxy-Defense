@@ -49,7 +49,7 @@ function ImageButton:new(host, overlay, name)
 
     local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
     newObj.backgroundTile = UiRectangle:new(host, debugName)
-    newObj.image = UiImage:new(host, debugName)
+    newObj.image = UiImage:new(host, debugName .. "_image")
     newObj.pressButtonStateContainer = UiRectangle:new(host)
 
     overlay:addWidget(newObj.backgroundTile)

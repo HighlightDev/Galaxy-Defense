@@ -44,7 +44,7 @@ void UiComponent::CreateUiElements(
     const eTextVerticalAlignmentType textVericalAlignment)
 {
     if (mLabel == nullptr) {
-        mLabel = std::make_shared<UiLabel>(fontName, "UiComponentLabel");
+        mLabel = std::make_shared<UiLabel>(fontName, "UiComponentLabel_" + std::to_string(GetObjectId()));
         mLabel->Initialize();
         mLabel->SetParents(mCanvas, mCanvas);
         mLabel->SetTextColor(color);
@@ -56,7 +56,7 @@ void UiComponent::CreateUiElements(
         mLabel->SetTextHorizontalAlignment(textHorizontalAlignment);
         mLabel->SetTextVerticalAlignment(textVericalAlignment);
     } else {
-        LogInfo("Warning: attempt to create SpaceObjectHealthBar while it is already created.");
+        LogInfo("Warning: attempt to create UiComponentLabel while it is already created.");
     }
 }
 

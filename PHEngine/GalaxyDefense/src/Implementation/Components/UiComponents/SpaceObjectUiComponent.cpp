@@ -45,7 +45,7 @@ void SpaceObjectUiComponent::CreateUiElements(
         fontName, fontSize, text, color, lineMaxWidthHeight, textHorizontalAlignment, textVericalAlignment);
 
     if (mHealthBar == nullptr) {
-        mHealthBar = std::make_shared<UiProgressBar>("SpaceObjectHealthBar");
+        mHealthBar = std::make_shared<UiProgressBar>("SpaceObjectHealthBar_" + std::to_string(GetObjectId()));
         mHealthBar->Initialize();
         mHealthBar->SetZOrder(100);
         mHealthBar->SetOpacity(0.0f);

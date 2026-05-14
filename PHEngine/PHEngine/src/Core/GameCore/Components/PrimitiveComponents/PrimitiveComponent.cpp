@@ -1,6 +1,7 @@
 #include "PrimitiveComponent.h"
 
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GameCore/Actor.h"
 #include "Core/GameCore/BoundingBoxBuilder.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
@@ -133,6 +134,15 @@ void PrimitiveComponent::SetIsOutlineApplied(const bool value)
 {
     if (mIsOutlineApplied != value) {
         mIsOutlineApplied = value;
+        if (value) {
+            // The outline matrix is only computed inside UpdateWorldMatrix when mIsOutlineApplied is true.
+            // If the object is stationary the root component is not dirty, so UpdateWorldMatrix won't run
+            // before SyncRenderData sends the (stale) m_outlineMatrix to the render thread.
+            // Force a correct computation right now using the same parentWorldMatrix that UpdateTransform uses.
+            if (const auto ownerSp = GetOwner().lock()) {
+                ownerSp->UpdateTransform(true);
+            }
+        }
         SetIsTransformationDirty(true);
         bIsOutlineStateDirty = true;
     }

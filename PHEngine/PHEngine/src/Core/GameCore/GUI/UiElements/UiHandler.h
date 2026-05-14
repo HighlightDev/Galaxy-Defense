@@ -55,6 +55,8 @@ public:
     std::shared_ptr<UiCanvas> GetHudCanvas() const;
 
     std::shared_ptr<UiItemBase> GetUiItemByUId(const size_t uiItemUId) const;
+
+    std::shared_ptr<IUiTransformable> TryFindUiItemInAllCanvases(const std::string& name) const;
 };
 } // namespace GUI
 } // namespace EngineCore

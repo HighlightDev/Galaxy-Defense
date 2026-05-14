@@ -47,7 +47,7 @@ function LabelButton:new(host, overlay, labelFontName, name)
 
     local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
     newObj.backgroundTile = UiRectangle:new(host, debugName)
-    newObj.label = UiLabel:new(host, labelFontName, debugName)
+    newObj.label = UiLabel:new(host, labelFontName, debugName .. "_label")
     newObj.pressButtonStateContainer = UiRectangle:new(host)
 
     overlay:addWidget(newObj.backgroundTile)

@@ -29,7 +29,7 @@ local UiLabel = require("Ui/Core/uiLabel")
 
 ImageAndLabelTile = {}
 
-function ImageAndLabelTile:new(host, overlay)
+function ImageAndLabelTile:new(host, overlay, backgroundTileName)
     assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
 
     local newObj = {
@@ -47,7 +47,7 @@ function ImageAndLabelTile:new(host, overlay)
         luaProxiesReadyCallback = nil
     }
 
-    newObj.backgroundTile = UiRectangle:new(host)
+    newObj.backgroundTile = UiRectangle:new(host, backgroundTileName)
     newObj.label = UiLabel:new(host, "Lora-VariableFont_wght")
     newObj.image = UiImage:new(host)
 

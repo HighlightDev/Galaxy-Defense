@@ -100,5 +100,7 @@ private:
     IterateHierarchyUpCollectTranslation(const std::weak_ptr<Actor>& currentOwnerWp, glm::vec3& accumulatedTranslation) const;
 
     void SyncScale(const glm::vec3& scale);
+
+    void SyncTranslation(const glm::vec3& translation);
 };
 } // namespace EngineCore

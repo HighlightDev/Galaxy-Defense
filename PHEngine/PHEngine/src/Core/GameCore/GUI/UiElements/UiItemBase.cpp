@@ -67,7 +67,7 @@ UiItemBase::UiItemBase(const std::string& name)
 
 void UiItemBase::Initialize()
 {
-    mName = mName == std::string("") ? GetUiTypeString() + "_" + std::to_string(mUId) : mName + "_" + std::to_string(mUId);
+    mName = mName == std::string("") ? GetUiTypeString() + "_" + std::to_string(mUId) : mName;
 }
 
 void UiItemBase::SetParents(const std::weak_ptr<UiCanvas>& parentCanvas, const std::weak_ptr<IUiTransformable>& parent)

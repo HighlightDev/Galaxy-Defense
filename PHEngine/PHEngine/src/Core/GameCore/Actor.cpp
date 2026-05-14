@@ -120,11 +120,11 @@ bool Actor::HasEngineObjectIdInHierarchy(const int32_t id) const
     return false;
 }
 
-void Actor::UpdateTransform()
+void Actor::UpdateTransform(const bool bForceUpdate)
 {
     ext_assert(m_rootComponent, "Actor root component is null in UpdateTransform");
 
-    if (m_rootComponent->GetIsTransformationDirty()) {
+    if (m_rootComponent->GetIsTransformationDirty() || bForceUpdate) {
         glm::mat4 parentWorldMatrix(1);
         if (const auto& spParent = m_parent.lock()) {
             parentWorldMatrix *= spParent->GetRootComponent()->GetWorldMatrix();

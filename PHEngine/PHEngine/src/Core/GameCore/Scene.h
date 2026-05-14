@@ -211,6 +211,8 @@ public:
 
     std::shared_ptr<EngineCore::GUI::UiCanvas> GetHudCanvas() const;
 
+    std::shared_ptr<EngineCore::GUI::IUiTransformable> TryFindUiItemInAllCanvases(const std::string& name) const;
+
 #ifdef DEBUG
 
     void SetRenderThreadFPSTextValue(const float fps);

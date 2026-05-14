@@ -74,6 +74,13 @@ const std::shared_ptr<SpaceStationLevel>& SpaceStationActor::GetSpaceStationLeve
     return mSpaceStationLevel;
 }
 
+void SpaceStationActor::SetMainMeshComponent(const std::shared_ptr<StaticMeshComponent>& mainMeshComponent)
+{
+    ext_assert(!mMainMeshComponent, "SpaceStationActor main mesh component already exists");
+    mMainMeshComponent = mainMeshComponent;
+    AddComponent(mainMeshComponent);
+}
+
 void SpaceStationActor::SetRadiusMarkerComponent(const std::shared_ptr<StaticMeshComponent>& radiusMarkerComponent)
 {
     ext_assert(!mRadiusMarkerComponent, "SpaceStationActor radius marker component already exists");
@@ -89,5 +96,46 @@ void SpaceStationActor::SetSpaceStationSize(const glm::vec3& size)
 const glm::vec3& SpaceStationActor::GetSpaceStationSize() const
 {
     return mSpaceStationSize;
+}
+
+void SpaceStationActor::SetIsEnabled(bool isEnabled)
+{
+    // The radius marker's enabled state is managed independently via SetIsRadiusMarkerActive.
+    // Preserve it so that Actor::SetIsEnabled (which propagates to all components) does not override it.
+    const bool radiusMarkerEnabled = mRadiusMarkerComponent && mRadiusMarkerComponent->IsEnabled();
+    Actor::SetIsEnabled(isEnabled);
+    if (mRadiusMarkerComponent) {
+        mRadiusMarkerComponent->SetIsEnabled(radiusMarkerEnabled);
+    }
+}
+
+void SpaceStationActor::SetIsOutlineApplied(const bool isOutlineApplied)
+{
+    if (mMainMeshComponent) {
+        mMainMeshComponent->SetIsOutlineApplied(isOutlineApplied);
+    }
+}
+
+bool SpaceStationActor::GetIsOutlineApplied() const
+{
+    if (mMainMeshComponent) {
+        return mMainMeshComponent->GetIsOutlineApplied();
+    }
+    return false;
+}
+
+void SpaceStationActor::SetIsRadiusMarkerActive(const bool isRadiusMarkerActive)
+{
+    if (mRadiusMarkerComponent) {
+        mRadiusMarkerComponent->SetIsEnabled(isRadiusMarkerActive);
+    }
+}
+
+bool SpaceStationActor::GetIsRadiusMarkerActive() const
+{
+    if (mRadiusMarkerComponent) {
+        return mRadiusMarkerComponent->IsEnabled();
+    }
+    return false;
 }
 } // namespace Game

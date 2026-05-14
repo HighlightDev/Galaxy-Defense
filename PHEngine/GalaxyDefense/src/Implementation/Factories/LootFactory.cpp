@@ -18,12 +18,17 @@
 #include "Core/GameCore/Particles/Modules/Velocity/RadialVelocityModule.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
+#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
+#include "Core/GameCore/Tweener/State.h"
+#include "Core/GameCore/Tweener/StateTransition.h"
+#include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Actors/LootActor.h"
 #include "Implementation/Components/MovementComponents/LootDropMovementComponent.h"
 #include "Implementation/Controllers/AiActorController.h"
+#include "Implementation/DataProviders/GameConstants.h"
 
 using namespace EngineCore;
 using namespace Graphics;
@@ -124,6 +129,46 @@ std::shared_ptr<LootActor> LootFactory::CreateLoot(
     a_loot->AddComponent(c_particles);
 
     scene->AddActorController(std::make_shared<AiActorController>(a_loot));
+
+    // Build the collect fly-off tweener programmatically: s_Idle → s_Collected via a
+    // quadratic-bezier arc.  Property values are placeholders here; they are overwritten
+    // at each SpawnLoot() call with the actual dynamic spawn position.
+    {
+        using BezierProp_t = StateProperty<eEnginePropertyBindingType::Vec3QuadraticBezier>;
+        using BezierBinding_t = Vec3QuadraticBezierPropertyBinding;
+        using RotProp_t = StateProperty<eEnginePropertyBindingType::EulerAnglesRotation>;
+        using RotBinding_t = EulerAnglesRotationPropertyBinding;
+
+        auto stateIdle = std::make_shared<State>("s_Idle");
+        auto stateCollected = std::make_shared<State>("s_Collected");
+        std::vector<std::shared_ptr<State>> allStates = {stateIdle, stateCollected};
+
+        auto lootTweener = std::make_shared<Tweener>("lootCollect", "LootCollect", stateIdle, std::move(allStates));
+
+        StateTransition collectTransition(stateIdle, stateCollected, Game::Constants::c_lootTweenTimeSec);
+        stateIdle->AddStateTransition(collectTransition);
+
+        const auto b_translation = std::make_shared<BezierBinding_t>("b_lootTranslation");
+        lootTweener->AddPropertyBinding("b_lootTranslation", b_translation);
+        BindingAttachmentBuilder::SetAttachment(rootComponent, b_translation, "p_translation");
+
+        const auto b_rotator = std::make_shared<RotBinding_t>("b_lootRotator");
+        lootTweener->AddPropertyBinding("b_lootRotator", b_rotator);
+        BindingAttachmentBuilder::SetAttachment(rootComponent, b_rotator, "p_rotator");
+
+        const glm::vec3 dummyPos(0.0f);
+        const auto idleProp = std::make_shared<BezierProp_t>(dummyPos, dummyPos, b_translation);
+        const auto collectedProp = std::make_shared<BezierProp_t>(dummyPos, dummyPos, b_translation);
+        stateIdle->AddStateProperty(idleProp);
+        stateCollected->AddStateProperty(collectedProp);
+
+        const auto idleRotProp = std::make_shared<RotProp_t>(glm::vec3(0.0f), b_rotator);
+        const auto collectedRotProp = std::make_shared<RotProp_t>(glm::vec3(0.0f), b_rotator);
+        stateIdle->AddStateProperty(idleRotProp);
+        stateCollected->AddStateProperty(collectedRotProp);
+
+        a_loot->SetupLootTweener(lootTweener, idleProp, collectedProp, collectedRotProp);
+    }
 
     return a_loot;
 }

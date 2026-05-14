@@ -20,7 +20,8 @@ SceneComponent::SceneComponent(
     : Component(gameObjectName, isEnabled)
     , m_TransformScale(std::make_shared<EngineObjectProperty<glm::vec3>>(
           scale, "p_scale", [this](const glm::vec3& scale) { SyncScale(scale); }))
-    , m_TransformTranslation(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_translation"))
+    , m_TransformTranslation(std::make_shared<EngineObjectProperty<glm::vec3>>(
+          glm::vec3(0.0f), "p_translation", [this](const glm::vec3& translation) { SyncTranslation(translation); }))
     , bTransformationDirty(true)
     , mTransform(std::make_shared<Transform>(
           translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
@@ -41,6 +42,11 @@ SceneComponent::~SceneComponent()
 void SceneComponent::SyncScale(const glm::vec3& scale)
 {
     SetScale(scale);
+}
+
+void SceneComponent::SyncTranslation(const glm::vec3& translation)
+{
+    SetTranslation(translation);
 }
 
 void SceneComponent::Tick(const float deltaTimeSec)
@@ -141,7 +147,7 @@ void SceneComponent::SetIsTransformationDirty(const bool isDirty)
 void SceneComponent::SetTranslation(const glm::vec3& translation)
 {
     mTransform->Translation = translation;
-    m_TransformTranslation->SetValue(translation);
+    m_TransformTranslation->SetValue(translation, false);
     SetIsTransformationDirty(true);
 }
 
@@ -154,6 +160,7 @@ void SceneComponent::SetRotator(const glm::quat& rotator)
 void SceneComponent::SetScale(glm::vec3 scale)
 {
     mTransform->Scale = scale;
+    m_TransformScale->SetValue(scale, false);
     SetIsTransformationDirty(true);
 }
 

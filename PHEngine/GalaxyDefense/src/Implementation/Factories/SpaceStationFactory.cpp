@@ -55,9 +55,9 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-    c_mesh->SetIsOutlineApplied(true);
+    c_mesh->SetIsOutlineApplied(false);
     c_mesh->SetOutlineThickness(3.0f);
-    towerActor->AddComponent(c_mesh);
+    towerActor->SetMainMeshComponent(c_mesh);
 
     const auto& sphereShape = std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f);
     const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
@@ -81,7 +81,8 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
         glm::vec3(0, -2 - (index * 0.01f), 0),
         glm::vec3(),
         glm::vec3(1.0f),
-        radiusMeshMaterial);
+        radiusMeshMaterial,
+        false);
     meshComponentCreator->SetIsDeferredShaderUsed(false);
     const auto& c_radiusMesh
         = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_radiusMesh));
@@ -89,7 +90,6 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     towerActor->SetRadiusMarkerComponent(c_radiusMesh);
 
     scene->AddActor(towerActor);
-
     towerActor->SetScene(scene);
     ++index;
 

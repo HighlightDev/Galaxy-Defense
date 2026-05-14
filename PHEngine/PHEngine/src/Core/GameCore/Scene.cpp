@@ -873,4 +873,9 @@ std::shared_ptr<EngineCore::GUI::UiCanvas> Scene::GetHudCanvas() const
 {
     return mUiHandler->GetHudCanvas();
 }
+
+std::shared_ptr<EngineCore::GUI::IUiTransformable> Scene::TryFindUiItemInAllCanvases(const std::string& name) const
+{
+    return mUiHandler->TryFindUiItemInAllCanvases(name);
+}
 } // namespace EngineCore

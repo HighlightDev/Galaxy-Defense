@@ -7,6 +7,7 @@
 #include "Core/GameCore/Tweener/BooleanTweenController.h"
 #include "Core/GameCore/Tweener/EulerAnglesRotationTweenController.h"
 #include "Core/GameCore/Tweener/FloatTweenController.h"
+#include "Core/GameCore/Tweener/Vec3QuadraticBezierTweenController.h"
 #include "Core/GameCore/Tweener/Vec3TweenController.h"
 
 #include <algorithm>
@@ -49,9 +50,11 @@ std::shared_ptr<ITweenController> GetPropertyTweenerController(const eEngineProp
         propertyController = std::make_shared<BooleanTweenController>();
     } else if (eEnginePropertyBindingType::Vec3 == propertyType) {
         propertyController = std::make_shared<Vec3TweenController>();
+    } else if (eEnginePropertyBindingType::Vec3QuadraticBezier == propertyType) {
+        propertyController = std::make_shared<Vec3QuadraticBezierTweenController>();
+    } else {
+        ext_assert(false, "GetPropertyTweenerController: Unsupported property type");
     }
-
-    ext_assert(propertyController, "GetPropertyTweenerController: Unsupported property type");
 
     return propertyController;
 }
@@ -75,6 +78,12 @@ void Tweener::InitRootState()
 
 void Tweener::DoTranstionInstantly(const std::string& dstStateName)
 {
+    // bTransitionEnabled and mCurrentActiveStateTransition must always be set/cleared together.
+    // If this assert fires it means SetTransitionValuesFinished or DoTransition broke that invariant.
+    ext_assert(
+        mCurrentActiveStateTransition.has_value(),
+        "DoTranstionInstantly: bTransitionEnabled is true but mCurrentActiveStateTransition is empty");
+
     if (mCurrentActiveStateTransition.has_value()) {
         for (std::shared_ptr<ITweenController>& controllerSp : CurrentActiveTransitionControllers) {
             controllerSp->OnTransitionFinished();
@@ -186,6 +195,20 @@ void Tweener::NotifyStateChangedObservers()
 {
     if (bIsStateChangedDirty) {
         bIsStateChangedDirty = false;
+
+        // Snapshot the state name before invoking callbacks: a re-entrant ChangeState call
+        // from within OnTweenStateChanged can overwrite mChangedStateName mid-loop,
+        // causing subsequent observers to receive the wrong (new) state name.
+        const std::string stateName = mChangedStateName;
+
+        // Purge expired observers so the list does not grow unbounded.
+        mStateChangedObservers.erase(
+            std::remove_if(
+                mStateChangedObservers.begin(),
+                mStateChangedObservers.end(),
+                [](const std::weak_ptr<ITweenStateChangeNotifyable>& wp) { return wp.expired(); }),
+            mStateChangedObservers.end());
+
         for (const auto& observerWp : mStateChangedObservers) {
             if (const auto& observerSp = observerWp.lock()) {
                 observerSp->OnTweenStateChanged(mChangedStateName);

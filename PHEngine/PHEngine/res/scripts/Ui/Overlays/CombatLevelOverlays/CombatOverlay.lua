@@ -171,7 +171,7 @@ function CombatOverlay:new(host)
     combatOverlay:addWidget(levelProgressContainer)
     combatOverlay.levelProgressContainer = levelProgressContainer
 
-    local crystalsStock = ImageAndLabelTile:new(host, combatOverlay)
+    local crystalsStock = ImageAndLabelTile:new(host, combatOverlay, "CrystalStockTile")
     combatOverlay:addCompoundWidget(crystalsStock)
 
     local levelProgressRowLayout = UiRowLayout:new(host, "LvlProgressRow")

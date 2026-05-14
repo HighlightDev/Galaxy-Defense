@@ -84,7 +84,7 @@ public:
 
     void RemovePhysicsComponent();
 
-    void SetIsEnabled(bool isEnabled);
+    virtual void SetIsEnabled(bool isEnabled);
 
     void SetIsVisible(bool isVisible);
 
@@ -131,7 +131,7 @@ public:
     std::shared_ptr<PhysicsComponent> GetPhysicsComponent() const;
 
     // If root component has dirty transformation -> update it and all attached actors + children components
-    void UpdateTransform();
+    void UpdateTransform(const bool bForceUpdate = false);
 
     // If components from list is scene component -> check if it has dirty transformation, and if it does -> update it
     void UpdateComponentsTransform(const bool bForceUpdate);

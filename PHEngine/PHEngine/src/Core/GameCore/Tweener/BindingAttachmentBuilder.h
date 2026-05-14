@@ -8,6 +8,7 @@
 #include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/Vec2PropertyBinding.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/Vec3PropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/Vec3QuadraticBezierPropertyBinding.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/iVec2PropertyBinding.h"
 
 using namespace Resources;
@@ -85,6 +86,13 @@ struct BindingAttachmentBuilder {
             const auto& gameObjectProperty
                 = CastBasePropertyToType<glm::vec2>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
             vec2Binding->SetEngineObjectProperty(gameObjectProperty);
+            break;
+        }
+        case eEnginePropertyBindingType::Vec3QuadraticBezier: {
+            const auto bezierBinding = std::static_pointer_cast<Vec3QuadraticBezierPropertyBinding>(bindingSp);
+            const auto& gameObjectProperty
+                = CastBasePropertyToType<glm::vec3>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
+            bezierBinding->SetEngineObjectProperty(gameObjectProperty);
             break;
         }
         default:

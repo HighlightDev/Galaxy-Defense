@@ -154,6 +154,21 @@ void UiHandler::UnpausableTick(const float deltaTimeSec)
 #endif
 }
 
+std::shared_ptr<IUiTransformable> UiHandler::TryFindUiItemInAllCanvases(const std::string& name) const
+{
+    for (const auto& canvas : mUiCanvases) {
+        if (const auto found = canvas->TryFindHierarchyChildByName(name)) {
+            return found;
+        }
+    }
+    if (mHudCanvas) {
+        if (const auto found = mHudCanvas->TryFindHierarchyChildByName(name)) {
+            return found;
+        }
+    }
+    return nullptr;
+}
+
 std::shared_ptr<UiCanvas> UiHandler::GetCanvasByName(const std::string& canvasName) const
 {
     const auto foundResultIt = std::find_if(

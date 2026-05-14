@@ -375,7 +375,7 @@ void UiCanvas::RegisterUiItem(const size_t uiId, const std::string& uiItemName)
 {
     ext_assert(
         !mRegisteredUIds.count(uiId) && !mRegisteredNames.count(uiItemName),
-        "UiCanvas::RegisterUiItem: uiId or uiItemName is already registered");
+        "UiCanvas::RegisterUiItem: uiId or uiItemName is already registered: " + uiItemName);
     mRegisteredUIds.insert(uiId);
     mRegisteredNames.insert(uiItemName);
 }
@@ -384,7 +384,7 @@ void UiCanvas::UnregisterUiItem(const size_t uiId, const std::string& uiItemName
 {
     ext_assert(
         mRegisteredUIds.count(uiId) && mRegisteredNames.count(uiItemName),
-        "UiCanvas::UnregisterUiItem: uiId or uiItemName is not registered");
+        "UiCanvas::UnregisterUiItem: uiId or uiItemName is not registered: " + uiItemName);
     mRegisteredUIds.erase(uiId);
     mRegisteredNames.erase(uiItemName);
     CollectChildrenWithDescendingZOrder();

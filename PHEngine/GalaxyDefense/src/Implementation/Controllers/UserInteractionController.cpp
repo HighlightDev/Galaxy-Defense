@@ -505,9 +505,17 @@ void UserInteractionController::ProcessCombatStage()
         if (-1 != collidedObjectId
             && eGameObjectsType::SPACE_STATION == mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedObjectId)) {
             mSelectedSpaceStationId = collidedObjectId;
+            const auto& spaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(mSelectedSpaceStationId);
+            spaceStationActor->SetIsOutlineApplied(true);
+            spaceStationActor->SetIsRadiusMarkerActive(true);
             PlayerDataProvider::GetInstance()->SetSelectedTowerId(mSelectedSpaceStationId);
         } else if (!mProjectileMarkerActor->IsEnabled()) {
-            mSelectedSpaceStationId = -1;
+            if (mSelectedSpaceStationId != -1) {
+                const auto& spaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(mSelectedSpaceStationId);
+                spaceStationActor->SetIsOutlineApplied(false);
+                spaceStationActor->SetIsRadiusMarkerActive(false);
+                mSelectedSpaceStationId = -1;
+            }
             PlayerDataProvider::GetInstance()->SetSelectedTowerId(-1);
         } else if (mProjectileMarkerActor->IsEnabled() && mShootCallback && !mReadyToShootTimer->IsRunning()) {
             mShootCallback();
@@ -610,8 +618,9 @@ void UserInteractionController::InitializeTowerGrid()
 {
     const auto& sceneSp = mSceneWp.lock();
     ext_assert(sceneSp, "Scene pointer is null in InitializeTowerGrid");
-    const auto halfExtent = mLevelBounds.GetHalfExtent().x;
-    mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(halfExtent)));
+    const auto halfExtent = mLevelBounds.GetHalfExtent();
+    mLevelPlacementGrid
+        = std::make_unique<LevelPlacementGrid>(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(halfExtent.x, halfExtent.z)));
     mTowerPlacementGridActor = std::make_shared<Actor>(
         "TowerPlacementGridActor",
         std::make_shared<SceneComponent>(
