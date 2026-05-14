@@ -148,3 +148,7 @@ target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC ${OPENGL_LIBRARIES}
   PUBLIC TinyLogger)
+
+if(ENABLE_LIBUNWIND)
+  target_link_libraries(${PROJECT_NAME} PUBLIC UnwindTool)
+endif()
