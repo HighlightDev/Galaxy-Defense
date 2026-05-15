@@ -84,14 +84,20 @@ int32_t PlayerDataProvider::GetDestroyedEnemySpaceshipsCount() const
     return mDestroyedEnemySpaceshipsCount;
 }
 
-void PlayerDataProvider::SetSelectedTowerId(const int32_t towerId)
+void PlayerDataProvider::SetSelectedTowerId(const int32_t towerId, const eMissileType towerWeaponType)
 {
+    LogInfo(
+        "PlayerDataProvider::SetSelectedTowerId: towerId: ",
+        towerId,
+        ", towerWeaponType: ",
+        static_cast<int32_t>(towerWeaponType));
     if (mSelectedTowerId != towerId) {
         mSelectedTowerId = towerId;
         const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::SELECTED_TOWER_CHANGED;
         nlohmann::json jsonObj;
         jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
         jsonObj["has_selected_tower"] = towerId != -1;
+        jsonObj["tower_weapon_type"] = static_cast<int32_t>(towerWeaponType);
         const auto& eventParams = jsonObj.dump();
         MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);
         LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);

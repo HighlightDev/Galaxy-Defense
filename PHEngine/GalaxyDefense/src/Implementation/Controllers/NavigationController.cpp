@@ -154,6 +154,12 @@ NavigationController::BuildNavMeshRouteTo(const glm::vec3& startPosition, const 
         route3D.emplace_back(point.x, startPosition.y, point.y);
     }
 
+    // A* returns cell centers; replace the last point with the exact destination
+    // so ships fly into the portal precisely rather than stopping at the cell center
+    if (!route3D.empty()) {
+        route3D.back() = glm::vec3(endPosition.x, startPosition.y, endPosition.z);
+    }
+
     if (route3D.size() < 3) {
         return route3D;
     }

@@ -3,6 +3,7 @@
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/UtilityCore/PlatformDependentFunctions.h"
 
 #ifdef __linux__
 #include <sys/epoll.h>
@@ -21,7 +22,7 @@ std::atomic<int32_t> FileWatcher::sInstanceCount = 0;
 #ifdef __linux__
 struct FileWatcher::Impl {
     int32_t mInotifyFd;
-    std::vector<int32_t> mInotifyWatcherDescriptors;
+    std::unordered_map<int32_t, std::string> mInotifyWatcherDescriptors;
     int32_t mEpollFd;
 };
 #endif
@@ -47,9 +48,11 @@ FileWatcher::~FileWatcher()
     LogInfo("FileWatcher::dctor");
     mIsRunning = false;
 #ifdef __linux__
-    for (const auto& inotifyWatcherFd : mImpl->mInotifyWatcherDescriptors) {
-        epoll_ctl(mImpl->mEpollFd, EPOLL_CTL_DEL, inotifyWatcherFd, nullptr);
-        inotify_rm_watch(mImpl->mInotifyFd, inotifyWatcherFd);
+    if (mImpl->mEpollFd != -1) {
+        epoll_ctl(mImpl->mEpollFd, EPOLL_CTL_DEL, mImpl->mInotifyFd, nullptr);
+    }
+    for (const auto& [wd, path] : mImpl->mInotifyWatcherDescriptors) {
+        inotify_rm_watch(mImpl->mInotifyFd, wd);
     }
     if (mImpl->mInotifyFd != -1) {
         close(mImpl->mInotifyFd);
@@ -73,16 +76,24 @@ bool FileWatcher::contains(const std::string& key) const
 void FileWatcher::initialize()
 {
     mImpl->mInotifyFd = inotify_init1(IN_NONBLOCK);
+
+    int32_t rootWatchDescriptor = inotify_add_watch(mImpl->mInotifyFd, mPathToWatch.c_str(), IN_CREATE | IN_CLOSE_WRITE | IN_DELETE);
+    if (rootWatchDescriptor != -1) {
+        mImpl->mInotifyWatcherDescriptors[rootWatchDescriptor] = mPathToWatch;
+    } else {
+        LogInfo("FileWatcher::initialize: Failed to add inotify watch for root path: " + mPathToWatch);
+    }
+
     for (auto& file : std::filesystem::recursive_directory_iterator(mPathToWatch)) {
         if (file.is_directory()) {
             const int32_t watchDescriptor
                 = inotify_add_watch(mImpl->mInotifyFd, file.path().string().c_str(), IN_CREATE | IN_CLOSE_WRITE | IN_DELETE);
             if (watchDescriptor == -1) {
                 LogInfo("FileWatcher::initialize: Failed to add inotify watch for path: " + file.path().string());
-                return;
+                continue;
             }
 
-            mImpl->mInotifyWatcherDescriptors.emplace_back(watchDescriptor);
+            mImpl->mInotifyWatcherDescriptors[watchDescriptor] = file.path().string();
         }
     }
 
@@ -118,13 +129,30 @@ void FileWatcher::start()
             const int32_t changedInotifyFd = events[0].data.fd;
             const ssize_t length = read(changedInotifyFd, buffer, sizeof(buffer));
             if (length > 0) {
-                inotify_event* event = reinterpret_cast<inotify_event*>(buffer);
-                if (event->mask & IN_CREATE) {
-                    mCallback(SLASH + std::string(event->name), FileStatus::CREATED);
-                } else if (event->mask & IN_CLOSE_WRITE) {
-                    mCallback(SLASH + std::string(event->name), FileStatus::MODIFIED);
-                } else if (event->mask & IN_DELETE) {
-                    mCallback(SLASH + std::string(event->name), FileStatus::ERASED);
+                ssize_t offset = 0;
+                while (offset < length) {
+                    inotify_event* event = reinterpret_cast<inotify_event*>(&buffer[offset]);
+                    if (event->len) {
+                        std::string fullPath = mImpl->mInotifyWatcherDescriptors[event->wd] + SLASH + std::string(event->name);
+                        
+                        if (event->mask & IN_ISDIR) {
+                            if (event->mask & IN_CREATE) {
+                                int32_t newWd = inotify_add_watch(mImpl->mInotifyFd, fullPath.c_str(), IN_CREATE | IN_CLOSE_WRITE | IN_DELETE);
+                                if (newWd != -1) {
+                                    mImpl->mInotifyWatcherDescriptors[newWd] = fullPath;
+                                }
+                            }
+                        }
+                        
+                        if (event->mask & IN_CREATE) {
+                            mCallback(fullPath, FileStatus::CREATED);
+                        } else if (event->mask & IN_CLOSE_WRITE) {
+                            mCallback(fullPath, FileStatus::MODIFIED);
+                        } else if (event->mask & IN_DELETE) {
+                            mCallback(fullPath, FileStatus::ERASED);
+                        }
+                    }
+                    offset += sizeof(inotify_event) + event->len;
                 }
             } else {
                 LogInfo("FileWatcher::start: Failed to read inotify events");
@@ -135,8 +163,9 @@ void FileWatcher::start()
 #else
 void FileWatcher::initialize()
 {
+    std::string fullPath = FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch;
     for (auto& file :
-         std::filesystem::recursive_directory_iterator(FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch)) {
+         std::filesystem::recursive_directory_iterator(fullPath)) {
         mPaths[file.path().string()] = std::filesystem::last_write_time(file);
     }
     mListenerThread = std::thread(std::bind(&FileWatcher::start, this));
@@ -145,6 +174,7 @@ void FileWatcher::initialize()
 void FileWatcher::start()
 {
     ThreadHelper::GetInstance()->RegisterThread("FileWatcherThread_" + std::to_string(mInstanceId));
+    std::string fullPath = FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch;
     while (mIsRunning) {
         // Wait for "mDelay" milliseconds
         std::this_thread::sleep_for(mDelay);
@@ -159,7 +189,7 @@ void FileWatcher::start()
         }
 
         for (auto& file :
-             std::filesystem::recursive_directory_iterator(FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch)) {
+             std::filesystem::recursive_directory_iterator(fullPath)) {
             auto currentFileLastWriteTime = std::filesystem::last_write_time(file);
 
             if (!contains(file.path().string())) // File creation

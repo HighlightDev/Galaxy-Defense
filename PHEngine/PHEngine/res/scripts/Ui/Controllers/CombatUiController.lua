@@ -121,23 +121,7 @@ end
 
 function System_OnGameEventTriggered(host, eventName, jsonArgs)
     assert(eventName ~= nil and type(eventName) == "string")
-
-    if "PlayerStatusChanged" == eventName then
-        assert(jsonArgs ~= nil and type(jsonArgs) == "string")
-        local parsedJson = json.decode(jsonArgs)
-        if parsedJson["player_status_type"] ~= nil then
-            local statusType = tonumber(parsedJson["player_status_type"])
-            if statusType == PlayerStatusType.SELECTED_TOWER_CHANGED then
-                if parsedJson["has_selected_tower"] ~= nil then
-                    if parsedJson["has_selected_tower"] == true then
-                        print("Player has selected tower")
-                    else
-                        print("Player has deselected tower")
-                    end
-                end
-            end
-        end
-    elseif "GameModeChanged" == eventName then
+    if "GameModeChanged" == eventName then
         assert(jsonArgs ~= nil and type(jsonArgs) == "string")
         local parsedJson = json.decode(jsonArgs)
         local newGameModeType = tonumber(parsedJson["game_mode_type"])

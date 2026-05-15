@@ -504,19 +504,12 @@ void UserInteractionController::ProcessCombatStage()
 
         if (-1 != collidedObjectId
             && eGameObjectsType::SPACE_STATION == mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedObjectId)) {
+            SetIsHighlightSpaceStation(mSelectedSpaceStationId, false); // Unhighlight previously selected space station if exists
             mSelectedSpaceStationId = collidedObjectId;
-            const auto& spaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(mSelectedSpaceStationId);
-            spaceStationActor->SetIsOutlineApplied(true);
-            spaceStationActor->SetIsRadiusMarkerActive(true);
-            PlayerDataProvider::GetInstance()->SetSelectedTowerId(mSelectedSpaceStationId);
-        } else if (!mProjectileMarkerActor->IsEnabled()) {
-            if (mSelectedSpaceStationId != -1) {
-                const auto& spaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(mSelectedSpaceStationId);
-                spaceStationActor->SetIsOutlineApplied(false);
-                spaceStationActor->SetIsRadiusMarkerActive(false);
-                mSelectedSpaceStationId = -1;
-            }
-            PlayerDataProvider::GetInstance()->SetSelectedTowerId(-1);
+            SetIsHighlightSpaceStation(mSelectedSpaceStationId, true);
+        } else if (!mProjectileMarkerActor->IsEnabled() && mSelectedSpaceStationId != -1) {
+            SetIsHighlightSpaceStation(mSelectedSpaceStationId, false);
+            mSelectedSpaceStationId = -1;
         } else if (mProjectileMarkerActor->IsEnabled() && mShootCallback && !mReadyToShootTimer->IsRunning()) {
             mShootCallback();
             mReadyToShootTimer->StartTimer();
@@ -531,6 +524,21 @@ void UserInteractionController::ProcessCombatStage()
         if (tParam >= 0.0f) {
             const auto& placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
             mProjectileMarkerActor->GetRootComponent()->SetTranslation(placementPosition);
+        }
+    }
+}
+
+void UserInteractionController::SetIsHighlightSpaceStation(const int32_t spaceStationId, const bool isHighlight)
+{
+    if (spaceStationId != -1) {
+        const auto& spaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(spaceStationId);
+        spaceStationActor->SetIsOutlineApplied(isHighlight);
+        spaceStationActor->SetIsRadiusMarkerActive(isHighlight);
+        if (isHighlight) {
+            PlayerDataProvider::GetInstance()->SetSelectedTowerId(
+                spaceStationId, spaceStationActor->GetSpaceStationLevel()->GetMissileType());
+        } else {
+            PlayerDataProvider::GetInstance()->SetSelectedTowerId(-1, eMissileType::NONE);
         }
     }
 }

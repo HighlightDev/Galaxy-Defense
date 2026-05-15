@@ -144,12 +144,12 @@ function ImageAndLabelTile:setLabelVisibility(isVisible)
     self.label:setIsVisible(isVisible)
 end
 
-function ImageAndLabelTile:rotateImage(rotateDegrees)
+function ImageAndLabelTile:setRotationDegrees(rotateDegrees)
     assert(rotateDegrees ~= nil and type(rotateDegrees) == "number")
     self.image:setRotationDegrees(rotateDegrees)
 end
 
-function ImageAndLabelTile:setFlipImage(isFlipped) self.image:setIsFlipped(isFlipped) end
+function ImageAndLabelTile:setIsFlipped(isFlipped) self.image:setIsFlipped(isFlipped) end
 
 function ImageAndLabelTile:setTextureSource(texSource)
     assert(texSource ~= nil and type(texSource) == "string")

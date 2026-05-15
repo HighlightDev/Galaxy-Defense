@@ -7,6 +7,7 @@
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Components/MovementComponents/LootDropMovementComponent.h"
@@ -128,7 +129,7 @@ void LootActor::CollectLoot()
         // Update bezier endpoints: source = current loot position, destination = crystal tile world position.
         if (mCollectedBezierProp && mIdleBezierProp) {
             if (const auto sceneSp = GetSceneOwner().lock()) {
-                const auto& mainCamera = sceneSp->GetMainCamera();
+                const auto& mainCamera = std::static_pointer_cast<ThirdPersonCamera>(sceneSp->GetMainCamera());
                 auto tileSp = mCachedCrystalTile.lock();
                 if (!tileSp) {
                     tileSp = sceneSp->TryFindUiItemInAllCanvases("CrystalStockTile");
@@ -160,10 +161,8 @@ void LootActor::CollectLoot()
                         projMatrix,
                         glm::vec4(0, 0, windowW, windowH));
 
-                    // Arc control point: midpoint between src and dst, raised upward.
-                    static constexpr float c_arcHeight = 5.0f;
-                    const glm::vec3 arcControlPoint
-                        = (mIdleBezierProp->Value + mCollectedBezierProp->Value) * 0.5f + glm::vec3(0.0f, c_arcHeight, 0.0f);
+                    const glm::vec3 arcControlPoint = (mIdleBezierProp->Value + mCollectedBezierProp->Value) * 0.5f
+                        - mainCamera->GetEyeSpaceForwardVector() * mainCamera->GetDistanceFromTargetToCamera();
                     mIdleBezierProp->ControlPoint = arcControlPoint;
                     mCollectedBezierProp->ControlPoint = arcControlPoint;
                 }

@@ -44,7 +44,7 @@ public:
 
     int32_t GetDestroyedEnemySpaceshipsCount() const;
 
-    void SetSelectedTowerId(const int32_t towerId);
+    void SetSelectedTowerId(const int32_t towerId, const eMissileType towerWeaponType);
 
     int32_t GetSelectedTowerId() const;
 

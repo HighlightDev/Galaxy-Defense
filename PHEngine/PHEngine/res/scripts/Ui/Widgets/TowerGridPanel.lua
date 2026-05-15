@@ -328,14 +328,25 @@ function TowerGridPanel:setupLayout(canvasName)
     self.gridLayout:setAlignment(UiGridLayout.UiGridHorizontalAlignmentType.CENTER,
                                  UiGridLayout.UiGridVerticalAlignmentType.CENTER)
 
+    local numberImages = {
+        "number-one.png", "number-two.png", "number-three.png", "number-four.png", 
+        "number-five.png", "number-six.png", "number-seven.png"
+    }
+
     for i = 1, #self.createTowerButtons do
+        local imageSource = "space_station_img.png"
+        if i <= #numberImages then
+            imageSource = numberImages[i]
+        end
+
         self.createTowerButtons[i]:setParent(host, canvasName, self.gridLayout.widgetName)
         self.createTowerButtons[i]:setWidth(smallButtonSize)
         self.createTowerButtons[i]:setHeight(smallButtonSize)
         self.createTowerButtons[i]:setButtonColorHexValue(Styles.Colors.buttonColor)
         self.createTowerButtons[i]:setButtonBorderRadius(buttonRadius)
-        self.createTowerButtons[i]:setImageTextureSource("space_station_img.png")
+        self.createTowerButtons[i]:setImageTextureSource(imageSource)
         self.createTowerButtons[i]:setImageRotationDegrees(180)
+        self.createTowerButtons[i]:setImageFlipped(true)
         self.createTowerButtons[i]:setZOrder(3)
     end
 

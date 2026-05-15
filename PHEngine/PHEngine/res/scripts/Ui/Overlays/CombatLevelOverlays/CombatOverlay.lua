@@ -34,8 +34,11 @@ local UiRectangle = require("Ui/Core/uiRectangle")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local TowerGridPanel = require("Ui/Widgets/TowerGridPanel")
+local SelectedTowerPanel = require("Ui/Widgets/SelectedTowerPanel")
 
 local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}
+
+local WeaponType = { NONE = 0, BOMB = 1, FREEZING_BOMB = 2, ELECTRO_RAY = 3, BLACK_HOLE = 4, FREEZING_RAY = 5 }
 
 PlayerStatusType = {
     CRYSTALS_COUNT_CHANGED = 0,
@@ -56,7 +59,7 @@ local TileSize = 80 -- temporary for now
 local function showTileRequirementAchived(requirementTile)
     requirementTile:setTextureSource("check.png")
     requirementTile:setLabelVisibility(false)
-    requirementTile:setFlipImage(true)
+    requirementTile:setIsFlipped(true)
     requirementTile:setImageColorHexValue(0xFFFFFF)
     requirementTile:setUseImageCustomColor(true)
 end
@@ -174,6 +177,9 @@ function CombatOverlay:new(host)
     local crystalsStock = ImageAndLabelTile:new(host, combatOverlay, "CrystalStockTile")
     combatOverlay:addCompoundWidget(crystalsStock)
 
+    local selectedTowerPanel = SelectedTowerPanel:new(host, combatOverlay, "SelectedTowerPanelObj")
+    combatOverlay:addCompoundWidget(selectedTowerPanel)
+
     local levelProgressRowLayout = UiRowLayout:new(host, "LvlProgressRow")
     combatOverlay:addWidget(levelProgressRowLayout)
     combatOverlay.levelProgressRowLayout = levelProgressRowLayout
@@ -279,6 +285,16 @@ function CombatOverlay:new(host)
         crystalsStock:setLabelVisibility(true)
         crystalsStock:setBackgroundTileColorHexValue(Styles.Colors.panelColor)
 
+        selectedTowerPanel:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
+        selectedTowerPanel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+                                    combatOverlayCanvas.widgetName, 30)
+        selectedTowerPanel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+                                    combatOverlayCanvas.widgetName, 10)
+        selectedTowerPanel:setWidth(TileSize)
+        selectedTowerPanel:setHeight(TileSize)
+        selectedTowerPanel:setupLayout()
+        selectedTowerPanel:setIsVisible(false)
+
         towerGridPanel:setupLayout(combatOverlayCanvas.widgetName)
 
         removeDropDownPanel:setParent(host, combatOverlayCanvas.widgetName, towerGridPanel.backgroundRect.widgetName)
@@ -318,6 +334,25 @@ function CombatOverlay:new(host)
                 if statusType == PlayerStatusType.CRYSTALS_COUNT_CHANGED then
                     local crystalsCount = tonumber(parsedJson["crystals_count"])
                     crystalsStock:setLabelText(tostring(crystalsCount))
+                elseif statusType == PlayerStatusType.SELECTED_TOWER_CHANGED then
+                    if parsedJson["has_selected_tower"] ~= nil then
+                        if parsedJson["has_selected_tower"] == true then
+                            assert(parsedJson["tower_weapon_type"] ~= nil)
+                            local weaponType = tonumber(parsedJson["tower_weapon_type"])
+                            local numberImages = {
+                                "number-one.png", "number-two.png", "number-three.png", "number-four.png", 
+                                "number-five.png", "number-six.png", "number-seven.png"
+                            }
+                            local imageToSet = "space_station_img.png"
+                            if weaponType > 0 and weaponType <= #numberImages then
+                                imageToSet = numberImages[weaponType]
+                            end
+                            selectedTowerPanel:setWeaponImage(imageToSet)
+                            selectedTowerPanel:setIsVisible(true)
+                        else
+                            selectedTowerPanel:setIsVisible(false)
+                        end
+                    end
                 end
             end
         end

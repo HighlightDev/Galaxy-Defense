@@ -220,6 +220,11 @@ function ImageButton:setImageRotationDegrees(angleDegrees)
     self.image:setRotationDegrees(angleDegrees)
 end
 
+function ImageButton:setImageFlipped(isFlipped)
+    assert(isFlipped ~= nil and type(isFlipped) == "boolean")
+    self.image:setIsFlipped(isFlipped)
+end
+
 function ImageButton:getImageRotationDegrees() return self.image:getRotationDegrees() end
 
 function ImageButton:resizeWidgets()

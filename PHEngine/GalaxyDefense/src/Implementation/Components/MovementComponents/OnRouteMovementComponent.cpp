@@ -92,15 +92,14 @@ void OnRouteMovementComponent::Move(const float deltaTimeSec)
 {
     if (mIsMovementOnRouteAllowed && not mIsDistanceCompleted) {
         const float distanceToBeDone = mCurrentSpeed * deltaTimeSec;
-        float distanceAlreadyDone = mMovementProgressOnRoute * mRouteTotalDistance + distanceToBeDone;
-        distanceAlreadyDone = std::fmod(distanceAlreadyDone, mRouteTotalDistance);
+        const float distanceAlreadyDone = mMovementProgressOnRoute * mRouteTotalDistance + distanceToBeDone;
         const float prctDistanceDone
             = EngineMath::FloatsNearEqual(mRouteTotalDistance, 0.0f) ? 0.0f : distanceToBeDone / mRouteTotalDistance;
         mMovementProgressOnRoute += prctDistanceDone;
         if (mMovementProgressOnRoute >= 1.0f) {
-            // reached destination, pending further actions from route handler
+            TeleportToMovementProgressOnRoute(mRouteTotalDistance);
             mIsDistanceCompleted = true;
-            mMovementProgressOnRoute = 0.0f;
+            mMovementProgressOnRoute = 1.0f;
         } else {
             TeleportToMovementProgressOnRoute(distanceAlreadyDone);
         }
