@@ -45,6 +45,10 @@ protected:
 
     const std::string mName;
 
+    bool mIsGuiScissorsSlave;
+
+    bool mIsGuiScissorsMaster;
+
 public:
     UiSceneProxyBase(const ::EngineCore::GUI::UiItemBase* uiItemBase);
 
@@ -79,6 +83,14 @@ public:
     glm::vec2 GetScale() const;
 
     void SetCenterOffset(const glm::vec2& offset);
+
+    void SetIsGuiScissorsSlave(const bool isScissorsSlave);
+
+    bool IsGuiScissorsSlave() const;
+
+    void SetIsGuiScissorsMaster(const bool isScissorsMaster);
+
+    bool IsGuiScissorsMaster() const;
 
     glm::vec2 GetCenterOffset() const;
 

@@ -916,16 +916,18 @@ void SceneRenderer::FontPass(const std::shared_ptr<SceneView>& sceneView)
 
 void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
 {
+    glClear(GL_STENCIL_BUFFER_BIT);
+
     RenderState renderState;
     renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     renderState.GetDepthState().SetIsDepthTestEnabled(false).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(false);
 
     renderState.GetStencilState()
-        .SetIsStencilTestEnabled(false)
-        .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
-        .SetStencilMask(0);
+        .SetIsStencilTestEnabled(true)
+        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilMask(0xFF);
 
     renderState.BindRenderState();
 

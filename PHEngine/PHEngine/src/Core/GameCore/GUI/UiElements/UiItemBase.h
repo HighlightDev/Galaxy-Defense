@@ -97,6 +97,10 @@ protected:
 
     std::shared_ptr<EngineObjectProperty<int32_t>> mHorizontalCenterOffsetProperty;
 
+    bool mIsGuiScissorsSlave;
+
+    bool mIsGuiScissorsMaster;
+
 #ifdef DEBUG
     bool mIsHiddenForDebugging;
 #endif
@@ -166,12 +170,15 @@ public:
     std::weak_ptr<IUiTransformable> GetRootParent() const override;
     std::weak_ptr<IUiTransformable> GetParent() const override;
     bool IsVisible() const override;
+    bool IsGuiScissorsSlave() const override;
+    bool IsGuiScissorsMaster() const override;
     bool GetIfCanInterceptMouseInputEvents() const override;
     std::string GetName() const override;
     size_t GetUId() const override;
     BoundingBox2D<glm::ivec2> GetBoundingArea() const override;
     bool IsTransformDirty() const override;
     std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
+    void SetIsGuiScissorsSlaveRecursive(const bool isSlave);
     std::weak_ptr<::EngineCore::Scene> GetScene() const override;
     const std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData>& GetAnchors() const;
     bool IsVisibleDirty() const;
@@ -181,6 +188,8 @@ public:
     void SetWidth(const size_t width) override;
     void SetHeight(const size_t height) override;
     void SetIsVisible(const bool isVisible) override;
+    void SetIsGuiScissorsSlave(const bool value) override;
+    void SetIsGuiScissorsMaster(const bool isScissorsMaster) override;
 #ifdef DEBUG
     void SetIsHiddenForDebugging(const bool isHiddenForDebugging) override;
 #endif
@@ -190,7 +199,7 @@ public:
     void SetHorizontalCenterOffset(const int32_t offset) override;
     void SetVerticalCenterOffset(const int32_t offset) override;
     void AddUiItem(const std::shared_ptr<UiItemBase>& uiItem) override;
-    void RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem);
+    void RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem) override;
     void RegisterUiItem(const size_t uiId, const std::string& uiItemName) override;
     void UnregisterUiItem(const size_t uiId, const std::string& uiItemName) override;
     std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string& name) const override;

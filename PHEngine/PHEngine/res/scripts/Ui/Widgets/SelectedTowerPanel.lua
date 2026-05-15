@@ -52,9 +52,7 @@ function SelectedTowerPanel:new(host, overlay, widgetName)
     local function checkAllWidgetLuaProxiesAreReady()
         if newObj.mainContainer.luaProxyReady == true and newObj.selectedTowerTile.allWidgetLuaProxiesReady == true then
             newObj.allWidgetLuaProxiesReady = true
-            if newObj.luaProxiesReadyCallback ~= nil then
-                newObj.luaProxiesReadyCallback(newObj.host)
-            end
+            if newObj.luaProxiesReadyCallback ~= nil then newObj.luaProxiesReadyCallback(newObj.host) end
         end
     end
 
@@ -72,16 +70,11 @@ function SelectedTowerPanel:subscribeOnLuaProxiesReady(callback)
     end
 end
 
-function SelectedTowerPanel:onPreCompoundWidgetInitialize()
-    self.selectedTowerTile:onPreCompoundWidgetInitialize()
-end
+function SelectedTowerPanel:onPreCompoundWidgetInitialize() self.selectedTowerTile:onPreCompoundWidgetInitialize() end
 
-function SelectedTowerPanel:onCompoundWidgetInitialize()
-    self.selectedTowerTile:onCompoundWidgetInitialize()
-end
+function SelectedTowerPanel:onCompoundWidgetInitialize() self.selectedTowerTile:onCompoundWidgetInitialize() end
 
-function SelectedTowerPanel:update(host, deltaTimeSec)
-end
+function SelectedTowerPanel:update(host, deltaTimeSec) end
 
 function SelectedTowerPanel:setParent(host, overlayCanvasName, parentName)
     self.mainContainer:setParent(host, overlayCanvasName, parentName)
@@ -105,8 +98,10 @@ function SelectedTowerPanel:setHeight(height)
 end
 
 function SelectedTowerPanel:setupLayout()
-    self.selectedTowerTile:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, self.mainContainer.widgetName, 0)
-    self.selectedTowerTile:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, self.mainContainer.widgetName, 0)
+    self.selectedTowerTile:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+                                     self.mainContainer.widgetName, 0)
+    self.selectedTowerTile:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+                                     self.mainContainer.widgetName, 0)
     self.selectedTowerTile:setTextureSource("diamond.png")
     self.selectedTowerTile:setLabelVisibility(false)
     self.selectedTowerTile:setBackgroundTileColorHexValue(Styles.Colors.panelColor)
@@ -119,8 +114,6 @@ function SelectedTowerPanel:setIsVisible(isVisible)
     self.selectedTowerTile:setIsVisible(isVisible)
 end
 
-function SelectedTowerPanel:setWeaponImage(imageName)
-    self.selectedTowerTile:setTextureSource(imageName)
-end
+function SelectedTowerPanel:setWeaponImage(imageName) self.selectedTowerTile:setTextureSource(imageName) end
 
 return SelectedTowerPanel

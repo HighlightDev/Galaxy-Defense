@@ -12,7 +12,8 @@ CommonUiWidgetCreator = {
         UI_ROW_LAYOUT = 9,
         UI_SLIDER_BAR = 10,
         UI_TEXT_BLOCK = 11,
-        UI_GRID_LAYOUT = 12
+        UI_GRID_LAYOUT = 12,
+        UI_SCROLL_LIST = 13
     }
 }
 
@@ -43,6 +44,8 @@ local function getTypeToString(commonUiWidgetType)
         return "UI_TEXT_BLOCK"
     elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_GRID_LAYOUT then
         return "UI_GRID_LAYOUT"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_SCROLL_LIST then
+        return "UI_SCROLL_LIST"
     else
         assert(false, "Wrong type of widget type: " .. tostring(commonUiWidgetType))
     end

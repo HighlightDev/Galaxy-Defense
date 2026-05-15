@@ -1,5 +1,6 @@
 #include "UiCanvasSceneProxy.h"
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontHandler.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
@@ -56,6 +57,15 @@ void UiCanvasSceneProxy::Render()
         for (const auto& proxy : mUiProxies) {
             if (proxy->IsVisible()) {
                 proxy->SetOverlayOpacity(mOverlayOpacity);
+                if (proxy->IsGuiScissorsSlave()) {
+                    glStencilFunc(GL_EQUAL, EngineConstants::eStencilValues::GUI_SCISSORING, 0xFF);
+                } else {
+                    if (proxy->IsGuiScissorsMaster()) {
+                        glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::GUI_SCISSORING, 0xFF);
+                    } else {
+                        glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF);
+                    }
+                }
                 proxy->Render();
             }
         }

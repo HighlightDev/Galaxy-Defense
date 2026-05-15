@@ -178,6 +178,5 @@ private:
     eMissileType MissileTypeFromString(const std::string& typeStr) const;
 
     void SetIsHighlightSpaceStation(const int32_t spaceStationId, const bool isHighlight);
-
 };
 } // namespace Game

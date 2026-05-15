@@ -177,7 +177,9 @@
         "_GetEditorLevelAreaBoundingBoxWidth",
         "_GetEditorLevelAreaBoundingBoxLength",
         "_SetVec3ToMaterial",
-        "_GetCollectedCrystalsCount"
+        "_GetCollectedCrystalsCount",
+        "_GetMouseCursorPositionY",
+        "_GetMouseCursorPositionX"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

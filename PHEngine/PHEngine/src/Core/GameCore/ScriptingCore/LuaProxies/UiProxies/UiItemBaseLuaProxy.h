@@ -52,6 +52,10 @@ protected:
 
     bool mIsMouseInputReceiverEnabled{false};
 
+    bool mIsGuiScissorsSlave{false};
+
+    bool mIsGuiScissorsMaster{false};
+
 public:
     explicit UiItemBaseLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiItemBase>& ownerUiItemBase);
 
@@ -80,6 +84,10 @@ public:
     void SetInputPressState_FromGameThread(const eLuaMouseInputPressState cursorHoverState);
 
     void SetInputCursorHoverState_FromGameThread(const eLuaMouseInputCursorHoverState pressState);
+
+    void SetIsGuiScissorsSlave_FromGameThread(const bool isScissorsSlave);
+
+    void SetIsGuiScissorsMaster_FromGameThread(const bool isScissorsMaster);
 
     void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
 

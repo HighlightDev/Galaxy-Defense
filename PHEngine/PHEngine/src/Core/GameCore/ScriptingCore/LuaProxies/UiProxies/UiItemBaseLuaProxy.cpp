@@ -25,6 +25,8 @@ UiItemBaseLuaProxy::UiItemBaseLuaProxy(const std::shared_ptr<::EngineCore::GUI::
     , mHeight(ownerUiItem->GetHeight())
     , mHorizontalCenterOffset(ownerUiItem->GetHorizontalCenterOffset())
     , mVerticalCenterOffset(ownerUiItem->GetVerticalCenterOffset())
+    , mIsGuiScissorsSlave(ownerUiItem->IsGuiScissorsSlave())
+    , mIsGuiScissorsMaster(ownerUiItem->IsGuiScissorsMaster())
 {
     mLuaProxyId = ownerUiItem->GetLuaProxyId();
     SetReplicatorId(ownerUiItem->GetReplicatorId());
@@ -120,6 +122,22 @@ void UiItemBaseLuaProxy::SetInputClicked_FromGameThread(const bool isClicked)
     }
 }
 
+void UiItemBaseLuaProxy::SetIsGuiScissorsSlave_FromGameThread(const bool isScissorsSlave)
+{
+    if (mIsGuiScissorsSlave != isScissorsSlave) {
+        mIsGuiScissorsSlave = isScissorsSlave;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiItemBaseLuaProxy::SetIsGuiScissorsMaster_FromGameThread(const bool isScissorsMaster)
+{
+    if (mIsGuiScissorsMaster != isScissorsMaster) {
+        mIsGuiScissorsMaster = isScissorsMaster;
+        mIsLuaDataDirty = true;
+    }
+}
+
 void UiItemBaseLuaProxy::SetParent(const std::string& canvasName, const std::string& parentName)
 {
     static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetParent");
@@ -186,6 +204,8 @@ std::string UiItemBaseLuaProxy::GetGameThreadData()
     jsonObj["horizontalCenterOffset"] = mHorizontalCenterOffset;
     jsonObj["verticalCenterOffset"] = mVerticalCenterOffset;
     jsonObj["anchors"] = anchorConvertedData;
+    jsonObj["is_gui_scissors_slave"] = mIsGuiScissorsSlave;
+    jsonObj["is_gui_scissors_master"] = mIsGuiScissorsMaster;
 
     mIsLuaDataDirty = false;
     return jsonObj.dump();

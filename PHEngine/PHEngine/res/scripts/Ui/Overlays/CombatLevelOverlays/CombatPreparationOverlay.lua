@@ -29,6 +29,7 @@ local ImageButton = require("Ui/Widgets/ImageButton")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local Styles = require("Ui/Common/styles")
 local TowerGridPanel = require("Ui/Widgets/TowerGridPanel")
+local TowerUpgradesPanel = require("Ui/Widgets/TowerUpgradesPanel")
 
 CombatPreparationOverlay = {buttonRadius = 6, localTimerManager = nil}
 
@@ -48,8 +49,16 @@ function CombatPreparationOverlay:new(host)
 
     combatPreparationOverlay.localTimerManager = combatPreparationOverlay:getTimerManager()
 
-    local towerGridPanel = TowerGridPanel:new(host, combatPreparationOverlay,
-                                              {buttonRadius = CombatPreparationOverlay.buttonRadius})
+    local towerUpgradesPanel = TowerUpgradesPanel:new(host, combatPreparationOverlay)
+    combatPreparationOverlay:addCompoundWidget(towerUpgradesPanel)
+
+    local TileSize = 80
+
+    local towerGridPanel = TowerGridPanel:new(host, combatPreparationOverlay, {
+        buttonRadius = CombatPreparationOverlay.buttonRadius,
+        mainButtonSize = TileSize,
+        onTowerUpgradesButtonClicked = function() towerUpgradesPanel:setIsVisible(true) end
+    })
     combatPreparationOverlay:addCompoundWidget(towerGridPanel)
 
     local mainButtonSize = towerGridPanel.mainButtonSize
@@ -79,6 +88,7 @@ function CombatPreparationOverlay:new(host)
         print("combatPreparationOverlay:OnAllWidgetLuaProxiesReady: name: " .. tostring(sender.overlayName))
 
         towerGridPanel:setupLayout(combatPreparationOverlayCanvas.widgetName)
+        towerUpgradesPanel:setupLayout(combatPreparationOverlayCanvas.widgetName, windowWidth, windowHeight)
 
         completeStageButton:setParent(host, combatPreparationOverlayCanvas.widgetName,
                                       combatPreparationOverlayCanvas.widgetName)
@@ -90,7 +100,7 @@ function CombatPreparationOverlay:new(host)
         completeStageButton:setHeight(mainButtonSize)
         completeStageButton:setButtonBorderRadius(CombatPreparationOverlay.buttonRadius)
         completeStageButton:setImageTextureSource("flag-banner-fold.png")
-        completeStageButton:setImageRotationDegrees(180)
+        completeStageButton:setRotationDegrees(180)
         completeStageButton:setButtonColorHexValue(Styles.Colors.buttonColor)
     end)
 

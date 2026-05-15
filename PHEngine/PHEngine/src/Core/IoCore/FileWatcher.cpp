@@ -77,7 +77,8 @@ void FileWatcher::initialize()
 {
     mImpl->mInotifyFd = inotify_init1(IN_NONBLOCK);
 
-    int32_t rootWatchDescriptor = inotify_add_watch(mImpl->mInotifyFd, mPathToWatch.c_str(), IN_CREATE | IN_CLOSE_WRITE | IN_DELETE);
+    int32_t rootWatchDescriptor
+        = inotify_add_watch(mImpl->mInotifyFd, mPathToWatch.c_str(), IN_CREATE | IN_CLOSE_WRITE | IN_DELETE);
     if (rootWatchDescriptor != -1) {
         mImpl->mInotifyWatcherDescriptors[rootWatchDescriptor] = mPathToWatch;
     } else {
@@ -134,16 +135,17 @@ void FileWatcher::start()
                     inotify_event* event = reinterpret_cast<inotify_event*>(&buffer[offset]);
                     if (event->len) {
                         std::string fullPath = mImpl->mInotifyWatcherDescriptors[event->wd] + SLASH + std::string(event->name);
-                        
+
                         if (event->mask & IN_ISDIR) {
                             if (event->mask & IN_CREATE) {
-                                int32_t newWd = inotify_add_watch(mImpl->mInotifyFd, fullPath.c_str(), IN_CREATE | IN_CLOSE_WRITE | IN_DELETE);
+                                int32_t newWd = inotify_add_watch(
+                                    mImpl->mInotifyFd, fullPath.c_str(), IN_CREATE | IN_CLOSE_WRITE | IN_DELETE);
                                 if (newWd != -1) {
                                     mImpl->mInotifyWatcherDescriptors[newWd] = fullPath;
                                 }
                             }
                         }
-                        
+
                         if (event->mask & IN_CREATE) {
                             mCallback(fullPath, FileStatus::CREATED);
                         } else if (event->mask & IN_CLOSE_WRITE) {
@@ -164,8 +166,7 @@ void FileWatcher::start()
 void FileWatcher::initialize()
 {
     std::string fullPath = FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch;
-    for (auto& file :
-         std::filesystem::recursive_directory_iterator(fullPath)) {
+    for (auto& file : std::filesystem::recursive_directory_iterator(fullPath)) {
         mPaths[file.path().string()] = std::filesystem::last_write_time(file);
     }
     mListenerThread = std::thread(std::bind(&FileWatcher::start, this));
@@ -188,8 +189,7 @@ void FileWatcher::start()
             }
         }
 
-        for (auto& file :
-             std::filesystem::recursive_directory_iterator(fullPath)) {
+        for (auto& file : std::filesystem::recursive_directory_iterator(fullPath)) {
             auto currentFileLastWriteTime = std::filesystem::last_write_time(file);
 
             if (!contains(file.path().string())) // File creation

@@ -56,6 +56,8 @@ UiItemBase::UiItemBase(const std::string& name)
           0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
     , mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
           0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
+    , mIsGuiScissorsSlave(false)
+    , mIsGuiScissorsMaster(false)
 #ifdef DEBUG
     , mIsHiddenForDebugging(false)
 #endif
@@ -220,6 +222,34 @@ void UiItemBase::SetIsVisible(const bool isVisible)
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
+}
+
+void UiItemBase::SetIsGuiScissorsSlave(const bool value)
+{
+    if (mIsGuiScissorsSlave != value) {
+        mIsGuiScissorsSlave = value;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+bool UiItemBase::IsGuiScissorsSlave() const
+{
+    return mIsGuiScissorsSlave;
+}
+
+void UiItemBase::SetIsGuiScissorsMaster(const bool isScissorsMaster)
+{
+    if (mIsGuiScissorsMaster != isScissorsMaster) {
+        mIsGuiScissorsMaster = isScissorsMaster;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+bool UiItemBase::IsGuiScissorsMaster() const
+{
+    return mIsGuiScissorsMaster;
 }
 
 bool UiItemBase::GetIfCanInterceptMouseInputEvents() const
@@ -730,6 +760,14 @@ std::vector<std::shared_ptr<UiItemBase>> UiItemBase::GetAllChildren() const
     return result;
 }
 
+void UiItemBase::SetIsGuiScissorsSlaveRecursive(const bool isSlave)
+{
+    SetIsGuiScissorsSlave(isSlave);
+    for (const auto& child : mChildren) {
+        child->SetIsGuiScissorsSlaveRecursive(isSlave);
+    }
+}
+
 void UiItemBase::UpdateAnchorTransform()
 {
     RecalculateAnchorPositions();
@@ -891,6 +929,20 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             ++srcAnchorValue;
         }
     }
+    if (jsonObj.contains("is_gui_scissors_slave")) {
+        const auto isScissorsSlave = jsonObj["is_gui_scissors_slave"].get<bool>();
+        if (mIsGuiScissorsSlave != isScissorsSlave) {
+            mIsGuiScissorsSlave = isScissorsSlave;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
+    if (jsonObj.contains("is_gui_scissors_master")) {
+        const auto isScissorsMaster = jsonObj["is_gui_scissors_master"].get<bool>();
+        if (mIsGuiScissorsMaster != isScissorsMaster) {
+            mIsGuiScissorsMaster = isScissorsMaster;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
 }
 
 void UiItemBase::SyncDataOnRenderThread()
@@ -913,7 +965,9 @@ void UiItemBase::SyncDataOnRenderThread()
                      normScale = mNormalizedScale,
                      width = mWidth,
                      height = mHeight,
-                     isHiddenForDebugging = mIsHiddenForDebugging](
+                     isHiddenForDebugging = mIsHiddenForDebugging,
+                     isGuiScissorsSlave = mIsGuiScissorsSlave,
+                     isGuiScissorsMaster = mIsGuiScissorsMaster](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -926,6 +980,8 @@ void UiItemBase::SyncDataOnRenderThread()
 #else
                                 uiSceneProxy->SetIsVisible(isVisible);
 #endif
+                                uiSceneProxy->SetIsGuiScissorsSlave(isGuiScissorsSlave);
+                                uiSceneProxy->SetIsGuiScissorsMaster(isGuiScissorsMaster);
                                 uiSceneProxy->SetZOrder(zOrder);
                                 uiSceneProxy->SetTransform(normTranslation, normScale);
                                 uiSceneProxy->SetWidthHeightPixels(
@@ -959,7 +1015,9 @@ void UiItemBase::SyncDataOnLuaThread()
                      horizontalOffset = mHorizontalCenterOffset,
                      verticalOffset = mVerticalCenterOffset,
                      anchorsMap = mAnchors,
-                     isHiddenForDebugging = mIsHiddenForDebugging](
+                     isHiddenForDebugging = mIsHiddenForDebugging,
+                     isGuiScissorsSlave = mIsGuiScissorsSlave,
+                     isGuiScissorsMaster = mIsGuiScissorsMaster](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -970,6 +1028,7 @@ void UiItemBase::SyncDataOnLuaThread()
 #else
                             uiItemBaseLuaProxy->SetIsVisible_FromGameThread(visible);
 #endif
+                            uiItemBaseLuaProxy->SetIsGuiScissorsSlave_FromGameThread(isGuiScissorsSlave);
                             uiItemBaseLuaProxy->SetIfCanInterceptMouseInputEvents_FromGameThread(interceptsMouseInputEvent);
                             uiItemBaseLuaProxy->SetZOrder_FromGameThread(zorder);
                             uiItemBaseLuaProxy->SetWidth_FromGameThread(width);

@@ -41,6 +41,7 @@ function ImageButton:new(host, overlay, name)
         pressButtonStateContainer = nil,
         buttonWidth = 0,
         buttonHeight = 0,
+        buttonZOrder = 3,
         containerColor = 0xffffff,
         widgetName = "",
         luaProxiesReadyCallback = nil,
@@ -80,10 +81,10 @@ function ImageButton:onPreCompoundWidgetInitialize()
 end
 
 function ImageButton:onCompoundWidgetInitialize()
-    local imageSize = math.min(self.buttonWidth * 0.75, self.buttonHeight)
+    local imageSize = math.min(self.buttonWidth * 0.5, self.buttonHeight)
 
     self.backgroundTile:setParent(self.host, self.overlayCanvasName, self.parentName)
-    self.backgroundTile:setZOrder(3);
+    self.backgroundTile:setZOrder(self.buttonZOrder);
     self.backgroundTile:setHeight(self.buttonHeight);
     self.backgroundTile:setWidth(self.buttonWidth);
     self.backgroundTile:setColorHexValue(self.containerColor)
@@ -91,7 +92,7 @@ function ImageButton:onCompoundWidgetInitialize()
     self.backgroundTile:setIfCanInterceptMouseInputEvent(true)
 
     self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
-    self.pressButtonStateContainer:setZOrder(4);
+    self.pressButtonStateContainer:setZOrder(self.buttonZOrder + 1);
     self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
                                              UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.backgroundTile.widgetName);
     self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
@@ -141,7 +142,7 @@ function ImageButton:onCompoundWidgetInitialize()
     end)
 
     self.image:setParent(self.host, self.overlayCanvasName, self.backgroundTile.widgetName)
-    self.image:setZOrder(4);
+    self.image:setZOrder(self.buttonZOrder + 1);
     self.image:setHeight(imageSize);
     self.image:setWidth(imageSize);
     self.image:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
@@ -215,7 +216,7 @@ function ImageButton:setButtonBorderRadius(radius)
     self.backgroundTile:setBorderRadius(radius)
 end
 
-function ImageButton:setImageRotationDegrees(angleDegrees)
+function ImageButton:setRotationDegrees(angleDegrees)
     assert(angleDegrees ~= nil and type(angleDegrees) == "number")
     self.image:setRotationDegrees(angleDegrees)
 end
@@ -228,7 +229,7 @@ end
 function ImageButton:getImageRotationDegrees() return self.image:getRotationDegrees() end
 
 function ImageButton:resizeWidgets()
-    local imageSize = math.min(self.buttonWidth * 0.75, self.buttonHeight)
+    local imageSize = math.min(self.buttonWidth * 0.5, self.buttonHeight)
 
     self.backgroundTile:setHeight(self.buttonHeight);
     self.backgroundTile:setWidth(self.buttonWidth);
@@ -257,6 +258,7 @@ end
 
 function ImageButton:setZOrder(zOrder)
     assert(zOrder ~= nil and type(zOrder) == "number")
+    self.buttonZOrder = zOrder
     self.backgroundTile:setZOrder(zOrder)
     self.image:setZOrder(zOrder + 1)
     self.pressButtonStateContainer:setZOrder(zOrder)

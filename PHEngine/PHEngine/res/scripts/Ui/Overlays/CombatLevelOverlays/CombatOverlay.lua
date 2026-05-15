@@ -35,10 +35,11 @@ local EventsHelper = require("Ui/Core/eventsHelper")
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local TowerGridPanel = require("Ui/Widgets/TowerGridPanel")
 local SelectedTowerPanel = require("Ui/Widgets/SelectedTowerPanel")
+local TowerUpgradesPanel = require("Ui/Widgets/TowerUpgradesPanel")
 
 local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}
 
-local WeaponType = { NONE = 0, BOMB = 1, FREEZING_BOMB = 2, ELECTRO_RAY = 3, BLACK_HOLE = 4, FREEZING_RAY = 5 }
+local WeaponType = {NONE = 0, BOMB = 1, FREEZING_BOMB = 2, ELECTRO_RAY = 3, BLACK_HOLE = 4, FREEZING_RAY = 5}
 
 PlayerStatusType = {
     CRYSTALS_COUNT_CHANGED = 0,
@@ -189,20 +190,15 @@ function CombatOverlay:new(host)
 
     fillRequirementTilesPool(host, combatOverlay, 10)
 
-    local removeDropDownPanel = UiItem:new(host, "RemoveDropDownPanel")
-    combatOverlay:addWidget(removeDropDownPanel)
-
-    local removeMenuDropDownRowLayout = UiRowLayout:new(host, "RemoveMenuDropDownRowLayout")
-    combatOverlay:addWidget(removeMenuDropDownRowLayout)
+    local towerUpgradesPanel = TowerUpgradesPanel:new(host, combatOverlay)
+    combatOverlay:addCompoundWidget(towerUpgradesPanel)
 
     local towerGridPanel = TowerGridPanel:new(host, combatOverlay, {
         buttonRadius = TowerGridPanel.DEFAULT_BUTTON_RADIUS,
-        onRemoveObjectClicked = function() removeDropDownPanel:setIsVisible(true) end
+        mainButtonSize = TileSize,
+        onTowerUpgradesButtonClicked = function() towerUpgradesPanel:setIsVisible(true) end
     })
     combatOverlay:addCompoundWidget(towerGridPanel)
-
-    local smallButtonSize = towerGridPanel.smallButtonSize
-    local panelHeight = towerGridPanel.panelHeight
 
     combatOverlay.onCurrentLevelProgressStageChanged = function()
         local currentProgressRequirementsCount = _GetCurrentProgressRequirementsCount(host)
@@ -240,6 +236,7 @@ function CombatOverlay:new(host)
     end
 
     combatOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
+        print("CombatOverlay: allWidgetLuaProxiesReady fired!")
         levelProgressContainer:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
         levelProgressContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
                                          combatOverlayCanvas.widgetName, 10)
@@ -287,9 +284,9 @@ function CombatOverlay:new(host)
 
         selectedTowerPanel:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
         selectedTowerPanel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-                                    combatOverlayCanvas.widgetName, 30)
+                                     combatOverlayCanvas.widgetName, 30)
         selectedTowerPanel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-                                    combatOverlayCanvas.widgetName, 10)
+                                     combatOverlayCanvas.widgetName, 10)
         selectedTowerPanel:setWidth(TileSize)
         selectedTowerPanel:setHeight(TileSize)
         selectedTowerPanel:setupLayout()
@@ -297,21 +294,7 @@ function CombatOverlay:new(host)
 
         towerGridPanel:setupLayout(combatOverlayCanvas.widgetName)
 
-        removeDropDownPanel:setParent(host, combatOverlayCanvas.widgetName, towerGridPanel.backgroundRect.widgetName)
-        removeDropDownPanel:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                                      UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                                      towerGridPanel.backgroundRect.widgetName)
-        removeDropDownPanel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                                      towerGridPanel.backgroundRect.widgetName)
-        removeDropDownPanel:setWidth(smallButtonSize * 2 + 40)
-        removeDropDownPanel:setHeight(smallButtonSize)
-        removeDropDownPanel:setVerticalCenterOffset(panelHeight)
-        removeDropDownPanel:setIsVisible(false)
-
-        removeMenuDropDownRowLayout:setParent(host, combatOverlayCanvas.widgetName, removeDropDownPanel.widgetName)
-        removeMenuDropDownRowLayout:fill(removeDropDownPanel.widgetName)
-        removeMenuDropDownRowLayout:setSpacing(smallButtonSize * 0.5)
-        removeMenuDropDownRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
+        towerUpgradesPanel:setupLayout(combatOverlayCanvas.widgetName, windowWidth, windowHeight)
     end)
 
     combatOverlay.onGameEventTriggered = function(eventName, jsonArgs)
@@ -340,7 +323,7 @@ function CombatOverlay:new(host)
                             assert(parsedJson["tower_weapon_type"] ~= nil)
                             local weaponType = tonumber(parsedJson["tower_weapon_type"])
                             local numberImages = {
-                                "number-one.png", "number-two.png", "number-three.png", "number-four.png", 
+                                "number-one.png", "number-two.png", "number-three.png", "number-four.png",
                                 "number-five.png", "number-six.png", "number-seven.png"
                             }
                             local imageToSet = "space_station_img.png"

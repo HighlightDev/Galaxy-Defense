@@ -11,6 +11,7 @@
 #include "UiProgressBarReplicatorFactory.h"
 #include "UiRectangleReplicatorFactory.h"
 #include "UiRowLayoutReplicatorFactory.h"
+#include "UiScrollListReplicatorFactory.h"
 #include "UiSliderReplicatorFactory.h"
 #include "UiTextBlockReplicatorFactory.h"
 #include "UiToggleButtonReplicatorFactory.h"
@@ -46,6 +47,8 @@ std::unique_ptr<IReplicatorFactory> CommonUiWidgetFactoryCreator::GetReplicatorF
         return std::make_unique<UiTextBlockReplicatorFactory>();
     case eCommonUiWidgetType::UI_GRID_LAYOUT:
         return std::make_unique<UiGridLayoutReplicatorFactory>();
+    case eCommonUiWidgetType::UI_SCROLL_LIST:
+        return std::make_unique<UiScrollListReplicatorFactory>();
 
     default:
         ext_assert(false, "CommonUiWidgetFactoryCreator::GetReplicatorFactory: Unsupported widget type");

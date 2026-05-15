@@ -168,7 +168,7 @@ function ImageAndLabelTile:setImageColorHexValue(colorHex) self.image:setColorHe
 function ImageAndLabelTile:setUseImageCustomColor(isCustom) self.image:setUseImageCustomColor(isCustom) end
 
 function ImageAndLabelTile:resizeWidgets()
-    local imageSize = self.tileWidth * 0.75
+    local imageSize = self.tileWidth * 0.5
 
     self.backgroundTile:setHeight(self.tileHeight);
     self.backgroundTile:setWidth(self.tileWidth);
@@ -197,7 +197,7 @@ function ImageAndLabelTile:onPreCompoundWidgetInitialize()
 end
 
 function ImageAndLabelTile:onCompoundWidgetInitialize()
-    local imageSize = self.tileWidth * 0.75
+    local imageSize = self.tileWidth * 0.5
 
     self.backgroundTile:setParent(self.host, self.overlayCanvasName, self.parentName)
     self.backgroundTile:setZOrder(3);

@@ -158,7 +158,18 @@ function UiOverlay:update(host, deltaTimeSec)
 
     if self.allWidgetLuaProxiesReady ~= true then
         local allProxiesReady = true
-        for _, value in pairs(self.widgets) do if value.luaProxyReady ~= true then allProxiesReady = false end end
+        local firstNotReady = nil
+        for _, value in pairs(self.widgets) do
+            if value.luaProxyReady ~= true then
+                allProxiesReady = false
+                if firstNotReady == nil then firstNotReady = value end
+            end
+        end
+        if firstNotReady and not self.debugPrinted then
+            print("UiOverlay[" .. self.overlayName .. "]: still waiting, first blocking widget: typeName=" ..
+                      tostring(firstNotReady.typeName) .. " luaProxyId=" .. tostring(firstNotReady.luaProxyId))
+            self.debugPrinted = true
+        end
         if allProxiesReady and self.overlayCanvas.luaProxyReady then
             self.allWidgetLuaProxiesReady = true
             for index, value in pairs(self.compoundWidgets) do value:onPreCompoundWidgetInitialize() end

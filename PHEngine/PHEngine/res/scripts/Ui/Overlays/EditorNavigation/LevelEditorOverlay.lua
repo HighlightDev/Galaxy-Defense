@@ -107,9 +107,9 @@ function LevelEditorOverlay:new(host)
         self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
                                         EditorContainerState.Hided or EditorContainerState.Expanded
 
-        changeContainerStateButton:setImageRotationDegrees(math.fmod(
-                                                               changeContainerStateButton:getImageRotationDegrees() +
-                                                                   180.0, 360.0))
+        changeContainerStateButton:setRotationDegrees(math.fmod(
+                                                          changeContainerStateButton:getImageRotationDegrees() + 180.0,
+                                                          360.0))
         local buttonsVisible = self.editorContainerState == EditorContainerState.Expanded
         editStationSocketsButton:setIsVisible(buttonsVisible)
         editBarriersButton:setIsVisible(buttonsVisible)

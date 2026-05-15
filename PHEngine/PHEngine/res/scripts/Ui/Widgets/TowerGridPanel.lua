@@ -43,14 +43,14 @@ TowerGridPanel = {DEFAULT_BUTTON_RADIUS = 6}
 function TowerGridPanel:new(host, overlay, config)
     config = config or {}
     local buttonRadius = config.buttonRadius or TowerGridPanel.DEFAULT_BUTTON_RADIUS
-    local onRemoveObjectClicked = config.onRemoveObjectClicked
+    local onTowerUpgradesButtonClicked = config.onTowerUpgradesButtonClicked
 
     local windowHeight = _GetWindowHeight(host)
 
-    local panelHeight = windowHeight * 0.15
-    local mainButtonSize = panelHeight * 0.8
+    local mainButtonSize = config.mainButtonSize or math.floor(windowHeight * 0.15 * 0.8)
+    local panelHeight = math.floor(mainButtonSize * 1.25)
     local smallButtonSize = windowHeight * 0.07
-    local panelWidth = (mainButtonSize) + 50
+    local panelWidth = mainButtonSize * 2 + 95
     local gridHeader = smallButtonSize * 0.5
     local gridWidth = smallButtonSize * 3 + (smallButtonSize * 0.5) * 3
     local gridHeight = smallButtonSize * 3 + (smallButtonSize * 0.5) * 3 + gridHeader
@@ -69,6 +69,7 @@ function TowerGridPanel:new(host, overlay, config)
         backgroundRect = nil,
         rowLayout = nil,
         createObjectButton = nil,
+        towerUpgradesButton = nil,
         removeObjectButton = nil,
         barrierManagementButton = nil,
         gridBackground = nil,
@@ -93,6 +94,9 @@ function TowerGridPanel:new(host, overlay, config)
 
     obj.createObjectButton = ImageButton:new(host, overlay, "CreateObjectButton")
     overlay:addCompoundWidget(obj.createObjectButton)
+
+    obj.towerUpgradesButton = ImageButton:new(host, overlay, "TowerUpgradesButton")
+    overlay:addCompoundWidget(obj.towerUpgradesButton)
 
     obj.gridBackground = UiRectangle:new(host, "GridBackground")
     overlay:addWidget(obj.gridBackground)
@@ -161,6 +165,20 @@ function TowerGridPanel:new(host, overlay, config)
         end
     end)
 
+    obj.towerUpgradesButton:subscribeOnMouseInputClickedCallback(function()
+        obj.hideCreatePanel()
+        EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
+        if onTowerUpgradesButtonClicked then onTowerUpgradesButtonClicked() end
+    end)
+
+    obj.towerUpgradesButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            obj.towerUpgradesButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+        else
+            obj.towerUpgradesButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+        end
+    end)
+
     obj.closeTowerCreatePanelButton:subscribeOnMouseInputClickedCallback(function()
         obj.isPlacementMode = false
         obj.hideCreatePanel()
@@ -180,7 +198,6 @@ function TowerGridPanel:new(host, overlay, config)
     obj.removeObjectButton:subscribeOnMouseInputClickedCallback(function()
         obj.isPlacementMode = true
         obj.hideCreatePanel()
-        if onRemoveObjectClicked then onRemoveObjectClicked() end
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                                   json.encode(
                                                       {action = "remove_tower_marker_visibility", visible = true}))
@@ -286,7 +303,14 @@ function TowerGridPanel:setupLayout(canvasName)
     self.createObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
     self.createObjectButton:setButtonBorderRadius(buttonRadius)
     self.createObjectButton:setImageTextureSource("hammer.png")
-    self.createObjectButton:setImageRotationDegrees(180)
+    self.createObjectButton:setRotationDegrees(180)
+
+    self.towerUpgradesButton:setParent(host, canvasName, self.rowLayout.widgetName)
+    self.towerUpgradesButton:setWidth(mainButtonSize)
+    self.towerUpgradesButton:setHeight(mainButtonSize)
+    self.towerUpgradesButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+    self.towerUpgradesButton:setButtonBorderRadius(buttonRadius)
+    self.towerUpgradesButton:setImageTextureSource("blueprint.png")
 
     self.gridBackground:setParent(host, canvasName, canvasName)
     self.gridBackground:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.TOP,
@@ -329,15 +353,13 @@ function TowerGridPanel:setupLayout(canvasName)
                                  UiGridLayout.UiGridVerticalAlignmentType.CENTER)
 
     local numberImages = {
-        "number-one.png", "number-two.png", "number-three.png", "number-four.png", 
-        "number-five.png", "number-six.png", "number-seven.png"
+        "number-one.png", "number-two.png", "number-three.png", "number-four.png", "number-five.png", "number-six.png",
+        "number-seven.png"
     }
 
     for i = 1, #self.createTowerButtons do
         local imageSource = "space_station_img.png"
-        if i <= #numberImages then
-            imageSource = numberImages[i]
-        end
+        if i <= #numberImages then imageSource = numberImages[i] end
 
         self.createTowerButtons[i]:setParent(host, canvasName, self.gridLayout.widgetName)
         self.createTowerButtons[i]:setWidth(smallButtonSize)
@@ -345,7 +367,7 @@ function TowerGridPanel:setupLayout(canvasName)
         self.createTowerButtons[i]:setButtonColorHexValue(Styles.Colors.buttonColor)
         self.createTowerButtons[i]:setButtonBorderRadius(buttonRadius)
         self.createTowerButtons[i]:setImageTextureSource(imageSource)
-        self.createTowerButtons[i]:setImageRotationDegrees(180)
+        self.createTowerButtons[i]:setRotationDegrees(180)
         self.createTowerButtons[i]:setImageFlipped(true)
         self.createTowerButtons[i]:setZOrder(3)
     end
@@ -363,7 +385,7 @@ function TowerGridPanel:setupLayout(canvasName)
     self.removeObjectButton:setButtonColorHexValue(Styles.Colors.buttonColor)
     self.removeObjectButton:setButtonBorderRadius(buttonRadius)
     self.removeObjectButton:setImageTextureSource("trash.png")
-    self.removeObjectButton:setImageRotationDegrees(180)
+    self.removeObjectButton:setRotationDegrees(180)
 
     self.closeTowerCreatePanelButton:setParent(host, canvasName, self.gridBackgroundHeader.widgetName)
     self.closeTowerCreatePanelButton:setWidth(smallButtonSize * 0.4)

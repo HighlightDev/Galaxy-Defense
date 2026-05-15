@@ -87,6 +87,7 @@ function CreateLevel(host)
         ,number-seven.png
         ,number-eight.png
         ,number-nine.png
+        ,blueprint.png
 		]])
 
     _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")

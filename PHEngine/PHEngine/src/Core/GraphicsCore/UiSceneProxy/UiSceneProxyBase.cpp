@@ -20,6 +20,8 @@ UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
     , mScale(1.0f)
     , mCenterOffset(0.0f)
     , mName(uiItemBase->GetName())
+    , mIsGuiScissorsSlave(uiItemBase->IsGuiScissorsSlave())
+    , mIsGuiScissorsMaster(uiItemBase->IsGuiScissorsMaster())
 {
 }
 
@@ -119,6 +121,26 @@ glm::vec2 UiSceneProxyBase::GetNormalizedWidthHeight() const
     return glm::vec2(
         static_cast<float>(mWidthHeightPixels.x) / static_cast<float>(screenResolution.x),
         static_cast<float>(mWidthHeightPixels.y) / static_cast<float>(screenResolution.y));
+}
+
+void UiSceneProxyBase::SetIsGuiScissorsSlave(const bool isScissorsSlave)
+{
+    mIsGuiScissorsSlave = isScissorsSlave;
+}
+
+bool UiSceneProxyBase::IsGuiScissorsSlave() const
+{
+    return mIsGuiScissorsSlave;
+}
+
+void UiSceneProxyBase::SetIsGuiScissorsMaster(const bool isScissorsMaster)
+{
+    mIsGuiScissorsMaster = isScissorsMaster;
+}
+
+bool UiSceneProxyBase::IsGuiScissorsMaster() const
+{
+    return mIsGuiScissorsMaster;
 }
 
 } // namespace Proxy
