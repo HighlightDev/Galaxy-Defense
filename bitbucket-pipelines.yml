@@ -1,0 +1,19 @@
+image: gcc:13
+
+
+pipelines:
+  branches:
+    master:
+    - parallel:
+        - step:
+            name: Lint
+            script:
+              # apt update && apt -y install cppcheck && cppcheck .
+              - make lint
+        - step:
+            name: Build and Run
+            script:
+              - apt update
+              - apt install -y cmake
+              - cmake --version
+              - mkdir build && cd build && cmake ../PHEngine/ && make -j$(nproc)
