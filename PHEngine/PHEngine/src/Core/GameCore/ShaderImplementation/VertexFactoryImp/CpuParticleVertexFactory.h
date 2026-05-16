@@ -21,7 +21,7 @@ public:
     explicit CpuParticleVertexFactory()
         : VertexFactoryShader("CpuParticleVertexFactory")
     {
-        InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "CpuParticleVertexFactory.glsl");
+        InitShader(FolderManager::GetInstance()->GetAbsolutePath("CpuParticleVertexFactory.glsl"));
     }
 
     void AccessAllUniformLocations(uint32_t shaderProgramID) override

@@ -4,7 +4,6 @@
 #include "Core/GraphicsCore/OpenGL/BufferObjectBase.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
-#include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 
 #include <memory>
@@ -37,8 +36,6 @@ VertexArrayObject* ScreenQuad::GetBuffer() const
 
 void ScreenQuad::Init()
 {
-    const auto folderManager = IO::FolderManager::GetInstance();
-
     /*Screen fill quad*/
     std::vector<float> vertices
         = {-1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, -1.0f, -1.0f, 0.0f};

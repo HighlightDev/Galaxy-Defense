@@ -77,16 +77,17 @@ function CreateLevel(host)
         ,сrystal_1.obj
         ,diamond.png
         ,shining_mask.png
-        ,number-zero.png
-        ,number-one.png
-        ,number-two.png
-        ,number-three.png
-        ,number-four.png
-        ,number-five.png
-        ,number-six.png
-        ,number-seven.png
-        ,number-eight.png
-        ,number-nine.png
+        ,cryo_cannon.png
+        ,electric_beam.png
+        ,force_barrier.png
+        ,gravity_bomb.png
+        ,he_rocket.png
+        ,ice_beam.png
+        ,ice_rocket.png
+        ,nano_beam.png
+        ,plasma_rocket.png
+        ,quantum_nexus.png
+        ,repair_beam.png
         ,blueprint.png
 		]])
 

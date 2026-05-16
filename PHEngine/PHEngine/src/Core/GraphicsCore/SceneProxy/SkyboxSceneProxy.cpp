@@ -24,16 +24,16 @@ void SkyboxSceneProxy::PostConstructorInitialize()
     ShaderParams shaderParams = ShaderParams("SkyboxForwardShader");
 
     shaderParams.SetMainShaders(
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
+        FolderManager::GetInstance()->GetAbsolutePath("simpleVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePath("forwardNoLitFS.glsl"));
 
     m_shader = CreateMaterialShader<SkyboxVertexFactory, SimpleShader>(
         "SkyboxVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
 
     ShaderParams planarReflectionParams("PlanarReflectionShader");
     planarReflectionParams.SetMainShaders(
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "planarReflectionVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
+        FolderManager::GetInstance()->GetAbsolutePath("planarReflectionVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePath("forwardNoLitFS.glsl"));
 
     m_planarReflectionShader = CreateMaterialShader<SkyboxVertexFactory, CapturePlanarReflectionShader>(
         "SkyboxVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName,

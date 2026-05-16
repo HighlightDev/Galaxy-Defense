@@ -36,9 +36,9 @@ void BillboardSceneProxy::PostConstructorInitialize()
 
     ShaderParams shaderParams("Billboard Shader");
     shaderParams.SetMainShaders(
-        FolderManager::GetInstance()->GetShadersPath() + "billboardVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "billboardFS.glsl");
-    shaderParams.SetGeometryShader(FolderManager::GetInstance()->GetShadersPath() + "billboardGS.glsl");
+        FolderManager::GetInstance()->GetAbsolutePath("billboardVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePath("billboardFS.glsl"));
+    shaderParams.SetGeometryShader(FolderManager::GetInstance()->GetAbsolutePath("billboardGS.glsl"));
 
     m_shader = CreateMaterialShader<StaticMeshVertexFactory, BillboardShader>(
         "StaticMeshVertexFactory_BillboardShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);

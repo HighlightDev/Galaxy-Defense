@@ -31,16 +31,16 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
     const auto fragmentShaderName = m_renderData.mIsDeferredShaded ? "deferredFS.glsl" : "forwardNoLitFS.glsl";
     ShaderParams shaderParams(shaderIdName);
     shaderParams.SetMainShaders(
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
+        FolderManager::GetInstance()->GetAbsolutePath("simpleVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePath(fragmentShaderName));
 
     m_shader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
         "StaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
 
     ShaderParams planarReflectionParams("PlanarReflectionShader");
     planarReflectionParams.SetMainShaders(
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "planarReflectionVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardNoLitFS.glsl");
+        FolderManager::GetInstance()->GetAbsolutePath("planarReflectionVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePath("forwardNoLitFS.glsl"));
 
     m_planarReflectionShader = CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(
         "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName,
@@ -59,8 +59,8 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
                 mOutlineMaterialProxy = outlineMatProxySp;
                 ShaderParams outlineShaderParams("OutlineShader");
                 outlineShaderParams.SetMainShaders(
-                    FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
-                    FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + fragmentShaderName);
+                    FolderManager::GetInstance()->GetAbsolutePath("simpleVS.glsl"),
+                    FolderManager::GetInstance()->GetAbsolutePath(fragmentShaderName));
                 m_outlineShader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
                     "StaticMeshVertexFactory_OutlineShader_OutlineMaterial", outlineShaderParams, outlineMatProxySp);
             }

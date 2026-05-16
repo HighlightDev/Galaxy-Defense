@@ -12,8 +12,7 @@ IMaterial::IMaterial(const std::string& materialName, const std::string& materia
     : MaterialProxyId(-1)
     , MaterialName(materialName)
     , MaterialShaderName(materialShaderName)
-    , MaterialShaderRelativePath(
-          IO::FolderManager::GetInstance()->GetShadersPath() + "material_shaders" + SLASH + materialShaderName)
+    , MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetAbsolutePath(materialShaderName))
 {
 }
 

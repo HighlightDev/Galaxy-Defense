@@ -113,17 +113,16 @@ void SceneRenderer::Initialize()
 
 void SceneRenderer::InitializeCoreShaders()
 {
-    const auto shadersPathStr = FolderManager::GetInstance()->GetShadersPath();
+    const auto folderManager = FolderManager::GetInstance();
 
     ShaderParams depthCollectShaderParams("DepthCollectShader");
     depthCollectShaderParams.SetMainShaders(
-        shadersPathStr + "composite_shaders" + SLASH + "depthCollectVS.glsl",
-        shadersPathStr + "composite_shaders" + SLASH + "depthCollectFS.glsl");
+        folderManager->GetAbsolutePath("depthCollectVS.glsl"), folderManager->GetAbsolutePath("depthCollectFS.glsl"));
     ShaderParams plDepthCollectShaderParams("PointLightDepthCollectShader");
     plDepthCollectShaderParams.SetMainShaders(
-        shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightVS.glsl",
-        shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightFS.glsl");
-    plDepthCollectShaderParams.SetGeometryShader(shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightGS.glsl");
+        folderManager->GetAbsolutePath("depthCollectPointLightVS.glsl"),
+        folderManager->GetAbsolutePath("depthCollectPointLightFS.glsl"));
+    plDepthCollectShaderParams.SetGeometryShader(folderManager->GetAbsolutePath("depthCollectPointLightGS.glsl"));
 
     const CompositeShaderParams staticMeshParams("StaticMeshVertexFactory", depthCollectShaderParams);
     const CompositeShaderParams skeletalMeshParams("SkeletalMeshVertexFactory<4>", depthCollectShaderParams);
@@ -131,9 +130,11 @@ void SceneRenderer::InitializeCoreShaders()
     const CompositeShaderParams skeletalMeshCompositeParams("SkeletalMeshVertexFactory<4>", plDepthCollectShaderParams);
     ShaderParams deferredLightShaderParams("DeferredLight Shader");
     deferredLightShaderParams.SetMainShaders(
-        shadersPathStr + "deferredLightPassVS.glsl", shadersPathStr + "deferredLightPassFS.glsl");
+        folderManager->GetAbsolutePath("deferredLightPassVS.glsl"),
+        folderManager->GetAbsolutePath("deferredLightPassFS.glsl"));
     ShaderParams fontRenderingShaderParams("FontRendering Shader");
-    fontRenderingShaderParams.SetMainShaders(shadersPathStr + "fontVS.glsl", shadersPathStr + "fontFS.glsl");
+    fontRenderingShaderParams.SetMainShaders(
+        folderManager->GetAbsolutePath("fontVS.glsl"), folderManager->GetAbsolutePath("fontFS.glsl"));
 
     mDepthCollectShaderNonSkeletal
         = std::make_shared<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);

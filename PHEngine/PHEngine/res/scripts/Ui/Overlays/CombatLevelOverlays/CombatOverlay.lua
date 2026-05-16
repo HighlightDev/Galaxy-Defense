@@ -36,10 +36,9 @@ local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local TowerGridPanel = require("Ui/Widgets/TowerGridPanel")
 local SelectedTowerPanel = require("Ui/Widgets/SelectedTowerPanel")
 local TowerUpgradesPanel = require("Ui/Widgets/TowerUpgradesPanel")
+local MissileTypes = require("Ui/Common/missileTypes")
 
 local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}
-
-local WeaponType = {NONE = 0, BOMB = 1, FREEZING_BOMB = 2, ELECTRO_RAY = 3, BLACK_HOLE = 4, FREEZING_RAY = 5}
 
 PlayerStatusType = {
     CRYSTALS_COUNT_CHANGED = 0,
@@ -322,14 +321,7 @@ function CombatOverlay:new(host)
                         if parsedJson["has_selected_tower"] == true then
                             assert(parsedJson["tower_weapon_type"] ~= nil)
                             local weaponType = tonumber(parsedJson["tower_weapon_type"])
-                            local numberImages = {
-                                "number-one.png", "number-two.png", "number-three.png", "number-four.png",
-                                "number-five.png", "number-six.png", "number-seven.png"
-                            }
-                            local imageToSet = "space_station_img.png"
-                            if weaponType > 0 and weaponType <= #numberImages then
-                                imageToSet = numberImages[weaponType]
-                            end
+                            local imageToSet = MissileTypes.IconByValue[weaponType] or "space_station_img.png"
                             selectedTowerPanel:setWeaponImage(imageToSet)
                             selectedTowerPanel:setIsVisible(true)
                         else

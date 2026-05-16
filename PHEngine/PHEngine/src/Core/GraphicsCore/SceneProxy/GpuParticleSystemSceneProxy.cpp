@@ -42,9 +42,9 @@ void GpuParticleSystemSceneProxy::PostConstructorInitialize()
 
     ShaderParams particlesShaderParams("ParticleShader");
     particlesShaderParams.SetMainShaders(
-        FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl");
-    particlesShaderParams.SetGeometryShader(FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl");
+        FolderManager::GetInstance()->GetAbsolutePath("particleVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePath("particleFS.glsl"));
+    particlesShaderParams.SetGeometryShader(FolderManager::GetInstance()->GetAbsolutePath("particleGS.glsl"));
 
     CompositeShaderParams particlesCompositeShaderParams("GpuParticleVertexFactory_SimpleShader", particlesShaderParams);
 
@@ -53,7 +53,7 @@ void GpuParticleSystemSceneProxy::PostConstructorInitialize()
 
     ShaderParams computeShaderParams("GpuParticleComputeShader");
     computeShaderParams.SetComputeShader(
-        FolderManager::GetInstance()->GetShadersPath() + SLASH + "compute" + SLASH + "gpuParticleCS.glsl");
+        FolderManager::GetInstance()->GetAbsolutePath("gpuParticleCS.glsl"));
     for (const auto& moduleProxy : m_gpuParticleModulesProxies) {
         computeShaderParams.AddShaderCodeSnippet(
             moduleProxy->GetModuleTypeHash(), eShaderType::ComputeShader, moduleProxy->GetShaderSnippet());
@@ -315,7 +315,7 @@ void GpuParticleSystemSceneProxy::ResetParticleModulesProxies(
     m_gpuParticleModulesProxies = gpuParticleModulesProxies;
     ShaderParams computeShaderParams("GpuParticleComputeShader");
     computeShaderParams.SetComputeShader(
-        FolderManager::GetInstance()->GetShadersPath() + SLASH + "compute" + SLASH + "gpuParticleCS.glsl");
+        FolderManager::GetInstance()->GetAbsolutePath("gpuParticleCS.glsl"));
     for (const auto& moduleProxy : m_gpuParticleModulesProxies) {
         computeShaderParams.AddShaderCodeSnippet(
             moduleProxy->GetModuleTypeHash(), eShaderType::ComputeShader, moduleProxy->GetShaderSnippet());

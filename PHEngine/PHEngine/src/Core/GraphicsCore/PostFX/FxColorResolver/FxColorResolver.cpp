@@ -24,8 +24,8 @@ void FxColorResolver::Init()
 {
     auto shaderParams = ShaderParams("ResolveFxColorShader");
     shaderParams.SetMainShaders(
-        IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/postFxVS.glsl",
-        IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/resolveFxColorFS.glsl");
+        IO::FolderManager::GetInstance()->GetAbsolutePath("postFxVS.glsl"),
+        IO::FolderManager::GetInstance()->GetAbsolutePath("resolveFxColorFS.glsl"));
     mResolveFxColorShader = ShaderPool::GetInstance()->template GetOrAllocateResource<ResolveFxColorShader>(shaderParams);
 }
 

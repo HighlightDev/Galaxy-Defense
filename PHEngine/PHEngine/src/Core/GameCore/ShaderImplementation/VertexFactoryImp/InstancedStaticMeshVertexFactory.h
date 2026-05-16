@@ -22,8 +22,7 @@ public:
     explicit InstancedStaticMeshVertexFactory()
         : VertexFactoryShader("InstancedStaticMeshVertexFactory")
     {
-        InitShader(
-            FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "InstancedStaticMeshVertexFactory.glsl");
+        InitShader(FolderManager::GetInstance()->GetAbsolutePath("InstancedStaticMeshVertexFactory.glsl"));
     }
 
     void AccessAllUniformLocations(uint32_t shaderProgramID) override

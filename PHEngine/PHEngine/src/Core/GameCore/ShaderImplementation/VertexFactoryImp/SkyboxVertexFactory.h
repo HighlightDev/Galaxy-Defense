@@ -20,7 +20,7 @@ public:
     SkyboxVertexFactory()
         : VertexFactoryShader("SkyboxVertexFactory")
     {
-        InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "SkyboxVertexFactory.glsl");
+        InitShader(FolderManager::GetInstance()->GetAbsolutePath("SkyboxVertexFactory.glsl"));
     }
 
     void AccessAllUniformLocations(uint32_t shaderProgramID) override

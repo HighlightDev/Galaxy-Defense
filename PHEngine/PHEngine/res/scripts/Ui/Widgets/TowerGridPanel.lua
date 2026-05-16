@@ -30,13 +30,9 @@ local ImageButton = require("Ui/Widgets/ImageButton")
 local UiImageButton = require("Ui/Widgets/ImageButton")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local Styles = require("Ui/Common/styles")
+local MissileTypes = require("Ui/Common/missileTypes")
 
-local MissileType = {BOMB = 0, FREEZING_BOMB = 1, ELECTRO_RAY = 2, FREEZING_RAY = 3, BLACK_HOLE = 4}
-
-local function valueToMissileType(value)
-    for k, v in pairs(MissileType) do if v == value then return k end end
-    return nil
-end
+local MissileType = MissileTypes.MissileType
 
 TowerGridPanel = {DEFAULT_BUTTON_RADIUS = 6}
 
@@ -107,11 +103,11 @@ function TowerGridPanel:new(host, overlay, config)
     obj.gridLayout = UiGridLayout:new(host, "CreateMenuDropDownGridLayout")
     overlay:addWidget(obj.gridLayout)
 
-    for i = MissileType.BOMB, MissileType.BLACK_HOLE do
+    for i = MissileType.BOMB, MissileType.FREEZING_RAY do
         local button = ImageButton:new(host, overlay, "CreateTowerButton" .. tostring(i))
         overlay:addCompoundWidget(button)
         obj.createTowerButtons[#obj.createTowerButtons + 1] = button
-        local missileType = valueToMissileType(i)
+        local missileType = MissileTypes.nameByValue(i)
 
         button:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
             if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -352,14 +348,9 @@ function TowerGridPanel:setupLayout(canvasName)
     self.gridLayout:setAlignment(UiGridLayout.UiGridHorizontalAlignmentType.CENTER,
                                  UiGridLayout.UiGridVerticalAlignmentType.CENTER)
 
-    local numberImages = {
-        "number-one.png", "number-two.png", "number-three.png", "number-four.png", "number-five.png", "number-six.png",
-        "number-seven.png"
-    }
-
     for i = 1, #self.createTowerButtons do
-        local imageSource = "space_station_img.png"
-        if i <= #numberImages then imageSource = numberImages[i] end
+        local missileValue = MissileType.BOMB + (i - 1)
+        local imageSource = MissileTypes.IconByValue[missileValue] or "space_station_img.png"
 
         self.createTowerButtons[i]:setParent(host, canvasName, self.gridLayout.widgetName)
         self.createTowerButtons[i]:setWidth(smallButtonSize)

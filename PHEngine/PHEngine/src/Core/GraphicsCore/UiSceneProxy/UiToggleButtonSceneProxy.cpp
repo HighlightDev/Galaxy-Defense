@@ -31,7 +31,7 @@ void UiToggleButtonSceneProxy::OnSceneProxyRegistered()
     const auto& folderManager = FolderManager::GetInstance();
     ShaderParams shaderParams("UiRectangle Shader");
     shaderParams.SetMainShaders(
-        folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiRectangleFS.glsl");
+        folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiRectangleFS.glsl"));
     mUiRectangleShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiRectangleShader>(shaderParams);
 }
 

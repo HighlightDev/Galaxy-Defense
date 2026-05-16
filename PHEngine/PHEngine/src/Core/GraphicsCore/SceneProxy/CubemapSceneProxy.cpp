@@ -44,8 +44,8 @@ void CubemapSceneProxy::PostConstructorInitialize()
 
     auto cubemapShaderParams = ShaderParams("Cubemap Shader");
     cubemapShaderParams.SetMainShaders(
-        FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl",
-        FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl");
+        FolderManager::GetInstance()->GetAbsolutePath("cubemapRendererVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePath("cubemapRendererFS.glsl"));
     m_shaderCubemap = ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapShader>(cubemapShaderParams);
 
     SimplePrimitivePoolParameters poolParams;

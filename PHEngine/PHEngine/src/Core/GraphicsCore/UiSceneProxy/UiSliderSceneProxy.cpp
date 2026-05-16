@@ -41,7 +41,7 @@ void UiSliderSceneProxy::OnSceneProxyRegistered()
     const auto& folderManager = FolderManager::GetInstance();
     ShaderParams shaderParams("UiRectangle Shader");
     shaderParams.SetMainShaders(
-        folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiSliderFS.glsl");
+        folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiSliderFS.glsl"));
     mUiSliderShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiSliderShader>(shaderParams);
 }
 

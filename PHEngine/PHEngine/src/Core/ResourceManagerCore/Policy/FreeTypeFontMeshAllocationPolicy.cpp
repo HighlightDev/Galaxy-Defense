@@ -47,7 +47,7 @@ std::shared_ptr<FreeTypeFontAtlas> FreeTypeFontMeshAllocationPolicy::AllocateMem
         vao.BindBuffersToVao();
     }
 
-    const auto fontFullPathToFile = IO::FolderManager::GetInstance()->GetFontsPath() + arg.FontName + ".ttf";
+    const auto fontFullPathToFile = IO::FolderManager::GetInstance()->GetAbsolutePath(arg.FontName + ".ttf");
     const auto& font = std::make_shared<FreeTypeFont>(fontFullPathToFile);
     return std::make_shared<FreeTypeFontAtlas>(vao, font, arg);
 }
