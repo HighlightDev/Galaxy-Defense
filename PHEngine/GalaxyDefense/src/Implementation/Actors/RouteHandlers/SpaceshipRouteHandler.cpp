@@ -52,7 +52,11 @@ bool SpaceshipRouteHandler::UpdateRoutesAndCheckIfCompleted()
             return false;
         }
 
-        if (eSpaceshipRouteGoal::BARRIER == mCurrentGoal && movementComp->GetIsDistanceCompleted()) {
+        // Reached a barrier waypoint: try to find a fresh route (destination cell may now be
+        // reachable, or a different barrier is closer). Without this, the ship sits forever
+        // at the waypoint until some external barrier add/remove triggers a global rebuild.
+        if (eSpaceshipRouteGoal::BARRIER == mCurrentGoal) {
+            RebuildFromCurrentPosition();
             return false;
         }
     }

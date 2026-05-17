@@ -52,8 +52,7 @@ void GpuParticleSystemSceneProxy::PostConstructorInitialize()
         "GpuParticleVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, particlesShaderParams, mMaterialProxy);
 
     ShaderParams computeShaderParams("GpuParticleComputeShader");
-    computeShaderParams.SetComputeShader(
-        FolderManager::GetInstance()->GetAbsolutePath("gpuParticleCS.glsl"));
+    computeShaderParams.SetComputeShader(FolderManager::GetInstance()->GetAbsolutePath("gpuParticleCS.glsl"));
     for (const auto& moduleProxy : m_gpuParticleModulesProxies) {
         computeShaderParams.AddShaderCodeSnippet(
             moduleProxy->GetModuleTypeHash(), eShaderType::ComputeShader, moduleProxy->GetShaderSnippet());
@@ -314,8 +313,7 @@ void GpuParticleSystemSceneProxy::ResetParticleModulesProxies(
 
     m_gpuParticleModulesProxies = gpuParticleModulesProxies;
     ShaderParams computeShaderParams("GpuParticleComputeShader");
-    computeShaderParams.SetComputeShader(
-        FolderManager::GetInstance()->GetAbsolutePath("gpuParticleCS.glsl"));
+    computeShaderParams.SetComputeShader(FolderManager::GetInstance()->GetAbsolutePath("gpuParticleCS.glsl"));
     for (const auto& moduleProxy : m_gpuParticleModulesProxies) {
         computeShaderParams.AddShaderCodeSnippet(
             moduleProxy->GetModuleTypeHash(), eShaderType::ComputeShader, moduleProxy->GetShaderSnippet());

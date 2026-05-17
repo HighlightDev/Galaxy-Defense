@@ -86,8 +86,7 @@ void UiImageSceneProxy::OnSceneProxyRegistered()
 {
     const auto& folderManager = FolderManager::GetInstance();
     ShaderParams shaderParams("UiImage Shader");
-    shaderParams.SetMainShaders(
-        folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiImageFS.glsl"));
+    shaderParams.SetMainShaders(folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiImageFS.glsl"));
     mUiImageShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiImageShader>(shaderParams);
 }
 } // namespace Proxy

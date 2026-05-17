@@ -122,6 +122,8 @@ private:
 
     void RebuildActiveShipRoutes();
 
+    bool IsRemainingRouteStillWalkable(const std::shared_ptr<SpaceshipActor>& spaceship) const;
+
 #ifdef DEBUG
     void InitializeNavMeshDebugRendering();
 

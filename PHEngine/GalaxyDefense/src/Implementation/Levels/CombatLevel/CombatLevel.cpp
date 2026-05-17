@@ -34,6 +34,7 @@
 #include "Core/IoCore/FileFacade.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Controllers/CombatController.h"
+#include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/Events/ElectroRaySphereContactCollisionEvent.h"
 #include "Implementation/Events/LevelProgressChangedEvent.h"
@@ -281,6 +282,8 @@ void CombatLevel::UnloadLevel()
         mCombatController->CleanUp();
         mCombatController.reset();
     }
+
+    Game::PlayerDataProvider::GetInstance()->ResetLevelData();
 }
 
 void CombatLevel::Tick(const float deltaTimeSec)

@@ -51,5 +51,7 @@ public:
     size_t GetCrystalsCount() const;
 
     void SetCrystalsCount(const size_t crystalsCount);
+
+    void ResetLevelData();
 };
 } // namespace Game

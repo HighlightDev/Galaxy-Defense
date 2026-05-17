@@ -30,6 +30,8 @@ public:
 
     bool IsCellWalkableByWorldPosition(const glm::vec2& worldPosition) const;
 
+    bool IsSegmentWalkable(const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition) const;
+
     std::vector<glm::vec2> BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition) const;
 
     const BoundingBox2D<glm::vec2>& GetLevelBoundingBox() const

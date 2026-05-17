@@ -23,6 +23,7 @@
 #include <glm/vec3.hpp>
 
 #include <array>
+#include <limits>
 
 using namespace Graphics;
 using namespace Resources;
@@ -220,7 +221,10 @@ std::vector<glm::vec3> NavigationController::BuildNavMeshRouteToNearestBarrier(c
                     continue;
                 }
                 const auto route = BuildNavMeshRouteTo(startPosition, candidate);
-                if (!route.empty() && (bestRoute.empty() || route.size() < bestRoute.size())) {
+                // Skip degenerate routes: a single-point route means the ship is already at the
+                // candidate cell. Applying it sets mRouteTotalDistance=0 and the ship gets stuck
+                // with goal=BARRIER and distanceCompleted=false forever.
+                if (route.size() > 1 && (bestRoute.empty() || route.size() < bestRoute.size())) {
                     bestRoute = route;
                 }
                 break;
@@ -266,6 +270,61 @@ void NavigationController::PutSpaceshipOnRoute(const glm::vec3& startPosition, c
 #endif
 }
 
+bool NavigationController::IsRemainingRouteStillWalkable(const std::shared_ptr<SpaceshipActor>& spaceship) const
+{
+    if (!spaceship || !mNavMesh) {
+        return false;
+    }
+    auto* handler = spaceship->GetRouteHandler();
+    if (!handler) {
+        return false;
+    }
+    const auto routePoints = handler->GetCurrentRoutePoints();
+    if (routePoints.empty()) {
+        // Ship has no route at all — let the caller try to build one.
+        return false;
+    }
+    if (routePoints.size() == 1) {
+        // Single-point route means nothing to traverse; nothing to invalidate.
+        return true;
+    }
+
+    const glm::vec3 currentPos = spaceship->GetWorldPosition();
+    const glm::vec2 currentPos2D(currentPos.x, currentPos.z);
+
+    // Find the route point closest to the ship; everything before it is "traveled" and
+    // a barrier landing there is irrelevant. We start checking from this index onward.
+    size_t closestIdx = 0;
+    float minDistSq = std::numeric_limits<float>::max();
+    for (size_t i = 0; i < routePoints.size(); ++i) {
+        const glm::vec2 p(routePoints[i].x, routePoints[i].z);
+        const glm::vec2 diff = p - currentPos2D;
+        const float distSq = diff.x * diff.x + diff.y * diff.y;
+        if (distSq < minDistSq) {
+            minDistSq = distSq;
+            closestIdx = i;
+        }
+    }
+
+    // Check each remaining segment but skip the final segment ending at the destination —
+    // the destination cell itself can be non-walkable (e.g., a barrier ray clips it) and
+    // A* is allowed to terminate there regardless.
+    for (size_t i = closestIdx; i + 1 < routePoints.size(); ++i) {
+        const glm::vec2 segStart(routePoints[i].x, routePoints[i].z);
+        const glm::vec2 segEnd(routePoints[i + 1].x, routePoints[i + 1].z);
+        if (i + 2 == routePoints.size()) {
+            // Final segment: check only the starting half to avoid the destination cell.
+            const glm::vec2 mid = (segStart + segEnd) * 0.5f;
+            if (!mNavMesh->IsSegmentWalkable(segStart, mid)) {
+                return false;
+            }
+        } else if (!mNavMesh->IsSegmentWalkable(segStart, segEnd)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void NavigationController::RebuildActiveShipRoutes()
 {
     for (const auto& spaceship : mEnemies) {
@@ -274,6 +333,11 @@ void NavigationController::RebuildActiveShipRoutes()
         }
         auto* handler = spaceship->GetRouteHandler();
         if (!handler) {
+            continue;
+        }
+        // If the obstacle change does not intersect the ship's remaining route, the
+        // existing path is still valid; rerouting would only thrash already-passed ships.
+        if (IsRemainingRouteStillWalkable(spaceship)) {
             continue;
         }
         handler->RebuildFromCurrentPosition();

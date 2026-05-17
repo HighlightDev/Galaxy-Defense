@@ -130,8 +130,7 @@ void SceneRenderer::InitializeCoreShaders()
     const CompositeShaderParams skeletalMeshCompositeParams("SkeletalMeshVertexFactory<4>", plDepthCollectShaderParams);
     ShaderParams deferredLightShaderParams("DeferredLight Shader");
     deferredLightShaderParams.SetMainShaders(
-        folderManager->GetAbsolutePath("deferredLightPassVS.glsl"),
-        folderManager->GetAbsolutePath("deferredLightPassFS.glsl"));
+        folderManager->GetAbsolutePath("deferredLightPassVS.glsl"), folderManager->GetAbsolutePath("deferredLightPassFS.glsl"));
     ShaderParams fontRenderingShaderParams("FontRendering Shader");
     fontRenderingShaderParams.SetMainShaders(
         folderManager->GetAbsolutePath("fontVS.glsl"), folderManager->GetAbsolutePath("fontFS.glsl"));

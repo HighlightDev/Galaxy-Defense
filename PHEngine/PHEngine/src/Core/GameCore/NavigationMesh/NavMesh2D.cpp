@@ -68,6 +68,27 @@ bool NavMesh2D::IsCellWalkableByWorldPosition(const glm::vec2& worldPosition) co
     return false;
 }
 
+bool NavMesh2D::IsSegmentWalkable(const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition) const
+{
+    const float distance = glm::distance(startWorldPosition, endWorldPosition);
+    if (distance <= 0.0f) {
+        return IsCellWalkableByWorldPosition(startWorldPosition);
+    }
+
+    // Sample at half-cell stride to ensure every cell crossed by the segment is checked.
+    const float stepLength = mCellSize * 0.5f;
+    const int32_t steps = static_cast<int32_t>(std::ceil(distance / stepLength));
+    const glm::vec2 direction = (endWorldPosition - startWorldPosition) / distance;
+    for (int32_t i = 0; i <= steps; ++i) {
+        const float t = std::min(static_cast<float>(i) * stepLength, distance);
+        const glm::vec2 point = startWorldPosition + direction * t;
+        if (!IsCellWalkableByWorldPosition(point)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void NavMesh2D::FillCellStatesBetweenWorldPositions(
     const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition, const glm::vec2& size, const bool isWalkable)
 {
@@ -117,17 +138,16 @@ NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const gl
             levelMin.x + (static_cast<float>(cx) + 0.5f) * mCellSize, levelMin.y + (static_cast<float>(cy) + 0.5f) * mCellSize};
     };
 
-    auto isValid = [&](const int32_t cx, const int32_t cy) -> bool {
-        return cx >= 0 && cx < colsCount && cy >= 0 && cy < rowsCount && mWalkableCells[cellIndex(cx, cy)];
-    };
+    auto inBounds
+        = [&](const int32_t cx, const int32_t cy) -> bool { return cx >= 0 && cx < colsCount && cy >= 0 && cy < rowsCount; };
 
     int32_t startX, startY, endX, endY;
     worldToCell(startWorldPosition, startX, startY);
     worldToCell(endWorldPosition, endX, endY);
 
-    if (!isValid(startX, startY) || !isValid(endX, endY)) {
+    if (!inBounds(startX, startY) || !inBounds(endX, endY)) {
         LogInfo(
-            "NavMesh2D::BuildRouteBetweenPoints: start or end cell is not walkable, startCell: (",
+            "NavMesh2D::BuildRouteBetweenPoints: start or end cell is out of bounds, startCell: (",
             startX,
             ", ",
             startY,
@@ -138,6 +158,19 @@ NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const gl
             ")");
         return {};
     }
+
+    // Start/end cells are allowed to be non-walkable: the start is where the ship already is,
+    // and the end is the goal we want to reach (a barrier ray can clip the destination cell).
+    // They are valid endpoints but cannot be used as pass-through cells.
+    auto isValid = [&](const int32_t cx, const int32_t cy) -> bool {
+        if (!inBounds(cx, cy)) {
+            return false;
+        }
+        if ((cx == startX && cy == startY) || (cx == endX && cy == endY)) {
+            return true;
+        }
+        return mWalkableCells[cellIndex(cx, cy)];
+    };
 
     const int32_t startIdx = cellIndex(startX, startY);
     const int32_t endIdx = cellIndex(endX, endY);

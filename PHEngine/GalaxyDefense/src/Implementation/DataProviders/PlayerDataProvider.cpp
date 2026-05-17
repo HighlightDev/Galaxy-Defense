@@ -128,4 +128,13 @@ size_t PlayerDataProvider::GetCrystalsCount() const
 {
     return mCrystalsCount;
 }
+
+void PlayerDataProvider::ResetLevelData()
+{
+    mAvailableMissiles.clear();
+    mSelectedMissileType = eMissileType::NONE;
+    mDestroyedEnemySpaceshipsCount = 0;
+    mSelectedTowerId = -1;
+    mCrystalsCount = 0;
+}
 } // namespace Game

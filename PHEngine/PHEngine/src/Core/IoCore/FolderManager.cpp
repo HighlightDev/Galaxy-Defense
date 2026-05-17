@@ -30,8 +30,8 @@ void FolderManager::BuildSystemPathToFolders()
 
     const std::string rootPath = GetRootPath();
 
-    for (auto it = std::filesystem::recursive_directory_iterator(rootPath);
-         it != std::filesystem::recursive_directory_iterator(); ++it) {
+    for (auto it = std::filesystem::recursive_directory_iterator(rootPath); it != std::filesystem::recursive_directory_iterator();
+         ++it) {
         const auto& dirEntry = *it;
         const std::string entryName = dirEntry.path().filename().string();
 
@@ -51,8 +51,8 @@ void FolderManager::BuildSystemPathToFolders()
 
         ext_assert(
             mAbsFilesPathMap.count(fileName) == 0,
-            "FolderManager::BuildSystemPathToFolders: duplicate file name in resource tree: " + fileName + " (existing: "
-                + mAbsFilesPathMap[fileName] + ", new: " + absPath + ")");
+            "FolderManager::BuildSystemPathToFolders: duplicate file name in resource tree: " + fileName
+                + " (existing: " + mAbsFilesPathMap[fileName] + ", new: " + absPath + ")");
 
         mAbsFilesPathMap[fileName] = absPath;
         EngineCore::LogInfo("FolderManager::BuildSystemPathToFolders: indexed: ", absPath);
