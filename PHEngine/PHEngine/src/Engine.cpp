@@ -98,6 +98,7 @@ void Engine::Initialize()
             WindowSizeChangedGameThreadEvent,
             BroadcastGameThreadEvent,
             MouseButtonDownRootEvent,
+            MouseScrollRootEvent,
             RestartLevelGameThreadEvent,
             GeneralSystemSettingsChangedGameThreadEvent>();
 

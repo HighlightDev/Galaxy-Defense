@@ -1,5 +1,5 @@
 #include "UniformBuffer.h"
 
-#include <GL/glew.h>
+#include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 

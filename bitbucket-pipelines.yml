@@ -1,19 +1,25 @@
 image: gcc:13
 
-
 pipelines:
   branches:
     master:
-    - parallel:
-        - step:
-            name: Lint
-            script:
-              # apt update && apt -y install cppcheck && cppcheck .
-              - make lint
-        - step:
-            name: Build and Run
-            script:
-              - apt update
-              - apt install -y cmake
-              - cmake --version
-              - mkdir build && cd build && cmake ../PHEngine/ && make -j$(nproc)
+      - parallel:
+          - step:
+              name: Lint
+              script:
+                # apt update && apt -y install cppcheck && cppcheck .
+                - make lint
+          - step:
+              name: Build and Run
+              script:
+                - apt update
+                - apt install -y cmake
+                - apt install -y libgl1-mesa-dev
+                - apt install -y libglu1-mesa-dev
+                - apt install -y freeglut3-dev
+                - apt install -y libopenal-dev
+                - cmake --version
+                - mkdir build
+                - ls -la
+                - cmake -B build -S ./PHEngine/ -DBUILD_GALAXY_DEFENSE=ON -DBUILD_ENGINE_TEST=ON -DENABLE_ASAN=OFF -DENABLE_TSAN=OFF -DENABLE_LIBUNWIND=OFF -DBUILD_UBO_TEST=OFF
+                - cmake --build build -j$(nproc)

@@ -11,6 +11,7 @@
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiScrollListSceneProxy.h"
+#include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/JsonUtilities.h"
 
 #include <json/json.hpp>
@@ -37,8 +38,11 @@ public:
 
     void ProcessEvent(const MouseScrollGameThreadEvent* /*sender*/, const MouseScrollGameThreadEvent::EventData_t& data) override
     {
+        if (eMouseEventTargetReceiverType::UI_INPUT_SYSTEM != std::get<0>(data)) {
+            return;
+        }
         if (const auto& ownerSp = mOwnerWp.lock()) {
-            ownerSp->HandleScroll(std::get<0>(data));
+            ownerSp->HandleScroll(std::get<1>(data));
         }
     }
 };
@@ -116,6 +120,7 @@ void UiScrollList::SetScrollOffset(const int32_t offset)
     if (mScrollOffset != clamped) {
         mScrollOffset = clamped;
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsTransformDirty(true);
     }
 }
@@ -143,6 +148,7 @@ void UiScrollList::SetSpacing(const uint32_t spacing)
     if (mSpacing != spacing) {
         mSpacing = spacing;
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsTransformDirty(true);
     }
 }
@@ -150,6 +156,62 @@ void UiScrollList::SetSpacing(const uint32_t spacing)
 uint32_t UiScrollList::GetSpacing() const
 {
     return mSpacing;
+}
+
+void UiScrollList::SetScrollbarSide(const eScrollbarSide side)
+{
+    if (mScrollbarSide != side) {
+        mScrollbarSide = side;
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+    }
+}
+
+eScrollbarSide UiScrollList::GetScrollbarSide() const
+{
+    return mScrollbarSide;
+}
+
+void UiScrollList::SetScrollbarBackgroundColor(const glm::vec3& color)
+{
+    if (!EngineMath::CheckSimilarityVec3(color, mScrollbarBackgroundColor)) {
+        mScrollbarBackgroundColor = color;
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+    }
+}
+
+glm::vec3 UiScrollList::GetScrollbarBackgroundColor() const
+{
+    return mScrollbarBackgroundColor;
+}
+
+void UiScrollList::SetScrollbarThumbColor(const glm::vec3& color)
+{
+    if (!EngineMath::CheckSimilarityVec3(color, mScrollbarThumbColor)) {
+        mScrollbarThumbColor = color;
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+    }
+}
+
+glm::vec3 UiScrollList::GetScrollbarThumbColor() const
+{
+    return mScrollbarThumbColor;
+}
+
+void UiScrollList::SetScrollbarThicknessPixels(const uint32_t thicknessPixels)
+{
+    if (mScrollbarThicknessPixels != thicknessPixels) {
+        mScrollbarThicknessPixels = thicknessPixels;
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+    }
+}
+
+uint32_t UiScrollList::GetScrollbarThicknessPixels() const
+{
+    return mScrollbarThicknessPixels;
 }
 
 int32_t UiScrollList::GetMaxScrollOffset() const
@@ -264,12 +326,47 @@ void UiScrollList::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             mScrollSpeed = speed;
         }
     }
+    if (jsonObj.contains("scrollbar_side")) {
+        const auto sideInt = nlohmann_utilities::GetIntFromJson(jsonObj, "scrollbar_side");
+        const auto side = static_cast<eScrollbarSide>(sideInt);
+        if (side != mScrollbarSide) {
+            mScrollbarSide = side;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
+    if (jsonObj.contains("scrollbar_background_color")) {
+        const glm::vec3 color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["scrollbar_background_color"]);
+        if (!EngineMath::CheckSimilarityVec3(color, mScrollbarBackgroundColor)) {
+            mScrollbarBackgroundColor = color;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
+    if (jsonObj.contains("scrollbar_thumb_color")) {
+        const glm::vec3 color = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["scrollbar_thumb_color"]);
+        if (!EngineMath::CheckSimilarityVec3(color, mScrollbarThumbColor)) {
+            mScrollbarThumbColor = color;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
+    if (jsonObj.contains("scrollbar_thickness")) {
+        const auto thickness = static_cast<uint32_t>(nlohmann_utilities::GetIntFromJson(jsonObj, "scrollbar_thickness"));
+        if (thickness != mScrollbarThicknessPixels) {
+            mScrollbarThicknessPixels = thickness;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
 }
 
 void UiScrollList::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
     UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
     SyncDataOnLuaThread();
+}
+
+void UiScrollList::OnPropertiesShouldBeUpdatedOnRenderThread()
+{
+    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
+    SyncDataOnRenderThread();
 }
 
 void UiScrollList::PropagateGuiScissorsToChildren()
@@ -294,7 +391,11 @@ void UiScrollList::SyncDataOnLuaThread()
                      luaProxyId = GetLuaProxyId(),
                      spacing = mSpacing,
                      scrollOffset = mScrollOffset,
-                     scrollSpeed = mScrollSpeed](
+                     scrollSpeed = mScrollSpeed,
+                     scrollbarSide = mScrollbarSide,
+                     scrollbarBackgroundColor = mScrollbarBackgroundColor,
+                     scrollbarThumbColor = mScrollbarThumbColor,
+                     scrollbarThickness = mScrollbarThicknessPixels](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -303,10 +404,57 @@ void UiScrollList::SyncDataOnLuaThread()
                             proxy->SetSpacing_FromGameThread(spacing);
                             proxy->SetScrollOffset_FromGameThread(scrollOffset);
                             proxy->SetScrollSpeed_FromGameThread(scrollSpeed);
+                            proxy->SetScrollbarSide_FromGameThread(static_cast<uint8_t>(scrollbarSide));
+                            proxy->SetScrollbarBackgroundColor_FromGameThread(scrollbarBackgroundColor);
+                            proxy->SetScrollbarThumbColor_FromGameThread(scrollbarThumbColor);
+                            proxy->SetScrollbarThicknessPixels_FromGameThread(scrollbarThickness);
                         }
                     });
             }
         }
+    }
+}
+
+void UiScrollList::SyncDataOnRenderThread()
+{
+    static constexpr uint64_t functionId = Hash64_CT("UiScrollList::SyncDataOnRenderThread");
+    if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
+        if (const auto& sceneSp = GetScene().lock()) {
+            if (const auto& canvasSp = GetParentCanvas().lock()) {
+                if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
+                        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                        GetUId(),
+                        functionId,
+                        [sceneRenderer,
+                         myUId = GetUId(),
+                         canvasUId = canvasSp->GetUId(),
+                         scrollOffset = mScrollOffset,
+                         maxScrollOffset = GetMaxScrollOffset(),
+                         scrollbarSide = static_cast<uint8_t>(mScrollbarSide),
+                         scrollbarBackgroundColor = mScrollbarBackgroundColor,
+                         scrollbarThumbColor = mScrollbarThumbColor,
+                         scrollbarThickness = mScrollbarThicknessPixels](
+                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                            std::weak_ptr<EngineCore::Scene> sceneWp,
+                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                            const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
+                            if (uiSceneProxy) {
+                                const auto& scrollListProxy
+                                    = std::static_pointer_cast<Graphics::Proxy::UiScrollListSceneProxy>(uiSceneProxy);
+                                scrollListProxy->SetScrollOffset(scrollOffset);
+                                scrollListProxy->SetMaxScrollOffset(maxScrollOffset);
+                                scrollListProxy->SetScrollbarSide(scrollbarSide);
+                                scrollListProxy->SetScrollbarBackgroundColor(scrollbarBackgroundColor);
+                                scrollListProxy->SetScrollbarThumbColor(scrollbarThumbColor);
+                                scrollListProxy->SetScrollbarThicknessPixels(scrollbarThickness);
+                            }
+                        });
+                }
+            }
+        }
+    } else {
+        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
     }
 }
 

@@ -8,6 +8,7 @@
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/Event/MouseButtonDownEvent.h"
+#include "Core/GameCore/Event/MouseScrollEvent.h"
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
@@ -61,7 +62,8 @@ class Scene : public EngineObject,
               public ITickable,
               public std::enable_shared_from_this<Scene>,
               public WindowSizeChangedGameThreadEvent,
-              public MouseButtonDownRootEvent {
+              public MouseButtonDownRootEvent,
+              public MouseScrollRootEvent {
 private:
     std::shared_ptr<EnginePhysics::PhysicsWorld> mPhysicsWorld;
 
@@ -127,6 +129,8 @@ public:
         const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t& data) override;
 
     void ProcessEvent(const MouseButtonDownRootEvent* sender, const MouseButtonDownRootEvent::EventData_t& data) override;
+
+    void ProcessEvent(const MouseScrollRootEvent* sender, const MouseScrollRootEvent::EventData_t& data) override;
 
     void RegisterCamera(const std::shared_ptr<ACamera>& camera);
 

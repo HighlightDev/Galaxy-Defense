@@ -72,12 +72,14 @@ Scene::~Scene()
 {
     WindowSizeChangedGameThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedGameThreadEvent::GetInstanceId());
     MouseButtonDownRootEvent::GetInstance()->RemoveListener(MouseButtonDownRootEvent::GetInstanceId());
+    MouseScrollRootEvent::GetInstance()->RemoveListener(MouseScrollRootEvent::GetInstanceId());
 }
 
 void Scene::Initialize()
 {
     WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
     MouseButtonDownRootEvent::GetInstance()->AddListener(shared_from_this());
+    MouseScrollRootEvent::GetInstance()->AddListener(shared_from_this());
 }
 
 void Scene::OnLevelInit()
@@ -505,6 +507,23 @@ void Scene::ProcessEvent(const MouseButtonDownRootEvent* sender, const MouseButt
         MouseButtonDownGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, receiverType, mousePressedKeys);
         MouseButtonDownLuaThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mousePressedKeys);
     }
+}
+
+void Scene::ProcessEvent(const MouseScrollRootEvent* sender, const MouseScrollRootEvent::EventData_t& data)
+{
+    const auto& currentMousePosition = std::get<0>(data);
+    const auto invertedScreenYPosition = static_cast<int32_t>(mScreenResolutionProperty->GetValue().y) - currentMousePosition.y;
+    const auto scrollDirection = std::get<1>(data);
+    const auto scrollOffset = std::get<2>(data);
+
+    const eMouseEventTargetReceiverType receiverType
+        = mUiHandler->CheckIfUiInterceptsMouseEvent(glm::ivec2(currentMousePosition.x, invertedScreenYPosition))
+        ? eMouseEventTargetReceiverType::UI_INPUT_SYSTEM
+        : eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS;
+
+    MouseScrollGameThreadEvent::GetInstance()->SendEvent(
+        eExecutionOrder::PRE_EXECUTION, receiverType, scrollDirection, scrollOffset);
+    MouseScrollLuaThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, scrollDirection, scrollOffset);
 }
 
 void Scene::RemoveComponent(std::shared_ptr<Component> component)

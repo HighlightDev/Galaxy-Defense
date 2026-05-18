@@ -49,7 +49,10 @@ void MouseBindings::ProcessEvent(
 void MouseBindings::ProcessEvent(
     const MouseScrollGameThreadEvent* sender, const typename MouseScrollGameThreadEvent::EventData_t& mouseData)
 {
-    const eMouseScrollDirection mouseScrollDirection = std::get<0>(mouseData);
+    if (eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS != std::get<0>(mouseData)) {
+        return;
+    }
+    const eMouseScrollDirection mouseScrollDirection = std::get<1>(mouseData);
     PushMouseScrollEvent(mouseScrollDirection);
 }
 

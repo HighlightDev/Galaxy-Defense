@@ -3,6 +3,9 @@
 #include "Core/GameCore/Input/MouseEventEnums.h"
 #include "UiItem.h"
 
+#include <glm/vec3.hpp>
+
+#include <cstdint>
 #include <memory>
 
 namespace EngineCore {
@@ -22,6 +25,8 @@ namespace GUI {
 
 class UiScrollListScrollHelper;
 
+enum class eScrollbarSide : uint8_t { NONE = 0, LEFT = 1, RIGHT = 2 };
+
 class UiScrollList : public UiItem {
     friend class UiScrollListScrollHelper;
 
@@ -32,6 +37,14 @@ class UiScrollList : public UiItem {
     uint32_t mSpacing{0};
 
     bool mIsHovered{false};
+
+    eScrollbarSide mScrollbarSide{eScrollbarSide::NONE};
+
+    glm::vec3 mScrollbarBackgroundColor{0.2f, 0.2f, 0.2f};
+
+    glm::vec3 mScrollbarThumbColor{0.6f, 0.6f, 0.6f};
+
+    uint32_t mScrollbarThicknessPixels{8};
 
     std::shared_ptr<UiScrollListScrollHelper> mScrollHelper;
 
@@ -50,6 +63,8 @@ public:
 
     int32_t GetScrollOffset() const;
 
+    int32_t GetMaxScrollOffset() const;
+
     void SetScrollSpeed(const int32_t speed);
 
     int32_t GetScrollSpeed() const;
@@ -57,6 +72,22 @@ public:
     void SetSpacing(const uint32_t spacing);
 
     uint32_t GetSpacing() const;
+
+    void SetScrollbarSide(const eScrollbarSide side);
+
+    eScrollbarSide GetScrollbarSide() const;
+
+    void SetScrollbarBackgroundColor(const glm::vec3& color);
+
+    glm::vec3 GetScrollbarBackgroundColor() const;
+
+    void SetScrollbarThumbColor(const glm::vec3& color);
+
+    glm::vec3 GetScrollbarThumbColor() const;
+
+    void SetScrollbarThicknessPixels(const uint32_t thicknessPixels);
+
+    uint32_t GetScrollbarThicknessPixels() const;
 
     void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
@@ -73,16 +104,18 @@ protected:
 
     void OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
+    void OnPropertiesShouldBeUpdatedOnRenderThread() override;
+
 private:
     void HandleScroll(const EngineCore::eMouseScrollDirection direction);
-
-    int32_t GetMaxScrollOffset() const;
 
     void RecalculatePositionsForChildren();
 
     void PropagateGuiScissorsToChildren();
 
     void SyncDataOnLuaThread();
+
+    void SyncDataOnRenderThread();
 };
 
 } // namespace GUI

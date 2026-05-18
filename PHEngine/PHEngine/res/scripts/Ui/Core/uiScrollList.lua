@@ -28,6 +28,8 @@ local json = require("Ui/Core/3rdparty/json")
 
 UiScrollList = UiItemBase:new()
 
+UiScrollList.ScrollbarSide = {NONE = 0, LEFT = 1, RIGHT = 2}
+
 function UiScrollList:new(host, name)
     assert(host ~= nil)
 
@@ -44,7 +46,11 @@ function UiScrollList:new(host, name)
     local scrollListProperties = {
         spacing = {value = 0, dirty = false},
         scroll_offset = {value = 0, dirty = false},
-        scroll_speed = {value = 30, dirty = false}
+        scroll_speed = {value = 30, dirty = false},
+        scrollbar_side = {value = UiScrollList.ScrollbarSide.NONE, dirty = false},
+        scrollbar_background_color = {value = {r = 0.2, g = 0.2, b = 0.2}, dirty = false},
+        scrollbar_thumb_color = {value = {r = 0.6, g = 0.6, b = 0.6}, dirty = false},
+        scrollbar_thickness = {value = 8, dirty = false}
     }
 
     local uiScrollListObj = UiScrollList.uiItemBaseClass.new(self)
@@ -72,6 +78,24 @@ function UiScrollList:updateFromReplicatorData(host)
             end
             if parsedJson["scroll_speed"] ~= nil then
                 self.scrollListProperties.scroll_speed.value = tonumber(parsedJson["scroll_speed"])
+            end
+            if parsedJson["scrollbar_side"] ~= nil then
+                self.scrollListProperties.scrollbar_side.value = tonumber(parsedJson["scrollbar_side"])
+            end
+            if parsedJson["scrollbar_background_color"] ~= nil then
+                local c = parsedJson["scrollbar_background_color"]
+                self.scrollListProperties.scrollbar_background_color.value.r = c[1]
+                self.scrollListProperties.scrollbar_background_color.value.g = c[2]
+                self.scrollListProperties.scrollbar_background_color.value.b = c[3]
+            end
+            if parsedJson["scrollbar_thumb_color"] ~= nil then
+                local c = parsedJson["scrollbar_thumb_color"]
+                self.scrollListProperties.scrollbar_thumb_color.value.r = c[1]
+                self.scrollListProperties.scrollbar_thumb_color.value.g = c[2]
+                self.scrollListProperties.scrollbar_thumb_color.value.b = c[3]
+            end
+            if parsedJson["scrollbar_thickness"] ~= nil then
+                self.scrollListProperties.scrollbar_thickness.value = tonumber(parsedJson["scrollbar_thickness"])
             end
         end
     end
@@ -120,5 +144,58 @@ function UiScrollList:setScrollSpeed(speed)
 end
 
 function UiScrollList:getScrollOffset() return self.scrollListProperties.scroll_offset.value end
+
+function UiScrollList:setScrollbarSide(side)
+    assert(side == UiScrollList.ScrollbarSide.NONE or side == UiScrollList.ScrollbarSide.LEFT
+               or side == UiScrollList.ScrollbarSide.RIGHT)
+    if self.scrollListProperties.scrollbar_side.value ~= side then
+        self.scrollListProperties.scrollbar_side.value = side
+        self.scrollListProperties.scrollbar_side.dirty = true
+    end
+end
+
+function UiScrollList:setScrollbarBackgroundColor(r, g, b)
+    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number"
+               and r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    self.scrollListProperties.scrollbar_background_color.value.r = r
+    self.scrollListProperties.scrollbar_background_color.value.g = g
+    self.scrollListProperties.scrollbar_background_color.value.b = b
+    self.scrollListProperties.scrollbar_background_color.dirty = true
+end
+
+function UiScrollList:setScrollbarBackgroundColorHexValue(colorHex)
+    assert(colorHex ~= nil and type(colorHex) == "number")
+    local INV = 1.0 / 255.0
+    local r = ((0xFF << 0x10) & colorHex) >> 0x10
+    local g = ((0xFF << 0x8) & colorHex) >> 0x8
+    local b = 0xFF & colorHex
+    self:setScrollbarBackgroundColor(r * INV, g * INV, b * INV)
+end
+
+function UiScrollList:setScrollbarThumbColor(r, g, b)
+    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number"
+               and r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    self.scrollListProperties.scrollbar_thumb_color.value.r = r
+    self.scrollListProperties.scrollbar_thumb_color.value.g = g
+    self.scrollListProperties.scrollbar_thumb_color.value.b = b
+    self.scrollListProperties.scrollbar_thumb_color.dirty = true
+end
+
+function UiScrollList:setScrollbarThumbColorHexValue(colorHex)
+    assert(colorHex ~= nil and type(colorHex) == "number")
+    local INV = 1.0 / 255.0
+    local r = ((0xFF << 0x10) & colorHex) >> 0x10
+    local g = ((0xFF << 0x8) & colorHex) >> 0x8
+    local b = 0xFF & colorHex
+    self:setScrollbarThumbColor(r * INV, g * INV, b * INV)
+end
+
+function UiScrollList:setScrollbarThicknessPixels(thicknessPixels)
+    assert(thicknessPixels ~= nil and type(thicknessPixels) == "number" and thicknessPixels >= 0)
+    if self.scrollListProperties.scrollbar_thickness.value ~= thicknessPixels then
+        self.scrollListProperties.scrollbar_thickness.value = thicknessPixels
+        self.scrollListProperties.scrollbar_thickness.dirty = true
+    end
+end
 
 return UiScrollList

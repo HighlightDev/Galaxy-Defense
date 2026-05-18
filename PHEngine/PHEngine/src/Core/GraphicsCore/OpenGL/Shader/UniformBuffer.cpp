@@ -3,7 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/OpenGL/UniformBuffer/UniformBufferControlBlock.h"
 
-#include <GL/glew.h>
+#include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Graphics::OpenGL {
