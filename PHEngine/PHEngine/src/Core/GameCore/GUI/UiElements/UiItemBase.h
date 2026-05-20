@@ -101,6 +101,8 @@ protected:
 
     bool mIsGuiScissorsMaster;
 
+    bool mCanBloomBeApplied;
+
 #ifdef DEBUG
     bool mIsHiddenForDebugging;
 #endif
@@ -136,6 +138,18 @@ public:
 
     virtual std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const = 0;
 
+    virtual bool IsGuiScissorsSlave() const;
+
+    virtual bool IsGuiScissorsMaster() const;
+
+    virtual void SetIsGuiScissorsSlave(const bool value);
+
+    virtual void SetIsGuiScissorsMaster(const bool isScissorsMaster);
+
+    virtual bool CanBloomBeApplied() const;
+
+    virtual void SetCanBloomBeApplied(const bool canBloomBeApplied);
+
     void SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable>& inputReceiver);
 
     const std::weak_ptr<UiCanvas>& GetParentCanvas() const;
@@ -170,8 +184,6 @@ public:
     std::weak_ptr<IUiTransformable> GetRootParent() const override;
     std::weak_ptr<IUiTransformable> GetParent() const override;
     bool IsVisible() const override;
-    bool IsGuiScissorsSlave() const override;
-    bool IsGuiScissorsMaster() const override;
     bool GetIfCanInterceptMouseInputEvents() const override;
     std::string GetName() const override;
     size_t GetUId() const override;
@@ -188,8 +200,6 @@ public:
     void SetWidth(const size_t width) override;
     void SetHeight(const size_t height) override;
     void SetIsVisible(const bool isVisible) override;
-    void SetIsGuiScissorsSlave(const bool value) override;
-    void SetIsGuiScissorsMaster(const bool isScissorsMaster) override;
 #ifdef DEBUG
     void SetIsHiddenForDebugging(const bool isHiddenForDebugging) override;
 #endif

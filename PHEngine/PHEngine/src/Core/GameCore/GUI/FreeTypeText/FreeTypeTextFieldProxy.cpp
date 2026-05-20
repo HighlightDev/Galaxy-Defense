@@ -25,7 +25,6 @@ FreeTypeTextFieldProxy::FreeTypeTextFieldProxy()
 
 std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldProxyInstance(
     const int32_t uniqueTextId,
-    const eTextFieldProxyType textFieldType,
     const bool isVisible,
     const std::string& text,
     const std::string& fontFileName,
@@ -38,7 +37,6 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
     const glm::ivec2& lineWidthHeight)
 {
     std::shared_ptr<FreeTypeTextFieldProxy> result = std::make_shared<FreeTypeTextFieldProxy>();
-    result->mTextFieldProxyType = textFieldType;
     result->mTextFieldId = uniqueTextId;
     result->mIsVisible = isVisible;
     result->mText = text;
@@ -55,11 +53,6 @@ std::shared_ptr<FreeTypeTextFieldProxy> FreeTypeTextFieldProxy::CreateTextFieldP
 int32_t FreeTypeTextFieldProxy::GetTextFieldId() const
 {
     return mTextFieldId;
-}
-
-eTextFieldProxyType FreeTypeTextFieldProxy::GetTextFieldProxyType() const
-{
-    return mTextFieldProxyType;
 }
 
 size_t FreeTypeTextFieldProxy::GetPositionChunkOffset() const

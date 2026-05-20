@@ -80,9 +80,8 @@ void UiScrollListSceneProxy::Render()
         const float bgWidthNorm = thicknessNorm;
 
         // Background X position: pin to left or right edge of the widget.
-        const float bgX = mScrollbarSide == c_scrollbarSideLeft
-            ? mNormalizedTranslation.x
-            : mNormalizedTranslation.x + mNormalizedScale.x - bgWidthNorm;
+        const float bgX = mScrollbarSide == c_scrollbarSideLeft ? mNormalizedTranslation.x
+                                                                : mNormalizedTranslation.x + mNormalizedScale.x - bgWidthNorm;
         const float bgY = mNormalizedTranslation.y;
 
         // Background.

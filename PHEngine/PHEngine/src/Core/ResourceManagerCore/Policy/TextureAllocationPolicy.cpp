@@ -18,7 +18,7 @@ std::shared_ptr<ITexture> TextureAllocationPolicy::AllocateMemory(const std::str
     case 6:
         return LoadTextureCubeFromFile(pathToTextures, "cubemap_" + arg);
     default:
-        ext_assert(false, "Undefined count of files.");
+        ext_assert(false, "Undefined count of files: " + std::to_string(pathToTextures.size()) + " for texture: " + arg);
     }
     return nullptr;
 }

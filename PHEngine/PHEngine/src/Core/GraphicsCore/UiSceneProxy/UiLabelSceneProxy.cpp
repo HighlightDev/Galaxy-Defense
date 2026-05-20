@@ -2,7 +2,6 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/StringHash.h"
-#include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/Common/UniqueFontTextIdGenerator.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontAtlas.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontHandler.h"
@@ -60,7 +59,6 @@ void UiLabelSceneProxy::Initialize()
             mUiLabelShader = ShaderPool::GetInstance()->template GetOrAllocateResource<FontRenderingShader>(shaderParams);
             mTextFieldProxy = FreeTypeTextFieldProxy::CreateTextFieldProxyInstance(
                 UniqueFontTextIdGenerator::GenerateUniqueFontTextId(),
-                eTextFieldProxyType::GUI_TEXT_FIELD,
                 false,
                 mText,
                 mFontName,

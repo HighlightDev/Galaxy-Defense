@@ -3,10 +3,13 @@
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetFactoryCreator.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Engine.h"
+#include "src/Implementation/GUI/GameUiWidgetType.h"
+#include "src/Implementation/GUI/UiUpgradeIconReplicatorFactory.h"
 #include "src/Implementation/Levels/GameLevelFactory.h"
 
 #include <TinyLogger/LogInterface.h>
@@ -223,6 +226,11 @@ int32_t main(int32_t argc, char** argv)
         engine->Initialize();
         engineInputManager = engine->GetInputManager();
         engine->SetLevelFactory(std::make_shared<GameLevelFactory>());
+
+        EngineCore::Scripts::CommonUiWidgetFactoryCreator::GetInstance().RegisterFactory(
+            static_cast<int32_t>(Game::eGameUiWidgetType::UI_UPGRADE_ICON),
+            [] { return std::make_unique<UiUpgradeIconReplicatorFactory>(); });
+
         engine->PlayLevel("MainMenuLevel");
         // Loop until the user closes the window
         while (!glfwWindowShouldClose(window) && !engine->IsExitGameState()) {

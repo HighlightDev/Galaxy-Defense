@@ -258,34 +258,6 @@ bool UiCanvas::IsVisible() const
     return mIsVisible;
 }
 
-bool UiCanvas::IsGuiScissorsSlave() const
-{
-    return mIsGuiScissorsSlave;
-}
-
-bool UiCanvas::IsGuiScissorsMaster() const
-{
-    return mIsGuiScissorsMaster;
-}
-
-void UiCanvas::SetIsGuiScissorsSlave(const bool scissorsSlave)
-{
-    if (mIsGuiScissorsSlave != scissorsSlave) {
-        mIsGuiScissorsSlave = scissorsSlave;
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
-        mIsPropertiesShouldBeUpdatedOnLuaThread = true;
-    }
-}
-
-void UiCanvas::SetIsGuiScissorsMaster(const bool isScissorsMaster)
-{
-    if (mIsGuiScissorsMaster != isScissorsMaster) {
-        mIsGuiScissorsMaster = isScissorsMaster;
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
-        mIsPropertiesShouldBeUpdatedOnLuaThread = true;
-    }
-}
-
 bool UiCanvas::GetIfCanInterceptMouseInputEvents() const
 {
     return mCanInterceptMouseInputEvents;

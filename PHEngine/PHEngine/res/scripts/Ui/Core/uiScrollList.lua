@@ -146,8 +146,8 @@ end
 function UiScrollList:getScrollOffset() return self.scrollListProperties.scroll_offset.value end
 
 function UiScrollList:setScrollbarSide(side)
-    assert(side == UiScrollList.ScrollbarSide.NONE or side == UiScrollList.ScrollbarSide.LEFT
-               or side == UiScrollList.ScrollbarSide.RIGHT)
+    assert(side == UiScrollList.ScrollbarSide.NONE or side == UiScrollList.ScrollbarSide.LEFT or side ==
+               UiScrollList.ScrollbarSide.RIGHT)
     if self.scrollListProperties.scrollbar_side.value ~= side then
         self.scrollListProperties.scrollbar_side.value = side
         self.scrollListProperties.scrollbar_side.dirty = true
@@ -155,8 +155,9 @@ function UiScrollList:setScrollbarSide(side)
 end
 
 function UiScrollList:setScrollbarBackgroundColor(r, g, b)
-    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number"
-               and r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.scrollListProperties.scrollbar_background_color.value.r = r
     self.scrollListProperties.scrollbar_background_color.value.g = g
     self.scrollListProperties.scrollbar_background_color.value.b = b
@@ -173,8 +174,9 @@ function UiScrollList:setScrollbarBackgroundColorHexValue(colorHex)
 end
 
 function UiScrollList:setScrollbarThumbColor(r, g, b)
-    assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number"
-               and r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+    assert(
+        r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
     self.scrollListProperties.scrollbar_thumb_color.value.r = r
     self.scrollListProperties.scrollbar_thumb_color.value.g = g
     self.scrollListProperties.scrollbar_thumb_color.value.b = b

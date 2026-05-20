@@ -7,7 +7,6 @@
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
-#include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontAtlas.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontParams.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeTextFieldProxy.h"
@@ -58,6 +57,11 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
           GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
           GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
     , m_resolvedSceneFramebuffer(std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
+          0,
+          0,
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
+    , m_resolvedSceneAndUiFramebuffer(std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
           0,
           0,
           GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
@@ -249,6 +253,7 @@ void SceneRenderer::OnWindowSizeChanged(const ViewPortInfo& viewPortInfo)
 {
     m_gbuffer->ResizeRenderTargets(viewPortInfo);
     m_resolvedSceneFramebuffer->ResizeRenderTargets(viewPortInfo);
+    m_resolvedSceneAndUiFramebuffer->ResizeRenderTargets(viewPortInfo);
     mPostFxRenderer->ResizeRenderTargets(viewPortInfo);
 }
 
@@ -267,7 +272,7 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
         renderState.GetStencilState()
             .SetIsStencilTestEnabled(false)
             .SetStencilOperation(0, 0, 0)
-            .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+            .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
             .SetStencilMask(0x00);
 
         renderState.BindRenderState();
@@ -498,7 +503,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
         .SetStencilMask(0xFF);
     renderState.BindRenderState();
 
@@ -507,7 +512,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     const auto& viewMatrix = cameraProxy->GetViewMatrix();
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
-    glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF);
+    glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF);
     mInstancedGeometryBatchRenderer->RenderAllBatches(
         cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::DEFERRED);
 
@@ -517,7 +522,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
                 && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
             if (bShouldRender) {
                 const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
-                                                                               : EngineConstants::eStencilValues::DEFAULT;
+                                                                               : EngineConstants::eStencilValues::SCENE_DEFAULT;
                 glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
                 proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
             }
@@ -530,7 +535,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
                 && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
             if (bShouldRender) {
                 const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
-                                                                               : EngineConstants::eStencilValues::DEFAULT;
+                                                                               : EngineConstants::eStencilValues::SCENE_DEFAULT;
                 glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
                 proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
             }
@@ -552,7 +557,7 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
         .SetStencilMask(0);
     renderState.BindRenderState();
     // TODO: Make some check if light source (point or spot light) is too far from current view
@@ -670,7 +675,7 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
         .SetStencilMask(0xFF);
     renderState.BindRenderState();
 
@@ -695,8 +700,8 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
         const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
             && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
         if (bShouldRender) {
-            const int32_t stencilFuncRefValue
-                = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM : EngineConstants::eStencilValues::DEFAULT;
+            const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
+                                                                           : EngineConstants::eStencilValues::SCENE_DEFAULT;
             glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
             proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
         }
@@ -784,7 +789,7 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
         .SetStencilMask(0xFF);
     renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
     renderState.BindRenderState();
@@ -808,7 +813,7 @@ void SceneRenderer::PlanarReflectionPass()
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
         .SetStencilMask(0);
 
     renderState.BindRenderState();
@@ -874,50 +879,8 @@ void SceneRenderer::PlanarReflectionPass()
     glDisable(GL_CLIP_DISTANCE0);
 }
 
-void SceneRenderer::FontPass(const std::shared_ptr<SceneView>& sceneView)
-{
-    const auto& renderDataMap = mFreeTypeFontHandler->GetFontBatcherMap();
-    const bool bHasTextToRender = std::any_of(renderDataMap.cbegin(), renderDataMap.cend(), [](const auto& pair) {
-        return pair.second->GetFreeTypeTextFieldProxies().size() > 0;
-    });
-
-    RenderState renderState;
-    if (bHasTextToRender) {
-        renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        renderState.GetDepthState().SetIsDepthTestEnabled(false).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
-        renderState.GetStencilState()
-            .SetIsStencilTestEnabled(false)
-            .SetStencilOperation(0, 0, 0)
-            .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
-            .SetStencilMask(0);
-        renderState.BindRenderState();
-
-        m_fontShader->ExecuteShader();
-        for (const auto& renderData : renderDataMap) {
-            const auto& renderDataSp = renderData.second;
-            renderDataSp->GetFontTextureAtlas()->BindTexture(0);
-
-            const auto& textFields = renderDataSp->GetFreeTypeTextFieldProxies();
-            m_fontShader->SetFontAtlasSlot(0);
-            for (const auto& textField : textFields) {
-                if (textField->IsVisible() && eTextFieldProxyType::HUD_TEXT_FIELD == textField->GetTextFieldProxyType()) {
-                    m_fontShader->SetPosition(textField->GetPosition());
-                    m_fontShader->SetColor(textField->GetColor());
-                    renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(
-                        textField->GetVertexStart(), textField->GetVerticesCount(), GL_TRIANGLES);
-                }
-            }
-        }
-        m_fontShader->StopShader();
-    }
-
-    renderState.GetBlendingState().SetIsBlendingEnabled(false);
-}
-
 void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
 {
-    glClear(GL_STENCIL_BUFFER_BIT);
-
     RenderState renderState;
     renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -926,10 +889,19 @@ void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_ALWAYS, 0x00, 0xFF)
         .SetStencilMask(0xFF);
 
     renderState.BindRenderState();
+
+    // Альфа-канал UI-фреймбуфера должен накапливать покрытие (coverage), а не блендиться как цвет.
+    // Раздельный режим: RGB как обычно (SRC_ALPHA, ONE_MINUS_SRC_ALPHA), альфа — (ONE, ONE_MINUS_SRC_ALPHA).
+    // Так RGB в фреймбуфере оказывается premultiplied, а альфа — корректное покрытие для последующего
+    // композитинга поверх сцены.
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+    m_resolvedSceneAndUiFramebuffer->BindResolvedSceneFramebuffer(
+        GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     std::sort(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [](const auto& left, const auto& right) {
         return left->GetCanvasZOrder() < right->GetCanvasZOrder();
@@ -1069,11 +1041,11 @@ void SceneRenderer::RenderScene_RenderThread()
                 if (not mForwardRenderingProxiesVec.empty())
                     ForwardBasePass_RenderThread(sceneView);
 
-                mPostFxRenderer->Execute(m_resolvedSceneFramebuffer);
-
-                FontPass(sceneView);
+                mPostFxRenderer->ExecuteResolveSceneColor(m_resolvedSceneFramebuffer);
 
                 GuiPass(sceneView);
+
+                mPostFxRenderer->ExecuteResolveGuiColor(m_resolvedSceneAndUiFramebuffer);
                 // TODO: rendering to render texture later....
             } else {
                 // TODO: rendering to render texture later....
@@ -2118,7 +2090,7 @@ void SceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::m
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
-        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::DEFAULT, 0xFF)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
         .SetStencilMask(0);
     renderState.BindRenderState();
     // todo: delete this crap and use buffers =\

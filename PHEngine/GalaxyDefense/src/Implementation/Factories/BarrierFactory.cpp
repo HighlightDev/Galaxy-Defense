@@ -1,8 +1,6 @@
 #include "BarrierFactory.h"
 
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
-#include "Core/GameCore/Components/ComponentData/UiComponentData.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/Scene.h"
@@ -10,7 +8,6 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Actors/BarrierActor.h"
-#include "Implementation/Components/UiComponents/BarrierUiComponent.h"
 
 using namespace Resources;
 using namespace EngineCore;

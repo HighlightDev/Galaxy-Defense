@@ -67,7 +67,11 @@ class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
     // G-buffers
     std::unique_ptr<DeferredShadingGBuffer> m_gbuffer;
 
+    // 3D scene render target
     std::shared_ptr<ResolvedSceneFramebuffer> m_resolvedSceneFramebuffer;
+
+    // 3D scene + UI render target
+    std::shared_ptr<ResolvedSceneFramebuffer> m_resolvedSceneAndUiFramebuffer;
 
     // Shaders
     std::shared_ptr<DeferredLightShader> m_deferredLightShader;
@@ -283,8 +287,6 @@ private:
     void PlanarReflectionPass();
 
     void OutlinePass(const std::shared_ptr<SceneView>& sceneView);
-
-    void FontPass(const std::shared_ptr<SceneView>& sceneView);
 
     void GuiPass(const std::shared_ptr<SceneView>& sceneView);
 

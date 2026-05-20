@@ -84,10 +84,12 @@ void BloomPostFxPass::ExecutePostFx(
 
     renderState.GetDepthState().SetIsDepthTestEnabled(false).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(false);
 
+    const GLint ref = EngineConstants::eStencilValues::BLOOM;
+    const GLuint mask = EngineConstants::eStencilValues::BLOOM;
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_KEEP)
-        .SetStencilFunction(GL_EQUAL, EngineConstants::eStencilValues::BLOOM, 0xFF)
+        .SetStencilFunction(GL_EQUAL, ref, mask)
         .SetStencilMask(0x00);
 
     renderState.BindRenderState();
@@ -130,6 +132,10 @@ void BloomPostFxPass::ExecutePostFx(
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
 
     mBloomFxShader->StopShader();
+    // Внутри прохода stencil write mask выставлен в 0x00. glClear(GL_STENCIL_BUFFER_BIT) подчиняется этой
+    // маске — без восстановления очистка стенсила UI-фреймбуфера в GuiPass становится no-op и стенсил
+    // (scissoring, бит BLOOM) тянется с прошлого кадра.
+    renderState.GetStencilState().SetStencilMask(0xFF);
     renderState.GetDepthState().SetDepthTestWriteMask(true);
     renderState.BindRenderState();
 }

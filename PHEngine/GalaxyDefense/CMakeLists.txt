@@ -116,7 +116,13 @@ set(HEADERS
     src/Implementation/LevelProgressSystem/LevelRequirementTrackerJsonFactories/LevelRequirementsTrackerFactory.h
     src/Implementation/Navigation/NavigationPathBuilder.h
     src/Implementation/Navigation/PathSegment.h
-    src/Implementation/Navigation/Path.h)
+    src/Implementation/Navigation/Path.h
+    src/Implementation/GUI/UiUpgradeIcon.h
+    src/Implementation/GUI/UiUpgradeIconReplicatorFactory.h
+    src/Implementation/GUI/GameUiWidgetType.h
+    src/Implementation/GUI/Shaders/UiUpgradeIconShader.h
+    src/Implementation/GUI/SceneProxies/UiUpgradeIconSceneProxy.h
+    src/Implementation/GUI/LuaProxies/UiUpgradeIconLuaProxy.h)
 
 set(SOURCES
     src/Implementation/Components/MovementComponents/LootDropMovementComponent.cpp
@@ -219,6 +225,12 @@ set(SOURCES
     src/Implementation/Navigation/NavigationPathBuilder.cpp
     src/Implementation/Navigation/PathSegment.cpp
     src/Implementation/Navigation/Path.cpp
+    src/Implementation/GUI/UiUpgradeIcon.cpp
+    src/Implementation/GUI/UiUpgradeIconReplicatorFactory.cpp
+    src/Implementation/GUI/GameUiWidgetType.cpp
+    src/Implementation/GUI/Shaders/UiUpgradeIconShader.cpp
+    src/Implementation/GUI/SceneProxies/UiUpgradeIconSceneProxy.cpp
+    src/Implementation/GUI/LuaProxies/UiUpgradeIconLuaProxy.cpp
     main.cpp)
 
 add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)

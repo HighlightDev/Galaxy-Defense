@@ -31,12 +31,18 @@ void ResolveFxColorShader::SetBloomColorTexture(const int32_t textureSlot)
     u_bloomColorTexture.LoadUniform(textureSlot);
 }
 
+void ResolveFxColorShader::SetResolveAlphaFromSource(const bool resolveAlphaFromSource)
+{
+    u_resolveAlphaFromSource.LoadUniform(resolveAlphaFromSource ? 1.0f : 0.0f);
+}
+
 void ResolveFxColorShader::AccessAllUniformLocations(uint32_t shaderProgramID)
 {
     Shader::AccessAllUniformLocations(shaderProgramID);
 
     u_sceneColorTexture = GetUniform("sceneColorTexture", shaderProgramID);
     u_bloomColorTexture = GetUniform("bloomColorTexture", shaderProgramID);
+    u_resolveAlphaFromSource = GetUniform("resolveAlphaFromSource", shaderProgramID);
 }
 
 void ResolveFxColorShader::SetShaderPredefine()

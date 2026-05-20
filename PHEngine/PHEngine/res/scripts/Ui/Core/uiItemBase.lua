@@ -83,7 +83,10 @@ function UiItemBase:new()
                 }
             },
             dirty = false
-        }
+        },
+        is_gui_scissors_slave = {value = false, dirty = false},
+        is_gui_scissors_master = {value = false, dirty = false},
+        can_bloom_be_applied = {value = false, dirty = false}
     }
 
     local uiItemBaseObj = UiItemBase.parentClass.new(self)
@@ -146,6 +149,15 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
                 }
             end
         end
+    end
+    if parsedJsonData["is_gui_scissors_slave"] ~= nil then
+        self.properties.is_gui_scissors_slave.value = parsedJsonData["is_gui_scissors_slave"]
+    end
+    if parsedJsonData["is_gui_scissors_master"] ~= nil then
+        self.properties.is_gui_scissors_master.value = parsedJsonData["is_gui_scissors_master"]
+    end
+    if parsedJsonData["can_bloom_be_applied"] ~= nil then
+        self.properties.can_bloom_be_applied.value = parsedJsonData["can_bloom_be_applied"]
     end
 end
 
@@ -367,5 +379,32 @@ function UiItemBase:startSequenceAnimation(host, animationSequenceName)
 
     _StartUiItemSequenceAnimation(host, self.luaProxyId, animationSequenceName)
 end
+
+function UiItemBase:setIsGuiScissorsSlave(isGuiScissorsSlave)
+    if self.properties.is_gui_scissors_slave.value ~= isGuiScissorsSlave then
+        self.properties.is_gui_scissors_slave.value = isGuiScissorsSlave
+        self.properties.is_gui_scissors_slave.dirty = true
+    end
+end
+
+function UiItemBase:getIsGuiScissorsSlave() return self.properties.is_gui_scissors_slave.value end
+
+function UiItemBase:setIsGuiScissorsMaster(isGuiScissorsMaster)
+    if self.properties.is_gui_scissors_master.value ~= isGuiScissorsMaster then
+        self.properties.is_gui_scissors_master.value = isGuiScissorsMaster
+        self.properties.is_gui_scissors_master.dirty = true
+    end
+end
+
+function UiItemBase:getIsGuiScissorsMaster() return self.properties.is_gui_scissors_master.value end
+
+function UiItemBase:setCanBloomBeApplied(canBloomBeApplied)
+    if self.properties.can_bloom_be_applied.value ~= canBloomBeApplied then
+        self.properties.can_bloom_be_applied.value = canBloomBeApplied
+        self.properties.can_bloom_be_applied.dirty = true
+    end
+end
+
+function UiItemBase:getCanBloomBeApplied() return self.properties.can_bloom_be_applied.value end
 
 return UiItemBase

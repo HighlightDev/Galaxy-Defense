@@ -27,7 +27,9 @@ public:
     PostFxRenderer(const ViewPortInfo& viewPortInfo);
     ~PostFxRenderer();
 
-    void Execute(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveSceneColorFramebuffer);
+    void ExecuteResolveSceneColor(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveSceneColorFramebuffer);
+
+    void ExecuteResolveGuiColor(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveUiFramebuffer);
 
     void ResizeRenderTargets(const ViewPortInfo& viewPortInfo);
 

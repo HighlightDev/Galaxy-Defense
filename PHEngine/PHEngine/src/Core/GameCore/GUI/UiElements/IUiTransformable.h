@@ -30,16 +30,12 @@ public:
     virtual bool GetIfCanInterceptMouseInputEvents() const = 0;
     virtual BoundingBox2D<glm::ivec2> GetBoundingArea() const = 0;
     virtual bool IsTransformDirty() const = 0;
-    virtual bool IsGuiScissorsSlave() const = 0;
-    virtual bool IsGuiScissorsMaster() const = 0;
 
     virtual void SetAbsoluteOrigin(const glm::ivec2& translation) = 0;
     virtual void SetZOrder(const size_t z_order) = 0;
     virtual void SetWidth(const size_t width) = 0;
     virtual void SetHeight(const size_t height) = 0;
     virtual void SetIsVisible(const bool visibility) = 0;
-    virtual void SetIsGuiScissorsSlave(const bool scissorsSlave) = 0;
-    virtual void SetIsGuiScissorsMaster(const bool isScissorsMaster) = 0;
 #ifdef DEBUG
     virtual void SetIsHiddenForDebugging(const bool isHiddenForDebugging) = 0;
 #endif

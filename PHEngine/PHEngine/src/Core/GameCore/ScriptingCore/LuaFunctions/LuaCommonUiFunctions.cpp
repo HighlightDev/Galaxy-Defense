@@ -229,15 +229,16 @@ void LuaCommonUiFunctions::CloseBackgroundOverlay(const std::tuple<std::string>&
 
 int32_t LuaCommonUiFunctions::CreateCommonUiWidget(const std::tuple<int32_t, std::string>& data)
 {
-    const auto commonUiWidgetType = static_cast<eCommonUiWidgetType>(std::get<0>(data));
+    const auto widgetTypeRaw = std::get<0>(data);
     const auto& jsonParametersStr = std::get<1>(data);
-    CommonUiWidgetFactoryCreator factoryCreator;
-    const auto& replicatorFactory = factoryCreator.GetReplicatorFactory(commonUiWidgetType);
+    const auto& replicatorFactory = CommonUiWidgetFactoryCreator::GetInstance().GetReplicatorFactory(widgetTypeRaw);
     const int32_t luaProxyId = replicatorFactory->CreateReplicator(mSceneWp, mLuaScriptProcessor, jsonParametersStr);
     LogInfo(
         "LuaCommonUiFunctions::CreateCommonUiWidget: widgetType: ",
-        CommonUiWidgetTypeToString(commonUiWidgetType),
-        ", luaProxyId: ",
+        CommonUiWidgetTypeToString(static_cast<eCommonUiWidgetType>(widgetTypeRaw)),
+        " (",
+        widgetTypeRaw,
+        "), luaProxyId: ",
         luaProxyId);
     return luaProxyId;
 }

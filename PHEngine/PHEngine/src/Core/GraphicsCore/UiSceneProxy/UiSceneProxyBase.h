@@ -49,6 +49,8 @@ protected:
 
     bool mIsGuiScissorsMaster;
 
+    bool mCanBloomBeApplied;
+
 public:
     UiSceneProxyBase(const ::EngineCore::GUI::UiItemBase* uiItemBase);
 
@@ -91,6 +93,10 @@ public:
     void SetIsGuiScissorsMaster(const bool isScissorsMaster);
 
     bool IsGuiScissorsMaster() const;
+
+    bool CanBloomBeApplied() const;
+
+    void SetCanBloomBeApplied(const bool canBloomBeApplied);
 
     glm::vec2 GetCenterOffset() const;
 

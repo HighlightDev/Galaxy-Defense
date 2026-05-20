@@ -58,6 +58,7 @@ UiItemBase::UiItemBase(const std::string& name)
           0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
     , mIsGuiScissorsSlave(false)
     , mIsGuiScissorsMaster(false)
+    , mCanBloomBeApplied(false)
 #ifdef DEBUG
     , mIsHiddenForDebugging(false)
 #endif
@@ -250,6 +251,20 @@ void UiItemBase::SetIsGuiScissorsMaster(const bool isScissorsMaster)
 bool UiItemBase::IsGuiScissorsMaster() const
 {
     return mIsGuiScissorsMaster;
+}
+
+bool UiItemBase::CanBloomBeApplied() const
+{
+    return mCanBloomBeApplied;
+}
+
+void UiItemBase::SetCanBloomBeApplied(const bool canBloomBeApplied)
+{
+    if (mCanBloomBeApplied != canBloomBeApplied) {
+        mCanBloomBeApplied = canBloomBeApplied;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
 }
 
 bool UiItemBase::GetIfCanInterceptMouseInputEvents() const
@@ -943,6 +958,13 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
+    if (jsonObj.contains("can_bloom_be_applied")) {
+        const auto canBloomBeApplied = jsonObj["can_bloom_be_applied"].get<bool>();
+        if (mCanBloomBeApplied != canBloomBeApplied) {
+            mCanBloomBeApplied = canBloomBeApplied;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
 }
 
 void UiItemBase::SyncDataOnRenderThread()
@@ -967,7 +989,8 @@ void UiItemBase::SyncDataOnRenderThread()
                      height = mHeight,
                      isHiddenForDebugging = mIsHiddenForDebugging,
                      isGuiScissorsSlave = mIsGuiScissorsSlave,
-                     isGuiScissorsMaster = mIsGuiScissorsMaster](
+                     isGuiScissorsMaster = mIsGuiScissorsMaster,
+                     canBloomBeApplied = mCanBloomBeApplied](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -982,6 +1005,7 @@ void UiItemBase::SyncDataOnRenderThread()
 #endif
                                 uiSceneProxy->SetIsGuiScissorsSlave(isGuiScissorsSlave);
                                 uiSceneProxy->SetIsGuiScissorsMaster(isGuiScissorsMaster);
+                                uiSceneProxy->SetCanBloomBeApplied(canBloomBeApplied);
                                 uiSceneProxy->SetZOrder(zOrder);
                                 uiSceneProxy->SetTransform(normTranslation, normScale);
                                 uiSceneProxy->SetWidthHeightPixels(
@@ -1017,7 +1041,8 @@ void UiItemBase::SyncDataOnLuaThread()
                      anchorsMap = mAnchors,
                      isHiddenForDebugging = mIsHiddenForDebugging,
                      isGuiScissorsSlave = mIsGuiScissorsSlave,
-                     isGuiScissorsMaster = mIsGuiScissorsMaster](
+                     isGuiScissorsMaster = mIsGuiScissorsMaster,
+                     canBloomBeApplied = mCanBloomBeApplied](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -1030,6 +1055,7 @@ void UiItemBase::SyncDataOnLuaThread()
 #endif
                             uiItemBaseLuaProxy->SetIsGuiScissorsSlave_FromGameThread(isGuiScissorsSlave);
                             uiItemBaseLuaProxy->SetIfCanInterceptMouseInputEvents_FromGameThread(interceptsMouseInputEvent);
+                            uiItemBaseLuaProxy->SetCanBloomBeApplied_FromGameThread(canBloomBeApplied);
                             uiItemBaseLuaProxy->SetZOrder_FromGameThread(zorder);
                             uiItemBaseLuaProxy->SetWidth_FromGameThread(width);
                             uiItemBaseLuaProxy->SetHeight_FromGameThread(height);

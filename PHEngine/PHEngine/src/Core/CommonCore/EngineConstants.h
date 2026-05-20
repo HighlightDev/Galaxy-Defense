@@ -3,7 +3,13 @@
 #include <cstdint>
 
 namespace EngineConstants {
-enum eStencilValues { DEFAULT = 0, BLOOM = 1, OUTLINE = 2, GUI_SCISSORING = 3 };
+enum eStencilValues : uint32_t {
+    SCENE_DEFAULT = 0x1,
+    GUI_DEFAULT = SCENE_DEFAULT << 1,
+    GUI_SCISSORING = GUI_DEFAULT << 1,
+    BLOOM = GUI_SCISSORING << 1,
+    OUTLINE = BLOOM << 1,
+};
 
 extern const int32_t c_maxInstancesPerInstanceBatch;
 extern const char* c_gameThreadName;

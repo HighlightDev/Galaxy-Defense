@@ -56,6 +56,8 @@ protected:
 
     bool mIsGuiScissorsMaster{false};
 
+    bool mCanBloomBeApplied{false};
+
 public:
     explicit UiItemBaseLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiItemBase>& ownerUiItemBase);
 
@@ -88,6 +90,8 @@ public:
     void SetIsGuiScissorsSlave_FromGameThread(const bool isScissorsSlave);
 
     void SetIsGuiScissorsMaster_FromGameThread(const bool isScissorsMaster);
+
+    void SetCanBloomBeApplied_FromGameThread(const bool canBloomBeApplied);
 
     void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
 

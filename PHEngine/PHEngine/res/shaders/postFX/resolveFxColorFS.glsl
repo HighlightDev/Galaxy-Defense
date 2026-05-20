@@ -8,6 +8,9 @@ layout(location = 0) out vec4 FragColor;
 uniform sampler2D sceneColorTexture;
 uniform sampler2D bloomColorTexture;
 
+// 0 - opaque result (resolve 3D scene), 1 - alpha is taken from the source texture (resolve GUI).
+uniform float resolveAlphaFromSource = 0.0;
+
 in vec2 vs_out_texCoords;
 
 #if defined(HDR_ON) && defined(BLOOM_ON)
@@ -58,5 +61,8 @@ vec4 resolveBloomColor()
 
 void main()
 {
-    FragColor = resolveBloomColor();
+    vec4 resolvedColor = resolveBloomColor();
+    float sourceAlpha = texture(sceneColorTexture, vs_out_texCoords).a;
+    resolvedColor.a = mix(1.0, sourceAlpha, resolveAlphaFromSource);
+    FragColor = resolvedColor;
 }

@@ -12,6 +12,7 @@ class ResolveFxColorShader : public Shader {
 private:
     Uniform u_sceneColorTexture;
     Uniform u_bloomColorTexture;
+    Uniform u_resolveAlphaFromSource;
 
 public:
     ResolveFxColorShader(const ShaderParams& params);
@@ -21,6 +22,8 @@ public:
     void SetSceneColorTexture(const int32_t textureSlot);
 
     void SetBloomColorTexture(const int32_t textureSlot);
+
+    void SetResolveAlphaFromSource(const bool resolveAlphaFromSource);
 
 protected:
     void AccessAllUniformLocations(uint32_t shaderProgramID) override;

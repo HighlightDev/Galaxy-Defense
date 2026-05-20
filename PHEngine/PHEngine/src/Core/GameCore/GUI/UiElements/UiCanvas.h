@@ -55,10 +55,6 @@ private:
 
     bool mIsVisible;
 
-    bool mIsGuiScissorsSlave{false};
-
-    bool mIsGuiScissorsMaster{false};
-
     bool mCanInterceptMouseInputEvents;
 
     bool mIsTransformDirty;
@@ -135,8 +131,6 @@ public:
     std::weak_ptr<::EngineCore::Scene> GetScene() const override;
     BoundingBox2D<glm::ivec2> GetBoundingArea() const override;
     bool IsVisible() const override;
-    bool IsGuiScissorsSlave() const override;
-    bool IsGuiScissorsMaster() const override;
     bool GetIfCanInterceptMouseInputEvents() const override;
     bool IsTransformDirty() const override;
     bool IsInputSystemInitialized() const;
@@ -149,8 +143,6 @@ public:
     void SetWidth(const size_t width) override;
     void SetHeight(const size_t height) override;
     void SetIsVisible(const bool isVisible) override;
-    void SetIsGuiScissorsSlave(const bool scissorsSlave) override;
-    void SetIsGuiScissorsMaster(const bool isScissorsMaster) override;
 #ifdef DEBUG
     void SetIsHiddenForDebugging(const bool isHiddenForDebugging) override;
 #endif

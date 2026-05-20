@@ -138,6 +138,14 @@ void UiItemBaseLuaProxy::SetIsGuiScissorsMaster_FromGameThread(const bool isScis
     }
 }
 
+void UiItemBaseLuaProxy::SetCanBloomBeApplied_FromGameThread(const bool canBloomBeApplied)
+{
+    if (mCanBloomBeApplied != canBloomBeApplied) {
+        mCanBloomBeApplied = canBloomBeApplied;
+        mIsLuaDataDirty = true;
+    }
+}
+
 void UiItemBaseLuaProxy::SetParent(const std::string& canvasName, const std::string& parentName)
 {
     static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetParent");
@@ -206,7 +214,7 @@ std::string UiItemBaseLuaProxy::GetGameThreadData()
     jsonObj["anchors"] = anchorConvertedData;
     jsonObj["is_gui_scissors_slave"] = mIsGuiScissorsSlave;
     jsonObj["is_gui_scissors_master"] = mIsGuiScissorsMaster;
-
+    jsonObj["can_bloom_be_applied"] = mCanBloomBeApplied;
     mIsLuaDataDirty = false;
     return jsonObj.dump();
 }

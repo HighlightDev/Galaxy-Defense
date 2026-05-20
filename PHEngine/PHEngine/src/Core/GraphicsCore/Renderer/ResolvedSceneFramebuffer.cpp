@@ -30,8 +30,8 @@ void ResolvedSceneFramebuffer::SetTextures()
         GL_NEAREST,
         GL_NEAREST,
         0,
-        isHdrEnabled ? GL_RGB16F : GL_RGB8,
-        GL_RGB,
+        isHdrEnabled ? GL_RGBA16F : GL_RGBA8,
+        GL_RGBA,
         isHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
         GL_REPEAT,
         true);
@@ -160,8 +160,8 @@ void ResolvedSceneFramebuffer::AllocateTextures()
         GL_NEAREST,
         GL_NEAREST,
         0,
-        isHdrEnabled ? GL_RGB16F : GL_RGB8,
-        GL_RGB,
+        isHdrEnabled ? GL_RGBA16F : GL_RGBA8,
+        GL_RGBA,
         isHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
         GL_REPEAT,
         true);

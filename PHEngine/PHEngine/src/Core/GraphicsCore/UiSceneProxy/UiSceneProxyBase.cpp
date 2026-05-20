@@ -22,6 +22,7 @@ UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
     , mName(uiItemBase->GetName())
     , mIsGuiScissorsSlave(uiItemBase->IsGuiScissorsSlave())
     , mIsGuiScissorsMaster(uiItemBase->IsGuiScissorsMaster())
+    , mCanBloomBeApplied(uiItemBase->CanBloomBeApplied())
 {
 }
 
@@ -141,6 +142,16 @@ void UiSceneProxyBase::SetIsGuiScissorsMaster(const bool isScissorsMaster)
 bool UiSceneProxyBase::IsGuiScissorsMaster() const
 {
     return mIsGuiScissorsMaster;
+}
+
+bool UiSceneProxyBase::CanBloomBeApplied() const
+{
+    return mCanBloomBeApplied;
+}
+
+void UiSceneProxyBase::SetCanBloomBeApplied(const bool canBloomBeApplied)
+{
+    mCanBloomBeApplied = canBloomBeApplied;
 }
 
 } // namespace Proxy

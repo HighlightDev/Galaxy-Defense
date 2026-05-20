@@ -57,18 +57,35 @@ void UiCanvasSceneProxy::Render()
         for (const auto& proxy : mUiProxies) {
             if (proxy->IsVisible()) {
                 proxy->SetOverlayOpacity(mOverlayOpacity);
+                const GLuint bloomRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM : 0;
                 if (proxy->IsGuiScissorsSlave()) {
-                    glStencilFunc(GL_EQUAL, EngineConstants::eStencilValues::GUI_SCISSORING, 0xFF);
+                    const GLint ref
+                        = EngineConstants::eStencilValues::GUI_SCISSORING | EngineConstants::GUI_DEFAULT | bloomRefValue;
+                    // test: compare ONLY the GUI_SCISSORING bit — slave is rendered inside the scissor region
+                    // the master is independent of whether the master wrote the BLOOM bit or not.
+                    glStencilFunc(GL_EQUAL, ref, EngineConstants::eStencilValues::GUI_SCISSORING);
+                    // Write: write-mask = bloomRefValue. If slave has bloom — only the BLOOM bit is passed
+                    // BLOOM (GL_REPLACE will set it from ref), GUI_SCISSORING master is not touched.
+                    // If slave has no bloom — mask 0, stencil is not changed at all.
+                    glStencilMask(bloomRefValue | EngineConstants::GUI_DEFAULT);
                 } else {
+                    // Master and usual proxies write the full value of ref.
+                    glStencilMask(0xFF);
                     if (proxy->IsGuiScissorsMaster()) {
-                        glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::GUI_SCISSORING, 0xFF);
+                        const GLint ref
+                            = EngineConstants::eStencilValues::GUI_SCISSORING | bloomRefValue | EngineConstants::GUI_DEFAULT;
+                        const GLuint mask = 0xFF;
+                        glStencilFunc(GL_ALWAYS, ref, mask);
                     } else {
-                        glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::DEFAULT, 0xFF);
+                        const GLint ref = EngineConstants::eStencilValues::GUI_DEFAULT;
+                        const GLuint mask = 0xFF;
+                        glStencilFunc(GL_ALWAYS, ref, mask);
                     }
                 }
                 proxy->Render();
             }
         }
+        glStencilMask(0xFF);
     }
 }
 

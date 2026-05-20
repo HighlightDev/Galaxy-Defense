@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontParams.h"
 
@@ -11,12 +10,9 @@
 #include <string>
 
 using namespace EngineCore;
-using namespace Graphics;
 
 namespace EngineCore::GUI {
 class FreeTypeTextFieldProxy {
-    eTextFieldProxyType mTextFieldProxyType{eTextFieldProxyType::UNDEFINED};
-
     int32_t mTextFieldId;
 
     // Chunk Data Begin
@@ -60,7 +56,6 @@ public:
 
     static std::shared_ptr<FreeTypeTextFieldProxy> CreateTextFieldProxyInstance(
         const int32_t uniqueTextId,
-        const eTextFieldProxyType textFieldProxyType,
         const bool isVisible,
         const std::string& text,
         const std::string& fontFileName,
@@ -73,8 +68,6 @@ public:
         const glm::ivec2& lineWidthHeight);
 
     int32_t GetTextFieldId() const;
-
-    eTextFieldProxyType GetTextFieldProxyType() const;
 
     size_t GetPositionChunkOffset() const;
 

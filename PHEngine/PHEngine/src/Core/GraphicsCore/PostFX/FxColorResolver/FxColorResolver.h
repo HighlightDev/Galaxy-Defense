@@ -7,6 +7,8 @@
 using namespace EngineCore::ShaderImpl;
 
 namespace Graphics {
+class ResolvedSceneFramebuffer;
+
 class FxColorResolver {
 private:
     std::shared_ptr<ResolveFxColorShader> mResolveFxColorShader;
@@ -17,7 +19,11 @@ public:
     FxColorResolver(const ViewPortInfo& viewPortInfo);
     virtual ~FxColorResolver();
 
-    virtual void Execute(const std::shared_ptr<ITexture>& sceneColorTexture, const std::shared_ptr<IPostFxPass>& prevPostFxPass);
+    virtual void ExecuteResolveSceneColor(
+        const std::shared_ptr<ITexture>& sceneColorTexture, const std::shared_ptr<IPostFxPass>& prevPostFxPass);
+
+    virtual void ExecuteResolveGuiColor(
+        const std::shared_ptr<ITexture>& sceneColorTexture, const std::shared_ptr<IPostFxPass>& prevPostFxPass);
 
     virtual void CleanUp();
 

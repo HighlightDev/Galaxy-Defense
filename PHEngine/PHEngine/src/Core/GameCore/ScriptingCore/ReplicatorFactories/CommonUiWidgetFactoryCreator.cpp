@@ -18,42 +18,59 @@
 
 namespace EngineCore {
 namespace Scripts {
-std::unique_ptr<IReplicatorFactory> CommonUiWidgetFactoryCreator::GetReplicatorFactory(const eCommonUiWidgetType widgetType) const
-{
-    switch (widgetType) {
-    case eCommonUiWidgetType::UI_OVERLAY:
-        return std::make_unique<UiOverlayReplicatorFactory>();
-    case eCommonUiWidgetType::UI_CANVAS:
-        return std::make_unique<UiCanvasReplicatorFactory>();
-    case eCommonUiWidgetType::UI_ITEM:
-        return std::make_unique<UiItemReplicatorFactory>();
-    case eCommonUiWidgetType::UI_RECTANGLE:
-        return std::make_unique<UiRectangleReplicatorFactory>();
-    case eCommonUiWidgetType::UI_IMAGE:
-        return std::make_unique<UiImageReplicatorFactory>();
-    case eCommonUiWidgetType::UI_LABEL:
-        return std::make_unique<UiLabelReplicatorFactory>();
-    case eCommonUiWidgetType::UI_TOGGLE_BUTTON:
-        return std::make_unique<UiToggleButtonReplicatorFactory>();
-    case eCommonUiWidgetType::UI_BACKGROUND_OVERLAY:
-        return std::make_unique<UiBackgroundOverlayReplicatorFactory>();
-    case eCommonUiWidgetType::UI_PROGRESS_BAR:
-        return std::make_unique<UiProgressBarReplicatorFactory>();
-    case eCommonUiWidgetType::UI_ROW_LAYOUT:
-        return std::make_unique<UiRowLayoutReplicatorFactory>();
-    case eCommonUiWidgetType::UI_SLIDER_BAR:
-        return std::make_unique<UiSliderReplicatorFactory>();
-    case eCommonUiWidgetType::UI_TEXT_BLOCK:
-        return std::make_unique<UiTextBlockReplicatorFactory>();
-    case eCommonUiWidgetType::UI_GRID_LAYOUT:
-        return std::make_unique<UiGridLayoutReplicatorFactory>();
-    case eCommonUiWidgetType::UI_SCROLL_LIST:
-        return std::make_unique<UiScrollListReplicatorFactory>();
 
-    default:
-        ext_assert(false, "CommonUiWidgetFactoryCreator::GetReplicatorFactory: Unsupported widget type");
-        return nullptr;
-    }
+namespace {
+constexpr int32_t AsInt(eCommonUiWidgetType type)
+{
+    return static_cast<int32_t>(type);
 }
+} // namespace
+
+CommonUiWidgetFactoryCreator::CommonUiWidgetFactoryCreator()
+{
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_OVERLAY)] = [] { return std::make_unique<UiOverlayReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_CANVAS)] = [] { return std::make_unique<UiCanvasReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_ITEM)] = [] { return std::make_unique<UiItemReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_RECTANGLE)] = [] { return std::make_unique<UiRectangleReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_IMAGE)] = [] { return std::make_unique<UiImageReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_LABEL)] = [] { return std::make_unique<UiLabelReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_TOGGLE_BUTTON)]
+        = [] { return std::make_unique<UiToggleButtonReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_BACKGROUND_OVERLAY)]
+        = [] { return std::make_unique<UiBackgroundOverlayReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_PROGRESS_BAR)]
+        = [] { return std::make_unique<UiProgressBarReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_ROW_LAYOUT)]
+        = [] { return std::make_unique<UiRowLayoutReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_SLIDER_BAR)] = [] { return std::make_unique<UiSliderReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_TEXT_BLOCK)]
+        = [] { return std::make_unique<UiTextBlockReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_GRID_LAYOUT)]
+        = [] { return std::make_unique<UiGridLayoutReplicatorFactory>(); };
+    mFactoryProducers[AsInt(eCommonUiWidgetType::UI_SCROLL_LIST)]
+        = [] { return std::make_unique<UiScrollListReplicatorFactory>(); };
+}
+
+CommonUiWidgetFactoryCreator& CommonUiWidgetFactoryCreator::GetInstance()
+{
+    static CommonUiWidgetFactoryCreator instance;
+    return instance;
+}
+
+void CommonUiWidgetFactoryCreator::RegisterFactory(const int32_t widgetType, FactoryProducer factoryProducer)
+{
+    mFactoryProducers[widgetType] = std::move(factoryProducer);
+}
+
+std::unique_ptr<IReplicatorFactory> CommonUiWidgetFactoryCreator::GetReplicatorFactory(const int32_t widgetType) const
+{
+    const auto it = mFactoryProducers.find(widgetType);
+    ext_assert(
+        it != mFactoryProducers.end(),
+        "CommonUiWidgetFactoryCreator::GetReplicatorFactory: No factory registered for widget type "
+            + std::to_string(widgetType));
+    return it->second();
+}
+
 } // namespace Scripts
 } // namespace EngineCore

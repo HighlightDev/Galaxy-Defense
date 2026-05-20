@@ -28,10 +28,24 @@ local ImageButton = require("Ui/Widgets/ImageButton")
 local UiItemBase = require("Ui/Core/uiItemBase")
 local Styles = require("Ui/Common/styles")
 local EventsHelper = require("Ui/Core/eventsHelper")
+local UpgradeIcon = require("Ui/Core/uiUpgradeIcon")
 
 TowerUpgradesPanel = {}
 
-local DUMMY_BUTTON_COUNT = 12
+local iconsCfg = {
+    {texture = "cryo_cannon.png", borderColor = 0x23208d, glowColor = 0x23208d},
+    {texture = "electric_beam.png", borderColor = 0x88008d, glowColor = 0x88008d},
+    {texture = "force_barrier.png", borderColor = 0xcf910e, glowColor = 0xcf910e},
+    {texture = "gravity_bomb.png", borderColor = 0x8700bb, glowColor = 0x8700bb},
+    {texture = "he_rocket.png", borderColor = 0xf24d00, glowColor = 0xf24d00},
+    {texture = "ice_beam.png", borderColor = 0x0c6a83, glowColor = 0x0c6a83},
+    {texture = "ice_rocket.png", borderColor = 0x1dcbe7, glowColor = 0x1dcbe7},
+    {texture = "nano_beam.png", borderColor = 0x00c77f, glowColor = 0x00c77f},
+    {texture = "plasma_rocket.png", borderColor = 0x750653, glowColor = 0x750653},
+    {texture = "quantum_nexus.png", borderColor = 0x4e3f88, glowColor = 0x4e3f88},
+    {texture = "repair_beam.png", borderColor = 0x209a5d, glowColor = 0x209a5d}
+}
+
 local BORDER_RADIUS = 6
 
 function TowerUpgradesPanel:new(host, overlay)
@@ -43,7 +57,7 @@ function TowerUpgradesPanel:new(host, overlay)
         background = nil,
         scrollList = nil,
         closeButton = nil,
-        dummyButtons = {},
+        upgradeButtons = {},
         panelWidth = 0,
         panelHeight = 0
     }
@@ -59,10 +73,10 @@ function TowerUpgradesPanel:new(host, overlay)
     newObj.closeButton = ImageButton:new(host, overlay, "TowerUpgradesCloseButton")
     overlay:addCompoundWidget(newObj.closeButton)
 
-    for i = 1, DUMMY_BUTTON_COUNT do
-        local btn = ImageButton:new(host, overlay, "TowerUpgradesDummyButton" .. tostring(i))
-        overlay:addCompoundWidget(btn)
-        newObj.dummyButtons[i] = btn
+    for i = 1, #iconsCfg do
+        local btn = UpgradeIcon:new(host, "TowerUpgradesUpgradeButton" .. tostring(i))
+        overlay:addWidget(btn)
+        newObj.upgradeButtons[i] = btn
     end
 
     newObj.closeButton:subscribeOnMouseInputClickedCallback(function()
@@ -78,8 +92,8 @@ function TowerUpgradesPanel:new(host, overlay)
     end)
 
     local dummyLabels = {"Speed Up", "Range Up", "Damage Up"}
-    for i = 1, DUMMY_BUTTON_COUNT do
-        local btn = newObj.dummyButtons[i]
+    for i = 1, #iconsCfg do
+        local btn = newObj.upgradeButtons[i]
         btn:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
             if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
                 btn:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
@@ -138,6 +152,7 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
     self.scrollList:setScrollbarBackgroundColorHexValue(Styles.Colors.panelColor)
     self.scrollList:setScrollbarThumbColorHexValue(Styles.Colors.buttonColor)
     self.scrollList:setScrollbarThicknessPixels(6)
+    self.scrollList:setCanBloomBeApplied(false)
 
     self.closeButton:setParent(self.host, canvasName, self.background.widgetName)
     self.closeButton:setWidth(closeBtnSize)
@@ -151,18 +166,18 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
     self.closeButton:setZOrder(12)
     self.closeButton:setIsVisible(false)
 
-    local dummyImages = {"warning.png", "hammer.png", "cancel.png"}
-    for i = 1, DUMMY_BUTTON_COUNT do
-        local btn = self.dummyButtons[i]
+    for i = 1, #iconsCfg do
+        local btn = self.upgradeButtons[i]
         btn:setParent(self.host, canvasName, self.scrollList.widgetName)
-        btn:setWidth(panelWidth - 24)
+        btn:setWidth(itemHeight)
         btn:setHeight(itemHeight)
-        btn:setButtonColorHexValue(Styles.Colors.buttonColor)
-        btn:setButtonBorderRadius(BORDER_RADIUS)
-        btn:setImageTextureSource(dummyImages[((i - 1) % #dummyImages) + 1])
+        btn:setTextureSource(iconsCfg[i].texture)
         btn:setZOrder(12)
         btn:setRotationDegrees(180)
+        btn:setBorderColorHexValue(iconsCfg[i].borderColor)
+        btn:setGlowColorHexValue(iconsCfg[i].glowColor)
         btn:setIsVisible(false)
+        btn:setCanBloomBeApplied(true)
     end
 end
 
@@ -173,7 +188,7 @@ function TowerUpgradesPanel:setIsVisible(isVisible)
     self.background:setIsVisible(isVisible)
     self.scrollList:setIsVisible(isVisible)
     self.closeButton:setIsVisible(isVisible)
-    for i = 1, #self.dummyButtons do self.dummyButtons[i]:setIsVisible(isVisible) end
+    for i = 1, #self.upgradeButtons do self.upgradeButtons[i]:setIsVisible(isVisible) end
 end
 
 function TowerUpgradesPanel:update() end

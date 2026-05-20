@@ -113,8 +113,7 @@ std::string UiScrollListLuaProxy::GetGameThreadData()
     jsonObj["scrollbar_side"] = mScrollbarSide;
     jsonObj["scrollbar_background_color"]
         = std::vector<float>{mScrollbarBackgroundColor.r, mScrollbarBackgroundColor.g, mScrollbarBackgroundColor.b};
-    jsonObj["scrollbar_thumb_color"]
-        = std::vector<float>{mScrollbarThumbColor.r, mScrollbarThumbColor.g, mScrollbarThumbColor.b};
+    jsonObj["scrollbar_thumb_color"] = std::vector<float>{mScrollbarThumbColor.r, mScrollbarThumbColor.g, mScrollbarThumbColor.b};
     jsonObj["scrollbar_thickness"] = mScrollbarThicknessPixels;
     return jsonObj.dump();
 }

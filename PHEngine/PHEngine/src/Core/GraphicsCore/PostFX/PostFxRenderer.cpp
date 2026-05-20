@@ -40,16 +40,29 @@ void PostFxRenderer::Init()
     }
 }
 
-void PostFxRenderer::Execute(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveSceneColorFramebuffer)
+void PostFxRenderer::ExecuteResolveSceneColor(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveSceneColorFramebuffer)
 {
     if (mEnabledFxBits.test(static_cast<uint8_t>(ePostFxStageType::BLOOM_STAGE))) {
         const auto& postFx = std::static_pointer_cast<BloomPostFxPass>(mPostFxStages.at(ePostFxStageType::BLOOM_STAGE));
         postFx->ExecutePostFx(resolveSceneColorFramebuffer->GetResolvedSceneColorTexture(), resolveSceneColorFramebuffer);
-        mFxColorResolver->Execute(resolveSceneColorFramebuffer->GetResolvedSceneColorTexture(), postFx);
+        mFxColorResolver->ExecuteResolveSceneColor(resolveSceneColorFramebuffer->GetResolvedSceneColorTexture(), postFx);
     }
 
     if (!mEnabledFxBits.any()) {
-        mFxColorResolver->Execute(resolveSceneColorFramebuffer->GetResolvedSceneColorTexture(), nullptr);
+        mFxColorResolver->ExecuteResolveSceneColor(resolveSceneColorFramebuffer->GetResolvedSceneColorTexture(), nullptr);
+    }
+}
+
+void PostFxRenderer::ExecuteResolveGuiColor(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveUiFramebuffer)
+{
+    if (mEnabledFxBits.test(static_cast<uint8_t>(ePostFxStageType::BLOOM_STAGE))) {
+        const auto& postFx = std::static_pointer_cast<BloomPostFxPass>(mPostFxStages.at(ePostFxStageType::BLOOM_STAGE));
+        postFx->ExecutePostFx(resolveUiFramebuffer->GetResolvedSceneColorTexture(), resolveUiFramebuffer);
+        mFxColorResolver->ExecuteResolveGuiColor(resolveUiFramebuffer->GetResolvedSceneColorTexture(), postFx);
+    }
+
+    if (!mEnabledFxBits.any()) {
+        mFxColorResolver->ExecuteResolveGuiColor(resolveUiFramebuffer->GetResolvedSceneColorTexture(), nullptr);
     }
 }
 

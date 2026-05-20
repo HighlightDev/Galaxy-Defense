@@ -47,7 +47,7 @@ local function getTypeToString(commonUiWidgetType)
     elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_SCROLL_LIST then
         return "UI_SCROLL_LIST"
     else
-        assert(false, "Wrong type of widget type: " .. tostring(commonUiWidgetType))
+        return "GAME_OR_UNKNOWN(" .. tostring(commonUiWidgetType) .. ")"
     end
 end
 
