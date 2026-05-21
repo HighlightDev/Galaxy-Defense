@@ -24,11 +24,13 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 local UiRectangle = require("Ui/Core/uiRectangle")
 local UiScrollList = require("Ui/Core/uiScrollList")
+local UiItem = require("Ui/Core/uiItem")
 local ImageButton = require("Ui/Widgets/ImageButton")
 local UiItemBase = require("Ui/Core/uiItemBase")
 local Styles = require("Ui/Common/styles")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local UpgradeIcon = require("Ui/Core/uiUpgradeIcon")
+local ConnectionLine = require("Ui/Core/uiConnectionLine")
 
 TowerUpgradesPanel = {}
 
@@ -48,6 +50,10 @@ local iconsCfg = {
 
 local BORDER_RADIUS = 6
 
+local CONTENT_NAME = "TowerUpgradesContent"
+local LINE_THICKNESS = 3.0
+local LINE_COLOR = 0x9ec5ff
+
 function TowerUpgradesPanel:new(host, overlay)
     assert(host ~= nil and overlay ~= nil)
 
@@ -56,8 +62,10 @@ function TowerUpgradesPanel:new(host, overlay)
         isVisible = false,
         background = nil,
         scrollList = nil,
+        contentContainer = nil,
         closeButton = nil,
         upgradeButtons = {},
+        connectionLines = {},
         panelWidth = 0,
         panelHeight = 0
     }
@@ -70,6 +78,9 @@ function TowerUpgradesPanel:new(host, overlay)
     newObj.scrollList = UiScrollList:new(host, "TowerUpgradesScrollList")
     overlay:addWidget(newObj.scrollList)
 
+    newObj.contentContainer = UiItem:new(host, CONTENT_NAME)
+    overlay:addWidget(newObj.contentContainer)
+
     newObj.closeButton = ImageButton:new(host, overlay, "TowerUpgradesCloseButton")
     overlay:addCompoundWidget(newObj.closeButton)
 
@@ -77,6 +88,12 @@ function TowerUpgradesPanel:new(host, overlay)
         local btn = UpgradeIcon:new(host, "TowerUpgradesUpgradeButton" .. tostring(i))
         overlay:addWidget(btn)
         newObj.upgradeButtons[i] = btn
+    end
+
+    for i = 1, #iconsCfg - 1 do
+        local line = ConnectionLine:new(host, "TowerUpgradesConnectionLine" .. tostring(i))
+        overlay:addWidget(line)
+        newObj.connectionLines[i] = line
     end
 
     newObj.closeButton:subscribeOnMouseInputClickedCallback(function()
@@ -144,7 +161,7 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
     self.scrollList:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, self.background.widgetName, 8)
     self.scrollList:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, self.background.widgetName,
                               8)
-    self.scrollList:setSpacing(itemSpacing)
+    self.scrollList:setSpacing(0)
     self.scrollList:setScrollSpeed(40)
     self.scrollList:setZOrder(11)
     self.scrollList:setIsVisible(false)
@@ -153,6 +170,15 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
     self.scrollList:setScrollbarThumbColorHexValue(Styles.Colors.buttonColor)
     self.scrollList:setScrollbarThicknessPixels(6)
     self.scrollList:setCanBloomBeApplied(false)
+
+    local iconCount = #iconsCfg
+    local contentWidth = panelWidth - 24
+    local contentHeight = iconCount * itemHeight + (iconCount - 1) * itemSpacing
+    self.contentContainer:setParent(self.host, canvasName, self.scrollList.widgetName)
+    self.contentContainer:setWidth(contentWidth)
+    self.contentContainer:setHeight(contentHeight)
+    self.contentContainer:setZOrder(11)
+    self.contentContainer:setIsVisible(false)
 
     self.closeButton:setParent(self.host, canvasName, self.background.widgetName)
     self.closeButton:setWidth(closeBtnSize)
@@ -163,21 +189,40 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
     self.closeButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, self.background.widgetName, 2)
     self.closeButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, self.background.widgetName,
                                2)
-    self.closeButton:setZOrder(12)
+    self.closeButton:setZOrder(14)
     self.closeButton:setIsVisible(false)
 
-    for i = 1, #iconsCfg do
+    for i = 1, iconCount do
         local btn = self.upgradeButtons[i]
-        btn:setParent(self.host, canvasName, self.scrollList.widgetName)
+        btn:setParent(self.host, canvasName, CONTENT_NAME)
         btn:setWidth(itemHeight)
         btn:setHeight(itemHeight)
+        btn:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER, CONTENT_NAME)
+        btn:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, CONTENT_NAME,
+                      (i - 1) * (itemHeight + itemSpacing))
         btn:setTextureSource(iconsCfg[i].texture)
-        btn:setZOrder(12)
+        btn:setZOrder(13)
         btn:setRotationDegrees(180)
         btn:setBorderColorHexValue(iconsCfg[i].borderColor)
         btn:setGlowColorHexValue(iconsCfg[i].glowColor)
         btn:setIsVisible(false)
-        btn:setCanBloomBeApplied(true)
+        btn:setCanBloomBeApplied(false)
+    end
+
+    for i = 1, iconCount - 1 do
+        local line = self.connectionLines[i]
+        line:setParent(self.host, canvasName, CONTENT_NAME)
+        line:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, CONTENT_NAME)
+        line:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, CONTENT_NAME)
+        line:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, CONTENT_NAME)
+        line:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, CONTENT_NAME)
+        line:setStartAnchorTarget("TowerUpgradesUpgradeButton" .. tostring(i))
+        line:setEndAnchorTarget("TowerUpgradesUpgradeButton" .. tostring(i + 1))
+        line:setColorHexValue(LINE_COLOR)
+        line:setThicknessPx(LINE_THICKNESS)
+        line:setZOrder(12)
+        line:setIsVisible(false)
+        line:setCanBloomBeApplied(false)
     end
 end
 
@@ -187,8 +232,10 @@ function TowerUpgradesPanel:setIsVisible(isVisible)
     self.isVisible = isVisible
     self.background:setIsVisible(isVisible)
     self.scrollList:setIsVisible(isVisible)
+    self.contentContainer:setIsVisible(isVisible)
     self.closeButton:setIsVisible(isVisible)
     for i = 1, #self.upgradeButtons do self.upgradeButtons[i]:setIsVisible(isVisible) end
+    for i = 1, #self.connectionLines do self.connectionLines[i]:setIsVisible(isVisible) end
 end
 
 function TowerUpgradesPanel:update() end

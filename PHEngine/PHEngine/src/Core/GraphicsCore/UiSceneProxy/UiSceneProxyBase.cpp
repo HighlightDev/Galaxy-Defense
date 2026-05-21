@@ -12,7 +12,7 @@ namespace Proxy {
 UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
     : mUiItemUId(uiItemBase->GetUId())
     , mIsVisible(uiItemBase->IsVisible())
-    , mZOrder(uiItemBase->GetZOrder())
+    , mZPath(uiItemBase->GetZPath())
     , mParentCanvasProxy()
     , mNormalizedTranslation(uiItemBase->GetNormalizedTranslation())
     , mNormalizedScale(uiItemBase->GetNormalizedScale())
@@ -51,17 +51,17 @@ bool UiSceneProxyBase::IsVisible() const
     return mIsVisible;
 }
 
-void UiSceneProxyBase::SetZOrder(const size_t zOrder)
+void UiSceneProxyBase::SetZPath(const std::vector<int32_t>& zPath)
 {
     if (const auto& canvasSp = mParentCanvasProxy.lock()) {
-        mZOrder = zOrder;
+        mZPath = zPath;
         canvasSp->SortProxiesByZOrder();
     }
 }
 
-size_t UiSceneProxyBase::GetZOrder() const
+const std::vector<int32_t>& UiSceneProxyBase::GetZPath() const
 {
-    return mZOrder;
+    return mZPath;
 }
 
 void UiSceneProxyBase::SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale)

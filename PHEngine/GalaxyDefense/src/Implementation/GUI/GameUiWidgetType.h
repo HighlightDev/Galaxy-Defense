@@ -5,7 +5,7 @@
 
 namespace Game {
 
-enum class eGameUiWidgetType : int32_t { UI_UPGRADE_ICON = 100 };
+enum class eGameUiWidgetType : int32_t { UI_UPGRADE_ICON = 100, UI_CONNECTION_LINE = 101 };
 
 std::string GameUiWidgetTypeToString(const eGameUiWidgetType type);
 

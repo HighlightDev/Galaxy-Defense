@@ -61,6 +61,22 @@ glm::vec3 GetXyzFromJsonMap(const nlohmann::json& root)
     return result;
 }
 
+glm::vec2 GetXyFromJsonMap(const nlohmann::json& root)
+{
+    glm::vec2 result;
+    for (auto it = root.cbegin(); it != root.cend(); ++it) {
+        const auto key = it.key();
+        if ("x" == key) {
+            result.x = it->get<float>();
+        } else if ("y" == key) {
+            result.y = it->get<float>();
+        } else {
+            ext_assert(false, "Missing x or y key in json object");
+        }
+    }
+    return result;
+}
+
 int32_t GetIntFromJson(const nlohmann::json& root, const std::string& key)
 {
     ext_assert(root.contains(key), "Missing key in json object: " + key);

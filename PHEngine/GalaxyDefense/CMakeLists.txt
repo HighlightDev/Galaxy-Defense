@@ -122,7 +122,12 @@ set(HEADERS
     src/Implementation/GUI/GameUiWidgetType.h
     src/Implementation/GUI/Shaders/UiUpgradeIconShader.h
     src/Implementation/GUI/SceneProxies/UiUpgradeIconSceneProxy.h
-    src/Implementation/GUI/LuaProxies/UiUpgradeIconLuaProxy.h)
+    src/Implementation/GUI/LuaProxies/UiUpgradeIconLuaProxy.h
+    src/Implementation/GUI/UiConnectionLine.h
+    src/Implementation/GUI/UiConnectionLineReplicatorFactory.h
+    src/Implementation/GUI/Shaders/UiConnectionLineShader.h
+    src/Implementation/GUI/SceneProxies/UiConnectionLineSceneProxy.h
+    src/Implementation/GUI/LuaProxies/UiConnectionLineLuaProxy.h)
 
 set(SOURCES
     src/Implementation/Components/MovementComponents/LootDropMovementComponent.cpp
@@ -231,6 +236,11 @@ set(SOURCES
     src/Implementation/GUI/Shaders/UiUpgradeIconShader.cpp
     src/Implementation/GUI/SceneProxies/UiUpgradeIconSceneProxy.cpp
     src/Implementation/GUI/LuaProxies/UiUpgradeIconLuaProxy.cpp
+    src/Implementation/GUI/UiConnectionLine.cpp
+    src/Implementation/GUI/UiConnectionLineReplicatorFactory.cpp
+    src/Implementation/GUI/Shaders/UiConnectionLineShader.cpp
+    src/Implementation/GUI/SceneProxies/UiConnectionLineSceneProxy.cpp
+    src/Implementation/GUI/LuaProxies/UiConnectionLineLuaProxy.cpp
     main.cpp)
 
 add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)

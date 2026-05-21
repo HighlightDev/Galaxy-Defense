@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 namespace EngineCore {
 namespace GUI {
@@ -29,7 +30,9 @@ protected:
 
     bool mIsVisible;
 
-    size_t mZOrder;
+    // Key for render sorting: [layer, local z of root, ..., local z of this widget]. Compared lexicographically — parent (prefix)
+    // is always before child.
+    std::vector<int32_t> mZPath;
 
     std::weak_ptr<UiCanvasSceneProxy> mParentCanvasProxy;
 
@@ -66,9 +69,9 @@ public:
 
     bool IsVisible() const;
 
-    void SetZOrder(const size_t zOrder);
+    void SetZPath(const std::vector<int32_t>& zPath);
 
-    size_t GetZOrder() const;
+    const std::vector<int32_t>& GetZPath() const;
 
     void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
 

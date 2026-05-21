@@ -9,6 +9,7 @@
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Engine.h"
 #include "src/Implementation/GUI/GameUiWidgetType.h"
+#include "src/Implementation/GUI/UiConnectionLineReplicatorFactory.h"
 #include "src/Implementation/GUI/UiUpgradeIconReplicatorFactory.h"
 #include "src/Implementation/Levels/GameLevelFactory.h"
 
@@ -230,6 +231,9 @@ int32_t main(int32_t argc, char** argv)
         EngineCore::Scripts::CommonUiWidgetFactoryCreator::GetInstance().RegisterFactory(
             static_cast<int32_t>(Game::eGameUiWidgetType::UI_UPGRADE_ICON),
             [] { return std::make_unique<UiUpgradeIconReplicatorFactory>(); });
+        EngineCore::Scripts::CommonUiWidgetFactoryCreator::GetInstance().RegisterFactory(
+            static_cast<int32_t>(Game::eGameUiWidgetType::UI_CONNECTION_LINE),
+            [] { return std::make_unique<UiConnectionLineReplicatorFactory>(); });
 
         engine->PlayLevel("MainMenuLevel");
         // Loop until the user closes the window

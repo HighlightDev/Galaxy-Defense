@@ -46,8 +46,10 @@ void UiCanvasSceneProxy::RemoveUiSceneProxy(const size_t uiItemUId)
 
 void UiCanvasSceneProxy::SortProxiesByZOrder()
 {
-    std::sort(mUiProxies.begin(), mUiProxies.end(), [](const auto& left, const auto& right) {
-        return left->GetZOrder() < right->GetZOrder();
+    // Lexicographical comparison of z-path: parent path is a prefix of child path, so parent is always sorted before. stable_sort
+    // preserves registration order for completely equal paths.
+    std::stable_sort(mUiProxies.begin(), mUiProxies.end(), [](const auto& left, const auto& right) {
+        return left->GetZPath() < right->GetZPath();
     });
 }
 
@@ -59,25 +61,23 @@ void UiCanvasSceneProxy::Render()
                 proxy->SetOverlayOpacity(mOverlayOpacity);
                 const GLuint bloomRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM : 0;
                 if (proxy->IsGuiScissorsSlave()) {
-                    const GLint ref
-                        = EngineConstants::eStencilValues::GUI_SCISSORING | EngineConstants::GUI_DEFAULT | bloomRefValue;
+                    const GLint ref = EngineConstants::eStencilValues::GUI_SCISSORING | bloomRefValue;
                     // test: compare ONLY the GUI_SCISSORING bit — slave is rendered inside the scissor region
                     // the master is independent of whether the master wrote the BLOOM bit or not.
                     glStencilFunc(GL_EQUAL, ref, EngineConstants::eStencilValues::GUI_SCISSORING);
                     // Write: write-mask = bloomRefValue. If slave has bloom — only the BLOOM bit is passed
                     // BLOOM (GL_REPLACE will set it from ref), GUI_SCISSORING master is not touched.
                     // If slave has no bloom — mask 0, stencil is not changed at all.
-                    glStencilMask(bloomRefValue | EngineConstants::GUI_DEFAULT);
+                    glStencilMask(bloomRefValue);
                 } else {
                     // Master and usual proxies write the full value of ref.
                     glStencilMask(0xFF);
                     if (proxy->IsGuiScissorsMaster()) {
-                        const GLint ref
-                            = EngineConstants::eStencilValues::GUI_SCISSORING | bloomRefValue | EngineConstants::GUI_DEFAULT;
+                        const GLint ref = EngineConstants::eStencilValues::GUI_SCISSORING | bloomRefValue;
                         const GLuint mask = 0xFF;
                         glStencilFunc(GL_ALWAYS, ref, mask);
                     } else {
-                        const GLint ref = EngineConstants::eStencilValues::GUI_DEFAULT;
+                        const GLint ref = 0x00;
                         const GLuint mask = 0xFF;
                         glStencilFunc(GL_ALWAYS, ref, mask);
                     }

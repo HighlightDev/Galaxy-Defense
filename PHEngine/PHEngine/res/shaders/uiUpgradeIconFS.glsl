@@ -70,5 +70,9 @@ void main(void)
     vec3 finalRgb = mix(glowColor, afterBorder, afterBorderA);
     float finalA = afterBorderA + outsideGlow * (1.0 - afterBorderA);
 
+    if (finalA < 0.01) {
+        discard;
+    }
+
     FragColor = vec4(finalRgb, finalA * opacity);
 }

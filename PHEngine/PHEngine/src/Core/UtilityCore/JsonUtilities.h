@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/gtc/quaternion.hpp>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <json/json.hpp>
@@ -11,6 +12,8 @@ glm::vec3 GetRgbFromJsonMap(const nlohmann::json& root);
 glm::vec4 GetRgbaFromJsonMap(const nlohmann::json& root);
 
 glm::vec3 GetXyzFromJsonMap(const nlohmann::json& root);
+
+glm::vec2 GetXyFromJsonMap(const nlohmann::json& root);
 
 int32_t GetIntFromJson(const nlohmann::json& root, const std::string& key);
 

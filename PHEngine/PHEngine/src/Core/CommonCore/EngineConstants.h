@@ -5,8 +5,7 @@
 namespace EngineConstants {
 enum eStencilValues : uint32_t {
     SCENE_DEFAULT = 0x1,
-    GUI_DEFAULT = SCENE_DEFAULT << 1,
-    GUI_SCISSORING = GUI_DEFAULT << 1,
+    GUI_SCISSORING = SCENE_DEFAULT << 1,
     BLOOM = GUI_SCISSORING << 1,
     OUTLINE = BLOOM << 1,
 };

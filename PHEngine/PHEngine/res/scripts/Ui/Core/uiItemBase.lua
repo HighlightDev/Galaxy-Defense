@@ -39,12 +39,15 @@ UiItemBase.UiAnchorType = {
 UiItemBase.UiMouseInputPressState = {RELEASED = 0, PRESSED = 1}
 
 UiItemBase.UiMouseInputCursorHoverState = {LEAVED = 0, ENTERED = 1}
+-- Render layer. INHERIT — take layer from parent. Inside the layer, order is defined by tree and local z.
+UiItemBase.UiLayer = {INHERIT = -1, BACKGROUND = 0, HUD = 100, PANEL = 200, OVERLAY = 300, MODAL = 400, TOOLTIP = 500}
 
 function UiItemBase:new()
     local uiItemBaseProperties = {
         visible = {value = false, dirty = false},
         intercept_mouse_input_event = {value = false, dirty = false},
         z_order = {value = 0, dirty = false},
+        layer = {value = -1, dirty = false},
         width = {value = 0, dirty = false},
         height = {value = 0, dirty = false},
         horizontalCenterOffset = {value = 0, dirty = false},
@@ -235,6 +238,17 @@ function UiItemBase:setZOrder(z_order)
 end
 
 function UiItemBase:getZOrder() return self.properties.z_order.value end
+
+-- layer — value from UiItemBase.UiLayer (UiLayer.INHERIT to inherit parent's layer).
+function UiItemBase:setLayer(layer)
+    assert(layer ~= nil and type(layer) == "number")
+    if self.properties.layer.value ~= layer then
+        self.properties.layer.value = layer
+        self.properties.layer.dirty = true
+    end
+end
+
+function UiItemBase:getLayer() return self.properties.layer.value end
 
 function UiItemBase:setWidth(width)
     if self.properties.width.value ~= width then

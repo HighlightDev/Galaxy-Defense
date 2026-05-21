@@ -9,6 +9,7 @@
 #include "Transform2D/BoundingBox2D.h"
 #include "Transform2D/UiAnchorData.h"
 #include "Transform2D/UiAnchorType.h"
+#include "eUiLayer.h"
 
 #include <glm/mat4x4.hpp>
 
@@ -48,6 +49,8 @@ protected:
     glm::vec2 mNormalizedScale;
 
     size_t mZOrder;
+
+    eUiLayer mLayer;
 
     size_t mWidth;
 
@@ -132,7 +135,7 @@ public:
 
     virtual void OnPropertiesShouldBeUpdatedOnLuaThread();
 
-    bool IsTransformDependentToUiItem(const std::string& uiItemName) const;
+    virtual bool IsTransformDependentToUiItem(const std::string& uiItemName) const;
 
     std::shared_ptr<IUiMouseInputReceivable> GetMouseInputReceiver() const;
 
@@ -177,6 +180,10 @@ public:
     // Implementation of IUiTransformable
     const glm::ivec2& GetAbsoluteOrigin() const override;
     size_t GetZOrder() const override;
+    void SetLayer(const eUiLayer layer);
+    eUiLayer GetLayer() const;
+    eUiLayer GetEffectiveLayer() const;
+    std::vector<int32_t> GetZPath() const;
     size_t GetWidth() const override;
     size_t GetHeight() const override;
     glm::vec2 GetNormalizedTranslation() const override;
@@ -265,6 +272,10 @@ protected:
 private:
     void CalculateHorizontalAnchorPositions();
     void CalculateVerticalAnchorPositions();
+
+    // Помечает виджет и всё его поддерево для ресинка на render-поток: z-path потомков зависит
+    // от z/слоя предков, поэтому при их изменении пересобрать путь нужно у всей ветки.
+    void PropagateRenderUpdateToSubtree();
 
     void SyncDataOnRenderThread();
 

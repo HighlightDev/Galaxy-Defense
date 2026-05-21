@@ -36,6 +36,7 @@ UiItemBase::UiItemBase(const std::string& name)
     , mNormalizedTranslation()
     , mNormalizedScale(glm::vec2(1.0))
     , mZOrder(0)
+    , mLayer(eUiLayer::INHERIT)
     , mWidth(0)
     , mHeight(0)
     , mBoundingArea()
@@ -144,6 +145,55 @@ size_t UiItemBase::GetZOrder() const
     return mZOrder;
 }
 
+void UiItemBase::SetLayer(const eUiLayer layer)
+{
+    if (mLayer != layer) {
+        mLayer = layer;
+        PropagateRenderUpdateToSubtree();
+    }
+}
+
+eUiLayer UiItemBase::GetLayer() const
+{
+    return mLayer;
+}
+
+eUiLayer UiItemBase::GetEffectiveLayer() const
+{
+    if (mLayer != eUiLayer::INHERIT) {
+        return mLayer;
+    }
+    if (const auto& parentItem = std::dynamic_pointer_cast<UiItemBase>(mParent.lock())) {
+        return parentItem->GetEffectiveLayer();
+    }
+    return eUiLayer::PANEL;
+}
+
+std::vector<int32_t> UiItemBase::GetZPath() const
+{
+    std::vector<int32_t> zPath;
+    if (const auto& parentItem = std::dynamic_pointer_cast<UiItemBase>(mParent.lock())) {
+        // Path for child = path for parent + own z-order. Сhild inherits the path from the parent and adds its own z-order to it.
+        zPath = parentItem->GetZPath();
+        if (mLayer != eUiLayer::INHERIT) {
+            zPath[0] = static_cast<int32_t>(mLayer);
+        }
+    } else {
+        // WIdget of the top level (parent is canvas): path starts with layer.
+        zPath.push_back(static_cast<int32_t>(GetEffectiveLayer()));
+    }
+    zPath.push_back(static_cast<int32_t>(mZOrder));
+    return zPath;
+}
+
+void UiItemBase::PropagateRenderUpdateToSubtree()
+{
+    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+    for (const auto& child : mChildren) {
+        child->PropagateRenderUpdateToSubtree();
+    }
+}
+
 size_t UiItemBase::GetWidth() const
 {
     return mWidth;
@@ -186,7 +236,7 @@ void UiItemBase::SetZOrder(const size_t zOrder)
 {
     if (mZOrder != zOrder) {
         mZOrder = zOrder;
-        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        PropagateRenderUpdateToSubtree();
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }
 }
@@ -885,11 +935,18 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             mCanInterceptMouseInputEvents = canIntercept;
         }
     }
+    if (jsonObj.contains("layer")) {
+        const auto layer = static_cast<eUiLayer>(jsonObj["layer"].get<int32_t>());
+        if (mLayer != layer) {
+            mLayer = layer;
+            PropagateRenderUpdateToSubtree();
+        }
+    }
     if (jsonObj.contains("z_order")) {
         const auto z_order = jsonObj["z_order"].get<int32_t>();
         if (mZOrder != z_order) {
             mZOrder = z_order;
-            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+            PropagateRenderUpdateToSubtree();
         }
     }
     if (jsonObj.contains("width")) {
@@ -982,7 +1039,7 @@ void UiItemBase::SyncDataOnRenderThread()
                      myUId = GetUId(),
                      canvasUId = canvasSp->GetUId(),
                      isVisible = mIsVisible,
-                     zOrder = mZOrder,
+                     zPath = GetZPath(),
                      normTranslation = mNormalizedTranslation,
                      normScale = mNormalizedScale,
                      width = mWidth,
@@ -1006,7 +1063,7 @@ void UiItemBase::SyncDataOnRenderThread()
                                 uiSceneProxy->SetIsGuiScissorsSlave(isGuiScissorsSlave);
                                 uiSceneProxy->SetIsGuiScissorsMaster(isGuiScissorsMaster);
                                 uiSceneProxy->SetCanBloomBeApplied(canBloomBeApplied);
-                                uiSceneProxy->SetZOrder(zOrder);
+                                uiSceneProxy->SetZPath(zPath);
                                 uiSceneProxy->SetTransform(normTranslation, normScale);
                                 uiSceneProxy->SetWidthHeightPixels(
                                     glm::ivec2(static_cast<int32_t>(width), static_cast<int32_t>(height)));
