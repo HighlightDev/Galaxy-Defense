@@ -23,6 +23,7 @@ protected:
 
     bool mIsCustomColor;
     bool mIsFlipped;
+    bool mGlowVisible;
 
     float mFillStrength;
     float mBorderThicknessPx;
@@ -60,6 +61,8 @@ public:
     void SetRotationDegrees_FromGameThread(const float rotationDegrees);
 
     void SetIsFlipped_FromGameThread(const bool isFlipped);
+
+    void SetGlowVisible_FromGameThread(const bool glowVisible);
 };
 
 } // namespace Game

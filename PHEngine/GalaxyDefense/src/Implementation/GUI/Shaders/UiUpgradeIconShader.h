@@ -21,12 +21,10 @@ class UiUpgradeIconShader : public Shader {
     Uniform u_widthAndHeight;
     Uniform u_fillColor;
     Uniform u_borderColor;
-    Uniform u_glowColor;
     Uniform u_iconCustomColor;
     Uniform u_isCustomIconColor;
     Uniform u_fillStrength;
     Uniform u_borderThicknessPx;
-    Uniform u_glowSizePx;
     Uniform u_opacity;
 
 public:
@@ -46,8 +44,6 @@ public:
 
     void SetBorderColor(const glm::vec3& color);
 
-    void SetGlowColor(const glm::vec3& color);
-
     void SetIconCustomColor(const glm::vec3& color);
 
     void SetIsCustomIconColor(const bool isCustomIconColor);
@@ -55,8 +51,6 @@ public:
     void SetFillStrength(const float fillStrength);
 
     void SetBorderThicknessPx(const float borderThicknessPx);
-
-    void SetGlowSizePx(const float glowSizePx);
 
     void SetOpacity(const float opacity);
 

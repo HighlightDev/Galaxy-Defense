@@ -130,8 +130,7 @@ void ElectroRayActor::Tick(const float deltaTimeSec)
         mElectroLineBegin += electroLineDirection * mElectroLineOriginSpeed * deltaTimeSec;
         if (bElectroLineCollided
             && (EngineMath::CheckSimilarityVec3(mElectroLineBegin, mElectroLineEnd)
-                || (EngineMath::ProjectVector3OnVector(mElectroLineBegin, mElectroLineDirection)
-                    >= EngineMath::ProjectVector3OnVector(mElectroLineEnd, mElectroLineDirection)))) {
+                || (glm::dot(mElectroLineBegin, mElectroLineDirection) >= glm::dot(mElectroLineEnd, mElectroLineDirection)))) {
             TriggerDisabled();
         }
     }

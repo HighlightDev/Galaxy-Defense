@@ -137,6 +137,14 @@ void UiConnectionLine::RecalculateAnchorPositions()
     ResolveAnchoredEndpoints();
 }
 
+void UiConnectionLine::UnpausableTick(const float deltaTimeSec)
+{
+    UiItemBase::UnpausableTick(deltaTimeSec);
+    // Reresolve endpoints each frame: this is robust to initialization order (target/parent may not be ready at the moment of
+    // first RecalculateAnchorPositions) and keeps line anchored to nodes when they are moved.
+    ResolveAnchoredEndpoints();
+}
+
 void UiConnectionLine::ResolveAnchoredEndpoints()
 {
     if (mStartAnchorTarget.empty() && mEndAnchorTarget.empty()) {
@@ -162,8 +170,6 @@ void UiConnectionLine::ResolveAnchoredEndpoints()
         const auto& targetBox = targetUiItem->GetBoundingArea();
         const glm::vec2 targetCenter = glm::vec2(targetBox.GetOrigin());
         glm::vec2 normalized = (targetCenter - lineMin) / lineSize;
-        // texCoords в шейдере перевёрнут по Y относительно screen-space bounding box (uiVS.glsl: 1 - texCoord.y).
-        normalized.y = 1.0f - normalized.y;
         if (!EngineMath::CheckSimilarityVec2(normalized, endpoint)) {
             endpoint = normalized;
             changed = true;

@@ -52,7 +52,8 @@ function UiUpgradeIcon:new(host, name)
         glow_size_px = {value = 10.0, dirty = false},
         opacity = {value = 1.0, dirty = false},
         rotation_degrees = {value = 0.0, dirty = false},
-        is_flipped = {value = false, dirty = false}
+        is_flipped = {value = false, dirty = false},
+        glow_visible = {value = false, dirty = false}
     }
 
     local uiUpgradeIconObj = UiUpgradeIcon.uiItemBaseClass.new(self)
@@ -105,6 +106,9 @@ function UiUpgradeIcon:updateFromReplicatorData(host)
             end
             if parsedJson["is_flipped"] ~= nil then
                 self.iconProperties.is_flipped.value = parsedJson["is_flipped"]
+            end
+            if parsedJson["glow_visible"] ~= nil then
+                self.iconProperties.glow_visible.value = parsedJson["glow_visible"]
             end
         end
     end
@@ -263,5 +267,15 @@ function UiUpgradeIcon:setIsFlipped(isFlipped)
         self.iconProperties.is_flipped.dirty = true
     end
 end
+
+function UiUpgradeIcon:setGlowVisible(isGlowVisible)
+    assert(isGlowVisible ~= nil and type(isGlowVisible) == "boolean")
+    if self.iconProperties.glow_visible.value ~= isGlowVisible then
+        self.iconProperties.glow_visible.value = isGlowVisible
+        self.iconProperties.glow_visible.dirty = true
+    end
+end
+
+function UiUpgradeIcon:isGlowVisible() return self.iconProperties.glow_visible.value end
 
 return UiUpgradeIcon

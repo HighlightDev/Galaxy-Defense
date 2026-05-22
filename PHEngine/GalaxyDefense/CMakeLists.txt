@@ -121,6 +121,7 @@ set(HEADERS
     src/Implementation/GUI/UiUpgradeIconReplicatorFactory.h
     src/Implementation/GUI/GameUiWidgetType.h
     src/Implementation/GUI/Shaders/UiUpgradeIconShader.h
+    src/Implementation/GUI/Shaders/UiUpgradeIconGlowShader.h
     src/Implementation/GUI/SceneProxies/UiUpgradeIconSceneProxy.h
     src/Implementation/GUI/LuaProxies/UiUpgradeIconLuaProxy.h
     src/Implementation/GUI/UiConnectionLine.h
@@ -234,6 +235,7 @@ set(SOURCES
     src/Implementation/GUI/UiUpgradeIconReplicatorFactory.cpp
     src/Implementation/GUI/GameUiWidgetType.cpp
     src/Implementation/GUI/Shaders/UiUpgradeIconShader.cpp
+    src/Implementation/GUI/Shaders/UiUpgradeIconGlowShader.cpp
     src/Implementation/GUI/SceneProxies/UiUpgradeIconSceneProxy.cpp
     src/Implementation/GUI/LuaProxies/UiUpgradeIconLuaProxy.cpp
     src/Implementation/GUI/UiConnectionLine.cpp

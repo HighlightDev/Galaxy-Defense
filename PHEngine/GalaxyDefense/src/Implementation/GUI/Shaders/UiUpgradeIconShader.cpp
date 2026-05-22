@@ -20,12 +20,10 @@ void UiUpgradeIconShader::AccessAllUniformLocations(uint32_t shaderProgramId)
     u_widthAndHeight = GetUniform("widthAndHeight", shaderProgramId);
     u_fillColor = GetUniform("fillColor", shaderProgramId);
     u_borderColor = GetUniform("borderColor", shaderProgramId);
-    u_glowColor = GetUniform("glowColor", shaderProgramId);
     u_iconCustomColor = GetUniform("iconCustomColor", shaderProgramId);
     u_isCustomIconColor = GetUniform("isCustomIconColor", shaderProgramId);
     u_fillStrength = GetUniform("fillStrength", shaderProgramId);
     u_borderThicknessPx = GetUniform("borderThicknessPx", shaderProgramId);
-    u_glowSizePx = GetUniform("glowSizePx", shaderProgramId);
     u_opacity = GetUniform("opacity", shaderProgramId);
 }
 
@@ -65,11 +63,6 @@ void UiUpgradeIconShader::SetBorderColor(const glm::vec3& color)
     u_borderColor.LoadUniform(color);
 }
 
-void UiUpgradeIconShader::SetGlowColor(const glm::vec3& color)
-{
-    u_glowColor.LoadUniform(color);
-}
-
 void UiUpgradeIconShader::SetIconCustomColor(const glm::vec3& color)
 {
     u_iconCustomColor.LoadUniform(color);
@@ -88,11 +81,6 @@ void UiUpgradeIconShader::SetFillStrength(const float fillStrength)
 void UiUpgradeIconShader::SetBorderThicknessPx(const float borderThicknessPx)
 {
     u_borderThicknessPx.LoadUniform(borderThicknessPx);
-}
-
-void UiUpgradeIconShader::SetGlowSizePx(const float glowSizePx)
-{
-    u_glowSizePx.LoadUniform(glowSizePx);
 }
 
 void UiUpgradeIconShader::SetOpacity(const float opacity)

@@ -298,9 +298,14 @@ glm::vec3 CreateRandomColor()
     return glm::vec3(Random::Float(), Random::Float(), Random::Float());
 }
 
-float ProjectVector3OnVector(const glm::vec3& projectedNonUnitVec, const glm::vec3& unitDirection)
+//     P*
+//    / |          
+//   /  |
+// A ---X---->B
+// Project PA on BA
+float ProjectVectors(const glm::vec3& pa, const glm::vec3& ba)
 {
-    return glm::dot(projectedNonUnitVec, unitDirection);
+    return glm::dot(pa, ba) / glm::dot(ba, ba);
 }
 
 float RaycastPlane(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const glm::vec4& plane)

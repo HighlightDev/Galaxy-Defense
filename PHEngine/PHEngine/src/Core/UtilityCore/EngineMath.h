@@ -92,7 +92,7 @@ glm::vec3 FromHexColorToVec3Color(const uint32_t hexValue);
 glm::vec4 FromHexColorToVec4Color(const uint32_t hexValue);
 glm::vec3 CreateRandomColor();
 
-float ProjectVector3OnVector(const glm::vec3& projectedNonUnitVec, const glm::vec3& unitDirection);
+float ProjectVectors(const glm::vec3& pa, const glm::vec3& ba);
 
 glm::vec3 QuadraticBezier(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, const float t);
 

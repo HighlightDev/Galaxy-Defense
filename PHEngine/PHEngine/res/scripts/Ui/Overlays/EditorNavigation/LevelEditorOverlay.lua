@@ -82,7 +82,7 @@ function LevelEditorOverlay:new(host)
                                                    "EditSpawnPortalsButton")
     overlay:addCompoundWidget(editSpawnPortalsButton)
 
-    local undoLastActionButton = ImageButton:new(host, overlay, "EditStationSocketsButton")
+    local undoLastActionButton = ImageButton:new(host, overlay, "UndoLastActionButton")
     overlay:addCompoundWidget(undoLastActionButton)
 
     local saveLevelButton = ImageButton:new(host, overlay, "SaveLevelButton")

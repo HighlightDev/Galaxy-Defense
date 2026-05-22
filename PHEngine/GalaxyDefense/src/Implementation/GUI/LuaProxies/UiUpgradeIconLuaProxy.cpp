@@ -22,6 +22,7 @@ UiUpgradeIconLuaProxy::UiUpgradeIconLuaProxy(const std::shared_ptr<UiUpgradeIcon
     , mFillColor(ownerUiItem->GetFillColor())
     , mIsCustomColor(ownerUiItem->IsCustomColorEnabled())
     , mIsFlipped(ownerUiItem->GetIsFlipped())
+    , mGlowVisible(ownerUiItem->GetGlowVisible())
     , mFillStrength(ownerUiItem->GetFillStrength())
     , mBorderThicknessPx(ownerUiItem->GetBorderThicknessPx())
     , mGlowSizePx(ownerUiItem->GetGlowSizePx())
@@ -68,6 +69,7 @@ std::string UiUpgradeIconLuaProxy::GetGameThreadData()
     jsonObj["opacity"] = mOpacity;
     jsonObj["rotation_degrees"] = mRotationDegrees;
     jsonObj["is_flipped"] = mIsFlipped;
+    jsonObj["glow_visible"] = mGlowVisible;
     return jsonObj.dump();
 }
 
@@ -163,6 +165,14 @@ void UiUpgradeIconLuaProxy::SetIsFlipped_FromGameThread(const bool isFlipped)
 {
     if (mIsFlipped != isFlipped) {
         mIsFlipped = isFlipped;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiUpgradeIconLuaProxy::SetGlowVisible_FromGameThread(const bool glowVisible)
+{
+    if (mGlowVisible != glowVisible) {
+        mGlowVisible = glowVisible;
         mIsLuaDataDirty = true;
     }
 }

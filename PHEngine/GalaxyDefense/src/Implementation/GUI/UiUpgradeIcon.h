@@ -44,6 +44,7 @@ class UiUpgradeIcon : public UiItemBase {
     float mRotationDegrees;
 
     bool mIsFlipped;
+    bool mGlowVisible;
 
 public:
     explicit UiUpgradeIcon(const std::string& name = std::string(""));
@@ -109,6 +110,10 @@ public:
     void SetIsFlipped(const bool isFlipped);
 
     bool GetIsFlipped() const;
+
+    void SetGlowVisible(const bool glowVisible);
+
+    bool GetGlowVisible() const;
 
     std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const override;
 

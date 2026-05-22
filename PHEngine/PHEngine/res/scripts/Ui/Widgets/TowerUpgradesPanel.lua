@@ -25,6 +25,7 @@ setup()
 local UiRectangle = require("Ui/Core/uiRectangle")
 local UiScrollList = require("Ui/Core/uiScrollList")
 local UiItem = require("Ui/Core/uiItem")
+local UiLabel = require("Ui/Core/uiLabel")
 local ImageButton = require("Ui/Widgets/ImageButton")
 local UiItemBase = require("Ui/Core/uiItemBase")
 local Styles = require("Ui/Common/styles")
@@ -34,25 +35,125 @@ local ConnectionLine = require("Ui/Core/uiConnectionLine")
 
 TowerUpgradesPanel = {}
 
-local iconsCfg = {
-    {texture = "cryo_cannon.png", borderColor = 0x23208d, glowColor = 0x23208d},
-    {texture = "electric_beam.png", borderColor = 0x88008d, glowColor = 0x88008d},
-    {texture = "force_barrier.png", borderColor = 0xcf910e, glowColor = 0xcf910e},
-    {texture = "gravity_bomb.png", borderColor = 0x8700bb, glowColor = 0x8700bb},
-    {texture = "he_rocket.png", borderColor = 0xf24d00, glowColor = 0xf24d00},
-    {texture = "ice_beam.png", borderColor = 0x0c6a83, glowColor = 0x0c6a83},
-    {texture = "ice_rocket.png", borderColor = 0x1dcbe7, glowColor = 0x1dcbe7},
-    {texture = "nano_beam.png", borderColor = 0x00c77f, glowColor = 0x00c77f},
-    {texture = "plasma_rocket.png", borderColor = 0x750653, glowColor = 0x750653},
-    {texture = "quantum_nexus.png", borderColor = 0x4e3f88, glowColor = 0x4e3f88},
-    {texture = "repair_beam.png", borderColor = 0x209a5d, glowColor = 0x209a5d}
+local treeNodes = {
+    {
+        id = "he_rocket",
+        name = "Фугасная Ракета",
+        texture = "he_rocket.png",
+        color = 0xe85d04,
+        glow = 0xff8c38,
+        x = 50,
+        y = 6,
+        parents = {}
+    }, {
+        id = "ice_rocket",
+        name = "Ледяная Ракета",
+        texture = "ice_rocket.png",
+        color = 0x48cae4,
+        glow = 0x90e0ef,
+        x = 14,
+        y = 24,
+        parents = {"he_rocket"}
+    }, {
+        id = "repair_beam",
+        name = "Ремонтный Луч",
+        texture = "repair_beam.png",
+        color = 0x22c55e,
+        glow = 0x86efac,
+        x = 50,
+        y = 24,
+        parents = {"he_rocket"}
+    }, {
+        id = "plasma_rocket",
+        name = "Плазменная Ракета",
+        texture = "plasma_rocket.png",
+        color = 0xf72585,
+        glow = 0xff49a0,
+        x = 86,
+        y = 24,
+        parents = {"he_rocket"}
+    }, {
+        id = "ice_beam",
+        name = "Ледяной Луч",
+        texture = "ice_beam.png",
+        color = 0x00b4d8,
+        glow = 0x48cae4,
+        x = 8,
+        y = 45,
+        parents = {"ice_rocket"}
+    }, {
+        id = "electric_beam",
+        name = "Электрический Луч",
+        texture = "electric_beam.png",
+        color = 0x7b2d8b,
+        glow = 0xb44fc4,
+        x = 31,
+        y = 45,
+        parents = {"plasma_rocket", "ice_rocket"}
+    }, {
+        id = "nano_beam",
+        name = "Нано-Луч",
+        texture = "nano_beam.png",
+        color = 0x10b981,
+        glow = 0x6ee7b7,
+        x = 62,
+        y = 45,
+        parents = {"repair_beam"}
+    }, {
+        id = "cryo_cannon",
+        name = "Крио-Пушка",
+        texture = "cryo_cannon.png",
+        color = 0x023e8a,
+        glow = 0x0077b6,
+        x = 88,
+        y = 45,
+        parents = {"plasma_rocket"}
+    }, {
+        id = "gravity_bomb",
+        name = "Гравитационная Бомба",
+        texture = "gravity_bomb.png",
+        color = 0x7209b7,
+        glow = 0xb44fc4,
+        x = 30,
+        y = 66,
+        parents = {"ice_beam", "electric_beam"}
+    }, {
+        id = "force_barrier",
+        name = "Форс-Барьер",
+        texture = "force_barrier.png",
+        color = 0xf59e0b,
+        glow = 0xfcd34d,
+        x = 72,
+        y = 66,
+        parents = {"nano_beam", "cryo_cannon"}
+    }, {
+        id = "quantum_nexus",
+        name = "Квантовый Нексус",
+        texture = "quantum_nexus.png",
+        color = 0x818cf8,
+        glow = 0xe0e7ff,
+        x = 50,
+        y = 85,
+        parents = {"gravity_bomb", "force_barrier"}
+    }
 }
 
-local BORDER_RADIUS = 6
+local nodeById = {}
+for _, node in ipairs(treeNodes) do nodeById[node.id] = node end
 
+local connections = {}
+for _, node in ipairs(treeNodes) do
+    for _, parentId in ipairs(node.parents) do connections[#connections + 1] = {from = parentId, to = node.id} end
+end
+
+local BORDER_RADIUS = 6
 local CONTENT_NAME = "TowerUpgradesContent"
 local LINE_THICKNESS = 3.0
-local LINE_COLOR = 0x9ec5ff
+local NODE_GLOW_SIZE = 18.0
+local LABEL_FONT = "Lora-VariableFont_wght"
+local LABEL_FONT_SIZE = 13.0
+
+local function nodeWidgetName(nodeId) return "TowerUpgradesNode_" .. nodeId end
 
 function TowerUpgradesPanel:new(host, overlay)
     assert(host ~= nil and overlay ~= nil)
@@ -65,6 +166,7 @@ function TowerUpgradesPanel:new(host, overlay)
         contentContainer = nil,
         closeButton = nil,
         upgradeButtons = {},
+        nodeLabels = {},
         connectionLines = {},
         panelWidth = 0,
         panelHeight = 0
@@ -78,20 +180,25 @@ function TowerUpgradesPanel:new(host, overlay)
     newObj.scrollList = UiScrollList:new(host, "TowerUpgradesScrollList")
     overlay:addWidget(newObj.scrollList)
 
+    -- One container = single item of the scroll list. Tree nodes, labels and connection lines live inside it. ---
     newObj.contentContainer = UiItem:new(host, CONTENT_NAME)
     overlay:addWidget(newObj.contentContainer)
 
     newObj.closeButton = ImageButton:new(host, overlay, "TowerUpgradesCloseButton")
     overlay:addCompoundWidget(newObj.closeButton)
 
-    for i = 1, #iconsCfg do
-        local btn = UpgradeIcon:new(host, "TowerUpgradesUpgradeButton" .. tostring(i))
+    for i = 1, #treeNodes do
+        local btn = UpgradeIcon:new(host, nodeWidgetName(treeNodes[i].id))
         overlay:addWidget(btn)
         newObj.upgradeButtons[i] = btn
+
+        local label = UiLabel:new(host, LABEL_FONT, "TowerUpgradesLabel_" .. treeNodes[i].id)
+        overlay:addWidget(label)
+        newObj.nodeLabels[i] = label
     end
 
-    for i = 1, #iconsCfg - 1 do
-        local line = ConnectionLine:new(host, "TowerUpgradesConnectionLine" .. tostring(i))
+    for i = 1, #connections do
+        local line = ConnectionLine:new(host, "TowerUpgradesLine" .. tostring(i))
         overlay:addWidget(line)
         newObj.connectionLines[i] = line
     end
@@ -108,18 +215,13 @@ function TowerUpgradesPanel:new(host, overlay)
         end
     end)
 
-    local dummyLabels = {"Speed Up", "Range Up", "Damage Up"}
-    for i = 1, #iconsCfg do
+    local function dropGlowVisibleState() for i = 1, #treeNodes do newObj.upgradeButtons[i]:setGlowVisible(false) end end
+
+    for i = 1, #treeNodes do
         local btn = newObj.upgradeButtons[i]
-        btn:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-            if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-                btn:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
-            else
-                btn:setButtonColorHexValue(Styles.Colors.buttonColor)
-            end
-        end)
         btn:subscribeOnMouseInputClickedCallback(function()
-            print("TowerUpgradesPanel: dummy perk clicked: " .. dummyLabels[((i - 1) % #dummyLabels) + 1])
+            dropGlowVisibleState()
+            btn:setGlowVisible(true)
         end)
     end
 
@@ -131,14 +233,14 @@ function TowerUpgradesPanel:onPreCompoundWidgetInitialize() end
 function TowerUpgradesPanel:onCompoundWidgetInitialize() end
 
 function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
-    local panelWidth = math.floor(windowWidth * 0.5)
-    local panelHeight = math.floor(windowHeight * 0.5)
+    local panelWidth = math.floor(windowWidth * 0.62)
+    local panelHeight = math.floor(windowHeight * 0.85)
     self.panelWidth = panelWidth
     self.panelHeight = panelHeight
 
-    local closeBtnSize = math.floor(panelHeight * 0.08)
-    local itemHeight = math.floor(panelHeight * 0.18)
-    local itemSpacing = math.floor(panelHeight * 0.03)
+    local closeBtnSize = math.floor(panelHeight * 0.06)
+    local nodeSize = math.floor(panelHeight * 0.13)
+    local scrollTopMargin = closeBtnSize + 4
 
     self.background:setParent(self.host, canvasName, canvasName)
     self.background:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
@@ -152,7 +254,6 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
     self.background:setZOrder(10)
     self.background:setIsVisible(false)
 
-    local scrollTopMargin = closeBtnSize + 4
     self.scrollList:setParent(self.host, canvasName, self.background.widgetName)
     self.scrollList:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, self.background.widgetName,
                               scrollTopMargin)
@@ -165,15 +266,11 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
     self.scrollList:setScrollSpeed(40)
     self.scrollList:setZOrder(11)
     self.scrollList:setIsVisible(false)
-    self.scrollList:setScrollbarSide(UiScrollList.ScrollbarSide.RIGHT)
-    self.scrollList:setScrollbarBackgroundColorHexValue(Styles.Colors.panelColor)
-    self.scrollList:setScrollbarThumbColorHexValue(Styles.Colors.buttonColor)
-    self.scrollList:setScrollbarThicknessPixels(6)
+    self.scrollList:setScrollbarSide(UiScrollList.ScrollbarSide.NONE)
     self.scrollList:setCanBloomBeApplied(false)
 
-    local iconCount = #iconsCfg
     local contentWidth = panelWidth - 24
-    local contentHeight = iconCount * itemHeight + (iconCount - 1) * itemSpacing
+    local contentHeight = panelHeight - scrollTopMargin
     self.contentContainer:setParent(self.host, canvasName, self.scrollList.widgetName)
     self.contentContainer:setWidth(contentWidth)
     self.contentContainer:setHeight(contentHeight)
@@ -189,52 +286,78 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
     self.closeButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, self.background.widgetName, 2)
     self.closeButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, self.background.widgetName,
                                2)
-    self.closeButton:setZOrder(14)
+    self.closeButton:setZOrder(15)
     self.closeButton:setIsVisible(false)
 
-    for i = 1, iconCount do
+    for i = 1, #treeNodes do
+        local node = treeNodes[i]
         local btn = self.upgradeButtons[i]
         btn:setParent(self.host, canvasName, CONTENT_NAME)
-        btn:setWidth(itemHeight)
-        btn:setHeight(itemHeight)
+        btn:setWidth(nodeSize)
+        btn:setHeight(nodeSize)
         btn:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER, CONTENT_NAME)
-        btn:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, CONTENT_NAME,
-                      (i - 1) * (itemHeight + itemSpacing))
-        btn:setTextureSource(iconsCfg[i].texture)
+        btn:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER, CONTENT_NAME)
+        btn:setHorizontalCenterOffset(math.floor((node.x / 100.0 - 0.5) * contentWidth))
+        btn:setVerticalCenterOffset(math.floor((0.5 - node.y / 100.0) * contentHeight))
+        btn:setTextureSource(node.texture)
         btn:setZOrder(13)
         btn:setRotationDegrees(180)
-        btn:setBorderColorHexValue(iconsCfg[i].borderColor)
-        btn:setGlowColorHexValue(iconsCfg[i].glowColor)
+        btn:setBorderColorHexValue(node.color)
+        btn:setGlowColorHexValue(node.glow)
+        btn:setFillColorHexValue(node.color)
+        btn:setGlowSizePx(NODE_GLOW_SIZE)
         btn:setIsVisible(false)
         btn:setCanBloomBeApplied(false)
+        btn:enableMouseInputReceiverBase(self.host)
     end
 
-    for i = 1, iconCount - 1 do
+    local labelWidth = math.floor(nodeSize * 3.2)
+    local labelHeight = math.floor(nodeSize * 0.42)
+    local labelGap = math.floor(nodeSize * 0.1)
+    for i = 1, #treeNodes do
+        local node = treeNodes[i]
+        local label = self.nodeLabels[i]
+        label:setParent(self.host, canvasName, CONTENT_NAME)
+        label:setWidth(labelWidth)
+        label:setHeight(labelHeight)
+        label:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+                        nodeWidgetName(node.id))
+        label:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, nodeWidgetName(node.id), labelGap)
+        label:setText(node.name)
+        label:setFontSize(LABEL_FONT_SIZE)
+        label:setTextColorHexValue(node.glow)
+        label:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        label:setZOrder(14)
+        label:setIsVisible(false)
+    end
+
+    for i = 1, #connections do
+        local conn = connections[i]
         local line = self.connectionLines[i]
         line:setParent(self.host, canvasName, CONTENT_NAME)
         line:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, CONTENT_NAME)
         line:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, CONTENT_NAME)
         line:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, CONTENT_NAME)
         line:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, CONTENT_NAME)
-        line:setStartAnchorTarget("TowerUpgradesUpgradeButton" .. tostring(i))
-        line:setEndAnchorTarget("TowerUpgradesUpgradeButton" .. tostring(i + 1))
-        line:setColorHexValue(LINE_COLOR)
+        line:setStartAnchorTarget(nodeWidgetName(conn.from))
+        line:setEndAnchorTarget(nodeWidgetName(conn.to))
+        line:setColorHexValue(nodeById[conn.to].glow)
         line:setThicknessPx(LINE_THICKNESS)
         line:setZOrder(12)
         line:setIsVisible(false)
         line:setCanBloomBeApplied(false)
+        line:setDashPattern(4, 2)
     end
 end
 
 function TowerUpgradesPanel:setIsVisible(isVisible)
-    print("TowerUpgradesPanel:setIsVisible called, isVisible=" .. tostring(isVisible) .. ", setupDone=" ..
-              tostring(self.panelWidth > 0))
     self.isVisible = isVisible
     self.background:setIsVisible(isVisible)
     self.scrollList:setIsVisible(isVisible)
     self.contentContainer:setIsVisible(isVisible)
     self.closeButton:setIsVisible(isVisible)
     for i = 1, #self.upgradeButtons do self.upgradeButtons[i]:setIsVisible(isVisible) end
+    for i = 1, #self.nodeLabels do self.nodeLabels[i]:setIsVisible(isVisible) end
     for i = 1, #self.connectionLines do self.connectionLines[i]:setIsVisible(isVisible) end
 end
 

@@ -28,6 +28,7 @@ UiUpgradeIconSceneProxy::UiUpgradeIconSceneProxy(const UiUpgradeIcon* uiUpgradeI
     , mOpacity(uiUpgradeIcon->GetOpacity())
     , mRotationDegrees(uiUpgradeIcon->GetRotationDegrees())
     , mIsFlipped(uiUpgradeIcon->GetIsFlipped())
+    , mGlowVisible(uiUpgradeIcon->GetGlowVisible())
 {
 }
 
@@ -42,6 +43,11 @@ void UiUpgradeIconSceneProxy::OnSceneProxyRegistered()
     shaderParams.SetMainShaders(
         folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiUpgradeIconFS.glsl"));
     mShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiUpgradeIconShader>(shaderParams);
+
+    ShaderParams glowShaderParams("UiUpgradeIconGlow Shader");
+    glowShaderParams.SetMainShaders(
+        folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiUpgradeIconGlowFS.glsl"));
+    mGlowShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiUpgradeIconGlowShader>(glowShaderParams);
 }
 
 void UiUpgradeIconSceneProxy::Render()
@@ -50,21 +56,24 @@ void UiUpgradeIconSceneProxy::Render()
         return;
     }
 
-    mShader->ExecuteShader();
     const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
-    mShader->SetTransform(mNormalizedTranslation + mCenterOffset + scaleOffset, mNormalizedScale * mScale);
+    const glm::vec2 iconTranslation = mNormalizedTranslation + mCenterOffset + scaleOffset;
+    const glm::vec2 iconScale = mNormalizedScale * mScale;
+    const glm::vec2 iconPixels = glm::vec2(static_cast<float>(mWidthHeightPixels.x), static_cast<float>(mWidthHeightPixels.y));
+    const float renderOpacity = mOpacity * mOverlayOpacity;
+
+    mShader->ExecuteShader();
+    mShader->SetTransform(iconTranslation, iconScale);
     mShader->SetRotationRadians(glm::radians<float>(mRotationDegrees));
     mShader->SetIsFlipped(mIsFlipped);
-    mShader->SetWidthHeightPixels(glm::vec2(static_cast<float>(mWidthHeightPixels.x), static_cast<float>(mWidthHeightPixels.y)));
+    mShader->SetWidthHeightPixels(iconPixels);
     mShader->SetFillColor(mFillColor);
     mShader->SetBorderColor(mBorderColor);
-    mShader->SetGlowColor(mGlowColor);
     mShader->SetIconCustomColor(mIconCustomColor);
     mShader->SetIsCustomIconColor(mIsCustomIconColor);
     mShader->SetFillStrength(mFillStrength);
     mShader->SetBorderThicknessPx(mBorderThicknessPx);
-    mShader->SetGlowSizePx(mGlowSizePx);
-    mShader->SetOpacity(mOpacity * mOverlayOpacity);
+    mShader->SetOpacity(renderOpacity);
 
     if (mTexture) {
         mTexture->BindTexture(0);
@@ -75,6 +84,25 @@ void UiUpgradeIconSceneProxy::Render()
 
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     mShader->StopShader();
+
+    if (mGlowVisible && mGlowSizePx > 0.0f) {
+        const float padPx = mGlowSizePx + 2.0f;
+        const glm::vec2 normPerPx = iconScale / glm::max(iconPixels, glm::vec2(1.0f));
+        const glm::vec2 glowScale = iconScale + 2.0f * padPx * normPerPx;
+        const glm::vec2 glowTranslation = iconTranslation - padPx * normPerPx;
+        const glm::vec2 glowPixels = iconPixels + 2.0f * padPx;
+
+        mGlowShader->ExecuteShader();
+        mGlowShader->SetTransform(glowTranslation, glowScale);
+        mGlowShader->SetWidthHeightPixels(glowPixels);
+        mGlowShader->SetIconWidthHeightPixels(iconPixels);
+        mGlowShader->SetGlowColor(mGlowColor);
+        mGlowShader->SetGlowSizePx(mGlowSizePx);
+        mGlowShader->SetOpacity(renderOpacity);
+
+        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        mGlowShader->StopShader();
+    }
 }
 
 void UiUpgradeIconSceneProxy::SetTexture(const std::shared_ptr<ITexture>& texture)
@@ -137,9 +165,15 @@ void UiUpgradeIconSceneProxy::SetIsFlipped(const bool isFlipped)
     mIsFlipped = isFlipped;
 }
 
+void UiUpgradeIconSceneProxy::SetGlowVisible(const bool glowVisible)
+{
+    mGlowVisible = glowVisible;
+}
+
 void UiUpgradeIconSceneProxy::CleanUp()
 {
     ShaderPool::GetInstance()->TryToFreeMemory(mShader);
+    ShaderPool::GetInstance()->TryToFreeMemory(mGlowShader);
 }
 
 } // namespace Game

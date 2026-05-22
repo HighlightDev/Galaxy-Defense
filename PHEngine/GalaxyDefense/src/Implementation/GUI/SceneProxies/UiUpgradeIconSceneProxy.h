@@ -2,6 +2,7 @@
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
+#include "Implementation/GUI/Shaders/UiUpgradeIconGlowShader.h"
 #include "Implementation/GUI/Shaders/UiUpgradeIconShader.h"
 
 #include <glm/vec3.hpp>
@@ -18,6 +19,7 @@ namespace Game {
 
 class UiUpgradeIconSceneProxy : public ::Graphics::Proxy::UiSceneProxyBase {
     std::shared_ptr<UiUpgradeIconShader> mShader;
+    std::shared_ptr<UiUpgradeIconGlowShader> mGlowShader;
 
     std::shared_ptr<ITexture> mTexture;
 
@@ -36,6 +38,7 @@ class UiUpgradeIconSceneProxy : public ::Graphics::Proxy::UiSceneProxyBase {
     float mRotationDegrees;
 
     bool mIsFlipped;
+    bool mGlowVisible;
 
 public:
     explicit UiUpgradeIconSceneProxy(const ::EngineCore::GUI::UiUpgradeIcon* uiUpgradeIcon);
@@ -67,6 +70,8 @@ public:
     void SetRotationDegrees(const float rotationDegrees);
 
     void SetIsFlipped(const bool isFlipped);
+
+    void SetGlowVisible(const bool glowVisible);
 
     void CleanUp() override;
 

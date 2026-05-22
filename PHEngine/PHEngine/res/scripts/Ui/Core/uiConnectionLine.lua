@@ -113,7 +113,7 @@ end
 
 function UiConnectionLine:update(host, deltaTimeSec) end
 
--- Точки задаются в нормализованных координатах [0..1] внутри bounding box виджета.
+-- Points are defined in normalized coordinates [0..1] inside the bounding box of the widget.
 function UiConnectionLine:setStartPoint(x, y)
     assert(x ~= nil and type(x) == "number" and y ~= nil and type(y) == "number")
     self.lineProperties.start_point.value = {x = x, y = y}
@@ -126,8 +126,7 @@ function UiConnectionLine:setEndPoint(x, y)
     self.lineProperties.end_point.dirty = true
 end
 
--- Привязывает начало линии к центру виджета targetUiItemName. Endpoint пересчитывается
--- при смещении цели (скролл и т.п.). Пустая строка — отвязать (вернуться к ручному start_point).
+-- Binds the start of the line to the center of the target widget targetUiItemName. Endpoint is recalculated when the target is moved (scroll, etc.). Empty string — unbind (return to manual start_point).
 function UiConnectionLine:setStartAnchorTarget(targetUiItemName)
     assert(targetUiItemName ~= nil and type(targetUiItemName) == "string")
     if self.lineProperties.start_anchor_target.value ~= targetUiItemName then
@@ -172,7 +171,7 @@ function UiConnectionLine:setThicknessPx(thicknessPx)
     end
 end
 
--- dashLengthPx = 0 — сплошная линия.
+-- dashLengthPx = 0 - solid line
 function UiConnectionLine:setDashPattern(dashLengthPx, gapLengthPx)
     assert(dashLengthPx ~= nil and type(dashLengthPx) == "number" and dashLengthPx >= 0.0)
     assert(gapLengthPx ~= nil and type(gapLengthPx) == "number" and gapLengthPx >= 0.0)

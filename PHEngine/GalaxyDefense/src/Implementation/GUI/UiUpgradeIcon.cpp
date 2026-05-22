@@ -38,6 +38,7 @@ UiUpgradeIcon::UiUpgradeIcon(const std::string& name)
     , mOpacity(1.0f)
     , mRotationDegrees(0.0f)
     , mIsFlipped(false)
+    , mGlowVisible(false)
 {
 }
 
@@ -335,6 +336,20 @@ bool UiUpgradeIcon::GetIsFlipped() const
     return mIsFlipped;
 }
 
+void UiUpgradeIcon::SetGlowVisible(const bool glowVisible)
+{
+    if (mGlowVisible != glowVisible) {
+        mGlowVisible = glowVisible;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+bool UiUpgradeIcon::GetGlowVisible() const
+{
+    return mGlowVisible;
+}
+
 std::string UiUpgradeIcon::GetUiTypeString() const
 {
     return "UiUpgradeIcon";
@@ -439,6 +454,13 @@ void UiUpgradeIcon::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
+    if (jsonObj.contains("glow_visible")) {
+        const auto glow_visible = jsonObj["glow_visible"].get<bool>();
+        if (mGlowVisible != glow_visible) {
+            mGlowVisible = glow_visible;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
 }
 
 void UiUpgradeIcon::SyncDataOnRenderThread()
@@ -466,7 +488,8 @@ void UiUpgradeIcon::SyncDataOnRenderThread()
                          glowSizePx = mGlowSizePx,
                          opacity = mOpacity,
                          rotationDegrees = mRotationDegrees,
-                         isFlipped = mIsFlipped](
+                         isFlipped = mIsFlipped,
+                         glowVisible = mGlowVisible](
                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                             std::weak_ptr<EngineCore::Scene> sceneWp,
                             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -485,6 +508,7 @@ void UiUpgradeIcon::SyncDataOnRenderThread()
                                 iconSceneProxy->SetOpacity(opacity);
                                 iconSceneProxy->SetRotationDegrees(rotationDegrees);
                                 iconSceneProxy->SetIsFlipped(isFlipped);
+                                iconSceneProxy->SetGlowVisible(glowVisible);
                             }
                         });
                 }
@@ -519,7 +543,8 @@ void UiUpgradeIcon::SyncDataOnLuaThread()
                      glowSizePx = mGlowSizePx,
                      opacity = mOpacity,
                      rotationDegrees = mRotationDegrees,
-                     isFlipped = mIsFlipped](
+                     isFlipped = mIsFlipped,
+                     glowVisible = mGlowVisible](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -537,6 +562,7 @@ void UiUpgradeIcon::SyncDataOnLuaThread()
                             iconLuaProxy->SetOpacity_FromGameThread(opacity);
                             iconLuaProxy->SetRotationDegrees_FromGameThread(rotationDegrees);
                             iconLuaProxy->SetIsFlipped_FromGameThread(isFlipped);
+                            iconLuaProxy->SetGlowVisible_FromGameThread(glowVisible);
                         }
                     });
             }
