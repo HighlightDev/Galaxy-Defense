@@ -1,4 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]] --
+--[[ BEGIN *** this snippet has to be inserted everywhere where your want to require custom modules *** BEGIN]] --
 local function setup()
     local slash = package.config:sub(1, 1)
     assert(slash ~= nil and type(slash) == "string" and slash ~= "")
@@ -32,6 +32,7 @@ local Styles = require("Ui/Common/styles")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local UpgradeIcon = require("Ui/Core/uiUpgradeIcon")
 local ConnectionLine = require("Ui/Core/uiConnectionLine")
+local WeaponInfoPanel = require("Ui/Widgets/WeaponInfoPanel")
 
 TowerUpgradesPanel = {}
 
@@ -44,7 +45,17 @@ local treeNodes = {
         glow = 0xff8c38,
         x = 50,
         y = 6,
-        parents = {}
+        parents = {},
+        category = "offense",
+        weaponType = "Кинетика",
+        damage = 2,
+        speed = 2,
+        range = 2,
+        area = 1,
+        slow = 0,
+        chain = 0,
+        repair = 0,
+        desc = "Базовый боеприпас. Прямое попадание с фугасным взрывом. Надёжно, просто, смертоносно."
     }, {
         id = "ice_rocket",
         name = "Ледяная Ракета",
@@ -53,7 +64,17 @@ local treeNodes = {
         glow = 0x90e0ef,
         x = 14,
         y = 24,
-        parents = {"he_rocket"}
+        parents = {"he_rocket"},
+        category = "offense",
+        weaponType = "Криогеника",
+        damage = 1,
+        speed = 2,
+        range = 2,
+        area = 2,
+        slow = 3,
+        chain = 0,
+        repair = 0,
+        desc = "Криогенный заряд. При взрыве распыляет хладагент, замедляя корабли в зоне поражения."
     }, {
         id = "repair_beam",
         name = "Ремонтный Луч",
@@ -62,7 +83,17 @@ local treeNodes = {
         glow = 0x86efac,
         x = 50,
         y = 24,
-        parents = {"he_rocket"}
+        parents = {"he_rocket"},
+        category = "support",
+        weaponType = "Поддержка",
+        damage = 0,
+        speed = 3,
+        range = 3,
+        area = 1,
+        slow = 0,
+        chain = 0,
+        repair = 3,
+        desc = "Направляет исцеляющий луч на повреждённые секции барьера. Постепенно восстанавливает структурную целостность защитных заграждений."
     }, {
         id = "plasma_rocket",
         name = "Плазменная Ракета",
@@ -71,7 +102,17 @@ local treeNodes = {
         glow = 0xff49a0,
         x = 86,
         y = 24,
-        parents = {"he_rocket"}
+        parents = {"he_rocket"},
+        category = "offense",
+        weaponType = "Энергетика",
+        damage = 3,
+        speed = 3,
+        range = 2,
+        area = 2,
+        slow = 0,
+        chain = 0,
+        repair = 0,
+        desc = "Плазменный заряд повышенной мощности. Прожигает броню и оставляет ожоговый след."
     }, {
         id = "ice_beam",
         name = "Ледяной Луч",
@@ -80,7 +121,17 @@ local treeNodes = {
         glow = 0x48cae4,
         x = 8,
         y = 45,
-        parents = {"ice_rocket"}
+        parents = {"ice_rocket"},
+        category = "offense",
+        weaponType = "Криогеника",
+        damage = 1,
+        speed = 5,
+        range = 4,
+        area = 1,
+        slow = 5,
+        chain = 0,
+        repair = 0,
+        desc = "Непрерывный луч абсолютного холода. Постепенно замораживает корабль до полной остановки."
     }, {
         id = "electric_beam",
         name = "Электрический Луч",
@@ -89,7 +140,17 @@ local treeNodes = {
         glow = 0xb44fc4,
         x = 31,
         y = 45,
-        parents = {"plasma_rocket", "ice_rocket"}
+        parents = {"plasma_rocket", "ice_rocket"},
+        category = "offense",
+        weaponType = "Дуговой разряд",
+        damage = 3,
+        speed = 5,
+        range = 3,
+        area = 3,
+        slow = 1,
+        chain = 4,
+        repair = 0,
+        desc = "Дуговой разряд перепрыгивает на соседние корабли, нанося цепной урон по ближайшим целям."
     }, {
         id = "nano_beam",
         name = "Нано-Луч",
@@ -98,7 +159,17 @@ local treeNodes = {
         glow = 0x6ee7b7,
         x = 62,
         y = 45,
-        parents = {"repair_beam"}
+        parents = {"repair_beam"},
+        category = "support",
+        weaponType = "Нанотехнологии",
+        damage = 0,
+        speed = 4,
+        range = 4,
+        area = 2,
+        slow = 0,
+        chain = 0,
+        repair = 5,
+        desc = "Поток нано-роботов восстанавливает барьер почти мгновенно. Может распределяться по нескольким соседним секциям одновременно."
     }, {
         id = "cryo_cannon",
         name = "Крио-Пушка",
@@ -107,7 +178,17 @@ local treeNodes = {
         glow = 0x0077b6,
         x = 88,
         y = 45,
-        parents = {"plasma_rocket"}
+        parents = {"plasma_rocket"},
+        category = "offense",
+        weaponType = "Криогеника+",
+        damage = 2,
+        speed = 4,
+        range = 3,
+        area = 4,
+        slow = 4,
+        chain = 0,
+        repair = 0,
+        desc = "Широкий конус ледяного шторма. Одновременно накрывает несколько кораблей в секторе обстрела."
     }, {
         id = "gravity_bomb",
         name = "Гравитационная Бомба",
@@ -116,7 +197,17 @@ local treeNodes = {
         glow = 0xb44fc4,
         x = 30,
         y = 66,
-        parents = {"ice_beam", "electric_beam"}
+        parents = {"ice_beam", "electric_beam"},
+        category = "offense",
+        weaponType = "Сингулярность",
+        damage = 5,
+        speed = 2,
+        range = 5,
+        area = 5,
+        slow = 5,
+        chain = 0,
+        repair = 0,
+        desc = "Создаёт микросингулярность. Затягивает флот в точку коллапса и уничтожает под действием гравитационных приливов."
     }, {
         id = "force_barrier",
         name = "Форс-Барьер",
@@ -125,7 +216,17 @@ local treeNodes = {
         glow = 0xfcd34d,
         x = 72,
         y = 66,
-        parents = {"nano_beam", "cryo_cannon"}
+        parents = {"nano_beam", "cryo_cannon"},
+        category = "support",
+        weaponType = "Фортификация",
+        damage = 0,
+        speed = 3,
+        range = 3,
+        area = 4,
+        slow = 2,
+        chain = 0,
+        repair = 4,
+        desc = "Проецирует временный силовой щит поверх уничтоженных секций барьера. Усиливает соседние секции и замедляет врагов, пытающихся прорваться через зону защиты."
     }, {
         id = "quantum_nexus",
         name = "Квантовый Нексус",
@@ -134,7 +235,17 @@ local treeNodes = {
         glow = 0xe0e7ff,
         x = 50,
         y = 85,
-        parents = {"gravity_bomb", "force_barrier"}
+        parents = {"gravity_bomb", "force_barrier"},
+        category = "hybrid",
+        weaponType = "Квантовая Сингулярность",
+        damage = 5,
+        speed = 1,
+        range = 5,
+        area = 5,
+        slow = 5,
+        chain = 0,
+        repair = 5,
+        desc = "Снаряд создаёт гравитационный коллапс, уничтожающий все корабли в зоне взрыва. Одновременно вспышка квантовой энергии накрывает все барьеры в радиусе, проецируя на каждый из них полноценный форс-щит."
     }
 }
 
@@ -168,6 +279,7 @@ function TowerUpgradesPanel:new(host, overlay)
         upgradeButtons = {},
         nodeLabels = {},
         connectionLines = {},
+        infoPanel = nil,
         panelWidth = 0,
         panelHeight = 0
     }
@@ -203,15 +315,19 @@ function TowerUpgradesPanel:new(host, overlay)
         newObj.connectionLines[i] = line
     end
 
+    newObj.infoPanel = WeaponInfoPanel:new(host, overlay)
+    newObj.infoPanel.weaponById = nodeById
+
     newObj.closeButton:subscribeOnMouseInputClickedCallback(function()
         newObj:setIsVisible(false)
+        newObj.infoPanel:hide()
         EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
     end)
     newObj.closeButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            newObj.closeButton:setButtonColorHexValue(Styles.Colors.hoveredButtonColor)
+            newObj.closeButton:setButtonColorHexValue(Styles.TechTree.hoveredButtonColor)
         else
-            newObj.closeButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+            newObj.closeButton:setButtonColorHexValue(Styles.TechTree.buttonColor)
         end
     end)
 
@@ -219,9 +335,11 @@ function TowerUpgradesPanel:new(host, overlay)
 
     for i = 1, #treeNodes do
         local btn = newObj.upgradeButtons[i]
+        local node = treeNodes[i]
         btn:subscribeOnMouseInputClickedCallback(function()
             dropGlowVisibleState()
             btn:setGlowVisible(true)
+            newObj.infoPanel:showFor(node)
         end)
     end
 
@@ -249,8 +367,8 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
                               canvasName)
     self.background:setWidth(panelWidth)
     self.background:setHeight(panelHeight)
-    self.background:setColorHexValue(Styles.Colors.panelColor)
-    self.background:setBorderRadius(BORDER_RADIUS)
+    self.background:setColorHexValue(Styles.TechTree.panelColor)
+    self.background:setBorderRadius(Styles.TechTree.panelBorderRadius)
     self.background:setZOrder(10)
     self.background:setIsVisible(false)
 
@@ -280,7 +398,7 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
     self.closeButton:setParent(self.host, canvasName, self.background.widgetName)
     self.closeButton:setWidth(closeBtnSize)
     self.closeButton:setHeight(closeBtnSize)
-    self.closeButton:setButtonColorHexValue(Styles.Colors.buttonColor)
+    self.closeButton:setButtonColorHexValue(Styles.TechTree.buttonColor)
     self.closeButton:setButtonBorderRadius(BORDER_RADIUS)
     self.closeButton:setImageTextureSource("cancel.png")
     self.closeButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, self.background.widgetName, 2)
@@ -348,6 +466,9 @@ function TowerUpgradesPanel:setupLayout(canvasName, windowWidth, windowHeight)
         line:setCanBloomBeApplied(false)
         line:setDashPattern(4, 2)
     end
+
+    local infoWidth = math.floor(windowWidth * 0.17)
+    self.infoPanel:setupLayout(canvasName, self.background.widgetName, windowWidth, infoWidth, panelHeight)
 end
 
 function TowerUpgradesPanel:setIsVisible(isVisible)
@@ -359,6 +480,7 @@ function TowerUpgradesPanel:setIsVisible(isVisible)
     for i = 1, #self.upgradeButtons do self.upgradeButtons[i]:setIsVisible(isVisible) end
     for i = 1, #self.nodeLabels do self.nodeLabels[i]:setIsVisible(isVisible) end
     for i = 1, #self.connectionLines do self.connectionLines[i]:setIsVisible(isVisible) end
+    if not isVisible then self.infoPanel:hide() end
 end
 
 function TowerUpgradesPanel:update() end

@@ -299,7 +299,7 @@ glm::vec3 CreateRandomColor()
 }
 
 //     P*
-//    / |          
+//    / |
 //   /  |
 // A ---X---->B
 // Project PA on BA
