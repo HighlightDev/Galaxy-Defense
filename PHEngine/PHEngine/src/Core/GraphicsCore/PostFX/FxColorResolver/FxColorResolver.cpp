@@ -3,6 +3,7 @@
 #include "Core/CommonCore/EngineConstants.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderParams.h"
+#include "Core/GraphicsCore/Renderer/RenderState.h"
 #include "Core/GraphicsCore/Renderer/ResolvedSceneFramebuffer.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
@@ -34,7 +35,10 @@ void FxColorResolver::Init()
 void FxColorResolver::ExecuteResolveSceneColor(
     const std::shared_ptr<ITexture>& sceneColorTexture, const std::shared_ptr<IPostFxPass>& prevPostFxPass)
 {
-    glDepthMask(false);
+    RenderState renderState;
+    renderState.GetDepthState().SetDepthTestWriteMask(false);
+    renderState.BindRenderState();
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -50,25 +54,31 @@ void FxColorResolver::ExecuteResolveSceneColor(
 
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     mResolveFxColorShader->StopShader();
-    glDepthMask(true);
+    renderState.GetDepthState().SetDepthTestWriteMask(true);
+    renderState.BindRenderState();
 }
 
 void FxColorResolver::ExecuteResolveGuiColor(
     const std::shared_ptr<ITexture>& sceneColorTexture, const std::shared_ptr<IPostFxPass>& prevPostFxPass)
 {
-    glDepthMask(false);
+    RenderState renderState;
+    renderState.GetDepthState().SetDepthTestWriteMask(false);
+
+    renderState.GetStencilState().SetIsStencilTestEnabled(false);
+    // Add compositing of GUI over the already resolved scene by alpha. The content of the UI framebuffer is premultiplied
+    // with glBlendFuncSeparate in GuiPass, so we use premultiplied blending: src + dst*(1-srcA).
+    renderState.GetBlendingState().SetIsBlendingEnabled(true);
+    renderState.GetBlendingState().SetBlendingFunction(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    renderState.BindRenderState();
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     glViewport(0, 0, mViewPortInfo.Width, mViewPortInfo.Height);
 
-    // Add compositing of GUI over the already resolved scene by alpha. The content of the UI framebuffer is premultiplied
-    // with glBlendFuncSeparate in GuiPass, so we use premultiplied blending: src + dst*(1-srcA).
-    glDisable(GL_STENCIL_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
     mResolveFxColorShader->ExecuteShader();
     mResolveFxColorShader->SetResolveAlphaFromSource(true);
+
+    renderState.BindRenderState();
 
     if (!prevPostFxPass) {
         ExecutePostFxDisabled(sceneColorTexture);
@@ -79,8 +89,9 @@ void FxColorResolver::ExecuteResolveGuiColor(
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     mResolveFxColorShader->StopShader();
 
-    glDisable(GL_BLEND);
-    glDepthMask(true);
+    renderState.GetDepthState().SetDepthTestWriteMask(true);
+    renderState.GetBlendingState().SetIsBlendingEnabled(false);
+    renderState.BindRenderState();
 }
 
 void FxColorResolver::ExecutePostFxDisabled(const std::shared_ptr<ITexture>& sceneColorTexture)

@@ -5,6 +5,9 @@ namespace Graphics {
  *               DepthState
  ********************************************/
 
+const std::unordered_map<bool, std::function<void(GLenum)>> glFuncMap
+    = {{true, [](GLenum cap) { glEnable(cap); }}, {false, [](GLenum cap) { glDisable(cap); }}};
+
 DepthState::DepthState()
 {
     glGetBooleanv(GL_DEPTH_TEST, &_dtEnabled);
@@ -17,20 +20,16 @@ DepthState::DepthState()
 void DepthState::BindDepthState()
 {
     if (dtEnableDirty) {
-        if (_dtEnabled) {
-            glEnable(GL_DEPTH_TEST);
-        } else {
-            glDisable(GL_DEPTH_TEST);
-        }
-        // dtEnableDirty = false;
+        glFuncMap.at(_dtEnabled)(GL_DEPTH_TEST);
+        dtEnableDirty = false;
     }
     if (dtwMaskDirty) {
         glDepthMask(_dtwMask);
-        // dtwMaskDirty = false;
+        dtwMaskDirty = false;
     }
     if (dtFuncDirty) {
         glDepthFunc(_dtFunc);
-        // dtFuncDirty = false;
+        dtFuncDirty = false;
     }
 }
 
@@ -92,24 +91,20 @@ StencilState::StencilState()
 void StencilState::BindStencilState()
 {
     if (stEnableDirty) {
-        if (_stEnabled) {
-            glEnable(GL_STENCIL_TEST);
-        } else {
-            glDisable(GL_STENCIL_TEST);
-        }
-        // stEnableDirty = false;
+        glFuncMap.at(_stEnabled)(GL_STENCIL_TEST);
+        stEnableDirty = false;
     }
     if (stOperationDirty) {
         glStencilOp(_sfail, _dpfail, _dppass);
-        // stOperationDirty = false;
+        stOperationDirty = false;
     }
-    if (stOperationDirty) {
+    if (stFuncDirty) {
         glStencilFunc(_func, _funcRef, _funcMask);
-        // stOperationDirty = false;
+        stFuncDirty = false;
     }
     if (stMaskDirty) {
         glStencilMask(_stencilMask);
-        // stMaskDirty = false;
+        stMaskDirty = false;
     }
 }
 
@@ -139,7 +134,7 @@ StencilState& StencilState::SetStencilFunction(const GLenum func, const GLint fu
         _func = func;
         _funcRef = funcRef;
         _funcMask = funcMask;
-        stOperationDirty = true;
+        stFuncDirty = true;
     }
     return *this;
 }
@@ -163,23 +158,21 @@ BlendingState::BlendingState()
     GLint sfactor, dfactor;
     glGetIntegerv(GL_BLEND_SRC_ALPHA, &sfactor);
     glGetIntegerv(GL_BLEND_DST_ALPHA, &dfactor);
-    _sfactor = sfactor;
-    _dfactor = dfactor;
+    _rgbSrcFactor = sfactor;
+    _rgbDstFactor = dfactor;
+    _alphaSrcFactor = sfactor;
+    _alphaDstFactor = dfactor;
 }
 
 void BlendingState::BindBlendState()
 {
     if (blendingEnableDirty) {
-        if (_blendingEnabled) {
-            glEnable(GL_BLEND);
-        } else {
-            glDisable(GL_BLEND);
-        }
-        // blendingEnableDirty = false;
+        glFuncMap.at(_blendingEnabled)(GL_BLEND);
+        blendingEnableDirty = false;
     }
     if (blendingFuncDirty) {
-        glBlendFunc(_sfactor, _dfactor);
-        // blendingFuncDirty = false;
+        glBlendFuncSeparate(_rgbSrcFactor, _rgbDstFactor, _alphaSrcFactor, _alphaDstFactor);
+        blendingFuncDirty = false;
     }
 }
 
@@ -192,13 +185,109 @@ BlendingState& BlendingState::SetIsBlendingEnabled(const GLboolean blendingEnabl
     return *this;
 }
 
-BlendingState& BlendingState::SetBlendingFunction(const GLenum sfactor, const GLenum dfactor)
+BlendingState& BlendingState::SetBlendingFunction(const GLenum rgbSrcFactor, const GLenum rgbDstFactor)
 {
-    if (_sfactor != sfactor || _dfactor != dfactor) {
-        _sfactor = sfactor;
-        _dfactor = dfactor;
+    if (_rgbSrcFactor != rgbSrcFactor || _rgbDstFactor != rgbDstFactor || _alphaSrcFactor != rgbSrcFactor
+        || _alphaDstFactor != rgbDstFactor) {
+        _rgbSrcFactor = rgbSrcFactor;
+        _rgbDstFactor = rgbDstFactor;
+        _alphaSrcFactor = rgbSrcFactor;
+        _alphaDstFactor = rgbDstFactor;
         blendingFuncDirty = true;
     }
     return *this;
+}
+
+BlendingState& BlendingState::SetBlendingFunction(
+    const GLenum rgbSrcFactor, const GLenum rgbDstFactor, const GLenum alphaSrcFactor, const GLenum alphaDstFactor)
+{
+    if (_rgbSrcFactor != rgbSrcFactor || _rgbDstFactor != rgbDstFactor || _alphaSrcFactor != alphaSrcFactor
+        || _alphaDstFactor != alphaDstFactor) {
+        _rgbSrcFactor = rgbSrcFactor;
+        _rgbDstFactor = rgbDstFactor;
+        _alphaSrcFactor = alphaSrcFactor;
+        _alphaDstFactor = alphaDstFactor;
+        blendingFuncDirty = true;
+    }
+    return *this;
+}
+
+CullingState::CullingState()
+{
+    GLint cullFaceMode, frontFace;
+    glGetBooleanv(GL_CULL_FACE, &_cullingEnabled);
+    glGetIntegerv(GL_CULL_FACE_MODE, &cullFaceMode);
+    glGetIntegerv(GL_FRONT_FACE, &frontFace);
+    _cullFaceMode = static_cast<GLenum>(cullFaceMode);
+    _frontFace = static_cast<GLenum>(frontFace);
+}
+
+void CullingState::BindCullingState()
+{
+    if (cullingEnableDirty) {
+        glFuncMap.at(_cullingEnabled)(GL_CULL_FACE);
+        // cullingEnableDirty = false;
+    }
+    if (cullFaceModeDirty) {
+        glCullFace(_cullFaceMode);
+        // cullFaceModeDirty = false;
+    }
+    if (frontFaceDirty) {
+        glFrontFace(_frontFace);
+        // frontFaceDirty = false;
+    }
+}
+
+CullingState& CullingState::SetIsCullingEnabled(const GLboolean cullingEnabled)
+{
+    if (_cullingEnabled != cullingEnabled) {
+        _cullingEnabled = cullingEnabled;
+        cullingEnableDirty = true;
+    }
+    return *this;
+}
+
+CullingState& CullingState::SetCullFaceMode(const GLenum cullFaceMode)
+{
+    if (_cullFaceMode != cullFaceMode) {
+        _cullFaceMode = cullFaceMode;
+        cullFaceModeDirty = true;
+    }
+    return *this;
+}
+
+CullingState& CullingState::SetFrontFace(const GLenum frontFace)
+{
+    if (_frontFace != frontFace) {
+        _frontFace = frontFace;
+        frontFaceDirty = true;
+    }
+    return *this;
+}
+
+ClipPlaneState::ClipPlaneState()
+{
+    for (uint32_t i = 0; i < 6; ++i) {
+        glGetBooleanv(GL_CLIP_DISTANCE0 + i, &_clipPlaneEnabled[i]);
+    }
+}
+
+void ClipPlaneState::BindClipPlaneState()
+{
+    for (uint32_t i = 0; i < 6; ++i) {
+        if (clipPlaneEnabledDirty[i]) {
+            std::invoke(glFuncMap.at(_clipPlaneEnabled[i]), GL_CLIP_DISTANCE0 + i);
+            clipPlaneEnabledDirty[i] = false;
+        }
+    }
+}
+
+void ClipPlaneState::SetIsClipPlaneEnabled(const uint32_t clipPlaneIndex, const GLboolean enabled)
+{
+    ext_assert(clipPlaneIndex < 6, "Invalid clip plane index");
+    if (_clipPlaneEnabled[clipPlaneIndex] != enabled) {
+        _clipPlaneEnabled[clipPlaneIndex] = enabled;
+        clipPlaneEnabledDirty[clipPlaneIndex] = true;
+    }
 }
 } // namespace Graphics

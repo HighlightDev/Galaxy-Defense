@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/RenderState.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
@@ -82,11 +83,12 @@ void RuntimeGeneratedLineSceneProxy::Render(
 
     const auto& shader = GetShader();
 
-    GLboolean isCullFaceEnabled;
-    glGetBooleanv(GL_CULL_FACE, &isCullFaceEnabled);
+    RenderState renderState;
+    const GLboolean isCullFaceEnabled = renderState.GetCullingState().GetIsCullingEnabled();
 
     if (isCullFaceEnabled) {
-        glDisable(GL_CULL_FACE);
+        renderState.GetCullingState().SetIsCullingEnabled(false);
+        renderState.BindRenderState();
     }
     const bool needToRebindShader = activeBindedState.TryUpdateActiveShaderName(shader->GetShaderName());
     if (needToRebindShader) {
@@ -97,7 +99,8 @@ void RuntimeGeneratedLineSceneProxy::Render(
     m_skin->GetBuffer()->RenderVAO(0, mVerticesCountToRender, GL_TRIANGLE_STRIP);
 
     if (isCullFaceEnabled) {
-        glEnable(GL_CULL_FACE);
+        renderState.GetCullingState().SetIsCullingEnabled(true);
+        renderState.BindRenderState();
     }
 }
 

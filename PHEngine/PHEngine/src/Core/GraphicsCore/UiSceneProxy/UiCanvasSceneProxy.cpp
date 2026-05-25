@@ -3,6 +3,7 @@
 #include "Core/CommonCore/EngineConstants.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontHandler.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
+#include "Core/GraphicsCore/Renderer/RenderState.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/UtilityCore/EngineMath.h"
 
@@ -55,6 +56,7 @@ void UiCanvasSceneProxy::SortProxiesByZOrder()
 
 void UiCanvasSceneProxy::Render()
 {
+    RenderState renderState;
     if (mIsVisible && !EngineMath::FloatsNearEqual(mOverlayOpacity, 0.0f)) {
         for (const auto& proxy : mUiProxies) {
             if (proxy->IsVisible()) {
@@ -64,28 +66,31 @@ void UiCanvasSceneProxy::Render()
                     const GLint ref = EngineConstants::eStencilValues::GUI_SCISSORING | bloomRefValue;
                     // test: compare ONLY the GUI_SCISSORING bit — slave is rendered inside the scissor region
                     // the master is independent of whether the master wrote the BLOOM bit or not.
-                    glStencilFunc(GL_EQUAL, ref, EngineConstants::eStencilValues::GUI_SCISSORING);
                     // Write: write-mask = bloomRefValue. If slave has bloom — only the BLOOM bit is passed
                     // BLOOM (GL_REPLACE will set it from ref), GUI_SCISSORING master is not touched.
                     // If slave has no bloom — mask 0, stencil is not changed at all.
-                    glStencilMask(bloomRefValue);
+                    renderState.GetStencilState()
+                        .SetStencilFunction(GL_EQUAL, ref, EngineConstants::eStencilValues::GUI_SCISSORING)
+                        .SetStencilMask(bloomRefValue);
+                    renderState.BindRenderState();
                 } else {
                     // Master and usual proxies write the full value of ref.
-                    glStencilMask(0xFF);
+                    GLint ref, mask;
                     if (proxy->IsGuiScissorsMaster()) {
-                        const GLint ref = EngineConstants::eStencilValues::GUI_SCISSORING | bloomRefValue;
-                        const GLuint mask = 0xFF;
-                        glStencilFunc(GL_ALWAYS, ref, mask);
+                        ref = EngineConstants::eStencilValues::GUI_SCISSORING | bloomRefValue;
+                        mask = 0xFF;
                     } else {
-                        const GLint ref = 0x00;
-                        const GLuint mask = 0xFF;
-                        glStencilFunc(GL_ALWAYS, ref, mask);
+                        ref = 0x00;
+                        mask = 0xFF;
                     }
+                    renderState.GetStencilState().SetStencilMask(0xFF).SetStencilFunction(GL_ALWAYS, ref, mask);
+                    renderState.BindRenderState();
                 }
                 proxy->Render();
             }
         }
-        glStencilMask(0xFF);
+        renderState.GetStencilState().SetStencilMask(0xFF);
+        renderState.BindRenderState();
     }
 }
 

@@ -259,16 +259,11 @@ void SceneRenderer::OnWindowSizeChanged(const ViewPortInfo& viewPortInfo)
 
 void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
 {
+    RenderState renderState;
     if (mGroupedByShadowAtlasLights.size()) {
-        glEnable(GL_CULL_FACE);
-        glFrontFace(GL_CCW);
-        glCullFace(GL_BACK);
-
-        RenderState renderState;
+        renderState.GetCullingState().SetIsCullingEnabled(true).SetCullFaceMode(GL_BACK).SetFrontFace(GL_CCW);
         renderState.GetBlendingState().SetIsBlendingEnabled(false);
-
         renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
-
         renderState.GetStencilState()
             .SetIsStencilTestEnabled(false)
             .SetStencilOperation(0, 0, 0)
@@ -485,19 +480,20 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
         }
     }
 
-    glDisable(GL_CULL_FACE);
+    renderState.GetCullingState().SetIsCullingEnabled(false);
+    renderState.BindRenderState();
 }
 
 void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneView>& sceneView)
 {
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
+    RenderState renderState;
+    renderState.GetCullingState().SetIsCullingEnabled(true).SetCullFaceMode(GL_BACK).SetFrontFace(GL_CCW);
+    renderState.BindRenderState();
+
     m_gbuffer->BindDeferredGBuffer();
 
     OutlinePass(sceneView);
 
-    RenderState renderState;
     renderState.GetBlendingState().SetIsBlendingEnabled(false);
     renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
     renderState.GetStencilState()
@@ -512,7 +508,7 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     const auto& viewMatrix = cameraProxy->GetViewMatrix();
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
-    glStencilFunc(GL_ALWAYS, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF);
+    renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF);
     mInstancedGeometryBatchRenderer->RenderAllBatches(
         cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::DEFERRED);
 
@@ -523,7 +519,8 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
             if (bShouldRender) {
                 const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
                                                                                : EngineConstants::eStencilValues::SCENE_DEFAULT;
-                glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
+                renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, stencilFuncRefValue, 0xFF);
+                renderState.BindRenderState();
                 proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
             }
         }
@@ -536,7 +533,8 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
             if (bShouldRender) {
                 const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
                                                                                : EngineConstants::eStencilValues::SCENE_DEFAULT;
-                glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
+                renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, stencilFuncRefValue, 0xFF);
+                renderState.BindRenderState();
                 proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
             }
         }
@@ -634,16 +632,25 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     m_deferredLightShader->StopShader();
 
-    glDisable(GL_CULL_FACE);
+    renderState.GetCullingState().SetIsCullingEnabled(false);
     renderState.GetDepthState().SetDepthTestWriteMask(true);
     renderState.BindRenderState();
 }
 
 void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView>& sceneView)
 {
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
+    RenderState renderState;
+    renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+
+    renderState.GetStencilState()
+        .SetIsStencilTestEnabled(true)
+        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
+        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
+        .SetStencilMask(0xFF);
+    renderState.GetCullingState().SetIsCullingEnabled(true).SetCullFaceMode(GL_BACK).SetFrontFace(GL_CCW);
+    renderState.BindRenderState();
 
     // Resolve depth from gBuffer to default frame buffer
     auto cameraProxy = sceneView->GetCameraProxy();
@@ -666,18 +673,6 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
 
     constexpr int NoClearFlag = 0;
     m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(NoClearFlag);
-
-    RenderState renderState;
-    renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
-
-    renderState.GetStencilState()
-        .SetIsStencilTestEnabled(true)
-        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-        .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
-        .SetStencilMask(0xFF);
-    renderState.BindRenderState();
 
     const auto& viewMatrix = cameraProxy->GetViewMatrix();
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
@@ -702,7 +697,8 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
         if (bShouldRender) {
             const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
                                                                            : EngineConstants::eStencilValues::SCENE_DEFAULT;
-            glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF);
+            renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, stencilFuncRefValue, 0xFF);
+            renderState.BindRenderState();
             proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
         }
     }
@@ -710,7 +706,8 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
     renderState.GetDepthState().SetDepthTestWriteMask(true);
     renderState.GetBlendingState().SetIsBlendingEnabled(false);
     renderState.GetStencilState().SetIsStencilTestEnabled(false);
-    glDisable(GL_CULL_FACE);
+    renderState.GetCullingState().SetIsCullingEnabled(false);
+    renderState.BindRenderState();
 
     m_resolvedSceneFramebuffer->UnbindFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
@@ -800,11 +797,6 @@ void SceneRenderer::PlanarReflectionPass()
     if (mPlanarReflectionProxiesVec.size() <= 0)
         return;
 
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CW);
-    glCullFace(GL_BACK);
-    glEnable(GL_CLIP_DISTANCE0);
-
     RenderState renderState;
     renderState.GetBlendingState().SetIsBlendingEnabled(false);
 
@@ -815,6 +807,9 @@ void SceneRenderer::PlanarReflectionPass()
         .SetStencilOperation(0, 0, 0)
         .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
         .SetStencilMask(0);
+
+    renderState.GetCullingState().SetIsCullingEnabled(true).SetCullFaceMode(GL_BACK).SetFrontFace(GL_CW);
+    renderState.GetClipPlaneState().SetIsClipPlaneEnabled(0, true);
 
     renderState.BindRenderState();
 
@@ -875,8 +870,9 @@ void SceneRenderer::PlanarReflectionPass()
         }
     }
 
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_CLIP_DISTANCE0);
+    renderState.GetCullingState().SetIsCullingEnabled(false).SetCullFaceMode(GL_BACK).SetFrontFace(GL_CCW);
+    renderState.GetClipPlaneState().SetIsClipPlaneEnabled(0, false);
+    renderState.BindRenderState();
 }
 
 void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
@@ -894,11 +890,10 @@ void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
 
     renderState.BindRenderState();
 
-    // Альфа-канал UI-фреймбуфера должен накапливать покрытие (coverage), а не блендиться как цвет.
-    // Раздельный режим: RGB как обычно (SRC_ALPHA, ONE_MINUS_SRC_ALPHA), альфа — (ONE, ONE_MINUS_SRC_ALPHA).
-    // Так RGB в фреймбуфере оказывается premultiplied, а альфа — корректное покрытие для последующего
-    // композитинга поверх сцены.
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    // Alpha channel of UI framebuffer should accumulate coverage, not blend as color.
+    // Separate mode: RGB as usual (SRC_ALPHA, ONE_MINUS_SRC_ALPHA), alpha — (ONE, ONE_MINUS_SRC_ALPHA).
+    // So RGB in framebuffer is premultiplied, and alpha is correct coverage for subsequent compositing over the scene.
+    renderState.GetBlendingState().SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     m_resolvedSceneAndUiFramebuffer->BindResolvedSceneFramebuffer(
         GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

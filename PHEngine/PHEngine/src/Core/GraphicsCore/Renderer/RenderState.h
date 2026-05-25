@@ -10,10 +10,9 @@
 
 namespace Graphics {
 /* Depth / stencil state */
-struct DepthState {
+class DepthState {
     friend class RenderState;
 
-private:
     GLboolean _dtEnabled;
     GLboolean _dtwMask;
     GLenum _dtFunc;
@@ -32,12 +31,26 @@ public:
     DepthState& SetDepthTestWriteMask(const GLboolean depthTestWriteMask);
 
     DepthState& SetDepthTestFunc(const GLenum depthTestFunc);
+
+    GLboolean GetIsDepthTestEnabled() const
+    {
+        return _dtEnabled;
+    }
+
+    GLboolean GetDepthTestWriteMask() const
+    {
+        return _dtwMask;
+    }
+
+    GLenum GetDepthTestFunc() const
+    {
+        return _dtFunc;
+    }
 };
 
-struct StencilState {
+class StencilState {
     friend class RenderState;
 
-private:
     GLboolean _stEnabled;
     GLenum _sfail;
     GLenum _dpfail;
@@ -64,16 +77,57 @@ public:
     StencilState& SetStencilFunction(const GLenum func, const GLint funcRef, const GLuint funcMask);
 
     StencilState& SetStencilMask(const GLuint stencilMask);
+
+    GLboolean GetIsStencilTestEnabled() const
+    {
+        return _stEnabled;
+    }
+
+    GLenum GetStencilSFail() const
+    {
+        return _sfail;
+    }
+
+    GLenum GetStencilDPFail() const
+    {
+        return _dpfail;
+    }
+
+    GLenum GetStencilDPPass() const
+    {
+        return _dppass;
+    }
+
+    GLenum GetStencilFunc() const
+    {
+        return _func;
+    }
+
+    GLint GetStencilFuncRef() const
+    {
+        return _funcRef;
+    }
+
+    GLuint GetStencilFuncMask() const
+    {
+        return _funcMask;
+    }
+
+    GLuint GetStencilMask() const
+    {
+        return _stencilMask;
+    }
 };
 
 /* Blending state */
-struct BlendingState {
+class BlendingState {
     friend class RenderState;
 
-private:
     GLboolean _blendingEnabled;
-    GLenum _sfactor;
-    GLenum _dfactor;
+    GLenum _rgbSrcFactor;
+    GLenum _rgbDstFactor;
+    GLenum _alphaSrcFactor;
+    GLenum _alphaDstFactor;
 
     bool blendingEnableDirty{true};
     bool blendingFuncDirty{true};
@@ -85,7 +139,94 @@ public:
 
     BlendingState& SetIsBlendingEnabled(const GLboolean blendingEnabled);
 
-    BlendingState& SetBlendingFunction(const GLenum sfactor, const GLenum dfactor);
+    BlendingState& SetBlendingFunction(const GLenum rgbSrcFactor, const GLenum rgbDstFactor);
+
+    BlendingState& SetBlendingFunction(
+        const GLenum rgbSrcFactor, const GLenum rgbDstFactor, const GLenum alphaSrcFactor, const GLenum alphaDstFactor);
+
+    GLboolean GetIsBlendingEnabled() const
+    {
+        return _blendingEnabled;
+    }
+
+    GLenum GetRgbSrcFactor() const
+    {
+        return _rgbSrcFactor;
+    }
+
+    GLenum GetRgbDstFactor() const
+    {
+        return _rgbDstFactor;
+    }
+
+    GLenum GetAlphaSrcFactor() const
+    {
+        return _alphaSrcFactor;
+    }
+
+    GLenum GetAlphaDstFactor() const
+    {
+        return _alphaDstFactor;
+    }
+};
+
+class CullingState {
+    friend class RenderState;
+
+    GLboolean _cullingEnabled;
+    GLenum _cullFaceMode;
+    GLenum _frontFace;
+
+    bool cullingEnableDirty{true};
+    bool cullFaceModeDirty{true};
+    bool frontFaceDirty{true};
+
+public:
+    explicit CullingState();
+
+    void BindCullingState();
+
+    CullingState& SetIsCullingEnabled(const GLboolean cullingEnabled);
+
+    CullingState& SetCullFaceMode(const GLenum cullFaceMode);
+
+    CullingState& SetFrontFace(const GLenum frontFace);
+
+    GLboolean GetIsCullingEnabled() const
+    {
+        return _cullingEnabled;
+    }
+
+    GLenum GetCullFaceMode() const
+    {
+        return _cullFaceMode;
+    }
+
+    GLenum GetFrontFace() const
+    {
+        return _frontFace;
+    }
+};
+
+class ClipPlaneState {
+    friend class RenderState;
+
+    GLboolean _clipPlaneEnabled[6]{};
+
+    bool clipPlaneEnabledDirty[6]{true, true, true, true, true, true};
+
+public:
+    explicit ClipPlaneState();
+
+    void BindClipPlaneState();
+
+    void SetIsClipPlaneEnabled(const uint32_t clipPlaneIndex, const GLboolean enabled);
+
+    GLboolean GetIsClipPlaneEnabled(const uint32_t clipPlaneIndex) const
+    {
+        ext_assert(clipPlaneIndex < 6, "Invalid clip plane index");
+        return _clipPlaneEnabled[clipPlaneIndex];
+    }
 };
 
 class RenderState {
@@ -108,11 +249,25 @@ public:
         return instance;
     }
 
+    static CullingState& GetCullingState()
+    {
+        static CullingState instance;
+        return instance;
+    }
+
+    static ClipPlaneState& GetClipPlaneState()
+    {
+        static ClipPlaneState instance;
+        return instance;
+    }
+
     void BindRenderState()
     {
         GetDepthState().BindDepthState();
         GetStencilState().BindStencilState();
         GetBlendingState().BindBlendState();
+        GetCullingState().BindCullingState();
+        GetClipPlaneState().BindClipPlaneState();
     }
 };
 } // namespace Graphics
