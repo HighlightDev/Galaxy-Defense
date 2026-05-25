@@ -109,14 +109,13 @@ LevelData CombatLevel::LoadLevelDataFromFile(const std::string& levelName) const
     const auto& sceneSp = mSceneWp.lock();
     ext_assert(sceneSp, "CombatLevel scene pointer is null in LoadLevelDataFromFile");
     FileFacade fileReader;
-    if (fileReader.OpenAndReadFile(levelName)) {
-        const auto& lvlJsonStr = fileReader.GetFileSrc().front();
-        LevelSerializationHelper lvlSerializationHelper;
-        const auto lvlData = lvlSerializationHelper.RestoreLevelFromJsonString(lvlJsonStr);
-        ext_assert(lvlData.isDataValid(), "CombatLevel loaded level data is invalid");
-        return lvlData;
-    }
-    return {};
+    const bool fileLoaded = fileReader.OpenAndReadFile(levelName);
+    ext_assert(fileLoaded, "Failed to load combat level data file: " + levelName);
+    const auto& lvlJsonStr = fileReader.GetFileSrc().front();
+    LevelSerializationHelper lvlSerializationHelper;
+    const auto lvlData = lvlSerializationHelper.RestoreLevelFromJsonString(lvlJsonStr);
+    ext_assert(lvlData.isDataValid(), "CombatLevel loaded level data is invalid");
+    return lvlData;
 }
 
 void CombatLevel::CreateScene()
@@ -213,8 +212,8 @@ void CombatLevel::CreateScene()
     MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "uvScale", uvScale);
 
     constexpr int32_t asteroidsCount = 64;
-    constexpr float asteroidsPerDimension = std::sqrt(static_cast<float>(asteroidsCount));
-    constexpr int32_t asteroidsPerDimensionInt = static_cast<int32_t>(asteroidsPerDimension);
+    const float asteroidsPerDimension = std::sqrt(static_cast<float>(asteroidsCount));
+    const int32_t asteroidsPerDimensionInt = static_cast<int32_t>(asteroidsPerDimension);
 
     const auto& instancedMeshComponentCreator
         = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>(true);

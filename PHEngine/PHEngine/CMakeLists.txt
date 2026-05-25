@@ -152,3 +152,7 @@ target_link_libraries(
 if(ENABLE_LIBUNWIND)
   target_link_libraries(${PROJECT_NAME} PUBLIC UnwindTool)
 endif()
+
+if (WIN32)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE TINYLOGGER_IMPORTS)
+endif()

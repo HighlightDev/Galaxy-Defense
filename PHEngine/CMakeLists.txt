@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 4.0.0)
+
+message(STATUS "CMake version: ${CMAKE_VERSION}")
 
 set(PROJECT_NAME GalaxyDefenseProject)
 
@@ -46,6 +48,8 @@ add_custom_target(
 if(WIN32)
   if(MSVC)
     add_compile_options(/bigobj)
+    add_compile_options("/utf-8")
+    add_compile_options(/MP)
   else()
     add_compile_options(-Wa,-mbig-obj)
   endif()

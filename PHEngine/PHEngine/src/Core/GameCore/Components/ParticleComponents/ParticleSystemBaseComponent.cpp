@@ -4,6 +4,9 @@
 
 #include <algorithm>
 
+#undef max
+#undef min
+
 namespace EngineCore {
 ParticleSystemBaseComponent::ParticleSystemBaseComponent(
     const std::string& name,

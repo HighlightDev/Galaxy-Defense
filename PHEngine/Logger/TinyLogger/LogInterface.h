@@ -111,6 +111,16 @@ struct IterateTuple<TupleT, max_index, max_index> {
 };
 } // namespace LogHelp
 
+#ifdef _WIN32
+#ifdef TINYLOGGER_EXPORTS
+#define TINYLOGGER_API __declspec(dllexport)
+#else if defined(TINYLOGGER_IMPORTS)
+#define TINYLOGGER_API __declspec(dllimport)
+#endif
+#else
+#define TINYLOGGER_API
+#endif
+
 struct Logger {
     using Clock_t = std::chrono::high_resolution_clock;
     using Duration_t = Clock_t::duration;

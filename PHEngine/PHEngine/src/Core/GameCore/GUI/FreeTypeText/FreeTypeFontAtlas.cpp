@@ -83,24 +83,46 @@ void FreeTypeFontAtlas::InitializeFontAtlas()
 
     int texPos = 0; // texture offset
 
+    // Padding pixels are written with a zero buffer — passing NULL to glTexSubImage2D
+    // with non-zero dimensions is UB and causes driver-level hangs.
+    const std::vector<uint8_t> zeroPadding(mWidthHeightTexture.y, 0);
+
     for (const auto& [languageName, symbols] : languageCharMap) {
         for (const int32_t c : symbols) {
             if (FT_Load_Char(face, c, FT_LOAD_RENDER))
                 continue;
 
-            // Add this character glyph to our texture
-            glTexSubImage2D(GL_TEXTURE_2D, 0, texPos, 0, 1, mSlot->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, (char*)0); // padding
+            // Layout per character slot (width = bitmap.width + 2):
+            //   texPos + 0                     : 1px zero padding (left)
+            //   texPos + 1                     : bitmap.width px glyph data
+            //   texPos + 1 + bitmap.width      : 1px zero padding (right)
+            glTexSubImage2D(
+                GL_TEXTURE_2D, 0, texPos, 0, 1, mWidthHeightTexture.y, GL_RED, GL_UNSIGNED_BYTE, zeroPadding.data()); // left
+                                                                                                                      // padding
+
+            if (mSlot->bitmap.width > 0 && mSlot->bitmap.rows > 0) {
+                glTexSubImage2D(
+                    GL_TEXTURE_2D,
+                    0,
+                    texPos + 1,
+                    0,
+                    mSlot->bitmap.width,
+                    mSlot->bitmap.rows,
+                    GL_RED,
+                    GL_UNSIGNED_BYTE,
+                    mSlot->bitmap.buffer); // glyph
+            }
+
             glTexSubImage2D(
                 GL_TEXTURE_2D,
                 0,
-                texPos,
+                texPos + 1 + (int)mSlot->bitmap.width,
                 0,
-                mSlot->bitmap.width,
-                mSlot->bitmap.rows,
+                1,
+                mWidthHeightTexture.y,
                 GL_RED,
                 GL_UNSIGNED_BYTE,
-                mSlot->bitmap.buffer);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, texPos, 0, 1, mSlot->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, (char*)0); // padding
+                zeroPadding.data()); // right padding
 
             // Store glyph info in our char array for this pixel size
             mChars[c].advanceX = mSlot->advance.x >> 6;
@@ -112,7 +134,8 @@ void FreeTypeFontAtlas::InitializeFontAtlas()
             mChars[c].bitmapLeft = mSlot->bitmap_left;
             mChars[c].bitmapTop = mSlot->bitmap_top;
 
-            mChars[c].xOffset = (float)texPos / (float)mWidthHeightTexture.x;
+            // xOffset points to the glyph start (after left padding)
+            mChars[c].xOffset = (float)(texPos + 1) / (float)mWidthHeightTexture.x;
 
             // Increase texture offset
             texPos += mSlot->bitmap.width + 2;

@@ -58,7 +58,7 @@ std::shared_ptr<LootActor> LootFactory::CreateLoot(
     MaterialPropertySetter::SetMaterialPropertyValue(loot_material, "opacity", 1.0f);
     auto meshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>(false);
     const auto data = std::make_shared<InstancedMeshComponentData>(
-        "c_loot_mesh_" + lootIndexStr, "сrystal_1.obj", glm::vec3(0), glm::vec3(0), glm::vec3(1.0f), loot_material);
+        "c_loot_mesh_" + lootIndexStr, "crystal_1.obj", glm::vec3(0), glm::vec3(0), glm::vec3(1.0f), loot_material);
     const auto& meshComponent
         = std::static_pointer_cast<InstancedStaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, data));
     a_loot->AddComponent(meshComponent);

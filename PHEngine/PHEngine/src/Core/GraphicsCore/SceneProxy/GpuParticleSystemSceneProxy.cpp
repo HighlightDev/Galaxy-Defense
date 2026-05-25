@@ -24,6 +24,8 @@ using namespace Graphics::Renderer;
 using namespace Graphics::OpenGL;
 using namespace EngineCore;
 
+#undef GetCurrentTime
+
 namespace Graphics::Proxy {
 GpuParticleSystemSceneProxy::GpuParticleSystemSceneProxy(const GpuParticleSystemComponent* component)
     : PrimitiveSceneProxy(component, component->GetRenderData().mMaterialProxy)

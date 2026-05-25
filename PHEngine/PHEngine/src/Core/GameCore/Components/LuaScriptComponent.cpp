@@ -1,7 +1,5 @@
 #include "LuaScriptComponent.h"
 
-#include "ComponentData/ComponentData.h"
-#include "ComponentData/ScriptComponentData.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
 #include "Core/InterThreadCommunicationMgr.h"
@@ -9,12 +7,6 @@
 using namespace EngineCore::Scripts;
 
 namespace EngineCore {
-
-LuaScriptComponent::LuaScriptComponent(const std::shared_ptr<ComponentData>& componentData)
-    : Component(componentData->EngineObjectName, componentData->mIsEnabled)
-    , mScriptName(std::static_pointer_cast<ScriptComponentData>(componentData)->ScriptName)
-{
-}
 
 eComponentType LuaScriptComponent::GetComponentType() const
 {

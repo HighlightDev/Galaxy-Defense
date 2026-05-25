@@ -7,6 +7,9 @@
 
 #include <gl/glew.h>
 
+#undef max
+#undef min
+
 using namespace Resources;
 using namespace IO;
 using namespace Graphics;

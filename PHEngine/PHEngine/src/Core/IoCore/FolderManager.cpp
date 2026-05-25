@@ -21,6 +21,18 @@ bool IsObsoleteName(const std::string& name)
 {
     return name == "obsolete" || name == "Obsolete";
 }
+
+// std::filesystem::path::string() uses the system ANSI code page on Windows and throws
+// std::system_error when the path contains characters outside that code page.
+// This helper always produces a valid UTF-8 std::string regardless of the locale.
+std::string PathToUtf8(const std::filesystem::path& p)
+{
+    // In C++20 u8string() returns std::u8string (char8_t), not std::string.
+    // The underlying bytes are identical to UTF-8 char bytes, so the range
+    // constructor is the safest zero-copy way to obtain a std::string.
+    auto u8 = p.u8string();
+    return { u8.begin(), u8.end() };
+}
 } // namespace
 
 void FolderManager::BuildSystemPathToFolders()
@@ -33,7 +45,7 @@ void FolderManager::BuildSystemPathToFolders()
     for (auto it = std::filesystem::recursive_directory_iterator(rootPath); it != std::filesystem::recursive_directory_iterator();
          ++it) {
         const auto& dirEntry = *it;
-        const std::string entryName = dirEntry.path().filename().string();
+        const std::string entryName = PathToUtf8(dirEntry.path().filename());
 
         if (std::filesystem::is_directory(dirEntry)) {
             if (IsObsoleteName(entryName)) {
@@ -47,7 +59,7 @@ void FolderManager::BuildSystemPathToFolders()
         }
 
         const std::string fileName = entryName;
-        const std::string absPath = dirEntry.path().string();
+        const std::string absPath = PathToUtf8(dirEntry.path());
 
         ext_assert(
             mAbsFilesPathMap.count(fileName) == 0,

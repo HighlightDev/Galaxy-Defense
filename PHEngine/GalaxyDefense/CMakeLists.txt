@@ -284,6 +284,21 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy_directory
           ${PROJECT_SOURCE_DIR}/PHEngine/res/
           $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/res)
+          
+if (WIN32)
+  add_custom_command(
+  TARGET ${EXECUTABLE_NAME}
+  POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E echo
+    "Copy dll files to binary directory: $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/r"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/bin/Debug/
+          ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/FreeType/bin/Release/
+          ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/bin/Release/x64/
+          ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/bin/Debug/
+          $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/)
+endif()
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
@@ -424,5 +439,8 @@ message(STATUS "LibUnwind enabled: ${ENABLE_LIBUNWIND}")
 if(ENABLE_LIBUNWIND)
   target_link_libraries(${EXECUTABLE_NAME} PRIVATE UnwindTool)
 else()
-
 endif(ENABLE_LIBUNWIND)
+
+if (WIN32)
+  target_compile_definitions(${EXECUTABLE_NAME} PRIVATE TINYLOGGER_IMPORTS)
+endif()

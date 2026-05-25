@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Component.h"
+#include "ComponentData/ComponentData.h"
+#include "ComponentData/ScriptComponentData.h"
 
 namespace EngineCore {
 
@@ -16,9 +18,13 @@ class LuaScriptComponent : public Component {
     std::string mScriptName;
 
 public:
-    LuaScriptComponent(const std::shared_ptr<ComponentData>& componentData);
+    explicit LuaScriptComponent(const std::shared_ptr<EngineCore::ComponentData>& componentData)
+        : Component(componentData->EngineObjectName, componentData->mIsEnabled)
+        , mScriptName(std::static_pointer_cast<EngineCore::ScriptComponentData>(componentData)->ScriptName)
+    {
+    }
 
-    virtual ~LuaScriptComponent() override = default;
+    ~LuaScriptComponent() override = default;
 
     eComponentType GetComponentType() const override;
 

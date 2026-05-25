@@ -9,6 +9,9 @@
 
 #include <algorithm>
 
+#undef max
+#undef min
+
 using namespace EngineCore::GUI;
 using namespace IO;
 using namespace Resources;

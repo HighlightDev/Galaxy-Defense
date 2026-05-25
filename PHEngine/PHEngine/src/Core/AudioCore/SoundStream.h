@@ -2,7 +2,11 @@
 
 #include "Core/IoCore/AudioLoaderCore/AudioResourceInfo.h"
 
+#include <stdint.h>
+
+#include <cstdint>
 #include <memory>
+#include <string>
 
 using namespace IO::Audio;
 

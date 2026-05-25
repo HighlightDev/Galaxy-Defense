@@ -13,6 +13,9 @@
 
 #include <algorithm>
 
+#undef max
+#undef min
+
 using namespace EngineCore;
 using namespace EngineCore::Scripts;
 

@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 
+#undef max
+#undef min
+
 namespace Graphics::OpenGL {
 
 class UniformBufferControlBlock {

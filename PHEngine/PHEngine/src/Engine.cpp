@@ -42,6 +42,8 @@
 #include "Core/CommonCore/ResourceUsageObserver.h"
 #endif
 
+#undef GetCurrentTime
+
 using namespace TinyLogger;
 using namespace IO;
 using namespace EngineUtility;

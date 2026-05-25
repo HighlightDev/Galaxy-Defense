@@ -74,7 +74,7 @@ function CreateLevel(host)
 		,warning.png
         ,hammer.png
         ,trash.png
-        ,сrystal_1.obj
+        ,crystal_1.obj
         ,diamond.png
         ,shining_mask.png
         ,cryo_cannon.png

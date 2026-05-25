@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace Game {
 class SpaceshipActor;

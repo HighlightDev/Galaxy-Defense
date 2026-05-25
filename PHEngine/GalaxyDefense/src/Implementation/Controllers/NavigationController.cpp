@@ -25,6 +25,9 @@
 #include <array>
 #include <limits>
 
+#undef max
+#undef min
+
 using namespace Graphics;
 using namespace Resources;
 

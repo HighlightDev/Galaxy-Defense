@@ -1,5 +1,7 @@
 #include "RenderState.h"
 
+#include <functional>
+
 namespace Graphics {
 /********************************************
  *               DepthState

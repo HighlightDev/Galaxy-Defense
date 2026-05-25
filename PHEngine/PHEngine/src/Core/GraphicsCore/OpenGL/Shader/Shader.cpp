@@ -1,11 +1,15 @@
 #include "Shader.h"
 
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <gl/glew.h>
 #include <glm/vec2.hpp>
 
 #include <fstream>
+
+#undef max
+#undef min
 
 using namespace EngineCore;
 
