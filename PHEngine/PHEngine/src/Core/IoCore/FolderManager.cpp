@@ -31,7 +31,7 @@ std::string PathToUtf8(const std::filesystem::path& p)
     // The underlying bytes are identical to UTF-8 char bytes, so the range
     // constructor is the safest zero-copy way to obtain a std::string.
     auto u8 = p.u8string();
-    return { u8.begin(), u8.end() };
+    return {u8.begin(), u8.end()};
 }
 } // namespace
 
