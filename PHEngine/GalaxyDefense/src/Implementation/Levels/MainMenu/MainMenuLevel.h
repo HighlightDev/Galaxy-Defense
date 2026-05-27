@@ -49,6 +49,8 @@ private:
     void CreateScene();
 
     void RunLuaBuildLevelScript();
+
+    void CreateBackgroundBillboard();
 };
 
 } // namespace Game

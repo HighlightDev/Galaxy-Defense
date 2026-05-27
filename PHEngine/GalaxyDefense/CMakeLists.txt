@@ -11,6 +11,7 @@ set(HEADERS
     src/Implementation/Levels/LevelBase.h
     src/Implementation/Levels/LevelSerializationHelper.h
     src/Implementation/Levels/LevelData.h
+    src/Implementation/Levels/ProceduralSpaceBackgroundBuilder.h
     src/Implementation/Levels/CombatLevel/CombatLevel.h
     src/Implementation/Levels/CombatLevel/Controllers/CombatLevelUiController.h
     src/Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h
@@ -139,6 +140,7 @@ set(SOURCES
     src/Implementation/Levels/LevelBase.cpp
     src/Implementation/Levels/LevelSerializationHelper.cpp
     src/Implementation/Levels/LevelData.cpp
+    src/Implementation/Levels/ProceduralSpaceBackgroundBuilder.cpp
     src/Implementation/Levels/CombatLevel/CombatLevel.cpp
     src/Implementation/Levels/CombatLevel/Controllers/CombatLevelUiController.cpp
     src/Implementation/Levels/CombatLevel/CombatActorsPoolHandler.cpp

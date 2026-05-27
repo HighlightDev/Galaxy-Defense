@@ -179,7 +179,8 @@
         "_SetVec3ToMaterial",
         "_GetCollectedCrystalsCount",
         "_GetMouseCursorPositionY",
-        "_GetMouseCursorPositionX"
+        "_GetMouseCursorPositionX",
+        "_SetIntToMaterial"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

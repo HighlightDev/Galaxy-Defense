@@ -44,7 +44,9 @@ void UiSliderSceneProxy::OnSceneProxyRegistered()
     mUiSliderShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiSliderShader>(shaderParams);
 }
 
-void UiSliderSceneProxy::Render()
+void UiSliderSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     mUiSliderShader->ExecuteShader();
     mUiSliderShader->LoadRenderSliderLineSubroutine();

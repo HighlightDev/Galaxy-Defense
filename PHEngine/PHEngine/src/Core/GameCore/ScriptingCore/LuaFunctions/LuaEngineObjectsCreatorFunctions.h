@@ -113,6 +113,8 @@ private:
     void SetVec3ToMaterial(
         const std::tuple<int32_t /*material proxy id*/, std::string /*value*/, std::string /*property name*/>& setVec3ToMaterial);
 
+    void SetIntToMaterial(const std::tuple<int32_t /*material proxy id*/, int32_t, std::string>& setIntToMaterial);
+
     /* -------------------  Create Tweener ----------------------------*/
     int32_t CreateTweener(const std::tuple<int32_t /*Actor id*/, std::string /*tweener name*/>& tweenerData);
 

@@ -19,6 +19,8 @@ UiRectangleLuaProxy::UiRectangleLuaProxy(const std::shared_ptr<::EngineCore::GUI
     , mBorderRadius(static_cast<float>(ownerRectangle->GetBorderRadius()))
     , mIsRoundTop(ownerRectangle->GetIsRoundTop())
     , mIsRoundBottom(ownerRectangle->GetIsRoundBottom())
+    , mApplyBlur(ownerRectangle->GetApplyBlur())
+    , mBlurMix(ownerRectangle->GetBlurMix())
 {
 }
 
@@ -54,6 +56,8 @@ std::string UiRectangleLuaProxy::GetGameThreadData()
     jsonObj["border_radius"] = mBorderRadius;
     jsonObj["is_round_top"] = mIsRoundTop;
     jsonObj["is_round_bottom"] = mIsRoundBottom;
+    jsonObj["apply_blur"] = mApplyBlur;
+    jsonObj["blur_mix"] = mBlurMix;
     return jsonObj.dump();
 }
 
@@ -93,6 +97,22 @@ void UiRectangleLuaProxy::SetIsRoundBottom_FromGameThread(const bool bIsRoundBot
 {
     if (mIsRoundBottom != bIsRoundBottom) {
         mIsRoundBottom = bIsRoundBottom;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiRectangleLuaProxy::SetApplyBlur_FromGameThread(const bool applyBlur)
+{
+    if (mApplyBlur != applyBlur) {
+        mApplyBlur = applyBlur;
+        mIsLuaDataDirty = true;
+    }
+}
+
+void UiRectangleLuaProxy::SetBlurMix_FromGameThread(const float blurMix)
+{
+    if (!EngineMath::FloatsNearEqual(mBlurMix, blurMix)) {
+        mBlurMix = blurMix;
         mIsLuaDataDirty = true;
     }
 }

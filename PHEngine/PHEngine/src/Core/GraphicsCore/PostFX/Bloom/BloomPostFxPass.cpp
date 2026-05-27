@@ -132,9 +132,9 @@ void BloomPostFxPass::ExecutePostFx(
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
 
     mBloomFxShader->StopShader();
-    // Внутри прохода stencil write mask выставлен в 0x00. glClear(GL_STENCIL_BUFFER_BIT) подчиняется этой
-    // маске — без восстановления очистка стенсила UI-фреймбуфера в GuiPass становится no-op и стенсил
-    // (scissoring, бит BLOOM) тянется с прошлого кадра.
+    // Inside the pass stencil write mask is set to 0x00. glClear(GL_STENCIL_BUFFER_BIT) obeys this mask - without restoring it
+    // clearing the stencil of UI framebuffer in GuiPass becomes no-op and stencil (scissoring, BLOOM bit) is carried over from
+    // the previous frame.
     renderState.GetStencilState().SetStencilMask(0xFF);
     renderState.GetDepthState().SetDepthTestWriteMask(true);
     renderState.BindRenderState();

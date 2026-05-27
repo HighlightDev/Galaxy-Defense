@@ -3,11 +3,9 @@
 #include "Core/CommonCore/JsonHelper.h"
 #include "Core/CommonCore/Random.h"
 #include "Core/GameCore/BoundingBox3D.h"
-#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/InstancedStaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
-#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/ComponentData/InstancedMeshComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
@@ -15,7 +13,6 @@
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
@@ -42,6 +39,7 @@
 #include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/GalaxySceneCamera.h"
 #include "Implementation/Levels/LevelSerializationHelper.h"
+#include "Implementation/Levels/ProceduralSpaceBackgroundBuilder.h"
 #include "Implementation/LuaExecutors/LuaCombatLevelExecutor.h"
 
 #include <glm/vec2.hpp>
@@ -160,29 +158,17 @@ void CombatLevel::CreateScene()
     const auto& a_skybox = sceneSp->GetActorByName("SkyboxActor");
     ext_assert(a_skybox, "CombatLevel skybox actor not found");
 
-    MaterialParser materialParser;
-    const std::shared_ptr<IMaterial>& spaceStars_material = materialParser.ParseMaterialDescriptor("SpaceStarsMaterial.m");
-    sceneSp->RegisterMaterialInstance(spaceStars_material);
-
-    MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
-    MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, "randomNormSeed", Random::Float() * 0.5f + 0.5f);
-
-    auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
-    const auto backgroundBillboardComponentData = std::make_shared<BillboardComponentData>(
-        "c_spaceBackgroundBillboard",
-        1.0f,
-        true,
-        glm::vec3(0.0f, 0.0f, 1.0f),
-        0.0f,
-        false,
-        glm::vec3(1.0f),
-        spaceStars_material,
-        [](const glm::mat4& viewMatrix) { return glm::mat4(1); },
-        [](const glm::mat4& projectionMatrix) { return glm::mat4(1); });
-    const auto& billboardComponent = std::static_pointer_cast<BillboardComponent>(
-        sceneSp->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
-    billboardComponent->SetSortOrderValue(-100000);
-    a_skybox->AddComponent(billboardComponent);
+    // Procedural starfield + nebula backdrop, re-using the menu's material.
+    // The planet/ring stay off here — the combat camera pans and zooms, so a
+    // stationary planet glued to the corner would feel pasted onto the lens.
+    // Builder randomises palette + star/sparkle offset on every level load.
+    AttachProceduralSpaceBackground(
+        sceneSp,
+        a_skybox,
+        SpaceBackgroundConfig{
+            .includePlanet = false,
+            .includeRing = false,
+        });
 
     if (mCombatController) {
         mCombatController->InitFromLevelData(levelData);
@@ -191,6 +177,7 @@ void CombatLevel::CreateScene()
     mUiController->OnLevelInit();
 
     // Asteroids field
+    MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& asteroidPbs_mat = materialParser.ParseMaterialDescriptor("AsteroidMaterial.m");
     sceneSp->RegisterMaterialInstance(asteroidPbs_mat);
 

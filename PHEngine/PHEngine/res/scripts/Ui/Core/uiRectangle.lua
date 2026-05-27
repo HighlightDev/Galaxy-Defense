@@ -45,7 +45,13 @@ function UiRectangle:new(host, name)
         opacity = {value = 1.0, dirty = false},
         border_radius = {value = 0.0, dirty = false},
         is_round_top = {value = false, dirty = false},
-        is_round_bottom = {value = false, dirty = false}
+        is_round_bottom = {value = false, dirty = false},
+        -- When apply_blur is true the rectangle's body colour is mixed with the
+        -- PostFx Gaussian-blurred scene (sourced from IPostFxRenderTargetProvider
+        -- in UiRectangleSceneProxy::Render) by blur_mix in [0,1]. Use it for
+        -- frosted-glass-style panels above the 3D scene.
+        apply_blur = {value = false, dirty = false},
+        blur_mix = {value = 0.0, dirty = false}
     }
 
     local uiRectangleObj = UiRectangle.uiItemBaseClass.new(self)
@@ -82,6 +88,12 @@ function UiRectangle:updateFromReplicatorData(host)
             end
             if parsedJson["is_round_bottom"] ~= nil then
                 self.rectangleProperties.is_round_bottom.value = parsedJson["is_round_bottom"]
+            end
+            if parsedJson["apply_blur"] ~= nil then
+                self.rectangleProperties.apply_blur.value = parsedJson["apply_blur"]
+            end
+            if parsedJson["blur_mix"] ~= nil then
+                self.rectangleProperties.blur_mix.value = parsedJson["blur_mix"]
             end
         end
     end
@@ -160,6 +172,26 @@ function UiRectangle:setIsRoundBottom(bIsRoundBottom)
     if self.rectangleProperties.is_round_bottom.value ~= bIsRoundBottom then
         self.rectangleProperties.is_round_bottom.value = bIsRoundBottom
         self.rectangleProperties.is_round_bottom.dirty = true
+    end
+end
+
+-- Turns on the PostFx-blur tap. When enabled, the rectangle's body colour is
+-- mixed with the Gaussian-blurred scene render target by the current blur_mix.
+function UiRectangle:setApplyBlur(applyBlur)
+    assert(applyBlur ~= nil and type(applyBlur) == "boolean")
+    if self.rectangleProperties.apply_blur.value ~= applyBlur then
+        self.rectangleProperties.apply_blur.value = applyBlur
+        self.rectangleProperties.apply_blur.dirty = true
+    end
+end
+
+-- Blend factor between the rectangle's base colour (0.0) and the sampled blur
+-- (1.0). Has no visual effect unless apply_blur is also true.
+function UiRectangle:setBlurMix(blurMix)
+    assert(blurMix ~= nil and type(blurMix) == "number" and blurMix >= 0.0 and blurMix <= 1.0)
+    if self.rectangleProperties.blur_mix.value ~= blurMix then
+        self.rectangleProperties.blur_mix.value = blurMix
+        self.rectangleProperties.blur_mix.dirty = true
     end
 end
 

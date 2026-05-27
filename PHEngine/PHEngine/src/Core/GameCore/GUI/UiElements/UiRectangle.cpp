@@ -34,6 +34,8 @@ UiRectangle::UiRectangle(const std::string& name)
     , mBorderRadius(0.0f)
     , mIsRoundTop(true)
     , mIsRoundBottom(true)
+    , mApplyBlur(false)
+    , mBlurMix(0.0f)
     , mColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(
           mColor, "Color", [this](const glm::vec3& newColorVaue) { SetColor(newColorVaue); }))
     , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
@@ -206,6 +208,34 @@ void UiRectangle::SetIsRoundBottom(const bool bIsRoundBottom)
     }
 }
 
+void UiRectangle::SetApplyBlur(const bool applyBlur)
+{
+    if (mApplyBlur != applyBlur) {
+        mApplyBlur = applyBlur;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+bool UiRectangle::GetApplyBlur() const
+{
+    return mApplyBlur;
+}
+
+void UiRectangle::SetBlurMix(const float blurMix)
+{
+    if (!EngineMath::FloatsNearEqual(mBlurMix, blurMix)) {
+        mBlurMix = blurMix;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+float UiRectangle::GetBlurMix() const
+{
+    return mBlurMix;
+}
+
 std::string UiRectangle::GetUiTypeString() const
 {
     return "UiRectangle";
@@ -261,6 +291,20 @@ void UiRectangle::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }
+    if (jsonObj.contains("apply_blur")) {
+        const auto applyBlur = jsonObj["apply_blur"].get<bool>();
+        if (mApplyBlur != applyBlur) {
+            mApplyBlur = applyBlur;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
+    if (jsonObj.contains("blur_mix")) {
+        const auto blurMix = jsonObj["blur_mix"].get<float>();
+        if (!EngineMath::FloatsNearEqual(mBlurMix, blurMix)) {
+            mBlurMix = blurMix;
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        }
+    }
 }
 
 void UiRectangle::SyncDataOnRenderThread()
@@ -282,7 +326,9 @@ void UiRectangle::SyncDataOnRenderThread()
                          opacity = mOpacity,
                          borderRadius = mBorderRadius,
                          isRoundTop = mIsRoundTop,
-                         isRoundBottom = mIsRoundBottom](
+                         isRoundBottom = mIsRoundBottom,
+                         applyBlur = mApplyBlur,
+                         blurMix = mBlurMix](
                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                             std::weak_ptr<EngineCore::Scene> sceneWp,
                             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -294,6 +340,8 @@ void UiRectangle::SyncDataOnRenderThread()
                                 rectangleSceneProxy->SetBorderRadius(borderRadius);
                                 rectangleSceneProxy->SetIsRoundTop(isRoundTop);
                                 rectangleSceneProxy->SetIsRoundBottom(isRoundBottom);
+                                rectangleSceneProxy->SetApplyBlur(applyBlur);
+                                rectangleSceneProxy->SetBlurMix(blurMix);
                             }
                         });
                 }
@@ -321,7 +369,9 @@ void UiRectangle::SyncDataOnLuaThread()
                      color = mColor,
                      borderRadius = mBorderRadius,
                      isRoundTop = mIsRoundTop,
-                     isRoundBottom = mIsRoundBottom](
+                     isRoundBottom = mIsRoundBottom,
+                     applyBlur = mApplyBlur,
+                     blurMix = mBlurMix](
                         std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                         std::weak_ptr<EngineCore::Scene> sceneWp,
                         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -332,6 +382,8 @@ void UiRectangle::SyncDataOnLuaThread()
                             rectangleLuaProxy->SetBorderRadius_FromGameThread(borderRadius);
                             rectangleLuaProxy->SetIsRoundTop_FromGameThread(isRoundTop);
                             rectangleLuaProxy->SetIsRoundBottom_FromGameThread(isRoundBottom);
+                            rectangleLuaProxy->SetApplyBlur_FromGameThread(applyBlur);
+                            rectangleLuaProxy->SetBlurMix_FromGameThread(blurMix);
                         }
                     });
             }

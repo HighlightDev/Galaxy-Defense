@@ -11,6 +11,11 @@ class UiCanvas;
 class FreeTypeFontHandler;
 } // namespace EngineCore::GUI
 
+namespace Graphics {
+class IPostFxRenderTargetProvider;
+class CameraSceneProxy;
+} // namespace Graphics
+
 namespace Graphics::Proxy {
 class UiSceneProxyBase;
 
@@ -44,7 +49,9 @@ public:
 
     void SortProxiesByZOrder();
 
-    void Render();
+    void Render(
+        const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+        const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy);
 
     void SetUiItemUid(const size_t UId);
 

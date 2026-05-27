@@ -30,6 +30,10 @@ class UiRectangle : public UiItemBase {
 
     bool mIsRoundBottom;
 
+    bool mApplyBlur;
+
+    float mBlurMix;
+
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mColorProperty;
 
     std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
@@ -64,6 +68,14 @@ public:
     void SetIsRoundTop(const bool bIsRoundTop);
 
     void SetIsRoundBottom(const bool bIsRoundBottom);
+
+    void SetApplyBlur(const bool applyBlur);
+
+    bool GetApplyBlur() const;
+
+    void SetBlurMix(const float blurMix);
+
+    float GetBlurMix() const;
 
     glm::vec3 GetColor() const;
 

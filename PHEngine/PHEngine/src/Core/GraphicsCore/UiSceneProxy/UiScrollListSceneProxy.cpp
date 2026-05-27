@@ -47,7 +47,9 @@ void UiScrollListSceneProxy::OnSceneProxyRegistered()
     mUiRectangleShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiRectangleShader>(shaderParams);
 }
 
-void UiScrollListSceneProxy::Render()
+void UiScrollListSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     if (mWidthHeightPixels.x == 0 || mWidthHeightPixels.y == 0) {
         return;

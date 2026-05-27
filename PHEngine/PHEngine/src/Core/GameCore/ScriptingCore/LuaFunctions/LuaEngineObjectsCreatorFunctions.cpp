@@ -184,7 +184,14 @@ void LuaEngineObjectsCreatorFunctions::RegisterCallbacks(const LuaWrapper& luaWr
             mOwnerPtr,
             std::bind(&LuaEngineObjectsCreatorFunctions::SetVec3ToMaterial, this, std::placeholders::_1),
             "_SetVec3ToMaterial");
-
+    LuaCallbackBindingHelper<
+        Hash64_CT("LuaEngineObjectsCreatorFunctions::SetIntToMaterial"),
+        void(int32_t, int32_t, std::string)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaEngineObjectsCreatorFunctions::SetIntToMaterial, this, std::placeholders::_1),
+            "_SetIntToMaterial");
     LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateTweener"), int32_t(int32_t, std::string)>::Bind(
         luaWrapper,
         mOwnerPtr,
@@ -427,6 +434,19 @@ void LuaEngineObjectsCreatorFunctions::SetVec3ToMaterial(
     const auto& jsonObj = nlohmann::json::parse(std::get<1>(setVec3ToMaterial));
     const glm::vec3 value = nlohmann_utilities::GetXyzFromJsonMap(jsonObj);
     const std::string& propertyName = std::get<2>(setVec3ToMaterial);
+    MaterialPropertySetter::SetMaterialPropertyValue(materialSp, propertyName, value);
+}
+
+void LuaEngineObjectsCreatorFunctions::SetIntToMaterial(
+    const std::tuple<int32_t /*material proxy id*/, int32_t, std::string>& setIntToMaterial)
+{
+    const auto materialId = std::get<0>(setIntToMaterial);
+    const auto sceneSp = mSceneWp.lock();
+    ext_assert(sceneSp, "LuaEngineObjectsCreatorFunctions::SetIntToMaterial: scene pointer is null");
+    const auto materialSp = sceneSp->GetMaterialByProxyId(materialId);
+    ext_assert(materialSp, "LuaEngineObjectsCreatorFunctions::SetIntToMaterial: material pointer is null");
+    const int32_t value = std::get<1>(setIntToMaterial);
+    const std::string& propertyName = std::get<2>(setIntToMaterial);
     MaterialPropertySetter::SetMaterialPropertyValue(materialSp, propertyName, value);
 }
 

@@ -45,7 +45,9 @@ public:
 
     ~UiUpgradeIconSceneProxy() override;
 
-    void Render() override;
+    void Render(
+        const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+        const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy) override;
 
     void SetTexture(const std::shared_ptr<ITexture>& texture);
 

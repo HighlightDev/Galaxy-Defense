@@ -22,13 +22,13 @@ private:
 public:
     BloomPostFxPass(const ViewPortInfo& viewPortInfo);
 
-    virtual ~BloomPostFxPass();
+    ~BloomPostFxPass() override;
 
     void ExecutePostFx(
         const std::shared_ptr<ITexture>& sceneColorTexture,
         const std::shared_ptr<FramebufferBundle>& previousStepFramebuffer) override;
 
-    virtual std::shared_ptr<ITexture> GetPostFxResult() const;
+    std::shared_ptr<ITexture> GetPostFxResult() const override;
 
     void CleanUp() override;
 

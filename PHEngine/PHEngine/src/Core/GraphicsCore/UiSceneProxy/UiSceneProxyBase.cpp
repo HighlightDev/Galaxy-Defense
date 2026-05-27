@@ -110,7 +110,9 @@ void UiSceneProxyBase::SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProx
     mParentCanvasProxy = parentCanvasProxy;
 }
 
-void UiSceneProxyBase::Render()
+void UiSceneProxyBase::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
 }
 

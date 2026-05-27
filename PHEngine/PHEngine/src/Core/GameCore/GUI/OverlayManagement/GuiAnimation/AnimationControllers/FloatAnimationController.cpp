@@ -28,7 +28,7 @@ void FloatAnimationController::ProcessAnimation(
         floatProperty->SetValue(std::any_cast<float>(data.GetDstValue()));
     } else {
         if (eAnimationInterpolationFunctionType::LINEAR == data.GetAnimationFunctionType()) {
-            const float srcValue = floatProperty->GetValue();
+            const float srcValue = floatProperty->GetInitialValue();
             const float dstValue = std::any_cast<float>(data.GetDstValue());
             const float resultValue
                 = EngineMath::LerpFloat(animationTimePassed, 0.0f, data.GetAnimationDuration(), srcValue, dstValue);

@@ -33,7 +33,9 @@ public:
 
     ~UiProgressBarSceneProxy() override;
 
-    void Render() override;
+    void Render(
+        const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+        const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy) override;
 
     void SetEmptyColor(const glm::vec3& color);
 

@@ -36,7 +36,9 @@ void UiProgressBarSceneProxy::OnSceneProxyRegistered()
     mUiProgressBarShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiProgressBarShader>(shaderParams);
 }
 
-void UiProgressBarSceneProxy::Render()
+void UiProgressBarSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     mUiProgressBarShader->ExecuteShader();
     const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);

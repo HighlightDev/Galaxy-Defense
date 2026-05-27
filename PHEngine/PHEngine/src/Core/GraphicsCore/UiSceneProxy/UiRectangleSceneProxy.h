@@ -29,12 +29,18 @@ protected:
 
     bool mIsRoundBottom;
 
+    bool mApplyBlur;
+
+    float mBlurMix;
+
 public:
     UiRectangleSceneProxy(const ::EngineCore::GUI::UiRectangle* uiRectangle);
 
     ~UiRectangleSceneProxy() override;
 
-    void Render() override;
+    void Render(
+        const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+        const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy) override;
 
     void SetColor(const glm::vec3& color);
 
@@ -45,6 +51,10 @@ public:
     void SetIsRoundTop(const bool bIsRoundTop);
 
     void SetIsRoundBottom(const bool bIsRoundBottom);
+
+    void SetApplyBlur(const bool applyBlur);
+
+    void SetBlurMix(const float blurMix);
 
     void CleanUp() override;
 

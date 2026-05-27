@@ -35,7 +35,9 @@ void UiToggleButtonSceneProxy::OnSceneProxyRegistered()
     mUiRectangleShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiRectangleShader>(shaderParams);
 }
 
-void UiToggleButtonSceneProxy::Render()
+void UiToggleButtonSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     mUiRectangleShader->ExecuteShader();
     // Render background

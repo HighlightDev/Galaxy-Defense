@@ -76,7 +76,7 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , bLightProxiesDirty(false)
     , bPlanarReflectionProxiesDirty(false)
     , mActiveBindedState()
-    , mPostFxRenderer(std::make_unique<PostFxRenderer>(ViewPortInfo(
+    , mPostFxRenderer(std::make_shared<PostFxRenderer>(ViewPortInfo(
           0,
           0,
           GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
@@ -907,7 +907,7 @@ void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
             const auto& canvasOrigin = canvas->GetAbsoluteOrigin();
             const auto& widthHeight = canvas->GetWidthHeight();
             glViewport(canvasOrigin.x, canvasOrigin.y, widthHeight.x, widthHeight.y);
-            canvas->Render();
+            canvas->Render(mPostFxRenderer, sceneView->GetCameraProxy());
         }
     }
 

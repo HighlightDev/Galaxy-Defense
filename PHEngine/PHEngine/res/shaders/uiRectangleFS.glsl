@@ -8,9 +8,18 @@ uniform vec3 color;
 uniform float opacity;
 uniform float borderRadius = 0;
 uniform vec2 widthAndHeight;
+uniform vec2 screenResolution;
 
 uniform bool isRoundTop;
 uniform bool isRoundBottom;
+
+// Frosted-glass-style background tap. When applyBlur is true, blurSampler is
+// expected to hold the Gaussian-blurred scene render target (sourced from
+// PostFxRenderer's GAUSSIAN_BLUR_STAGE) and gets mixed into the body colour
+// by blurMix in [0,1].
+uniform sampler2D blurSampler;
+uniform bool applyBlur = false;
+uniform float blurMix = 0.0;
 
 float udRoundBox(in vec2 pixelPos, in vec2 centerPos, float radius)
 {
@@ -36,5 +45,13 @@ void main(void)
     }
     int totalPixelsChecked = (pixelsToCheck * 2 + 1) * (pixelsToCheck * 2 + 1);
     float borderRadiusOpacityCoef = 1.0 - sumNeighborRounding / float(totalPixelsChecked);
-    FragColor = vec4(color, borderRadiusOpacityCoef * opacity);
+
+    vec2 blurResolution = vec2(max(textureSize(blurSampler, 0), ivec2(1)));
+    vec2 blurFragCoords = (blurResolution / screenResolution) * gl_FragCoord.xy;
+    vec2 blurUv = blurFragCoords / blurResolution;
+    vec3 blurColor = texture(blurSampler, blurUv).rgb;
+    float blurFactor = float(applyBlur) * clamp(blurMix, 0.0, 1.0);
+    vec3 finalColor = mix(color, blurColor, blurFactor);
+
+    FragColor = vec4(finalColor, borderRadiusOpacityCoef * opacity);
 }

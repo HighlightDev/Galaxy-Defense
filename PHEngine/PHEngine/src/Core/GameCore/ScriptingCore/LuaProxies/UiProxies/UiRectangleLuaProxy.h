@@ -24,6 +24,10 @@ protected:
 
     bool mIsRoundBottom;
 
+    bool mApplyBlur;
+
+    float mBlurMix;
+
 public:
     explicit UiRectangleLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiRectangle>& ownerUiItem);
 
@@ -40,6 +44,10 @@ public:
     void SetIsRoundTop_FromGameThread(const bool bIsRoundTop);
 
     void SetIsRoundBottom_FromGameThread(const bool bIsRoundBottom);
+
+    void SetApplyBlur_FromGameThread(const bool applyBlur);
+
+    void SetBlurMix_FromGameThread(const float blurMix);
 };
 } // namespace Scripts
 } // namespace EngineCore

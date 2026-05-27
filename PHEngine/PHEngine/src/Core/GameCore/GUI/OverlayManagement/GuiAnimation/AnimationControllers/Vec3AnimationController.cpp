@@ -29,7 +29,7 @@ void Vec3AnimationController::ProcessAnimation(
         vec3Property->SetValue(std::any_cast<glm::vec3>(data.GetDstValue()));
     } else {
         if (eAnimationInterpolationFunctionType::LINEAR == data.GetAnimationFunctionType()) {
-            const glm::vec3 srcValue = vec3Property->GetValue();
+            const glm::vec3 srcValue = vec3Property->GetInitialValue();
             const glm::vec3 dstValue = std::any_cast<glm::vec3>(data.GetDstValue());
             const glm::vec3 resultValue
                 = EngineMath::LerpVec3(animationTimePassed, 0.0f, data.GetAnimationDuration(), srcValue, dstValue);

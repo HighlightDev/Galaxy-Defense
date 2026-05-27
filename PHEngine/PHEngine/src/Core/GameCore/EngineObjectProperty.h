@@ -73,12 +73,15 @@ protected:
 
     std::shared_ptr<Type> ValuePtr;
 
+    Type InitialValue;
+
 public:
     template<typename ValueType, typename FunctionType>
     EngineObjectProperty(const ValueType& value, const std::string& key, FunctionType action)
         : EngineObjectPropertyBase(key)
         , ValuePtr(std::make_shared<Type>(value))
         , Action(std::make_unique<Action_t>(action))
+        , InitialValue(value)
     {
         mEnginePropertyType = ConvertTypeToEnginePropertyType<typename std::decay<Type>::type>::value;
     }
@@ -88,6 +91,7 @@ public:
         : EngineObjectPropertyBase(key)
         , ValuePtr(std::make_shared<Type>(value))
         , Action()
+        , InitialValue(value)
     {
     }
 
@@ -99,6 +103,11 @@ public:
     Type GetValue() const
     {
         return *ValuePtr;
+    }
+
+    Type GetInitialValue() const
+    {
+        return InitialValue;
     }
 
     void SetValue(const Type& value, const bool triggerAction = true)

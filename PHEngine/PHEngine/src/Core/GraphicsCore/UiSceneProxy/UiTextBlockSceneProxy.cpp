@@ -95,7 +95,9 @@ void UiTextBlockSceneProxy::Initialize()
     }
 }
 
-void UiTextBlockSceneProxy::Render()
+void UiTextBlockSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     const glm::vec2 boundariesPaddingFactor = glm::vec2(1.0f) - (glm::vec2(mBorderThickness) / glm::vec2(mWidthHeightPixels));
 

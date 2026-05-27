@@ -21,6 +21,10 @@ void UiRectangleShader::AccessAllUniformLocations(uint32_t shaderProgramId)
     u_borderRadius = GetUniform("borderRadius", shaderProgramId);
     u_isRoundTop = GetUniform("isRoundTop", shaderProgramId);
     u_isRoundBottom = GetUniform("isRoundBottom", shaderProgramId);
+    u_blurSampler = GetUniform("blurSampler", shaderProgramId);
+    u_applyBlur = GetUniform("applyBlur", shaderProgramId);
+    u_blurMix = GetUniform("blurMix", shaderProgramId);
+    u_screenResolution = GetUniform("screenResolution", shaderProgramId);
 }
 
 void UiRectangleShader::SetColor(const glm::vec3& color)
@@ -57,6 +61,26 @@ void UiRectangleShader::SetIsRoundTop(const bool bIsRoundTop)
 void UiRectangleShader::SetIsRoundBottom(const bool bIsRoundBottom)
 {
     u_isRoundBottom.LoadUniform(bIsRoundBottom);
+}
+
+void UiRectangleShader::SetBlurSampler(const int32_t textureSlot)
+{
+    u_blurSampler.LoadUniform(textureSlot);
+}
+
+void UiRectangleShader::SetApplyBlur(const bool applyBlur)
+{
+    u_applyBlur.LoadUniform(applyBlur);
+}
+
+void UiRectangleShader::SetBlurMix(const float blurMix)
+{
+    u_blurMix.LoadUniform(blurMix);
+}
+
+void UiRectangleShader::SetScreenResolution(const glm::vec2& screenResolution)
+{
+    u_screenResolution.LoadUniform(screenResolution);
 }
 
 void UiRectangleShader::SetShaderPredefine()

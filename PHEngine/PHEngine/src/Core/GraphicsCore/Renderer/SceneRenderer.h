@@ -83,7 +83,7 @@ class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
     std::shared_ptr<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>>
         mDepthCollectPointLightShaderNonSkeletal;
 
-    std::unique_ptr<PostFxRenderer> mPostFxRenderer;
+    std::shared_ptr<PostFxRenderer> mPostFxRenderer;
 
     bool bProxiesDirty;
     bool bLightProxiesDirty;

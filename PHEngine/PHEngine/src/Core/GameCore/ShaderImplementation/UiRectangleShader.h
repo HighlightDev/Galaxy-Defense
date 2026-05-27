@@ -22,6 +22,10 @@ class UiRectangleShader : public Shader {
     Uniform u_borderRadius;
     Uniform u_isRoundTop;
     Uniform u_isRoundBottom;
+    Uniform u_blurSampler;
+    Uniform u_applyBlur;
+    Uniform u_blurMix;
+    Uniform u_screenResolution;
 
 public:
     UiRectangleShader(const ShaderParams& params);
@@ -39,6 +43,14 @@ public:
     void SetIsRoundTop(const bool bIsRoundTop);
 
     void SetIsRoundBottom(const bool bIsRoundBottom);
+
+    void SetBlurSampler(const int32_t textureSlot);
+
+    void SetApplyBlur(const bool applyBlur);
+
+    void SetBlurMix(const float blurMix);
+
+    void SetScreenResolution(const glm::vec2& screenResolution);
 
 protected:
     void AccessAllUniformLocations(uint32_t shaderProgramId) override;

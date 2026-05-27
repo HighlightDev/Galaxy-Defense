@@ -81,7 +81,9 @@ void UiLabelSceneProxy::Initialize()
     }
 }
 
-void UiLabelSceneProxy::Render()
+void UiLabelSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
         if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {

@@ -54,7 +54,9 @@ void UiCanvasSceneProxy::SortProxiesByZOrder()
     });
 }
 
-void UiCanvasSceneProxy::Render()
+void UiCanvasSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     RenderState renderState;
     if (mIsVisible && !EngineMath::FloatsNearEqual(mOverlayOpacity, 0.0f)) {
@@ -86,7 +88,7 @@ void UiCanvasSceneProxy::Render()
                     renderState.GetStencilState().SetStencilMask(0xFF).SetStencilFunction(GL_ALWAYS, ref, mask);
                     renderState.BindRenderState();
                 }
-                proxy->Render();
+                proxy->Render(postFxRenderTargetProvider, cameraSceneProxy);
             }
         }
         renderState.GetStencilState().SetStencilMask(0xFF);

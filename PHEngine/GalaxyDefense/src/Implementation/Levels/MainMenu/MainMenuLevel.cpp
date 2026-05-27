@@ -7,6 +7,7 @@
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Implementation/Levels/ProceduralSpaceBackgroundBuilder.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -45,6 +46,25 @@ void MainMenuLevel::PreLevelInit()
 void MainMenuLevel::CreateScene()
 {
     RunLuaBuildLevelScript();
+    CreateBackgroundBillboard();
+}
+
+void MainMenuLevel::CreateBackgroundBillboard()
+{
+    const auto sceneSp = mSceneWp.lock();
+    ext_assert(sceneSp, "MainMenuLevel scene pointer is null in CreateBackgroundBillboard");
+
+    const auto& a_bg = sceneSp->GetActorByName("MainMenuBackgroundActor");
+    ext_assert(a_bg, "MainMenuLevel: MainMenuBackgroundActor not found (expected to be created by MainMenuLvl.lua)");
+
+    // Static camera in the menu, so the planet feels at home in a corner.
+    AttachProceduralSpaceBackground(
+        sceneSp,
+        a_bg,
+        SpaceBackgroundConfig{
+            .includePlanet = true,
+            .includeRing = true,
+        });
 }
 
 void MainMenuLevel::RunLuaBuildLevelScript()

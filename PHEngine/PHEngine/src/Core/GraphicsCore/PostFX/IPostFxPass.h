@@ -10,6 +10,8 @@ using namespace Texture;
 
 class IPostFxPass {
 public:
+    virtual ~IPostFxPass() = default;
+
     virtual void ResizeRenderTargets(const ViewPortInfo& viewPortInfo) = 0;
 
     virtual void ExecutePostFx(

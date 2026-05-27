@@ -16,6 +16,9 @@ class UiItemBase;
 } // namespace EngineCore
 
 namespace Graphics {
+class IPostFxRenderTargetProvider;
+class CameraSceneProxy;
+
 namespace Renderer {
 class SceneRenderer;
 } // namespace Renderer
@@ -108,7 +111,10 @@ public:
 
     virtual void OnSceneProxyRegistered() = 0;
 
-    virtual void Render() = 0;
+    virtual void Render(
+        const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+        const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
+        = 0;
 
     virtual void CleanUp() = 0;
 };

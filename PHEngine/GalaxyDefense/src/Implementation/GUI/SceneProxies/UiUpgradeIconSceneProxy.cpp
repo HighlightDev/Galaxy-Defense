@@ -53,7 +53,9 @@ void UiUpgradeIconSceneProxy::OnSceneProxyRegistered()
     mGlowShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiUpgradeIconGlowShader>(glowShaderParams);
 }
 
-void UiUpgradeIconSceneProxy::Render()
+void UiUpgradeIconSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     if (mWidthHeightPixels.x == 0 || mWidthHeightPixels.y == 0) {
         return;

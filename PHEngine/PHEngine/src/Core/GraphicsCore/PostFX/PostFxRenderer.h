@@ -3,17 +3,17 @@
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "FxColorResolver/FxColorResolver.h"
 #include "IPostFxPass.h"
+#include "IPostFxRenderTargetProvider.h"
 
 #include <bitset>
 #include <memory>
 #include <unordered_map>
 
 namespace Graphics {
-enum class ePostFxStageType { BLOOM_STAGE };
 
 class ResolvedSceneFramebuffer;
 
-class PostFxRenderer {
+class PostFxRenderer : public IPostFxRenderTargetProvider {
 private:
     std::bitset<4> mEnabledFxBits;
 
@@ -23,9 +23,14 @@ private:
 
     std::unique_ptr<FxColorResolver> mFxColorResolver;
 
+    std::unordered_map<ePostFxStageType, std::shared_ptr<ITexture>> mPostFxResultCache;
+
 public:
     PostFxRenderer(const ViewPortInfo& viewPortInfo);
-    ~PostFxRenderer();
+
+    ~PostFxRenderer() override;
+
+    std::shared_ptr<ITexture> GetRenderTargetTextureByKey(const ePostFxStageType postFxStageType) const override;
 
     void ExecuteResolveSceneColor(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveSceneColorFramebuffer);
 

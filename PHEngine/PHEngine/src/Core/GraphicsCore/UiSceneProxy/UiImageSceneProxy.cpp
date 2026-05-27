@@ -28,7 +28,9 @@ UiImageSceneProxy::~UiImageSceneProxy()
 {
 }
 
-void UiImageSceneProxy::Render()
+void UiImageSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     if (mTexture) {
         mUiImageShader->ExecuteShader();

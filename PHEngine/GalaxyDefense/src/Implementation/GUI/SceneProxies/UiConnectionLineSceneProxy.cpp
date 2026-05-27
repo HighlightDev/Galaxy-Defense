@@ -39,7 +39,9 @@ void UiConnectionLineSceneProxy::OnSceneProxyRegistered()
     mShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiConnectionLineShader>(shaderParams);
 }
 
-void UiConnectionLineSceneProxy::Render()
+void UiConnectionLineSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
     if (mWidthHeightPixels.x == 0 || mWidthHeightPixels.y == 0) {
         return;

@@ -2,6 +2,9 @@
 
 #include "Core/GameCore/GUI/UiElements/UiRectangle.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
+#include "Core/GraphicsCore/PostFX/IPostFxRenderTargetProvider.h"
+#include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
+#include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 
@@ -20,6 +23,8 @@ UiRectangleSceneProxy::UiRectangleSceneProxy(const UiRectangle* uiRectangle)
     , mBorderRadius(uiRectangle->GetBorderRadius())
     , mIsRoundTop(uiRectangle->GetIsRoundTop())
     , mIsRoundBottom(uiRectangle->GetIsRoundBottom())
+    , mApplyBlur(uiRectangle->GetApplyBlur())
+    , mBlurMix(uiRectangle->GetBlurMix())
 {
 }
 
@@ -36,7 +41,9 @@ void UiRectangleSceneProxy::OnSceneProxyRegistered()
     mUiRectangleShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiRectangleShader>(shaderParams);
 }
 
-void UiRectangleSceneProxy::Render()
+void UiRectangleSceneProxy::Render(
+    const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
+    const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy)
 {
     if (mWidthHeightPixels.x == 0 || mWidthHeightPixels.y == 0) {
         return;
@@ -52,6 +59,28 @@ void UiRectangleSceneProxy::Render()
         glm::vec2(static_cast<float>(mWidthHeightPixels.x), static_cast<float>(mWidthHeightPixels.y)));
     mUiRectangleShader->SetIsRoundTop(mIsRoundTop);
     mUiRectangleShader->SetIsRoundBottom(mIsRoundBottom);
+
+    // Frosted-glass tap. Only enabled when the rectangle asks for it AND the
+    // PostFx renderer has a populated Gaussian blur RT this frame; otherwise
+    // we leave the body colour untouched. The shader's sampler still has to be
+    // bound to slot 0 to avoid an "incomplete texture" warning, so we bind the
+    // blur RT when it's available regardless of the apply flag.
+    bool blurActive = false;
+    if (postFxRenderTargetProvider) {
+        const auto& blurTexture = postFxRenderTargetProvider->GetRenderTargetTextureByKey(ePostFxStageType::GAUSSIAN_BLUR_STAGE);
+        if (blurTexture) {
+            blurTexture->BindTexture(0);
+            mUiRectangleShader->SetBlurSampler(0);
+            blurActive = mApplyBlur;
+        }
+    }
+    const auto& viewPortInfo = cameraSceneProxy->GetViewPort();
+    const auto screenResolution = glm::vec2(viewPortInfo.Width, viewPortInfo.Height);
+
+    mUiRectangleShader->SetApplyBlur(blurActive);
+    mUiRectangleShader->SetBlurMix(mBlurMix);
+    mUiRectangleShader->SetScreenResolution(screenResolution);
+
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
     mUiRectangleShader->StopShader();
 }
@@ -79,6 +108,16 @@ void UiRectangleSceneProxy::SetIsRoundTop(const bool bIsRoundTop)
 void UiRectangleSceneProxy::SetIsRoundBottom(const bool bIsRoundBottom)
 {
     mIsRoundBottom = bIsRoundBottom;
+}
+
+void UiRectangleSceneProxy::SetApplyBlur(const bool applyBlur)
+{
+    mApplyBlur = applyBlur;
+}
+
+void UiRectangleSceneProxy::SetBlurMix(const float blurMix)
+{
+    mBlurMix = blurMix;
 }
 
 void UiRectangleSceneProxy::CleanUp()
