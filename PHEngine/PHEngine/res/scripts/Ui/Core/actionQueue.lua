@@ -10,8 +10,8 @@ end
 function ActionQueue:hasPendingActions() return #self.actions > 0 end
 
 function ActionQueue:addAction(action, predicate)
-    assert(action ~= nil and type(action) == "function")
-    assert(predicate ~= nil and type(predicate) == "function")
+    assert(action ~= nil and type(action) == "function", debug.traceback())
+    assert(predicate ~= nil and type(predicate) == "function", debug.traceback())
 
     self.actions[#self.actions + 1] = action
     self.predicates[#self.predicates + 1] = predicate

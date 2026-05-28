@@ -29,11 +29,11 @@ local json = require("Ui/Core/3rdparty/json")
 UiRectangle = UiItemBase:new()
 
 function UiRectangle:new(host, name)
-    assert(host ~= nil)
+    assert(host ~= nil, debug.traceback())
 
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({name = name})
     end
 
@@ -118,7 +118,7 @@ end
 function UiRectangle:update(host, deltaTimeSec) end
 
 function UiRectangle:setColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -135,7 +135,7 @@ end
 function UiRectangle:setColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
     self.rectangleProperties.color.value.r = r
     self.rectangleProperties.color.value.g = g
     self.rectangleProperties.color.value.b = b
@@ -144,7 +144,7 @@ function UiRectangle:setColor(r, g, b)
 end
 
 function UiRectangle:setOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.rectangleProperties.opacity.value ~= opacity then
         self.rectangleProperties.opacity.value = opacity
         self.rectangleProperties.opacity.dirty = true
@@ -152,7 +152,7 @@ function UiRectangle:setOpacity(opacity)
 end
 
 function UiRectangle:setBorderRadius(borderRadius)
-    assert(borderRadius ~= nil and type(borderRadius) == "number")
+    assert(borderRadius ~= nil and type(borderRadius) == "number", debug.traceback())
     if self.rectangleProperties.border_radius.value ~= borderRadius then
         self.rectangleProperties.border_radius.value = borderRadius
         self.rectangleProperties.border_radius.dirty = true
@@ -160,7 +160,7 @@ function UiRectangle:setBorderRadius(borderRadius)
 end
 
 function UiRectangle:setIsRoundTop(bIsRoundTop)
-    assert(bIsRoundTop ~= nil and type(bIsRoundTop) == "boolean")
+    assert(bIsRoundTop ~= nil and type(bIsRoundTop) == "boolean", debug.traceback())
     if self.rectangleProperties.is_round_top.value ~= bIsRoundTop then
         self.rectangleProperties.is_round_top.value = bIsRoundTop
         self.rectangleProperties.is_round_top.dirty = true
@@ -168,7 +168,7 @@ function UiRectangle:setIsRoundTop(bIsRoundTop)
 end
 
 function UiRectangle:setIsRoundBottom(bIsRoundBottom)
-    assert(bIsRoundBottom ~= nil and type(bIsRoundBottom) == "boolean")
+    assert(bIsRoundBottom ~= nil and type(bIsRoundBottom) == "boolean", debug.traceback())
     if self.rectangleProperties.is_round_bottom.value ~= bIsRoundBottom then
         self.rectangleProperties.is_round_bottom.value = bIsRoundBottom
         self.rectangleProperties.is_round_bottom.dirty = true
@@ -178,7 +178,7 @@ end
 -- Turns on the PostFx-blur tap. When enabled, the rectangle's body colour is
 -- mixed with the Gaussian-blurred scene render target by the current blur_mix.
 function UiRectangle:setApplyBlur(applyBlur)
-    assert(applyBlur ~= nil and type(applyBlur) == "boolean")
+    assert(applyBlur ~= nil and type(applyBlur) == "boolean", debug.traceback())
     if self.rectangleProperties.apply_blur.value ~= applyBlur then
         self.rectangleProperties.apply_blur.value = applyBlur
         self.rectangleProperties.apply_blur.dirty = true
@@ -188,7 +188,7 @@ end
 -- Blend factor between the rectangle's base colour (0.0) and the sampled blur
 -- (1.0). Has no visual effect unless apply_blur is also true.
 function UiRectangle:setBlurMix(blurMix)
-    assert(blurMix ~= nil and type(blurMix) == "number" and blurMix >= 0.0 and blurMix <= 1.0)
+    assert(blurMix ~= nil and type(blurMix) == "number" and blurMix >= 0.0 and blurMix <= 1.0, debug.traceback())
     if self.rectangleProperties.blur_mix.value ~= blurMix then
         self.rectangleProperties.blur_mix.value = blurMix
         self.rectangleProperties.blur_mix.dirty = true

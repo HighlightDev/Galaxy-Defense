@@ -223,7 +223,8 @@ function LevelEditorOverlay:new(host)
     end)
 
     overlay.onWindowSizeChanged = function(width, height)
-        assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number")
+        assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number",
+               debug.traceback())
 
         editorContainer:setHeight(height * 0.25)
 
@@ -459,7 +460,7 @@ function LevelEditorOverlay:new(host)
 
     overlay.onGameEventTriggered = function(eventName, jsonArgs)
         if "EditLevelAreaBoundingBoxChanged" == eventName and overlay.allWidgetLuaProxiesReady == true then
-            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs);
             if parsedJson["width"] ~= nil then levelWidthSlider:setSliderValue(tonumber(parsedJson["width"])) end
             if parsedJson["length"] ~= nil then
@@ -470,7 +471,7 @@ function LevelEditorOverlay:new(host)
 
     overlay.onEngineEventTriggered = function(eventName, jsonArgs)
         if "WindowSizeChanged" == eventName and overlay.allWidgetLuaProxiesReady == true then
-            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             local windowSize = {}
             if parsedJson["width"] ~= nil then windowSize.width = tonumber(parsedJson["width"]) end

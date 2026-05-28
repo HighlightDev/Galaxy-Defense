@@ -26,9 +26,11 @@ setup()
 local EventsHelper = require("Ui/Core/eventsHelper")
 local UiCanvas = require("Ui/Core/uiCanvas")
 local UiOverlay = require("Ui/Core/uiOverlay")
+local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local UiRectangle = require("Ui/Core/uiRectangle")
 local UiLabel = require("Ui/Core/uiLabel")
 local Styles = require("Ui/Common/styles")
+local UiTextSizing = require("Ui/Common/uiTextSizing")
 
 -- Galaxy-Defense-style main menu, modelled after UiDesign/menu-centered.jsx.
 -- The space skybox lives in MainMenuLvl.lua; this overlay only paints a darkening
@@ -48,13 +50,9 @@ local Z_TITLE = 10
 local Z_BTN_BG = 12
 local Z_BTN_FG = 14
 
--- FreeType returns its line height as `face->size->metrics.height` (ascender −
--- descender + line gap). When the label's container height is smaller than
--- that value, FreeTypeTextMeshCreator falls back to drawing the literal
--- string "container.height < line.height" instead of the requested text (see
--- FreeTypeTextMeshCreator.cpp:69-72). For Lora the metric runs ~1.3-1.4× the
--- font size, so 1.7× gives a comfortable margin in both directions.
-local function safeLineHeight(fontSize) return math.ceil(fontSize * 1.7) end
+-- Safe-line-height helper lives in Ui/Common/uiTextSizing so settings, HUD
+-- panels and any other overlay can share the same epsilon-free sizing rule.
+local safeLineHeight = UiTextSizing.safeLineHeight
 
 -- Helper: create a UiLabel pre-configured with text/size/color/alignment.
 -- Returns the label so the caller can add it to the overlay and set anchors later.
@@ -256,7 +254,7 @@ function MainMenuOverlay:new(host)
             sub = "Параметры и калибровка",
             accent = M.accentMuted,
             highlight = false,
-            onClick = function() end
+            onClick = function() UiOverlayManager:openOverlay(host, "GameSettingsOverlay") end
         }, {
             id = "exit",
             label = "ВЫХОД",

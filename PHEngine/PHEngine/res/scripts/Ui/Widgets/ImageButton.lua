@@ -30,7 +30,7 @@ local Styles = require("Ui/Common/styles")
 ImageButton = {}
 
 function ImageButton:new(host, overlay, name)
-    assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
+    assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table", debug.traceback())
 
     local newObj = {
         host = host,
@@ -152,14 +152,14 @@ function ImageButton:onCompoundWidgetInitialize()
 end
 
 function ImageButton:setWidth(width)
-    assert(width ~= nil and type(width) == "number")
+    assert(width ~= nil and type(width) == "number", debug.traceback())
 
     self.buttonWidth = width;
     self:resizeWidgets()
 end
 
 function ImageButton:setHeight(height)
-    assert(height ~= nil and type(height) == "number")
+    assert(height ~= nil and type(height) == "number", debug.traceback())
 
     self.buttonHeight = height;
     self:resizeWidgets()
@@ -167,29 +167,30 @@ end
 
 function ImageButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchor >
-               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+           debug.traceback())
 
     self.backgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     self:resizeWidgets()
 end
 
 function ImageButton:subscribeOnMouseInputClickedCallback(callback)
-    assert(callback ~= nil and type(callback) == "function")
+    assert(callback ~= nil and type(callback) == "function", debug.traceback())
     self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
 end
 
 function ImageButton:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
-    assert(callback ~= nil and type(callback) == "function")
+    assert(callback ~= nil and type(callback) == "function", debug.traceback())
     self.backgroundTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
 end
 
 function ImageButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
                                   animatedPropertyType, propertySrcValue, propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata")
+    assert(host ~= nil and type(host) == "userdata", debug.traceback())
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
                type(animationFunctionType) == "number" and animationDuration ~= nil and type(animationDuration) ==
                "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
-               animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
+               animatedPropertyType ~= nil and type(animatedPropertyType) == "number", debug.traceback())
     assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
 
     self.backgroundTile:addAnimation(host, animationName, animationFunctionType, animationDuration,
@@ -199,30 +200,30 @@ function ImageButton:addAnimation(host, animationName, animationFunctionType, an
 end
 
 function ImageButton:startAnimation(host, animationName)
-    assert(host ~= nil and type(host) == "userdata")
-    assert(animationName ~= nil and type(animationName) == "string")
+    assert(host ~= nil and type(host) == "userdata", debug.traceback())
+    assert(animationName ~= nil and type(animationName) == "string", debug.traceback())
 
     self.backgroundTile:startAnimation(host, animationName)
     self.image:startAnimation(host, animationName)
 end
 
 function ImageButton:setImageTextureSource(textureSource)
-    assert(textureSource ~= nil and type(textureSource) == "string")
+    assert(textureSource ~= nil and type(textureSource) == "string", debug.traceback())
     self.image:setTextureSource(textureSource)
 end
 
 function ImageButton:setButtonBorderRadius(radius)
-    assert(radius ~= nil and type(radius) == "number")
+    assert(radius ~= nil and type(radius) == "number", debug.traceback())
     self.backgroundTile:setBorderRadius(radius)
 end
 
 function ImageButton:setRotationDegrees(angleDegrees)
-    assert(angleDegrees ~= nil and type(angleDegrees) == "number")
+    assert(angleDegrees ~= nil and type(angleDegrees) == "number", debug.traceback())
     self.image:setRotationDegrees(angleDegrees)
 end
 
 function ImageButton:setImageFlipped(isFlipped)
-    assert(isFlipped ~= nil and type(isFlipped) == "boolean")
+    assert(isFlipped ~= nil and type(isFlipped) == "boolean", debug.traceback())
     self.image:setIsFlipped(isFlipped)
 end
 
@@ -238,26 +239,26 @@ function ImageButton:resizeWidgets()
 end
 
 function ImageButton:setButtonColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     self.containerColor = colorHex
     self.backgroundTile:setColorHexValue(colorHex)
 end
 
 function ImageButton:setUseImageCustomColor(isUsed)
-    assert(isUsed ~= nil and type(isUsed) == "boolean")
+    assert(isUsed ~= nil and type(isUsed) == "boolean", debug.traceback())
 
     self.image:setUseImageCustomColor(isUsed)
 end
 
 function ImageButton:setImageColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     self.image:setColorHexValue(colorHex)
 end
 
 function ImageButton:setZOrder(zOrder)
-    assert(zOrder ~= nil and type(zOrder) == "number")
+    assert(zOrder ~= nil and type(zOrder) == "number", debug.traceback())
     self.buttonZOrder = zOrder
     self.backgroundTile:setZOrder(zOrder)
     self.image:setZOrder(zOrder + 1)
@@ -265,18 +266,18 @@ function ImageButton:setZOrder(zOrder)
 end
 
 function ImageButton:setIsVisible(isVisible)
-    assert(isVisible ~= nil and type(isVisible) == "boolean")
+    assert(isVisible ~= nil and type(isVisible) == "boolean", debug.traceback())
     self.backgroundTile:setIsVisible(isVisible)
     self.image:setIsVisible(isVisible)
 end
 
 function ImageButton:setIsBackgroundVisible(isVisible)
-    assert(isVisible ~= nil and type(isVisible) == "boolean")
+    assert(isVisible ~= nil and type(isVisible) == "boolean", debug.traceback())
     self.backgroundTile:setIsVisible(isVisible)
 end
 
 function ImageButton:setIsButtonActive(isButtonActive)
-    assert(isButtonActive ~= nil and type(isButtonActive) == "boolean")
+    assert(isButtonActive ~= nil and type(isButtonActive) == "boolean", debug.traceback())
     if self.buttonActiveState.isButtonActive ~= isButtonActive then
         self.buttonActiveState.isButtonActive = isButtonActive
         if isButtonActive then
@@ -294,6 +295,7 @@ function ImageButton:setIsButtonActive(isButtonActive)
 end
 
 function ImageButton:setIfCanInterceptMouseInputEvent(intercept)
+    assert(intercept ~= nil and type(intercept) == "boolean", debug.traceback())
     self.backgroundTile:setIfCanInterceptMouseInputEvent(intercept)
 end
 

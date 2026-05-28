@@ -106,7 +106,7 @@ function CombatPreparationOverlay:new(host)
 
     combatPreparationOverlay.onGameEventTriggered = function(eventName, jsonArgs)
         if "PlayerStatusChanged" == eventName then
-            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             if (parsedJson["player_status_type"] ~= nil) then
                 local statusType = tonumber(parsedJson["player_status_type"])
@@ -133,7 +133,7 @@ function CombatPreparationOverlay:new(host)
 
     combatPreparationOverlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
         if "CombatLevelEvents" == eventName and combatPreparationOverlay.allWidgetLuaProxiesReady == true then
-            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             if parsedJson["action"] ~= nil then
                 local action = tostring(parsedJson["action"])

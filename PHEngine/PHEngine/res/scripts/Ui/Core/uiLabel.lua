@@ -32,11 +32,11 @@ UiLabel.TextHorizontalAlignmentType = {LEFT = 0, CENTER = 1, RIGHT = 2}
 UiLabel.TextVerticalAlignmentType = {TOP = 0, CENTER = 1, BOTTOM = 2}
 
 function UiLabel:new(host, fontName, name)
-    assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and fontName ~= "")
+    assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and fontName ~= "", debug.traceback())
 
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({font_name = fontName, name = name})
     else
         jsonParameters = json.encode({font_name = fontName})
@@ -112,7 +112,7 @@ end
 function UiLabel:update(host, deltaTimeSec) end
 
 function UiLabel:setText(text)
-    assert(text ~= nil and type(text) == "string")
+    assert(text ~= nil and type(text) == "string", debug.traceback())
     if self.labelProperties.text.value ~= text then
         self.labelProperties.text.value = text
         self.labelProperties.text.dirty = true
@@ -120,7 +120,7 @@ function UiLabel:setText(text)
 end
 
 function UiLabel:setOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.labelProperties.text_opacity.value ~= opacity then
         self.labelProperties.text_opacity.value = opacity
         self.labelProperties.text_opacity.dirty = true
@@ -128,7 +128,7 @@ function UiLabel:setOpacity(opacity)
 end
 
 function UiLabel:setTextColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -145,7 +145,7 @@ end
 function UiLabel:setTextColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
 
     self.labelProperties.text_color.value.r = r
     self.labelProperties.text_color.value.g = g
@@ -155,7 +155,7 @@ function UiLabel:setTextColor(r, g, b)
 end
 
 function UiLabel:setFontSize(fontSize)
-    assert(fontSize ~= nil and type(fontSize) == "number")
+    assert(fontSize ~= nil and type(fontSize) == "number", debug.traceback())
     if self.labelProperties.font_size.value ~= fontSize then
         self.labelProperties.font_size.value = fontSize
         self.labelProperties.font_size.dirty = true
@@ -165,7 +165,7 @@ end
 function UiLabel:setTextHorizontalAlignment(textHorizontalAlignment)
     assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) == "number" and textHorizontalAlignment >=
                UiLabel.TextHorizontalAlignmentType.LEFT and textHorizontalAlignment <=
-               UiLabel.TextHorizontalAlignmentType.RIGHT)
+               UiLabel.TextHorizontalAlignmentType.RIGHT, debug.traceback())
     if self.labelProperties.text_horizontal_alignment.value ~= textHorizontalAlignment then
         self.labelProperties.text_horizontal_alignment.value = textHorizontalAlignment
         self.labelProperties.text_horizontal_alignment.dirty = true
@@ -175,7 +175,7 @@ end
 function UiLabel:setTextVerticalAlignment(textVerticalAlignment)
     assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) == "number" and textVerticalAlignment >=
                UiLabel.TextVerticalAlignmentType.TOP and textVerticalAlignment <=
-               UiLabel.TextVerticalAlignmentType.BOTTOM)
+               UiLabel.TextVerticalAlignmentType.BOTTOM, debug.traceback())
     if self.labelProperties.text_vertical_alignment.value ~= textVerticalAlignment then
         self.labelProperties.text_vertical_alignment.value = textVerticalAlignment
         self.labelProperties.text_vertical_alignment.dirty = true

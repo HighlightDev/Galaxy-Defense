@@ -29,10 +29,10 @@ local json = require("Ui/Core/3rdparty/json")
 UiCanvas = UiBaseWidget:new()
 
 function UiCanvas:new(host, originX, originY, width, height, name)
-    assert(host ~= nil and originX ~= nil and originY ~= nil and width ~= nil and height ~= nil)
+    assert(host ~= nil and originX ~= nil and originY ~= nil and width ~= nil and height ~= nil, debug.traceback())
     local canvasJsonParameters;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         canvasJsonParameters = json.encode({
             originX = originX,
             originY = originY,
@@ -118,11 +118,12 @@ end
 
 function UiCanvas:addFadeInAnimation(host, animationFunctionType, animationDuration, animatedPropertyName,
                                      animatedPropertyType, propertySrcValue, propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true, debug.traceback())
     assert(animationFunctionType ~= nil and type(animationFunctionType) == "number" and animationDuration ~= nil and
                type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) ==
-               "string" and animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
-    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+               "string" and animatedPropertyType ~= nil and type(animatedPropertyType) == "number", debug.traceback())
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue),
+           debug.traceback())
     local animationJsonData = json.encode({
         animatedPropertyType = animatedPropertyType,
         animationFunctionType = animationFunctionType,
@@ -136,11 +137,12 @@ end
 
 function UiCanvas:addFadeOutAnimation(host, animationFunctionType, animationDuration, animatedPropertyName,
                                       animatedPropertyType, propertySrcValue, propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true, debug.traceback())
     assert(animationFunctionType ~= nil and type(animationFunctionType) == "number" and animationDuration ~= nil and
                type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) ==
-               "string" and animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
-    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+               "string" and animatedPropertyType ~= nil and type(animatedPropertyType) == "number", debug.traceback())
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue),
+           debug.traceback())
     local animationJsonData = json.encode({
         animatedPropertyType = animatedPropertyType,
         animationFunctionType = animationFunctionType,

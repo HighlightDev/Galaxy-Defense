@@ -12,32 +12,32 @@ function EventsHelper:sendExitGameThreadEvent(host, enqueueJobPolicy)
 end
 
 function EventsHelper:sendLoadLevelGameThreadEvent(host, enqueueJobPolicy, levelName)
-    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
-    assert(levelName ~= nil and type(levelName) == "string")
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]", debug.traceback())
+    assert(levelName ~= nil and type(levelName) == "string", debug.traceback())
     _SendLoadLevelGameThreadEvent(host, enqueueJobPolicy, levelName)
 end
 
 function EventsHelper:sendChangeGameModeGameThreadEvent(host, enqueueJobPolicy, gameModeType)
-    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
-    assert(gameModeType ~= nil and type(gameModeType) == "number")
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]", debug.traceback())
+    assert(gameModeType ~= nil and type(gameModeType) == "number", debug.traceback())
     _SendChangeGameModeGameThreadEvent(host, enqueueJobPolicy, gameModeType)
 end
 
 function EventsHelper:sendChangeEditModeGameThreadEvent(host, enqueueJobPolicy, editModeType)
-    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
-    assert(editModeType ~= nil and type(editModeType) == "number")
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]", debug.traceback())
+    assert(editModeType ~= nil and type(editModeType) == "number", debug.traceback())
     _SendChangeEditModeGameThreadEvent(host, enqueueJobPolicy, editModeType)
 end
 
 function EventsHelper:sendBroadcastGameThreadEvent(host, enqueueJobPolicy, eventHeader, jsonParameters)
-    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
-    assert(eventHeader ~= nil and type(eventHeader) == "string")
-    assert(jsonParameters ~= nil and type(jsonParameters) == "string")
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]", debug.traceback())
+    assert(eventHeader ~= nil and type(eventHeader) == "string", debug.traceback())
+    assert(jsonParameters ~= nil and type(jsonParameters) == "string", debug.traceback())
     _SendBroadcastGameThreadEvent(host, enqueueJobPolicy, eventHeader, jsonParameters)
 end
 
 function EventsHelper:sendRestartLevelGameThreadEvent(host, enqueueJobPolicy)
-    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]", debug.traceback())
     _SendRestartLevelGameThreadEvent(host, enqueueJobPolicy)
 end
 

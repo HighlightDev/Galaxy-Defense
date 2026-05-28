@@ -118,7 +118,7 @@ function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
 end
 
 function UiItemBase:setIsUiInputEnabled(isUiInputEnabled)
-    assert(isUiInputEnabled ~= nil and type(isUiInputEnabled) == "boolean")
+    assert(isUiInputEnabled ~= nil and type(isUiInputEnabled) == "boolean", debug.traceback())
     self.isUiInputEnabled = isUiInputEnabled
 end
 
@@ -179,7 +179,7 @@ function UiItemBase:getUiItemBaseDataToReplicator()
 end
 
 function UiItemBase:updateFromReplicatorMouseInputData(host)
-    assert(host ~= nil and type(host) == "userdata")
+    assert(host ~= nil and type(host) == "userdata", debug.traceback())
     if self.luaProxyReady then
         local replicatorMouseInputJsonData = _GetMouseInputData(host, self.luaProxyId)
         if self.isUiInputEnabled and replicatorMouseInputJsonData ~= "" then
@@ -213,6 +213,7 @@ function UiItemBase:updateFromReplicatorMouseInputData(host)
 end
 
 function UiItemBase:setIsVisible(isVisible)
+    assert(isVisible ~= nil and type(isVisible) == "boolean", debug.traceback())
     if self.properties.visible.value ~= isVisible then
         self.properties.visible.value = isVisible
         self.properties.visible.dirty = true
@@ -241,7 +242,7 @@ function UiItemBase:getZOrder() return self.properties.z_order.value end
 
 -- layer — value from UiItemBase.UiLayer (UiLayer.INHERIT to inherit parent's layer).
 function UiItemBase:setLayer(layer)
-    assert(layer ~= nil and type(layer) == "number")
+    assert(layer ~= nil and type(layer) == "number", debug.traceback())
     if self.properties.layer.value ~= layer then
         self.properties.layer.value = layer
         self.properties.layer.dirty = true
@@ -288,7 +289,8 @@ function UiItemBase:getHorizontalCenterOffset() return self.properties.horizonta
 
 function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchor >
-               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+           debug.traceback())
     self.properties.anchors.dirty = true
     self.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
     self.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
@@ -296,7 +298,7 @@ function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
 end
 
 function UiItemBase:fill(dstUiItemWidgetName)
-    assert(dstUiItemWidgetName ~= nil and type(dstUiItemWidgetName) == "string")
+    assert(dstUiItemWidgetName ~= nil and type(dstUiItemWidgetName) == "string", debug.traceback())
     self.properties.anchors.dirty = true
     for anchor = UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.BOTTOM, 1 do
         self.properties.anchors.value[anchor].dstAnchor = anchor
@@ -308,40 +310,42 @@ end
 
 function UiItemBase:setAnchorMargin(srcAnchor, anchorMargin)
     assert(srcAnchor ~= nil and srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <=
-               UiItemBase.UiAnchorType.HORIZONTAL_CENTER and anchorMargin ~= nil and type(anchorMargin) == "number")
+               UiItemBase.UiAnchorType.HORIZONTAL_CENTER and anchorMargin ~= nil and type(anchorMargin) == "number",
+           debug.traceback())
     self.properties.anchors.dirty = true
     self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
 end
 
 function UiItemBase:enableMouseInputReceiverBase(host)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true, debug.traceback())
     _EnableMouseInputReceiverBase(host, self.luaProxyId)
     self:setIfCanInterceptMouseInputEvent(true)
 end
 
 function UiItemBase:subscribeOnMouseInputPressStateChanged(callback)
-    assert(callback ~= nil and type(callback) == "function")
+    assert(callback ~= nil and type(callback) == "function", debug.traceback())
     self.onMouseInputPressStateChangedCallbacks[#self.onMouseInputPressStateChangedCallbacks + 1] = callback
 end
 
 function UiItemBase:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
-    assert(callback ~= nil and type(callback) == "function")
+    assert(callback ~= nil and type(callback) == "function", debug.traceback())
     self.onMouseInputCursorHoverStateChangedCallback = callback
 end
 
 function UiItemBase:subscribeOnMouseInputClickedCallback(callback)
-    assert(callback ~= nil and type(callback) == "function")
+    assert(callback ~= nil and type(callback) == "function", debug.traceback())
     self.onMouseInputClickedCallbacks[#self.onMouseInputClickedCallbacks + 1] = callback
 end
 
 function UiItemBase:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
                                  animatedPropertyType, propertySrcValue, propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true, debug.traceback())
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
                type(animationFunctionType) == "number" and animationDuration ~= nil and type(animationDuration) ==
                "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
-               animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
-    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+               animatedPropertyType ~= nil and type(animatedPropertyType) == "number", debug.traceback())
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue),
+           debug.traceback())
 
     local animationJsonData = json.encode({
         animatedPropertyType = animatedPropertyType,
@@ -355,13 +359,13 @@ function UiItemBase:addAnimation(host, animationName, animationFunctionType, ani
 end
 
 function UiItemBase:addSequenceAnimation(host, animationName, animationDataList)
-    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
-    assert(animationName ~= nil and type(animationName) == "string")
-    assert(animationDataList ~= nil and type(animationDataList) == "table")
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true, debug.traceback())
+    assert(animationName ~= nil and type(animationName) == "string", debug.traceback())
+    assert(animationDataList ~= nil and type(animationDataList) == "table", debug.traceback())
 
     -- check validity of animation sequence
     for _, animationData in pairs(animationDataList) do
-        assert(animationData ~= nil and type(animationData) == "table")
+        assert(animationData ~= nil and type(animationData) == "table", debug.traceback())
         local animationFunctionType = animationData.animationFunctionType
         local animationDuration = animationData.animationDuration
         local animatedPropertyName = animationData.animatedPropertyName
@@ -381,15 +385,16 @@ function UiItemBase:addSequenceAnimation(host, animationName, animationDataList)
 end
 
 function UiItemBase:startAnimation(host, animationName)
-    assert(host ~= nil and type(host) == "userdata")
-    assert(animationName ~= nil and type(animationName) == "string" and self.luaProxyReady == true)
+    assert(host ~= nil and type(host) == "userdata", debug.traceback())
+    assert(animationName ~= nil and type(animationName) == "string" and self.luaProxyReady == true, debug.traceback())
 
     _StartUiItemAnimation(host, self.luaProxyId, animationName)
 end
 
 function UiItemBase:startSequenceAnimation(host, animationSequenceName)
-    assert(host ~= nil and type(host) == "userdata")
-    assert(animationSequenceName ~= nil and type(animationSequenceName) == "string" and self.luaProxyReady == true)
+    assert(host ~= nil and type(host) == "userdata", debug.traceback())
+    assert(animationSequenceName ~= nil and type(animationSequenceName) == "string" and self.luaProxyReady == true,
+           debug.traceback())
 
     _StartUiItemSequenceAnimation(host, self.luaProxyId, animationSequenceName)
 end

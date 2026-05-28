@@ -180,7 +180,9 @@
         "_GetCollectedCrystalsCount",
         "_GetMouseCursorPositionY",
         "_GetMouseCursorPositionX",
-        "_SetIntToMaterial"
+        "_SetIntToMaterial",
+        "_GetLabelWidthPx",
+        "_EnableSliderMouseInputReceiver"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

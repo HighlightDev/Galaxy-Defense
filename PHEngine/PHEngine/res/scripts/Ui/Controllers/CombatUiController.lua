@@ -77,7 +77,7 @@ local function createCombatOverlay(host) return CombatOverlay:new(host) end
 local function createCombatPreparationOverlay(host) return CombatPreparationOverlay:new(host) end
 
 local function initialize(host)
-    UiOverlays["PauseSettingsOverlay"] = createPauseSettingsOverlay(host)
+    UiOverlays["GameSettingsOverlay"] = createPauseSettingsOverlay(host)
     UiOverlays["PauseMenuOverlay"] = createPauseOverlay(host)
     UiOverlays["LevelFailedOverlay"] = createLevelFailedOverlay(host)
     UiOverlays["CombatOverlay"] = createCombatOverlay(host)
@@ -113,16 +113,16 @@ function System_OnUpdate(host, deltaTimeSec)
 end
 
 function System_OnEngineEventTriggered(host, eventName, jsonArgs)
-    assert(eventName ~= nil and type(eventName) == "string")
+    assert(eventName ~= nil and type(eventName) == "string", debug.traceback())
 
     for _, value in pairs(UiOverlays) do value.onEngineEventTriggered(eventName, jsonArgs) end
     for _, value in pairs(UiBackgroundOverlays) do value.onEngineEventTriggered(eventName, jsonArgs) end
 end
 
 function System_OnGameEventTriggered(host, eventName, jsonArgs)
-    assert(eventName ~= nil and type(eventName) == "string")
+    assert(eventName ~= nil and type(eventName) == "string", debug.traceback())
     if "GameModeChanged" == eventName then
-        assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+        assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
         local parsedJson = json.decode(jsonArgs)
         local newGameModeType = tonumber(parsedJson["game_mode_type"])
         if newGameModeType ~= nil then
@@ -142,7 +142,8 @@ function System_OnGameEventTriggered(host, eventName, jsonArgs)
 end
 
 function System_OnBroadcastEventTriggered(host, eventName, jsonArgs)
-    assert(eventName ~= nil and type(eventName) == "string")
+    assert(eventName ~= nil and type(eventName) == "string", debug.traceback())
+    assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
 
     for _, value in pairs(UiOverlays) do value.onBroadcastEventTriggered(eventName, jsonArgs) end
     for _, value in pairs(UiBackgroundOverlays) do value.onBroadcastEventTriggered(eventName, jsonArgs) end

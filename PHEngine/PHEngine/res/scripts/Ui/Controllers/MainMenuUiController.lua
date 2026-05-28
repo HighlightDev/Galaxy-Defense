@@ -24,6 +24,7 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local MainMenuOverlay = require("Ui/Overlays/MenuNavigation/MainMenuOverlay")
+local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
 
 GlobalContext = {}
 
@@ -31,12 +32,20 @@ UiOverlays = {}
 
 local function createMainMenuOverlay(host, overlayNumber)
     assert(host ~= nil and type(host) == "userdata" and overlayNumber ~= nil and type(overlayNumber) == "number" and
-               overlayNumber > 0 and overlayNumber <= 1)
+               overlayNumber > 0 and overlayNumber <= 1, debug.traceback())
     if overlayNumber == 1 then return MainMenuOverlay:new(host) end
     return nil;
 end
 
-local function initialize(host) UiOverlays["MainMenuOverlay"] = createMainMenuOverlay(host, 1) end
+-- "GameSettingsOverlay" is the same overlay name used by Combat / Editor
+-- pause flows. Reusing it lets the НАСТРОЙКИ button in the main menu open
+-- the very same settings screen via UiOverlayManager:openOverlay(...).
+local function createPauseSettingsOverlay(host) return SettingsOverlay:new(host) end
+
+local function initialize(host)
+    UiOverlays["MainMenuOverlay"] = createMainMenuOverlay(host, 1)
+    UiOverlays["GameSettingsOverlay"] = createPauseSettingsOverlay(host)
+end
 
 function System_OnStart(host)
     initialize(host)
@@ -54,19 +63,22 @@ function System_OnUpdate(host, deltaTimeSec)
 end
 
 function System_OnEngineEventTriggered(host, eventName, jsonArgs)
-    assert(eventName ~= nil and type(eventName) == "string")
+    assert(eventName ~= nil and type(eventName) == "string", debug.traceback())
+    assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
 
     for _, value in pairs(UiOverlays) do value.onEngineEventTriggered(eventName, jsonArgs) end
 end
 
 function System_OnGameEventTriggered(host, eventName, jsonArgs)
-    assert(eventName ~= nil and type(eventName) == "string")
+    assert(eventName ~= nil and type(eventName) == "string", debug.traceback())
+    assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
 
     for _, value in pairs(UiOverlays) do value.onGameEventTriggered(eventName, jsonArgs) end
 end
 
 function System_OnBroadcastEventTriggered(host, eventName, jsonArgs)
-    assert(eventName ~= nil and type(eventName) == "string")
+    assert(eventName ~= nil and type(eventName) == "string", debug.traceback())
+    assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
 
     for _, value in pairs(UiOverlays) do value.onBroadcastEventTriggered(eventName, jsonArgs) end
 end

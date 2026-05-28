@@ -30,11 +30,11 @@ local json = require("Ui/Core/3rdparty/json")
 UiConnectionLine = UiItemBase:new()
 
 function UiConnectionLine:new(host, name)
-    assert(host ~= nil)
+    assert(host ~= nil, debug.traceback())
 
     local jsonParameters = nil
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({name = name})
     end
 
@@ -115,20 +115,20 @@ function UiConnectionLine:update(host, deltaTimeSec) end
 
 -- Points are defined in normalized coordinates [0..1] inside the bounding box of the widget.
 function UiConnectionLine:setStartPoint(x, y)
-    assert(x ~= nil and type(x) == "number" and y ~= nil and type(y) == "number")
+    assert(x ~= nil and type(x) == "number" and y ~= nil and type(y) == "number", debug.traceback())
     self.lineProperties.start_point.value = {x = x, y = y}
     self.lineProperties.start_point.dirty = true
 end
 
 function UiConnectionLine:setEndPoint(x, y)
-    assert(x ~= nil and type(x) == "number" and y ~= nil and type(y) == "number")
+    assert(x ~= nil and type(x) == "number" and y ~= nil and type(y) == "number", debug.traceback())
     self.lineProperties.end_point.value = {x = x, y = y}
     self.lineProperties.end_point.dirty = true
 end
 
 -- Binds the start of the line to the center of the target widget targetUiItemName. Endpoint is recalculated when the target is moved (scroll, etc.). Empty string — unbind (return to manual start_point).
 function UiConnectionLine:setStartAnchorTarget(targetUiItemName)
-    assert(targetUiItemName ~= nil and type(targetUiItemName) == "string")
+    assert(targetUiItemName ~= nil and type(targetUiItemName) == "string", debug.traceback())
     if self.lineProperties.start_anchor_target.value ~= targetUiItemName then
         self.lineProperties.start_anchor_target.value = targetUiItemName
         self.lineProperties.start_anchor_target.dirty = true
@@ -136,7 +136,7 @@ function UiConnectionLine:setStartAnchorTarget(targetUiItemName)
 end
 
 function UiConnectionLine:setEndAnchorTarget(targetUiItemName)
-    assert(targetUiItemName ~= nil and type(targetUiItemName) == "string")
+    assert(targetUiItemName ~= nil and type(targetUiItemName) == "string", debug.traceback())
     if self.lineProperties.end_anchor_target.value ~= targetUiItemName then
         self.lineProperties.end_anchor_target.value = targetUiItemName
         self.lineProperties.end_anchor_target.dirty = true
@@ -146,13 +146,13 @@ end
 function UiConnectionLine:setColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
     self.lineProperties.color.value = {r = r, g = g, b = b}
     self.lineProperties.color.dirty = true
 end
 
 function UiConnectionLine:setColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
     local mask_b = 0xFF
     local mask_g = 0xFF << 0x8
     local mask_r = 0xFF << 0x10
@@ -164,7 +164,7 @@ function UiConnectionLine:setColorHexValue(colorHex)
 end
 
 function UiConnectionLine:setThicknessPx(thicknessPx)
-    assert(thicknessPx ~= nil and type(thicknessPx) == "number" and thicknessPx >= 0.0)
+    assert(thicknessPx ~= nil and type(thicknessPx) == "number" and thicknessPx >= 0.0, debug.traceback())
     if self.lineProperties.thickness_px.value ~= thicknessPx then
         self.lineProperties.thickness_px.value = thicknessPx
         self.lineProperties.thickness_px.dirty = true
@@ -173,8 +173,8 @@ end
 
 -- dashLengthPx = 0 - solid line
 function UiConnectionLine:setDashPattern(dashLengthPx, gapLengthPx)
-    assert(dashLengthPx ~= nil and type(dashLengthPx) == "number" and dashLengthPx >= 0.0)
-    assert(gapLengthPx ~= nil and type(gapLengthPx) == "number" and gapLengthPx >= 0.0)
+    assert(dashLengthPx ~= nil and type(dashLengthPx) == "number" and dashLengthPx >= 0.0, debug.traceback())
+    assert(gapLengthPx ~= nil and type(gapLengthPx) == "number" and gapLengthPx >= 0.0, debug.traceback())
     self.lineProperties.dash_length_px.value = dashLengthPx
     self.lineProperties.dash_length_px.dirty = true
     self.lineProperties.gap_length_px.value = gapLengthPx
@@ -182,7 +182,7 @@ function UiConnectionLine:setDashPattern(dashLengthPx, gapLengthPx)
 end
 
 function UiConnectionLine:setOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.lineProperties.opacity.value ~= opacity then
         self.lineProperties.opacity.value = opacity
         self.lineProperties.opacity.dirty = true

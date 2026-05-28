@@ -368,7 +368,7 @@ function WeaponInfoPanel:setupLayout(canvasName, refBackgroundName, windowWidth,
 end
 
 function WeaponInfoPanel:showFor(weapon)
-    assert(weapon ~= nil)
+    assert(weapon ~= nil, debug.traceback())
 
     self.background:setIsVisible(true)
 

@@ -39,7 +39,7 @@ function UiBaseWidget:new()
         luaProxyId = -1,
         widgetName = "",
         __gc = function(self)
-            assert(self.host ~= nil and type(self.host) == "userdata")
+            assert(self.host ~= nil and type(self.host) == "userdata", debug.traceback())
             CommonUiWidgetCreator:destroyUiWidget(self.host, self.luaProxyId)
         end
     }

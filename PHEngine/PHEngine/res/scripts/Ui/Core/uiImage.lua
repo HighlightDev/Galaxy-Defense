@@ -29,11 +29,11 @@ local json = require("Ui/Core/3rdparty/json")
 UiImage = UiItemBase:new()
 
 function UiImage:new(host, name)
-    assert(host ~= nil)
+    assert(host ~= nil, debug.traceback())
 
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({name = name})
     end
 
@@ -107,7 +107,7 @@ end
 function UiImage:update(host, deltaTimeSec) end
 
 function UiImage:setTextureSource(textureSource)
-    assert(textureSource ~= nil and type(textureSource) == "string")
+    assert(textureSource ~= nil and type(textureSource) == "string", debug.traceback())
     if self.imageProperties.texture_source.value ~= textureSource then
         self.imageProperties.texture_source.value = textureSource
         self.imageProperties.texture_source.dirty = true
@@ -115,7 +115,7 @@ function UiImage:setTextureSource(textureSource)
 end
 
 function UiImage:setUseImageCustomColor(isUsed)
-    assert(isUsed ~= nil and type(isUsed) == "boolean")
+    assert(isUsed ~= nil and type(isUsed) == "boolean", debug.traceback())
     if self.imageProperties.is_custom_color.value ~= isUsed then
         self.imageProperties.is_custom_color.value = isUsed
         self.imageProperties.is_custom_color.dirty = true
@@ -123,7 +123,7 @@ function UiImage:setUseImageCustomColor(isUsed)
 end
 
 function UiImage:setColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -140,7 +140,7 @@ end
 function UiImage:setColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
     self.imageProperties.color.value.r = r
     self.imageProperties.color.value.g = g
     self.imageProperties.color.value.b = b
@@ -149,7 +149,7 @@ function UiImage:setColor(r, g, b)
 end
 
 function UiImage:setOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.imageProperties.opacity.value ~= opacity then
         self.imageProperties.opacity.value = opacity
         self.imageProperties.opacity.dirty = true
@@ -157,7 +157,7 @@ function UiImage:setOpacity(opacity)
 end
 
 function UiImage:setRotationDegrees(rotationDegrees)
-    assert(rotationDegrees ~= nil and type(rotationDegrees) == "number")
+    assert(rotationDegrees ~= nil and type(rotationDegrees) == "number", debug.traceback())
     if self.imageProperties.rotation_degrees.value ~= rotationDegrees then
         self.imageProperties.rotation_degrees.value = rotationDegrees
         self.imageProperties.rotation_degrees.dirty = true
@@ -167,7 +167,7 @@ end
 function UiImage:getRotationDegrees() return self.imageProperties.rotation_degrees.value end
 
 function UiImage:setIsFlipped(isFlipped)
-    assert(isFlipped ~= nil and type(isFlipped) == "boolean")
+    assert(isFlipped ~= nil and type(isFlipped) == "boolean", debug.traceback())
     if self.imageProperties.is_flipped.value ~= isFlipped then
         self.imageProperties.is_flipped.value = isFlipped
         self.imageProperties.is_flipped.dirty = true

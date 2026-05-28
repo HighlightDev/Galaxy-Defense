@@ -29,11 +29,11 @@ local json = require("Ui/Core/3rdparty/json")
 UiToggleButton = UiItemBase:new()
 
 function UiToggleButton:new(host, isStateOn, name)
-    assert(host ~= nil and isStateOn ~= nil and type(isStateOn) == "boolean")
+    assert(host ~= nil and isStateOn ~= nil and type(isStateOn) == "boolean", debug.traceback())
 
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({is_state_on = isStateOn, name = name})
     else
         jsonParameters = json.encode({is_state_on = isStateOn})
@@ -61,7 +61,7 @@ function UiToggleButton:new(host, isStateOn, name)
 end
 
 function UiToggleButton:enableToggleButtonMouseInputReceiver(host)
-    assert(host ~= nil and type(host) == "userdata")
+    assert(host ~= nil and type(host) == "userdata", debug.traceback())
     _EnableToggleButtonMouseInputReceiver(host, self.luaProxyId)
 end
 
@@ -118,7 +118,7 @@ end
 function UiToggleButton:update(host, deltaTimeSec) end
 
 function UiToggleButton:setIsStateOn(isStateOn)
-    assert(isStateOn ~= nil and type(isStateOn) == "boolean")
+    assert(isStateOn ~= nil and type(isStateOn) == "boolean", debug.traceback())
     if self.toggleButtonProperties.is_state_on.value ~= isStateOn then
         self.toggleButtonProperties.is_state_on.value = isStateOn
         self.toggleButtonProperties.is_state_on.dirty = true
@@ -126,7 +126,7 @@ function UiToggleButton:setIsStateOn(isStateOn)
 end
 
 function UiToggleButton:setOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.toggleButtonProperties.opacity.value ~= opacity then
         self.toggleButtonProperties.opacity.value = opacity
         self.toggleButtonProperties.opacity.dirty = true
@@ -134,7 +134,7 @@ function UiToggleButton:setOpacity(opacity)
 end
 
 function UiToggleButton:setToggleOnColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -151,7 +151,7 @@ end
 function UiToggleButton:setToggleOnColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
 
     self.toggleButtonProperties.toggle_on_color.value.r = r
     self.toggleButtonProperties.toggle_on_color.value.g = g
@@ -161,7 +161,7 @@ function UiToggleButton:setToggleOnColor(r, g, b)
 end
 
 function UiToggleButton:setToggleOffColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -178,7 +178,7 @@ end
 function UiToggleButton:setToggleOffColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
 
     self.toggleButtonProperties.toggle_off_color.value.r = r
     self.toggleButtonProperties.toggle_off_color.value.g = g
@@ -188,7 +188,7 @@ function UiToggleButton:setToggleOffColor(r, g, b)
 end
 
 function UiToggleButton:setOnIsStateChangedCallback(callback)
-    assert(callback ~= nil and type(callback) == "function")
+    assert(callback ~= nil and type(callback) == "function", debug.traceback())
     self.onStateChangedCallback = callback
 end
 

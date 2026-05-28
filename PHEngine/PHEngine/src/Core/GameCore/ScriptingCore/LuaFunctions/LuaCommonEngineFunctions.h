@@ -63,6 +63,12 @@ private:
     int32_t GetMouseCursorPositionX(const std::tuple<>& data) const;
 
     int32_t GetMouseCursorPositionY(const std::tuple<>& data) const;
+
+    /* Measure the rendered width (in pixels) of `text` when laid out with
+       (fontName, fontSize). Backs `_GetLabelWidthPx` and is implemented in
+       terms of FreeTypeTextMeshCreator::CalcWidth, so the answer matches what
+       the font batcher would actually draw. */
+    int32_t GetLabelWidthPx(const std::tuple<std::string, int32_t, std::string>& data) const;
 };
 } // namespace Scripts
 } // namespace EngineCore

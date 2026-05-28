@@ -31,11 +31,11 @@ UiScrollList = UiItemBase:new()
 UiScrollList.ScrollbarSide = {NONE = 0, LEFT = 1, RIGHT = 2}
 
 function UiScrollList:new(host, name)
-    assert(host ~= nil)
+    assert(host ~= nil, debug.traceback())
 
     local jsonParameters = nil
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({name = name})
     end
 
@@ -120,7 +120,7 @@ end
 function UiScrollList:update(host, deltaTimeSec) end
 
 function UiScrollList:setSpacing(spacing)
-    assert(spacing ~= nil and type(spacing) == "number" and spacing >= 0)
+    assert(spacing ~= nil and type(spacing) == "number" and spacing >= 0, debug.traceback())
     if self.scrollListProperties.spacing.value ~= spacing then
         self.scrollListProperties.spacing.value = spacing
         self.scrollListProperties.spacing.dirty = true
@@ -128,7 +128,7 @@ function UiScrollList:setSpacing(spacing)
 end
 
 function UiScrollList:setScrollOffset(offset)
-    assert(offset ~= nil and type(offset) == "number")
+    assert(offset ~= nil and type(offset) == "number", debug.traceback())
     if self.scrollListProperties.scroll_offset.value ~= offset then
         self.scrollListProperties.scroll_offset.value = offset
         self.scrollListProperties.scroll_offset.dirty = true
@@ -136,7 +136,7 @@ function UiScrollList:setScrollOffset(offset)
 end
 
 function UiScrollList:setScrollSpeed(speed)
-    assert(speed ~= nil and type(speed) == "number" and speed > 0)
+    assert(speed ~= nil and type(speed) == "number" and speed > 0, debug.traceback())
     if self.scrollListProperties.scroll_speed.value ~= speed then
         self.scrollListProperties.scroll_speed.value = speed
         self.scrollListProperties.scroll_speed.dirty = true
@@ -147,7 +147,7 @@ function UiScrollList:getScrollOffset() return self.scrollListProperties.scroll_
 
 function UiScrollList:setScrollbarSide(side)
     assert(side == UiScrollList.ScrollbarSide.NONE or side == UiScrollList.ScrollbarSide.LEFT or side ==
-               UiScrollList.ScrollbarSide.RIGHT)
+               UiScrollList.ScrollbarSide.RIGHT, debug.traceback())
     if self.scrollListProperties.scrollbar_side.value ~= side then
         self.scrollListProperties.scrollbar_side.value = side
         self.scrollListProperties.scrollbar_side.dirty = true
@@ -157,7 +157,7 @@ end
 function UiScrollList:setScrollbarBackgroundColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
     self.scrollListProperties.scrollbar_background_color.value.r = r
     self.scrollListProperties.scrollbar_background_color.value.g = g
     self.scrollListProperties.scrollbar_background_color.value.b = b
@@ -165,7 +165,7 @@ function UiScrollList:setScrollbarBackgroundColor(r, g, b)
 end
 
 function UiScrollList:setScrollbarBackgroundColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
     local INV = 1.0 / 255.0
     local r = ((0xFF << 0x10) & colorHex) >> 0x10
     local g = ((0xFF << 0x8) & colorHex) >> 0x8
@@ -176,7 +176,7 @@ end
 function UiScrollList:setScrollbarThumbColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
     self.scrollListProperties.scrollbar_thumb_color.value.r = r
     self.scrollListProperties.scrollbar_thumb_color.value.g = g
     self.scrollListProperties.scrollbar_thumb_color.value.b = b
@@ -184,7 +184,7 @@ function UiScrollList:setScrollbarThumbColor(r, g, b)
 end
 
 function UiScrollList:setScrollbarThumbColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
     local INV = 1.0 / 255.0
     local r = ((0xFF << 0x10) & colorHex) >> 0x10
     local g = ((0xFF << 0x8) & colorHex) >> 0x8
@@ -193,7 +193,7 @@ function UiScrollList:setScrollbarThumbColorHexValue(colorHex)
 end
 
 function UiScrollList:setScrollbarThicknessPixels(thicknessPixels)
-    assert(thicknessPixels ~= nil and type(thicknessPixels) == "number" and thicknessPixels >= 0)
+    assert(thicknessPixels ~= nil and type(thicknessPixels) == "number" and thicknessPixels >= 0, debug.traceback())
     if self.scrollListProperties.scrollbar_thickness.value ~= thicknessPixels then
         self.scrollListProperties.scrollbar_thickness.value = thicknessPixels
         self.scrollListProperties.scrollbar_thickness.dirty = true

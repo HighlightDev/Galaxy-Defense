@@ -267,7 +267,7 @@ local LABEL_FONT_SIZE = 13.0
 local function nodeWidgetName(nodeId) return "TowerUpgradesNode_" .. nodeId end
 
 function TowerUpgradesPanel:new(host, overlay)
-    assert(host ~= nil and overlay ~= nil)
+    assert(host ~= nil and overlay ~= nil, debug.traceback())
 
     local newObj = {
         host = host,

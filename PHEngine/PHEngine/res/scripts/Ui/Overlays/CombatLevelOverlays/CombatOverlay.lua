@@ -98,7 +98,7 @@ local function updateRequirementTileData(host, levelProgressTile, trackerJson)
             EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
         end
     else
-        assert(false, "Not supported requirement: " .. name)
+        assert(false, "Not supported requirement: " .. name, debug.traceback())
     end
     local hintText = tostring(trackerJson["hint"])
     levelProgressTile.hintText = hintText
@@ -220,10 +220,10 @@ function CombatOverlay:new(host)
         if requirementTrackersJson ~= nil and requirementTrackersJson ~= "" then
             local parsedJson = json.decode(requirementTrackersJson)
             if parsedJson ~= nil and parsedJson ~= "" then
-                assert(#parsedJson == #RequirementTrackers)
+                assert(#parsedJson == #RequirementTrackers, debug.traceback())
                 for index, trackerJsonRoot in pairs(parsedJson) do
                     local requirementTrackerTile = RequirementTrackers[index]
-                    assert(requirementTrackerTile ~= nil)
+                    assert(requirementTrackerTile ~= nil, debug.traceback())
                     updateRequirementTileData(host, requirementTrackerTile, trackerJsonRoot)
                 end
             end
@@ -231,7 +231,8 @@ function CombatOverlay:new(host)
     end
 
     combatOverlay.onWindowSizeChanged = function(width, height)
-        assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number")
+        assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number",
+               debug.traceback())
     end
 
     combatOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
@@ -298,7 +299,7 @@ function CombatOverlay:new(host)
 
     combatOverlay.onGameEventTriggered = function(eventName, jsonArgs)
         if "LevelProgressChanged" == eventName then
-            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             if parsedJson["level_progress_status_type"] ~= nil then
                 local lvlProgressStatusType = tonumber(parsedJson["level_progress_status_type"])
@@ -309,7 +310,7 @@ function CombatOverlay:new(host)
                 end
             end
         elseif "PlayerStatusChanged" == eventName then
-            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             if parsedJson["player_status_type"] ~= nil then
                 local statusType = tonumber(parsedJson["player_status_type"])
@@ -319,7 +320,7 @@ function CombatOverlay:new(host)
                 elseif statusType == PlayerStatusType.SELECTED_TOWER_CHANGED then
                     if parsedJson["has_selected_tower"] ~= nil then
                         if parsedJson["has_selected_tower"] == true then
-                            assert(parsedJson["tower_weapon_type"] ~= nil)
+                            assert(parsedJson["tower_weapon_type"] ~= nil, debug.traceback())
                             local weaponType = tonumber(parsedJson["tower_weapon_type"])
                             local imageToSet = MissileTypes.IconByValue[weaponType] or "space_station_img.png"
                             selectedTowerPanel:setWeaponImage(imageToSet)
@@ -335,7 +336,7 @@ function CombatOverlay:new(host)
 
     combatOverlay.onEngineEventTriggered = function(eventName, jsonArgs)
         if "WindowSizeChanged" == eventName and combatOverlay.allWidgetLuaProxiesReady == true then
-            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             local windowSize = {}
             if parsedJson["width"] ~= nil then windowSize.width = tonumber(parsedJson["width"]) end
@@ -346,7 +347,7 @@ function CombatOverlay:new(host)
 
     combatOverlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
         if "CombatLevelEvents" == eventName and combatOverlay.allWidgetLuaProxiesReady == true then
-            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             if parsedJson["action"] ~= nil then
                 local action = tostring(parsedJson["action"])

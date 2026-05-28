@@ -79,7 +79,7 @@ function PauseOverlay:new(host)
     local settingsButton = LabelButton:new(host, pauseMenuOverlay, "Lora-VariableFont_wght", "SettingsButton")
     pauseMenuOverlay:addCompoundWidget(settingsButton)
     settingsButton:subscribeOnMouseInputClickedCallback(function()
-        UiOverlayManager:openOverlay(host, "PauseSettingsOverlay")
+        UiOverlayManager:openOverlay(host, "GameSettingsOverlay")
     end)
     settingsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then

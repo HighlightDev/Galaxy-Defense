@@ -4,9 +4,13 @@
 #include "Core/CommonCore/StringHash.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontAtlas.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontParams.h"
+#include "Core/GameCore/GUI/FreeTypeText/FreeTypeTextMeshCreator.h"
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/ResourceManagerCore/Pool/FreeTypeFontMeshPool.h"
 
 using namespace EngineCore;
 using namespace EngineCore::DataProviders;
@@ -86,6 +90,13 @@ void LuaCommonEngineFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
         mOwnerPtr,
         std::bind(&LuaCommonEngineFunctions::GetMouseCursorPositionY, this, std::placeholders::_1),
         "_GetMouseCursorPositionY");
+
+    LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetLabelWidthPx"), int32_t(std::string, int32_t, std::string)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaCommonEngineFunctions::GetLabelWidthPx, this, std::placeholders::_1),
+            "_GetLabelWidthPx");
 }
 
 int32_t LuaCommonEngineFunctions::GetWindowHeight(const std::tuple<>& data) const
@@ -147,6 +158,27 @@ int32_t LuaCommonEngineFunctions::GetMouseCursorPositionY(const std::tuple<>& da
         return windowHeight - luaProcessorSp->GetEngineInputLuaProxy()->GetMouseCursorPosition().y;
     }
     return 0;
+}
+
+int32_t LuaCommonEngineFunctions::GetLabelWidthPx(const std::tuple<std::string, int32_t, std::string>& data) const
+{
+    const auto& fontName = std::get<0>(data);
+    const int32_t fontSize = std::get<1>(data);
+    const auto& text = std::get<2>(data);
+    if (fontName.empty() || fontSize <= 0 || text.empty()) {
+        return 0;
+    }
+    // Reuses the same FreeType atlas the font batcher draws from, so the
+    // answer matches what would actually be rendered. The pool's
+    // GetOrAllocateResource caches per (fontName, size), so consecutive
+    // measurements of the same font cost a single hashmap lookup. The first
+    // call for a brand-new font triggers atlas allocation (heavier).
+    const FreeTypeFontParams params(fontName, fontSize);
+    const auto& atlas = ::Resources::FreeTypeFontMeshPool::GetInstance()->GetOrAllocateResource(params);
+    if (!atlas) {
+        return 0;
+    }
+    return FreeTypeTextMeshCreator::CalcWidth(text, atlas);
 }
 
 } // namespace Scripts

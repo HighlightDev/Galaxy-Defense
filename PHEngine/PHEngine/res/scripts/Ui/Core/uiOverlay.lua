@@ -31,7 +31,7 @@ UiOverlay = {}
 
 function UiOverlay:createOverlay(host, overlayName, overlayCanvas)
     print("UiOverlay::createOverlay")
-    assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil)
+    assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil, debug.traceback())
 
     local uiOverlayJsonParameters =
         json.encode({overlayName = overlayName, canvasLuaProxyId = overlayCanvas.luaProxyId})
@@ -60,7 +60,7 @@ end
 
 function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
     print("UiOverlay::createBackgroundOverlay")
-    assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil)
+    assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil, debug.traceback())
 
     local uiOverlayJsonParameters =
         json.encode({overlayName = overlayName, canvasLuaProxyId = overlayCanvas.luaProxyId})
@@ -88,8 +88,8 @@ function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
 end
 
 function UiOverlay:addActionWithPredicate(action, predicate)
-    assert(action ~= nil and type(action) == "function")
-    assert(predicate ~= nil and type(predicate) == "function")
+    assert(action ~= nil and type(action) == "function", debug.traceback())
+    assert(predicate ~= nil and type(predicate) == "function", debug.traceback())
     self.actionQueue:addAction(action, predicate)
 end
 
@@ -115,19 +115,20 @@ function UiOverlay:sendDataToReplicator(host)
 end
 
 function UiOverlay:addWidget(widget)
-    assert(widget ~= nil and type(widget) == "table" and widget.typeName ~= nil and type(widget.typeName) == "string")
+    assert(widget ~= nil and type(widget) == "table" and widget.typeName ~= nil and type(widget.typeName) == "string",
+           debug.traceback())
     self.widgets[#self.widgets + 1] = widget
 end
 
 function UiOverlay:addCompoundWidget(compoundWidget)
     assert(compoundWidget ~= nil and type(compoundWidget) == "table" and compoundWidget.typeName == nil and
                compoundWidget.onCompoundWidgetInitialize ~= nil and type(compoundWidget.onCompoundWidgetInitialize) ==
-               "function")
+               "function", debug.traceback())
     self.compoundWidgets[#self.compoundWidgets + 1] = compoundWidget
 end
 
 function UiOverlay:removeWidget(widget)
-    assert(widget ~= nil and type(widget) == "table")
+    assert(widget ~= nil and type(widget) == "table", debug.traceback())
     if widget.typeName ~= nil and type(widget.typeName) == "string" then
         for index, iterate_widget in pairs(self.widgets) do
             if widget.luaProxyId == iterate_widget.luaProxyId then
@@ -136,10 +137,10 @@ function UiOverlay:removeWidget(widget)
             end
         end
     elseif widget.onCompoundWidgetInitialize ~= nil and type(widget.onCompoundWidgetInitialize) == "function" then
-        assert(widget.backgroundTile.luaProxyReady)
+        assert(widget.backgroundTile.luaProxyReady, debug.traceback())
         for index, iterate_widget in pairs(self.compoundWidgets) do
             if iterate_widget.backgroundTile ~= nil then
-                assert(widget.backgroundTile ~= nil, "backgroundTile is null")
+                assert(widget.backgroundTile ~= nil, "backgroundTile is null", debug.traceback())
                 if widget.backgroundTile.luaProxyId == iterate_widget.backgroundTile.luaProxyId then
                     table.remove(self.compoundWidgets, index)
                     break

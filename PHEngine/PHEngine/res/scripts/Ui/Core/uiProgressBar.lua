@@ -29,11 +29,11 @@ local json = require("Ui/Core/3rdparty/json")
 UiProgressBar = UiItemBase:new()
 
 function UiProgressBar:new(host, name)
-    assert(host ~= nil)
+    assert(host ~= nil, debug.traceback())
 
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({name = name})
     end
 
@@ -110,7 +110,7 @@ end
 function UiProgressBar:update(host, deltaTimeSec) end
 
 function UiProgressBar:setEmptyColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -136,7 +136,7 @@ function UiProgressBar:setEmptyColor(r, g, b)
 end
 
 function UiProgressBar:setFilledColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -153,7 +153,7 @@ end
 function UiProgressBar:setFilledColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
     self.progressBarProperties.filled_color.value.r = r
     self.progressBarProperties.filled_color.value.g = g
     self.progressBarProperties.filled_color.value.b = b
@@ -162,7 +162,7 @@ function UiProgressBar:setFilledColor(r, g, b)
 end
 
 function UiProgressBar:setOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.progressBarProperties.opacity.value ~= opacity then
         self.progressBarProperties.opacity.value = opacity
         self.progressBarProperties.opacity.dirty = true
@@ -170,7 +170,7 @@ function UiProgressBar:setOpacity(opacity)
 end
 
 function UiProgressBar:setFillPercentValue(fillPercentValue)
-    assert(fillPercentValue ~= nil and type(fillPercentValue) == "number")
+    assert(fillPercentValue ~= nil and type(fillPercentValue) == "number", debug.traceback())
     if self.progressBarProperties.fill_percent_value.value ~= fillPercentValue then
         self.progressBarProperties.fill_percent_value.value = fillPercentValue
         self.progressBarProperties.fill_percent_value.dirty = true
@@ -178,7 +178,7 @@ function UiProgressBar:setFillPercentValue(fillPercentValue)
 end
 
 function UiProgressBar:setBorderRadius(borderRadius)
-    assert(borderRadius ~= nil and type(borderRadius) == "number")
+    assert(borderRadius ~= nil and type(borderRadius) == "number", debug.traceback())
     if self.progressBarProperties.border_radius.value ~= borderRadius then
         self.progressBarProperties.border_radius.value = borderRadius
         self.progressBarProperties.border_radius.dirty = true

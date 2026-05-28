@@ -29,11 +29,11 @@ local json = require("Ui/Core/3rdparty/json")
 UiItem = UiItemBase:new()
 
 function UiItem:new(host, name)
-    assert(host ~= nil)
+    assert(host ~= nil, debug.traceback())
 
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({name = name})
     end
 

@@ -30,7 +30,7 @@ local UiLabel = require("Ui/Core/uiLabel")
 ImageAndLabelTile = {}
 
 function ImageAndLabelTile:new(host, overlay, backgroundTileName)
-    assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
+    assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table", debug.traceback())
 
     local newObj = {
         host = host,
@@ -61,20 +61,21 @@ end
 
 function ImageAndLabelTile:subscribeOnLuaProxiesReady(callback)
     print("subscribeOnLuaProxiesReady: " .. self.backgroundTile.luaProxyId)
+    assert(callback ~= nil and type(callback) == "function", debug.traceback())
     self.luaProxiesReadyCallback = callback
 end
 
 function ImageAndLabelTile:update(host, deltaTimeSec) end
 
 function ImageAndLabelTile:setWidth(width)
-    assert(width ~= nil and type(width) == "number")
+    assert(width ~= nil and type(width) == "number", debug.traceback())
 
     self.tileWidth = width;
     self:resizeWidgets()
 end
 
 function ImageAndLabelTile:setHeight(height)
-    assert(height ~= nil and type(height) == "number")
+    assert(height ~= nil and type(height) == "number", debug.traceback())
 
     self.tileHeight = height;
     self:resizeWidgets()
@@ -82,7 +83,8 @@ end
 
 function ImageAndLabelTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchor >
-               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+               UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+           debug.traceback())
 
     anchorMargin = nil == anchorMargin and 0 or anchorMargin
     if srcAnchor == UiItemBase.UiAnchorType.LEFT then
@@ -101,13 +103,14 @@ end
 
 function ImageAndLabelTile:addAnimation(host, onlyForTile, animationName, animationFunctionType, animationDuration,
                                         animatedPropertyName, animatedPropertyType, propertySrcValue, propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata")
-    assert(onlyForTile ~= nil and type(onlyForTile) == "boolean")
+    assert(host ~= nil and type(host) == "userdata", debug.traceback())
+    assert(onlyForTile ~= nil and type(onlyForTile) == "boolean", debug.traceback())
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
                type(animationFunctionType) == "number" and animationDuration ~= nil and type(animationDuration) ==
                "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
-               animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
-    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+               animatedPropertyType ~= nil and type(animatedPropertyType) == "number", debug.traceback())
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue),
+           debug.traceback())
 
     self.backgroundTile:addAnimation(host, animationName, animationFunctionType, animationDuration,
                                      animatedPropertyName, animatedPropertyType, propertySrcValue, propertyDstValue)
@@ -120,8 +123,8 @@ function ImageAndLabelTile:addAnimation(host, onlyForTile, animationName, animat
 end
 
 function ImageAndLabelTile:startAnimation(host, animationName)
-    assert(host ~= nil and type(host) == "userdata")
-    assert(animationName ~= nil and type(animationName) == "string")
+    assert(host ~= nil and type(host) == "userdata", debug.traceback())
+    assert(animationName ~= nil and type(animationName) == "string", debug.traceback())
 
     self.backgroundTile:startAnimation(host, animationName)
     self.image:startAnimation(host, animationName)
@@ -135,24 +138,24 @@ function ImageAndLabelTile:setIsVisible(isVisible)
 end
 
 function ImageAndLabelTile:setLabelText(labelText)
-    assert(labelText ~= nil and type(labelText) == "string")
+    assert(labelText ~= nil and type(labelText) == "string", debug.traceback())
     self.label:setText(labelText)
 end
 
 function ImageAndLabelTile:setLabelVisibility(isVisible)
-    assert(isVisible ~= nil and type(isVisible) == "boolean")
+    assert(isVisible ~= nil and type(isVisible) == "boolean", debug.traceback())
     self.label:setIsVisible(isVisible)
 end
 
 function ImageAndLabelTile:setRotationDegrees(rotateDegrees)
-    assert(rotateDegrees ~= nil and type(rotateDegrees) == "number")
+    assert(rotateDegrees ~= nil and type(rotateDegrees) == "number", debug.traceback())
     self.image:setRotationDegrees(rotateDegrees)
 end
 
 function ImageAndLabelTile:setIsFlipped(isFlipped) self.image:setIsFlipped(isFlipped) end
 
 function ImageAndLabelTile:setTextureSource(texSource)
-    assert(texSource ~= nil and type(texSource) == "string")
+    assert(texSource ~= nil and type(texSource) == "string", debug.traceback())
     self.image:setTextureSource(texSource)
 end
 
@@ -234,12 +237,12 @@ function ImageAndLabelTile:onCompoundWidgetInitialize()
 end
 
 function ImageAndLabelTile:subscribeOnMouseInputClickedCallback(callback)
-    assert(callback ~= nil and type(callback) == "function")
+    assert(callback ~= nil and type(callback) == "function", debug.traceback())
     self.backgroundTile:subscribeOnMouseInputClickedCallback(callback)
 end
 
 function ImageAndLabelTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
-    assert(callback ~= nil and type(callback) == "function")
+    assert(callback ~= nil and type(callback) == "function", debug.traceback())
     self.backgroundTile:subscribeOnMouseInputCursorHoverStateChangedCallback(callback)
 end
 

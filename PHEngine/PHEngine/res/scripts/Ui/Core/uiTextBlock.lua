@@ -30,11 +30,11 @@ local UiLabel = require("Ui/Core/uiLabel")
 UiTextBlock = UiItemBase:new()
 
 function UiTextBlock:new(host, fontName, name)
-    assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and fontName ~= "")
+    assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and fontName ~= "", debug.traceback())
 
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({font_name = fontName, name = name})
     else
         jsonParameters = json.encode({font_name = fontName})
@@ -152,7 +152,7 @@ end
 function UiTextBlock:update(host, deltaTimeSec) end
 
 function UiTextBlock:setRectangleColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -169,7 +169,7 @@ end
 function UiTextBlock:setRectangleColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
     self.textBlockProperties.rectangle_color.value.r = r
     self.textBlockProperties.rectangle_color.value.g = g
     self.textBlockProperties.rectangle_color.value.b = b
@@ -178,7 +178,7 @@ function UiTextBlock:setRectangleColor(r, g, b)
 end
 
 function UiTextBlock:setRectangleOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.textBlockProperties.rectangle_opacity.value ~= opacity then
         self.textBlockProperties.rectangle_opacity.value = opacity
         self.textBlockProperties.rectangle_opacity.dirty = true
@@ -186,7 +186,7 @@ function UiTextBlock:setRectangleOpacity(opacity)
 end
 
 function UiTextBlock:setRectangleRadius(borderRadius)
-    assert(borderRadius ~= nil and type(borderRadius) == "number")
+    assert(borderRadius ~= nil and type(borderRadius) == "number", debug.traceback())
     if self.textBlockProperties.rectangle_radius.value ~= borderRadius then
         self.textBlockProperties.rectangle_radius.value = borderRadius
         self.textBlockProperties.rectangle_radius.dirty = true
@@ -196,7 +196,7 @@ end
 function UiTextBlock:setBorderColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
 
     self.textBlockProperties.border_color.value.r = r
     self.textBlockProperties.border_color.value.g = g
@@ -206,7 +206,7 @@ function UiTextBlock:setBorderColor(r, g, b)
 end
 
 function UiTextBlock:setBorderColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -221,7 +221,7 @@ function UiTextBlock:setBorderColorHexValue(colorHex)
 end
 
 function UiTextBlock:setBorderRadius(borderRadius)
-    assert(borderRadius ~= nil and type(borderRadius) == "number")
+    assert(borderRadius ~= nil and type(borderRadius) == "number", debug.traceback())
     if self.textBlockProperties.border_radius.value ~= borderRadius then
         self.textBlockProperties.border_radius.value = borderRadius
         self.textBlockProperties.border_radius.dirty = true
@@ -229,7 +229,7 @@ function UiTextBlock:setBorderRadius(borderRadius)
 end
 
 function UiTextBlock:setBorderOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.textBlockProperties.border_opacity.value ~= opacity then
         self.textBlockProperties.border_opacity.value = opacity
         self.textBlockProperties.border_opacity.dirty = true
@@ -237,7 +237,7 @@ function UiTextBlock:setBorderOpacity(opacity)
 end
 
 function UiTextBlock:setText(text)
-    assert(text ~= nil and type(text) == "string")
+    assert(text ~= nil and type(text) == "string", debug.traceback())
     if self.textBlockProperties.text.value ~= text then
         self.textBlockProperties.text.value = text
         self.textBlockProperties.text.dirty = true
@@ -245,7 +245,7 @@ function UiTextBlock:setText(text)
 end
 
 function UiTextBlock:setOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.textBlockProperties.text_opacity.value ~= opacity then
         self.textBlockProperties.text_opacity.value = opacity
         self.textBlockProperties.text_opacity.dirty = true
@@ -253,7 +253,7 @@ function UiTextBlock:setOpacity(opacity)
 end
 
 function UiTextBlock:setTextColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -270,7 +270,7 @@ end
 function UiTextBlock:setTextColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
 
     self.textBlockProperties.text_color.value.r = r
     self.textBlockProperties.text_color.value.g = g
@@ -280,7 +280,7 @@ function UiTextBlock:setTextColor(r, g, b)
 end
 
 function UiTextBlock:setFontSize(fontSize)
-    assert(fontSize ~= nil and type(fontSize) == "number")
+    assert(fontSize ~= nil and type(fontSize) == "number", debug.traceback())
     if self.textBlockProperties.font_size.value ~= fontSize then
         self.textBlockProperties.font_size.value = fontSize
         self.textBlockProperties.font_size.dirty = true
@@ -290,7 +290,7 @@ end
 function UiTextBlock:setTextHorizontalAlignment(textHorizontalAlignment)
     assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) == "number" and textHorizontalAlignment >=
                UiLabel.TextHorizontalAlignmentType.LEFT and textHorizontalAlignment <=
-               UiLabel.TextHorizontalAlignmentType.RIGHT)
+               UiLabel.TextHorizontalAlignmentType.RIGHT, debug.traceback())
     if self.textBlockProperties.text_horizontal_alignment.value ~= textHorizontalAlignment then
         self.textBlockProperties.text_horizontal_alignment.value = textHorizontalAlignment
         self.textBlockProperties.text_horizontal_alignment.dirty = true
@@ -300,7 +300,7 @@ end
 function UiTextBlock:setTextVerticalAlignment(textVerticalAlignment)
     assert(textVerticalAlignment ~= nil and type(textVerticalAlignment) == "number" and textVerticalAlignment >=
                UiLabel.TextVerticalAlignmentType.TOP and textVerticalAlignment <=
-               UiLabel.TextVerticalAlignmentType.BOTTOM)
+               UiLabel.TextVerticalAlignmentType.BOTTOM, debug.traceback())
     if self.textBlockProperties.text_vertical_alignment.value ~= textVerticalAlignment then
         self.textBlockProperties.text_vertical_alignment.value = textVerticalAlignment
         self.textBlockProperties.text_vertical_alignment.dirty = true
@@ -308,7 +308,7 @@ function UiTextBlock:setTextVerticalAlignment(textVerticalAlignment)
 end
 
 function UiTextBlock:setAttachTargetUiItemName(uiItemName)
-    assert(uiItemName ~= nil and type(uiItemName) == "string")
+    assert(uiItemName ~= nil and type(uiItemName) == "string", debug.traceback())
     if self.textBlockProperties.attach_target_ui_item_name.value ~= uiItemName then
         self.textBlockProperties.attach_target_ui_item_name.value = uiItemName
         self.textBlockProperties.attach_target_ui_item_name.dirty = true
@@ -316,7 +316,7 @@ function UiTextBlock:setAttachTargetUiItemName(uiItemName)
 end
 
 function UiTextBlock:setBorderThickness(thickness)
-    assert(thickness ~= nil and type(thickness) == "number")
+    assert(thickness ~= nil and type(thickness) == "number", debug.traceback())
     if self.textBlockProperties.border_thickness.value ~= thickness then
         self.textBlockProperties.border_thickness.value = thickness
         self.textBlockProperties.border_thickness.dirty = true

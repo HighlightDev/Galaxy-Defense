@@ -24,10 +24,10 @@ local json = require("Ui/Core/3rdparty/json");
 UiSlider = UiItemBase:new();
 UiSlider.UiSliderType = {SLIDER_TYPE_VERTICAL = 0, SLIDER_TYPE_HORIZONTAL = 1};
 function UiSlider:new(host, name)
-    assert(host ~= nil);
+    assert(host ~= nil, debug.traceback());
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "");
+        assert(type(name) == "string" and name ~= "", debug.traceback());
         jsonParameters = json.encode({name = name});
     end
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
@@ -94,8 +94,8 @@ function UiSlider:updateFromReplicatorData(host)
             if parsedJson["slider_color"] ~= nil then
                 local colorArray = parsedJson["slider_color"]
                 self.sliderProperties.slider_color.value.r = colorArray[1]
-                self.rectangleProperties.slider_color.value.g = colorArray[2]
-                self.rectangleProperties.slider_color.value.b = colorArray[3]
+                self.sliderProperties.slider_color.value.g = colorArray[2]
+                self.sliderProperties.slider_color.value.b = colorArray[3]
             end
             if parsedJson["blob_color"] ~= nil then
                 local colorArray = parsedJson["blob_color"]
@@ -127,14 +127,14 @@ function UiSlider:enableSliderMouseInputReceiver(host)
     self:setIfCanInterceptMouseInputEvent(true)
 end
 function UiSlider:setOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number");
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback());
     if self.sliderProperties.opacity.value ~= opacity then
         self.sliderProperties.opacity.value = opacity;
         self.sliderProperties.opacity.dirty = true;
     end
 end
 function UiSlider:setSliderValue(sliderValue)
-    assert(sliderValue ~= nil and type(sliderValue) == "number");
+    assert(sliderValue ~= nil and type(sliderValue) == "number", debug.traceback());
     if self.sliderProperties.slider_value.value ~= sliderValue then
         self.sliderProperties.slider_value.value = sliderValue;
         self.sliderProperties.slider_value.dirty = true;
@@ -142,35 +142,35 @@ function UiSlider:setSliderValue(sliderValue)
 end
 function UiSlider:getSliderValue() return self.sliderProperties.slider_value.value; end
 function UiSlider:setMaxSliderValue(maxSliderValue)
-    assert(maxSliderValue ~= nil and type(maxSliderValue) == "number");
+    assert(maxSliderValue ~= nil and type(maxSliderValue) == "number", debug.traceback());
     if self.sliderProperties.max_slider_value.value ~= maxSliderValue then
         self.sliderProperties.max_slider_value.value = maxSliderValue;
         self.sliderProperties.max_slider_value.dirty = true;
     end
 end
 function UiSlider:setMinSliderValue(minSliderValue)
-    assert(minSliderValue ~= nil and type(minSliderValue) == "number");
+    assert(minSliderValue ~= nil and type(minSliderValue) == "number", debug.traceback());
     if self.sliderProperties.min_slider_value.value ~= minSliderValue then
         self.sliderProperties.min_slider_value.value = minSliderValue;
         self.sliderProperties.min_slider_value.dirty = true;
     end
 end
 function UiSlider:setSliderStep(sliderStep)
-    assert(sliderStep ~= nil and type(sliderStep) == "number");
+    assert(sliderStep ~= nil and type(sliderStep) == "number", debug.traceback());
     if self.sliderProperties.slider_step.value ~= sliderStep then
         self.sliderProperties.slider_step.value = sliderStep;
         self.sliderProperties.slider_step.dirty = true;
     end
 end
 function UiSlider:setSliderThicknessPixels(sliderThicknessPixels)
-    assert(sliderThicknessPixels ~= nil and type(sliderThicknessPixels) == "number");
+    assert(sliderThicknessPixels ~= nil and type(sliderThicknessPixels) == "number", debug.traceback());
     if self.sliderProperties.slider_thickness_pixels.value ~= sliderThicknessPixels then
         self.sliderProperties.slider_thickness_pixels.value = sliderThicknessPixels;
         self.sliderProperties.slider_thickness_pixels.dirty = true;
     end
 end
 function UiSlider:setBlobThicknessPixels(blobThicknessPixels)
-    assert(blobThicknessPixels ~= nil and type(blobThicknessPixels) == "number");
+    assert(blobThicknessPixels ~= nil and type(blobThicknessPixels) == "number", debug.traceback());
     if self.sliderProperties.blob_thickness_pixels.value ~= blobThicknessPixels then
         self.sliderProperties.blob_thickness_pixels.value = blobThicknessPixels;
         self.sliderProperties.blob_thickness_pixels.dirty = true;
@@ -179,14 +179,14 @@ end
 function UiSlider:setSliderType(sliderType)
     assert(sliderType ~= nil and type(sliderType) == "number" and
                (sliderType == UiSlider.UiSliderType.SLIDER_TYPE_HORIZONTAL or sliderType ==
-                   UiSlider.UiSliderType.SLIDER_TYPE_VERTICAL));
+                   UiSlider.UiSliderType.SLIDER_TYPE_VERTICAL), debug.traceback());
     if self.sliderProperties.slider_type.value ~= sliderType then
         self.sliderProperties.slider_type.value = sliderType;
         self.sliderProperties.slider_type.dirty = true;
     end
 end
 function UiSlider:setSliderColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number");
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback());
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -203,7 +203,7 @@ end
 function UiSlider:setSliderColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0);
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback());
 
     self.sliderProperties.slider_color.value.r = r;
     self.sliderProperties.slider_color.value.g = g;
@@ -213,7 +213,7 @@ function UiSlider:setSliderColor(r, g, b)
 end
 
 function UiSlider:setBlobColorHexValue(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number");
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback());
 
     local mask_b = 0xFF;
     local mask_g = 0xFF << 0x8;
@@ -230,7 +230,7 @@ end
 function UiSlider:setBlobColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0);
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback());
 
     self.sliderProperties.blob_color.value.r = r;
     self.sliderProperties.blob_color.value.g = g;
@@ -240,7 +240,7 @@ function UiSlider:setBlobColor(r, g, b)
 end
 
 function UiSlider:subscribeOnSliderValueChangedCallback(sliderValueChangedCallback)
-    assert(sliderValueChangedCallback ~= nil and type(sliderValueChangedCallback) == "function");
+    assert(sliderValueChangedCallback ~= nil and type(sliderValueChangedCallback) == "function", debug.traceback());
     self.onSliderValueChangedCallbacks[(#self.onSliderValueChangedCallbacks) + 1] = sliderValueChangedCallback;
 end
 return UiSlider;

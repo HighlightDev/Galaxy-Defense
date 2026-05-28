@@ -30,11 +30,11 @@ UiRowLayout = UiItemBase:new()
 UiRowLayout.UiRowAlignmentType = {LEFT = 0, RIGHT = 1, CENTER = 2}
 
 function UiRowLayout:new(host, name)
-    assert(host ~= nil)
+    assert(host ~= nil, debug.traceback())
 
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({name = name})
     end
 
@@ -93,7 +93,7 @@ end
 function UiRowLayout:update(host, deltaTimeSec) end
 
 function UiRowLayout:setSpacing(spacing)
-    assert(spacing ~= nil and type(spacing) == "number")
+    assert(spacing ~= nil and type(spacing) == "number", debug.traceback())
     if self.rowLayoutProperties.spacing.value ~= spacing then
         self.rowLayoutProperties.spacing.value = spacing
         self.rowLayoutProperties.spacing.dirty = true
@@ -102,7 +102,7 @@ end
 
 function UiRowLayout:setAlignment(alignment)
     assert(alignment ~= nil and alignment >= UiRowLayout.UiRowAlignmentType.LEFT and alignment <=
-               UiRowLayout.UiRowAlignmentType.CENTER)
+               UiRowLayout.UiRowAlignmentType.CENTER, debug.traceback())
     if self.rowLayoutProperties.alignment.value ~= alignment then
         self.rowLayoutProperties.alignment.value = alignment
         self.rowLayoutProperties.alignment.dirty = true

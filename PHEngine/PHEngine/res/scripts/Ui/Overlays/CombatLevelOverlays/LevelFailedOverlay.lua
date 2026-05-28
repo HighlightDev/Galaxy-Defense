@@ -107,7 +107,7 @@ function LevelFailedOverlay:new(host)
                                  levelFailedOverlayCanvas.widgetName, menuVerticalMargin)
         backgroundRect:setColorHexValue(Styles.Colors.panelColor)
         backgroundRect:setZOrder(1)
-        backgroundRect:setBorderRadius(SettingsOverlay.buttonRadius)
+        backgroundRect:setBorderRadius(LevelFailedOverlay.buttonRadius)
 
         descriptionLabel:setParent(host, levelFailedOverlayCanvas.widgetName, backgroundRect.widgetName)
         descriptionLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,

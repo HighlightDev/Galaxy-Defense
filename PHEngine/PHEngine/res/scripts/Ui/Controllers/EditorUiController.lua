@@ -67,7 +67,7 @@ local function createPauseOverlay(host) return PauseOverlay:new(host) end
 local function createPauseSettingsOverlay(host) return SettingsOverlay:new(host) end
 
 local function initialize(host)
-    UiOverlays["PauseSettingsOverlay"] = createPauseSettingsOverlay(host)
+    UiOverlays["GameSettingsOverlay"] = createPauseSettingsOverlay(host)
     UiOverlays["PauseMenuOverlay"] = createPauseOverlay(host)
     UiBackgroundOverlays["LevelEditorOverlay"] = createLevelEditorOverlay(host)
 end
@@ -102,21 +102,24 @@ function System_OnUpdate(host, deltaTimeSec)
 end
 
 function System_OnEngineEventTriggered(host, eventName, jsonArgs)
-    assert(eventName ~= nil and type(eventName) == "string")
+    assert(eventName ~= nil and type(eventName) == "string", debug.traceback())
+    assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
 
     for _, value in pairs(UiOverlays) do value.onEngineEventTriggered(eventName, jsonArgs) end
     for _, value in pairs(UiBackgroundOverlays) do value.onEngineEventTriggered(eventName, jsonArgs) end
 end
 
 function System_OnGameEventTriggered(host, eventName, jsonArgs)
-    assert(eventName ~= nil and type(eventName) == "string")
+    assert(eventName ~= nil and type(eventName) == "string", debug.traceback())
+    assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
 
     for _, value in pairs(UiOverlays) do value.onGameEventTriggered(eventName, jsonArgs) end
     for _, value in pairs(UiBackgroundOverlays) do value.onGameEventTriggered(eventName, jsonArgs) end
 end
 
 function System_OnBroadcastEventTriggered(host, eventName, jsonArgs)
-    assert(eventName ~= nil and type(eventName) == "string")
+    assert(eventName ~= nil and type(eventName) == "string", debug.traceback())
+    assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
 
     for _, value in pairs(UiOverlays) do value.onBroadcastEventTriggered(eventName, jsonArgs) end
     for _, value in pairs(UiBackgroundOverlays) do value.onBroadcastEventTriggered(eventName, jsonArgs) end

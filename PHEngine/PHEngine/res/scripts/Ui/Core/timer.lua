@@ -8,9 +8,9 @@ function TimerManager:new()
 end
 
 function TimerManager:createTimer(action, oneshot, intervalInSec)
-    assert(action ~= nil and type(action) == "function")
-    assert(oneshot ~= nil and type(oneshot) == "boolean")
-    assert(intervalInSec ~= nil and type(intervalInSec) == "number")
+    assert(action ~= nil and type(action) == "function", debug.traceback())
+    assert(oneshot ~= nil and type(oneshot) == "boolean", debug.traceback())
+    assert(intervalInSec ~= nil and type(intervalInSec) == "number", debug.traceback())
     local timer = {
         id = TimerManager.timers_id_counter + 1,
         action = action,

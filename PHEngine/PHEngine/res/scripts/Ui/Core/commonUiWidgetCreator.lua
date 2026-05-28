@@ -52,7 +52,7 @@ local function getTypeToString(commonUiWidgetType)
 end
 
 function CommonUiWidgetCreator:createUiWidget(host, commonUiWidgetType, jsonParameters)
-    assert(host ~= nil and commonUiWidgetType ~= nil)
+    assert(host ~= nil and commonUiWidgetType ~= nil, debug.traceback())
     jsonParameters = jsonParameters and jsonParameters or ""
     local widgetLuaProxyId = _CreateCommonUiWidget(host, commonUiWidgetType, jsonParameters)
     print(
@@ -63,8 +63,8 @@ function CommonUiWidgetCreator:createUiWidget(host, commonUiWidgetType, jsonPara
 end
 
 function CommonUiWidgetCreator:destroyUiWidget(host, luaProxyId)
-    assert(host ~= nil)
-    assert(luaProxyId ~= nil and type(luaProxyId) == "number" and luaProxyId > -1)
+    assert(host ~= nil, debug.traceback())
+    assert(luaProxyId ~= nil and type(luaProxyId) == "number" and luaProxyId > -1, debug.traceback())
     -- print("CommonUiWidgetCreator::destroyUiWidget: luaProxyId: " .. tostring(luaProxyId))
     -- invocation of this function leads to exception, memory is already deallocated
     -- _DestroyCommonUiWidget(host, luaProxyId)

@@ -30,11 +30,11 @@ local json = require("Ui/Core/3rdparty/json")
 UiUpgradeIcon = UiItemBase:new()
 
 function UiUpgradeIcon:new(host, name)
-    assert(host ~= nil)
+    assert(host ~= nil, debug.traceback())
 
     local jsonParameters = nil
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({name = name})
     end
 
@@ -133,7 +133,7 @@ end
 function UiUpgradeIcon:update(host, deltaTimeSec) end
 
 function UiUpgradeIcon:setTextureSource(textureSource)
-    assert(textureSource ~= nil and type(textureSource) == "string")
+    assert(textureSource ~= nil and type(textureSource) == "string", debug.traceback())
     if self.iconProperties.texture_source.value ~= textureSource then
         self.iconProperties.texture_source.value = textureSource
         self.iconProperties.texture_source.dirty = true
@@ -141,7 +141,7 @@ function UiUpgradeIcon:setTextureSource(textureSource)
 end
 
 function UiUpgradeIcon:setUseImageCustomColor(isUsed)
-    assert(isUsed ~= nil and type(isUsed) == "boolean")
+    assert(isUsed ~= nil and type(isUsed) == "boolean", debug.traceback())
     if self.iconProperties.is_custom_color.value ~= isUsed then
         self.iconProperties.is_custom_color.value = isUsed
         self.iconProperties.is_custom_color.dirty = true
@@ -149,7 +149,7 @@ function UiUpgradeIcon:setUseImageCustomColor(isUsed)
 end
 
 local function hexToRgb(colorHex)
-    assert(colorHex ~= nil and type(colorHex) == "number")
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
     local mask_b = 0xFF
     local mask_g = 0xFF << 0x8
     local mask_r = 0xFF << 0x10
@@ -163,7 +163,7 @@ end
 local function assertNormalizedColor(r, g, b)
     assert(
         r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and r >=
-            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
+            0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0, debug.traceback())
 end
 
 function UiUpgradeIcon:setColor(r, g, b)
@@ -175,6 +175,7 @@ function UiUpgradeIcon:setColor(r, g, b)
 end
 
 function UiUpgradeIcon:setColorHexValue(colorHex)
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
     local r, g, b = hexToRgb(colorHex)
     self:setColor(r, g, b)
 end
@@ -188,6 +189,7 @@ function UiUpgradeIcon:setBorderColor(r, g, b)
 end
 
 function UiUpgradeIcon:setBorderColorHexValue(colorHex)
+    assert(colorHex ~= nil and type(colorHex) == "number", debug.traceback())
     local r, g, b = hexToRgb(colorHex)
     self:setBorderColor(r, g, b)
 end
@@ -219,7 +221,8 @@ function UiUpgradeIcon:setFillColorHexValue(colorHex)
 end
 
 function UiUpgradeIcon:setFillStrength(fillStrength)
-    assert(fillStrength ~= nil and type(fillStrength) == "number" and fillStrength >= 0.0 and fillStrength <= 1.0)
+    assert(fillStrength ~= nil and type(fillStrength) == "number" and fillStrength >= 0.0 and fillStrength <= 1.0,
+           debug.traceback())
     if self.iconProperties.fill_strength.value ~= fillStrength then
         self.iconProperties.fill_strength.value = fillStrength
         self.iconProperties.fill_strength.dirty = true
@@ -227,7 +230,8 @@ function UiUpgradeIcon:setFillStrength(fillStrength)
 end
 
 function UiUpgradeIcon:setBorderThicknessPx(borderThicknessPx)
-    assert(borderThicknessPx ~= nil and type(borderThicknessPx) == "number" and borderThicknessPx >= 0.0)
+    assert(borderThicknessPx ~= nil and type(borderThicknessPx) == "number" and borderThicknessPx >= 0.0,
+           debug.traceback())
     if self.iconProperties.border_thickness_px.value ~= borderThicknessPx then
         self.iconProperties.border_thickness_px.value = borderThicknessPx
         self.iconProperties.border_thickness_px.dirty = true
@@ -235,7 +239,7 @@ function UiUpgradeIcon:setBorderThicknessPx(borderThicknessPx)
 end
 
 function UiUpgradeIcon:setGlowSizePx(glowSizePx)
-    assert(glowSizePx ~= nil and type(glowSizePx) == "number" and glowSizePx >= 0.0)
+    assert(glowSizePx ~= nil and type(glowSizePx) == "number" and glowSizePx >= 0.0, debug.traceback())
     if self.iconProperties.glow_size_px.value ~= glowSizePx then
         self.iconProperties.glow_size_px.value = glowSizePx
         self.iconProperties.glow_size_px.dirty = true
@@ -243,7 +247,7 @@ function UiUpgradeIcon:setGlowSizePx(glowSizePx)
 end
 
 function UiUpgradeIcon:setOpacity(opacity)
-    assert(opacity ~= nil and type(opacity) == "number")
+    assert(opacity ~= nil and type(opacity) == "number", debug.traceback())
     if self.iconProperties.opacity.value ~= opacity then
         self.iconProperties.opacity.value = opacity
         self.iconProperties.opacity.dirty = true
@@ -251,7 +255,7 @@ function UiUpgradeIcon:setOpacity(opacity)
 end
 
 function UiUpgradeIcon:setRotationDegrees(rotationDegrees)
-    assert(rotationDegrees ~= nil and type(rotationDegrees) == "number")
+    assert(rotationDegrees ~= nil and type(rotationDegrees) == "number", debug.traceback())
     if self.iconProperties.rotation_degrees.value ~= rotationDegrees then
         self.iconProperties.rotation_degrees.value = rotationDegrees
         self.iconProperties.rotation_degrees.dirty = true
@@ -261,7 +265,7 @@ end
 function UiUpgradeIcon:getRotationDegrees() return self.iconProperties.rotation_degrees.value end
 
 function UiUpgradeIcon:setIsFlipped(isFlipped)
-    assert(isFlipped ~= nil and type(isFlipped) == "boolean")
+    assert(isFlipped ~= nil and type(isFlipped) == "boolean", debug.traceback())
     if self.iconProperties.is_flipped.value ~= isFlipped then
         self.iconProperties.is_flipped.value = isFlipped
         self.iconProperties.is_flipped.dirty = true
@@ -269,7 +273,7 @@ function UiUpgradeIcon:setIsFlipped(isFlipped)
 end
 
 function UiUpgradeIcon:setGlowVisible(isGlowVisible)
-    assert(isGlowVisible ~= nil and type(isGlowVisible) == "boolean")
+    assert(isGlowVisible ~= nil and type(isGlowVisible) == "boolean", debug.traceback())
     if self.iconProperties.glow_visible.value ~= isGlowVisible then
         self.iconProperties.glow_visible.value = isGlowVisible
         self.iconProperties.glow_visible.dirty = true

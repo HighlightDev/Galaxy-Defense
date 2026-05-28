@@ -44,7 +44,7 @@ function System_OnStart(host)
         _GetLuaProxyIdForComponent(host, "c_particleSystem_3")
     }
     for _, luaProxyId in ipairs(particlesLuaProxyIds) do
-        assert(luaProxyId ~= nil and luaProxyId ~= -1, "Particle system Lua proxy ID is nil")
+        assert(luaProxyId ~= nil and luaProxyId ~= -1, "Particle system Lua proxy ID is nil", debug.traceback())
     end
     engineReceiver = EngineInputReceiver:new()
     engineReceiver.subscribeToMouseEvents = false

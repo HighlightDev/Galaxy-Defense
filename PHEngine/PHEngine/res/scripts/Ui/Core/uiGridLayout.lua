@@ -32,11 +32,11 @@ UiGridLayout.UiGridHorizontalAlignmentType = {LEFT = 0, CENTER = 1, RIGHT = 2}
 UiGridLayout.UiGridVerticalAlignmentType = {TOP = 0, CENTER = 1, BOTTOM = 2}
 
 function UiGridLayout:new(host, name)
-    assert(host ~= nil)
+    assert(host ~= nil, debug.traceback())
 
     local jsonParameters = nil;
     if name ~= nil then
-        assert(type(name) == "string" and name ~= "")
+        assert(type(name) == "string" and name ~= "", debug.traceback())
         jsonParameters = json.encode({name = name})
     end
 
@@ -110,7 +110,7 @@ end
 function UiGridLayout:update(host, deltaTimeSec) end
 
 function UiGridLayout:setHorizontalSpacing(spacing)
-    assert(spacing ~= nil and type(spacing) == "number")
+    assert(spacing ~= nil and type(spacing) == "number", debug.traceback())
     if self.gridLayoutProperties.horizontal_spacing.value ~= spacing then
         self.gridLayoutProperties.horizontal_spacing.value = spacing
         self.gridLayoutProperties.horizontal_spacing.dirty = true
@@ -118,7 +118,7 @@ function UiGridLayout:setHorizontalSpacing(spacing)
 end
 
 function UiGridLayout:setVerticalSpacing(spacing)
-    assert(spacing ~= nil and type(spacing) == "number")
+    assert(spacing ~= nil and type(spacing) == "number", debug.traceback())
     if self.gridLayoutProperties.vertical_spacing.value ~= spacing then
         self.gridLayoutProperties.vertical_spacing.value = spacing
         self.gridLayoutProperties.vertical_spacing.dirty = true
@@ -126,7 +126,7 @@ function UiGridLayout:setVerticalSpacing(spacing)
 end
 
 function UiGridLayout:setColumnsCount(count)
-    assert(count ~= nil and type(count) == "number" and count >= 1)
+    assert(count ~= nil and type(count) == "number" and count >= 1, debug.traceback())
     if self.gridLayoutProperties.columns_count.value ~= count then
         self.gridLayoutProperties.columns_count.value = count
         self.gridLayoutProperties.columns_count.dirty = true
@@ -134,7 +134,7 @@ function UiGridLayout:setColumnsCount(count)
 end
 
 function UiGridLayout:setRowsCount(count)
-    assert(count ~= nil and type(count) == "number" and count >= 1)
+    assert(count ~= nil and type(count) == "number" and count >= 1, debug.traceback())
     if self.gridLayoutProperties.rows_count.value ~= count then
         self.gridLayoutProperties.rows_count.value = count
         self.gridLayoutProperties.rows_count.dirty = true
@@ -142,10 +142,10 @@ function UiGridLayout:setRowsCount(count)
 end
 
 function UiGridLayout:setAlignment(horizontalAlignment, verticalAlignment)
-    assert(horizontalAlignment ~= nil and type(horizontalAlignment) == "number")
-    assert(verticalAlignment ~= nil and type(verticalAlignment) == "number")
+    assert(horizontalAlignment ~= nil and type(horizontalAlignment) == "number", debug.traceback())
+    assert(verticalAlignment ~= nil and type(verticalAlignment) == "number", debug.traceback())
     assert(horizontalAlignment >= UiGridLayout.UiGridHorizontalAlignmentType.LEFT and horizontalAlignment <=
-               UiGridLayout.UiGridHorizontalAlignmentType.RIGHT)
+               UiGridLayout.UiGridHorizontalAlignmentType.RIGHT, debug.traceback())
     assert(verticalAlignment >= UiGridLayout.UiGridVerticalAlignmentType.TOP and verticalAlignment <=
                UiGridLayout.UiGridVerticalAlignmentType.BOTTOM)
 
