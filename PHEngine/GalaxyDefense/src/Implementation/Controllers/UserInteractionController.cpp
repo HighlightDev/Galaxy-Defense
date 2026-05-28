@@ -71,6 +71,7 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
           std::make_shared<SceneComponent>(
               "GhostBarrierPillarActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostBarrierPillarBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
+    , mSelectedSpaceStationHighlightTimer(std::make_shared<GameThreadTimer>())
 {
     mGhostTowerActor->AddEngineProperty(mGhostTowerBlendColorProperty);
     mRemoveTowerMarkerActor->AddEngineProperty(mRemoveTowerMarkerBlendColorProperty);
@@ -85,6 +86,11 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     mReloadPlacementTower->SetIsPausable(true);
     mReloadPlacementTower->SetIsRepeat(false);
     mReloadPlacementTower->SetIntervalMs(200);
+
+    mSelectedSpaceStationHighlightTimer->Initialize();
+    mSelectedSpaceStationHighlightTimer->SetIsPausable(true);
+    mSelectedSpaceStationHighlightTimer->SetIsRepeat(false);
+    mSelectedSpaceStationHighlightTimer->SetIntervalMs(250);
 }
 
 void UserInteractionController::SetParentController(const std::weak_ptr<CombatController>& parentController)
@@ -497,6 +503,10 @@ void UserInteractionController::ProcessCombatStage()
     const auto& mouseBindings = mInputComponent->GetMouseBindings();
 
     if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
+        if (mSelectedSpaceStationHighlightTimer->IsRunning()) {
+            return; // Prevent processing new left click while space station highlight timer is running to avoid multiple quick
+                    // selections of space stations
+        }
         const auto& mousePosition = mouseBindings->GetLastMouseCursorPosition();
         const glm::ivec2& screenSpacePosition = glm::ivec2(mousePosition.x, mousePosition.y);
         const int32_t collidedObjectId = mSmartPicker->CastScreenSpaceRayIntoScene(
@@ -514,6 +524,8 @@ void UserInteractionController::ProcessCombatStage()
             mShootCallback();
             mReadyToShootTimer->StartTimer();
         }
+
+        mSelectedSpaceStationHighlightTimer->StartTimer(); // Start timer to prevent multiple quick selections of space stations
     } else if (mProjectileMarkerActor->IsEnabled()) {
         const auto& mousePosition = mouseBindings->GetLastMouseCursorPosition();
         const glm::ivec2& screenSpacePosition = glm::ivec2(mousePosition.x, mousePosition.y);

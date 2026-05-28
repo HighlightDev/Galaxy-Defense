@@ -26,10 +26,7 @@ local UiTextSizing = {}
 -- Fonts not listed fall back to DEFAULT_HEIGHT_MULTIPLIER. Add new entries
 -- here rather than overriding callers — that way every overlay sizes the
 -- same font consistently.
-local FONT_HEIGHT_MULTIPLIER = {
-    ["Lora-VariableFont_wght"] = 1.70,
-    ["13_5Atom_Sans_Regular"] = 1.55
-}
+local FONT_HEIGHT_MULTIPLIER = {["Lora-VariableFont_wght"] = 1.70, ["13_5Atom_Sans_Regular"] = 1.55}
 
 local DEFAULT_HEIGHT_MULTIPLIER = 1.70
 
@@ -43,7 +40,8 @@ function UiTextSizing.safeLineHeight(fontSize, fontName)
            "UiTextSizing.safeLineHeight: fontSize must be a positive number", debug.traceback())
     local multiplier = DEFAULT_HEIGHT_MULTIPLIER
     if fontName ~= nil then
-        assert(type(fontName) == "string", "UiTextSizing.safeLineHeight: fontName must be a string when provided", debug.traceback())
+        assert(type(fontName) == "string", "UiTextSizing.safeLineHeight: fontName must be a string when provided",
+               debug.traceback())
         multiplier = FONT_HEIGHT_MULTIPLIER[fontName] or DEFAULT_HEIGHT_MULTIPLIER
     end
     return math.ceil(fontSize * multiplier)
@@ -63,7 +61,8 @@ function UiTextSizing.getHeightMultipliers() return FONT_HEIGHT_MULTIPLIER end
 -- Returns 0 for empty text or unknown font/size; callers should plan for
 -- this rather than trusting that "0 means tiny".
 function UiTextSizing.measureLabelWidthPx(host, fontName, fontSize, text)
-    assert(host ~= nil and type(host) == "userdata", "UiTextSizing.measureLabelWidthPx: host must be userdata", debug.traceback())
+    assert(host ~= nil and type(host) == "userdata", "UiTextSizing.measureLabelWidthPx: host must be userdata",
+           debug.traceback())
     assert(fontName ~= nil and type(fontName) == "string" and fontName ~= "",
            "UiTextSizing.measureLabelWidthPx: fontName must be a non-empty string", debug.traceback())
     assert(fontSize ~= nil and type(fontSize) == "number" and fontSize > 0,

@@ -100,6 +100,8 @@ class UserInteractionController : public ILevelController,
 
     std::shared_ptr<BarrierActor> mCurrentBarrierActor;
 
+    std::shared_ptr<GameThreadTimer> mSelectedSpaceStationHighlightTimer;
+
 public:
     UserInteractionController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 

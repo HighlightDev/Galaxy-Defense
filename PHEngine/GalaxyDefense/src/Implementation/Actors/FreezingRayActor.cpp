@@ -145,7 +145,6 @@ void FreezingRayActor::Tick(const float deltaTimeSec)
                     if (foundNearestIt != descriptorActorIds.end()) {
                         const auto& collidedActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
                         if (collidedActor) {
-                            LogInfo("FreezingRayActor::Tick: collided with actor ", collidedActor->GetName());
                             const bool mCollideWithOldActor
                                 = mLastCollidedActorId == collidedActor->GetObjectId() || mSwitchTargetMinTimer->IsRunning();
                             if (mCollideWithOldActor) {
