@@ -3,6 +3,7 @@
 layout(location = 0) out vec4 FragColor;
 
 in vec2 texCoords;
+in vec3 interpolatedVertexColor;
 
 uniform sampler2D fontAtlas;
 uniform vec3 color;

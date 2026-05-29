@@ -20,10 +20,7 @@ std::string RandomRangeLifeTimeModuleGpuProxy::GetShaderSnippet() const
         return currentLifeTime + dt;
     }
     float resetLifeTime(in float dt, in vec3 currentInvokeId) {
-        float minLifeTime = %f;
-        float maxLifeTime = %f;
-        float r = random(vec2(dt * 1000.0, currentInvokeId.x));
-        return minLifeTime + r * (maxLifeTime - minLifeTime);
+        return 0.0;
     })";
     char buffer[512];
     std::snprintf(buffer, sizeof(buffer), fmtStr, mMinLifeTime, mMaxLifeTime);

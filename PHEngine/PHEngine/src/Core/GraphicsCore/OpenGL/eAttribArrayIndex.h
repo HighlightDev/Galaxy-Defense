@@ -14,7 +14,8 @@ enum class eAttribArrayIndex : int8_t {
     VertexTangent = 3,
     VertexBitangent = 4,
     VertexBlendWeights = 5,
-    VertexBlendIndex = 6
+    VertexBlendIndex = 6,
+    VertexColor = 7
 };
 }
 } // namespace Graphics

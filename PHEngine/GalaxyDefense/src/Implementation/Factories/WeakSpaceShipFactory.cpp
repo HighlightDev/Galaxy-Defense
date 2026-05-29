@@ -139,7 +139,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "clipRadius", 0.35f);
 
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
-        "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 500);
+        "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 500, false);
 
     d_particle->emitterData = std::make_shared<ParticleEmitterData>();
     d_particle->emitterData->emitterType = "explosion";

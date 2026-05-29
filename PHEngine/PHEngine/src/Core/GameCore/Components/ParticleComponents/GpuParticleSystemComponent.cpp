@@ -32,7 +32,8 @@ GpuParticleSystemComponent::GpuParticleSystemComponent(
         meshComponentData->m_translation,
         glm::vec3(),
         meshComponentData->m_scale,
-        meshComponentData->m_particlesCount)
+        meshComponentData->m_particlesCount,
+        meshComponentData->m_isEndlessRespawn)
     , mRenderData(renderData)
 {
 }
@@ -43,7 +44,7 @@ GpuParticleSystemComponent::~GpuParticleSystemComponent()
 
 void GpuParticleSystemComponent::Tick(const float deltaTimeSec)
 {
-    if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && (IsParticlesDataDirty() || IsParticleModulesProxiesDirty())) {
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && (IsParticlesDataDirty() || IsParticleModulesProxiesDirty() || IsEndlessRespawnEnabledDirty())) {
         SyncDataWithRenderThread(0);
     }
 }
@@ -96,32 +97,40 @@ void GpuParticleSystemComponent::UpdateWorldMatrix(const glm::mat4& parentWorldM
 
 void GpuParticleSystemComponent::SetIsParticlesDataDirty(const bool isDirty)
 {
-    isParticlesDataDirty = isDirty;
+    mIsParticlesDataDirty = isDirty;
 }
 
 bool GpuParticleSystemComponent::IsParticlesDataDirty() const
 {
-    return isParticlesDataDirty;
+    return mIsParticlesDataDirty;
 }
 
 void GpuParticleSystemComponent::SetIsParticleModulesProxiesDirty(const bool isDirty)
 {
-    isParticleModulesProxiesDirty = isDirty;
+    mIsParticleModulesProxiesDirty = isDirty;
 }
 
 bool GpuParticleSystemComponent::IsParticleModulesProxiesDirty() const
 {
-    return isParticleModulesProxiesDirty;
+    return mIsParticleModulesProxiesDirty;
+}
+
+void GpuParticleSystemComponent::SetIsEndlessRespawnEnabled(const bool value)
+{
+    if (mIsEndlessRespawnEnabled != value) {
+        mIsEndlessRespawnEnabled = value;
+        mIsEndlessRespawnEnabledDirty = true;
+    }
 }
 
 void GpuParticleSystemComponent::SetIsEndlessRespawnEnabledDirty(const bool isDirty)
 {
-    isEndlessRespawnEnabledDirty = isDirty;
+    mIsEndlessRespawnEnabledDirty = isDirty;
 }
 
 bool GpuParticleSystemComponent::IsEndlessRespawnEnabledDirty() const
 {
-    return isEndlessRespawnEnabledDirty;
+    return mIsEndlessRespawnEnabledDirty;
 }
 
 void GpuParticleSystemComponent::SyncDataWithRenderThread(
@@ -135,9 +144,9 @@ void GpuParticleSystemComponent::SyncDataWithRenderThread(
             functionId,
             [weak = weak_from_this(),
              activeParticlesCount,
-             isParticlesDataDirty = IsParticlesDataDirty(),
-             isParticleModulesProxiesDirty = IsParticleModulesProxiesDirty(),
-             isEndlessRespawnEnabledDirty = IsEndlessRespawnEnabledDirty(),
+             mIsParticlesDataDirty = IsParticlesDataDirty(),
+             mIsParticleModulesProxiesDirty = IsParticleModulesProxiesDirty(),
+             mIsEndlessRespawnEnabledDirty = IsEndlessRespawnEnabledDirty(),
              sceneProxyId = mSceneProxyId](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
@@ -148,7 +157,7 @@ void GpuParticleSystemComponent::SyncDataWithRenderThread(
                         const auto& proxyPtr = std::static_pointer_cast<GpuParticleSystemSceneProxy>(
                             sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId));
                         if (proxyPtr) {
-                            if (isParticlesDataDirty) {
+                            if (mIsParticlesDataDirty) {
                                 const auto& particlesPool = particleComponentPtr->GetParticlesPool();
                                 std::vector<glm::vec4> positionsData, velocitiesData, initialVelocitiesData, colorsData;
                                 std::vector<glm::vec2> rotationAndSizeData;
@@ -183,11 +192,11 @@ void GpuParticleSystemComponent::SyncDataWithRenderThread(
                                     lifetimeData.size() * sizeof(float));
                                 particleComponentPtr->SetIsParticlesDataDirty(false);
                             }
-                            if (isParticleModulesProxiesDirty) {
+                            if (mIsParticleModulesProxiesDirty) {
                                 proxyPtr->ResetParticleModulesProxies(particleComponentPtr->GetParticleModulesProxies());
                                 particleComponentPtr->SetIsParticleModulesProxiesDirty(false);
                             }
-                            if (isEndlessRespawnEnabledDirty) {
+                            if (mIsEndlessRespawnEnabledDirty) {
                                 proxyPtr->SetIsEndlessRespawnEnabled(particleComponentPtr->IsEndlessRespawnEnabled());
                                 particleComponentPtr->SetIsEndlessRespawnEnabledDirty(false);
                             }

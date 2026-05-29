@@ -193,7 +193,6 @@ void GpuParticleSystemSceneProxy::Render(
         m_lastDispatchTime = currentTime;
         m_computeShader->SetDispatchDeltaTime(timeSinceLastDispatch);
         m_computeShader->SetIsEndlessRespawnEnabled(mIsEndlessRespawnEnabled);
-        m_computeShader->SetEmitterPosition(glm::vec3(m_worldMatrix[3]));
     }
 
     m_computeShader->Dispatch(mRenderData.mParticleMeshParams.mParticleCount, 1, 1);
@@ -206,15 +205,17 @@ void GpuParticleSystemSceneProxy::Render(
 
     uint32_t* countOfAliveParticles = m_gpuParticlesAliveCounterSSBO->GetMappedData<uint32_t>();
     ext_assert(countOfAliveParticles != nullptr, "Failed to map alive counter SSBO");
-    mPrevActiveParticlesCount = *countOfAliveParticles;
+    const uint32_t currentCountOfActiveParticles = *countOfAliveParticles;
+    mPrevActiveParticlesCount = currentCountOfActiveParticles;
 
-    const auto& shader = GetShader();
-    activeBindedState.TryUpdateActiveShaderName(m_shader->GetShaderName());
-    m_shader->ExecuteShader();
-
-    shader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
-    shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
-    m_skin->GetBuffer()->RenderInstanced(GL_POINTS, *countOfAliveParticles);
+    if (currentCountOfActiveParticles > 0) {
+        const auto& shader = GetShader();
+        activeBindedState.TryUpdateActiveShaderName(m_shader->GetShaderName());
+        m_shader->ExecuteShader();
+        shader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
+        shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
+        m_skin->GetBuffer()->RenderInstanced(GL_POINTS, currentCountOfActiveParticles);
+    }
 }
 
 bool GpuParticleSystemSceneProxy::IsDeferred() const

@@ -329,4 +329,39 @@ public:
         return 4;
     }
 };
+
+template <>
+class StandartAttributeData<eAttribArrayIndex::VertexColor> : public StandartAttributeDataBase 
+{
+public:
+    explicit StandartAttributeData(const int32_t attributeIndex)
+        : StandartAttributeDataBase(attributeIndex)
+    {
+    }
+
+    std::string GetAttributeName() const override
+    {
+        return "VertexColor";
+    }
+
+    eAttribArrayIndex GetAttribArrayIndex() const override
+    {
+        return eAttribArrayIndex::VertexColor;
+    }
+
+    eAttributeType GetAttributeType() const override
+    {
+        return eAttributeType::STANDART;
+    }
+
+    eAttributeComponentDataType GetAttributeComponentDataType() const override
+    {
+        return eAttributeComponentDataType::INT;
+    }
+
+    int32_t GetAttributeComponentsNumber() const override
+    {
+        return 3;
+    }
+};
 } // namespace Graphics::OpenGL

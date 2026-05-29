@@ -18,7 +18,7 @@ std::string SimpleLifeTimeModuleGpuProxy::GetShaderSnippet() const
         return currentLifeTime + dt;
     }
     float resetLifeTime(in float dt, in vec3 currentInvokeId) {
-        return %f;
+        return 0.0;
     })";
     char buffer[256];
     std::snprintf(buffer, sizeof(buffer), fmtStr, mLifeTime);

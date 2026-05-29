@@ -370,11 +370,13 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
         const auto scale = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["scale"]);
         const auto particlesCount = nlohmann_utilities::GetIntFromJson(jsonObj, "particlesCount");
         const auto materialProxyId = nlohmann_utilities::GetIntFromJson(jsonObj, "materialProxyId");
+        const bool isEndlessRespawnEnabled = nlohmann_utilities::GetBoolFromJson(jsonObj, "isEndlessRespawnEnabled");
         const auto& material = sceneSp->GetMaterialByProxyId(materialProxyId);
         ext_assert(
             material, std::string("Material not found for ") + componentType + ", proxy ID: " + std::to_string(materialProxyId));
 
-        componentData = std::make_shared<ParticleSystemComponentData>(objectName, material, translation, scale, particlesCount);
+        componentData = std::make_shared<ParticleSystemComponentData>(
+            objectName, material, translation, scale, particlesCount, isEndlessRespawnEnabled);
         const auto& particleData = std::static_pointer_cast<ParticleSystemComponentData>(componentData);
 
         // Parse emitter

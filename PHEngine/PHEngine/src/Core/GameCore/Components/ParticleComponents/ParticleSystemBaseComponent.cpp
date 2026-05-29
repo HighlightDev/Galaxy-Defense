@@ -13,10 +13,12 @@ ParticleSystemBaseComponent::ParticleSystemBaseComponent(
     const glm::vec3& translation,
     const glm::vec3& rotation,
     const glm::vec3& scale,
-    const size_t particlesCount)
+    const size_t particlesCount,
+    const bool isEndlessRespawn)
     : PrimitiveComponent(name, translation, rotation, scale)
     , mParticlesCount(particlesCount)
     , mPrevActiveParticles(0)
+    , mIsEndlessRespawnEnabled(isEndlessRespawn)
 {
     mParticlesPool.resize(particlesCount);
     mSortOrderValue = std::numeric_limits<int32_t>::max(); // draw this primitive the last one
@@ -56,7 +58,7 @@ void ParticleSystemBaseComponent::EmitParticles()
         particleModule->OnEmitParticles();
     }
 
-    bIsEmitting = true;
+    mIsEmitting = true;
 }
 
 void ParticleSystemBaseComponent::ResetParticles()
@@ -70,7 +72,7 @@ void ParticleSystemBaseComponent::ResetParticles()
         mPrevActiveParticles = 0;
     }
 
-    bIsEmitting = false;
+    mIsEmitting = false;
 }
 
 size_t ParticleSystemBaseComponent::GetParticlesCount() const
@@ -114,11 +116,11 @@ bool ParticleSystemBaseComponent::IsAnyParticleAlive() const
 
 void ParticleSystemBaseComponent::SetIsEndlessRespawnEnabled(const bool isEnabled)
 {
-    isEndlessRespawnEnabled = isEnabled;
+    mIsEndlessRespawnEnabled = isEnabled;
 }
 
 bool ParticleSystemBaseComponent::IsEndlessRespawnEnabled() const
 {
-    return isEndlessRespawnEnabled;
+    return mIsEndlessRespawnEnabled;
 }
 } // namespace EngineCore

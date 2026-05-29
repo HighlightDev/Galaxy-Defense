@@ -38,8 +38,7 @@ layout(std430, binding = 6) buffer AliveCounterBuffer
 };
 
 uniform float deltaTimeSec;
-uniform bool isEndlessRespawnEnabled;
-uniform vec3 emitterPosition;
+uniform bool mIsEndlessRespawnEnabled;
 
 float random(in vec2 seed)
 {
@@ -49,25 +48,26 @@ float random(in vec2 seed)
 void main()
 {
     uint index = gl_GlobalInvocationID.x;
-    float particleLifetime = ParticleLifetimes[index];
-    vec4 currentParticlePositionAndLifeDuration = ParticlePositions[index];
-    float currentLifeDuration = currentParticlePositionAndLifeDuration.w;
-    bool particleAlive = currentLifeDuration < particleLifetime;
+    float maxLifetime = ParticleLifetimes[index];
+    vec4 currentPositionAndAge = ParticlePositions[index];
+    float currentAge = currentPositionAndAge.w;
+    bool particleAlive = currentAge < maxLifetime;
 
-    float particleLifeFactor = currentLifeDuration / particleLifetime; // [0, 1]
+    float particleLifeFactor = currentAge / maxLifetime; // [0, 1]
 
     vec3 initialVelocity, initialColor, position;
     vec2 initialRotationAndSize;
-    float initialLifeTime;
+    float newAge;
 
-    if (!particleAlive && isEndlessRespawnEnabled) {
+    if (!particleAlive && mIsEndlessRespawnEnabled) {
         atomicAdd(AliveCounter, 1);
         vec3 invokeId = vec3(gl_GlobalInvocationID);
         initialVelocity = resetVelocity(deltaTimeSec, invokeId);
         initialColor = resetColor(deltaTimeSec, invokeId);
         initialRotationAndSize = resetRotationAndSize(deltaTimeSec, invokeId);
-        initialLifeTime = resetLifeTime(deltaTimeSec, invokeId);
-        position = emitterPosition;
+        newAge = resetLifeTime(deltaTimeSec, invokeId);
+        // Respawn at the component's local origin; worldMatrix is applied later in the vertex shader.
+        position = vec3(0.0);
         // Update initial velocity so next-frame updateVelocity gets the correct direction
         ParticleInitialVelocities[index] = vec4(initialVelocity, 0.0);
     } else if (particleAlive) {
@@ -76,8 +76,13 @@ void main()
             ParticleInitialVelocities[index].xyz, ParticleVelocities[index].xyz, particleLifeFactor, deltaTimeSec);
         initialColor = updateColor(Colors[index].rgb, particleLifeFactor, deltaTimeSec);
         initialRotationAndSize = updateRotationAndSize(RotationAndSizes[index], particleLifeFactor, deltaTimeSec);
-        initialLifeTime = updateLifeTime(currentLifeDuration, deltaTimeSec);
-        position = currentParticlePositionAndLifeDuration.xyz;
+        newAge = updateLifeTime(currentAge, deltaTimeSec);
+        position = currentPositionAndAge.xyz;
+    } else {
+        // Particle is dead and respawn is disabled — leave buffers unchanged.
+        // Without this return, local variables above are undefined per GLSL spec.
+        // On Windows drivers they contain garbage (e.g. +Inf), causing full-screen artifacts.
+        return;
     }
 
     Colors[index] = vec4(initialColor, 1.0);
@@ -85,5 +90,5 @@ void main()
     ParticleVelocities[index] = vec4(initialVelocity, 0.0);
 
     position += initialVelocity * deltaTimeSec;
-    ParticlePositions[index] = vec4(position, initialLifeTime);
+    ParticlePositions[index] = vec4(position, newAge);
 }

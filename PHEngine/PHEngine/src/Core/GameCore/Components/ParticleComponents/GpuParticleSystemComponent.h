@@ -13,11 +13,11 @@ class GpuParticleSystemComponent : public ParticleSystemBaseComponent {
 
     GpuParticleSystemRenderData mRenderData;
 
-    std::atomic_bool isParticlesDataDirty{false};
+    std::atomic_bool mIsParticlesDataDirty{false};
 
-    std::atomic_bool isParticleModulesProxiesDirty{false};
+    std::atomic_bool mIsParticleModulesProxiesDirty{false};
 
-    std::atomic_bool isEndlessRespawnEnabledDirty{false};
+    std::atomic_bool mIsEndlessRespawnEnabledDirty{false};
 
 public:
     GpuParticleSystemComponent(
@@ -47,6 +47,8 @@ public:
     void SetIsParticleModulesProxiesDirty(const bool isDirty) override;
 
     bool IsParticleModulesProxiesDirty() const;
+
+    void SetIsEndlessRespawnEnabled(const bool value) override;
 
     void SetIsEndlessRespawnEnabledDirty(const bool isDirty);
 

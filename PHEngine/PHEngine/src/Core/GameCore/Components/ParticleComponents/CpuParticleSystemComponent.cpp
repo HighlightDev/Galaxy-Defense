@@ -32,7 +32,8 @@ CpuParticleSystemComponent::CpuParticleSystemComponent(
         meshComponentData->m_translation,
         glm::vec3(),
         meshComponentData->m_scale,
-        meshComponentData->m_particlesCount)
+        meshComponentData->m_particlesCount,
+        meshComponentData->m_isEndlessRespawn)
     , mParticlesRawDataHandler(meshComponentData->m_particlesCount)
     , mRenderData(renderData)
 {
@@ -44,11 +45,11 @@ CpuParticleSystemComponent::~CpuParticleSystemComponent()
 
 void CpuParticleSystemComponent::Tick(const float deltaTimeSec)
 {
-    if (!bIsEmitting)
+    if (!mIsEmitting)
         return;
 
     for (auto& particle : mParticlesPool) {
-        if (!particle.isActive && !isEndlessRespawnEnabled)
+        if (!particle.isActive && !mIsEndlessRespawnEnabled)
             continue;
 
         for (const auto& module : mParticleModules) {
@@ -62,7 +63,7 @@ void CpuParticleSystemComponent::Tick(const float deltaTimeSec)
     size_t particleColorByteOffset = 0;
 
     for (auto particleIt = mParticlesPool.begin(); particleIt != mParticlesPool.end(); ++particleIt) {
-        if (not particleIt->isActive && isEndlessRespawnEnabled) {
+        if (not particleIt->isActive && mIsEndlessRespawnEnabled) {
             mParticleEmitter->EmitSingleParticle(*particleIt);
 
             for (const auto& particleModule : mParticleModules) {
@@ -74,7 +75,7 @@ void CpuParticleSystemComponent::Tick(const float deltaTimeSec)
             for (const auto& particleModule : mParticleModules) {
                 particleModule->Update(*particleIt, deltaTimeSec);
             }
-        } else if (not particleIt->isActive && !isEndlessRespawnEnabled) {
+        } else if (not particleIt->isActive && !mIsEndlessRespawnEnabled) {
             continue;
         }
 

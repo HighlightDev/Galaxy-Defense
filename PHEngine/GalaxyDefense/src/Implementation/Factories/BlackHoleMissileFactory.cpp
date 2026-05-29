@@ -175,7 +175,8 @@ std::shared_ptr<MissileActor> BlackHoleMissileFactory::CreateMissile(
             particles_mat,
             glm::vec3(0),
             glm::vec3(1.0f),
-            100);
+            100,
+            false);
         const auto& particleSystemComponentCreator
             = std::make_shared<ParticleSystemComponentCreator<CpuParticleSystemComponent>>();
         const auto& c_particleSystemComponent = std::static_pointer_cast<CpuParticleSystemComponent>(

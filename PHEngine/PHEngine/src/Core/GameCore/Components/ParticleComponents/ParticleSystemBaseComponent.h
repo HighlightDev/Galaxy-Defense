@@ -27,11 +27,11 @@ protected:
 
     std::shared_ptr<IEmitter> mParticleEmitter;
 
-    bool isParticleModulesProxiesDirty{false};
+    bool mIsParticleModulesProxiesDirty{false};
 
-    bool isEndlessRespawnEnabled{false};
+    bool mIsEndlessRespawnEnabled;
 
-    bool bIsEmitting{false};
+    bool mIsEmitting{false};
 
 public:
     ParticleSystemBaseComponent(
@@ -39,7 +39,8 @@ public:
         const glm::vec3& translation,
         const glm::vec3& rotation,
         const glm::vec3& scale,
-        const size_t particlesCount);
+        const size_t particlesCount,
+        const bool isEndlessRespawn);
 
     virtual ~ParticleSystemBaseComponent() = default;
 
@@ -63,13 +64,13 @@ public:
 
     bool IsAnyParticleAlive() const;
 
-    void SetIsEndlessRespawnEnabled(const bool isEnabled);
+    virtual void SetIsEndlessRespawnEnabled(const bool isEnabled);
 
     bool IsEndlessRespawnEnabled() const;
 
     virtual void SetIsParticleModulesProxiesDirty(const bool isDirty)
     {
-        isParticleModulesProxiesDirty = isDirty;
+        mIsParticleModulesProxiesDirty = isDirty;
     }
 
 protected:

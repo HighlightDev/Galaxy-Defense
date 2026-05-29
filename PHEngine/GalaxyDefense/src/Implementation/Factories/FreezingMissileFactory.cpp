@@ -89,7 +89,7 @@ std::shared_ptr<MissileActor> FreezingMissileFactory::CreateMissile(
     MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "clipRadius", 0.35f);
 
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
-        "c_freezeParticleSystemComponent_" + shipBulletIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 500);
+        "c_freezeParticleSystemComponent_" + shipBulletIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 500, false);
     d_particle->emitterData = std::make_shared<ParticleEmitterData>();
     d_particle->emitterData->emitterType = "explosion";
     d_particle->emitterData->radius = 3.0f;

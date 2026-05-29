@@ -41,8 +41,15 @@ std::shared_ptr<FreeTypeFontAtlas> FreeTypeFontMeshAllocationPolicy::AllocateMem
             GL_FLOAT,
             2,
             GL_ARRAY_BUFFER);
+        auto* colorVBO = new VertexBufferObject<float, GL_DYNAMIC_DRAW>(
+            maxFontCharactersCount * verticesPerCharacter,
+            "VertexColor",
+            (int32_t)eAttribArrayIndex::VertexColor,
+            GL_FLOAT,
+            3,
+            GL_ARRAY_BUFFER);
 
-        vao.AddVBO(positionsVBO, texCoordsVBO);
+        vao.AddVBO(positionsVBO, texCoordsVBO, colorVBO);
 
         vao.BindBuffersToVao();
     }

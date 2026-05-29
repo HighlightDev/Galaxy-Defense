@@ -91,11 +91,10 @@ std::shared_ptr<LootActor> LootFactory::CreateLoot(
     const auto& shiningMask = Resources::TexturePool::GetInstance()->GetOrAllocateResource("shining_mask.png");
     MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacityMask", shiningMask);
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
-        "c_lootParticles_" + lootIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 50);
+        "c_lootParticles_" + lootIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 50, true);
     const auto& particleCreator = std::make_shared<ParticleSystemComponentCreator<GpuParticleSystemComponent>>();
     const auto& c_particles
         = std::static_pointer_cast<GpuParticleSystemComponent>(scene->CreateComponent_GameThread(particleCreator, d_particle));
-    c_particles->SetIsEndlessRespawnEnabled(true); // Keep emitting particles while loot is active, to make it more eye-catching
 
     auto emitter = std::make_shared<ParticleExplosionEmitter>();
     emitter->SetOwner(c_particles);

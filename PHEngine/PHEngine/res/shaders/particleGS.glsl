@@ -32,6 +32,11 @@ void main()
 {
     vec2 rotation_size = vs_out_rotation_size[0];
 
+    // Guard against garbage size values (uninit buffers on first frame, or dead particles).
+    // +Inf / NaN size produces a full-screen quad on Windows drivers.
+    if (!(rotation_size.y > 0.0))
+        return;
+
     out_color = vs_out_particle_color[0];
 
     mat4 rotationMatrix = rollMatrix(rotation_size.x);

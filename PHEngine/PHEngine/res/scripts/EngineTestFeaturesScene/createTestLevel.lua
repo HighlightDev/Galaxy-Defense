@@ -459,6 +459,7 @@ function CreateTestLevel(host)
         scale = {x = 1.0, y = 1.0, z = 1.0},
         particlesCount = 2000,
         materialProxyId = particlesMat,
+        isEndlessRespawnEnabled = true,
 
         emitter = {type = "explosion", radius = 5.0, thetaSlicesCount = 100},
         lifetime = {type = "simple", lifeTime = 2.0},
@@ -481,6 +482,7 @@ function CreateTestLevel(host)
         scale = {x = 1.0, y = 1.0, z = 1.0},
         particlesCount = 2000,
         materialProxyId = particlesMat,
+        isEndlessRespawnEnabled = true,
 
         emitter = {type = "explosion", radius = 5.0, thetaSlicesCount = 100},
         lifetime = {type = "simple", lifeTime = 2.0},
@@ -503,6 +505,7 @@ function CreateTestLevel(host)
         scale = {x = 1.0, y = 1.0, z = 1.0},
         particlesCount = 2000,
         materialProxyId = particlesMat,
+        isEndlessRespawnEnabled = true,
 
         emitter = {type = "explosion", radius = 5.0, thetaSlicesCount = 100},
         lifetime = {type = "simple", lifeTime = 2.0},
