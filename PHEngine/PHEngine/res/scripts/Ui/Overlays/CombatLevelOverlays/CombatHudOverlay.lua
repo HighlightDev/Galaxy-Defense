@@ -42,7 +42,7 @@ local SelectedTowerPanel = require("Ui/Widgets/SelectedTowerPanel")
 local TowerUpgradesPanel = require("Ui/Widgets/TowerUpgradesPanel")
 local MissileTypes = require("Ui/Common/missileTypes")
 
-local FONT = "Lora-VariableFont_wght"
+local FONT = "JetBrainsMono-VariableFont_wght"
 
 -- Russian display names for the tower context panel title, keyed by Game::eMissileType value.
 local WEAPON_DISPLAY_NAME = {
@@ -374,7 +374,7 @@ function CombatHudOverlay:new(host)
     combatOverlay:addWidget(levelProgressRowLayout)
     combatOverlay.levelProgressRowLayout = levelProgressRowLayout
 
-    RequirementTrackerHint = UiTextBlock:new(host, "Lora-VariableFont_wght", "TestTextBlock")
+    RequirementTrackerHint = UiTextBlock:new(host, "JetBrainsMono-VariableFont_wght", "TestTextBlock")
     combatOverlay:addWidget(RequirementTrackerHint)
 
     fillRequirementTilesPool(host, combatOverlay, 10)

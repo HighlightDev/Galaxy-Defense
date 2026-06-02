@@ -33,7 +33,7 @@ local UiImage = require("Ui/Core/uiImage")
 local Styles = require("Ui/Common/styles")
 local UiTextSizing = require("Ui/Common/uiTextSizing")
 
-local FONT = "Lora-VariableFont_wght"
+local FONT = "JetBrainsMono-VariableFont_wght"
 
 PauseOverlay = {}
 

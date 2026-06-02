@@ -41,7 +41,7 @@ local json = require("Ui/Core/3rdparty/json")
 -- transitions keep working — main menu opens the same overlay name.
 SettingsOverlay = {}
 
-local FONT = "Lora-VariableFont_wght"
+local FONT = "JetBrainsMono-VariableFont_wght"
 local M = Styles.MainMenu
 
 -- ZOrder layers (local to canvas).

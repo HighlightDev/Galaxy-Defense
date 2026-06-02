@@ -97,6 +97,7 @@ function CreateLevel(host)
         ,arrow-left.png
         ,sign-out.png
         ,play.png
+        ,shield.png
 		]])
 
     _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")

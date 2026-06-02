@@ -61,10 +61,10 @@ function LevelFailedOverlay:new(host)
     local backgroundRect = UiRectangle:new(host)
     levelFailedOverlay:addWidget(backgroundRect)
 
-    local descriptionLabel = UiLabel:new(host, "Lora-VariableFont_wght")
+    local descriptionLabel = UiLabel:new(host, "JetBrainsMono-VariableFont_wght")
     levelFailedOverlay:addWidget(descriptionLabel)
 
-    local restartButton = LabelButton:new(host, levelFailedOverlay, "Lora-VariableFont_wght", "RestartButton")
+    local restartButton = LabelButton:new(host, levelFailedOverlay, "JetBrainsMono-VariableFont_wght", "RestartButton")
     levelFailedOverlay:addCompoundWidget(restartButton)
     restartButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendRestartLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
@@ -77,7 +77,7 @@ function LevelFailedOverlay:new(host)
         end
     end)
 
-    local exitToMainMenuButton = LabelButton:new(host, levelFailedOverlay, "Lora-VariableFont_wght",
+    local exitToMainMenuButton = LabelButton:new(host, levelFailedOverlay, "JetBrainsMono-VariableFont_wght",
                                                  "ExitToMainMenuButton")
     levelFailedOverlay:addCompoundWidget(exitToMainMenuButton)
     exitToMainMenuButton:subscribeOnMouseInputClickedCallback(function()

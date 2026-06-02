@@ -41,7 +41,7 @@ UiRectangle::UiRectangle(const std::string& name)
     , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
           mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 #ifdef DEBUG
-    , mDebugLabel(std::make_shared<UiLabel>("Lora-VariableFont_wght", "Rectangle_DebugLabel_" + std::to_string(GetUId())))
+    , mDebugLabel(std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "Rectangle_DebugLabel_" + std::to_string(GetUId())))
 #endif
 {
     ext_assert(!mProperties.count("Color"), "UiRectangle::ctor: Property 'Color' already exists");

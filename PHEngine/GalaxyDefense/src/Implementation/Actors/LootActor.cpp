@@ -132,7 +132,8 @@ void LootActor::CollectLoot()
                 const auto& mainCamera = std::static_pointer_cast<ThirdPersonCamera>(sceneSp->GetMainCamera());
                 auto tileSp = mCachedCrystalTile.lock();
                 if (!tileSp) {
-                    tileSp = sceneSp->TryFindUiItemInAllCanvases("CrystalStockTile");
+                    const std::string crystalTileName = "CombatCrystalIcon";
+                    tileSp = sceneSp->TryFindUiItemInAllCanvases(crystalTileName);
                     mCachedCrystalTile = tileSp;
                 }
                 if (tileSp && mainCamera) {

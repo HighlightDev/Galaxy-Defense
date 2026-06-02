@@ -38,7 +38,7 @@ local UiTextSizing = require("Ui/Common/uiTextSizing")
 -- panel is used, so the skybox is still visible behind every UI element.
 MainMenuOverlay = {}
 
-local FONT = "Lora-VariableFont_wght"
+local FONT = "JetBrainsMono-VariableFont_wght"
 
 local M = Styles.MainMenu
 

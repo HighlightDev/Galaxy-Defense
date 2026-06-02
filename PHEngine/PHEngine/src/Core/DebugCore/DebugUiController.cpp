@@ -154,7 +154,7 @@ void DebugUiController::InitializeWidgets()
         mRectangleBackground->SetZOrder(1);
         mRectangleBackground->SetOpacity(0.0f);
 
-        mRenderFpsLabel = std::make_shared<UiLabel>("Lora-VariableFont_wght", "DebugPanelRenderFPSLabel");
+        mRenderFpsLabel = std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "DebugPanelRenderFPSLabel");
         mRenderFpsLabel->Initialize();
         mRenderFpsLabel->SetParents(mCanvas, mRectangleBackground);
         mRenderFpsLabel->SetTextColor(0xFF0000);
@@ -163,7 +163,7 @@ void DebugUiController::InitializeWidgets()
         mRenderFpsLabel->SetTextVerticalAlignment(eTextVerticalAlignmentType::TOP);
         mRenderFpsLabel->SetZOrder(2);
 
-        mGameFpsLabel = std::make_shared<UiLabel>("Lora-VariableFont_wght", "DebugPanelGameFPSLabel");
+        mGameFpsLabel = std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "DebugPanelGameFPSLabel");
         mGameFpsLabel->Initialize();
         mGameFpsLabel->SetParents(mCanvas, mRectangleBackground);
         mGameFpsLabel->SetTextColor(0xFF0000);
@@ -172,7 +172,7 @@ void DebugUiController::InitializeWidgets()
         mGameFpsLabel->SetTextVerticalAlignment(eTextVerticalAlignmentType::TOP);
         mGameFpsLabel->SetZOrder(2);
 
-        mLuaFpsLabel = std::make_shared<UiLabel>("Lora-VariableFont_wght", "DebugPanelLuaFPSLabel");
+        mLuaFpsLabel = std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "DebugPanelLuaFPSLabel");
         mLuaFpsLabel->Initialize();
         mLuaFpsLabel->SetParents(mCanvas, mRectangleBackground);
         mLuaFpsLabel->SetTextColor(0xFF0000);
@@ -191,7 +191,7 @@ void DebugUiController::InitializeWidgets()
         mImage2Container = std::make_shared<UiItem>("Image2Container");
         mImage2Container->SetParents(mCanvas, mTexturesLayout);
 
-        mImage1Label = std::make_shared<UiLabel>("Lora-VariableFont_wght", "DebugImage1Label");
+        mImage1Label = std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "DebugImage1Label");
         mImage1Label->Initialize();
         mImage1Label->SetParents(mCanvas, mImage1Container);
         mImage1Label->SetTextColor(0xFFFFFF);
@@ -200,7 +200,7 @@ void DebugUiController::InitializeWidgets()
         mImage1Label->SetTextVerticalAlignment(eTextVerticalAlignmentType::TOP);
         mImage1Label->SetZOrder(2);
 
-        mImage2Label = std::make_shared<UiLabel>("Lora-VariableFont_wght", "DebugImage2Label");
+        mImage2Label = std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "DebugImage2Label");
         mImage2Label->Initialize();
         mImage2Label->SetParents(mCanvas, mImage2Container);
         mImage2Label->SetTextColor(0xFFFFFF);

@@ -261,7 +261,7 @@ local BORDER_RADIUS = 6
 local CONTENT_NAME = "TowerUpgradesContent"
 local LINE_THICKNESS = 3.0
 local NODE_GLOW_SIZE = 18.0
-local LABEL_FONT = "Lora-VariableFont_wght"
+local LABEL_FONT = "JetBrainsMono-VariableFont_wght"
 local LABEL_FONT_SIZE = 13.0
 
 local function nodeWidgetName(nodeId) return "TowerUpgradesNode_" .. nodeId end

@@ -40,7 +40,7 @@ LevelEditorOverlay = {
     overlayName = "LevelEditorOverlay",
     editorContainerState = EditorContainerState.Expanded,
     currentEditModeType = EditModeType.IDLE,
-    labelFontName = "Lora-VariableFont_wght"
+    labelFontName = "JetBrainsMono-VariableFont_wght"
 }
 
 local function getRandomColor()
@@ -91,13 +91,13 @@ function LevelEditorOverlay:new(host)
     local newBarrierButton = ImageButton:new(host, overlay, "NewBarrierButton")
     overlay:addCompoundWidget(newBarrierButton)
 
-    local levelWidthLabel = UiLabel:new(host, "Lora-VariableFont_wght", "LevelWidthLabel")
+    local levelWidthLabel = UiLabel:new(host, "JetBrainsMono-VariableFont_wght", "LevelWidthLabel")
     overlay:addWidget(levelWidthLabel)
 
     local levelWidthSlider = UiSlider:new(host, "LevelWidthSlider")
     overlay:addWidget(levelWidthSlider)
 
-    local levelHeightLabel = UiLabel:new(host, "Lora-VariableFont_wght", "LevelHeightLabel")
+    local levelHeightLabel = UiLabel:new(host, "JetBrainsMono-VariableFont_wght", "LevelHeightLabel")
     overlay:addWidget(levelHeightLabel)
 
     local levelLengthSlider = UiSlider:new(host, "LevelHeightSlider")

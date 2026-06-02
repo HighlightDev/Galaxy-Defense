@@ -136,7 +136,8 @@ struct Logger {
         const auto timestampNow = std::chrono::system_clock::now();
 
         static constexpr double invFromNanoToSec = 1e-9;
-        const double timePassedSinceStart = static_cast<double>((timestampNow - logStartTimestamp).count()) * invFromNanoToSec;
+        const double timePassedSinceStart
+            = std::chrono::duration_cast<std::chrono::nanoseconds>(timestampNow - logStartTimestamp).count() * invFromNanoToSec;
 
         std::vector<std::string> result{
             std::to_string(index++), "| Timestamp: " + std::to_string(timePassedSinceStart), "| Thread: " + threadName + "| "};

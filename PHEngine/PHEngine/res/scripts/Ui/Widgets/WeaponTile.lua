@@ -47,7 +47,7 @@ function WeaponTile:new(host, overlay)
     }
 
     newObj.backgroundTile = UiRectangle:new(host)
-    newObj.weaponLabel = UiLabel:new(host, "Lora-VariableFont_wght")
+    newObj.weaponLabel = UiLabel:new(host, "JetBrainsMono-VariableFont_wght")
     newObj.weaponImage = UiImage:new(host)
 
     overlay:addWidget(newObj.backgroundTile)

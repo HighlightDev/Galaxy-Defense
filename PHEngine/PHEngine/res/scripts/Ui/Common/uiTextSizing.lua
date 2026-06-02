@@ -26,7 +26,7 @@ local UiTextSizing = {}
 -- Fonts not listed fall back to DEFAULT_HEIGHT_MULTIPLIER. Add new entries
 -- here rather than overriding callers — that way every overlay sizes the
 -- same font consistently.
-local FONT_HEIGHT_MULTIPLIER = {["Lora-VariableFont_wght"] = 1.70, ["13_5Atom_Sans_Regular"] = 1.55}
+local FONT_HEIGHT_MULTIPLIER = {["JetBrainsMono-VariableFont_wght"] = 1.70, ["13_5Atom_Sans_Regular"] = 1.55}
 
 local DEFAULT_HEIGHT_MULTIPLIER = 1.70
 

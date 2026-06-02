@@ -181,7 +181,6 @@ void ElectroRayChainActor::DropState()
 
 void ElectroRayChainActor::OnTweenStateChanged(const std::string& stateName)
 {
-    LogInfo("ElectroRayChainActor::OnTweenStateChanged: stateName: ", stateName);
     if ("s_OnFadeOutFinished" == stateName) {
         mIsPendingDisable = true;
     }

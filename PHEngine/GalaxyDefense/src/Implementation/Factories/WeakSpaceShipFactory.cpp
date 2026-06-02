@@ -197,7 +197,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         std::make_shared<SpaceObjectUiComponentData>("c_uiComponent_" + enemyShipIndexStr, hudCanvas, rootComponent)));
     a_enemySpaceship->AddComponent(c_uiComponent);
     c_uiComponent->CreateUiElements(
-        "Lora-VariableFont_wght",
+        "JetBrainsMono-VariableFont_wght",
         textFontSize,
         "",
         glm::vec3(1.0f, 0.0f, 0.0f),

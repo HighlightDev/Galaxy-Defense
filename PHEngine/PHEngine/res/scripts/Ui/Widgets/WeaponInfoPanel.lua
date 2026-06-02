@@ -30,7 +30,7 @@ local Styles = require("Ui/Common/styles")
 
 WeaponInfoPanel = {}
 
-local LABEL_FONT = "Lora-VariableFont_wght"
+local LABEL_FONT = "JetBrainsMono-VariableFont_wght"
 
 local DESC_LINE_COUNT = 7
 local STAT_SEGMENTS = 5

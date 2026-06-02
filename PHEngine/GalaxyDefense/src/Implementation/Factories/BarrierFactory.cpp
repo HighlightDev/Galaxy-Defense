@@ -54,7 +54,7 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
 
     a_barrier->SetBarrierPillarSize(scale);
     a_barrier->SetBarrierProtoData(
-        {"Lora-VariableFont_wght",
+        {"JetBrainsMono-VariableFont_wght",
          16,
          "",
          glm::vec3(0.3f, 0.5f, 1.0f),

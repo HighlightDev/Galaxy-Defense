@@ -30,7 +30,7 @@ local LabelButton = require("Ui/Widgets/LabelButton")
 local UiItemBase = require("Ui/Core/uiItemBase")
 local Styles = require("Ui/Common/styles")
 
-local FONT = "Lora-VariableFont_wght"
+local FONT = "JetBrainsMono-VariableFont_wght"
 
 -- Tower context panel (mockup CbTowerContext, right shell): header with the tower name + icon, a stats
 -- block and the ДЕМОНТАЖ / ПРОКАЧАТЬ actions. The numeric stats have no engine data yet → placeholders.
