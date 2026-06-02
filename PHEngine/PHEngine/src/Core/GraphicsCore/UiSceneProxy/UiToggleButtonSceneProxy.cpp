@@ -47,7 +47,7 @@ void UiToggleButtonSceneProxy::Render(
     mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
     mUiRectangleShader->SetWidthHeightPixels(mWidthHeightPixels);
     mUiRectangleShader->SetBorderRadius(0.0f);
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
 
     if (mIsStateOn) {
         // Render foreground
@@ -58,7 +58,7 @@ void UiToggleButtonSceneProxy::Render(
             mNormalizedTranslation + mCenterOffset + toggleOnRectangleCenteredOffset,
             mNormalizedScale * glm::vec2(normalizedToggleOnRectangleSize * mScale));
         mUiRectangleShader->SetColor(mToggleOnColor);
-        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     }
     mUiRectangleShader->StopShader();
 }

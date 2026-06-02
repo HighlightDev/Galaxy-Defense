@@ -87,7 +87,7 @@ void UiUpgradeIconSceneProxy::Render(
         mShader->SetImageTexture(0);
     }
 
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     mShader->StopShader();
 
     if (mGlowVisible && mGlowSizePx > 0.0f) {
@@ -105,7 +105,7 @@ void UiUpgradeIconSceneProxy::Render(
         mGlowShader->SetGlowSizePx(mGlowSizePx);
         mGlowShader->SetOpacity(renderOpacity);
 
-        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
         mGlowShader->StopShader();
     }
 }

@@ -37,17 +37,16 @@ VertexArrayObject* ScreenQuad::GetBuffer() const
 void ScreenQuad::Init()
 {
     /*Screen fill quad*/
-    std::vector<float> vertices
-        = {-1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, -1.0f, -1.0f, 0.0f};
+    std::vector<float> vertices = {-1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f};
 
-    std::vector<float> texCoords = {0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1};
+    std::vector<float> texCoords = {0, 0, 0, 1, 1, 0, 1, 1};
 
     VertexBufferObject<float>* verticesVBO = new VertexBufferObject<float>(
         std::move(vertices),
         "VertexPosition",
         (int32_t)eAttribArrayIndex::VertexPosition,
         GL_FLOAT,
-        3,
+        2,
         GL_ARRAY_BUFFER,
         eDataCarryFlag::INVALIDATE);
 

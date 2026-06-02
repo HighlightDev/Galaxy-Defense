@@ -68,7 +68,7 @@ void UiScrollListSceneProxy::Render(
     mUiRectangleShader->SetIsRoundBottom(false);
 
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
     // Scrollbar pass (background + thumb).
@@ -97,7 +97,7 @@ void UiScrollListSceneProxy::Render(
         mUiRectangleShader->SetWidthHeightPixels(glm::vec2(thicknessPx, viewportHeightPx));
         mUiRectangleShader->SetIsRoundTop(false);
         mUiRectangleShader->SetIsRoundBottom(false);
-        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
 
         // Thumb sizing: proportional to viewport / (viewport + maxScroll), clamped to a minimum.
         const float contentHeightPx = viewportHeightPx + static_cast<float>(mMaxScrollOffset);
@@ -122,7 +122,7 @@ void UiScrollListSceneProxy::Render(
         mUiRectangleShader->SetWidthHeightPixels(glm::vec2(thicknessPx, thumbHeightPx));
         mUiRectangleShader->SetIsRoundTop(true);
         mUiRectangleShader->SetIsRoundBottom(true);
-        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     }
 
     mUiRectangleShader->StopShader();

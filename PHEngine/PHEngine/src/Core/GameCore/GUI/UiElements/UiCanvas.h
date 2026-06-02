@@ -168,6 +168,12 @@ public:
     void OnMousePressed(const glm::ivec2& mouseCursorPosition);
     void OnMouseClicked(const glm::ivec2& mouseCursorPosition);
 
+    // Top-most hit-test: the highest z-order visible child that intercepts mouse input and contains the
+    // cursor. Press/release/click are routed only to it so overlapping widgets (e.g. a modal dialog over
+    // the menu beneath it) no longer all receive the same event. Hover (OnMousePositionChanged) is still
+    // broadcast to every child so each can track its own enter/leave transitions.
+    std::shared_ptr<UiItemBase> FindTopMostInterceptingChild(const glm::ivec2& mouseCursorPosition) const;
+
     std::shared_ptr<::EngineObjectPropertyBase> GetPropertyByName(const std::string& propName) const override;
 
     std::shared_ptr<Animator> GetAnimator() const override;

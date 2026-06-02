@@ -27,9 +27,8 @@ local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
-local CombatOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatOverlay")
+local CombatHudOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatHudOverlay")
 local LevelFailedOverlay = require("Ui/Overlays/CombatLevelOverlays/LevelFailedOverlay")
-local CombatPreparationOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatPreparationOverlay")
 local json = require("Ui/Core/3rdparty/json")
 
 GameModeType = {INIT = 0, COMBAT = 1, SPACE_STATION_PLACEMENT = 2}
@@ -72,16 +71,13 @@ local function createPauseSettingsOverlay(host) return SettingsOverlay:new(host)
 
 local function createLevelFailedOverlay(host) return LevelFailedOverlay:new(host) end
 
-local function createCombatOverlay(host) return CombatOverlay:new(host) end
-
-local function createCombatPreparationOverlay(host) return CombatPreparationOverlay:new(host) end
+local function createCombatOverlay(host) return CombatHudOverlay:new(host) end
 
 local function initialize(host)
     UiOverlays["GameSettingsOverlay"] = createPauseSettingsOverlay(host)
     UiOverlays["PauseMenuOverlay"] = createPauseOverlay(host)
     UiOverlays["LevelFailedOverlay"] = createLevelFailedOverlay(host)
-    UiOverlays["CombatOverlay"] = createCombatOverlay(host)
-    UiOverlays["CombatPreparationOverlay"] = createCombatPreparationOverlay(host)
+    UiOverlays["CombatHudOverlay"] = createCombatOverlay(host)
 end
 
 function System_OnStart(host)
@@ -127,11 +123,17 @@ function System_OnGameEventTriggered(host, eventName, jsonArgs)
         local newGameModeType = tonumber(parsedJson["game_mode_type"])
         if newGameModeType ~= nil then
             if gameModeType ~= newGameModeType then
+                gameModeType = newGameModeType
                 if GameModeType.SPACE_STATION_PLACEMENT == newGameModeType then
-                    UiOverlayManager:openOverlay(host, "CombatPreparationOverlay")
+                    if UiOverlayManager:getCurrentOverlayName(host) ~= "CombatHudOverlay" then
+                        UiOverlayManager:openOverlay(host, "CombatHudOverlay")
+                    end
+                    UiOverlays["CombatHudOverlay"].setCombatState(host, CombatHudOverlay.CombatState.PREPARATION)
                 elseif GameModeType.COMBAT == newGameModeType then
-                    UiOverlayManager:closeCurrentOverlay(host)
-                    UiOverlayManager:openOverlay(host, "CombatOverlay")
+                    if UiOverlayManager:getCurrentOverlayName(host) ~= "CombatHudOverlay" then
+                        UiOverlayManager:openOverlay(host, "CombatHudOverlay")
+                    end
+                    UiOverlays["CombatHudOverlay"].setCombatState(host, CombatHudOverlay.CombatState.COMBAT)
                 end
             end
         end

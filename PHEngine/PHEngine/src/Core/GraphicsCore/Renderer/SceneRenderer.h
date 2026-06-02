@@ -274,6 +274,8 @@ private:
 
     void GroupLightsByShadowMap();
 
+    void DepthPrePass(const std::shared_ptr<CameraSceneProxy>& cameraProxy);
+
     void DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy>& cameraProxy);
 
     void DeferredBasePass_RenderThread(const std::shared_ptr<SceneView>& sceneView);

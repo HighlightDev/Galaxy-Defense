@@ -52,7 +52,7 @@ void FxColorResolver::ExecuteResolveSceneColor(
         ExecutePostFxEnabled(sceneColorTexture, prevPostFxPass);
     }
 
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     mResolveFxColorShader->StopShader();
     renderState.GetDepthState().SetDepthTestWriteMask(true);
     renderState.BindRenderState();
@@ -86,7 +86,7 @@ void FxColorResolver::ExecuteResolveGuiColor(
         ExecutePostFxEnabled(sceneColorTexture, prevPostFxPass);
     }
 
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     mResolveFxColorShader->StopShader();
 
     renderState.GetDepthState().SetDepthTestWriteMask(true);

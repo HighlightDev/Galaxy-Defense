@@ -94,7 +94,7 @@ PrimitiveSorter::SortPrimitivesByShaderAndDistanceToCamera(
                 primitivesGroup.begin(), primitivesGroup.end(), [&cameraProxy](const auto& proxyLeft, const auto& proxyRight) {
                     const float lengthToLeft2 = glm::length2(proxyLeft->GetOriginPosition() - cameraProxy->GetEyeVector());
                     const float lengthToRight2 = glm::length2(proxyRight->GetOriginPosition() - cameraProxy->GetEyeVector());
-                    return lengthToLeft2 < lengthToRight2;
+                    return lengthToLeft2 < lengthToRight2; // sort front to back to apply early depth test
                 });
             sortedVector.insert(sortedVector.end(), primitivesGroup.begin(), primitivesGroup.end());
         } else {

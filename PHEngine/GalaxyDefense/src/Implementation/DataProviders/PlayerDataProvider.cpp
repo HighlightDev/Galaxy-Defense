@@ -11,6 +11,14 @@
 using namespace Event;
 
 namespace Game {
+PlayerDataProvider::PlayerDataProvider()
+{
+#if defined(DEBUG)
+    LogInfo("PlayerDataProvider::Give a lot of crystals from the start for debug purposes");
+    mCrystalsCount = 9999;
+#endif
+}
+
 PlayerDataProvider* PlayerDataProvider::GetInstance()
 {
     static PlayerDataProvider s_dataProvider;

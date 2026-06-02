@@ -81,7 +81,7 @@ void UiRectangleSceneProxy::Render(
     mUiRectangleShader->SetBlurMix(mBlurMix);
     mUiRectangleShader->SetScreenResolution(screenResolution);
 
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     mUiRectangleShader->StopShader();
 }
 

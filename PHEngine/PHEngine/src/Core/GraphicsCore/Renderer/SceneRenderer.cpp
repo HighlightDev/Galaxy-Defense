@@ -251,6 +251,15 @@ void SceneRenderer::OnWindowSizeChanged(const ViewPortInfo& viewPortInfo)
     mPostFxRenderer->ResizeRenderTargets(viewPortInfo);
 }
 
+void SceneRenderer::DepthPrePass(const std::shared_ptr<CameraSceneProxy>& cameraProxy)
+{
+    RenderState renderState;
+    renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LESS).SetDepthTestWriteMask(true);
+    renderState.GetStencilState().SetIsStencilTestEnabled(false);
+    renderState.GetBlendingState().SetIsBlendingEnabled(false);
+    renderState.BindRenderState();
+}
+
 void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
 {
     RenderState renderState;
@@ -623,7 +632,7 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
 #ifndef NO_LIT
     m_deferredLightShader->SetLightsInfo(LightProxiesVector);
 #endif
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     m_deferredLightShader->StopShader();
 
     renderState.GetCullingState().SetIsCullingEnabled(false);

@@ -89,6 +89,14 @@ function CreateLevel(host)
         ,quantum_nexus.png
         ,repair_beam.png
         ,blueprint.png
+        ,graph.png
+        ,castle-turret.png
+        ,map-trifold.png
+        ,info.png
+        ,gear.png
+        ,arrow-left.png
+        ,sign-out.png
+        ,play.png
 		]])
 
     _CreateActor(host, "Actor", "SceneCenterActorDummy", 0, 0, 0, 0, 0, 0, 1, 1, 1, "")

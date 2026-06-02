@@ -44,7 +44,7 @@ void UiImageSceneProxy::Render(
         mUiImageShader->SetOpacity(mOpacity * mOverlayOpacity);
         mUiImageShader->SetRotationRadians(glm::radians<float>(mRotationDegrees));
         mUiImageShader->SetIsFlipped(mIsFlipped);
-        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
         mUiImageShader->StopShader();
     }
 }

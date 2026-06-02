@@ -101,7 +101,7 @@ void BloomPostFxPass::ExecutePostFx(
         sceneColorTexture->BindTexture(0);
         mBloomFxShader->SetSceneColorTexture(0);
         mBloomFxShader->LoadExtractBrightPartsSubroutine();
-        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     }
 
     renderState.GetStencilState().SetIsStencilTestEnabled(false);
@@ -114,14 +114,14 @@ void BloomPostFxPass::ExecutePostFx(
             mBloomFramebuffer->BindColor1Texture(0);
             mBloomFxShader->SetSceneColorTexture(0);
             mBloomFxShader->LoadRunVerticalBlurSubroutine();
-            ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+            ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
 
             mBloomFramebuffer->BindColor1Framebuffer(
                 GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // horizontal blur target
             mBloomFramebuffer->BindColor2Texture(0);
             mBloomFxShader->SetSceneColorTexture(0);
             mBloomFxShader->LoadRunHorizontalBlurSubroutine();
-            ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+            ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
         }
     }
 
@@ -129,7 +129,7 @@ void BloomPostFxPass::ExecutePostFx(
     mBloomFramebuffer->BindColor1Texture(0);
     mBloomFxShader->SetBluredColorTexture(0);
     mBloomFxShader->LoadRunResolveBloomColorSubroutine();
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
 
     mBloomFxShader->StopShader();
     // Inside the pass stencil write mask is set to 0x00. glClear(GL_STENCIL_BUFFER_BIT) obeys this mask - without restoring it

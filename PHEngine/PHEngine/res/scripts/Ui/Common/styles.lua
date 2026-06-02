@@ -15,6 +15,36 @@ Styles = {
         buttonColor = 0x16243a,
         hoveredButtonColor = 0x24375a
     },
+    -- Combat HUD palette, modelled after UiMockup/menu-battle-centered.jsx (Galaxy Defense battle screen).
+    -- Centered cyan / purple sci-fi theme: translucent dark surfaces over the 3D scene, cyan + indigo
+    -- accents, danger red for warnings. Hex values mirror the JSX accent constants so the runtime look
+    -- stays close to the reference.
+    Combat = {
+        -- Surfaces
+        hudBarColor = 0x0a0f18,
+        hudBarOpacity = 0.82,
+        panelColor = 0x0d1524,
+        panelHeaderColor = 0x16243a, -- slightly lighter strip for panel headers
+        panelOpacity = 0.90,
+        panelBorderRadius = 8,
+        chipColor = 0x111a2b,
+        chipHoverColor = 0x1d2a44, -- brightened surface on hover (mockup highlight)
+        chipOpacity = 0.85,
+        chipBorderRadius = 6,
+        dockActiveColor = 0x16304f, -- active (toggled-on) dock button, cyan-tinted surface
+        -- Accents (per the JSX CB_TOWER_COLORS / accent constants)
+        cyan = 0x4a9eff,
+        cyanGlow = 0x90e0ef,
+        indigo = 0x818cf8,
+        lilac = 0xc4b5fd,
+        danger = 0xf43f5e,
+        dangerSoft = 0xfda4af,
+        green = 0x22c55e,
+        -- Text
+        textBright = 0xcdd6f4,
+        textDim = 0x8a99ac,
+        textVeryDim = 0x5a6e86
+    },
     -- Main menu palette, modelled after UiDesign/menu-centered.jsx (Galaxy Defense mockup).
     -- A dark sci-fi look on top of the space skybox: translucent surfaces, indigo highlight
     -- for the primary action, dim slate for secondary text. Hex values below match the JSX

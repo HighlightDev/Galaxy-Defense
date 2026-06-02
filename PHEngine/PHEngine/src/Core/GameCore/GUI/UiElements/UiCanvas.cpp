@@ -37,8 +37,9 @@ UiCanvas::UiCanvas(const ViewPortInfo& canvasScreenProperties, const std::string
     , mIsTransformDirty(true)
     , mInputSystem()
     , mDescendingByZOrderHierarchyChildren()
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
-          1.0f, "Opacity", [this](const float opacity) { UpdateOpacityProperty(); }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(1.0f, "Opacity", [this](const float opacity) {
+        UpdateOpacityProperty();
+    }))
 {
     LogInfo("UiCanvas::ctor: ", mUId);
 
@@ -392,10 +393,12 @@ void UiCanvas::UnregisterUiItem(const size_t uiId, const std::string& uiItemName
 
 void UiCanvas::RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem)
 {
-    UnregisterUiItem(uiItem->GetUId(), uiItem->GetName());
     const auto foundIt = std::find_if(
         mChildren.begin(), mChildren.end(), [&](const auto& childItem) { return uiItem->GetUId() == childItem->GetUId(); });
-    (*foundIt)->OnUnregistered();
+    if (foundIt != mChildren.end()) {
+        (*foundIt)->OnUnregistered();
+    }
+    UnregisterUiItem(uiItem->GetUId(), uiItem->GetName());
     mChildren.erase(
         std::remove_if(
             mChildren.begin(), mChildren.end(), [&](const auto& childUi) { return childUi->GetUId() == uiItem->GetUId(); }),
@@ -614,15 +617,29 @@ void UiCanvas::OnMouseReleased(const glm::ivec2& mouseCursorPosition)
     mMouseButtonWasPressedLastFrame = false;
 }
 
+std::shared_ptr<UiItemBase> UiCanvas::FindTopMostInterceptingChild(const glm::ivec2& mouseCursorPosition) const
+{
+    // mDescendingByZOrderHierarchyChildren is sorted ascending by z-order, so iterate in reverse to test
+    // the visually top-most widget first and return the first hit.
+    for (auto it = mDescendingByZOrderHierarchyChildren.rbegin(); it != mDescendingByZOrderHierarchyChildren.rend();
+         ++it) {
+        if (const auto& childSp = it->lock()) {
+            if (childSp->IsVisible() && childSp->GetIfCanInterceptMouseInputEvents()
+                && childSp->CheckIfInterceptsMouseEvent(mouseCursorPosition)) {
+                return childSp;
+            }
+        }
+    }
+    return nullptr;
+}
+
 void UiCanvas::OnMousePressed(const glm::ivec2& mouseCursorPosition)
 {
     const auto& boundingArea = GetBoundingArea();
     if (EngineMath::TestPointInAABB(boundingArea.GetMin(), boundingArea.GetMax(), mouseCursorPosition)) {
         mMouseButtonWasPressedLastFrame = true;
-        for (const auto& childWp : mDescendingByZOrderHierarchyChildren) {
-            if (const auto& childSp = childWp.lock()) {
-                childSp->OnMousePressed(mouseCursorPosition);
-            }
+        if (const auto& topMostChild = FindTopMostInterceptingChild(mouseCursorPosition)) {
+            topMostChild->OnMousePressed(mouseCursorPosition);
         }
     }
 }
@@ -631,10 +648,8 @@ void UiCanvas::OnMouseClicked(const glm::ivec2& mouseCursorPosition)
 {
     const auto& boundingArea = GetBoundingArea();
     if (EngineMath::TestPointInAABB(boundingArea.GetMin(), boundingArea.GetMax(), mouseCursorPosition)) {
-        for (const auto& childWp : mDescendingByZOrderHierarchyChildren) {
-            if (const auto& childSp = childWp.lock()) {
-                childSp->OnMouseClicked(mouseCursorPosition);
-            }
+        if (const auto& topMostChild = FindTopMostInterceptingChild(mouseCursorPosition)) {
+            topMostChild->OnMouseClicked(mouseCursorPosition);
         }
     }
 }

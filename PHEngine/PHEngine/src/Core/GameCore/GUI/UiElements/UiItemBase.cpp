@@ -742,10 +742,10 @@ void UiItemBase::AddUiItem(const std::shared_ptr<UiItemBase>& uiItem)
 void UiItemBase::RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem)
 {
     UnregisterUiItem(uiItem->GetUId(), uiItem->GetName());
+    uiItem->OnUnregistered();
     const auto it = std::remove_if(
         mChildren.begin(), mChildren.end(), [&](const auto& childUi) { return childUi->GetUId() == uiItem->GetUId(); });
     mChildren.erase(it);
-    uiItem->OnUnregistered();
 
     if (const auto& canvasSp = mParentCanvas.lock()) {
         canvasSp->CollectChildrenWithDescendingZOrder();

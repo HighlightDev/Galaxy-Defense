@@ -19,7 +19,7 @@ class PlayerDataProvider {
     size_t mCrystalsCount{0};
 
 private:
-    PlayerDataProvider() = default;
+    explicit PlayerDataProvider();
 
 public:
     static PlayerDataProvider* GetInstance();

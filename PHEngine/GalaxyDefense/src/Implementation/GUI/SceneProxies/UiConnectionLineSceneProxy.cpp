@@ -58,7 +58,7 @@ void UiConnectionLineSceneProxy::Render(
     mShader->SetDashLengthPx(mDashLengthPx);
     mShader->SetGapLengthPx(mGapLengthPx);
     mShader->SetOpacity(mOpacity * mOverlayOpacity);
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     mShader->StopShader();
 }
 

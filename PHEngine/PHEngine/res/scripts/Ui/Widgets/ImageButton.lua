@@ -101,8 +101,9 @@ function ImageButton:onCompoundWidgetInitialize()
     self.pressButtonStateContainer:setHeight(self.buttonHeight);
     self.pressButtonStateContainer:setWidth(self.buttonWidth);
     self.pressButtonStateContainer:setBorderRadius(10)
-    self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
-    self.pressButtonStateContainer:setIfCanInterceptMouseInputEvent(true)
+    -- The press overlay is purely visual: it must NOT intercept mouse input, otherwise (being on top of
+    -- the background tile) it would absorb the click under the top-most hit-test and the button's action
+    -- callback on the background tile would never fire. Its animation is driven from the background click.
     self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick", {
         {
             animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
@@ -137,7 +138,7 @@ function ImageButton:onCompoundWidgetInitialize()
             propertyDstValue = 0.0
         }
     });
-    self.pressButtonStateContainer:subscribeOnMouseInputClickedCallback(function()
+    self.backgroundTile:subscribeOnMouseInputClickedCallback(function()
         self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonClick")
     end)
 

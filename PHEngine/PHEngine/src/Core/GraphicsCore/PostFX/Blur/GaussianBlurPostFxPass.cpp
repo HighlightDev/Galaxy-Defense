@@ -71,14 +71,14 @@ void GaussianBlurPostFxPass::ExecutePostFx(
         sceneColorTexture->BindTexture(sceneColorTextureSlot);
         mBlurShader->SetSceneColorTexture(sceneColorTextureSlot);
         mBlurShader->LoadRunVerticalBlurSubroutine();
-        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
 
         constexpr int32_t verticalPassTextureSlot = 0;
         mBlurFramebuffer->BindColor2Framebuffer(GL_COLOR_BUFFER_BIT);
         mBlurFramebuffer->BindColor1Texture(verticalPassTextureSlot);
         mBlurShader->SetSceneColorTexture(verticalPassTextureSlot);
         mBlurShader->LoadRunHorizontalBlurSubroutine();
-        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     }
 }
 

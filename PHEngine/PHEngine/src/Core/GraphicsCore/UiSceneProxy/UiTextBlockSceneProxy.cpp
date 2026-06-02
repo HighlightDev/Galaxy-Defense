@@ -99,6 +99,9 @@ void UiTextBlockSceneProxy::Render(
     const std::shared_ptr<Graphics::IPostFxRenderTargetProvider>& postFxRenderTargetProvider,
     const std::shared_ptr<Graphics::CameraSceneProxy>& cameraSceneProxy)
 {
+    if (mTextFieldProxy->GetVerticesCount() <= 0) {
+        return;
+    }
     const glm::vec2 boundariesPaddingFactor = glm::vec2(1.0f) - (glm::vec2(mBorderThickness) / glm::vec2(mWidthHeightPixels));
 
     // Render borders
@@ -321,7 +324,7 @@ void UiTextBlockSceneProxy::RenderRectangle(
     mUiRectangleShader->SetBorderRadius(borderRadius);
     mUiRectangleShader->SetWidthHeightPixels(
         glm::vec2(static_cast<float>(mWidthHeightPixels.x), static_cast<float>(mWidthHeightPixels.y)));
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     mUiRectangleShader->StopShader();
 }
 

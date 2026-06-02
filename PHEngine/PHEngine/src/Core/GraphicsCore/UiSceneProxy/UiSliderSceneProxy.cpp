@@ -62,7 +62,7 @@ void UiSliderSceneProxy::Render(
         : glm::vec2(static_cast<float>(mSliderThicknessPixels), static_cast<float>(mWidthHeightPixels.y));
     mUiSliderShader->SetWidthHeightPixels(widthHeightPixels);
     mUiSliderShader->SetColor(mSliderColor);
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
 
     // Render slider blob
     mUiSliderShader->LoadRenderSliderBlobSubroutine();
@@ -72,7 +72,7 @@ void UiSliderSceneProxy::Render(
         mBlobThicknessScale * mScale * mAspectRatioScale);
     mUiSliderShader->SetColor(mBlobColor);
     mUiSliderShader->SetWidthHeightPixels(glm::vec2(mBlobThicknessPixels));
-    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+    ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
     mUiSliderShader->StopShader();
 }
 
