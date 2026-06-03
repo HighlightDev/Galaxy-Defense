@@ -45,9 +45,9 @@ local function buildItems(Combat)
          icon = "play.png"},
         {id = "settings", label = "НАСТРОЙКИ", sub = "Графика · звук · управление", accent = Combat.textBright,
          icon = "gear.png"},
-        {id = "tomenu", label = "ВЫЙТИ В ГЛАВНОЕ МЕНЮ", sub = "Прогресс волны будет сохранён", accent = Combat.danger,
-         icon = "arrow-left.png"},
-        {id = "quit", label = "ВЫЙТИ ИЗ ИГРЫ", sub = "Завершить сеанс", accent = Combat.danger,
+        {id = "tomenu", label = "ВЫЙТИ В ГЛАВНОЕ МЕНЮ", sub = "Прогресс волны будет сохранён",
+         accent = Combat.dangerSoft, icon = "arrow-left.png"},
+        {id = "quit", label = "ВЫЙТИ ИЗ ИГРЫ", sub = "Завершить сеанс", accent = Combat.dangerSoft,
          icon = "sign-out.png"}
     }
 end
@@ -75,8 +75,16 @@ function PauseOverlay:new(host)
     local card = UiRectangle:new(host, "PauseCard")
     pauseMenuOverlay:addWidget(card)
 
+    local eyebrowLabel = UiLabel:new(host, FONT, "PauseEyebrow")
+    pauseMenuOverlay:addWidget(eyebrowLabel)
     local titleLabel = UiLabel:new(host, FONT, "PauseTitle")
     pauseMenuOverlay:addWidget(titleLabel)
+    -- Cyan-glow corner L-braces around the card (.pause-card__brace), 2 rects per corner.
+    local braces = {}
+    for i = 1, 8 do
+        braces[i] = UiRectangle:new(host, "PauseBrace" .. tostring(i))
+        pauseMenuOverlay:addWidget(braces[i])
+    end
     local waveChip = UiRectangle:new(host, "PauseWaveChip")
     pauseMenuOverlay:addWidget(waveChip)
     local waveChipLabel = UiLabel:new(host, FONT, "PauseWaveChipLabel")
@@ -222,9 +230,9 @@ function PauseOverlay:new(host)
         scrim:setOpacity(0.6)
         scrim:setZOrder(0)
 
-        -- centered pause card
-        local cardWidth = 460
-        local cardHeight = 540
+        -- centered pause card (560px wide per .pause-card)
+        local cardWidth = 560
+        local cardHeight = 560
         card:setParent(host, canvasName, canvasName)
         card:setAnchor(A.HORIZONTAL_CENTER, A.HORIZONTAL_CENTER, canvasName, 0)
         card:setAnchor(A.VERTICAL_CENTER, A.VERTICAL_CENTER, canvasName, 0)
@@ -236,22 +244,61 @@ function PauseOverlay:new(host)
         card:setZOrder(1)
         local cardName = card.widgetName
 
+        -- corner L-braces (2 rects each: horizontal + vertical arm)
+        local braceArm = 26
+        local braceThick = 2
+        local braceInset = 0
+        local braceCorners = {
+            {h = A.LEFT, v = A.TOP}, {h = A.RIGHT, v = A.TOP}, {h = A.LEFT, v = A.BOTTOM}, {h = A.RIGHT, v = A.BOTTOM}
+        }
+        for c = 1, 4 do
+            local corner = braceCorners[c]
+            local hArm = braces[(c - 1) * 2 + 1]
+            local vArm = braces[(c - 1) * 2 + 2]
+            for _, arm in ipairs({hArm, vArm}) do
+                arm:setParent(host, canvasName, cardName)
+                arm:setColorHexValue(Combat.cyanGlow)
+                arm:setAnchor(corner.h, corner.h, cardName, braceInset)
+                arm:setAnchor(corner.v, corner.v, cardName, braceInset)
+                arm:setZOrder(3)
+            end
+            hArm:setWidth(braceArm)
+            hArm:setHeight(braceThick)
+            vArm:setWidth(braceThick)
+            vArm:setHeight(braceArm)
+        end
+
+        eyebrowLabel:setParent(host, canvasName, cardName)
+        eyebrowLabel:setAnchor(A.HORIZONTAL_CENTER, A.HORIZONTAL_CENTER, cardName, 0)
+        eyebrowLabel:setAnchor(A.TOP, A.TOP, cardName, 28)
+        eyebrowLabel:setWidth(cardWidth)
+        eyebrowLabel:setHeight(lh(10))
+        eyebrowLabel:setFontSize(10)
+        eyebrowLabel:setTextColorHexValue(Combat.cyan)
+        eyebrowLabel:setOpacity(0.6)
+        eyebrowLabel:setTextHorizontalAlignment(HALIGN.CENTER)
+        eyebrowLabel:setTextVerticalAlignment(VALIGN.CENTER)
+        eyebrowLabel:setText("— СИСТЕМА ПРИОСТАНОВЛЕНА —")
+        eyebrowLabel:setZOrder(2)
+
         titleLabel:setParent(host, canvasName, cardName)
         titleLabel:setAnchor(A.HORIZONTAL_CENTER, A.HORIZONTAL_CENTER, cardName, 0)
-        titleLabel:setAnchor(A.TOP, A.TOP, cardName, 32)
+        titleLabel:setAnchor(A.TOP, A.TOP, cardName, 48)
         titleLabel:setWidth(cardWidth)
-        titleLabel:setHeight(lh(48))
-        titleLabel:setFontSize(48)
-        titleLabel:setTextColorHexValue(Combat.textBright)
+        titleLabel:setHeight(lh(56))
+        titleLabel:setFontSize(56)
+        titleLabel:setTextColorHexValue(Combat.cyanGlow)
         titleLabel:setTextHorizontalAlignment(HALIGN.CENTER)
         titleLabel:setTextVerticalAlignment(VALIGN.CENTER)
         titleLabel:setText("ПАУЗА")
         titleLabel:setZOrder(2)
+        -- .pause-title gradient (135deg cyan-glow -> blue -> indigo); vertical 2-stop approximation.
+        titleLabel:setTextGradientHexValues(UiLabel.TextGradientColorType.VERTICAL, Combat.cyanGlow, Combat.indigo)
 
         -- TODO: real wave number / phase once exposed to Lua
         waveChip:setParent(host, canvasName, cardName)
         waveChip:setAnchor(A.HORIZONTAL_CENTER, A.HORIZONTAL_CENTER, cardName, 0)
-        waveChip:setAnchor(A.TOP, A.TOP, cardName, 128)
+        waveChip:setAnchor(A.TOP, A.TOP, cardName, 152)
         waveChip:setWidth(300)
         waveChip:setHeight(lh(11) + 8)
         waveChip:setColorHexValue(Combat.chipColor)
@@ -272,7 +319,7 @@ function PauseOverlay:new(host)
         local itemWidth = cardWidth - 48
         local itemHeight = 64
         local itemSpacing = 12
-        local firstItemTop = 170
+        local firstItemTop = 196
         for i, item in ipairs(items) do
             item.bg:setParent(host, canvasName, cardName)
             item.bg:setAnchor(A.HORIZONTAL_CENTER, A.HORIZONTAL_CENTER, cardName, 0)

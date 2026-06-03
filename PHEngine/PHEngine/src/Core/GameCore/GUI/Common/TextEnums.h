@@ -15,4 +15,6 @@ enum eFontFlags {
     Indented = 1 << 8,
     HorizontalLayout = 1 << 9
 };
+
+enum class eTextGradientColorType { NONE, VERTICAL, HORIZONTAL };
 } // namespace EngineCore

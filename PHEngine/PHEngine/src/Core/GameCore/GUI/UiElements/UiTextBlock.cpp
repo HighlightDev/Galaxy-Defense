@@ -163,6 +163,41 @@ void UiTextBlock::SetTextVerticalAlignment(const eTextVerticalAlignmentType text
     }
 }
 
+eTextGradientColorType UiTextBlock::GetTextGradientColorType() const
+{
+    return mTextGradientColorType;
+}
+
+void UiTextBlock::SetTextGradientColorType(const eTextGradientColorType textGradientColorType)
+{
+    if (mTextGradientColorType != textGradientColorType) {
+        mTextGradientColorType = textGradientColorType;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+glm::vec3 UiTextBlock::GetGradientTextColorStart() const
+{
+    return mGradientTextColorStart;
+}
+
+glm::vec3 UiTextBlock::GetGradientTextColorEnd() const
+{
+    return mGradientTextColorEnd;
+}
+
+void UiTextBlock::SetGradientTextColors(const glm::vec3& gradientTextColorStart, const glm::vec3& gradientTextColorEnd)
+{
+    if (!EngineMath::CheckSimilarityVec3(mGradientTextColorStart, gradientTextColorStart)
+        || !EngineMath::CheckSimilarityVec3(mGradientTextColorEnd, gradientTextColorEnd)) {
+        mGradientTextColorStart = gradientTextColorStart;
+        mGradientTextColorEnd = gradientTextColorEnd;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
 eTextVerticalAlignmentType UiTextBlock::GetTextVerticalAlignment() const
 {
     return mTextVerticalAlignment;
@@ -500,6 +535,28 @@ void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             bShouldUpdatePropertiesOnRT = true;
         }
     }
+    if (jsonObj.contains("text_gradient_type")) {
+        const auto text_gradient_type
+            = static_cast<eTextGradientColorType>(jsonObj["text_gradient_type"].get<uint8_t>());
+        if (text_gradient_type != mTextGradientColorType) {
+            mTextGradientColorType = text_gradient_type;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("gradient_color_start")) {
+        const glm::vec3 gradient_color_start = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["gradient_color_start"]);
+        if (!EngineMath::CheckSimilarityVec3(gradient_color_start, mGradientTextColorStart)) {
+            mGradientTextColorStart = gradient_color_start;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("gradient_color_end")) {
+        const glm::vec3 gradient_color_end = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["gradient_color_end"]);
+        if (!EngineMath::CheckSimilarityVec3(gradient_color_end, mGradientTextColorEnd)) {
+            mGradientTextColorEnd = gradient_color_end;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
 
     if (bShouldUpdatePropertiesOnRT) {
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
@@ -534,7 +591,10 @@ void UiTextBlock::SyncDataOnRenderThread()
                          borderColor = mBorderColor,
                          borderRadius = mBorderRadius,
                          borderOpacity = mBorderOpacity,
-                         borderThickness = mBorderThickness](
+                         borderThickness = mBorderThickness,
+                         textGradientColorType = mTextGradientColorType,
+                         gradientTextColorStart = mGradientTextColorStart,
+                         gradientTextColorEnd = mGradientTextColorEnd](
                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                             std::weak_ptr<EngineCore::Scene> sceneWp,
                             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -555,6 +615,8 @@ void UiTextBlock::SyncDataOnRenderThread()
                                 textBlockSceneProxy->SetBorderRadius(borderRadius);
                                 textBlockSceneProxy->SetBorderOpacity(borderOpacity);
                                 textBlockSceneProxy->SetBorderThickness(borderThickness);
+                                textBlockSceneProxy->SetGradientColor(
+                                    textGradientColorType, gradientTextColorStart, gradientTextColorEnd);
                             }
                         });
                 }

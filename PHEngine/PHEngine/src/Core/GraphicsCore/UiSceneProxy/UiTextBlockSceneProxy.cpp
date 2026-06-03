@@ -34,6 +34,9 @@ UiTextBlockSceneProxy::UiTextBlockSceneProxy(const UiTextBlock* uiTextBlock)
     , mTextHorizontalAlignment(uiTextBlock->GetTextHorizontalAlignment())
     , mTextVerticalAlignment(uiTextBlock->GetTextVerticalAlignment())
     , mTextColor(uiTextBlock->GetTextColor())
+    , mTextGradientColorType(uiTextBlock->GetTextGradientColorType())
+    , mGradientTextColorStart(uiTextBlock->GetGradientTextColorStart())
+    , mGradientTextColorEnd(uiTextBlock->GetGradientTextColorEnd())
     , mRectangleColor(uiTextBlock->GetRectangleColor())
     , mRectangleOpacity(uiTextBlock->GetRectangleOpacity())
     , mRectangleRadius(uiTextBlock->GetRectangleRadius())
@@ -192,7 +195,32 @@ void UiTextBlockSceneProxy::SetTextVerticalAlignment(const eTextVerticalAlignmen
 
 void UiTextBlockSceneProxy::SetTextColor(const glm::vec3& textColor)
 {
-    mTextColor = textColor;
+    if (not EngineMath::CheckSimilarityVec3(mTextColor, textColor)) {
+        mTextColor = textColor;
+        if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
+            if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
+                fontHandlerSp->TextColorChanged(mTextFieldProxy->GetTextFieldId(), textColor);
+            }
+        }
+    }
+}
+
+void UiTextBlockSceneProxy::SetGradientColor(
+    const eTextGradientColorType textGradientColorType, const glm::vec3& gradientColorStart, const glm::vec3& gradientColorEnd)
+{
+    if (mTextGradientColorType != textGradientColorType
+        || not EngineMath::CheckSimilarityVec3(mGradientTextColorStart, gradientColorStart)
+        || not EngineMath::CheckSimilarityVec3(mGradientTextColorEnd, gradientColorEnd)) {
+        mTextGradientColorType = textGradientColorType;
+        mGradientTextColorStart = gradientColorStart;
+        mGradientTextColorEnd = gradientColorEnd;
+        if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
+            if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
+                fontHandlerSp->TextColorGradientChanged(
+                    mTextFieldProxy->GetTextFieldId(), textGradientColorType, gradientColorStart, gradientColorEnd);
+            }
+        }
+    }
 }
 
 void UiTextBlockSceneProxy::SetRectangleColor(const glm::vec3& rectangleColor)
@@ -298,13 +326,13 @@ void UiTextBlockSceneProxy::RenderText()
             const auto textNormSize = mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized();
             const auto textAlignmentOffset = CalculateTextAlignmentOffset(normalizedWidthHeight, textNormSize);
 
-            mUiLabelShader->SetPosition(glm::vec2(
-                mNormalizedTranslation.x + mCenterOffset.x + textAlignmentOffset.x,
-                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textNormSize.y + textAlignmentOffset.y)));
+            mUiLabelShader->SetPosition(
+                glm::vec2(
+                    mNormalizedTranslation.x + mCenterOffset.x + textAlignmentOffset.x,
+                    1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textNormSize.y + textAlignmentOffset.y)));
             mFontTexture->BindTexture(0);
             mUiLabelShader->SetFontAtlasSlot(0);
             mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);
-            mUiLabelShader->SetColor(mTextColor);
             renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(
                 mTextFieldProxy->GetVertexStart(), mTextFieldProxy->GetVerticesCount(), GL_TRIANGLES);
             mUiLabelShader->StopShader();

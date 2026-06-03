@@ -31,6 +31,9 @@ UiLabel.TextHorizontalAlignmentType = {LEFT = 0, CENTER = 1, RIGHT = 2}
 
 UiLabel.TextVerticalAlignmentType = {TOP = 0, CENTER = 1, BOTTOM = 2}
 
+-- Matches the C++ eTextGradientColorType enum order (NONE, VERTICAL, HORIZONTAL).
+UiLabel.TextGradientColorType = {NONE = 0, VERTICAL = 1, HORIZONTAL = 2}
+
 function UiLabel:new(host, fontName, name)
     assert(host ~= nil and fontName ~= nil and type(fontName) == "string" and fontName ~= "", debug.traceback())
 
@@ -51,7 +54,10 @@ function UiLabel:new(host, fontName, name)
         text_color = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
         font_size = {value = 5.0, dirty = false},
         text_horizontal_alignment = {value = UiLabel.TextHorizontalAlignmentType.LEFT, dirty = false},
-        text_vertical_alignment = {value = UiLabel.TextVerticalAlignmentType.TOP, dirty = false}
+        text_vertical_alignment = {value = UiLabel.TextVerticalAlignmentType.TOP, dirty = false},
+        text_gradient_type = {value = UiLabel.TextGradientColorType.NONE, dirty = false},
+        gradient_color_start = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
+        gradient_color_end = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false}
     }
 
     local uiLabelObj = UiLabel.uiItemBaseClass.new(self)
@@ -180,6 +186,50 @@ function UiLabel:setTextVerticalAlignment(textVerticalAlignment)
         self.labelProperties.text_vertical_alignment.value = textVerticalAlignment
         self.labelProperties.text_vertical_alignment.dirty = true
     end
+end
+
+-- Gradient text. NONE renders the flat text_color; VERTICAL / HORIZONTAL interpolate per glyph from
+-- the start colour to the end colour. Colours are normalized rgb in [0, 1].
+function UiLabel:setTextGradientColorType(gradientType)
+    assert(gradientType ~= nil and type(gradientType) == "number" and gradientType >=
+               UiLabel.TextGradientColorType.NONE and gradientType <= UiLabel.TextGradientColorType.HORIZONTAL,
+           debug.traceback())
+    if self.labelProperties.text_gradient_type.value ~= gradientType then
+        self.labelProperties.text_gradient_type.value = gradientType
+        self.labelProperties.text_gradient_type.dirty = true
+    end
+end
+
+function UiLabel:setGradientColors(startR, startG, startB, endR, endG, endB)
+    assert(startR ~= nil and type(startR) == "number" and startG ~= nil and type(startG) == "number" and startB ~= nil and
+               type(startB) == "number" and endR ~= nil and type(endR) == "number" and endG ~= nil and
+               type(endG) == "number" and endB ~= nil and type(endB) == "number", debug.traceback())
+    self.labelProperties.gradient_color_start.value.r = startR
+    self.labelProperties.gradient_color_start.value.g = startG
+    self.labelProperties.gradient_color_start.value.b = startB
+    self.labelProperties.gradient_color_start.dirty = true
+    self.labelProperties.gradient_color_end.value.r = endR
+    self.labelProperties.gradient_color_end.value.g = endG
+    self.labelProperties.gradient_color_end.value.b = endB
+    self.labelProperties.gradient_color_end.dirty = true
+end
+
+function UiLabel:setGradientColorHexValues(startHex, endHex)
+    assert(startHex ~= nil and type(startHex) == "number" and endHex ~= nil and type(endHex) == "number",
+           debug.traceback())
+    local INV = 1.0 / 255.0
+    local function unpackHex(hex)
+        return ((hex >> 0x10) & 0xFF) * INV, ((hex >> 0x8) & 0xFF) * INV, (hex & 0xFF) * INV
+    end
+    local sr, sg, sb = unpackHex(startHex)
+    local er, eg, eb = unpackHex(endHex)
+    self:setGradientColors(sr, sg, sb, er, eg, eb)
+end
+
+-- Convenience: set type + both colours (hex) in one call.
+function UiLabel:setTextGradientHexValues(gradientType, startHex, endHex)
+    self:setTextGradientColorType(gradientType)
+    self:setGradientColorHexValues(startHex, endHex)
 end
 
 return UiLabel

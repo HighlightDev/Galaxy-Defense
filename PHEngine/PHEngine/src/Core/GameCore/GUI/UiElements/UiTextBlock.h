@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "UiItemBase.h"
 
 #include <glm/vec2.hpp>
@@ -47,6 +47,12 @@ class UiTextBlock : public UiItemBase {
 
     glm::ivec2 mTextScreenSpaceSize;
 
+    eTextGradientColorType mTextGradientColorType{eTextGradientColorType::NONE};
+
+    glm::vec3 mGradientTextColorStart;
+
+    glm::vec3 mGradientTextColorEnd;
+
 public:
     explicit UiTextBlock(const std::string& fontName, const std::string& name = std::string(""));
 
@@ -75,6 +81,16 @@ public:
     glm::vec3 GetTextColor() const;
 
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
+
+    eTextGradientColorType GetTextGradientColorType() const;
+
+    void SetTextGradientColorType(const eTextGradientColorType textGradientColorType);
+
+    glm::vec3 GetGradientTextColorStart() const;
+
+    glm::vec3 GetGradientTextColorEnd() const;
+
+    void SetGradientTextColors(const glm::vec3& gradientTextColorStart, const glm::vec3& gradientTextColorEnd);
 
     eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
 

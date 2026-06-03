@@ -6,7 +6,7 @@
 #include "Core/GameCore/Components/ComponentData/UiComponentData.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemBaseComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"

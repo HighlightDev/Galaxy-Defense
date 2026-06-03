@@ -56,8 +56,9 @@ void FreeTypeFontBatcher::UnregisterText(const int32_t textFieldId)
     ext_assert(
         freeTypeTextProxy != nullptr,
         "FreeTypeFontBatcher::UnregisterText: text field proxy is null for ID " + std::to_string(textFieldId));
-    mTextFields.erase(std::remove_if(
-        mTextFields.begin(), mTextFields.end(), [=](const auto& mProxy) { return textFieldId == mProxy->GetTextFieldId(); }));
+    mTextFields.erase(std::remove_if(mTextFields.begin(), mTextFields.end(), [=](const auto& mProxy) {
+        return textFieldId == mProxy->GetTextFieldId();
+    }));
 
     FreeAllocatedTextSpace(freeTypeTextProxy);
 }
@@ -78,6 +79,40 @@ void FreeTypeFontBatcher::TextColorChanged(const int32_t textFieldProxyId, const
         freeTypeTextProxy != nullptr,
         "FreeTypeFontBatcher::TextColorChanged: text field proxy is null for ID " + std::to_string(textFieldProxyId));
     freeTypeTextProxy->SetColor(color);
+
+    // A flat colour change only repaints the existing mesh when no gradient is active; gradient text
+    // keeps its per-vertex colours (use TextColorGradientChanged to repaint those).
+    if (freeTypeTextProxy->GetTextGradientColorType() == eTextGradientColorType::NONE
+        && freeTypeTextProxy->GetColorChunkSize() > 0) {
+        std::vector<glm::vec3> colors(freeTypeTextProxy->GetVerticesCount(), freeTypeTextProxy->GetColor());
+        FontBufferSubColorData(
+            freeTypeTextProxy, mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexColor"), colors);
+    }
+}
+
+void FreeTypeFontBatcher::TextColorGradientChanged(
+    const int32_t textFieldProxyId,
+    const eTextGradientColorType gradientColorType,
+    const glm::vec3& gradientColorStart,
+    const glm::vec3& gradientColorEnd)
+{
+    const auto freeTypeTextProxy = GetFreeTypeTextFieldById(textFieldProxyId);
+    ext_assert(
+        freeTypeTextProxy != nullptr,
+        "FreeTypeFontBatcher::TextColorGradientChanged: text field proxy is null for ID " + std::to_string(textFieldProxyId));
+    freeTypeTextProxy->SetTextGradientColorType(gradientColorType);
+    freeTypeTextProxy->SetGradientTextColorStart(gradientColorStart);
+    freeTypeTextProxy->SetGradientTextColorEnd(gradientColorEnd);
+
+    const auto colorVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexColor");
+    ext_assert(colorVBO != nullptr, "Color VBO not found in font atlas buffer");
+
+    if (gradientColorType != eTextGradientColorType::NONE && freeTypeTextProxy->GetColorChunkSize() > 0) {
+        FreeTypeTextMeshCreator textMeshCreator;
+        const auto& colors = textMeshCreator.CreateColorGradientForTextMesh(
+            freeTypeTextProxy, mTextFontAtlas);
+        FontBufferSubColorData(freeTypeTextProxy, colorVBO, colors);
+    }
 }
 
 void FreeTypeFontBatcher::TextChanged(const int32_t textFieldProxyId, const std::string& text)
@@ -105,7 +140,8 @@ void FreeTypeFontBatcher::TextVisibilityChanged(const int32_t textFieldProxyId, 
 void FreeTypeFontBatcher::FontBufferSubData(
     const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy,
     BufferObjectBase* const positionVBO,
-    BufferObjectBase* const textureCoordinatesVBO)
+    BufferObjectBase* const textureCoordinatesVBO,
+    BufferObjectBase* const colorVBO)
 {
     const auto displayDeviceProvider = EngineCore::DataProviders::GeneralSystemSettingsDataProvider::GetInstance();
     FreeTypeTextMeshCreator textMeshCreator;
@@ -114,8 +150,10 @@ void FreeTypeFontBatcher::FontBufferSubData(
         "Font size mismatch! Expected: " + std::to_string(mTextFontAtlas->GetFontSize())
             + ", got: " + std::to_string(textFieldProxy->GetFontSize()));
 
-    const auto& [vertexPositions, textCoordinates] = textMeshCreator.CreateTextMesh(textFieldProxy, mTextFontAtlas);
-    ext_assert(vertexPositions.size() == textCoordinates.size(), "Vertex positions and texture coordinates size mismatch");
+    const auto& [vertexPositions, textCoordinates, colors] = textMeshCreator.CreateTextMesh(textFieldProxy, mTextFontAtlas);
+    ext_assert(
+        vertexPositions.size() == textCoordinates.size() && textCoordinates.size() == colors.size(),
+        "Vertex positions, texture coordinates, and colors size mismatch");
     // positions
     const size_t positionOffset = mPositionChunkData.mCurrentChunkOffset;
     textFieldProxy->SetVertexStart(positionOffset / (positionVBO->GetElementByteSize() * positionVBO->GetVectorSize()));
@@ -138,11 +176,34 @@ void FreeTypeFontBatcher::FontBufferSubData(
     mTextureCoordinatesChunkData.mCurrentChunkOffset = texCoordinatesOffset + texCoordinatesSizeUpdate;
     textFieldProxy->SetTextureCoordinatesChunkOffset(texCoordinatesOffset);
     textFieldProxy->SetTextureCoordinatesChunkSize(texCoordinatesSizeUpdate);
+
+    // color
+    const size_t colorOffset = mColorChunkData.mCurrentChunkOffset;
+    const size_t colorSizeUpdate = colors.size() * colorVBO->GetElementByteSize() * colorVBO->GetVectorSize();
+    ext_assert(colorOffset + colorSizeUpdate <= mColorChunkData.mTotalChunkSize, "Color buffer overflow");
+    colorVBO->BufferSubData(colorOffset, colorSizeUpdate, colors.data());
+    mColorChunkData.mCurrentChunkOffset = colorOffset + colorSizeUpdate;
+    textFieldProxy->SetColorChunkOffset(colorOffset);
+    textFieldProxy->SetColorChunkSize(colorSizeUpdate);
+
     const glm::ivec2 textWidthHeightScreenSpace = textMeshCreator.CalcTextScreenSpaceSize(textFieldProxy, mTextFontAtlas);
     textFieldProxy->SetCreatedMeshTextWidthHeightScreenSpace(textWidthHeightScreenSpace);
-    textFieldProxy->SetCreatedMeshTextWidthHeightNormalized(glm::vec2(
-        static_cast<float>(textWidthHeightScreenSpace.x) / static_cast<float>(displayDeviceProvider->GetWindowWidth()),
-        static_cast<float>(textWidthHeightScreenSpace.y) / static_cast<float>(displayDeviceProvider->GetWindowHeight())));
+    textFieldProxy->SetCreatedMeshTextWidthHeightNormalized(
+        glm::vec2(
+            static_cast<float>(textWidthHeightScreenSpace.x) / static_cast<float>(displayDeviceProvider->GetWindowWidth()),
+            static_cast<float>(textWidthHeightScreenSpace.y) / static_cast<float>(displayDeviceProvider->GetWindowHeight())));
+}
+
+void FreeTypeFontBatcher::FontBufferSubColorData(
+    const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy,
+    ::Graphics::OpenGL::BufferObjectBase* const colorVBO,
+    const std::vector<glm::vec3>& colors)
+{
+    const size_t colorOffset = textFieldProxy->GetColorChunkOffset();
+    const size_t colorSizeUpdate
+        = textFieldProxy->GetVerticesCount() * colorVBO->GetElementByteSize() * colorVBO->GetVectorSize();
+
+    colorVBO->BufferSubData(colorOffset, colorSizeUpdate, colors.data());
 }
 
 void FreeTypeFontBatcher::AllocateTextSpace(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy)
@@ -150,9 +211,11 @@ void FreeTypeFontBatcher::AllocateTextSpace(const std::shared_ptr<FreeTypeTextFi
     if (!textFieldProxy->GetText().empty()) {
         auto* const positionVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
         auto* const textureCoordinatesVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
-        ext_assert(positionVBO && textureCoordinatesVBO, "Failed to get VBOs for vertex positions or texture coordinates");
+        auto* const colorVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexColor");
+        ext_assert(
+            positionVBO && textureCoordinatesVBO && colorVBO, "Failed to get VBOs for vertex positions or texture coordinates");
 
-        FontBufferSubData(textFieldProxy, positionVBO, textureCoordinatesVBO);
+        FontBufferSubData(textFieldProxy, positionVBO, textureCoordinatesVBO, colorVBO);
         textureCoordinatesVBO->UnbindBuffer();
 
         mVerticesCount
@@ -164,14 +227,17 @@ void FreeTypeFontBatcher::ReallocateTextSpace()
 {
     auto* const positionVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
     auto* const textureCoordinatesVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
-    ext_assert(positionVBO && textureCoordinatesVBO, "Failed to get VBOs for vertex positions or texture coordinates");
+    auto* const colorVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexColor");
+    ext_assert(
+        positionVBO && textureCoordinatesVBO && colorVBO, "Failed to get VBOs for vertex positions or texture coordinates");
 
     mPositionChunkData.mCurrentChunkOffset = 0; // start filling buffer from the beginning
     mTextureCoordinatesChunkData.mCurrentChunkOffset = 0;
+    mColorChunkData.mCurrentChunkOffset = 0;
 
     for (auto& textProxy : mTextFields) {
         if (!textProxy->GetText().empty()) { // if text is empty - skip allocation
-            FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO);
+            FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO, colorVBO);
         }
     }
 
@@ -182,16 +248,19 @@ void FreeTypeFontBatcher::FreeAllocatedTextSpace(const std::shared_ptr<FreeTypeT
 {
     auto* const positionVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
     auto* const textureCoordinatesVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
-    ext_assert(positionVBO && textureCoordinatesVBO, "Failed to get VBOs for vertex positions or texture coordinates");
+    auto* const colorVBO = mTextFontAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexColor");
+    ext_assert(
+        positionVBO && textureCoordinatesVBO && colorVBO, "Failed to get VBOs for vertex positions or texture coordinates");
 
     if (0 == removeTextFieldProxy->GetPositionChunkOffset()) // text that should be removed is at the beginning
     {
         mPositionChunkData.mCurrentChunkOffset = 0; // start filling buffer from the beginning
         mTextureCoordinatesChunkData.mCurrentChunkOffset = 0;
+        mColorChunkData.mCurrentChunkOffset = 0;
 
         for (auto& textProxy : mTextFields) {
             if (!textProxy->GetText().empty()) {
-                FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO);
+                FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO, colorVBO);
             }
         }
     } else {
@@ -205,14 +274,16 @@ void FreeTypeFontBatcher::FreeAllocatedTextSpace(const std::shared_ptr<FreeTypeT
         {
             mPositionChunkData.mCurrentChunkOffset = removeTextFieldProxy->GetPositionChunkOffset();
             mTextureCoordinatesChunkData.mCurrentChunkOffset = removeTextFieldProxy->GetTextureCoordinatesChunkOffset();
+            mColorChunkData.mCurrentChunkOffset = removeTextFieldProxy->GetColorChunkOffset();
             for (auto& textProxy : textFieldProxiesToReallocate) {
                 if (!textProxy->GetText().empty()) {
-                    FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO);
+                    FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO, colorVBO);
                 }
             }
         } else {
             mPositionChunkData.mCurrentChunkOffset -= removeTextFieldProxy->GetPositionChunkSize();
             mTextureCoordinatesChunkData.mCurrentChunkOffset -= removeTextFieldProxy->GetTextureCoordinatesChunkSize();
+            mColorChunkData.mCurrentChunkOffset -= removeTextFieldProxy->GetColorChunkSize();
         }
     }
 
@@ -238,6 +309,11 @@ FreeTypeTextVertexChunkData& FreeTypeFontBatcher::GetPositionChunkDataRef()
 FreeTypeTextVertexChunkData& FreeTypeFontBatcher::GetTextureCoordinatesChunkDataRef()
 {
     return mTextureCoordinatesChunkData;
+}
+
+FreeTypeTextVertexChunkData& FreeTypeFontBatcher::GetColorChunkDataRef()
+{
+    return mColorChunkData;
 }
 
 size_t FreeTypeFontBatcher::GetVerticesCount() const
@@ -281,13 +357,19 @@ void FreeTypeFontHandler::RegisterFont(const FreeTypeFontParams& fontParams) con
 
     auto* const positionVBO = fontTextureAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexPosition");
     auto* const textureCoordinatesVBO = fontTextureAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexTexCoords");
-    ext_assert(positionVBO && textureCoordinatesVBO, "Failed to get VBOs for vertex positions or texture coordinates");
+    auto* const colorVBO = fontTextureAtlas->GetBuffer()->GetVboByAttribArrayIndexName("VertexColor");
+    ext_assert(
+        positionVBO && textureCoordinatesVBO && colorVBO,
+        "Failed to get VBOs for vertex positions or texture coordinates or colors");
 
     fontBatcher->GetPositionChunkDataRef().mTotalChunkSize
         = maxFontCharactersCount * verticesPerCharacter * positionVBO->GetVectorSize() * positionVBO->GetElementByteSize();
 
     fontBatcher->GetTextureCoordinatesChunkDataRef().mTotalChunkSize = maxFontCharactersCount * verticesPerCharacter
         * textureCoordinatesVBO->GetVectorSize() * textureCoordinatesVBO->GetElementByteSize();
+
+    fontBatcher->GetColorChunkDataRef().mTotalChunkSize
+        = maxFontCharactersCount * verticesPerCharacter * colorVBO->GetVectorSize() * colorVBO->GetElementByteSize();
 }
 
 std::shared_ptr<FreeTypeFontBatcher> FreeTypeFontHandler::GetFontBatcher(const FreeTypeFontParams& fontParams) const
@@ -350,6 +432,20 @@ void FreeTypeFontHandler::TextColorChanged(const int32_t textFieldProxyId, const
         "FreeTypeFontHandler::TextColorChanged: Font batcher not found for text field proxy ID "
             + std::to_string(textFieldProxyId));
     batcherSp->TextColorChanged(textFieldProxyId, color);
+}
+
+void FreeTypeFontHandler::TextColorGradientChanged(
+    const int32_t textFieldProxyId,
+    const eTextGradientColorType gradientColorType,
+    const glm::vec3& gradientColorStart,
+    const glm::vec3& gradientColorEnd)
+{
+    const auto batcherSp = FindFontBatcherByTextFieldProxyId(textFieldProxyId);
+    ext_assert(
+        batcherSp != nullptr,
+        "FreeTypeFontHandler::TextColorChanged: Font batcher not found for text field proxy ID "
+            + std::to_string(textFieldProxyId));
+    batcherSp->TextColorGradientChanged(textFieldProxyId, gradientColorType, gradientColorStart, gradientColorEnd);
 }
 
 void FreeTypeFontHandler::TextChanged(const int32_t textFieldProxyId, const std::string& text)

@@ -7,7 +7,7 @@
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
 #include "Core/GameCore/FirstPersonCamera.h"
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"

@@ -58,7 +58,10 @@ function UiTextBlock:new(host, fontName, name)
         text_horizontal_alignment = {value = UiLabel.TextHorizontalAlignmentType.LEFT, dirty = false},
         text_vertical_alignment = {value = UiLabel.TextVerticalAlignmentType.TOP, dirty = false},
         attach_target_ui_item_name = {value = "", dirty = false},
-        border_thickness = {value = 1, dirty = false}
+        border_thickness = {value = 1, dirty = false},
+        text_gradient_type = {value = UiLabel.TextGradientColorType.NONE, dirty = false},
+        gradient_color_start = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false},
+        gradient_color_end = {value = {r = 0.0, g = 0.0, b = 0.0}, dirty = false}
     }
 
     local uiRectangleObj = UiTextBlock.uiItemBaseClass.new(self)
@@ -321,6 +324,50 @@ function UiTextBlock:setBorderThickness(thickness)
         self.textBlockProperties.border_thickness.value = thickness
         self.textBlockProperties.border_thickness.dirty = true
     end
+end
+
+-- Gradient text. NONE renders the flat text_color; VERTICAL / HORIZONTAL interpolate per glyph from
+-- the start colour to the end colour. Colours are normalized rgb in [0, 1].
+function UiTextBlock:setTextGradientColorType(gradientType)
+    assert(gradientType ~= nil and type(gradientType) == "number" and gradientType >=
+               UiLabel.TextGradientColorType.NONE and gradientType <= UiLabel.TextGradientColorType.HORIZONTAL,
+           debug.traceback())
+    if self.textBlockProperties.text_gradient_type.value ~= gradientType then
+        self.textBlockProperties.text_gradient_type.value = gradientType
+        self.textBlockProperties.text_gradient_type.dirty = true
+    end
+end
+
+function UiTextBlock:setGradientColors(startR, startG, startB, endR, endG, endB)
+    assert(startR ~= nil and type(startR) == "number" and startG ~= nil and type(startG) == "number" and startB ~= nil and
+               type(startB) == "number" and endR ~= nil and type(endR) == "number" and endG ~= nil and
+               type(endG) == "number" and endB ~= nil and type(endB) == "number", debug.traceback())
+    self.textBlockProperties.gradient_color_start.value.r = startR
+    self.textBlockProperties.gradient_color_start.value.g = startG
+    self.textBlockProperties.gradient_color_start.value.b = startB
+    self.textBlockProperties.gradient_color_start.dirty = true
+    self.textBlockProperties.gradient_color_end.value.r = endR
+    self.textBlockProperties.gradient_color_end.value.g = endG
+    self.textBlockProperties.gradient_color_end.value.b = endB
+    self.textBlockProperties.gradient_color_end.dirty = true
+end
+
+function UiTextBlock:setGradientColorHexValues(startHex, endHex)
+    assert(startHex ~= nil and type(startHex) == "number" and endHex ~= nil and type(endHex) == "number",
+           debug.traceback())
+    local INV = 1.0 / 255.0
+    local function unpackHex(hex)
+        return ((hex >> 0x10) & 0xFF) * INV, ((hex >> 0x8) & 0xFF) * INV, (hex & 0xFF) * INV
+    end
+    local sr, sg, sb = unpackHex(startHex)
+    local er, eg, eb = unpackHex(endHex)
+    self:setGradientColors(sr, sg, sb, er, eg, eb)
+end
+
+-- Convenience: set type + both colours (hex) in one call.
+function UiTextBlock:setTextGradientHexValues(gradientType, startHex, endHex)
+    self:setTextGradientColorType(gradientType)
+    self:setGradientColorHexValues(startHex, endHex)
 end
 
 return UiTextBlock

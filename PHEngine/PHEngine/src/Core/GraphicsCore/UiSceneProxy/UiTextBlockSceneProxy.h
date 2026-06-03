@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "Core/GameCore/ShaderImplementation/FontRenderingShader.h"
 #include "Core/GameCore/ShaderImplementation/UiRectangleShader.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
@@ -45,6 +45,12 @@ class UiTextBlockSceneProxy : public UiSceneProxyBase {
 
     glm::vec3 mTextColor;
 
+    ::EngineCore::eTextGradientColorType mTextGradientColorType;
+
+    glm::vec3 mGradientTextColorStart;
+
+    glm::vec3 mGradientTextColorEnd;
+
     glm::vec3 mRectangleColor;
 
     float mRectangleOpacity;
@@ -85,6 +91,11 @@ public:
     void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVerticalAlignment);
 
     void SetTextColor(const glm::vec3& textColor);
+
+    void SetGradientColor(
+        const eTextGradientColorType textGradientColorType,
+        const glm::vec3& gradientColorStart,
+        const glm::vec3& gradientColorEnd);
 
     void SetRectangleColor(const glm::vec3& rectangleColor);
 

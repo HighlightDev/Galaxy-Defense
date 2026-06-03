@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "UiItemBaseLuaProxy.h"
 
 #include <glm/vec3.hpp>

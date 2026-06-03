@@ -123,6 +123,28 @@ void UiLabel::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
             bShouldUpdatePropertiesOnRT = true;
         }
     }
+    if (jsonObj.contains("text_gradient_type")) {
+        const auto text_gradient_type
+            = static_cast<eTextGradientColorType>(jsonObj["text_gradient_type"].get<uint8_t>());
+        if (text_gradient_type != mTextGradientColorType) {
+            mTextGradientColorType = text_gradient_type;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("gradient_color_start")) {
+        const glm::vec3 gradient_color_start = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["gradient_color_start"]);
+        if (!EngineMath::CheckSimilarityVec3(gradient_color_start, mGradientTextColorStart)) {
+            mGradientTextColorStart = gradient_color_start;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
+    if (jsonObj.contains("gradient_color_end")) {
+        const glm::vec3 gradient_color_end = nlohmann_utilities::GetRgbFromJsonMap(jsonObj["gradient_color_end"]);
+        if (!EngineMath::CheckSimilarityVec3(gradient_color_end, mGradientTextColorEnd)) {
+            mGradientTextColorEnd = gradient_color_end;
+            bShouldUpdatePropertiesOnRT = true;
+        }
+    }
 
     if (bShouldUpdatePropertiesOnRT) {
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
@@ -219,6 +241,41 @@ eTextVerticalAlignmentType UiLabel::GetTextVerticalAlignment() const
     return mTextVerticalAlignment;
 }
 
+eTextGradientColorType UiLabel::GetTextGradientColorType() const
+{
+    return mTextGradientColorType;
+}
+
+void UiLabel::SetTextGradientColorType(const eTextGradientColorType textGradientColorType)
+{
+    if (mTextGradientColorType != textGradientColorType) {
+        mTextGradientColorType = textGradientColorType;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
+glm::vec3 UiLabel::GetGradientTextColorStart() const
+{
+    return mGradientTextColorStart;
+}
+
+glm::vec3 UiLabel::GetGradientTextColorEnd() const
+{
+    return mGradientTextColorEnd;
+}
+
+void UiLabel::SetGradientTextColors(const glm::vec3& gradientTextColorStart, const glm::vec3& gradientTextColorEnd)
+{
+    if (!EngineMath::CheckSimilarityVec3(mGradientTextColorStart, gradientTextColorStart)
+        || !EngineMath::CheckSimilarityVec3(mGradientTextColorEnd, gradientTextColorEnd)) {
+        mGradientTextColorStart = gradientTextColorStart;
+        mGradientTextColorEnd = gradientTextColorEnd;
+        SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+    }
+}
+
 void UiLabel::SetTextVerticalAlignment(const eTextVerticalAlignmentType textVericalAlignment)
 {
     if (mTextVerticalAlignment != textVericalAlignment) {
@@ -295,7 +352,10 @@ void UiLabel::SyncDataOnRenderThread()
                          fontSize = mFontSize,
                          textColor = mTextColor,
                          textHorizontalAlignment = mTextHorizontalAlignment,
-                         textVerticalAlignment = mTextVerticalAlignment](
+                         textVerticalAlignment = mTextVerticalAlignment,
+                         textGradientColorType = mTextGradientColorType,
+                         gradientTextColorStart = mGradientTextColorStart,
+                         gradientTextColorEnd = mGradientTextColorEnd](
                             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                             std::weak_ptr<EngineCore::Scene> sceneWp,
                             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -309,6 +369,8 @@ void UiLabel::SyncDataOnRenderThread()
                                 labelSceneProxy->SetTextColor(textColor);
                                 labelSceneProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
                                 labelSceneProxy->SetTextVerticalAlignment(textVerticalAlignment);
+                                labelSceneProxy->SetGradientColor(
+                                    textGradientColorType, gradientTextColorStart, gradientTextColorEnd);
                             }
                         });
                 }

@@ -247,7 +247,7 @@ bool UserInteractionController::IsTowerPositionValid(const glm::vec3 position) c
 
 bool UserInteractionController::IsBarrierPositionValid(const glm::vec3& position) const
 {
-    if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+    if (auto parentControllerSp = mParentController.lock()) {
         return not parentControllerSp->GetNavigationController()->IsPositionNearFinalDestination(
             position, Game::Constants::c_barrierExclusionRadiusFromDestination);
     }
@@ -393,7 +393,7 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                         LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(mTowerMissileType, 1),
                         LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
                     spaceStationSp->SetState(eSpaceStationActivityState::ACTIVE);
-                    if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+                    if (auto parentControllerSp = mParentController.lock()) {
                         parentControllerSp->GetNavigationController()->PutActiveSpaceStationOnLevel(spaceStationSp);
                     }
                     SetUserInteractionType(eUserInteractionType::IDLE);
@@ -401,14 +401,14 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                 } else if (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
                     const auto& spaceStationSp = GetSpaceStationAtPosition(cellPositionVec3);
                     if (spaceStationSp) {
-                        if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+                        if (auto parentControllerSp = mParentController.lock()) {
                             parentControllerSp->GetNavigationController()->RemoveActiveSpaceStationFromLevel(spaceStationSp);
                         }
                         spaceStationSp->SetState(eSpaceStationActivityState::IDLE);
                     } else {
                         const auto& barrierSp = GetBarrierAtPosition(placementPosition);
                         if (barrierSp) {
-                            if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+                            if (auto parentControllerSp = mParentController.lock()) {
                                 parentControllerSp->GetNavigationController()->RemoveActiveBarrierFromLevel(
                                     barrierSp); // Remove barrier from navigation controller to update nav mesh with removed
                                                 // barrier rays positions
@@ -452,7 +452,7 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     if (IsBarrierPositionValid(snappedPosition)) {
                         mCurrentBarrierActor->CreateNewBarrierPillar(
                             snappedPosition, glm::vec3(), Game::Constants::c_barrierPillarScale);
-                        if (not mParentController.expired(); auto parentControllerSp = mParentController.lock()) {
+                        if (auto parentControllerSp = mParentController.lock()) {
                             parentControllerSp->GetNavigationController()->PutActiveBarrierOnLevel(
                                 mCurrentBarrierActor); // Add barrier to navigation controller to update nav mesh with barrier
                                                        // rays positions

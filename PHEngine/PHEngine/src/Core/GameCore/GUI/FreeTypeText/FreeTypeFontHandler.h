@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "FreeTypeFontParams.h"
 
@@ -13,6 +14,7 @@
 
 using namespace Graphics;
 using namespace Graphics::Texture;
+using namespace EngineCore;
 
 namespace Graphics::OpenGL {
 class BufferObjectBase;
@@ -27,12 +29,13 @@ struct FreeTypeTextVertexChunkData {
     size_t mCurrentChunkOffset;
     size_t mTotalChunkSize;
 
-    FreeTypeTextVertexChunkData();
+    explicit FreeTypeTextVertexChunkData();
 };
 
 class FreeTypeFontBatcher {
     FreeTypeTextVertexChunkData mPositionChunkData;
     FreeTypeTextVertexChunkData mTextureCoordinatesChunkData;
+    FreeTypeTextVertexChunkData mColorChunkData;
     size_t mVerticesCount;
 
     std::shared_ptr<FreeTypeFontAtlas> mTextFontAtlas;
@@ -52,6 +55,12 @@ public:
 
     void TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color);
 
+    void TextColorGradientChanged(
+        const int32_t textFieldProxyId,
+        const eTextGradientColorType gradientColorType,
+        const glm::vec3& gradientColorStart,
+        const glm::vec3& gradientColorEnd);
+
     void TextChanged(const int32_t textFieldProxyId, const std::string& text);
 
     void TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible);
@@ -59,6 +68,8 @@ public:
     FreeTypeTextVertexChunkData& GetPositionChunkDataRef();
 
     FreeTypeTextVertexChunkData& GetTextureCoordinatesChunkDataRef();
+
+    FreeTypeTextVertexChunkData& GetColorChunkDataRef();
 
     const std::shared_ptr<FreeTypeFontAtlas>& GetFreeTypeFontAtlas() const;
 
@@ -82,7 +93,13 @@ private:
     void FontBufferSubData(
         const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy,
         ::Graphics::OpenGL::BufferObjectBase* const positionVBO,
-        ::Graphics::OpenGL::BufferObjectBase* const textureCoordinatesVBO);
+        ::Graphics::OpenGL::BufferObjectBase* const textureCoordinatesVBO,
+        ::Graphics::OpenGL::BufferObjectBase* const colorVBO);
+
+    void FontBufferSubColorData(
+        const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy,
+        ::Graphics::OpenGL::BufferObjectBase* const colorVBO,
+        const std::vector<glm::vec3>& colors);
 };
 
 class FreeTypeFontHandler {
@@ -104,6 +121,12 @@ public:
     void TextPositionChanged(const int32_t textFieldProxyId, const glm::vec2& position);
 
     void TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color);
+
+    void TextColorGradientChanged(
+        const int32_t textFieldProxyId,
+        const eTextGradientColorType gradientColorType,
+        const glm::vec3& gradientColorStart,
+        const glm::vec3& gradientColorEnd);
 
     void TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible);
 

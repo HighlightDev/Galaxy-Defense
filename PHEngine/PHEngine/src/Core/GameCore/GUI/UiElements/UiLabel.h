@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "UiItemBase.h"
 
 #include <glm/vec3.hpp>
@@ -46,6 +46,12 @@ class UiLabel : public UiItemBase {
 
     std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
 
+    eTextGradientColorType mTextGradientColorType{eTextGradientColorType::NONE};
+
+    glm::vec3 mGradientTextColorStart;
+
+    glm::vec3 mGradientTextColorEnd;
+
 public:
     explicit UiLabel(const std::string& fontName, const std::string& name = std::string(""));
 
@@ -80,6 +86,16 @@ public:
     void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVericalAlignment);
 
     eTextVerticalAlignmentType GetTextVerticalAlignment() const;
+
+    eTextGradientColorType GetTextGradientColorType() const;
+
+    void SetTextGradientColorType(const eTextGradientColorType textGradientColorType);
+
+    glm::vec3 GetGradientTextColorStart() const;
+
+    glm::vec3 GetGradientTextColorEnd() const;
+
+    void SetGradientTextColors(const glm::vec3& gradientTextColorStart, const glm::vec3& gradientTextColorEnd);
 
     std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const override;
 

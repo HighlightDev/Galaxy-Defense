@@ -13,7 +13,19 @@ Styles = {
         panelBorderRadius = 16,
         accentColor = 0x1a3050,
         buttonColor = 0x16243a,
-        hoveredButtonColor = 0x24375a
+        hoveredButtonColor = 0x24375a,
+        -- Chrome added to mirror UiMockup/menu-techtree-centered.jsx: header (pre-text + bracketed
+        -- title + category legend), tier rail labels, dividers, corner braces and footer hint.
+        textBright = 0xcdd6f4,
+        textDim = 0x8a99ac,
+        textVeryDim = 0x5a6e86,
+        titleAccent = 0x90e0ef,
+        cornerColor = 0x4a9eff,
+        dividerColor = 0x162338,
+        -- Category accents (TT_WEAPONS[].category in the reference): offense / support / hybrid.
+        offenseColor = 0xe85d04,
+        supportColor = 0x22c55e,
+        hybridColor = 0x818cf8
     },
     -- Combat HUD palette, modelled after UiMockup/menu-battle-centered.jsx (Galaxy Defense battle screen).
     -- Centered cyan / purple sci-fi theme: translucent dark surfaces over the 3D scene, cyan + indigo

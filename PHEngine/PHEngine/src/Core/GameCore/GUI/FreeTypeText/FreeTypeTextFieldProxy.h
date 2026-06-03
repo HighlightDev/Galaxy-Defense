@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "Core/GameCore/GUI/FreeTypeText/FreeTypeFontParams.h"
 
 #include <glm/vec2.hpp>
@@ -23,6 +23,11 @@ class FreeTypeTextFieldProxy {
     size_t mTextureCoordinatesChunkOffset;
 
     size_t mTextureCoordinatesChunkSize;
+
+    size_t mColorChunkOffset;
+
+    size_t mColorChunkSize;
+
     // Chunk Data End
 
     size_t mVertexStart;
@@ -51,6 +56,12 @@ class FreeTypeTextFieldProxy {
 
     eTextVerticalAlignmentType mTextVerticalAlignment{eTextVerticalAlignmentType::TOP};
 
+    eTextGradientColorType mTextGradientColorType{eTextGradientColorType::NONE};
+
+    glm::vec3 mGradientTextColorStart;
+
+    glm::vec3 mGradientTextColorEnd;
+
 public:
     explicit FreeTypeTextFieldProxy();
 
@@ -77,6 +88,10 @@ public:
 
     size_t GetTextureCoordinatesChunkSize() const;
 
+    size_t GetColorChunkOffset() const;
+
+    size_t GetColorChunkSize() const;
+
     size_t GetVertexStart() const;
 
     size_t GetVerticesCount() const;
@@ -99,7 +114,13 @@ public:
 
     eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
 
-    eTextVerticalAlignmentType GetextVerticalAlignment() const;
+    eTextVerticalAlignmentType GetTextVerticalAlignment() const;
+
+    eTextGradientColorType GetTextGradientColorType() const;
+
+    glm::vec3 GetGradientTextColorStart() const;
+
+    glm::vec3 GetGradientTextColorEnd() const;
 
     glm::vec2 GetCreatedMeshTextWidthHeightNormalized() const;
 
@@ -112,6 +133,10 @@ public:
     void SetTextureCoordinatesChunkOffset(const size_t textureCoordinatesChunkOffset);
 
     void SetTextureCoordinatesChunkSize(const size_t textureCoordinatesChunkSize);
+
+    void SetColorChunkOffset(const size_t colorChunkOffset);
+
+    void SetColorChunkSize(const size_t colorChunkSize);
 
     void SetVertexStart(const size_t vertexStart);
 
@@ -138,6 +163,12 @@ public:
     void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 
     void SetTextVerticalAlignment(const eTextVerticalAlignmentType textVericalAlignment);
+
+    void SetTextGradientColorType(const eTextGradientColorType textGradientColorType);
+
+    void SetGradientTextColorStart(const glm::vec3& gradientTextColorStart);
+
+    void SetGradientTextColorEnd(const glm::vec3& gradientTextColorEnd);
 
     void SetCreatedMeshTextWidthHeightNormalized(const glm::vec2& createdMeshTextWidthHeightTextureSpace);
 

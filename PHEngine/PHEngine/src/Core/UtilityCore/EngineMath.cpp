@@ -60,6 +60,11 @@ glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec
     return resultPosition;
 }
 
+glm::vec3 MixVec3(const glm::vec3& position1, const glm::vec3& position2, const float factor)
+{
+    return LerpVec3(factor, 0.0f, 1.0f, position1, position2);
+}
+
 glm::vec2 LerpVec2(const float t, const float t1, const float t2, const glm::vec2& position1, const glm::vec2& position2)
 {
     glm::vec2 resultPosition;

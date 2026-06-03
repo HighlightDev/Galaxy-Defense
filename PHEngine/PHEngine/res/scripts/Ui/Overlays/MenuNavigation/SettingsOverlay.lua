@@ -565,6 +565,8 @@ function SettingsOverlay:new(host)
         titleMain:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, titleEyebrow.widgetName, 4)
         titleMain:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER, cn)
         titleMain:setZOrder(Z_TITLE)
+        -- game-title gradient (135deg cyan-glow -> blue -> purple); vertical 2-stop approximation.
+        titleMain:setTextGradientHexValues(UiLabel.TextGradientColorType.VERTICAL, 0x90e0ef, 0xc084fc)
 
         applyLabelInit(titleSub)
         titleSub:setParent(h, cn, cn)

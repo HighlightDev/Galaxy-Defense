@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

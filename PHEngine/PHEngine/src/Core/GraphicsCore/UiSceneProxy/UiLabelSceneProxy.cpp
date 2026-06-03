@@ -36,6 +36,9 @@ UiLabelSceneProxy::UiLabelSceneProxy(const UiLabel* uiLabel)
     , mFontSize(uiLabel->GetFontSize())
     , mTextHorizontalAlignment(uiLabel->GetTextHorizontalAlignment())
     , mTextColor(uiLabel->GetTextColor())
+    , mTextGradientColorType(uiLabel->GetTextGradientColorType())
+    , mGradientTextColorStart(uiLabel->GetGradientTextColorStart())
+    , mGradientTextColorEnd(uiLabel->GetGradientTextColorEnd())
 {
 }
 
@@ -105,7 +108,6 @@ void UiLabelSceneProxy::Render(
             mFontTexture->BindTexture(0);
             mUiLabelShader->SetFontAtlasSlot(0);
             mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);
-            mUiLabelShader->SetColor(mTextColor);
             renderDataSp->GetFreeTypeFontAtlas()->GetBuffer()->RenderVAO(
                 mTextFieldProxy->GetVertexStart(), mTextFieldProxy->GetVerticesCount(), GL_TRIANGLES);
             mUiLabelShader->StopShader();
@@ -188,7 +190,32 @@ void UiLabelSceneProxy::SetTextVerticalAlignment(const eTextVerticalAlignmentTyp
 
 void UiLabelSceneProxy::SetTextColor(const glm::vec3& textColor)
 {
-    mTextColor = textColor;
+    if (not EngineMath::CheckSimilarityVec3(mTextColor, textColor)) {
+        mTextColor = textColor;
+        if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
+            if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
+                fontHandlerSp->TextColorChanged(mTextFieldProxy->GetTextFieldId(), textColor);
+            }
+        }
+    }
+}
+
+void UiLabelSceneProxy::SetGradientColor(
+    const eTextGradientColorType textGradientColorType, const glm::vec3& gradientColorStart, const glm::vec3& gradientColorEnd)
+{
+    if (mTextGradientColorType != textGradientColorType
+        || not EngineMath::CheckSimilarityVec3(mGradientTextColorStart, gradientColorStart)
+        || not EngineMath::CheckSimilarityVec3(mGradientTextColorEnd, gradientColorEnd)) {
+        mTextGradientColorType = textGradientColorType;
+        mGradientTextColorStart = gradientColorStart;
+        mGradientTextColorEnd = gradientColorEnd;
+        if (const auto& canvasProxySp = mParentCanvasProxy.lock()) {
+            if (const auto& fontHandlerSp = canvasProxySp->GetFontHandler().lock()) {
+                fontHandlerSp->TextColorGradientChanged(
+                    mTextFieldProxy->GetTextFieldId(), textGradientColorType, gradientColorStart, gradientColorEnd);
+            }
+        }
+    }
 }
 
 void UiLabelSceneProxy::CleanUp()

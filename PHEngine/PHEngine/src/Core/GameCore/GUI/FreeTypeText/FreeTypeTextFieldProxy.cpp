@@ -11,6 +11,8 @@ FreeTypeTextFieldProxy::FreeTypeTextFieldProxy()
     , mPositionChunkSize(0)
     , mTextureCoordinatesChunkOffset(0)
     , mTextureCoordinatesChunkSize(0)
+    , mColorChunkOffset(0)
+    , mColorChunkSize(0)
     , mVertexStart(0)
     , mVerticesCount(0)
     , mIsVisible(false)
@@ -73,6 +75,16 @@ size_t FreeTypeTextFieldProxy::GetTextureCoordinatesChunkOffset() const
 size_t FreeTypeTextFieldProxy::GetTextureCoordinatesChunkSize() const
 {
     return mTextureCoordinatesChunkSize;
+}
+
+size_t FreeTypeTextFieldProxy::GetColorChunkOffset() const
+{
+    return mColorChunkOffset;
+}
+
+size_t FreeTypeTextFieldProxy::GetColorChunkSize() const
+{
+    return mColorChunkSize;
 }
 
 size_t FreeTypeTextFieldProxy::GetVertexStart() const
@@ -150,6 +162,16 @@ void FreeTypeTextFieldProxy::SetTextureCoordinatesChunkSize(const size_t texture
     mTextureCoordinatesChunkSize = textureCoordinatesChunkSize;
 }
 
+void FreeTypeTextFieldProxy::SetColorChunkOffset(const size_t colorChunkOffset)
+{
+    mColorChunkOffset = colorChunkOffset;
+}
+
+void FreeTypeTextFieldProxy::SetColorChunkSize(const size_t colorChunkSize)
+{
+    mColorChunkSize = colorChunkSize;
+}
+
 void FreeTypeTextFieldProxy::SetVertexStart(const size_t vertexStart)
 {
     mVertexStart = vertexStart;
@@ -225,7 +247,7 @@ void FreeTypeTextFieldProxy::SetTextHorizontalAlignment(const eTextHorizontalAli
     mTextHorizontalAlignment = textHorizontalAlignment;
 }
 
-eTextVerticalAlignmentType FreeTypeTextFieldProxy::GetextVerticalAlignment() const
+eTextVerticalAlignmentType FreeTypeTextFieldProxy::GetTextVerticalAlignment() const
 {
     return mTextVerticalAlignment;
 }
@@ -233,6 +255,36 @@ eTextVerticalAlignmentType FreeTypeTextFieldProxy::GetextVerticalAlignment() con
 void FreeTypeTextFieldProxy::SetTextVerticalAlignment(const eTextVerticalAlignmentType textVericalAlignment)
 {
     mTextVerticalAlignment = textVericalAlignment;
+}
+
+eTextGradientColorType FreeTypeTextFieldProxy::GetTextGradientColorType() const
+{
+    return mTextGradientColorType;
+}
+
+void FreeTypeTextFieldProxy::SetTextGradientColorType(const eTextGradientColorType textGradientColorType)
+{
+    mTextGradientColorType = textGradientColorType;
+}
+
+glm::vec3 FreeTypeTextFieldProxy::GetGradientTextColorStart() const
+{
+    return mGradientTextColorStart;
+}
+
+glm::vec3 FreeTypeTextFieldProxy::GetGradientTextColorEnd() const
+{
+    return mGradientTextColorEnd;
+}
+
+void FreeTypeTextFieldProxy::SetGradientTextColorStart(const glm::vec3& gradientTextColorStart)
+{
+    mGradientTextColorStart = gradientTextColorStart;
+}
+
+void FreeTypeTextFieldProxy::SetGradientTextColorEnd(const glm::vec3& gradientTextColorEnd)
+{
+    mGradientTextColorEnd = gradientTextColorEnd;
 }
 
 FreeTypeFontParams FreeTypeTextFieldProxy::GetFontParams() const

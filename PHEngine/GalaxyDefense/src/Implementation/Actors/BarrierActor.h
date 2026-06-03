@@ -2,7 +2,7 @@
 
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "Implementation/ActorLeveling/BarrierLevel.h"
 
 #include <glm/vec3.hpp>

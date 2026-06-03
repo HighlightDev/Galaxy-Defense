@@ -47,21 +47,25 @@ local STAT_DEFS = {
 }
 local STAT_COUNT = #STAT_DEFS
 
+-- Category chip is an outline tag (translucent tint + bright text), per .tt-info__cat in the CSS.
+-- tagBg is the colour pre-blended onto the dark info surface (no per-widget opacity, which would
+-- also dim the child label).
 local CATEGORY_INFO = {
-    offense = {label = "АТАКА", color = 0xe85d04},
-    support = {label = "ПОДДЕРЖКА", color = 0x22c55e},
-    hybrid = {label = "ГИБРИД", color = 0x818cf8}
+    offense = {label = "АТАКА", textColor = 0xff9f1c, tagBg = 0x241310},
+    support = {label = "ПОДДЕРЖКА", textColor = 0x86efac, tagBg = 0x0e2018},
+    hybrid = {label = "ГИБРИД", textColor = 0xe0e7ff, tagBg = 0x171a2e}
 }
 
-local COLOR_PANEL_BG = Styles.TechTree.panelColor
-local COLOR_TAG_TEXT = 0x0a0f18
-local COLOR_TYPE_TEXT = 0x8294ab
-local COLOR_DESC_TEXT = 0x8a99ac
-local COLOR_SECTION_TEXT = 0x5a6e86
-local COLOR_STAT_NAME = 0x8294ab
+-- Info column surface matches .tt-canvas; the host panel's body divider provides the separation.
+local COLOR_PANEL_BG = 0x081221
+local COLOR_TYPE_TEXT = 0x667788
+local COLOR_DESC_TEXT = 0x8899aa
+local COLOR_SECTION_TEXT = 0x445566
+local COLOR_STAT_NAME = 0x667788
 local COLOR_SEGMENT_OFF = 0x1c2738
 local COLOR_SEPARATOR = Styles.TechTree.accentColor
 local COLOR_PARENT_BG = 0x141f33
+local COLOR_RESEARCH_TEXT = 0x061522 -- dark ink on the bright research button
 
 local function ulen(s) return utf8.len(s) or #s end
 
@@ -151,10 +155,17 @@ function WeaponInfoPanel:new(host, overlay)
         newObj.parentRows[i] = row
     end
 
+    newObj.researchBg = UiRectangle:new(host, "WeaponInfoResearchBg")
+    overlay:addWidget(newObj.researchBg)
+    newObj.researchLabel = UiLabel:new(host, LABEL_FONT, "WeaponInfoResearchLabel")
+    overlay:addWidget(newObj.researchLabel)
+
     return newObj
 end
 
-function WeaponInfoPanel:setupLayout(canvasName, refBackgroundName, windowWidth, infoWidth, infoHeight)
+-- Lives inside the tech-tree panel as the right-hand column: anchored to the panel background's
+-- right edge (rightInset) and top edge (topInset), filling the body height between header and footer.
+function WeaponInfoPanel:setupLayout(canvasName, panelBgName, infoWidth, infoHeight, topInset, rightInset)
     local anchors = UiItemBase.UiAnchorType
     local pad = math.floor(infoWidth * 0.075)
     local contentW = infoWidth - 2 * pad
@@ -173,8 +184,8 @@ function WeaponInfoPanel:setupLayout(canvasName, refBackgroundName, windowWidth,
     self.background:setParent(self.host, canvasName, canvasName)
     self.background:setWidth(infoWidth)
     self.background:setHeight(infoHeight)
-    self.background:setAnchor(anchors.LEFT, anchors.RIGHT, refBackgroundName, math.floor(windowWidth * 0.012))
-    self.background:setAnchor(anchors.TOP, anchors.TOP, refBackgroundName, 0)
+    self.background:setAnchor(anchors.RIGHT, anchors.RIGHT, panelBgName, rightInset)
+    self.background:setAnchor(anchors.TOP, anchors.TOP, panelBgName, topInset)
     self.background:setColorHexValue(COLOR_PANEL_BG)
     self.background:setBorderRadius(Styles.TechTree.panelBorderRadius)
     self.background:setZOrder(10)
@@ -365,6 +376,27 @@ function WeaponInfoPanel:setupLayout(canvasName, refBackgroundName, windowWidth,
         row.label:setZOrder(12)
         row.label:setIsVisible(false)
     end
+
+    -- Research CTA pinned to the bottom of the column (.tt-research).
+    local researchH = math.floor(infoHeight * 0.06)
+    self.researchBg:setParent(self.host, canvasName, bgName)
+    self.researchBg:setAnchor(anchors.LEFT, anchors.LEFT, bgName, pad)
+    self.researchBg:setAnchor(anchors.RIGHT, anchors.RIGHT, bgName, pad)
+    self.researchBg:setAnchor(anchors.BOTTOM, anchors.BOTTOM, bgName, pad)
+    self.researchBg:setHeight(researchH)
+    self.researchBg:setBorderRadius(6)
+    self.researchBg:setZOrder(12)
+    self.researchBg:setIsVisible(false)
+
+    self.researchLabel:setParent(self.host, canvasName, self.researchBg.widgetName)
+    self.researchLabel:fill(self.researchBg.widgetName)
+    self.researchLabel:setFontSize(12.0)
+    self.researchLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+    self.researchLabel:setTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
+    self.researchLabel:setTextColorHexValue(COLOR_RESEARCH_TEXT)
+    self.researchLabel:setText("[ ИЗУЧИТЬ · 320 ]")
+    self.researchLabel:setZOrder(13)
+    self.researchLabel:setIsVisible(false)
 end
 
 function WeaponInfoPanel:showFor(weapon)
@@ -374,10 +406,10 @@ function WeaponInfoPanel:showFor(weapon)
 
     local category = CATEGORY_INFO[weapon.category] or CATEGORY_INFO.offense
     self.categoryTag:setIsVisible(true)
-    self.categoryTag:setColorHexValue(category.color)
+    self.categoryTag:setColorHexValue(category.tagBg)
     self.categoryLabel:setIsVisible(true)
     self.categoryLabel:setText(category.label)
-    self.categoryLabel:setTextColorHexValue(COLOR_TAG_TEXT)
+    self.categoryLabel:setTextColorHexValue(category.textColor)
 
     self.headerIcon:setIsVisible(true)
     self.headerIcon:setTextureSource(weapon.texture)
@@ -469,6 +501,11 @@ function WeaponInfoPanel:showFor(weapon)
             row.label:setIsVisible(false)
         end
     end
+
+    -- Bright research button tinted with the weapon glow (gradient glow->accent in the CSS).
+    self.researchBg:setIsVisible(true)
+    self.researchBg:setColorHexValue(weapon.glow)
+    self.researchLabel:setIsVisible(true)
 end
 
 function WeaponInfoPanel:hide()
@@ -495,6 +532,8 @@ function WeaponInfoPanel:hide()
         row.icon:setIsVisible(false)
         row.label:setIsVisible(false)
     end
+    self.researchBg:setIsVisible(false)
+    self.researchLabel:setIsVisible(false)
 end
 
 return WeaponInfoPanel

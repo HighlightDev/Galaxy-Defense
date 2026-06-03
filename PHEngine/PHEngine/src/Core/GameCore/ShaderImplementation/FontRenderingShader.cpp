@@ -18,7 +18,6 @@ void FontRenderingShader::AccessAllUniformLocations(uint32_t shaderProgramID)
 
     u_fontAtlas = GetUniform("fontAtlas", shaderProgramID);
     u_position = GetUniform("position", shaderProgramID);
-    u_color = GetUniform("color", shaderProgramID);
     u_shadowWidth = GetUniform("shadowWidth", shaderProgramID);
     u_shadowOffset = GetUniform("shadowOffset", shaderProgramID);
     u_opacity = GetUniform("opacity", shaderProgramID);
@@ -32,11 +31,6 @@ void FontRenderingShader::SetFontAtlasSlot(const int32_t slot)
 void FontRenderingShader::SetPosition(const glm::vec2& position)
 {
     u_position.LoadUniform(position);
-}
-
-void FontRenderingShader::SetColor(const glm::vec3& color)
-{
-    u_color.LoadUniform(color);
 }
 
 void FontRenderingShader::SetShadowWidth(const float shadowWidth)

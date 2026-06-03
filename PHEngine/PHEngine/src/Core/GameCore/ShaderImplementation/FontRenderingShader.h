@@ -12,7 +12,7 @@ namespace ShaderImpl {
 class FontRenderingShader : public Shader {
 
 private:
-    Uniform u_fontAtlas, u_position, u_color, u_shadowWidth, u_shadowOffset, u_opacity;
+    Uniform u_fontAtlas, u_position, u_shadowWidth, u_shadowOffset, u_opacity;
 
 public:
     FontRenderingShader();
@@ -24,8 +24,6 @@ public:
     void SetFontAtlasSlot(const int32_t slot);
 
     void SetPosition(const glm::vec2& position);
-
-    void SetColor(const glm::vec3& color);
 
     void SetOpacity(const float opacity);
 
