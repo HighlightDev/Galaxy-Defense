@@ -349,7 +349,6 @@ set(BULLET_LIBS
     ConvexDecomposition)
 
 if(WIN32)
-  message("ARCH_x64: ${ARCH_x64}")
   if(ARCH_x64)
     set(LIB_LOCATION_PREFIX Win/x64/)
   else()

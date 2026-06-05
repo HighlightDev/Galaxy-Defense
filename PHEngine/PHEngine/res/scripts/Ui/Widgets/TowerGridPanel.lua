@@ -28,6 +28,7 @@ local UiRowLayout = require("Ui/Core/uiRowLayout")
 local UiGridLayout = require("Ui/Core/uiGridLayout")
 local UiLabel = require("Ui/Core/uiLabel")
 local UiImage = require("Ui/Core/uiImage")
+local UiDivider = require("Ui/Core/uiDivider")
 local ImageButton = require("Ui/Widgets/ImageButton")
 local UiImageButton = require("Ui/Widgets/ImageButton")
 local EventsHelper = require("Ui/Core/eventsHelper")
@@ -105,9 +106,11 @@ function TowerGridPanel:new(host, overlay, config)
         towerSectionHeader = nil,
         towerSectionLabel = nil,
         towerSectionCountLabel = nil,
+        towerSectionDivider = nil,
         barrierSectionHeader = nil,
         barrierSectionLabel = nil,
         barrierSectionCountLabel = nil,
+        barrierSectionDivider = nil,
         barrierCard = nil,
         backgroundRect = nil,
         rowLayout = nil,
@@ -157,6 +160,9 @@ function TowerGridPanel:new(host, overlay, config)
 
     obj.towerSectionCountLabel = UiLabel:new(host, FONT, "TowerSectionCount")
     overlay:addWidget(obj.towerSectionCountLabel)
+
+    obj.towerSectionDivider = UiDivider:new(host, "TowerSectionDivider")
+    overlay:addWidget(obj.towerSectionDivider)
 
     -- One card per tower type. The card background (a plain rectangle) is the clickable / hoverable
     -- surface; the icon and text labels sit on top as non-interactive children.
@@ -212,6 +218,9 @@ function TowerGridPanel:new(host, overlay, config)
 
     obj.barrierSectionCountLabel = UiLabel:new(host, FONT, "BarrierSectionCount")
     overlay:addWidget(obj.barrierSectionCountLabel)
+
+    obj.barrierSectionDivider = UiDivider:new(host, "BarrierSectionDivider")
+    overlay:addWidget(obj.barrierSectionDivider)
 
     obj.barrierCard = {
         info = BARRIER_CARD_INFO,
@@ -482,6 +491,20 @@ function TowerGridPanel:setupLayout(canvasName)
     self.towerSectionCountLabel:setText(string.format("%02d", #self.towerCards))
     self.towerSectionCountLabel:setZOrder(4)
 
+    -- Faded divider under the towers heading (mockup .cb-palette section separators).
+    self.towerSectionDivider:setParent(host, canvasName, self.gridBackground.widgetName)
+    self.towerSectionDivider:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+                                       UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
+    self.towerSectionDivider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
+                                       self.towerSectionHeader.widgetName, 2)
+    self.towerSectionDivider:setWidth(cardWidth)
+    self.towerSectionDivider:setHeight(4)
+    self.towerSectionDivider:setColorHexValue(Styles.Combat.cyan)
+    self.towerSectionDivider:setOpacity(0.4)
+    self.towerSectionDivider:setLineWidthPx(0.75)
+    self.towerSectionDivider:setEdgeFade(0.12)
+    self.towerSectionDivider:setZOrder(4)
+
     for i = 1, #self.towerCards do
         local card = self.towerCards[i]
         local info = card.info
@@ -602,6 +625,20 @@ function TowerGridPanel:setupLayout(canvasName)
     self.barrierSectionCountLabel:setTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
     self.barrierSectionCountLabel:setText("01")
     self.barrierSectionCountLabel:setZOrder(4)
+
+    -- Faded divider under the barriers heading (matches the towers one).
+    self.barrierSectionDivider:setParent(host, canvasName, self.gridBackground.widgetName)
+    self.barrierSectionDivider:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+                                         UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
+    self.barrierSectionDivider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
+                                         self.barrierSectionHeader.widgetName, 2)
+    self.barrierSectionDivider:setWidth(cardWidth)
+    self.barrierSectionDivider:setHeight(4)
+    self.barrierSectionDivider:setColorHexValue(Styles.Combat.lilac)
+    self.barrierSectionDivider:setOpacity(0.4)
+    self.barrierSectionDivider:setLineWidthPx(0.75)
+    self.barrierSectionDivider:setEdgeFade(0.12)
+    self.barrierSectionDivider:setZOrder(4)
 
     -- Force-field barrier card.
     local barrierCard = self.barrierCard

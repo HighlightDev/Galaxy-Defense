@@ -13,7 +13,8 @@ CommonUiWidgetCreator = {
         UI_SLIDER_BAR = 10,
         UI_TEXT_BLOCK = 11,
         UI_GRID_LAYOUT = 12,
-        UI_SCROLL_LIST = 13
+        UI_SCROLL_LIST = 13,
+        UI_DIVIDER = 14
     }
 }
 
@@ -46,6 +47,8 @@ local function getTypeToString(commonUiWidgetType)
         return "UI_GRID_LAYOUT"
     elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_SCROLL_LIST then
         return "UI_SCROLL_LIST"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_DIVIDER then
+        return "UI_DIVIDER"
     else
         return "GAME_OR_UNKNOWN(" .. tostring(commonUiWidgetType) .. ")"
     end

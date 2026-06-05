@@ -101,9 +101,9 @@ public:
 
     std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
-    void OnPropertiesShouldBeUpdatedOnRenderThread() override;
+    bool OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
-    void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+    bool OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
     void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
@@ -127,9 +127,9 @@ protected:
     void OnUnregistered() override;
 
 private:
-    void SyncDataOnRenderThread();
+    bool SyncDataOnRenderThread();
 
-    void SyncDataOnLuaThread();
+    bool SyncDataOnLuaThread();
 };
 } // namespace GUI
 } // namespace EngineCore

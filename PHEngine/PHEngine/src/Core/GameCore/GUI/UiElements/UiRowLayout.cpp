@@ -115,7 +115,7 @@ void UiRowLayout::RecalculatePositionsForChildren()
 void UiRowLayout::UnpausableTick(const float deltaTimeSec)
 {
     const auto childTransformDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto& child) {
-        return child->IsTransformDirty() || child->IsVisibleDirty();
+        return child->IsTransformDirty() || child->IsPropertiesShouldBeUpdatedOnRenderThread();
     });
 
     if (childTransformDirty) {
@@ -156,14 +156,12 @@ void UiRowLayout::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     }
 }
 
-void UiRowLayout::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiRowLayout::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
-void UiRowLayout::SyncDataOnLuaThread()
+bool UiRowLayout::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiRowLayout::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -186,7 +184,9 @@ void UiRowLayout::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 } // namespace GUI
 } // namespace EngineCore

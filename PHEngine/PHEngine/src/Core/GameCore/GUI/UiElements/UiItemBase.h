@@ -76,8 +76,6 @@ protected:
 
     bool mIsVisible;
 
-    bool mIsVisibleDirty{false};
-
     bool mCanInterceptMouseInputEvents;
 
     bool mIsTransformDirty;
@@ -131,9 +129,9 @@ public:
 
     virtual void OnUnregistered() = 0;
 
-    virtual void OnPropertiesShouldBeUpdatedOnRenderThread();
+    virtual bool OnPropertiesShouldBeUpdatedOnRenderThread();
 
-    virtual void OnPropertiesShouldBeUpdatedOnLuaThread();
+    virtual bool OnPropertiesShouldBeUpdatedOnLuaThread();
 
     virtual bool IsTransformDependentToUiItem(const std::string& uiItemName) const;
 
@@ -152,6 +150,8 @@ public:
     virtual bool CanBloomBeApplied() const;
 
     virtual void SetCanBloomBeApplied(const bool canBloomBeApplied);
+
+    bool IsPropertiesShouldBeUpdatedOnRenderThread() const;
 
     void SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable>& inputReceiver);
 
@@ -200,7 +200,6 @@ public:
     void SetIsGuiScissorsSlaveRecursive(const bool isSlave);
     std::weak_ptr<::EngineCore::Scene> GetScene() const override;
     const std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData>& GetAnchors() const;
-    bool IsVisibleDirty() const;
 
     void SetAbsoluteOrigin(const glm::ivec2& transform) override;
     void SetZOrder(const size_t z_order) override;
@@ -277,9 +276,9 @@ private:
     // от z/слоя предков, поэтому при их изменении пересобрать путь нужно у всей ветки.
     void PropagateRenderUpdateToSubtree();
 
-    void SyncDataOnRenderThread();
+    bool SyncDataOnRenderThread();
 
-    void SyncDataOnLuaThread();
+    bool SyncDataOnLuaThread();
 
     void UpdateScaleProperty();
 

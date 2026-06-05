@@ -27,8 +27,9 @@ UiProgressBar::UiProgressBar(const std::string& name)
     , mOpacity(1.0f)
     , mFillPercentValue(0.0f)
     , mBorderRadius(0.0f)
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
-          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(mOpacity, "Opacity", [this](const float newOpacityValue) {
+        SetOpacity(newOpacityValue);
+    }))
 {
     ext_assert(!mProperties.count("Opacity"), "UiProgressBar::ctor: Property 'Opacity' already exists");
     mProperties.emplace("Opacity", mOpacityProperty);
@@ -55,18 +56,14 @@ void UiProgressBar::OnUnregistered()
 {
 }
 
-void UiProgressBar::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiProgressBar::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
-
-    SyncDataOnRenderThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread() && SyncDataOnRenderThread();
 }
 
-void UiProgressBar::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiProgressBar::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
 void UiProgressBar::SetEmptyColor(const glm::vec3& color)
@@ -226,7 +223,7 @@ void UiProgressBar::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr
     }
 }
 
-void UiProgressBar::SyncDataOnRenderThread()
+bool UiProgressBar::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiProgressBar::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -262,12 +259,13 @@ void UiProgressBar::SyncDataOnRenderThread()
                 }
             }
         }
-    } else {
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+
+        return true;
     }
+    return false;
 }
 
-void UiProgressBar::SyncDataOnLuaThread()
+bool UiProgressBar::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiProgressBar::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -299,7 +297,9 @@ void UiProgressBar::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 } // namespace GUI
 } // namespace EngineCore

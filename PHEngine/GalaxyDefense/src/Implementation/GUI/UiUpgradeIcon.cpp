@@ -95,17 +95,14 @@ void UiUpgradeIcon::ReallocateTexture(const bool updateRenderThreadData, const b
     }
 }
 
-void UiUpgradeIcon::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiUpgradeIcon::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
-    SyncDataOnRenderThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread() && SyncDataOnRenderThread();
 }
 
-void UiUpgradeIcon::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiUpgradeIcon::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
 void UiUpgradeIcon::SetTextureSrc(const std::string& textureSrc)
@@ -463,7 +460,7 @@ void UiUpgradeIcon::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr
     }
 }
 
-void UiUpgradeIcon::SyncDataOnRenderThread()
+bool UiUpgradeIcon::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiUpgradeIcon::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -514,12 +511,12 @@ void UiUpgradeIcon::SyncDataOnRenderThread()
                 }
             }
         }
-    } else {
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+        return true;
     }
+    return false;
 }
 
-void UiUpgradeIcon::SyncDataOnLuaThread()
+bool UiUpgradeIcon::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiUpgradeIcon::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -567,7 +564,9 @@ void UiUpgradeIcon::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 } // namespace GUI
 } // namespace EngineCore

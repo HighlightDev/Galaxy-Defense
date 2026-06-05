@@ -115,18 +115,14 @@ std::string UiToggleButton::GetUiTypeString() const
     return "UiToggleButton";
 }
 
-void UiToggleButton::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiToggleButton::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
-
-    SyncDataOnRenderThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread() && SyncDataOnRenderThread();
 }
 
-void UiToggleButton::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiToggleButton::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
 void UiToggleButton::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
@@ -174,7 +170,7 @@ std::shared_ptr<LuaProxy> UiToggleButton::ReplicateLuaProxy()
     return std::make_shared<UiToggleButtonLuaProxy>(std::static_pointer_cast<UiToggleButton>(shared_from_this()));
 }
 
-void UiToggleButton::SyncDataOnRenderThread()
+bool UiToggleButton::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiToggleButton::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -209,12 +205,12 @@ void UiToggleButton::SyncDataOnRenderThread()
                 }
             }
         }
-    } else {
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+        return true;
     }
+    return false;
 }
 
-void UiToggleButton::SyncDataOnLuaThread()
+bool UiToggleButton::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiToggleButton::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -244,7 +240,9 @@ void UiToggleButton::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return true;
 }
 } // namespace GUI
 } // namespace EngineCore

@@ -51,12 +51,15 @@ UiItemBase::UiItemBase(const std::string& name)
     , mIsTransformDirty(false)
     , mIsPropertiesShouldBeUpdatedOnRenderThread(false)
     , mIsPropertiesShouldBeUpdatedOnLuaThread(false)
-    , mScaleProperty(std::make_shared<EngineObjectProperty<glm::vec2>>(
-          glm::vec2(1.0f), "Scale", [this](const glm::vec2& newScaleValue) { UpdateScaleProperty(); }))
-    , mVerticalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
-          0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
-    , mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
-          0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
+    , mScaleProperty(
+          std::make_shared<EngineObjectProperty<glm::vec2>>(
+              glm::vec2(1.0f), "Scale", [this](const glm::vec2& newScaleValue) { UpdateScaleProperty(); }))
+    , mVerticalCenterOffsetProperty(
+          std::make_shared<EngineObjectProperty<int32_t>>(
+              0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
+    , mHorizontalCenterOffsetProperty(
+          std::make_shared<EngineObjectProperty<int32_t>>(
+              0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
     , mIsGuiScissorsSlave(false)
     , mIsGuiScissorsMaster(false)
     , mCanBloomBeApplied(false)
@@ -268,7 +271,6 @@ void UiItemBase::SetIsVisible(const bool isVisible)
 {
     if (mIsVisible != isVisible) {
         mIsVisible = isVisible;
-        SetIsVisibleDirty(true);
         SetChildrenIsVisible(mIsVisible);
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
@@ -498,19 +500,14 @@ void UiItemBase::SetIsTransformDirty(const bool isDirty)
     mIsTransformDirty = isDirty;
 }
 
-bool UiItemBase::IsVisibleDirty() const
-{
-    return mIsVisibleDirty;
-}
-
-void UiItemBase::SetIsVisibleDirty(const bool isDirty)
-{
-    mIsVisibleDirty = isDirty;
-}
-
 void UiItemBase::SetIsPropertiesShouldBeUpdatedOnRenderThread(const bool update)
 {
     mIsPropertiesShouldBeUpdatedOnRenderThread = update;
+}
+
+bool UiItemBase::IsPropertiesShouldBeUpdatedOnRenderThread() const
+{
+    return mIsPropertiesShouldBeUpdatedOnRenderThread;
 }
 
 void UiItemBase::SetIsPropertiesShouldBeUpdatedOnLuaThread(const bool update)
@@ -624,9 +621,9 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
                 leftAnchorUiItem, "UiItemBase::CalculateHorizontalAnchorPositions: leftAnchorUiItem is null, name: " + GetName());
             const auto& leftAnchorUiItemBoundingArea = leftAnchorUiItem->GetBoundingArea();
 
-            const int32_t originX = eUiAnchor::LEFT == leftAnchor.GetDstAnchor()
-                ? leftAnchorUiItemBoundingArea.GetMin().x
-                : eUiAnchor::RIGHT == leftAnchor.GetDstAnchor() ? leftAnchorUiItemBoundingArea.GetMax().x : 0;
+            const int32_t originX = eUiAnchor::LEFT == leftAnchor.GetDstAnchor() ? leftAnchorUiItemBoundingArea.GetMin().x
+                : eUiAnchor::RIGHT == leftAnchor.GetDstAnchor()                  ? leftAnchorUiItemBoundingArea.GetMax().x
+                                                                                 : 0;
             mAbsoluteOrigin.x = originX + leftAnchor.GetSrcAnchorMargin() + mHorizontalCenterOffset;
         } else if (mAnchors.count(eUiAnchor::RIGHT)) {
             const auto& rightAnchor = mAnchors.at(eUiAnchor::RIGHT);
@@ -637,9 +634,9 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
 
             const auto& rightAnchorUiItemBoundingArea = rightAnchorUiItem->GetBoundingArea();
 
-            const int32_t anchorOriginX = eUiAnchor::LEFT == rightAnchor.GetDstAnchor()
-                ? rightAnchorUiItemBoundingArea.GetMin().x
-                : eUiAnchor::RIGHT == rightAnchor.GetDstAnchor() ? rightAnchorUiItemBoundingArea.GetMax().x : 0;
+            const int32_t anchorOriginX = eUiAnchor::LEFT == rightAnchor.GetDstAnchor() ? rightAnchorUiItemBoundingArea.GetMin().x
+                : eUiAnchor::RIGHT == rightAnchor.GetDstAnchor()                        ? rightAnchorUiItemBoundingArea.GetMax().x
+                                                                                        : 0;
             mAbsoluteOrigin.x = anchorOriginX - mWidth - rightAnchor.GetSrcAnchorMargin() + mHorizontalCenterOffset;
         }
     }
@@ -699,9 +696,9 @@ void UiItemBase::CalculateVerticalAnchorPositions()
                 "UiItemBase::CalculateVerticalAnchorPositions: bottomAnchorUiItem is null, name: " + GetName());
             const auto& bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
 
-            const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor()
-                ? bottomAnchorUiItemBoundingArea.GetMin().y
-                : eUiAnchor::TOP == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMax().y : 0;
+            const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMin().y
+                : eUiAnchor::TOP == bottomAnchor.GetDstAnchor()                      ? bottomAnchorUiItemBoundingArea.GetMax().y
+                                                                                     : 0;
             mAbsoluteOrigin.y = originY + bottomAnchor.GetSrcAnchorMargin() + mVerticalCenterOffset;
         } else if (mAnchors.count(eUiAnchor::TOP)) {
             const auto& topAnchor = mAnchors.at(eUiAnchor::TOP);
@@ -711,9 +708,9 @@ void UiItemBase::CalculateVerticalAnchorPositions()
 
             const auto& topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
 
-            const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.GetDstAnchor()
-                ? topAnchorUiItemBoundingArea.GetMin().y
-                : eUiAnchor::TOP == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMax().y : 0;
+            const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMin().y
+                : eUiAnchor::TOP == topAnchor.GetDstAnchor()                            ? topAnchorUiItemBoundingArea.GetMax().y
+                                                                                        : 0;
             mAbsoluteOrigin.y = anchorOriginY - mHeight - topAnchor.GetSrcAnchorMargin() + mVerticalCenterOffset;
         }
     }
@@ -773,12 +770,14 @@ void UiItemBase::UnpausableTick(const float deltaTimeSec)
         mIsTransformDirty = false;
     }
 
-    if (mIsPropertiesShouldBeUpdatedOnRenderThread || mIsVisibleDirty) {
-        OnPropertiesShouldBeUpdatedOnRenderThread();
+    if (mIsPropertiesShouldBeUpdatedOnRenderThread) {
+        const bool successfullyUpdated = OnPropertiesShouldBeUpdatedOnRenderThread();
+        mIsPropertiesShouldBeUpdatedOnRenderThread = !successfullyUpdated;
     }
 
-    if (mIsPropertiesShouldBeUpdatedOnLuaThread || mIsVisibleDirty) {
-        OnPropertiesShouldBeUpdatedOnLuaThread();
+    if (mIsPropertiesShouldBeUpdatedOnLuaThread) {
+        const bool successfullyUpdated = OnPropertiesShouldBeUpdatedOnLuaThread();
+        mIsPropertiesShouldBeUpdatedOnLuaThread = !successfullyUpdated;
     }
 
     for (const auto& child : mChildren) {
@@ -792,22 +791,20 @@ void UiItemBase::UnpausableTick(const float deltaTimeSec)
     if (mSequenceAnimator) {
         mSequenceAnimator->UnpausableTick(deltaTimeSec);
     }
-
-    SetIsVisibleDirty(false);
 }
 
 void UiItemBase::Tick(const float deltaTimeSec)
 {
 }
 
-void UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    SyncDataOnRenderThread();
+    return SyncDataOnRenderThread();
 }
 
-void UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    SyncDataOnLuaThread();
+    return SyncDataOnLuaThread();
 }
 
 std::vector<std::shared_ptr<UiItemBase>> UiItemBase::GetAllChildren() const
@@ -920,7 +917,6 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         const auto isVisible = jsonObj["visible"].get<bool>();
         if (mIsVisible != isVisible) {
             mIsVisible = isVisible;
-            SetIsVisibleDirty(true);
 #ifdef DEBUG
             SetChildrenIsVisible(mIsVisible && not mIsHiddenForDebugging);
 #else
@@ -1024,7 +1020,7 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     }
 }
 
-void UiItemBase::SyncDataOnRenderThread()
+bool UiItemBase::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -1072,10 +1068,13 @@ void UiItemBase::SyncDataOnRenderThread()
                     });
             }
         }
+        return true;
     }
+
+    return false;
 }
 
-void UiItemBase::SyncDataOnLuaThread()
+bool UiItemBase::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -1125,7 +1124,9 @@ void UiItemBase::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 
 void UiItemBase::InitLuaProxy(const std::shared_ptr<Scene>& sceneSp)

@@ -477,10 +477,6 @@ function MainMenuOverlay:new(host)
         titleMain:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
                             canvasName)
         titleMain:setZOrder(Z_TITLE)
-        -- Title gradient, approximating .game-title--gradient (menu.css): the reference is a 135deg
-        -- cyan->blue->indigo->purple ramp; the engine does a 2-stop per-glyph gradient, so a vertical
-        -- cyan-glow -> purple reads as one coherent top-to-bottom ramp across the single-line title.
-        titleMain:setTextGradientHexValues(UiLabel.TextGradientColorType.VERTICAL, 0x90e0ef, 0xc084fc)
 
         applyLabelInit(titleSub)
         titleSub:setParent(h, canvasName, canvasName)

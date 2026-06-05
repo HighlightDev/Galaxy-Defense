@@ -46,12 +46,12 @@ public:
 protected:
     void UpdateAnchorTransform() override;
 
-    void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+    bool OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
 private:
     void RecalculatePositionsForChildren();
 
-    void SyncDataOnLuaThread();
+    bool SyncDataOnLuaThread();
 };
 } // namespace GUI
 } // namespace EngineCore

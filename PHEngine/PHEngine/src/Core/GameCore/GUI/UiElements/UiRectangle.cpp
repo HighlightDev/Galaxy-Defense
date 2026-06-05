@@ -36,12 +36,15 @@ UiRectangle::UiRectangle(const std::string& name)
     , mIsRoundBottom(true)
     , mApplyBlur(false)
     , mBlurMix(0.0f)
-    , mColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(
-          mColor, "Color", [this](const glm::vec3& newColorVaue) { SetColor(newColorVaue); }))
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
-          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
+    , mColorProperty(
+          std::make_shared<EngineObjectProperty<glm::vec3>>(
+              mColor, "Color", [this](const glm::vec3& newColorVaue) { SetColor(newColorVaue); }))
+    , mOpacityProperty(
+          std::make_shared<EngineObjectProperty<float>>(
+              mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 #ifdef DEBUG
-    , mDebugLabel(std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "Rectangle_DebugLabel_" + std::to_string(GetUId())))
+    , mDebugLabel(
+          std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "Rectangle_DebugLabel_" + std::to_string(GetUId())))
 #endif
 {
     ext_assert(!mProperties.count("Color"), "UiRectangle::ctor: Property 'Color' already exists");
@@ -128,18 +131,14 @@ void UiRectangle::SetColor(const uint8_t r, const uint8_t g, const uint8_t b)
     SetColor(color);
 }
 
-void UiRectangle::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiRectangle::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
-
-    SyncDataOnRenderThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread() && SyncDataOnRenderThread();
 }
 
-void UiRectangle::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiRectangle::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
 void UiRectangle::SetColor(const uint32_t hexColor)
@@ -307,7 +306,7 @@ void UiRectangle::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     }
 }
 
-void UiRectangle::SyncDataOnRenderThread()
+bool UiRectangle::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -347,12 +346,13 @@ void UiRectangle::SyncDataOnRenderThread()
                 }
             }
         }
-    } else {
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+
+        return true;
     }
+    return false;
 }
 
-void UiRectangle::SyncDataOnLuaThread()
+bool UiRectangle::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -388,7 +388,9 @@ void UiRectangle::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 } // namespace GUI
 } // namespace EngineCore

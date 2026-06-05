@@ -31,7 +31,6 @@ target_include_directories(${EXECUTABLE_NAME}
     PUBLIC ${GLM_DEPENDENCE_INCLUDE}
 )
 
-message("ARCH_x64: ${ARCH_x64}")
 if(ARCH_x64)
     set(LIB_LOCATION_PREFIX Win/x64/)
 else()

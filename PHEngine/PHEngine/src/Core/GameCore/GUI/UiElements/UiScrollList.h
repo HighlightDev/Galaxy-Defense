@@ -102,9 +102,9 @@ protected:
 
     void UpdateAnchorTransform() override;
 
-    void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+    bool OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
-    void OnPropertiesShouldBeUpdatedOnRenderThread() override;
+    bool OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
 private:
     void HandleScroll(const EngineCore::eMouseScrollDirection direction);
@@ -113,9 +113,9 @@ private:
 
     void PropagateGuiScissorsToChildren();
 
-    void SyncDataOnLuaThread();
+    bool SyncDataOnLuaThread();
 
-    void SyncDataOnRenderThread();
+    bool SyncDataOnRenderThread();
 };
 
 } // namespace GUI

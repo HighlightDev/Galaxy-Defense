@@ -29,8 +29,9 @@ UiLabel::UiLabel(const std::string& fontName, const std::string& name)
     , mTextLineWidthHeight()
     , mFontSize(15)
     , mTextColor(glm::vec3())
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
-          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(mOpacity, "Opacity", [this](const float newOpacityValue) {
+        SetOpacity(newOpacityValue);
+    }))
 {
     ext_assert(mFontName.size(), "UiLabel::ctor: fontName is empty");
     ext_assert(!mProperties.count("Opacity"), "UiLabel::ctor: Property 'Opacity' already exists");
@@ -58,18 +59,16 @@ void UiLabel::OnUnregistered()
 {
 }
 
-void UiLabel::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiLabel::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
+    const bool parentUpdated = UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
     mTextLineWidthHeight = GetBoundingArea().GetHalfExtent() * 2;
-    SyncDataOnRenderThread();
+    return parentUpdated && SyncDataOnRenderThread();
 }
 
-void UiLabel::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiLabel::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
 void UiLabel::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
@@ -124,8 +123,7 @@ void UiLabel::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         }
     }
     if (jsonObj.contains("text_gradient_type")) {
-        const auto text_gradient_type
-            = static_cast<eTextGradientColorType>(jsonObj["text_gradient_type"].get<uint8_t>());
+        const auto text_gradient_type = static_cast<eTextGradientColorType>(jsonObj["text_gradient_type"].get<uint8_t>());
         if (text_gradient_type != mTextGradientColorType) {
             mTextGradientColorType = text_gradient_type;
             bShouldUpdatePropertiesOnRT = true;
@@ -331,7 +329,7 @@ glm::ivec2 UiLabel::GetTextScreenSpaceSize() const
     return mTextScreenSpaceSize;
 }
 
-void UiLabel::SyncDataOnRenderThread()
+bool UiLabel::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiLabel::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -376,12 +374,13 @@ void UiLabel::SyncDataOnRenderThread()
                 }
             }
         }
-    } else {
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+
+        return true;
     }
+    return false;
 }
 
-void UiLabel::SyncDataOnLuaThread()
+bool UiLabel::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiLabel::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -417,7 +416,9 @@ void UiLabel::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 } // namespace GUI
 } // namespace EngineCore

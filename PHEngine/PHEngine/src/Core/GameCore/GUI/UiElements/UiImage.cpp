@@ -87,17 +87,14 @@ void UiImage::ReallocateTexture(const bool updateRenderThreadData, const bool up
     }
 }
 
-void UiImage::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiImage::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
-    SyncDataOnRenderThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread() && SyncDataOnRenderThread();
 }
 
-void UiImage::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiImage::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
 void UiImage::SetTextureSrc(const std::string& textureSrc)
@@ -290,7 +287,7 @@ void UiImage::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     }
 }
 
-void UiImage::SyncDataOnRenderThread()
+bool UiImage::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiImage::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -327,12 +324,12 @@ void UiImage::SyncDataOnRenderThread()
                 }
             }
         }
-    } else {
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+        return true;
     }
+    return false;
 }
 
-void UiImage::SyncDataOnLuaThread()
+bool UiImage::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiImage::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -366,7 +363,9 @@ void UiImage::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 } // namespace GUI
 } // namespace EngineCore

@@ -240,7 +240,7 @@ int32_t UiGridLayout::GetRowHeight(const uint32_t rowIndex) const
 void UiGridLayout::UnpausableTick(const float deltaTimeSec)
 {
     const auto childTransformDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto& child) {
-        return child->IsTransformDirty() || child->IsVisibleDirty();
+        return child->IsTransformDirty() || child->IsPropertiesShouldBeUpdatedOnRenderThread();
     });
 
     if (childTransformDirty) {
@@ -311,14 +311,12 @@ void UiGridLayout::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     }
 }
 
-void UiGridLayout::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiGridLayout::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
-void UiGridLayout::SyncDataOnLuaThread()
+bool UiGridLayout::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiGridLayout::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -351,7 +349,9 @@ void UiGridLayout::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 } // namespace GUI
 } // namespace EngineCore

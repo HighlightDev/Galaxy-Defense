@@ -54,16 +54,14 @@ void UiConnectionLine::OnUnregistered()
 {
 }
 
-void UiConnectionLine::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiConnectionLine::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
-    SyncDataOnRenderThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread() && SyncDataOnRenderThread();
 }
 
-void UiConnectionLine::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiConnectionLine::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
 void UiConnectionLine::SetStartPoint(const glm::vec2& startPoint)
@@ -344,7 +342,7 @@ void UiConnectionLine::SyncFromLuaJsonProperties(const std::string& luaJsonProps
     }
 }
 
-void UiConnectionLine::SyncDataOnRenderThread()
+bool UiConnectionLine::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiConnectionLine::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -383,12 +381,13 @@ void UiConnectionLine::SyncDataOnRenderThread()
                 }
             }
         }
-    } else {
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+
+        return true;
     }
+    return false;
 }
 
-void UiConnectionLine::SyncDataOnLuaThread()
+bool UiConnectionLine::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiConnectionLine::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -428,7 +427,9 @@ void UiConnectionLine::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 } // namespace GUI
 } // namespace EngineCore

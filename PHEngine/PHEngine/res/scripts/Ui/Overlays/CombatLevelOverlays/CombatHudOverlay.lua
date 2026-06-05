@@ -30,7 +30,7 @@ local UiRowLayout = require("Ui/Core/uiRowLayout")
 local UiRectangle = require("Ui/Core/uiRectangle")
 local UiLabel = require("Ui/Core/uiLabel")
 local UiImage = require("Ui/Core/uiImage")
-local ImageAndLabelTile = require("Ui/Widgets/ImageAndLabelTile")
+local ObjectivesPanel = require("Ui/Widgets/ObjectivesPanel")
 local ImageButton = require("Ui/Widgets/ImageButton")
 local LabelButton = require("Ui/Widgets/LabelButton")
 local Styles = require("Ui/Common/styles")
@@ -70,121 +70,43 @@ PlayerStatusType = {
 local CombatState = {PREPARATION = 0, COMBAT = 1}
 
 local CombatHudOverlay = {
-    levelProgressContainer = nil,
-    levelProgressRowLayout = nil,
     CombatState = CombatState,
     preparationButtonRadius = 6
 }
 
-local RequirementTrackers = {}
-local RequirementTrackersIdle = {}
+local TileSize = 80 -- tower grid main button size (px)
 
-local RequirementTrackerHint = nil
+-- Default objective labels per tracker type, used when the engine provides no hint text.
+local OBJECTIVE_DEFAULT_LABEL = {
+    DestroySpaceshipsTracker = "Уничтожить корабли",
+    MissedSpaceshipsTracker = "Не пропустить корабли"
+}
 
-local TileSize = 80 -- temporary for now
-
-local function showTileRequirementAchived(requirementTile)
-    requirementTile:setTextureSource("check.png")
-    requirementTile:setLabelVisibility(false)
-    requirementTile:setIsFlipped(true)
-    requirementTile:setImageColorHexValue(0xFFFFFF)
-    requirementTile:setUseImageCustomColor(true)
-end
-
-local function showTileRequirementFailed(requirementTile)
-    requirementTile:setTextureSource("cancel.png")
-    requirementTile:setLabelVisibility(false)
-    requirementTile:setImageColorHexValue(0xFFFFFF)
-    requirementTile:setUseImageCustomColor(true)
-end
-
-local function showAllRequirementsAchived()
-    for _, requirementTile in pairs(RequirementTrackers) do showTileRequirementAchived(requirementTile) end
-end
-
-local function updateRequirementTileData(host, levelProgressTile, trackerJson)
+-- Maps one requirement-tracker JSON entry to an ObjectivesPanel item descriptor
+-- ({icon, label, value, color, done, failed}); see ObjectivesPanel:setItems.
+local function trackerToObjectiveItem(trackerJson)
     local name = trackerJson["name"]
+    local hint = trackerJson["hint"]
+    if hint == nil or hint == "" or hint == "nil" then hint = nil end
+    local label = hint or OBJECTIVE_DEFAULT_LABEL[name] or tostring(name)
+
     if name == "DestroySpaceshipsTracker" then
-        local leftSpaceshipsCount = trackerJson["left_to_destroy_spaceships_count"]
-        if tonumber(leftSpaceshipsCount) > 0 then
-            levelProgressTile:setLabelText(leftSpaceshipsCount)
-            levelProgressTile:setTextureSource("skull.png")
-        else
-            showTileRequirementAchived(levelProgressTile)
+        local left = tonumber(trackerJson["left_to_destroy_spaceships_count"]) or 0
+        if left > 0 then
+            return {icon = "skull.png", label = label, value = tostring(left), color = Styles.Combat.cyanGlow}
         end
+        return {icon = "check.png", label = label, color = 0x86efac, done = true}
     elseif name == "MissedSpaceshipsTracker" then
-        local doNotMissCount = tonumber(trackerJson["not_to_miss_spaceships_count"])
-        local missedCount = tonumber(trackerJson["missed_spaceships_count"])
+        local doNotMissCount = tonumber(trackerJson["not_to_miss_spaceships_count"]) or 0
+        local missedCount = tonumber(trackerJson["missed_spaceships_count"]) or 0
         local stillCanMiss = math.max(doNotMissCount - missedCount, 0)
         if stillCanMiss > 0 then
-            levelProgressTile:setLabelText(tostring(stillCanMiss))
-            levelProgressTile:setTextureSource("warning.png")
-        else
-            showTileRequirementFailed(levelProgressTile)
-            UiOverlayManager:openOverlay(host, "LevelFailedOverlay")
-            EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
+            return {icon = "warning.png", label = label, value = tostring(stillCanMiss), color = Styles.Combat.danger}
         end
-    else
-        assert(false, "Not supported requirement: " .. name, debug.traceback())
-    end
-    local hintText = tostring(trackerJson["hint"])
-    levelProgressTile.hintText = hintText
-end
-
-local function fillRequirementTilesPool(host, combatOverlay, count)
-    for i = 1, count, 1 do
-        local levelProgressTile = ImageAndLabelTile:new(host, combatOverlay)
-        combatOverlay:addCompoundWidget(levelProgressTile)
-        RequirementTrackersIdle[#RequirementTrackersIdle + 1] = levelProgressTile
-
-        levelProgressTile:subscribeOnLuaProxiesReady(function(host)
-            levelProgressTile:setParent(host, combatOverlay:getOverlayCanvas().widgetName,
-                                        combatOverlay.levelProgressRowLayout.widgetName)
-            levelProgressTile:setWidth(TileSize)
-            levelProgressTile:setHeight(TileSize)
-            levelProgressTile:setBackgroundTileOpacity(1.0)
-            levelProgressTile:setIsVisible(false)
-            levelProgressTile:setBackgroundTileColorHexValue(Styles.Combat.chipColor)
-            levelProgressTile:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-                if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-                    RequirementTrackerHint:setIsVisible(true)
-                    RequirementTrackerHint:setAttachTargetUiItemName(levelProgressTile.widgetName)
-                    RequirementTrackerHint:setText(levelProgressTile.hintText)
-                else
-                    RequirementTrackerHint:setIsVisible(false)
-                    RequirementTrackerHint:setAttachTargetUiItemName("")
-                end
-            end)
-        end)
-    end
-end
-
-local function updateRequirementTiles(host, combatOverlay, requirementTrackers)
-    -- move active requirements tiles to idle state
-    for _, activeTrackerTile in pairs(RequirementTrackers) do
-        activeTrackerTile:setIsVisible(false)
-        RequirementTrackersIdle[#RequirementTrackersIdle + 1] = activeTrackerTile
-    end
-    RequirementTrackers = {}
-
-    local action = function()
-        for index = 1, #requirementTrackers, 1 do
-            local trackerTile = RequirementTrackersIdle[index]
-            table.remove(RequirementTrackersIdle, index)
-            RequirementTrackers[index] = trackerTile
-            local trackerJson = requirementTrackers[index]
-            updateRequirementTileData(host, trackerTile, trackerJson)
-            trackerTile:setIsVisible(true)
-        end
+        return {icon = "cancel.png", label = label, color = Styles.Combat.danger, failed = true}
     end
 
-    local predicate = function() return combatOverlay.allWidgetLuaProxiesReady end
-
-    if predicate() then
-        action()
-    else
-        combatOverlay:addActionWithPredicate(action, predicate)
-    end
+    assert(false, "Not supported requirement: " .. tostring(name), debug.traceback())
 end
 
 function CombatHudOverlay:new(host)
@@ -275,9 +197,16 @@ function CombatHudOverlay:new(host)
     local sectorLabel = UiLabel:new(host, FONT, "CombatSectorLabel")
     combatOverlay:addWidget(sectorLabel)
 
+    -- Forward declarations: the objectives panel + its rebuild fn are created after the dock, but the
+    -- ЗАДАЧИ dock toggle references them, so declare them up front and assign below.
+    local objectivesPanel
+    local rebuildObjectives
+    local objectivesActive = true -- objectives visible by default in combat (mockup parity)
+
     -- ─── Side dock (left vertical rail with panel toggles) ─────────────────────
     -- Mockup: icon rail toggling the side panels. Engine mapping: АРСЕНАЛ → build-create popup,
-    -- ТЕХ → tower upgrades panel (both functional); КАРТА / ЖУРНАЛ are placeholders (no engine data yet).
+    -- ЗАДАЧИ → objectives panel, ТЕХ → tower upgrades panel (functional); КАРТА / ЖУРНАЛ are
+    -- placeholders (no engine data yet).
     local dockPanel = UiRectangle:new(host, "CombatDockPanel")
     combatOverlay:addWidget(dockPanel)
     -- dock buttons carry both an icon (UiImage on top) and a text label (LabelButton, bottom-aligned)
@@ -285,6 +214,10 @@ function CombatHudOverlay:new(host)
     combatOverlay:addCompoundWidget(dockArsenalButton)
     local dockArsenalIcon = UiImage:new(host, "CombatDockArsenalIcon")
     combatOverlay:addWidget(dockArsenalIcon)
+    local dockObjButton = LabelButton:new(host, combatOverlay, FONT, "CombatDockObj")
+    combatOverlay:addCompoundWidget(dockObjButton)
+    local dockObjIcon = UiImage:new(host, "CombatDockObjIcon")
+    combatOverlay:addWidget(dockObjIcon)
     local dockTechButton = LabelButton:new(host, combatOverlay, FONT, "CombatDockTech")
     combatOverlay:addCompoundWidget(dockTechButton)
     local dockTechIcon = UiImage:new(host, "CombatDockTechIcon")
@@ -323,6 +256,8 @@ function CombatHudOverlay:new(host)
     local dockButtons = {
         {button = dockArsenalButton, icon = dockArsenalIcon, label = "АРСЕНАЛ", iconTexture = "castle-turret.png",
          hovered = false, rotationDegrees = 180.0, isActive = function() return towerGridPanel.isCreatePanelVisible() end},
+        {button = dockObjButton, icon = dockObjIcon, label = "ЗАДАЧИ", iconTexture = "flag-banner-fold.png",
+         hovered = false, rotationDegrees = 180.0, isActive = function() return objectivesActive end},
         {button = dockTechButton, icon = dockTechIcon, label = "РАЗВИТИЕ", iconTexture = "graph.png",
          hovered = false, rotationDegrees = 0.0, isActive = function() return towerUpgradesPanel.background:getIsVisible() end},
         {button = dockMapButton, icon = dockMapIcon, label = "КАРТА", iconTexture = "map-trifold.png",
@@ -338,6 +273,11 @@ function CombatHudOverlay:new(host)
     end
 
     dockArsenalButton:subscribeOnMouseInputClickedCallback(function() towerGridPanel.toggleCreatePanel() end)
+    dockObjButton:subscribeOnMouseInputClickedCallback(function()
+        objectivesActive = not objectivesActive
+        objectivesPanel:setIsVisible(objectivesActive)
+        if objectivesActive then rebuildObjectives() end
+    end)
     dockTechButton:subscribeOnMouseInputClickedCallback(function()
         local willShow = not towerUpgradesPanel.background:getIsVisible()
         towerUpgradesPanel:setIsVisible(willShow)
@@ -351,10 +291,6 @@ function CombatHudOverlay:new(host)
     end)
 
     -- ─── Combat-state widgets ─────────────────────────────────────────────────
-    local levelProgressContainer = UiItem:new(host, "LvlProgressContainer")
-    combatOverlay:addWidget(levelProgressContainer)
-    combatOverlay.levelProgressContainer = levelProgressContainer
-
     local selectedTowerPanel = SelectedTowerPanel:new(host, combatOverlay, "SelectedTowerPanelObj", {
         -- ДЕМОНТАЖ: relocated from the build palette — enters tower-removal mode (same broadcast as before).
         onDemolishClicked = function()
@@ -370,14 +306,48 @@ function CombatHudOverlay:new(host)
     })
     combatOverlay:addCompoundWidget(selectedTowerPanel)
 
-    local levelProgressRowLayout = UiRowLayout:new(host, "LvlProgressRow")
-    combatOverlay:addWidget(levelProgressRowLayout)
-    combatOverlay.levelProgressRowLayout = levelProgressRowLayout
+    -- Operation objectives (right column, above the selected-tower panel). Fed from the engine's
+    -- requirement trackers; rendered in the mockup's cb-obj list style. (Forward-declared above the dock.)
+    objectivesPanel = ObjectivesPanel:new(host, combatOverlay, "ObjectivesPanel")
 
-    RequirementTrackerHint = UiTextBlock:new(host, "JetBrainsMono-VariableFont_wght", "TestTextBlock")
-    combatOverlay:addWidget(RequirementTrackerHint)
-
-    fillRequirementTilesPool(host, combatOverlay, 10)
+    -- Rebuilds the objectives list from the current requirement trackers. Runs on stage change and on
+    -- tracker status change, deferred until the overlay's widget proxies are ready.
+    local levelFailedTriggered = false
+    rebuildObjectives = function()
+        local apply = function()
+            local requirementsCount = _GetCurrentProgressRequirementsCount(host)
+            if requirementsCount <= 0 then
+                -- Only touch the widgets when the panel is actually shown; the tracker events fire
+                -- regardless of the ЗАДАЧИ toggle, and we must not pop the item plates while it's hidden.
+                if objectivesActive then objectivesPanel:markAllDone() end
+                return
+            end
+            local trackersJson = _GetCurrentProgressStageRequirementTrackers(host)
+            if trackersJson == nil or trackersJson == "" then return end
+            local trackers = json.decode(trackersJson)
+            local items = {}
+            local anyFailed = false
+            for index = 1, #trackers do
+                local item = trackerToObjectiveItem(trackers[index])
+                if item ~= nil then
+                    items[#items + 1] = item
+                    if item.failed then anyFailed = true end
+                end
+            end
+            -- Render the rows only while the panel is visible; the failure side-effect below still runs.
+            if objectivesActive then objectivesPanel:setItems(items) end
+            if anyFailed and not levelFailedTriggered then
+                levelFailedTriggered = true
+                UiOverlayManager:openOverlay(host, "LevelFailedOverlay")
+                EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
+            end
+        end
+        if combatOverlay.allWidgetLuaProxiesReady then
+            apply()
+        else
+            combatOverlay:addActionWithPredicate(apply, function() return combatOverlay.allWidgetLuaProxiesReady end)
+        end
+    end
 
     -- ─── State machine ────────────────────────────────────────────────────────
     -- Toggles which subset of widgets is visible. Event-driven combat widgets (selected tower panel,
@@ -407,22 +377,15 @@ function CombatHudOverlay:new(host)
         dockLogIcon:setIsVisible(isCombat)
         if not isCombat then dockLogActive = false end
 
-        -- NOTE: do NOT toggle levelProgressContainer / levelProgressRowLayout visibility. They are
-        -- non-drawing layout nodes that own the requirement tiles and the hint as children. Hiding a layout
-        -- node excludes it from the C++ layout solve, so its rect goes stale and the anchored children
-        -- (tiles, hint) inherit garbage positions — which manifests as a full-screen grey plate. We hide the
-        -- combat HUD in PREPARATION by toggling only the leaf widgets that actually render below.
-
+        -- The tower context panel is combat-only (shown when a tower is selected during the wave).
         if not isCombat then
             selectedTowerPanel:setIsVisible(false)
-            RequirementTrackerHint:setIsVisible(false)
-            for _, tile in pairs(RequirementTrackers) do tile:setIsVisible(false) end
-            for _, tile in pairs(RequirementTrackersIdle) do tile:setIsVisible(false) end
-        else
-            -- re-sync combat HUD on entry: while in PREPARATION the combat-only events are gated out, so the
-            -- requirement tiles must be pulled from the current game state explicitly.
-            combatOverlay.onCurrentLevelProgressStageChanged()
         end
+
+        -- Objectives are available in BOTH preparation and combat; the ЗАДАЧИ dock toggle (objectivesActive)
+        -- decides whether the panel is shown. Pull the current trackers explicitly on every state change.
+        objectivesPanel:setIsVisible(objectivesActive)
+        if objectivesActive then rebuildObjectives() end
     end
 
     combatOverlay.currentCombatState = CombatState.PREPARATION
@@ -472,36 +435,9 @@ function CombatHudOverlay:new(host)
         end)
     end
 
-    combatOverlay.onCurrentLevelProgressStageChanged = function()
-        local currentProgressRequirementsCount = _GetCurrentProgressRequirementsCount(host)
-        print("CombatHudOverlay::onCurrentLevelProgressStageChanged : req count: " ..
-                  tostring(currentProgressRequirementsCount))
+    combatOverlay.onCurrentLevelProgressStageChanged = rebuildObjectives
 
-        if currentProgressRequirementsCount > 0 then
-            local requirementTrackersJson = _GetCurrentProgressStageRequirementTrackers(host)
-            if requirementTrackersJson ~= nil and requirementTrackersJson ~= "" then
-                local parsedJson = json.decode(requirementTrackersJson)
-                updateRequirementTiles(host, combatOverlay, parsedJson)
-            end
-        elseif #RequirementTrackers > 0 then
-            showAllRequirementsAchived()
-        end
-    end
-
-    combatOverlay.onRequirementTrackersStatusChanged = function()
-        local requirementTrackersJson = _GetCurrentProgressStageRequirementTrackers(host)
-        if requirementTrackersJson ~= nil and requirementTrackersJson ~= "" then
-            local parsedJson = json.decode(requirementTrackersJson)
-            if parsedJson ~= nil and parsedJson ~= "" then
-                assert(#parsedJson == #RequirementTrackers, debug.traceback())
-                for index, trackerJsonRoot in pairs(parsedJson) do
-                    local requirementTrackerTile = RequirementTrackers[index]
-                    assert(requirementTrackerTile ~= nil, debug.traceback())
-                    updateRequirementTileData(host, requirementTrackerTile, trackerJsonRoot)
-                end
-            end
-        end
-    end
+    combatOverlay.onRequirementTrackersStatusChanged = rebuildObjectives
 
     combatOverlay.onWindowSizeChanged = function(width, height)
         assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number",
@@ -510,38 +446,16 @@ function CombatHudOverlay:new(host)
 
     combatOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
         print("CombatHudOverlay: allWidgetLuaProxiesReady fired!")
-        -- placed just below the top HUD bar (56px) so the two do not overlap
-        levelProgressContainer:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
-        levelProgressContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-                                         combatOverlayCanvas.widgetName, 10)
-        levelProgressContainer:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-                                         combatOverlayCanvas.widgetName, 66)
-        local levelProgressContainerWidth = windowWidth / 5.0
-        levelProgressContainer:setWidth(levelProgressContainerWidth)
-        levelProgressContainer:setHeight(levelProgressContainerWidth * 0.5)
-
-        levelProgressRowLayout:setParent(host, combatOverlayCanvas.widgetName, levelProgressContainer.widgetName)
-        levelProgressRowLayout:fill(levelProgressContainer.widgetName)
-        levelProgressRowLayout:setSpacing(35)
-        levelProgressRowLayout:setAlignment(UiRowLayout.UiRowAlignmentType.CENTER)
-
-        RequirementTrackerHint:setParent(host, combatOverlayCanvas.widgetName, levelProgressContainer.widgetName)
-        RequirementTrackerHint:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-                                         levelProgressRowLayout.widgetName, 20)
-        RequirementTrackerHint:setWidth(levelProgressContainerWidth)
-        RequirementTrackerHint:setHeight(levelProgressContainerWidth)
-        RequirementTrackerHint:setFontSize(15)
-        RequirementTrackerHint:setRectangleOpacity(1.0)
-        RequirementTrackerHint:setRectangleColor(0.6, 0.6, 0.6)
-        RequirementTrackerHint:setTextColorHexValue(0x000000)
-        RequirementTrackerHint:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
-        RequirementTrackerHint:setTextVerticalAlignment(UiLabel.TextVerticalAlignmentType.CENTER)
-        RequirementTrackerHint:setRectangleRadius(6)
-        RequirementTrackerHint:setBorderColorHexValue(0xFFFFFF)
-        RequirementTrackerHint:setBorderRadius(0)
-        RequirementTrackerHint:setBorderOpacity(1.0)
-        RequirementTrackerHint:setIsVisible(false)
-        RequirementTrackerHint:setBorderThickness(40)
+        -- Objectives panel: top of the right column, just below the top HUD bar.
+        objectivesPanel:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
+        objectivesPanel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+                                  combatOverlayCanvas.widgetName, 24)
+        objectivesPanel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+                                  combatOverlayCanvas.widgetName, 66)
+        objectivesPanel:setWidth(300)
+        objectivesPanel:setHeight(300)
+        objectivesPanel:setupLayout()
+        objectivesPanel:setIsVisible(false)
 
         -- ── Top HUD bar layout ────────────────────────────────────────────────
         local Combat = Styles.Combat
@@ -694,7 +608,7 @@ function CombatHudOverlay:new(host)
         local dockSpacing = 10
         local dockPad = 10
         local dockPanelW = dockButtonW + dockPad * 2
-        local dockPanelH = dockButtonH * 4 + dockSpacing * 3 + dockPad * 2
+        local dockPanelH = dockButtonH * 5 + dockSpacing * 4 + dockPad * 2
 
         dockPanel:setParent(host, canvasName, canvasName)
         dockPanel:setAnchor(A.LEFT, A.LEFT, canvasName, 12)
@@ -743,11 +657,12 @@ function CombatHudOverlay:new(host)
             d.icon:setRotationDegrees(d.rotationDegrees)
         end
 
-        -- Tower context panel docked to the right edge (mockup right shell).
+        -- Tower context panel — stacked directly under the objectives panel in the right column
+        -- (mockup cb-right). Anchored to the objectives layout node, which always keeps a valid rect.
         selectedTowerPanel:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
-        selectedTowerPanel:setAnchor(A.RIGHT, A.RIGHT, combatOverlayCanvas.widgetName, 16)
-        selectedTowerPanel:setAnchor(A.VERTICAL_CENTER, A.VERTICAL_CENTER, combatOverlayCanvas.widgetName, 0)
-        selectedTowerPanel:setWidth(270)
+        selectedTowerPanel:setAnchor(A.RIGHT, A.RIGHT, combatOverlayCanvas.widgetName, 24)
+        selectedTowerPanel:setAnchor(A.TOP, A.BOTTOM, objectivesPanel.mainContainer.widgetName, 12)
+        selectedTowerPanel:setWidth(300)
         selectedTowerPanel:setHeight(280)
         selectedTowerPanel:setupLayout()
         selectedTowerPanel:setIsVisible(false)

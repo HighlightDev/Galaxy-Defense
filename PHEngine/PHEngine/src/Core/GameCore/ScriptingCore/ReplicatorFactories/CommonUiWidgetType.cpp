@@ -33,6 +33,8 @@ std::string CommonUiWidgetTypeToString(const eCommonUiWidgetType type)
         return "UI_GRID_LAYOUT";
     case eCommonUiWidgetType::UI_SCROLL_LIST:
         return "UI_SCROLL_LIST";
+    case eCommonUiWidgetType::UI_DIVIDER:
+        return "UI_DIVIDER";
     default:
         return "UNKNOWN_TYPE";
     }

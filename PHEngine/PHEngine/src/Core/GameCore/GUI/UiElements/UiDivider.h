@@ -1,51 +1,38 @@
 #pragma once
 
+#include "Core/GameCore/GUI/Common/DividerOrientation.h"
 #include "UiItemBase.h"
 
 #include <glm/vec3.hpp>
 
-namespace Graphics {
-namespace Proxy {
+namespace Graphics::Proxy {
 class UiSceneProxyBase;
 }
-} // namespace Graphics
 
-namespace EngineCore {
-namespace Scripts {
+namespace EngineCore::Scripts {
 class LuaProxy;
-}
-} // namespace EngineCore
+} // namespace EngineCore::Scripts
 
-namespace EngineCore {
-namespace GUI {
-class UiLabel;
-class UiRectangle : public UiItemBase {
+namespace EngineCore::GUI {
+class UiDivider : public UiItemBase {
     glm::vec3 mColor;
 
     float mOpacity;
 
-    float mBorderRadius;
+    float mLineWidthPx;
 
-    bool mIsRoundTop;
+    float mEdgeFade;
 
-    bool mIsRoundBottom;
-
-    bool mApplyBlur;
-
-    float mBlurMix;
+    eDividerOrientation mOrientation;
 
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mColorProperty;
 
     std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
 
-#ifdef DEBUG
-    std::shared_ptr<EngineCore::GUI::UiLabel> mDebugLabel;
-#endif
-
 public:
-    explicit UiRectangle(const std::string& name = std::string(""));
+    explicit UiDivider(const std::string& name = std::string(""));
 
-    ~UiRectangle() override;
+    ~UiDivider() override;
 
     void SetColor(const glm::vec3& color);
 
@@ -57,27 +44,19 @@ public:
 
     float GetOpacity() const;
 
-    void SetBorderRadius(const float radiusPx);
+    void SetLineWidthPx(const float widthPx);
 
-    float GetBorderRadius() const;
+    float GetLineWidthPx() const;
 
-    bool GetIsRoundTop() const;
+    void SetEdgeFade(const float edgeFade);
 
-    bool GetIsRoundBottom() const;
+    void SetDividerOrientation(const eDividerOrientation orientation);
 
-    void SetIsRoundTop(const bool bIsRoundTop);
-
-    void SetIsRoundBottom(const bool bIsRoundBottom);
-
-    void SetApplyBlur(const bool applyBlur);
-
-    bool GetApplyBlur() const;
-
-    void SetBlurMix(const float blurMix);
-
-    float GetBlurMix() const;
+    float GetEdgeFade() const;
 
     glm::vec3 GetColor() const;
+
+    eDividerOrientation GetDividerOrientation() const;
 
     std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const override;
 
@@ -91,14 +70,8 @@ public:
 
     std::string GetUiTypeString() const override;
 
-#ifdef DEBUG
-    void SetIsHiddenForDebugging(const bool isHiddenForDebugging) override;
-#endif
-
 protected:
     void OnRegistered() override;
-
-    void OnPostRegistered() override;
 
     void OnUnregistered() override;
 
@@ -107,5 +80,4 @@ private:
 
     bool SyncDataOnLuaThread();
 };
-} // namespace GUI
-} // namespace EngineCore
+} // namespace EngineCore::GUI

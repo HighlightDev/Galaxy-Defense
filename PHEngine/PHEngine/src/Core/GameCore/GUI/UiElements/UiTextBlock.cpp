@@ -51,17 +51,16 @@ void UiTextBlock::OnUnregistered()
 {
 }
 
-void UiTextBlock::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiTextBlock::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
+    const bool parentUpdated = UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
     mTextLineWidthHeight = GetBoundingArea().GetHalfExtent() * 2;
-    SyncDataOnRenderThread();
+    return parentUpdated && SyncDataOnRenderThread();
 }
 
-void UiTextBlock::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiTextBlock::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
 std::string UiTextBlock::GetUiTypeString() const
@@ -536,8 +535,7 @@ void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
         }
     }
     if (jsonObj.contains("text_gradient_type")) {
-        const auto text_gradient_type
-            = static_cast<eTextGradientColorType>(jsonObj["text_gradient_type"].get<uint8_t>());
+        const auto text_gradient_type = static_cast<eTextGradientColorType>(jsonObj["text_gradient_type"].get<uint8_t>());
         if (text_gradient_type != mTextGradientColorType) {
             mTextGradientColorType = text_gradient_type;
             bShouldUpdatePropertiesOnRT = true;
@@ -563,7 +561,7 @@ void UiTextBlock::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     }
 }
 
-void UiTextBlock::SyncDataOnRenderThread()
+bool UiTextBlock::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiTextBlock::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -622,12 +620,12 @@ void UiTextBlock::SyncDataOnRenderThread()
                 }
             }
         }
-    } else {
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+        return true;
     }
+    return false;
 }
 
-void UiTextBlock::SyncDataOnLuaThread()
+bool UiTextBlock::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiTextBlock::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -679,7 +677,9 @@ void UiTextBlock::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 } // namespace GUI
 } // namespace EngineCore

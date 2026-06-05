@@ -4,7 +4,7 @@
 
 namespace EngineCore {
 namespace Scripts {
-enum class eCommonUiWidgetType {
+enum class eCommonUiWidgetType : int32_t {
     UI_OVERLAY = 0,
     UI_CANVAS = 1,
     UI_ITEM = 2,
@@ -18,7 +18,8 @@ enum class eCommonUiWidgetType {
     UI_SLIDER_BAR = 10,
     UI_TEXT_BLOCK = 11,
     UI_GRID_LAYOUT = 12,
-    UI_SCROLL_LIST = 13
+    UI_SCROLL_LIST = 13,
+    UI_DIVIDER = 14
 };
 
 std::string CommonUiWidgetTypeToString(const eCommonUiWidgetType type);

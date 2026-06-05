@@ -274,8 +274,9 @@ void UiScrollList::UpdateAnchorTransform()
 
 void UiScrollList::UnpausableTick(const float deltaTimeSec)
 {
-    const bool childDirty = std::any_of(
-        mChildren.cbegin(), mChildren.cend(), [](const auto& c) { return c->IsTransformDirty() || c->IsVisibleDirty(); });
+    const bool childDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto& c) {
+        return c->IsTransformDirty() || c->IsPropertiesShouldBeUpdatedOnRenderThread();
+    });
     if (childDirty) {
         SetIsTransformDirty(true);
     }
@@ -357,16 +358,14 @@ void UiScrollList::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
     }
 }
 
-void UiScrollList::OnPropertiesShouldBeUpdatedOnLuaThread()
+bool UiScrollList::OnPropertiesShouldBeUpdatedOnLuaThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
-    SyncDataOnLuaThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread() && SyncDataOnLuaThread();
 }
 
-void UiScrollList::OnPropertiesShouldBeUpdatedOnRenderThread()
+bool UiScrollList::OnPropertiesShouldBeUpdatedOnRenderThread()
 {
-    UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
-    SyncDataOnRenderThread();
+    return UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread() && SyncDataOnRenderThread();
 }
 
 void UiScrollList::PropagateGuiScissorsToChildren()
@@ -376,7 +375,7 @@ void UiScrollList::PropagateGuiScissorsToChildren()
     }
 }
 
-void UiScrollList::SyncDataOnLuaThread()
+bool UiScrollList::SyncDataOnLuaThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiScrollList::SyncDataOnLuaThread");
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
@@ -412,10 +411,12 @@ void UiScrollList::SyncDataOnLuaThread()
                     });
             }
         }
+        return true;
     }
+    return false;
 }
 
-void UiScrollList::SyncDataOnRenderThread()
+bool UiScrollList::SyncDataOnRenderThread()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiScrollList::SyncDataOnRenderThread");
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
@@ -453,9 +454,9 @@ void UiScrollList::SyncDataOnRenderThread()
                 }
             }
         }
-    } else {
-        mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+        return true;
     }
+    return false;
 }
 
 } // namespace GUI
