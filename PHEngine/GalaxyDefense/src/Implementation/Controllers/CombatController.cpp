@@ -49,7 +49,6 @@ CombatController::~CombatController()
     ElectroRaySphereContactCollisionEvent::GetInstance()->RemoveListener(ElectroRaySphereContactCollisionEvent::GetInstanceId());
     PhysicsCollisionGameThreadEvent::GetInstance()->RemoveListener(PhysicsCollisionGameThreadEvent::GetInstanceId());
     ShootRayCollisionEvent::GetInstance()->RemoveListener(ShootRayCollisionEvent::GetInstanceId());
-    BroadcastGameThreadEvent::GetInstance()->RemoveListener(BroadcastGameThreadEvent::GetInstanceId());
     ChangeGameModeEvent::GetInstance()->RemoveListener(ChangeGameModeEvent::GetInstance()->GetInstanceId());
 }
 
@@ -59,7 +58,6 @@ void CombatController::OnPreLevelInit()
     ElectroRaySphereContactCollisionEvent::GetInstance()->AddListener(thisSp);
     PhysicsCollisionGameThreadEvent::GetInstance()->AddListener(thisSp);
     ShootRayCollisionEvent::GetInstance()->AddListener(thisSp);
-    BroadcastGameThreadEvent::GetInstance()->AddListener(thisSp);
     ChangeGameModeEvent::GetInstance()->AddListener(thisSp);
     mNavigationController->OnPreLevelInit();
     mUserInteractionController->SetParentController(shared_from_this());
@@ -150,7 +148,6 @@ void CombatController::OnLevelInit()
 {
     mNavigationController->OnLevelInit();
     mUserInteractionController->SetActorsPoolHandler(mCombatActorsPoolHandler);
-    mUserInteractionController->SetOnShootCallback(std::bind(&CombatController::OnReadyToShoot, this));
     mUserInteractionController->OnLevelInit();
     mLootController->SetActorsPoolHandler(mCombatActorsPoolHandler);
     mLootController->OnLevelInit();
@@ -210,19 +207,6 @@ void CombatController::OnCombatPreparationCompleted()
             portal->SetupSpaceshipSpawn(Game::Constants::c_spawnSpaceshipTimeoutMs);
         }
     }
-}
-
-void CombatController::OnReadyToShoot()
-{
-    LogInfo("CombatController::OnReadyToShoot");
-    const auto& projectileMarkerPosition = mUserInteractionController->GetProjectileMarkerPosition();
-    const auto selectedSpaceStationId = mUserInteractionController->GetSelectedSpaceStationId();
-    const auto& activeSpaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(selectedSpaceStationId);
-    ext_assert(activeSpaceStationActor, "Active space station actor not found");
-    const auto& activeSpaceStationPosition = activeSpaceStationActor->GetRootComponent()->GetTranslation();
-    const auto& projectileShootDirection = glm::normalize(projectileMarkerPosition - activeSpaceStationPosition);
-    const auto selectedMissileType = PlayerDataProvider::GetInstance()->GetSelectedMissileType();
-    LaunchMissile(activeSpaceStationActor, activeSpaceStationPosition, projectileShootDirection, selectedMissileType);
 }
 
 void CombatController::ProcessEvent(
@@ -414,8 +398,8 @@ void CombatController::ProcessEvent(
         const std::shared_ptr<Actor>& srcCollisionActor = eGameObjectsType::SPACESHIP == srcActorGameObjectType
             ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(srcActorId))
             : eGameObjectsType::NEUTRAL_SPACE_OBJECT == srcActorGameObjectType
-                ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
-                : nullptr;
+            ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
+            : nullptr;
         ext_assert(srcCollisionActor, "Source collision actor not found");
         for (const auto& collidedActorId : collidedActorIds) {
             const auto& gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedActorId);
@@ -440,31 +424,6 @@ void CombatController::ProcessEvent(
                         ownerSpaceObjectActor->AddModifier(electroRayChainModifier);
                     }
                 }
-            }
-        }
-    }
-}
-
-void CombatController::ProcessEvent(
-    const BroadcastGameThreadEvent* sender, const typename BroadcastGameThreadEvent::EventData_t& data)
-{
-    const auto& eventHeader = std::get<0>(data);
-    const auto& jsonParams = std::get<1>(data);
-    if ("CombatLevelEvents" == eventHeader) {
-        const auto& jsonObj = nlohmann::json::parse(std::get<1>(data));
-        const auto& actionName = jsonObj.at("action").get<std::string>();
-        if ("button_press" == actionName) {
-            const auto selectedSpaceStationId = mUserInteractionController->GetSelectedSpaceStationId();
-            if (selectedSpaceStationId >= 0) {
-                const auto& buttonType = jsonObj.at("button_type").get<std::string>();
-                static std::unordered_map<std::string, eMissileType> missilesMap
-                    = {{"Bomb", eMissileType::BOMB},
-                       {"Freezing", eMissileType::FREEZING_BOMB},
-                       {"Electro_Ray", eMissileType::ELECTRO_RAY},
-                       {"Black_Hole", eMissileType::BLACK_HOLE}};
-                ext_assert(missilesMap.count(buttonType), "Unknown button type: " + buttonType);
-                PlayerDataProvider::GetInstance()->SetSelectedMissileType(missilesMap.at(buttonType));
-                mUserInteractionController->ShowMissileProjectile();
             }
         }
     }

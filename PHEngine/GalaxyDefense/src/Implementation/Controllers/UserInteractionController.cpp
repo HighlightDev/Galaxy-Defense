@@ -30,7 +30,6 @@
 #include "Implementation/Controllers/CombatController.h"
 #include "Implementation/Controllers/NavigationController.h"
 #include "Implementation/DataProviders/GameConstants.h"
-#include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/GameObjectsType.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
@@ -45,52 +44,42 @@ using namespace Graphics;
 using namespace EngineCore::DataProviders;
 using namespace Resources;
 
+namespace {
+constexpr int32_t cNoObject = -1;
+}
+
 namespace Game {
 UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>& sceneWp)
     : mSceneWp(sceneWp)
     , mLevelBounds()
     , mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>("GameFlowController_InputComponent")))
     , mMainSceneCamera()
-    , mProjectileMarkerActor(std::make_shared<Actor>(
-          "MissileProjectileActor",
-          std::make_shared<SceneComponent>("MissileProjectileRootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
-    , mGhostTowerActor(std::make_shared<Actor>(
-          "GhostTowerActor",
-          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
-    , mRemoveTowerMarkerActor(std::make_shared<Actor>(
-          "RemoveTowerMarkerActor",
-          std::make_shared<SceneComponent>(
-              "RemoveTowerMarkerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
-    , mReadyToShootTimer(std::make_shared<GameThreadTimer>())
+    , mGhostTowerActor(
+          std::make_shared<Actor>(
+              "GhostTowerActor",
+              std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mGhostBarrierPillarActor(
+          std::make_shared<Actor>(
+              "GhostBarrierPillarActor",
+              std::make_shared<SceneComponent>(
+                  "GhostBarrierPillarActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mReloadPlacementTower(std::make_shared<GameThreadTimer>())
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
-    , mRemoveTowerMarkerBlendColorProperty(
-          std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_transparency_color_filler"))
-    , mGhostBarrierPillarActor(std::make_shared<Actor>(
-          "GhostBarrierPillarActor",
-          std::make_shared<SceneComponent>(
-              "GhostBarrierPillarActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostBarrierPillarBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
-    , mSelectedSpaceStationHighlightTimer(std::make_shared<GameThreadTimer>())
+    , mSelectedSpaceObjectHighlightTimer(std::make_shared<GameThreadTimer>())
 {
     mGhostTowerActor->AddEngineProperty(mGhostTowerBlendColorProperty);
-    mRemoveTowerMarkerActor->AddEngineProperty(mRemoveTowerMarkerBlendColorProperty);
     mGhostBarrierPillarActor->AddEngineProperty(mGhostBarrierPillarBlendColorProperty);
-
-    mReadyToShootTimer->Initialize();
-    mReadyToShootTimer->SetIsPausable(true);
-    mReadyToShootTimer->SetIsRepeat(false);
-    mReadyToShootTimer->SetIntervalMs(500);
 
     mReloadPlacementTower->Initialize();
     mReloadPlacementTower->SetIsPausable(true);
     mReloadPlacementTower->SetIsRepeat(false);
     mReloadPlacementTower->SetIntervalMs(200);
 
-    mSelectedSpaceStationHighlightTimer->Initialize();
-    mSelectedSpaceStationHighlightTimer->SetIsPausable(true);
-    mSelectedSpaceStationHighlightTimer->SetIsRepeat(false);
-    mSelectedSpaceStationHighlightTimer->SetIntervalMs(250);
+    mSelectedSpaceObjectHighlightTimer->Initialize();
+    mSelectedSpaceObjectHighlightTimer->SetIsPausable(true);
+    mSelectedSpaceObjectHighlightTimer->SetIsRepeat(false);
+    mSelectedSpaceObjectHighlightTimer->SetIntervalMs(250);
 }
 
 void UserInteractionController::SetParentController(const std::weak_ptr<CombatController>& parentController)
@@ -107,14 +96,6 @@ void UserInteractionController::SetUserInteractionType(const eUserInteractionTyp
         mGhostTowerActor->SetIsEnabled(true);
         mTowerPlacementGridActor->SetIsEnabled(true);
         mPlacementAllowedAreaActor->SetIsEnabled(true);
-        mRemoveTowerMarkerActor->SetIsEnabled(false);
-        mGhostBarrierPillarActor->SetIsEnabled(false);
-        break;
-    case eUserInteractionType::TOWER_REMOVEMENT_SELECTION:
-        mRemoveTowerMarkerActor->SetIsEnabled(true);
-        mTowerPlacementGridActor->SetIsEnabled(true);
-        mPlacementAllowedAreaActor->SetIsEnabled(true);
-        mGhostTowerActor->SetIsEnabled(false);
         mGhostBarrierPillarActor->SetIsEnabled(false);
         break;
     case eUserInteractionType::BARRIER_PLACEMENT:
@@ -122,14 +103,12 @@ void UserInteractionController::SetUserInteractionType(const eUserInteractionTyp
         mTowerPlacementGridActor->SetIsEnabled(true);
         mPlacementAllowedAreaActor->SetIsEnabled(false);
         mGhostTowerActor->SetIsEnabled(false);
-        mRemoveTowerMarkerActor->SetIsEnabled(false);
         break;
     case eUserInteractionType::IDLE:
     default:
         mTowerPlacementGridActor->SetIsEnabled(false);
         mPlacementAllowedAreaActor->SetIsEnabled(false);
         mGhostTowerActor->SetIsEnabled(false);
-        mRemoveTowerMarkerActor->SetIsEnabled(false);
         mGhostBarrierPillarActor->SetIsEnabled(false);
         break;
     }
@@ -152,8 +131,6 @@ void UserInteractionController::Initialize()
     ext_assert(mainCameraSp, "Failed to cast main camera to ThirdPersonCamera");
     mMainSceneCamera = mainCameraSp;
 
-    sceneSp->AddActor(mProjectileMarkerActor);
-
     MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& missileProjectileMaterial
         = materialParser.ParseMaterialDescriptor("EditorPickerMaterial.m");
@@ -175,14 +152,11 @@ void UserInteractionController::Initialize()
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     c_mesh->SetSortOrderValue(1);
-    mProjectileMarkerActor->AddComponent(c_mesh);
-    mProjectileMarkerActor->SetIsEnabled(false);
 
     InitializeTowerGrid();
     InitializePlacementAllowedArea();
     InitializeGhostTower();
     InitializeGhostBarrierPillar();
-    InitializeRemoveTowerMarker();
     SetUserInteractionType(eUserInteractionType::IDLE);
 }
 
@@ -322,7 +296,6 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
         const glm::ivec2& screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
 
         if (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType
-            || eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType
             || eUserInteractionType::BARRIER_PLACEMENT == mInteractionType) {
             const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
             const auto& worldSpaceRay
@@ -342,15 +315,6 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     const glm::vec3 ghostTowerPositionValidationColor
                         = IsTowerPositionValid(cellPositionVec3) ? glm::vec3(0, 1, 0) : glm::vec3(1, 0, 0);
                     mGhostTowerBlendColorProperty->SetValue(ghostTowerPositionValidationColor);
-                } else if (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
-                    const bool hasTargetAtPosition = GetSpaceStationAtPosition(placementPosition) != nullptr
-                        || GetBarrierAtPosition(placementPosition) != nullptr;
-                    const glm::vec3 removeTowerPositionValidationColor = hasTargetAtPosition ? glm::vec3(1) : glm::vec3(0.3);
-                    mRemoveTowerMarkerBlendColorProperty->SetValue(removeTowerPositionValidationColor);
-                    const glm::vec3 movedUpPosition = placementPosition + EngineMath::AXIS_UP * 3.0f;
-                    const auto ndcSpacePosition = sceneCameraSp->GetConvertedToNDCSpacePosition(glm::vec4(movedUpPosition, 1.0f));
-                    mRemoveTowerMarkerActor->GetRootComponent()->SetTranslation(
-                        glm::vec3(ndcSpacePosition.x, ndcSpacePosition.y, 0.0f));
                 } else if (eUserInteractionType::BARRIER_PLACEMENT == mInteractionType) {
                     const auto& routeEdgeNode = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(
                         glm::vec2(placementPosition.x, placementPosition.z));
@@ -365,9 +329,7 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
     }
 
     if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
-        if (!mReloadPlacementTower->IsRunning()
-            && (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType
-                || eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType)) {
+        if (!mReloadPlacementTower->IsRunning() && (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType)) {
             const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
             const auto& lastMousePosition = mouseBindings->GetLastMouseCursorPosition();
             const glm::ivec2& screenSpacePosition = glm::ivec2(lastMousePosition.x, lastMousePosition.y);
@@ -387,36 +349,18 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     const auto spaceStationSp = mCombatActorsPoolHandler->GetFreeSpaceStationActor();
                     ext_assert(spaceStationSp, "Failed to get free space station actor");
                     spaceStationSp->GetRootComponent()->SetTranslation(cellPositionVec3);
-                    spaceStationSp->SetSpaceStationLevel(std::make_shared<SpaceStationLevel>(
-                        mTowerMissileType,
-                        1,
-                        LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(mTowerMissileType, 1),
-                        LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
+                    spaceStationSp->SetSpaceStationLevel(
+                        std::make_shared<SpaceStationLevel>(
+                            mTowerMissileType,
+                            1,
+                            LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(mTowerMissileType, 1),
+                            LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
                     spaceStationSp->SetState(eSpaceStationActivityState::ACTIVE);
                     if (auto parentControllerSp = mParentController.lock()) {
                         parentControllerSp->GetNavigationController()->PutActiveSpaceStationOnLevel(spaceStationSp);
                     }
                     SetUserInteractionType(eUserInteractionType::IDLE);
                     TriggerSwitchToIdleInteractionMode();
-                } else if (eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType) {
-                    const auto& spaceStationSp = GetSpaceStationAtPosition(cellPositionVec3);
-                    if (spaceStationSp) {
-                        if (auto parentControllerSp = mParentController.lock()) {
-                            parentControllerSp->GetNavigationController()->RemoveActiveSpaceStationFromLevel(spaceStationSp);
-                        }
-                        spaceStationSp->SetState(eSpaceStationActivityState::IDLE);
-                    } else {
-                        const auto& barrierSp = GetBarrierAtPosition(placementPosition);
-                        if (barrierSp) {
-                            if (auto parentControllerSp = mParentController.lock()) {
-                                parentControllerSp->GetNavigationController()->RemoveActiveBarrierFromLevel(
-                                    barrierSp); // Remove barrier from navigation controller to update nav mesh with removed
-                                                // barrier rays positions
-                            }
-                            barrierSp->RemoveAllBarrierPillars();
-                            barrierSp->SetState(eBarrierActivityState::IDLE);
-                        }
-                    }
                 }
                 nlohmann::json root;
                 root["player_status_type"] = static_cast<int32_t>(eMainPlayerStatusType::TOWERS_COUNT_CHANGED);
@@ -486,7 +430,6 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
     } else if (
         mouseBindings->GetKeyState(eMouseKeys::MouseButtonRight) == KeyState::PRESSED
         && (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType
-            || eUserInteractionType::TOWER_REMOVEMENT_SELECTION == mInteractionType
             || eUserInteractionType::BARRIER_PLACEMENT == mInteractionType)) {
         TriggerSwitchToIdleInteractionMode();
     }
@@ -496,68 +439,48 @@ void UserInteractionController::ProcessCombatStage()
 {
     const auto& sceneSp = mSceneWp.lock();
     const auto& sceneCameraSp = mMainSceneCamera.lock();
+    const auto& mouseBindings = mInputComponent->GetMouseBindings();
+
     if (!sceneCameraSp || !sceneSp) {
         return;
     }
-
-    const auto& mouseBindings = mInputComponent->GetMouseBindings();
-
-    if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
-        if (mSelectedSpaceStationHighlightTimer->IsRunning()) {
-            return; // Prevent processing new left click while space station highlight timer is running to avoid multiple quick
-                    // selections of space stations
-        }
-        const auto& mousePosition = mouseBindings->GetLastMouseCursorPosition();
-        const glm::ivec2& screenSpacePosition = glm::ivec2(mousePosition.x, mousePosition.y);
-        const int32_t collidedObjectId = mSmartPicker->CastScreenSpaceRayIntoScene(
-            sceneSp, sceneCameraSp, screenSpacePosition, {eGameObjectsType::SPACESHIP});
-
-        if (-1 != collidedObjectId
-            && eGameObjectsType::SPACE_STATION == mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedObjectId)) {
-            SetIsHighlightSpaceStation(mSelectedSpaceStationId, false); // Unhighlight previously selected space station if exists
-            mSelectedSpaceStationId = collidedObjectId;
-            SetIsHighlightSpaceStation(mSelectedSpaceStationId, true);
-        } else if (!mProjectileMarkerActor->IsEnabled() && mSelectedSpaceStationId != -1) {
-            SetIsHighlightSpaceStation(mSelectedSpaceStationId, false);
-            mSelectedSpaceStationId = -1;
-        } else if (mProjectileMarkerActor->IsEnabled() && mShootCallback && !mReadyToShootTimer->IsRunning()) {
-            mShootCallback();
-            mReadyToShootTimer->StartTimer();
-        }
-
-        mSelectedSpaceStationHighlightTimer->StartTimer(); // Start timer to prevent multiple quick selections of space stations
-    } else if (mProjectileMarkerActor->IsEnabled()) {
-        const auto& mousePosition = mouseBindings->GetLastMouseCursorPosition();
-        const glm::ivec2& screenSpacePosition = glm::ivec2(mousePosition.x, mousePosition.y);
-        const auto& worldSpaceRay = mSmartPicker->CreateWorldSpaceRayFromScreenSpacePosition(sceneCameraSp, screenSpacePosition);
-
-        const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
-        const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
-        if (tParam >= 0.0f) {
-            const auto& placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
-            mProjectileMarkerActor->GetRootComponent()->SetTranslation(placementPosition);
-        }
+    if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) != KeyState::PRESSED) {
+        return;
     }
+    if (mSelectedSpaceObjectHighlightTimer->IsRunning()) {
+        return; // Prevent processing new left click while space station highlight timer is running to avoid multiple quick
+                // selections of space stations
+    }
+    const auto& mousePosition = mouseBindings->GetLastMouseCursorPosition();
+    const glm::ivec2& screenSpacePosition = glm::ivec2(mousePosition.x, mousePosition.y);
+    const int32_t collidedObjectId
+        = mSmartPicker->CastScreenSpaceRayIntoScene(sceneSp, sceneCameraSp, screenSpacePosition, {eGameObjectsType::SPACESHIP});
+
+    if (cNoObject != collidedObjectId) {
+        SetIsHighlightSpaceObject(mSelectedSpaceObjectId, false);
+        SetIsHighlightSpaceObject(collidedObjectId, true);
+        mSelectedSpaceObjectId = collidedObjectId;
+    } else if (mSelectedSpaceObjectId != cNoObject) {
+        SetIsHighlightSpaceObject(mSelectedSpaceObjectId, false);
+        mSelectedSpaceObjectId = cNoObject;
+    }
+
+    mSelectedSpaceObjectHighlightTimer->StartTimer(); // Start timer to prevent multiple quick selections of space stations
 }
 
-void UserInteractionController::SetIsHighlightSpaceStation(const int32_t spaceStationId, const bool isHighlight)
+void UserInteractionController::SetIsHighlightSpaceObject(const int32_t spaceObjectId, const bool isHighlight)
 {
-    if (spaceStationId != -1) {
-        const auto& spaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(spaceStationId);
-        spaceStationActor->SetIsOutlineApplied(isHighlight);
-        spaceStationActor->SetIsRadiusMarkerActive(isHighlight);
-        if (isHighlight) {
-            PlayerDataProvider::GetInstance()->SetSelectedTowerId(
-                spaceStationId, spaceStationActor->GetSpaceStationLevel()->GetMissileType());
-        } else {
-            PlayerDataProvider::GetInstance()->SetSelectedTowerId(-1, eMissileType::NONE);
+    if (spaceObjectId != cNoObject) {
+        if (const std::shared_ptr<IHighlightable>& highlightableActor = mCombatActorsPoolHandler->GetHighlightableByType(
+                spaceObjectId, mCombatActorsPoolHandler->GetGameObjectTypeByActorId(spaceObjectId))) {
+            highlightableActor->ChangeHighlightState(isHighlight);
         }
     }
 }
 
 int32_t UserInteractionController::GetSelectedSpaceStationId() const
 {
-    return mSelectedSpaceStationId;
+    return mSelectedSpaceObjectId;
 }
 
 void UserInteractionController::ProcessEvent(
@@ -592,11 +515,25 @@ void UserInteractionController::ProcessEvent(
             }
             SetUserInteractionType(
                 isGhostTowerVisible ? eUserInteractionType::TOWER_PLACE_SELECTION : eUserInteractionType::IDLE);
-        } else if (jsonRoot.at("action").get<std::string>() == "remove_tower_marker_visibility") {
-            const bool isTowerEraserMarkerVisible = jsonRoot.at("visible").get<bool>();
-            mTowerMissileType = eMissileType::NONE;
-            SetUserInteractionType(
-                isTowerEraserMarkerVisible ? eUserInteractionType::TOWER_REMOVEMENT_SELECTION : eUserInteractionType::IDLE);
+        } else if (jsonRoot.at("action").get<std::string>() == "remove_tower") {
+            const auto& spaceStationActor = mCombatActorsPoolHandler->GetSpaceStationOwnerActorById(mSelectedSpaceObjectId);
+            if (spaceStationActor) {
+                if (auto parentControllerSp = mParentController.lock()) {
+                    parentControllerSp->GetNavigationController()->RemoveActiveSpaceStationFromLevel(spaceStationActor);
+                }
+                spaceStationActor->SetState(eSpaceStationActivityState::IDLE);
+            }
+        } else if (jsonRoot.at("action").get<std::string>() == "remove_barrier") {
+            const auto& barrierSp = mCombatActorsPoolHandler->GetBarrierOwnerActorById(mSelectedSpaceObjectId);
+            if (barrierSp) {
+                if (auto parentControllerSp = mParentController.lock()) {
+                    parentControllerSp->GetNavigationController()->RemoveActiveBarrierFromLevel(
+                        barrierSp); // Remove barrier from navigation controller to update nav mesh with removed
+                                    // barrier rays positions
+                }
+                barrierSp->RemoveAllBarrierPillars();
+                barrierSp->SetState(eBarrierActivityState::IDLE);
+            }
         } else if (jsonRoot.at("action").get<std::string>() == "barrier_placement_visibility") {
             const bool isBarrierPlacementActive = jsonRoot.at("visible").get<bool>();
             if (isBarrierPlacementActive) {
@@ -608,30 +545,9 @@ void UserInteractionController::ProcessEvent(
     }
 }
 
-void UserInteractionController::SetOnShootCallback(const std::function<void()>& callback)
-{
-    mShootCallback = callback;
-}
-
 void UserInteractionController::SetActorsPoolHandler(const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler)
 {
     mCombatActorsPoolHandler = combatActorsPoolHandler;
-}
-
-void UserInteractionController::ShowMissileProjectile()
-{
-    ext_assert(eGameModeType::COMBAT == mCurrentGameModeType, "Cannot show missile projectile in non-combat game mode");
-    mProjectileMarkerActor->SetIsEnabled(true);
-}
-
-void UserInteractionController::HideMissileProjectile()
-{
-    mProjectileMarkerActor->SetIsEnabled(false);
-}
-
-glm::vec3 UserInteractionController::GetProjectileMarkerPosition() const
-{
-    return mProjectileMarkerActor->GetRootComponent()->GetTranslation();
 }
 
 void UserInteractionController::InitializeTowerGrid()
@@ -819,48 +735,6 @@ void UserInteractionController::InitializeGhostBarrierPillar()
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     mGhostBarrierPillarActor->AddComponent(c_mesh);
-}
-
-void UserInteractionController::InitializeRemoveTowerMarker()
-{
-    const auto& sceneSp = mSceneWp.lock();
-    ext_assert(sceneSp, "Scene pointer is null in InitializeRemoveTowerMarker");
-    sceneSp->AddActor(mRemoveTowerMarkerActor);
-
-    MaterialParser materialParser;
-    const std::shared_ptr<IMaterial>& billboard_material = materialParser.ParseMaterialDescriptor("BillboardMaterial.m");
-    sceneSp->RegisterMaterialInstance(billboard_material);
-    const auto mask_texture = TexturePool::GetInstance()->GetOrAllocateResource("default_circle_mask.png");
-    const auto albedo_texture = TexturePool::GetInstance()->GetOrAllocateResource("cancel.png");
-
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "albedo", albedo_texture);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "mask", mask_texture);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "inverse_y", (int32_t) true);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "use_mask", (int32_t) true);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "fill_albedo_transparency_with_color", (int32_t) true);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "use_custom_color_for_albedo", (int32_t) true);
-    MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "albedo_custom_color", glm::vec3(1.0f, 0.0f, 0.0f));
-    MaterialPropertySetter::SetMaterialPropertyValue(
-        billboard_material, mRemoveTowerMarkerActor, "p_transparency_color_filler", "b_transparency_color_filler");
-
-    auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
-    const auto data = std::make_shared<BillboardComponentData>(
-        "c_billboard_RemoveTowerMarkerActor",
-        0.015f,
-        true,
-        glm::vec3(0.0f),
-        0.0f,
-        false,
-        glm::vec3(1.0f),
-        billboard_material,
-        [](const glm::mat4& viewMatrix) { return glm::mat4(1); },
-        [](const glm::mat4& projectionMatrix) { return glm::mat4(1); },
-        true,
-        true);
-    const auto& billboardComponent
-        = std::static_pointer_cast<BillboardComponent>(sceneSp->CreateComponent_GameThread(billboardComponentCreator, data));
-    billboardComponent->SetSortOrderValue(10000);
-    mRemoveTowerMarkerActor->AddComponent(billboardComponent);
 }
 
 void UserInteractionController::TriggerPlayerStatusChangedEvent(const std::string& jsonArgs)

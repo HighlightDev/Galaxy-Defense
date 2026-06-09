@@ -27,6 +27,7 @@
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Implementation/Components/UiComponents/BarrierUiComponent.h"
 #include "Implementation/DataProviders/GameConstants.h"
+#include "Implementation/DataProviders/PlayerDataProvider.h"
 
 #include <glm/gtx/quaternion.hpp>
 
@@ -90,6 +91,7 @@ void BarrierActor::CreateNewBarrierPillar(const glm::vec3& position, const glm::
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+    c_mesh->SetOutlineThickness(Game::Constants::c_outlineThickness);
     AddBarrierPillarMesh(c_mesh);
 
     if (pillarIndex > 0 && mRayMaterial) {
@@ -473,5 +475,20 @@ void BarrierActor::SetBarrierPillarSize(const glm::vec3& size)
 const glm::vec3& BarrierActor::GetBarrierPillarSize() const
 {
     return mBarrierPillarSize;
+}
+
+void BarrierActor::ChangeHighlightState(const bool isHighlightEnabled)
+{
+    constexpr int32_t cNoObject = -1;
+    for (const auto& barrierPillar : mBarrierPillars) {
+        // todo: for now show outline for all pillars
+        barrierPillar->SetIsOutlineApplied(isHighlightEnabled);
+    }
+
+    if (isHighlightEnabled) {
+        PlayerDataProvider::GetInstance()->SetSelectedBarrier(GetObjectId());
+    } else {
+        PlayerDataProvider::GetInstance()->SetSelectedBarrier(cNoObject);
+    }
 }
 } // namespace Game

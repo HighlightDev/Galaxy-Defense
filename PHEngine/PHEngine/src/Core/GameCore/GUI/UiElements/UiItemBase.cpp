@@ -272,6 +272,7 @@ void UiItemBase::SetIsVisible(const bool isVisible)
     if (mIsVisible != isVisible) {
         mIsVisible = isVisible;
         SetChildrenIsVisible(mIsVisible);
+        SetIsTransformDirty(true); // If parent is layout - it requires recalculate layout space
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
     }

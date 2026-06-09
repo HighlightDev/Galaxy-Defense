@@ -76,8 +76,9 @@ std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayCh
     ext_assert(sceneSp, "Scene pointer is null in SpawnElectroRayChainActor");
 
     ElectroRayChainFactory factory;
-    const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(std::static_pointer_cast<ElectroRayChainActor>(
-        factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1))));
+    const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(
+        std::static_pointer_cast<ElectroRayChainActor>(
+            factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1))));
     spawnedActor->TriggerDisabled();
     return spawnedActor;
 }
@@ -544,5 +545,17 @@ CombatActorsPoolHandler::GetActorsByGameObjectType(const eGameObjectsType gameOb
         break;
     }
     return actors;
+}
+
+std::shared_ptr<IHighlightable>
+CombatActorsPoolHandler::GetHighlightableByType(const int32_t goId, const eGameObjectsType goType) const
+{
+    if (eGameObjectsType::BARRIER == goType) {
+        return GetBarrierOwnerActorById(goId);
+    } else if (eGameObjectsType::SPACE_STATION == goType) {
+        return GetSpaceStationOwnerActorById(goId);
+    } else {
+        return nullptr;
+    }
 }
 } // namespace Game

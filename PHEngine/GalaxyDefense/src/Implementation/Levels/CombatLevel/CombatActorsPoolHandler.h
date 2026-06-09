@@ -144,6 +144,8 @@ public:
     std::vector<std::shared_ptr<PhysicsComponent>>
     GetPhysicsComponentsByGameObjectTypes(const std::unordered_set<eGameObjectsType>& gameObjectTypes) const;
 
+    std::shared_ptr<IHighlightable> GetHighlightableByType(const int32_t goId, const eGameObjectsType goType) const;
+
 private:
     std::unique_ptr<IMissileFactory> GetMissileFactoryByType(const eMissileType missileType) const;
 

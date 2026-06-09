@@ -121,15 +121,17 @@ end
 function CreateLevelProgressStages(host)
     local stagesQueue = {};
     local trackers = {}
+    local count = 20
     trackers[1] = {
         type = "MissedSpaceshipsTracker",
-        spaceships_count = 200,
-        hint = string.format("Не пропустите более %d космических кораблей", 20)
+        spaceships_count = count,
+        hint = string.format("Не пропустите более %d космических кораблей", count)
     }
+    count = 10
     trackers[2] = {
         type = "DestroySpaceshipsTracker",
-        spaceships_count = 10,
-        hint = string.format("Уничтожьте %d космических кораблей", 10)
+        spaceships_count = count,
+        hint = string.format("Уничтожьте %d космических кораблей", count)
     }
     local stage = {name = "weak_spaceships_attack", trackers = trackers}
     stagesQueue[1] = stage

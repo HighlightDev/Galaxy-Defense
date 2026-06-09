@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
+#include "Implementation/DataProviders/PlayerDataProvider.h"
 
 namespace Game {
 SpaceStationActor::SpaceStationActor(
@@ -48,6 +49,7 @@ void SpaceStationActor::SetState(const eSpaceStationActivityState spacestationSt
         mSpacestationState = spacestationState;
         if (mSpacestationState == eSpaceStationActivityState::IDLE) {
             mSpaceStationLevel = nullptr;
+            SetIsRadiusMarkerActive(false);
         }
         // Disable spacestation if it is idle
         SetIsEnabled(spacestationState == eSpaceStationActivityState::ACTIVE);
@@ -122,6 +124,19 @@ bool SpaceStationActor::GetIsOutlineApplied() const
         return mMainMeshComponent->GetIsOutlineApplied();
     }
     return false;
+}
+
+void SpaceStationActor::ChangeHighlightState(const bool isHighlightEnabled)
+{
+    constexpr int32_t cNoObject = -1;
+    SetIsOutlineApplied(isHighlightEnabled);
+    SetIsRadiusMarkerActive(isHighlightEnabled);
+
+    if (isHighlightEnabled) {
+        PlayerDataProvider::GetInstance()->SetSelectedTower(GetObjectId(), mSpaceStationLevel->GetMissileType());
+    } else {
+        PlayerDataProvider::GetInstance()->SetSelectedTower(cNoObject, eMissileType::NONE);
+    }
 }
 
 void SpaceStationActor::SetIsRadiusMarkerActive(const bool isRadiusMarkerActive)

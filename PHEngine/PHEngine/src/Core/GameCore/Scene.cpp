@@ -88,7 +88,7 @@ void Scene::OnLevelInit()
 
     MaterialParser materialParser;
     mOutlineMaterialSp = materialParser.ParseMaterialDescriptor("OutlineMaterial.m");
-    MaterialPropertySetter::SetMaterialPropertyValue(mOutlineMaterialSp, "color", glm::vec3(0.8, 1.0, 0.2));
+    MaterialPropertySetter::SetMaterialPropertyValue(mOutlineMaterialSp, "color", glm::vec3(0.8, 0.2, 1.0));
     RegisterMaterialInstance(mOutlineMaterialSp);
 
     mInstancedGeometryBatchHolder->SetScene(shared_from_this());

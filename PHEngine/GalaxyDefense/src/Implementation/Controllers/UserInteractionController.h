@@ -8,6 +8,7 @@
 #include "Implementation/Controllers/ILevelController.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/GameModeTypeEnum.h"
+#include "Implementation/GameObjectsType.h"
 #include "Implementation/Levels/Editor/LevelPlacementGrid.h"
 #include "Implementation/MissileType.h"
 #include "Implementation/StatusTypes.h"
@@ -42,7 +43,7 @@ class UserInteractionController : public ILevelController,
                                   public BroadcastGameThreadEvent,
                                   public std::enable_shared_from_this<UserInteractionController> {
 
-    enum class eUserInteractionType { IDLE, TOWER_PLACE_SELECTION, TOWER_REMOVEMENT_SELECTION, BARRIER_PLACEMENT };
+    enum class eUserInteractionType { IDLE, TOWER_PLACE_SELECTION, BARRIER_PLACEMENT };
 
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
@@ -60,9 +61,7 @@ class UserInteractionController : public ILevelController,
 
     std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
 
-    int32_t mSelectedSpaceStationId{-1};
-
-    std::shared_ptr<::EngineCore::Actor> mProjectileMarkerActor;
+    int32_t mSelectedSpaceObjectId{-1};
 
     std::unique_ptr<LevelPlacementGrid> mLevelPlacementGrid;
 
@@ -72,21 +71,13 @@ class UserInteractionController : public ILevelController,
 
     std::shared_ptr<Actor> mGhostTowerActor;
 
-    std::shared_ptr<Actor> mRemoveTowerMarkerActor;
-
-    std::shared_ptr<GameThreadTimer> mReadyToShootTimer;
-
     std::shared_ptr<GameThreadTimer> mReloadPlacementTower;
-
-    std::function<void()> mShootCallback;
 
     float mTowerCellSize{0.0f};
 
     std::vector<glm::vec3> mTowerPlacementCells;
 
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostTowerBlendColorProperty;
-
-    std::shared_ptr<EngineObjectProperty<glm::vec3>> mRemoveTowerMarkerBlendColorProperty;
 
     std::shared_ptr<EngineObjectProperty<glm::vec3>> mGhostBarrierBlendColorProperty;
 
@@ -100,7 +91,7 @@ class UserInteractionController : public ILevelController,
 
     std::shared_ptr<BarrierActor> mCurrentBarrierActor;
 
-    std::shared_ptr<GameThreadTimer> mSelectedSpaceStationHighlightTimer;
+    std::shared_ptr<GameThreadTimer> mSelectedSpaceObjectHighlightTimer;
 
 public:
     UserInteractionController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
@@ -133,20 +124,12 @@ public:
 
     void SetLevelBounds(const BoundingBox3D& mLevelBounds);
 
-    void SetOnShootCallback(const std::function<void()>& callback);
-
     void SetActorsPoolHandler(const std::shared_ptr<CombatActorsPoolHandler>& combatActorsPoolHandler);
 
     void
     SetTowersData(const std::unordered_map<std::string, std::tuple<glm::vec3 /*position*/, glm::vec3 /*scale*/>>& towersData);
 
     int32_t GetSelectedSpaceStationId() const;
-
-    void ShowMissileProjectile();
-
-    void HideMissileProjectile();
-
-    glm::vec3 GetProjectileMarkerPosition() const;
 
     std::shared_ptr<SpaceStationActor> GetSpaceStationAtPosition(const glm::vec3& position) const;
 
@@ -163,8 +146,6 @@ private:
 
     void InitializeGhostBarrierPillar();
 
-    void InitializeRemoveTowerMarker();
-
     bool IsTowerPositionValid(const glm::vec3 position) const;
 
     bool IsBarrierPositionValid(const glm::vec3& position) const;
@@ -179,6 +160,6 @@ private:
 
     eMissileType MissileTypeFromString(const std::string& typeStr) const;
 
-    void SetIsHighlightSpaceStation(const int32_t spaceStationId, const bool isHighlight);
+    void SetIsHighlightSpaceObject(const int32_t spaceObjectId, const bool isHighlight);
 };
 } // namespace Game

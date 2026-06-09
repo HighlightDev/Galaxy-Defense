@@ -39,6 +39,7 @@ local EventsHelper = require("Ui/Core/eventsHelper")
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local TowerGridPanel = require("Ui/Widgets/TowerGridPanel")
 local SelectedTowerPanel = require("Ui/Widgets/SelectedTowerPanel")
+local SelectedBarrierPanel = require("Ui/Widgets/SelectedBarrierPanel")
 local TowerUpgradesPanel = require("Ui/Widgets/TowerUpgradesPanel")
 local MissileTypes = require("Ui/Common/missileTypes")
 
@@ -60,7 +61,7 @@ local GameModeType = {INIT = 0, COMBAT = 1, SPACE_STATION_PLACEMENT = 2}
 PlayerStatusType = {
     CRYSTALS_COUNT_CHANGED = 0,
     DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED = 1,
-    SELECTED_TOWER_CHANGED = 2,
+    SELECTED_SPACE_OBJECT_CHANGED = 2,
     TOWERS_COUNT_CHANGED = 3
 }
 
@@ -201,6 +202,12 @@ function CombatHudOverlay:new(host)
     -- ЗАДАЧИ dock toggle references them, so declare them up front and assign below.
     local objectivesPanel
     local rebuildObjectives
+    -- selectedTowerPanel's own onDemolishClicked closure needs to hide the panel, so it must reference
+    -- the variable; declare it before construction (the local's scope would otherwise start only after
+    -- the assignment statement, leaving the closure bound to a nil global).
+    local selectedTowerPanel
+    -- Same closure/scoping reason as selectedTowerPanel above (its onDemolishClicked hides the panel).
+    local selectedBarrierPanel
     local objectivesActive = true -- objectives visible by default in combat (mockup parity)
 
     -- ─── Side dock (left vertical rail with panel toggles) ─────────────────────
@@ -291,12 +298,13 @@ function CombatHudOverlay:new(host)
     end)
 
     -- ─── Combat-state widgets ─────────────────────────────────────────────────
-    local selectedTowerPanel = SelectedTowerPanel:new(host, combatOverlay, "SelectedTowerPanelObj", {
+    selectedTowerPanel = SelectedTowerPanel:new(host, combatOverlay, "SelectedTowerPanelObj", {
         -- ДЕМОНТАЖ: relocated from the build palette — enters tower-removal mode (same broadcast as before).
         onDemolishClicked = function()
+            selectedTowerPanel:setIsVisible(false)
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
                                                       "CombatLevelEvents",
-                                                      json.encode({action = "remove_tower_marker_visibility", visible = true}))
+                                                      json.encode({action = "remove_tower"}))
         end,
         -- ПРОКАЧАТЬ: open the tower tech tree (same path as the dock ТЕХ button).
         onUpgradeClicked = function()
@@ -306,29 +314,81 @@ function CombatHudOverlay:new(host)
     })
     combatOverlay:addCompoundWidget(selectedTowerPanel)
 
+    -- Barrier context panel: trimmed variant of the tower panel with only the ДЕМОНТАЖ action.
+    selectedBarrierPanel = SelectedBarrierPanel:new(host, combatOverlay, "SelectedBarrierPanelObj", {
+        onDemolishClicked = function()
+            selectedBarrierPanel:setIsVisible(false)
+            EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
+                                                      "CombatLevelEvents",
+                                                      json.encode({action = "remove_barrier"}))
+        end
+    })
+    combatOverlay:addCompoundWidget(selectedBarrierPanel)
+
     -- Operation objectives (right column, above the selected-tower panel). Fed from the engine's
     -- requirement trackers; rendered in the mockup's cb-obj list style. (Forward-declared above the dock.)
     objectivesPanel = ObjectivesPanel:new(host, combatOverlay, "ObjectivesPanel")
 
     -- Rebuilds the objectives list from the current requirement trackers. Runs on stage change and on
     -- tracker status change, deferred until the overlay's widget proxies are ready.
-    local levelFailedTriggered = false
+    -- Win / lose end state. The level ends once (either way); levelEndTriggered guards against re-firing.
+    -- hadRequirements flips true once the run actually has requirements, so an empty/not-yet-loaded
+    -- requirement set in preparation is never mistaken for "all enemies destroyed".
+    local levelEndTriggered = false
+    local hadRequirements = false
+
+    local function triggerLevelEnd(mode)
+        if levelEndTriggered then return end
+        levelEndTriggered = true
+        -- UiOverlays is the global registry built by CombatUiController; setMode swaps the unified end
+        -- overlay between victory / defeat. Apply the mode now so its ~30 label meshes start syncing to
+        -- the render thread, and freeze the game immediately to capture the moment.
+        if UiOverlays ~= nil and UiOverlays["LevelEndOverlay"] ~= nil then
+            UiOverlays["LevelEndOverlay"].setMode(host, mode)
+        end
+        EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
+        -- Defer actually showing the overlay a few frames: _OpenOverlay flips visibility on the render
+        -- thread instantly, but the mode's text/colours only land via the per-frame replicator sync.
+        -- Opening on the same frame would flash the overlay's previous (defeat-default) content first.
+        local framesUntilOpen = 3
+        combatOverlay:addActionWithPredicate(function()
+            UiOverlayManager:openOverlay(host, "LevelEndOverlay")
+        end, function()
+            framesUntilOpen = framesUntilOpen - 1
+            return framesUntilOpen <= 0
+        end)
+    end
+
     rebuildObjectives = function()
         local apply = function()
+            local inCombat = combatOverlay.currentCombatState == CombatState.COMBAT
             local requirementsCount = _GetCurrentProgressRequirementsCount(host)
             if requirementsCount <= 0 then
                 -- Only touch the widgets when the panel is actually shown; the tracker events fire
                 -- regardless of the ЗАДАЧИ toggle, and we must not pop the item plates while it's hidden.
                 if objectivesActive then objectivesPanel:markAllDone() end
+                -- No active requirements left: if the run had any and we are mid-combat, every enemy has
+                -- been destroyed and all stages are cleared -> victory.
+                if inCombat and hadRequirements then triggerLevelEnd("victory") end
                 return
             end
+            hadRequirements = true
             local trackersJson = _GetCurrentProgressStageRequirementTrackers(host)
             if trackersJson == nil or trackersJson == "" then return end
             local trackers = json.decode(trackersJson)
             local items = {}
             local anyFailed = false
+            local hasDestroyTracker = false
+            local allEnemiesDestroyed = true
             for index = 1, #trackers do
-                local item = trackerToObjectiveItem(trackers[index])
+                local tracker = trackers[index]
+                if tracker["name"] == "DestroySpaceshipsTracker" then
+                    hasDestroyTracker = true
+                    if (tonumber(tracker["left_to_destroy_spaceships_count"]) or 0) > 0 then
+                        allEnemiesDestroyed = false
+                    end
+                end
+                local item = trackerToObjectiveItem(tracker)
                 if item ~= nil then
                     items[#items + 1] = item
                     if item.failed then anyFailed = true end
@@ -336,10 +396,11 @@ function CombatHudOverlay:new(host)
             end
             -- Render the rows only while the panel is visible; the failure side-effect below still runs.
             if objectivesActive then objectivesPanel:setItems(items) end
-            if anyFailed and not levelFailedTriggered then
-                levelFailedTriggered = true
-                UiOverlayManager:openOverlay(host, "LevelFailedOverlay")
-                EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
+            if anyFailed then
+                triggerLevelEnd("defeat")
+            elseif inCombat and hasDestroyTracker and allEnemiesDestroyed then
+                -- Every required enemy has been destroyed -> victory.
+                triggerLevelEnd("victory")
             end
         end
         if combatOverlay.allWidgetLuaProxiesReady then
@@ -380,6 +441,7 @@ function CombatHudOverlay:new(host)
         -- The tower context panel is combat-only (shown when a tower is selected during the wave).
         if not isCombat then
             selectedTowerPanel:setIsVisible(false)
+            selectedBarrierPanel:setIsVisible(false)
         end
 
         -- Objectives are available in BOTH preparation and combat; the ЗАДАЧИ dock toggle (objectivesActive)
@@ -667,6 +729,15 @@ function CombatHudOverlay:new(host)
         selectedTowerPanel:setupLayout()
         selectedTowerPanel:setIsVisible(false)
 
+        -- Barrier panel shares the tower panel's slot (only one space object is selected at a time).
+        selectedBarrierPanel:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
+        selectedBarrierPanel:setAnchor(A.RIGHT, A.RIGHT, combatOverlayCanvas.widgetName, 24)
+        selectedBarrierPanel:setAnchor(A.TOP, A.BOTTOM, objectivesPanel.mainContainer.widgetName, 12)
+        selectedBarrierPanel:setWidth(300)
+        selectedBarrierPanel:setHeight(130)
+        selectedBarrierPanel:setupLayout()
+        selectedBarrierPanel:setIsVisible(false)
+
         -- ── Bottom wave-dock layout ───────────────────────────────────────────
         local HALIGN = UiLabel.TextHorizontalAlignmentType
         local VALIGN = UiLabel.TextVerticalAlignmentType
@@ -816,7 +887,7 @@ function CombatHudOverlay:new(host)
                     local crystalsCount = tonumber(parsedJson["crystals_count"])
                     crystalValueLabel:setText(tostring(crystalsCount))
                     towerGridPanel:updateAffordability(crystalsCount)
-                elseif statusType == PlayerStatusType.SELECTED_TOWER_CHANGED then
+                elseif statusType == PlayerStatusType.SELECTED_SPACE_OBJECT_CHANGED then
                     -- tower context panel works in both states (select a placed tower to demolish / upgrade)
                     if parsedJson["has_selected_tower"] ~= nil then
                         if parsedJson["has_selected_tower"] == true then
@@ -826,8 +897,17 @@ function CombatHudOverlay:new(host)
                             selectedTowerPanel:setWeaponImage(imageToSet)
                             selectedTowerPanel:setTowerTitle(WEAPON_DISPLAY_NAME[weaponType] or "БАШНЯ")
                             selectedTowerPanel:setIsVisible(true)
+                            selectedBarrierPanel:setIsVisible(false) -- only one space object is selected at a time
                         else
                             selectedTowerPanel:setIsVisible(false)
+                        end
+                    end
+                    if parsedJson["has_selected_barrier"] ~= nil then
+                        if parsedJson["has_selected_barrier"] == true then
+                            selectedBarrierPanel:setIsVisible(true)
+                            selectedTowerPanel:setIsVisible(false) -- only one space object is selected at a time
+                        else
+                            selectedBarrierPanel:setIsVisible(false)
                         end
                     end
                 end

@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/GUI/Common/TextEnums.h"
+#include "IHighlightable.h"
 #include "Implementation/ActorLeveling/BarrierLevel.h"
 
 #include <glm/vec3.hpp>
@@ -33,7 +34,7 @@ class BarrierUiComponent;
 
 enum class eBarrierActivityState { IDLE, ACTIVE };
 
-class BarrierActor : public Actor {
+class BarrierActor : public Actor, public IHighlightable {
 
 public:
     struct BarrierUiProtoData {
@@ -81,6 +82,8 @@ public:
     BarrierActor(const std::string& gameObjectName, const std::shared_ptr<::EngineCore::SceneComponent>& rootComponent);
 
     void Tick(const float deltaTimeSec) override;
+
+    void ChangeHighlightState(const bool isHighlightEnabled) override;
 
     void SetBarrierProtoData(const BarrierUiProtoData& protoData);
 

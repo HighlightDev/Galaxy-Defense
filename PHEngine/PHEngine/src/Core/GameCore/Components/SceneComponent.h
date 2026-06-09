@@ -31,7 +31,7 @@ protected:
 
     bool mIsOutlineApplied{false};
 
-    float mOutlineThickness{0.0f};
+    float mOutlineThickness{2.0f};
 
 public:
     SceneComponent(

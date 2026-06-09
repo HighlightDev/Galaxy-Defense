@@ -275,7 +275,7 @@ void UiScrollList::UpdateAnchorTransform()
 void UiScrollList::UnpausableTick(const float deltaTimeSec)
 {
     const bool childDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto& c) {
-        return c->IsTransformDirty() || c->IsPropertiesShouldBeUpdatedOnRenderThread();
+        return c->IsTransformDirty();
     });
     if (childDirty) {
         SetIsTransformDirty(true);

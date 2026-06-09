@@ -240,7 +240,7 @@ int32_t UiGridLayout::GetRowHeight(const uint32_t rowIndex) const
 void UiGridLayout::UnpausableTick(const float deltaTimeSec)
 {
     const auto childTransformDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto& child) {
-        return child->IsTransformDirty() || child->IsPropertiesShouldBeUpdatedOnRenderThread();
+        return child->IsTransformDirty();
     });
 
     if (childTransformDirty) {

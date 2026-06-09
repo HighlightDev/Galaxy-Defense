@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/GameCore/BoundingBox3D.h"
-#include "Core/GameCore/Event/BroadcastEvent.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Core/GameCore/ITickable.h"
 #include "ILevelController.h"
@@ -40,7 +39,6 @@ class CombatController : public ITickable,
                          public PhysicsCollisionGameThreadEvent,
                          public ShootRayCollisionEvent,
                          public ElectroRaySphereContactCollisionEvent,
-                         public BroadcastGameThreadEvent,
                          public ChangeGameModeEvent,
                          public std::enable_shared_from_this<CombatController> {
     std::weak_ptr<Scene> mScene;
@@ -72,7 +70,7 @@ public:
 
     void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTimeSec) override{};
+    void UnpausableTick(const float deltaTimeSec) override { };
 
     void CleanUp() override;
 
@@ -91,9 +89,6 @@ protected:
         const ElectroRaySphereContactCollisionEvent* sender,
         const typename ElectroRaySphereContactCollisionEvent::EventData_t& data) override;
 
-    void
-    ProcessEvent(const BroadcastGameThreadEvent* sender, const typename BroadcastGameThreadEvent::EventData_t& data) override;
-
     void ProcessEvent(const ChangeGameModeEvent* sender, const typename ChangeGameModeEvent::EventData_t& data) override;
 
 private:
@@ -110,8 +105,6 @@ private:
     void ValidatePoolObjects();
 
     void UpdateMissilesData();
-
-    void OnReadyToShoot();
 
     void OnCombatPreparationCompleted();
 };

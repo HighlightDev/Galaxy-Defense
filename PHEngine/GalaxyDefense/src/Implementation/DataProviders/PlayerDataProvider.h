@@ -14,7 +14,7 @@ class PlayerDataProvider {
 
     int32_t mDestroyedEnemySpaceshipsCount{0};
 
-    int32_t mSelectedTowerId{-1};
+    int32_t mSelectedSpaceObjectId{-1};
 
     size_t mCrystalsCount{0};
 
@@ -44,9 +44,11 @@ public:
 
     int32_t GetDestroyedEnemySpaceshipsCount() const;
 
-    void SetSelectedTowerId(const int32_t towerId, const eMissileType towerWeaponType);
+    void SetSelectedTower(const int32_t towerId, const eMissileType towerWeaponType);
 
-    int32_t GetSelectedTowerId() const;
+    void SetSelectedBarrier(const int32_t barrierId);
+
+    int32_t GetSelectedSpaceObjectId() const;
 
     size_t GetCrystalsCount() const;
 

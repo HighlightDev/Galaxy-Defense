@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Actor.h"
+#include "IHighlightable.h"
 #include "Implementation/ActorLeveling/SpaceStationLevel.h"
 
 using namespace EngineCore;
@@ -12,7 +13,7 @@ class StaticMeshComponent;
 namespace Game {
 enum class eSpaceStationActivityState { IDLE, ACTIVE };
 
-class SpaceStationActor : public Actor {
+class SpaceStationActor : public Actor, public IHighlightable {
 
     float mShootCooldown{0.0f};
 
@@ -34,6 +35,8 @@ public:
     SpaceStationActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
     void Tick(const float deltaTimeSec) override;
+
+    void ChangeHighlightState(const bool isHighlightEnabled) override;
 
     bool CanShoot() const;
 

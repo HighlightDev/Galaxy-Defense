@@ -28,7 +28,7 @@ local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
 local CombatHudOverlay = require("Ui/Overlays/CombatLevelOverlays/CombatHudOverlay")
-local LevelFailedOverlay = require("Ui/Overlays/CombatLevelOverlays/LevelFailedOverlay")
+local LevelEndOverlay = require("Ui/Overlays/CombatLevelOverlays/LevelEndOverlay")
 local json = require("Ui/Core/3rdparty/json")
 
 GameModeType = {INIT = 0, COMBAT = 1, SPACE_STATION_PLACEMENT = 2}
@@ -53,7 +53,7 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
                         EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                               false)
                         UiOverlayManager:closeCurrentOverlay(host)
-                    elseif "LevelFailedOverlay" ~= currentOverlayName then
+                    elseif "LevelEndOverlay" ~= currentOverlayName then
                         EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                               true)
                         print("UiOverlayManager:openOverlay(host, PauseMenuOverlay)")
@@ -69,14 +69,14 @@ local function createPauseOverlay(host) return PauseOverlay:new(host) end
 
 local function createPauseSettingsOverlay(host) return SettingsOverlay:new(host) end
 
-local function createLevelFailedOverlay(host) return LevelFailedOverlay:new(host) end
+local function createLevelEndOverlay(host) return LevelEndOverlay:new(host) end
 
 local function createCombatOverlay(host) return CombatHudOverlay:new(host) end
 
 local function initialize(host)
     UiOverlays["GameSettingsOverlay"] = createPauseSettingsOverlay(host)
     UiOverlays["PauseMenuOverlay"] = createPauseOverlay(host)
-    UiOverlays["LevelFailedOverlay"] = createLevelFailedOverlay(host)
+    UiOverlays["LevelEndOverlay"] = createLevelEndOverlay(host)
     UiOverlays["CombatHudOverlay"] = createCombatOverlay(host)
 end
 

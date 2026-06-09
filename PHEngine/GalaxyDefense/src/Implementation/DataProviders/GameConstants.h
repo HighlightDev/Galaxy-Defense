@@ -17,4 +17,5 @@ extern const glm::vec3 c_barrierPillarScale;
 extern const float c_barrierExclusionRadiusFromDestination;
 extern const glm::vec3 c_lootSize;
 extern const float c_lootTweenTimeSec;
+extern const float c_outlineThickness;
 } // namespace Game::Constants

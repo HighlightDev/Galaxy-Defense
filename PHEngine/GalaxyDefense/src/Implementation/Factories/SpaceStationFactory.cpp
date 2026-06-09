@@ -14,6 +14,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Actors/SpaceStationActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 
 using namespace Graphics;
 using namespace EngineCore;
@@ -56,7 +57,7 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     const auto& c_mesh
         = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     c_mesh->SetIsOutlineApplied(false);
-    c_mesh->SetOutlineThickness(3.0f);
+    c_mesh->SetOutlineThickness(Game::Constants::c_outlineThickness);
     towerActor->SetMainMeshComponent(c_mesh);
 
     const auto& sphereShape = std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f);

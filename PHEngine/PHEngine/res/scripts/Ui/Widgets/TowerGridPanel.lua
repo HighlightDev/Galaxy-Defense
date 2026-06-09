@@ -262,9 +262,6 @@ function TowerGridPanel:new(host, overlay, config)
         obj.isPlacementMode = false
         obj.gridBackground:setIsVisible(true)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-                                                  json.encode(
-                                                      {action = "remove_tower_marker_visibility", visible = false}))
-        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
                                                   json.encode({action = "barrier_placement_visibility", visible = false}))
     end
     obj.isCreatePanelVisible = function() return obj.gridBackground:getIsVisible() end

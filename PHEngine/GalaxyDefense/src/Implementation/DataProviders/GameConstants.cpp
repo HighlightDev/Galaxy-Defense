@@ -12,4 +12,5 @@ const glm::vec3 c_barrierPillarScale = glm::vec3(6.0f, 12.0f, 6.0f);
 const float c_barrierExclusionRadiusFromDestination = 10.0f;
 const glm::vec3 c_lootSize = glm::vec3(1.0f);
 const float c_lootTweenTimeSec = 1.0f;
+const float c_outlineThickness = 3.0f;
 } // namespace Game::Constants

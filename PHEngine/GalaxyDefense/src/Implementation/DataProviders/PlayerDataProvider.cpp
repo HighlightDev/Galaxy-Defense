@@ -92,16 +92,13 @@ int32_t PlayerDataProvider::GetDestroyedEnemySpaceshipsCount() const
     return mDestroyedEnemySpaceshipsCount;
 }
 
-void PlayerDataProvider::SetSelectedTowerId(const int32_t towerId, const eMissileType towerWeaponType)
+void PlayerDataProvider::SetSelectedTower(const int32_t towerId, const eMissileType towerWeaponType)
 {
     LogInfo(
-        "PlayerDataProvider::SetSelectedTowerId: towerId: ",
-        towerId,
-        ", towerWeaponType: ",
-        static_cast<int32_t>(towerWeaponType));
-    if (mSelectedTowerId != towerId) {
-        mSelectedTowerId = towerId;
-        const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::SELECTED_TOWER_CHANGED;
+        "PlayerDataProvider::SetSelectedTower: towerId: ", towerId, ", towerWeaponType: ", static_cast<int32_t>(towerWeaponType));
+    if (mSelectedSpaceObjectId != towerId) {
+        mSelectedSpaceObjectId = towerId;
+        const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::SELECTED_SPACE_OBJECT_CHANGED;
         nlohmann::json jsonObj;
         jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
         jsonObj["has_selected_tower"] = towerId != -1;
@@ -112,9 +109,24 @@ void PlayerDataProvider::SetSelectedTowerId(const int32_t towerId, const eMissil
     }
 }
 
-int32_t PlayerDataProvider::GetSelectedTowerId() const
+void PlayerDataProvider::SetSelectedBarrier(const int32_t barrierId)
 {
-    return mSelectedTowerId;
+    LogInfo("PlayerDataProvider::SetSelectedBarrier: barrierId: ", barrierId);
+    if (mSelectedSpaceObjectId != barrierId) {
+        mSelectedSpaceObjectId = barrierId;
+        const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::SELECTED_SPACE_OBJECT_CHANGED;
+        nlohmann::json jsonObj;
+        jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
+        jsonObj["has_selected_barrier"] = barrierId != -1;
+        const auto& eventParams = jsonObj.dump();
+        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);
+        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);
+    }
+}
+
+int32_t PlayerDataProvider::GetSelectedSpaceObjectId() const
+{
+    return mSelectedSpaceObjectId;
 }
 
 void PlayerDataProvider::SetCrystalsCount(const size_t crystalsCount)
@@ -142,7 +154,7 @@ void PlayerDataProvider::ResetLevelData()
     mAvailableMissiles.clear();
     mSelectedMissileType = eMissileType::NONE;
     mDestroyedEnemySpaceshipsCount = 0;
-    mSelectedTowerId = -1;
+    mSelectedSpaceObjectId = -1;
     mCrystalsCount = 0;
 }
 } // namespace Game
