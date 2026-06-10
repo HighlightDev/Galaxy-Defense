@@ -5,7 +5,7 @@
 #include <json/json.hpp>
 
 namespace EngineCore::Scripts {
-ElectricBeamComponentLuaProxy::ElectricBeamComponentLuaProxy(const std::shared_ptr<ElectricBeamComponent>& baseComponent)
+ElectricBeamComponentLuaProxy::ElectricBeamComponentLuaProxy(const std::shared_ptr<BeamComponentBase>& baseComponent)
     : PrimitiveComponentLuaProxy(baseComponent)
 {
 }
@@ -21,7 +21,7 @@ bool ElectricBeamComponentLuaProxy::InvokeFunction(const std::string& functionNa
 
     if (!baseInvokeResult) {
         if (const auto ownerComponentSp = mOwnerComponentWp.lock()) {
-            const auto electricBeamComponentSp = std::dynamic_pointer_cast<ElectricBeamComponent>(ownerComponentSp);
+            const auto electricBeamComponentSp = std::dynamic_pointer_cast<BeamComponentBase>(ownerComponentSp);
             if (electricBeamComponentSp) {
                 if ("SetStartWorldPosition" == functionName) {
                     const auto json = nlohmann::json::parse(jsonParameters);

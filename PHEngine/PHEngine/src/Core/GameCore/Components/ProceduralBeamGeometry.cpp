@@ -7,221 +7,6 @@
 
 namespace EngineCore {
 
-void ProceduralBeamGeometry::GenerateBeamGeometry(
-    const glm::vec3& startPoint,
-    const glm::vec3& endPoint,
-    float radius,
-    int segments,
-    std::vector<BeamVertex>& outVertices,
-    std::vector<uint32_t>& outIndices)
-{
-    outVertices.clear();
-    outIndices.clear();
-
-    if (segments < 3)
-        segments = 3;
-
-    const glm::vec3 direction = glm::normalize(endPoint - startPoint);
-    glm::vec3 tangent, bitangent;
-    CalculateTangentBasis(direction, tangent, bitangent);
-
-    // Generate vertices for both caps
-    for (int cap = 0; cap < 2; ++cap) {
-        const glm::vec3 center = (cap == 0) ? startPoint : endPoint;
-        const float vCoord = static_cast<float>(cap);
-
-        for (int i = 0; i <= segments; ++i) {
-            const float angle = (static_cast<float>(i) / segments) * 2.0f * glm::pi<float>();
-            const float cosAngle = std::cos(angle);
-            const float sinAngle = std::sin(angle);
-
-            const glm::vec3 offset = (tangent * cosAngle + bitangent * sinAngle) * radius;
-            const glm::vec3 position = center + offset;
-            const glm::vec3 normal = glm::normalize(offset);
-            const glm::vec2 texCoord(static_cast<float>(i) / segments, vCoord);
-
-            outVertices.push_back({position, normal, texCoord});
-        }
-    }
-
-    // Generate indices
-    const int vertsPerCap = segments + 1;
-    for (int i = 0; i < segments; ++i) {
-        const uint32_t topLeft = i;
-        const uint32_t topRight = i + 1;
-        const uint32_t bottomLeft = vertsPerCap + i;
-        const uint32_t bottomRight = vertsPerCap + i + 1;
-
-        // First triangle
-        outIndices.push_back(topLeft);
-        outIndices.push_back(bottomLeft);
-        outIndices.push_back(topRight);
-
-        // Second triangle
-        outIndices.push_back(topRight);
-        outIndices.push_back(bottomLeft);
-        outIndices.push_back(bottomRight);
-    }
-}
-
-void ProceduralBeamGeometry::GenerateElectricBeamGeometry(
-    const glm::vec3& startPoint,
-    const glm::vec3& endPoint,
-    float radius,
-    int radialSegments,
-    int lengthSegments,
-    float jitterAmount,
-    std::vector<BeamVertex>& outVertices,
-    std::vector<uint32_t>& outIndices)
-{
-    outVertices.clear();
-    outIndices.clear();
-
-    if (radialSegments < 3)
-        radialSegments = 3;
-    if (lengthSegments < 2)
-        lengthSegments = 2;
-
-    const glm::vec3 baseDirection = endPoint - startPoint;
-    const float totalLength = glm::length(baseDirection);
-    const glm::vec3 direction = baseDirection / totalLength;
-
-    glm::vec3 tangent, bitangent;
-    CalculateTangentBasis(direction, tangent, bitangent);
-
-    // Generate spine points with jitter
-    std::vector<glm::vec3> spinePoints;
-    spinePoints.reserve(lengthSegments + 1);
-
-    for (int seg = 0; seg <= lengthSegments; ++seg) {
-        const float t = static_cast<float>(seg) / lengthSegments;
-        glm::vec3 point = glm::mix(startPoint, endPoint, t);
-
-        // Add jitter to intermediate points (not start/end)
-        if (seg > 0 && seg < lengthSegments) {
-            point = GetJitteredPoint(point, jitterAmount);
-        }
-
-        spinePoints.push_back(point);
-    }
-
-    // Generate vertices around each spine point
-    for (int seg = 0; seg <= lengthSegments; ++seg) {
-        const glm::vec3& center = spinePoints[seg];
-        const float vCoord = static_cast<float>(seg) / lengthSegments;
-
-        // Recalculate tangent basis for each segment to follow jittered spine
-        glm::vec3 segmentDirection;
-        if (seg == 0) {
-            segmentDirection = glm::normalize(spinePoints[1] - spinePoints[0]);
-        } else if (seg == lengthSegments) {
-            segmentDirection = glm::normalize(spinePoints[lengthSegments] - spinePoints[lengthSegments - 1]);
-        } else {
-            segmentDirection = glm::normalize(spinePoints[seg + 1] - spinePoints[seg - 1]);
-        }
-
-        glm::vec3 segTangent, segBitangent;
-        CalculateTangentBasis(segmentDirection, segTangent, segBitangent);
-
-        // Add slight radius variation for more organic look
-        const float radiusVariation = 1.0f + (std::sin(seg * 2.5f) * 0.15f);
-        const float segmentRadius = radius * radiusVariation;
-
-        for (int i = 0; i <= radialSegments; ++i) {
-            const float angle = (static_cast<float>(i) / radialSegments) * 2.0f * glm::pi<float>();
-            const float cosAngle = std::cos(angle);
-            const float sinAngle = std::sin(angle);
-
-            const glm::vec3 offset = (segTangent * cosAngle + segBitangent * sinAngle) * segmentRadius;
-            const glm::vec3 position = center + offset;
-            const glm::vec3 normal = glm::normalize(offset);
-            const glm::vec2 texCoord(static_cast<float>(i) / radialSegments, vCoord);
-
-            outVertices.push_back({position, normal, texCoord});
-        }
-    }
-
-    // Generate indices
-    const int vertsPerRing = radialSegments + 1;
-    for (int seg = 0; seg < lengthSegments; ++seg) {
-        for (int i = 0; i < radialSegments; ++i) {
-            const uint32_t topLeft = seg * vertsPerRing + i;
-            const uint32_t topRight = seg * vertsPerRing + i + 1;
-            const uint32_t bottomLeft = (seg + 1) * vertsPerRing + i;
-            const uint32_t bottomRight = (seg + 1) * vertsPerRing + i + 1;
-
-            // First triangle
-            outIndices.push_back(topLeft);
-            outIndices.push_back(bottomLeft);
-            outIndices.push_back(topRight);
-
-            // Second triangle
-            outIndices.push_back(topRight);
-            outIndices.push_back(bottomLeft);
-            outIndices.push_back(bottomRight);
-        }
-    }
-}
-
-void ProceduralBeamGeometry::GenerateTaperedBeamGeometry(
-    const glm::vec3& startPoint,
-    const glm::vec3& endPoint,
-    float startRadius,
-    float endRadius,
-    int segments,
-    std::vector<BeamVertex>& outVertices,
-    std::vector<uint32_t>& outIndices)
-{
-    outVertices.clear();
-    outIndices.clear();
-
-    if (segments < 3)
-        segments = 3;
-
-    const glm::vec3 direction = glm::normalize(endPoint - startPoint);
-    glm::vec3 tangent, bitangent;
-    CalculateTangentBasis(direction, tangent, bitangent);
-
-    // Generate vertices for both caps with different radii
-    for (int cap = 0; cap < 2; ++cap) {
-        const glm::vec3 center = (cap == 0) ? startPoint : endPoint;
-        const float radius = (cap == 0) ? startRadius : endRadius;
-        const float vCoord = static_cast<float>(cap);
-
-        for (int i = 0; i <= segments; ++i) {
-            const float angle = (static_cast<float>(i) / segments) * 2.0f * glm::pi<float>();
-            const float cosAngle = std::cos(angle);
-            const float sinAngle = std::sin(angle);
-
-            const glm::vec3 offset = (tangent * cosAngle + bitangent * sinAngle) * radius;
-            const glm::vec3 position = center + offset;
-            const glm::vec3 normal = glm::normalize(offset);
-            const glm::vec2 texCoord(static_cast<float>(i) / segments, vCoord);
-
-            outVertices.push_back({position, normal, texCoord});
-        }
-    }
-
-    // Generate indices
-    const int vertsPerCap = segments + 1;
-    for (int i = 0; i < segments; ++i) {
-        const uint32_t topLeft = i;
-        const uint32_t topRight = i + 1;
-        const uint32_t bottomLeft = vertsPerCap + i;
-        const uint32_t bottomRight = vertsPerCap + i + 1;
-
-        // First triangle
-        outIndices.push_back(topLeft);
-        outIndices.push_back(bottomLeft);
-        outIndices.push_back(topRight);
-
-        // Second triangle
-        outIndices.push_back(topRight);
-        outIndices.push_back(bottomLeft);
-        outIndices.push_back(bottomRight);
-    }
-}
-
 glm::vec3 ProceduralBeamGeometry::GetJitteredPoint(const glm::vec3& point, float jitterAmount)
 {
     static std::random_device rd;
@@ -266,9 +51,7 @@ float ProceduralBeamGeometry::SmoothNoise(float x, float y, float z)
     return (noise + 1.0f) * 0.5f;
 }
 
-void ProceduralBeamGeometry::GenerateAnimatedElectricBeamGeometry(
-    const glm::vec3& startPoint,
-    const glm::vec3& endPoint,
+void ProceduralBeamGeometry::GenerateCanonicalAnimatedElectricBeamGeometry(
     float radius,
     int radialSegments,
     int lengthSegments,
@@ -286,46 +69,33 @@ void ProceduralBeamGeometry::GenerateAnimatedElectricBeamGeometry(
     if (lengthSegments < 2)
         lengthSegments = 2;
 
-    const glm::vec3 direction = glm::normalize(endPoint - startPoint);
-
-    glm::vec3 tangent, bitangent;
-    CalculateTangentBasis(direction, tangent, bitangent);
-
-    // Generate spine points with animated jitter
+    // Canonical spine runs along +Z from 0 to 1. Jitter perturbs only the perpendicular XY plane so the
+    // result stays length-independent: the proxy scales Z by the real beam length, and scaling baked-in
+    // longitudinal jitter would distort it differently per length.
     std::vector<glm::vec3> spinePoints;
     spinePoints.reserve(lengthSegments + 1);
 
     for (int seg = 0; seg <= lengthSegments; ++seg) {
         const float t = static_cast<float>(seg) / lengthSegments;
-        glm::vec3 point = glm::mix(startPoint, endPoint, t);
+        glm::vec3 point(0.0f, 0.0f, t);
 
-        // Add animated jitter to intermediate points (not start/end)
         if (seg > 0 && seg < lengthSegments) {
-            point = GetAnimatedJitteredPoint(point, jitterAmount, animationTime, animationSpeed, seg);
+            const glm::vec3 jittered = GetAnimatedJitteredPoint(point, jitterAmount, animationTime, animationSpeed, seg);
+            point.x = jittered.x; // perpendicular only — keep the longitudinal (Z) position intact
+            point.y = jittered.y;
         }
 
         spinePoints.push_back(point);
     }
 
-    // Generate vertices around each spine point
+    // Rings are oriented to the fixed canonical axis (+Z), NOT to the local jittered spine direction.
+    const glm::vec3 segTangent(1.0f, 0.0f, 0.0f);
+    const glm::vec3 segBitangent(0.0f, 1.0f, 0.0f);
+
     for (int seg = 0; seg <= lengthSegments; ++seg) {
         const glm::vec3& center = spinePoints[seg];
         const float vCoord = static_cast<float>(seg) / lengthSegments;
 
-        // Recalculate tangent basis for each segment to follow jittered spine
-        glm::vec3 segmentDirection;
-        if (seg == 0) {
-            segmentDirection = glm::normalize(spinePoints[1] - spinePoints[0]);
-        } else if (seg == lengthSegments) {
-            segmentDirection = glm::normalize(spinePoints[lengthSegments] - spinePoints[lengthSegments - 1]);
-        } else {
-            segmentDirection = glm::normalize(spinePoints[seg + 1] - spinePoints[seg - 1]);
-        }
-
-        glm::vec3 segTangent, segBitangent;
-        CalculateTangentBasis(segmentDirection, segTangent, segBitangent);
-
-        // Add animated radius variation for pulsing effect
         const float pulsePhase = animationTime * animationSpeed * 2.0f + seg * 0.5f;
         const float radiusVariation = 1.0f + (std::sin(pulsePhase) * 0.15f);
         const float segmentRadius = radius * radiusVariation;
@@ -344,7 +114,6 @@ void ProceduralBeamGeometry::GenerateAnimatedElectricBeamGeometry(
         }
     }
 
-    // Generate indices
     const int vertsPerRing = radialSegments + 1;
     for (int seg = 0; seg < lengthSegments; ++seg) {
         for (int i = 0; i < radialSegments; ++i) {
@@ -353,26 +122,15 @@ void ProceduralBeamGeometry::GenerateAnimatedElectricBeamGeometry(
             const uint32_t bottomLeft = (seg + 1) * vertsPerRing + i;
             const uint32_t bottomRight = (seg + 1) * vertsPerRing + i + 1;
 
-            // First triangle
             outIndices.push_back(topLeft);
             outIndices.push_back(bottomLeft);
             outIndices.push_back(topRight);
 
-            // Second triangle
             outIndices.push_back(topRight);
             outIndices.push_back(bottomLeft);
             outIndices.push_back(bottomRight);
         }
     }
-}
-
-void ProceduralBeamGeometry::CalculateTangentBasis(const glm::vec3& direction, glm::vec3& tangent, glm::vec3& bitangent)
-{
-    // Choose an arbitrary vector that's not parallel to direction
-    glm::vec3 arbitrary = (std::abs(direction.y) < 0.99f) ? glm::vec3(0.0f, 1.0f, 0.0f) : glm::vec3(1.0f, 0.0f, 0.0f);
-
-    tangent = glm::normalize(glm::cross(arbitrary, direction));
-    bitangent = glm::normalize(glm::cross(direction, tangent));
 }
 
 } // namespace EngineCore

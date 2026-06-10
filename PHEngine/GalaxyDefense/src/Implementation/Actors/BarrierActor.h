@@ -14,7 +14,7 @@
 namespace EngineCore {
 class SceneComponent;
 class StaticMeshComponent;
-class ElectricBeamComponent;
+class DynamicBeamComponent;
 class GpuParticleSystemComponent;
 } // namespace EngineCore
 
@@ -50,7 +50,7 @@ public:
 private:
     std::vector<std::shared_ptr<::EngineCore::StaticMeshComponent>> mBarrierPillars;
 
-    std::vector<std::shared_ptr<::EngineCore::ElectricBeamComponent>> mBarrierRays;
+    std::vector<std::shared_ptr<::EngineCore::DynamicBeamComponent>> mBarrierRays;
 
     eBarrierActivityState mBarrierState{eBarrierActivityState::IDLE};
 
@@ -96,7 +96,7 @@ public:
 
     void AddBarrierPillarMesh(const std::shared_ptr<::EngineCore::StaticMeshComponent>& meshComponent);
 
-    void AddRayLineMesh(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& rayComponent);
+    void AddRayLineMesh(const std::shared_ptr<::EngineCore::DynamicBeamComponent>& rayComponent);
 
     bool TrySetBarrierPillarMeshRelativeTransform(
         const int32_t pillarIndex, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);

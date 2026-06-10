@@ -367,10 +367,10 @@ float GetRollFromQuaternion(const glm::quat& quat)
     return RAD_TO_DEG(roll);
 }
 
-glm::mat4 CreateRotationMatrixFromDirection(const glm::vec3& direction)
+void CreateOrthogonalBasisFromDirection(const glm::vec3& inDirection, glm::vec3& outTangent, glm::vec3& outBinormal)
 {
     // Find a vector, ref, not parallel to v
-    glm::vec3 vmag = glm::abs(direction);
+    glm::vec3 vmag = glm::abs(inDirection);
     glm::vec3 ref;
     if (vmag.x <= vmag.y && vmag.x <= vmag.z) {
         ref = glm::vec3(1.0, 0.0, 0.0);
@@ -379,10 +379,16 @@ glm::mat4 CreateRotationMatrixFromDirection(const glm::vec3& direction)
     } else {
         ref = glm::vec3(0.0, 0.0, 1.0);
     }
-    // Use ref to create two unit vectors, u1, u2, so {direction, u1, u2} are orthogonal
-    glm::vec3 utemp = glm::cross(direction, ref);
-    glm::vec3 u1 = glm::normalize(glm::cross(direction, utemp));
-    glm::vec3 u2 = glm::normalize(glm::cross(direction, u1));
+
+    glm::vec3 temp = glm::cross(inDirection, ref);
+    outTangent = glm::normalize(glm::cross(inDirection, temp));
+    outBinormal = glm::normalize(glm::cross(inDirection, outTangent));
+}
+
+glm::mat4 CreateRotationMatrixFromDirection(const glm::vec3& direction)
+{
+    glm::vec3 u1, u2;
+    CreateOrthogonalBasisFromDirection(direction, u1, u2);
     return glm::mat4(glm::vec4(u1, 0.0f), glm::vec4(u2, 0.0f), glm::vec4(direction, 0.0f), glm::vec4(0, 0, 0, 1));
 }
 

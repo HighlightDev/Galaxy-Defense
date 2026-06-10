@@ -13,7 +13,7 @@
 using namespace EngineCore;
 
 namespace EngineCore {
-class ElectricBeamComponent;
+class DynamicBeamComponent;
 class Actor;
 class SpaceStationActor;
 } // namespace EngineCore
@@ -23,7 +23,7 @@ class MissileExplosionVisitorBase;
 class CombatActorsPoolHandler;
 
 class FreezingRayActor : public MissileActor {
-    std::shared_ptr<::EngineCore::ElectricBeamComponent> mLineComponent;
+    std::shared_ptr<::EngineCore::DynamicBeamComponent> mLineComponent;
 
     std::weak_ptr<SpaceStationActor> mActorWhoSpawnedMeWp;
 
@@ -61,7 +61,7 @@ public:
 
     void TriggerDisabled() override;
 
-    void SetLineComponent(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& lineComponent);
+    void SetLineComponent(const std::shared_ptr<::EngineCore::DynamicBeamComponent>& lineComponent);
 
     std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
 

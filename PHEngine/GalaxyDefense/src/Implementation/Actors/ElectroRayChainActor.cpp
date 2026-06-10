@@ -3,7 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/DynamicBeamComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
@@ -128,7 +128,7 @@ void ElectroRayChainActor::SetEndLineSpaceship(const std::weak_ptr<Actor>& endLi
     mEndLineSpaceship = endLineSpaceship;
 }
 
-void ElectroRayChainActor::SetLineComponent(const std::shared_ptr<ElectricBeamComponent>& lineComponent)
+void ElectroRayChainActor::SetLineComponent(const std::shared_ptr<DynamicBeamComponent>& lineComponent)
 {
     mLineComponent = lineComponent;
 }

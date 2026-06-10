@@ -32,7 +32,7 @@
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/PlatformTraverseComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/DynamicBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
@@ -85,7 +85,9 @@ int32_t DefaultComponentCreatorFactory::CreateComponent(
            {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()},
            {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()},
            {"BillboardComponent", std::make_shared<BillboardComponentCreator<BillboardComponent>>()},
-           {"ElectricBeamComponent", std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>()},
+           {"DynamicBeamComponent", std::make_shared<ElectricBeamComponentCreator<DynamicBeamComponent>>()},
+           // Back-compat: scenes/scripts that referenced the old single component map to the beam component.
+           {"ElectricBeamComponent", std::make_shared<ElectricBeamComponentCreator<DynamicBeamComponent>>()},
            {"CpuParticleSystemComponent", std::make_shared<ParticleSystemComponentCreator<CpuParticleSystemComponent>>()},
            {"GpuParticleSystemComponent", std::make_shared<ParticleSystemComponentCreator<GpuParticleSystemComponent>>()},
            {"LuaScriptComponent", std::make_shared<ScriptComponentCreator<LuaScriptComponent>>()}};
@@ -335,7 +337,7 @@ std::shared_ptr<ComponentData> DefaultComponentCreatorFactory::CreateComponentDa
             [](const glm::mat4& projectionMatrix) { return projectionMatrix; },
             isEnabled,
             isVisible);
-    } else if ("ElectricBeamComponent" == componentType) {
+    } else if ("DynamicBeamComponent" == componentType || "ElectricBeamComponent" == componentType) {
         const auto startPoint = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["startPoint"]);
         const auto endPoint = nlohmann_utilities::GetXyzFromJsonMap(jsonObj["endPoint"]);
         const float beamThickness = nlohmann_utilities::GetFloatFromJson(jsonObj, "beamThickness");

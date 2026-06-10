@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/DynamicBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Scene.h"
@@ -89,7 +89,7 @@ void BarriersHandler::CreateNewBarrierPillar(const glm::vec3& position, const gl
     a_barrier->AddBarrierPillarMesh(c_mesh);
 
     if (pillarsSize) {
-        const auto rayIndex = a_barrier->GetComponentsByType<ElectricBeamComponent>().size();
+        const auto rayIndex = a_barrier->GetComponentsByType<DynamicBeamComponent>().size();
         const auto d_mesh = std::make_shared<ElectricBeamComponentData>(
             "c_barrier_mesh_line_" + barrierIndexStr + "_ray_" + std::to_string(rayIndex),
             glm::vec3(0),
@@ -99,10 +99,11 @@ void BarriersHandler::CreateNewBarrierPillar(const glm::vec3& position, const gl
             1.0f,
             0.05f,
             barrier_mat.second);
-        const auto& meshComponentCreator = std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>();
+        const auto& meshComponentCreator = std::make_shared<ElectricBeamComponentCreator<DynamicBeamComponent>>();
         const auto& c_mesh
-            = std::static_pointer_cast<ElectricBeamComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+            = std::static_pointer_cast<DynamicBeamComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         c_mesh->SetSortOrderValue(200 + rayIndex);
+        c_mesh->SetAnimationSpeed(2.0f);
         a_barrier->AddRayLineMesh(c_mesh);
     }
     a_barrier->TrySetBarrierPillarMeshRelativeTransform(

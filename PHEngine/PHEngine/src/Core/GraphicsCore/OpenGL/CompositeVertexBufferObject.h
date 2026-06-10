@@ -27,6 +27,7 @@ protected:
     std::vector<GLDataLayout> m_glData;
     int32_t m_stride;
     int32_t m_countOfIndices;
+    size_t m_reservedElementCount{0};
 
 public:
     CompositeVertexBufferObject(const int32_t bufferTarget, const int32_t stride)
@@ -57,6 +58,14 @@ public:
         m_rawData = std::move(data);
     }
 
+    // Reserve GPU capacity (in DataType elements) so the buffer is allocated empty in SendDataToGPU and
+    // streamed later via BufferSubData — symmetric to the size-based VertexBufferObject constructor. The
+    // vertex attribute layout is still configured. Ignored when raw data is provided instead.
+    void ReserveCapacity(const size_t elementCount)
+    {
+        m_reservedElementCount = elementCount;
+    }
+
 public:
     std::vector<DataType>& GetCastedDataRef()
     {
@@ -73,14 +82,19 @@ public:
         GenBuffer();
         BindBuffer();
 
-        ext_assert(not m_rawData.empty(), "CompositeVertexBufferObject::SendDataToGPU: No data to send to GPU");
-        m_countOfIndices = static_cast<int32_t>(m_rawData.size());
-        m_allocatedBufferSize = m_rawData.size() * sizeof(DataType);
+        // Allocate from raw data when provided, otherwise allocate an empty buffer of the reserved size
+        // (to be streamed later via BufferSubData).
+        const size_t elementCount = m_rawData.empty() ? m_reservedElementCount : m_rawData.size();
+        ext_assert(
+            elementCount > 0,
+            "CompositeVertexBufferObject::SendDataToGPU: nothing to allocate (provide raw data or ReserveCapacity)");
+        m_countOfIndices = static_cast<int32_t>(elementCount);
+        m_allocatedBufferSize = elementCount * sizeof(DataType);
 
-        glBufferData(m_bufferTarget, m_allocatedBufferSize, m_rawData.data(), buffer_usage);
+        glBufferData(m_bufferTarget, m_allocatedBufferSize, m_rawData.empty() ? nullptr : m_rawData.data(), buffer_usage);
         for (const auto& data : m_glData) {
 
-            void* m_offset = reinterpret_cast<void*>(data.offset);
+            void* m_offset = reinterpret_cast<void*>(static_cast<uintptr_t>(data.offset));
             glEnableVertexAttribArray(data.vertexAttribIndex);
             if (data.glType == GL_INT || data.glType == GL_UNSIGNED_BYTE || data.glType == GL_UNSIGNED_INT) {
                 glVertexAttribIPointer(data.vertexAttribIndex, data.vectorSize, data.glType, m_stride, m_offset);

@@ -3,7 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/DynamicBeamComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/SphereCollisionTestWithFilterAdapter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
@@ -276,7 +276,7 @@ std::shared_ptr<MissileExplosionVisitorBase> FreezingRayActor::CreateMissileExpl
     return std::make_shared<FreezingRayExplosionVisitor>(std::static_pointer_cast<FreezingRayActor>(shared_from_this()));
 }
 
-void FreezingRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& lineComponent)
+void FreezingRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::DynamicBeamComponent>& lineComponent)
 {
     mLineComponent = lineComponent;
 }

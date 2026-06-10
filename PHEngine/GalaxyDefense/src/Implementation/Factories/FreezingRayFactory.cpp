@@ -9,7 +9,7 @@
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/DynamicBeamComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
@@ -59,9 +59,9 @@ std::shared_ptr<MissileActor> FreezingRayFactory::CreateMissile(
     const auto d_mesh = std::make_shared<ElectricBeamComponentData>(
         "c_runtimeElectricMesh_" + rayIndexStr, glm::vec3(), glm::vec3(), 1.0f, 2, 0.2f, 0.1f, electroRay_material);
     const std::shared_ptr<IComponentCreatable>& meshComponentCreator
-        = std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>();
+        = std::make_shared<ElectricBeamComponentCreator<DynamicBeamComponent>>();
     const auto& c_mesh
-        = std::static_pointer_cast<ElectricBeamComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        = std::static_pointer_cast<DynamicBeamComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
     a_freezingRay->SetLineComponent(c_mesh);
     a_freezingRay->AddComponent(c_mesh);
     a_freezingRay->SetScene(scene);

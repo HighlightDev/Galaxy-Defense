@@ -4,7 +4,7 @@
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/ElectricBeamComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/DynamicBeamComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
@@ -50,9 +50,12 @@ std::shared_ptr<MissileActor> ElectroRayChainFactory::CreateMissile(
     const auto d_mesh = std::make_shared<ElectricBeamComponentData>(
         "c_rayChainElectricLineMesh_" + rayChainIndexStr, glm::vec3(), glm::vec3(), 1.0f, 2, 0.7f, 0.05f, electroRay_material);
     const std::shared_ptr<IComponentCreatable>& meshComponentCreator
-        = std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>();
+        = std::make_shared<ElectricBeamComponentCreator<DynamicBeamComponent>>();
     const auto& c_mesh
-        = std::static_pointer_cast<ElectricBeamComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        = std::static_pointer_cast<DynamicBeamComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+    c_mesh->SetUpdateFrequency(0.05f);
+    c_mesh->SetJitterAmount(0.3f);
+    c_mesh->SetAnimationSpeed(2.0f);
 
     TweenerParser tweenerParser;
     const auto& rayChainTweener = tweenerParser.ParseTweenerDescriptor("electroRayChain.tween");

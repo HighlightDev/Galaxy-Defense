@@ -18,6 +18,10 @@ struct RuntimeGeneratedMeshPoolParameters {
     size_t mMaxIndicesCount;
     std::vector<std::shared_ptr<AttributeDataBase>> mVertexAttributes;
 
+    // When true, the mesh is allocated as a single interleaved buffer (position + normal + texcoords) via
+    // CompositeVertexBufferObject instead of one VBO per attribute. Opt-in; used by the electric beam.
+    bool mUseInterleavedBuffer{false};
+
     RuntimeGeneratedMeshPoolParameters(
         const std::string& componentName, const size_t maxVerticesCount, const size_t maxIndicesCount)
         : mComponentName(componentName)
@@ -38,7 +42,7 @@ struct RuntimeGeneratedMeshPoolParameters {
     bool operator==(const RuntimeGeneratedMeshPoolParameters& other) const
     {
         return this->mComponentName == other.mComponentName && this->mMaxVerticesCount == other.mMaxVerticesCount
-            && this->mMaxIndicesCount == other.mMaxIndicesCount;
+            && this->mMaxIndicesCount == other.mMaxIndicesCount && this->mUseInterleavedBuffer == other.mUseInterleavedBuffer;
     }
 };
 } // namespace Resources
@@ -50,7 +54,7 @@ struct hash<RuntimeGeneratedMeshPoolParameters> {
     std::size_t operator()(const RuntimeGeneratedMeshPoolParameters& params) const
     {
         return hash<std::string>()(params.mComponentName) ^ hash<size_t>()(params.mMaxVerticesCount)
-            ^ hash<size_t>()(params.mMaxIndicesCount);
+            ^ hash<size_t>()(params.mMaxIndicesCount) ^ hash<bool>()(params.mUseInterleavedBuffer);
     }
 };
 } // namespace std

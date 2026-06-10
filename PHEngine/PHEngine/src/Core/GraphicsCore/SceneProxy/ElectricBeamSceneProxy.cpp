@@ -12,6 +12,9 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <algorithm>
+#include <string>
+
 using namespace Resources;
 using namespace Graphics;
 using namespace Graphics::Mesh;
@@ -21,7 +24,7 @@ using namespace Graphics::Renderer;
 namespace Graphics {
 namespace Proxy {
 
-ElectricBeamSceneProxy::ElectricBeamSceneProxy(const ElectricBeamComponent* component)
+ElectricBeamSceneProxy::ElectricBeamSceneProxy(const BeamComponentBase* component)
     : PrimitiveSceneProxy(component, component->GetRenderData().mMaterialProxy)
     , mBeamMeshPoolParams(component->GetRuntimeGeneratedMeshPoolParameters())
     , mBeamCount(component->GetBeamCount())
@@ -52,7 +55,8 @@ void ElectricBeamSceneProxy::PostConstructorInitialize()
         planarReflectionParams,
         mMaterialProxy);
 
-    CreateBeamSkins();
+    // Skins are allocated lazily once the pre-baked frame set arrives (SetAnimationFrames), since the
+    // frame count is only known then.
 }
 
 void ElectricBeamSceneProxy::Render(
@@ -61,10 +65,11 @@ void ElectricBeamSceneProxy::Render(
     const glm::mat4& projectionMatrix,
     ActiveBindedState& activeBindedState)
 {
-    if (bUpdateBeamGeometry) {
-        UpdateBeamGeometry();
-        bUpdateBeamGeometry = false;
+    if (mBeamSkins.empty()) {
+        return; // frame set not uploaded yet
     }
+
+    AdvanceFrame();
 
     const auto& shader = GetShader();
 
@@ -74,12 +79,13 @@ void ElectricBeamSceneProxy::Render(
     }
 
     shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy, activeBindedState);
-    shader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
+    // Static beams: mBeamWorldMatrix is identity, so this is just m_worldMatrix (world-space geometry).
+    // Dynamic beams: m_worldMatrix is identity and mBeamWorldMatrix places the canonical unit beam.
+    shader->GetVertexFactoryShader()->SetMatrices(m_worldMatrix * mBeamWorldMatrix, viewMatrix, projectionMatrix);
 
-    // Render each beam
-    if (mBeamSkin) {
-        const auto& buffer = mBeamSkin->GetBuffer();
-        buffer->RenderVAO(GL_TRIANGLES);
+    // Render the currently selected pre-baked frame.
+    if (mCurrentFrame >= 0 && mCurrentFrame < static_cast<int>(mBeamSkins.size()) && mBeamSkins[mCurrentFrame]) {
+        mBeamSkins[mCurrentFrame]->GetBuffer()->RenderVAO(GL_TRIANGLES);
     }
 }
 
@@ -88,10 +94,45 @@ bool ElectricBeamSceneProxy::IsDeferred() const
     return false;
 }
 
-void ElectricBeamSceneProxy::SetMeshData(const std::vector<std::tuple<std::vector<BeamVertex>, std::vector<uint32_t>>>& meshData)
+void ElectricBeamSceneProxy::SetAnimationFrames(const std::vector<BeamFrame>& frames, int beamCount, float frameStepSeconds)
 {
-    mMeshData = meshData;
-    bUpdateBeamGeometry = true;
+    mBeamCount = beamCount > 0 ? beamCount : mBeamCount;
+    mFrameStepSeconds = frameStepSeconds > 0.0f ? frameStepSeconds : 0.05f;
+
+    const int frameCount = static_cast<int>(frames.size());
+    if (frameCount == 0) {
+        DestroyBeamSkins();
+        return;
+    }
+
+    // Topology is identical across frames, so size each GPU buffer from a representative frame rather
+    // than from (potentially stale) radial/length segment counts.
+    size_t verticesPerFrame = 0, indicesPerFrame = 0;
+    for (const auto& beamMesh : frames.front()) {
+        verticesPerFrame += std::get<0>(beamMesh).size();
+        indicesPerFrame += std::get<1>(beamMesh).size();
+    }
+
+    // A moving beam re-bakes (and resends) its frames every tick. Only (re)allocate the GPU buffers when
+    // the count or per-frame capacity actually changes — otherwise reuse them and just re-upload, so the
+    // common per-tick path is a BufferSubData, not buffer churn.
+    const bool needRealloc = static_cast<int>(mBeamSkins.size()) != frameCount
+        || mBeamMeshPoolParams.mMaxVerticesCount != verticesPerFrame || mBeamMeshPoolParams.mMaxIndicesCount != indicesPerFrame;
+    if (needRealloc) {
+        AllocateBeamSkins(frameCount, verticesPerFrame, indicesPerFrame);
+        mCurrentFrame = 0;
+        mFrameAccumulatorSeconds = 0.0f;
+        mHasLastAdvanceTime = false;
+    }
+
+    for (int frame = 0; frame < frameCount; ++frame) {
+        UploadFrame(frame, frames[frame]);
+    }
+}
+
+void ElectricBeamSceneProxy::SetBeamWorldMatrix(const glm::mat4& beamWorldMatrix)
+{
+    mBeamWorldMatrix = beamWorldMatrix;
 }
 
 bool ElectricBeamSceneProxy::IsFrustumCullTestNeeded() const
@@ -111,83 +152,118 @@ RenderInfo ElectricBeamSceneProxy::GetRenderInfo() const
     return renderInfo;
 }
 
-void ElectricBeamSceneProxy::UpdateBeamGeometry()
+void ElectricBeamSceneProxy::UploadFrame(int frameIndex, const BeamFrame& frame)
 {
-    if (mMeshData.empty()) {
+    if (frameIndex < 0 || frameIndex >= static_cast<int>(mBeamSkins.size()) || !mBeamSkins[frameIndex]) {
         return;
     }
 
-    std::vector<float> vertexData;
-    std::vector<float> texCoordsData;
-    std::vector<float> normalData;
+    // Single interleaved vertex stream: [pos.xyz, normal.xyz, tex.uv] per vertex — matches the layout the
+    // allocation policy set up on the CompositeVertexBufferObject.
+    constexpr size_t c_floatsPerVertex = 3 + 3 + 2;
+    std::vector<float> interleavedData;
     std::vector<uint32_t> totalIndices;
-    vertexData.reserve(mBeamMeshPoolParams.mMaxVerticesCount);
-    texCoordsData.reserve(mBeamMeshPoolParams.mMaxVerticesCount);
-    normalData.reserve(mBeamMeshPoolParams.mMaxVerticesCount);
+    interleavedData.reserve(mBeamMeshPoolParams.mMaxVerticesCount * c_floatsPerVertex);
     totalIndices.reserve(mBeamMeshPoolParams.mMaxIndicesCount);
-    const uint32_t verticesPerBeam = mBeamMeshPoolParams.mMaxVerticesCount / mBeamCount;
+    const uint32_t verticesPerBeam = mBeamCount > 0 ? mBeamMeshPoolParams.mMaxVerticesCount / mBeamCount : 0;
 
-    for (uint32_t i = 0; i < mBeamCount; ++i) {
-        const auto& vertices = std::get<0>(mMeshData[i]);
-        const auto& indices = std::get<1>(mMeshData[i]);
+    const int beamsInFrame = std::min(static_cast<int>(frame.size()), mBeamCount);
+    for (int i = 0; i < beamsInFrame; ++i) {
+        const auto& vertices = std::get<0>(frame[i]);
+        const auto& indices = std::get<1>(frame[i]);
 
-        if (!vertices.empty() && !indices.empty()) {
-            for (const auto& vertex : vertices) {
-                vertexData.push_back(vertex.Position.x);
-                vertexData.push_back(vertex.Position.y);
-                vertexData.push_back(vertex.Position.z);
-                normalData.push_back(vertex.Normal.x);
-                normalData.push_back(vertex.Normal.y);
-                normalData.push_back(vertex.Normal.z);
-                texCoordsData.push_back(vertex.TexCoord.x);
-                texCoordsData.push_back(vertex.TexCoord.y);
-            }
+        for (const auto& vertex : vertices) {
+            interleavedData.push_back(vertex.Position.x);
+            interleavedData.push_back(vertex.Position.y);
+            interleavedData.push_back(vertex.Position.z);
+            interleavedData.push_back(vertex.Normal.x);
+            interleavedData.push_back(vertex.Normal.y);
+            interleavedData.push_back(vertex.Normal.z);
+            interleavedData.push_back(vertex.TexCoord.x);
+            interleavedData.push_back(vertex.TexCoord.y);
         }
 
         for (const auto& index : indices) {
             totalIndices.push_back(index + (i * verticesPerBeam));
         }
     }
-    auto& buffer = mBeamSkin->GetBuffer();
-    const auto& positionVBO = buffer->GetVboByAttribArrayIndexName("VertexPosition");
-    const auto& normalVBO = buffer->GetVboByAttribArrayIndexName("VertexNormal");
-    const auto& texCoordVBO = buffer->GetVboByAttribArrayIndexName("VertexTexCoords");
+
+    auto& buffer = mBeamSkins[frameIndex]->GetBuffer();
+    const auto& interleavedVBO = buffer->GetVboByAttribArrayIndexName("VertexPosition"); // the single composite VBO
     const auto& ibo = buffer->GetIBO();
 
-    positionVBO->BufferSubData(0, vertexData.size() * sizeof(float), vertexData.data());
-    normalVBO->BufferSubData(0, normalData.size() * sizeof(float), normalData.data());
-    texCoordVBO->BufferSubData(0, texCoordsData.size() * sizeof(float), texCoordsData.data());
-    texCoordVBO->UnbindBuffer();
+    interleavedVBO->BufferSubData(0, interleavedData.size() * sizeof(float), interleavedData.data());
+    interleavedVBO->UnbindBuffer();
     ibo->BufferSubData(0, totalIndices.size() * sizeof(uint32_t), totalIndices.data());
     ibo->UnbindBuffer();
 }
 
-void ElectricBeamSceneProxy::CreateBeamSkins()
+void ElectricBeamSceneProxy::AllocateBeamSkins(int frameCount, size_t verticesPerFrame, size_t indicesPerFrame)
 {
-    if (mBeamSkin) {
-        RuntimeGeneratedMeshPool::GetInstance()->TryToFreeMemory(mBeamSkin);
-        mBeamSkin.reset();
-    }
-
-    int32_t totalCountOfVertices = 0, totalCountOfIndices = 0;
-    for (int i = 0; i < mBeamCount; ++i) {
-        totalCountOfVertices += (mRadialSegments + 1) * (mLengthSegments + 1);
-        totalCountOfIndices += mRadialSegments * mLengthSegments * 6;
-    }
+    DestroyBeamSkins();
 
     const auto vertexAttributes = GetShader()->GetVertexAttributes();
+    const std::string baseName = mBeamMeshPoolParams.mComponentName;
+
+    mBeamSkins.reserve(frameCount);
+    for (int frame = 0; frame < frameCount; ++frame) {
+        // One distinct pool key per frame (the pool dedups by {name, vtxCount, idxCount}), so each frame
+        // gets its own GPU buffer rather than aliasing a single shared one.
+        RuntimeGeneratedMeshPoolParameters frameParams(baseName + "_frame" + std::to_string(frame));
+        frameParams.mVertexAttributes = vertexAttributes;
+        frameParams.mMaxVerticesCount = verticesPerFrame;
+        frameParams.mMaxIndicesCount = indicesPerFrame;
+        frameParams.mUseInterleavedBuffer = true; // all attributes in one interleaved CompositeVertexBufferObject
+        mBeamSkins.push_back(RuntimeGeneratedMeshPool::GetInstance()->GetOrAllocateResource(frameParams));
+    }
+
+    // Keep the shared params reflecting the per-frame capacity used by UploadFrame's reserves/offsets.
     mBeamMeshPoolParams.mVertexAttributes = vertexAttributes;
-    mBeamMeshPoolParams.mMaxVerticesCount = totalCountOfVertices;
-    mBeamMeshPoolParams.mMaxIndicesCount = totalCountOfIndices;
-    mBeamSkin = RuntimeGeneratedMeshPool::GetInstance()->GetOrAllocateResource(mBeamMeshPoolParams);
+    mBeamMeshPoolParams.mMaxVerticesCount = verticesPerFrame;
+    mBeamMeshPoolParams.mMaxIndicesCount = indicesPerFrame;
 }
 
 void ElectricBeamSceneProxy::DestroyBeamSkins()
 {
-    if (mBeamSkin) {
-        RuntimeGeneratedMeshPool::GetInstance()->TryToFreeMemory(mBeamSkin);
-        mBeamSkin.reset();
+    for (auto& skin : mBeamSkins) {
+        if (skin) {
+            RuntimeGeneratedMeshPool::GetInstance()->TryToFreeMemory(skin);
+        }
     }
+    mBeamSkins.clear();
+}
+
+void ElectricBeamSceneProxy::AdvanceFrame()
+{
+    const int frameCount = static_cast<int>(mBeamSkins.size());
+    if (frameCount <= 1 || mFrameStepSeconds <= 0.0f) {
+        return;
+    }
+
+    const auto now = std::chrono::steady_clock::now();
+    if (!mHasLastAdvanceTime) {
+        mLastAdvanceTime = now;
+        mHasLastAdvanceTime = true;
+        return;
+    }
+
+    const float deltaSeconds = std::chrono::duration<float>(now - mLastAdvanceTime).count();
+    mLastAdvanceTime = now;
+    mFrameAccumulatorSeconds += deltaSeconds;
+
+    // Catch up if the render thread stalled, but cap the work to one full loop.
+    int advance = static_cast<int>(mFrameAccumulatorSeconds / mFrameStepSeconds);
+    if (advance > 0) {
+        mFrameAccumulatorSeconds -= advance * mFrameStepSeconds;
+        mCurrentFrame = (mCurrentFrame + advance) % frameCount;
+    }
+}
+
+void ElectricBeamSceneProxy::CleanUp()
+{
+    PrimitiveSceneProxy::CleanUp();
+
+    DestroyBeamSkins();
 }
 
 } // namespace Proxy

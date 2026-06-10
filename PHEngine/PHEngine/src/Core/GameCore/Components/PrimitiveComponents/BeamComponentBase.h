@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/EngineObjectProperty.h"
 #include "Core/GraphicsCore/RenderData/MeshRenderData.h"
@@ -8,7 +7,9 @@
 
 #include <glm/vec3.hpp>
 
+#include <cstdint>
 #include <memory>
+#include <tuple>
 #include <vector>
 
 using namespace Graphics::Data;
@@ -16,23 +17,31 @@ using namespace Resources;
 
 namespace EngineCore {
 
-class StaticMeshComponent;
 struct BeamVertex;
 
 /**
- * Component for creating electric beam effects between two points
- * Supports multiple parallel beams with jitter animation
+ * Shared base for beam components. Bakes a fixed set of animation frames once and ships them to the
+ * (shared) ElectricBeamSceneProxy, which cycles through them on the render thread — there is no per-tick
+ * jitter regeneration. Subclasses choose the geometry/placement strategy via the virtual hooks below;
+ * the only concrete subclass is DynamicBeamComponent (canonical geometry placed by a per-tick world
+ * matrix, so endpoints can move freely without re-baking).
  */
-class ElectricBeamComponent : public PrimitiveComponent {
+class BeamComponentBase : public PrimitiveComponent {
     using Base = PrimitiveComponent;
 
-private:
+protected:
     constexpr static int32_t c_maxBeamsCount = 20;
     constexpr static int32_t c_minBeamsCount = 1;
 
+    // Number of pre-baked animation frames the proxy cycles through. Trades GPU memory for loop length:
+    // at the default update frequency (20 Hz) this is a ~2.4 s loop. Tunable.
+    constexpr static int32_t c_animationFramesCount = 48;
+
     RuntimeGeneratedMeshPoolParameters mBeamMeshPoolParams;
 
-    std::vector<std::tuple<std::vector<BeamVertex>, std::vector<uint32_t>>> mBeamMeshes;
+    // Pre-baked animation frames. Outer vector: one entry per animation frame. Inner vector: one mesh per
+    // beam. Baked on the game thread and shipped to the proxy, which then cycles through them on its own.
+    std::vector<std::vector<std::tuple<std::vector<BeamVertex>, std::vector<uint32_t>>>> mAnimationFrames;
 
     glm::vec3 mStartWorldPosition;
     glm::vec3 mEndWorldPosition;
@@ -43,24 +52,22 @@ private:
 
     int32_t mRadialSegments;
     int32_t mLengthSegments;
-    float mAnimationTime;
     float mAnimationSpeed;
 
-    float mTimeSinceLastUpdate;
-
-    bool mIsRenderDataDirty{false};
+    // A geometry param (or, for Static, an endpoint) changed → re-bake + resend the whole frame set.
+    bool mAreFramesDirty{false};
 
     const MeshRenderData mRenderData;
 
 public:
-    ElectricBeamComponent(
+    BeamComponentBase(
         const std::string& gameObjectName,
         const MeshRenderData& renderData,
-        const RuntimeGeneratedMeshPoolParameters& mBeamMeshPoolParams,
+        const RuntimeGeneratedMeshPoolParameters& beamMeshPoolParams,
         const bool isEnabled = true,
         const bool isVisible = true);
 
-    ~ElectricBeamComponent() override;
+    ~BeamComponentBase() override;
 
     void Tick(const float deltaTime) override;
 
@@ -96,15 +103,23 @@ public:
 
     const MeshRenderData& GetRenderData() const;
 
-private:
-    void SyncRenderData();
-    void RegenerateBeams();
-    glm::vec3 GetJitteredPoint(const glm::vec3& basePoint) const;
+protected:
+    // Bake one beam mesh for the given animation time (frame time + per-beam offset). Strategy hook:
+    // Static bakes in world space from the endpoints; Dynamic bakes the canonical unit beam.
+    virtual void BakeBeamMesh(
+        const float animationTime, std::vector<BeamVertex>& outVertices, std::vector<uint32_t>& outIndices) const = 0;
 
-    // Mesh-based methods
-    void CreateBeamMeshes();
-    void DestroyBeamMeshes();
-    void UpdateBeamMesh(const int32_t beamIndex);
+    // Whether the current state can produce geometry (Static: non-degenerate endpoints; Dynamic: always).
+    virtual bool CanBakeGeometry() const { return true; }
+
+    // Called whenever an endpoint changes. Default (Static): re-bake. Dynamic overrides to resend the matrix.
+    virtual void OnEndpointsChanged() { mAreFramesDirty = true; }
+
+    // Called at the end of every Tick. Dynamic ships its world matrix here; Static does nothing.
+    virtual void SyncTransformIfDirty() {}
+
+    void GenerateAnimationFrames();
+    void SyncAnimationFrames();
 };
 
 } // namespace EngineCore

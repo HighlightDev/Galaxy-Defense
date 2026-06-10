@@ -3,7 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/DynamicBeamComponent.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/RayCastWithFilterAdapter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
@@ -183,7 +183,7 @@ std::shared_ptr<MissileExplosionVisitorBase> ElectroRayActor::CreateMissileExplo
     return std::make_shared<ElectroRayExplosionVisitor>(std::static_pointer_cast<ElectroRayActor>(shared_from_this()));
 }
 
-void ElectroRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& lineComponent)
+void ElectroRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::DynamicBeamComponent>& lineComponent)
 {
     mLineComponent = lineComponent;
 }

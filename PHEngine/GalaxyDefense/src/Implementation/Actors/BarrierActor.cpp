@@ -12,7 +12,7 @@
 #include "Core/GameCore/Components/ComponentData/UiComponentData.h"
 #include "Core/GameCore/Components/ParticleComponents/GpuParticleSystemComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/ElectricBeamComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/DynamicBeamComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
@@ -105,10 +105,11 @@ void BarrierActor::CreateNewBarrierPillar(const glm::vec3& position, const glm::
             1.0f,
             0.05f,
             mRayMaterial);
-        const auto& rayComponentCreator = std::make_shared<ElectricBeamComponentCreator<ElectricBeamComponent>>();
+        const auto& rayComponentCreator = std::make_shared<ElectricBeamComponentCreator<DynamicBeamComponent>>();
         const auto& c_ray
-            = std::static_pointer_cast<ElectricBeamComponent>(sceneSp->CreateComponent_GameThread(rayComponentCreator, d_ray));
+            = std::static_pointer_cast<DynamicBeamComponent>(sceneSp->CreateComponent_GameThread(rayComponentCreator, d_ray));
         c_ray->SetSortOrderValue(200 + static_cast<int32_t>(rayIndex));
+        c_ray->SetAnimationSpeed(2.0f);
         AddRayLineMesh(c_ray);
     }
 
@@ -250,7 +251,7 @@ void BarrierActor::AddBarrierPillarMesh(const std::shared_ptr<StaticMeshComponen
     AddComponent(mBarrierPillars.emplace_back(meshComponent));
 }
 
-void BarrierActor::AddRayLineMesh(const std::shared_ptr<ElectricBeamComponent>& rayComponent)
+void BarrierActor::AddRayLineMesh(const std::shared_ptr<DynamicBeamComponent>& rayComponent)
 {
     AddComponent(mBarrierRays.emplace_back(rayComponent));
 }

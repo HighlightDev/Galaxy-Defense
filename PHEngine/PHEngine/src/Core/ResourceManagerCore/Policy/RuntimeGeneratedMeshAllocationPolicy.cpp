@@ -4,11 +4,14 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GraphicsCore/OpenGL/AttributesDataDescriptor.h"
+#include "Core/GraphicsCore/OpenGL/CompositeVertexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
+#include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
 
 #include <gl/glew.h>
 
+#include <cstddef>
 #include <vector>
 
 using namespace Graphics::OpenGL;
@@ -24,22 +27,45 @@ std::shared_ptr<Skin> RuntimeGeneratedMeshAllocationPolicy::AllocateMemory(const
     {
         const auto vao = std::make_shared<VertexArrayObject>();
 
-        const auto& vertexAttributes = arg.mVertexAttributes;
-        for (const auto& vertexAttribute : vertexAttributes) {
-            if (vertexAttribute->GetAttributeType() == eAttributeType::STANDART) {
-                const auto& standartAttribute = std::static_pointer_cast<StandartAttributeDataBase>(vertexAttribute);
-                if (standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexPosition
-                    || standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexTexCoords
-                    || standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexNormal) {
-                    const auto& vbo = new VertexBufferObject<float>(
-                        arg.mMaxVerticesCount,
-                        vertexAttribute->GetAttributeName(),
-                        vertexAttribute->GetAttributeIndex(),
-                        vertexAttribute->GetAttributeComponentDataType() == eAttributeComponentDataType::FLOAT ? GL_FLOAT
-                                                                                                               : GL_INT,
-                        vertexAttribute->GetAttributeComponentsNumber(),
-                        GL_ARRAY_BUFFER);
-                    vao->AddVBO(vbo);
+        if (arg.mUseInterleavedBuffer) {
+            // Single interleaved buffer: position + normal + texcoords, tightly packed per vertex. The
+            // proxy streams the actual per-frame data later via BufferSubData with this same layout.
+            struct InterleavedVertex {
+                float position[3];
+                float normal[3];
+                float texCoords[2];
+            };
+
+            auto compositeVBO = new CompositeVertexBufferObject<InterleavedVertex>(
+                GL_ARRAY_BUFFER, static_cast<int32_t>(sizeof(InterleavedVertex)));
+            compositeVBO->AddData(
+                static_cast<int32_t>(eAttribArrayIndex::VertexPosition), GL_FLOAT, 3, offsetof(InterleavedVertex, position));
+            compositeVBO->AddData(
+                static_cast<int32_t>(eAttribArrayIndex::VertexNormal), GL_FLOAT, 3, offsetof(InterleavedVertex, normal));
+            compositeVBO->AddData(
+                static_cast<int32_t>(eAttribArrayIndex::VertexTexCoords), GL_FLOAT, 2, offsetof(InterleavedVertex, texCoords));
+
+            // Reserve the full vertex capacity (in vertices); the buffer is allocated empty (no upload here).
+            compositeVBO->ReserveCapacity(arg.mMaxVerticesCount);
+            vao->AddVBO(compositeVBO);
+        } else {
+            const auto& vertexAttributes = arg.mVertexAttributes;
+            for (const auto& vertexAttribute : vertexAttributes) {
+                if (vertexAttribute->GetAttributeType() == eAttributeType::STANDART) {
+                    const auto& standartAttribute = std::static_pointer_cast<StandartAttributeDataBase>(vertexAttribute);
+                    if (standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexPosition
+                        || standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexTexCoords
+                        || standartAttribute->GetAttribArrayIndex() == eAttribArrayIndex::VertexNormal) {
+                        const auto& vbo = new VertexBufferObject<float>(
+                            arg.mMaxVerticesCount,
+                            vertexAttribute->GetAttributeName(),
+                            vertexAttribute->GetAttributeIndex(),
+                            vertexAttribute->GetAttributeComponentDataType() == eAttributeComponentDataType::FLOAT ? GL_FLOAT
+                                                                                                                   : GL_INT,
+                            vertexAttribute->GetAttributeComponentsNumber(),
+                            GL_ARRAY_BUFFER);
+                        vao->AddVBO(vbo);
+                    }
                 }
             }
         }

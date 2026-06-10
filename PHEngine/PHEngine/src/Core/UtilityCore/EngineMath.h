@@ -104,6 +104,8 @@ float NormalizeAngleRadians(float angleRadians);
 
 float GetRollFromQuaternion(const glm::quat& quat);
 
+void CreateOrthogonalBasisFromDirection(const glm::vec3& inDirection, glm::vec3& outTangent, glm::vec3& outBinormal);
+
 glm::mat4 CreateRotationMatrixFromDirection(const glm::vec3& direction);
 
 } // namespace EngineMath

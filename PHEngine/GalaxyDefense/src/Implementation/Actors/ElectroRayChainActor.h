@@ -14,7 +14,7 @@
 using namespace EngineCore;
 
 namespace EngineCore {
-class ElectricBeamComponent;
+class DynamicBeamComponent;
 class SpaceStationActor;
 class Actor;
 } // namespace EngineCore
@@ -24,7 +24,7 @@ class MissileExplosionVisitorBase;
 class CombatActorsPoolHandler;
 
 class ElectroRayChainActor : public MissileActor, public ITweenStateChangeNotifyable {
-    std::shared_ptr<::EngineCore::ElectricBeamComponent> mLineComponent;
+    std::shared_ptr<::EngineCore::DynamicBeamComponent> mLineComponent;
 
     glm::vec3 mElectroLineBegin;
     glm::vec3 mElectroLineEnd;
@@ -72,7 +72,7 @@ public:
 
     void SetEndLineSpaceship(const std::weak_ptr<Actor>& endLineSpaceship);
 
-    void SetLineComponent(const std::shared_ptr<::EngineCore::ElectricBeamComponent>& lineComponent);
+    void SetLineComponent(const std::shared_ptr<::EngineCore::DynamicBeamComponent>& lineComponent);
 
     void SetIsPendingDisable(const bool value);
 
