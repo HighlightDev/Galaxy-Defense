@@ -35,6 +35,13 @@ elseif(ENABLE_TSAN)
   target_link_options(${PROJECT_NAME} PRIVATE -fsanitize=thread)
 endif()
 
+if (ENABLE_PIC)
+  message(STATUS "Position independent code enabled for ${PROJECT_NAME}")
+  target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
+else()
+  message(STATUS "Position independent code disabled for ${PROJECT_NAME}")
+endif()
+
 set(ENGINE_DEPENDENCIES_DIR ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies)
 
 set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)

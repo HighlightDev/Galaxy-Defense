@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/GUI/UiElements/UiScrollList.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
+#include "Core/GraphicsCore/Renderer/RenderState.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 
@@ -67,9 +68,14 @@ void UiScrollListSceneProxy::Render(
     mUiRectangleShader->SetIsRoundTop(false);
     mUiRectangleShader->SetIsRoundBottom(false);
 
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    RenderState renderState;
+    renderState.GetColorState().SetColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    renderState.BindRenderState();
+
     ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLE_STRIP);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+    renderState.GetColorState().SetColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    renderState.BindRenderState();
 
     // Scrollbar pass (background + thumb).
     if (mScrollbarSide != c_scrollbarSideNone && mScrollbarThicknessPixels > 0 && mMaxScrollOffset > 0) {

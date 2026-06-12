@@ -22,12 +22,12 @@ namespace Assimp {
 struct MeshDataCollector {
 private:
     struct VertexBoneData {
-        size_t BoneIndices[MAX_BONES_PER_VERT]{0};
+        uint32_t BoneIndices[MAX_BONES_PER_VERT]{0};
         float Weights[MAX_BONES_PER_VERT]{0.0f};
 
         bool IsFilled = false;
 
-        void AddBoneData(size_t boneIndex, float weight);
+        void AddBoneData(const uint32_t boneIndex, const float weight);
     };
 
 public:
@@ -78,13 +78,13 @@ private:
 
     void CollectVertexData();
 
-    void VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData);
+    void VertexDataIterate(const uint32_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData);
 
     void StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData);
 
     void StoreVertexData(const aiMesh* pMesh);
 
-    void StoreIndices(size_t meshBaseVertexIndex, const aiMesh* pMesh);
+    void StoreIndices(const uint32_t meshBaseVertexIndex, const aiMesh* pMesh);
 };
 
 } // namespace Assimp

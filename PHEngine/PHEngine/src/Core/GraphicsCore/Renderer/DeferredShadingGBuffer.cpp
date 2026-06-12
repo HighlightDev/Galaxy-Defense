@@ -164,14 +164,14 @@ void DeferredShadingGBuffer::AllocateTextures()
     }
 }
 
-void DeferredShadingGBuffer::BindDeferredGBuffer()
+void DeferredShadingGBuffer::BindDeferredGBuffer(const GLbitfield clearBufferBit)
 {
-    RenderToFBO(*mFramebuffer, true, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    RenderToFBO(*mFramebuffer, true, mViewPortInfo, clearBufferBit);
 }
 
-void DeferredShadingGBuffer::UnbindDeferredGBuffer()
+void DeferredShadingGBuffer::UnbindDeferredGBuffer(const GLbitfield clearBufferBit)
 {
-    UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    UnbindFramebuffer(clearBufferBit);
 }
 
 void DeferredShadingGBuffer::BindDepthTexture(int32_t slot)

@@ -72,7 +72,7 @@ PrimitiveSorter::SortPrimitivesByShader(const std::vector<std::shared_ptr<T>>& p
 template<typename T>
 typename std::enable_if<std::is_base_of<PrimitiveSceneProxy, T>::value, std::vector<std::shared_ptr<T>>>::type
 PrimitiveSorter::SortPrimitivesByShaderAndDistanceToCamera(
-    const std::shared_ptr<CameraSceneProxy>& cameraProxy, const std::vector<std::shared_ptr<T>>& primitiveProxies)
+    const glm::vec3& cameraPosition, const std::vector<std::shared_ptr<T>>& primitiveProxies)
 {
     std::vector<std::shared_ptr<T>> sortedVector;
     sortedVector.reserve(primitiveProxies.size());
@@ -91,9 +91,9 @@ PrimitiveSorter::SortPrimitivesByShaderAndDistanceToCamera(
                 primitivesGroup.emplace_back(primitiveProxies.at(primitiveIndex));
             }
             std::sort(
-                primitivesGroup.begin(), primitivesGroup.end(), [&cameraProxy](const auto& proxyLeft, const auto& proxyRight) {
-                    const float lengthToLeft2 = glm::length2(proxyLeft->GetOriginPosition() - cameraProxy->GetEyeVector());
-                    const float lengthToRight2 = glm::length2(proxyRight->GetOriginPosition() - cameraProxy->GetEyeVector());
+                primitivesGroup.begin(), primitivesGroup.end(), [&cameraPosition](const auto& proxyLeft, const auto& proxyRight) {
+                    const float lengthToLeft2 = glm::length2(proxyLeft->GetOriginPosition() - cameraPosition);
+                    const float lengthToRight2 = glm::length2(proxyRight->GetOriginPosition() - cameraPosition);
                     return lengthToLeft2 < lengthToRight2; // sort front to back to apply early depth test
                 });
             sortedVector.insert(sortedVector.end(), primitivesGroup.begin(), primitivesGroup.end());
@@ -105,6 +105,27 @@ PrimitiveSorter::SortPrimitivesByShaderAndDistanceToCamera(
     return sortedVector;
 }
 
+template<typename T>
+typename std::enable_if<std::is_base_of<PrimitiveSceneProxy, T>::value, std::vector<std::shared_ptr<T>>>::type
+PrimitiveSorter::SortPrimitivesByDistanceToCamera(
+    const PrimitiveSorter::ePrimitiveSortComparatorType sortCmpType,
+    const glm::vec3& cameraPosition,
+    const std::vector<std::shared_ptr<T>>& primitiveProxies)
+{
+    std::vector<std::shared_ptr<T>> sortedVector;
+    sortedVector.insert(sortedVector.begin(), primitiveProxies.begin(), primitiveProxies.end());
+
+    std::sort(
+        sortedVector.begin(), sortedVector.end(), [&cameraPosition, sortCmpType](const auto& proxyLeft, const auto& proxyRight) {
+            const float lengthToLeft2 = glm::length2(proxyLeft->GetOriginPosition() - cameraPosition);
+            const float lengthToRight2 = glm::length2(proxyRight->GetOriginPosition() - cameraPosition);
+            return PrimitiveSorter::ePrimitiveSortComparatorType::LESS == sortCmpType ? lengthToLeft2 < lengthToRight2
+                                                                                      : lengthToLeft2 > lengthToRight2;
+        });
+
+    return sortedVector;
+}
+
 template std::vector<std::shared_ptr<PrimitiveSceneProxy>>
 PrimitiveSorter::SortPrimitivesByShader<PrimitiveSceneProxy>(const std::vector<std::shared_ptr<PrimitiveSceneProxy>>&);
 template std::vector<std::shared_ptr<SkeletalMeshSceneProxy>>
@@ -112,8 +133,20 @@ PrimitiveSorter::SortPrimitivesByShader<SkeletalMeshSceneProxy>(const std::vecto
 
 template std::vector<std::shared_ptr<PrimitiveSceneProxy>>
 PrimitiveSorter::SortPrimitivesByShaderAndDistanceToCamera<PrimitiveSceneProxy>(
-    const std::shared_ptr<CameraSceneProxy>& cameraProxy, const std::vector<std::shared_ptr<PrimitiveSceneProxy>>&);
+    const glm::vec3&, const std::vector<std::shared_ptr<PrimitiveSceneProxy>>&);
 template std::vector<std::shared_ptr<SkeletalMeshSceneProxy>>
 PrimitiveSorter::SortPrimitivesByShaderAndDistanceToCamera<SkeletalMeshSceneProxy>(
-    const std::shared_ptr<CameraSceneProxy>& cameraProxy, const std::vector<std::shared_ptr<SkeletalMeshSceneProxy>>&);
+    const glm::vec3&, const std::vector<std::shared_ptr<SkeletalMeshSceneProxy>>&);
+
+template std::vector<std::shared_ptr<PrimitiveSceneProxy>>
+PrimitiveSorter::SortPrimitivesByDistanceToCamera<PrimitiveSceneProxy>(
+    const PrimitiveSorter::ePrimitiveSortComparatorType,
+    const glm::vec3&,
+    const std::vector<std::shared_ptr<PrimitiveSceneProxy>>&);
+
+template std::vector<std::shared_ptr<SkeletalMeshSceneProxy>>
+PrimitiveSorter::SortPrimitivesByDistanceToCamera<SkeletalMeshSceneProxy>(
+    const PrimitiveSorter::ePrimitiveSortComparatorType,
+    const glm::vec3&,
+    const std::vector<std::shared_ptr<SkeletalMeshSceneProxy>>&);
 } // namespace Graphics

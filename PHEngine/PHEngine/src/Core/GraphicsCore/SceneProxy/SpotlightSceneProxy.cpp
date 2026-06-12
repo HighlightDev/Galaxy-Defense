@@ -66,6 +66,8 @@ std::shared_ptr<ProjectedShadowInfo> SpotlightSceneProxy::GetShadowInfo()
             direction = glm::normalize(direction);
             const glm::vec3& origin = GetPosition();
 
+            mShadowCastPosition = origin;
+
             const glm::mat4& shadowViewMatrix = glm::lookAt(origin, origin + direction, -AXIS_UP);
             shadowInfo->SetShadowViewMatrix(shadowViewMatrix);
             SetIsTransformationDirty(false);

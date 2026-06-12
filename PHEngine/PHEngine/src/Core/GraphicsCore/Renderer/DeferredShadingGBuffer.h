@@ -37,9 +37,9 @@ public:
 
     void CleanUp() override;
 
-    void BindDeferredGBuffer();
+    void BindDeferredGBuffer(const GLbitfield clearBufferBit);
 
-    void UnbindDeferredGBuffer();
+    void UnbindDeferredGBuffer(const GLbitfield clearBufferBit);
 
     void BindDepthTexture(int32_t slot);
 

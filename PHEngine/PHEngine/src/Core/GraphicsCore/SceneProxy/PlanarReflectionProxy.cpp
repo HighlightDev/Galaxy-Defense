@@ -11,6 +11,7 @@ PlanarReflectionProxy::PlanarReflectionProxy(PlanarReflectionComponent const* pl
     : SceneProxyBase(planarReflectionComponent->IsEnabled())
     , mRenderTargetViewPortInfo(planarReflectionComponent->GetRenderTargetViewPortInfo())
     , mReflectionPlane(planarReflectionComponent->GetReflectionPlane())
+    , mReflectionPlaneOrigin(planarReflectionComponent->GetReflectionPlaneOrigin())
     , mPlanarReflectionFBO(std::make_unique<PlanarReflectionFramebuffer>(mRenderTargetViewPortInfo))
     , mMirrorMatrix(1)
 {
@@ -57,14 +58,24 @@ void PlanarReflectionProxy::SetReflectionPlane(const glm::vec4& reflectionPlane)
     mMirrorMatrix = EngineMath::BuildMirrorMatrix(mReflectionPlane);
 }
 
-glm::mat4 PlanarReflectionProxy::GetMirrorMatrix() const
+const glm::mat4& PlanarReflectionProxy::GetMirrorMatrix() const
 {
     return mMirrorMatrix;
 }
 
-glm::vec4 PlanarReflectionProxy::GetReflectionPlane() const
+const glm::vec4& PlanarReflectionProxy::GetReflectionPlane() const
 {
     return mReflectionPlane;
+}
+
+const glm::vec3& PlanarReflectionProxy::GetReflectionPlaneOrigin() const 
+{
+    return mReflectionPlaneOrigin;
+}
+
+void PlanarReflectionProxy::SetReflectionPlaneOrigin(const glm::vec3& reflectionPlaneOrigin)
+{
+    mReflectionPlaneOrigin = reflectionPlaneOrigin;
 }
 
 std::shared_ptr<ITexture> PlanarReflectionProxy::GetPlanarReflectionTexture() const

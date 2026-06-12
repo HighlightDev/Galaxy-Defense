@@ -20,6 +20,8 @@ class PlanarReflectionProxy : public SceneProxyBase {
 
     glm::vec4 mReflectionPlane;
 
+    glm::vec3 mReflectionPlaneOrigin;
+
     std::unique_ptr<PlanarReflectionFramebuffer> mPlanarReflectionFBO;
 
     glm::mat4 mMirrorMatrix;
@@ -43,9 +45,13 @@ public:
 
     void SetReflectionPlane(const glm::vec4& reflectionPlane);
 
-    glm::vec4 GetReflectionPlane() const;
+    void SetReflectionPlaneOrigin(const glm::vec3& reflectionPlaneOrigin);
 
-    glm::mat4 GetMirrorMatrix() const;
+    const glm::vec4& GetReflectionPlane() const;
+
+    const glm::vec3& GetReflectionPlaneOrigin() const;
+
+    const glm::mat4& GetMirrorMatrix() const;
 
     std::shared_ptr<ITexture> GetPlanarReflectionTexture() const;
 };

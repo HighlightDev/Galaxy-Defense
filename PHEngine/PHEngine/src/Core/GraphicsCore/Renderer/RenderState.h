@@ -5,6 +5,7 @@
 #include <gl/glew.h>
 #include <stdint.h>
 
+#include <array>
 #include <cstddef>
 #include <type_traits>
 
@@ -229,6 +230,23 @@ public:
     }
 };
 
+class ColorState {
+    friend class RenderState;
+
+    std::array<GLboolean, 4> mChannelsMask;
+
+    bool mChannelsMaskDirty{true};
+
+public:
+    explicit ColorState();
+
+    void BindColorState();
+
+    void SetColorMask(const GLboolean red, const GLboolean green, const GLboolean blue, const GLboolean alpha);
+
+    const std::array<GLboolean, 4>& GetChannelsMask() const;
+};
+
 class RenderState {
 public:
     static DepthState& GetDepthState()
@@ -261,6 +279,12 @@ public:
         return instance;
     }
 
+    static ColorState& GetColorState()
+    {
+        static ColorState instance;
+        return instance;
+    }
+
     void BindRenderState()
     {
         GetDepthState().BindDepthState();
@@ -268,6 +292,7 @@ public:
         GetBlendingState().BindBlendState();
         GetCullingState().BindCullingState();
         GetClipPlaneState().BindClipPlaneState();
+        GetColorState().BindColorState();
     }
 };
 } // namespace Graphics

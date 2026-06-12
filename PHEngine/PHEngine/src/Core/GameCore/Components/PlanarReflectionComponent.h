@@ -23,6 +23,8 @@ class PlanarReflectionComponent : public SceneComponent, public IDeferredResourc
 
     glm::vec4 mReflectionPlane;
 
+    glm::vec3 mReflectionPlaneOrigin;
+
     std::weak_ptr<ACamera> mOwnerCameraWp;
 
     ::Graphics::ViewPortInfo mRenderTargetViewPortInfo;
@@ -58,6 +60,8 @@ public:
     int32_t GetSceneProxyId() const;
 
     glm::vec4 GetReflectionPlane() const;
+
+    glm::vec3 GetReflectionPlaneOrigin() const;
 
     void SetSceneProxyId(const int32_t sceneProxyId);
 

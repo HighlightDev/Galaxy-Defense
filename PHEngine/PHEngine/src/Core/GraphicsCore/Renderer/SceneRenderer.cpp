@@ -35,6 +35,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <utility>
 
 using namespace Resources;
 using namespace Common;
@@ -251,19 +252,85 @@ void SceneRenderer::OnWindowSizeChanged(const ViewPortInfo& viewPortInfo)
     mPostFxRenderer->ResizeRenderTargets(viewPortInfo);
 }
 
-void SceneRenderer::DepthPrePass(const std::shared_ptr<CameraSceneProxy>& cameraProxy)
+void SceneRenderer::DepthPrePass(const std::shared_ptr<SceneView>& sceneView)
 {
     RenderState renderState;
     renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LESS).SetDepthTestWriteMask(true);
     renderState.GetStencilState().SetIsStencilTestEnabled(false);
     renderState.GetBlendingState().SetIsBlendingEnabled(false);
+    renderState.GetColorState().SetColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    renderState.BindRenderState();
+
+    const auto& cameraProxy = sceneView->GetCameraProxy();
+    const auto& viewMatrix = cameraProxy->GetViewMatrix();
+    const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
+
+    mInstancedGeometryBatchRenderer->RenderAllBatches(
+        cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::DEFERRED);
+
+    // Only enabled, visible and passed frustum-cull test proxies should be rendered
+    std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleNonSkeletalProxies;
+    visibleNonSkeletalProxies.reserve(mNonSkeletalProxiesVec.size());
+    std::copy_if(
+        mNonSkeletalProxiesVec.cbegin(),
+        mNonSkeletalProxiesVec.cend(),
+        std::back_inserter(visibleNonSkeletalProxies),
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
+
+    std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
+    visibleSkeletalProxies.reserve(mSkeletalProxiesVec.size());
+    std::copy_if(
+        mSkeletalProxiesVec.cbegin(),
+        mSkeletalProxiesVec.cend(),
+        std::back_inserter(visibleSkeletalProxies),
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
+
+    if (!visibleNonSkeletalProxies.empty()) {
+        PrimitiveSorter sorter;
+        const auto sortedNonSkeletalPrimitives = sorter.SortPrimitivesByDistanceToCamera(
+            PrimitiveSorter::ePrimitiveSortComparatorType::LESS, cameraProxy->GetEyeVector(), visibleNonSkeletalProxies);
+
+        mDepthCollectShaderNonSkeletal->ExecuteShader();
+        mDepthCollectShaderNonSkeletal->GetShader()->SetWriteDepthLinearly(false);
+        for (auto& proxy : sortedNonSkeletalPrimitives) {
+            mDepthCollectShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(
+                proxy->GetMatrix(), viewMatrix, projectionMatrix);
+
+            proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        }
+        mDepthCollectShaderNonSkeletal->StopShader();
+    }
+
+    if (visibleSkeletalProxies.size() > 0) // Skeletal proxies
+    {
+        PrimitiveSorter sorter;
+        const auto sortedSkeletalPrimitives = sorter.SortPrimitivesByDistanceToCamera(
+            PrimitiveSorter::ePrimitiveSortComparatorType::LESS, cameraProxy->GetEyeVector(), visibleSkeletalProxies);
+
+        mDepthCollectShaderSkeletal->ExecuteShader();
+        mDepthCollectShaderSkeletal->GetShader()->SetWriteDepthLinearly(false);
+        for (auto& proxy : sortedSkeletalPrimitives) {
+            mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetMatrices(proxy->GetMatrix(), viewMatrix, projectionMatrix);
+            mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(proxy->GetSkinningMatrices());
+
+            proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+        }
+        mDepthCollectShaderSkeletal->StopShader();
+    }
+
+    renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+    renderState.GetColorState().SetColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     renderState.BindRenderState();
 }
 
-void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
+void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
 {
-    RenderState renderState;
     if (mGroupedByShadowAtlasLights.size()) {
+        RenderState renderState;
         renderState.GetCullingState().SetIsCullingEnabled(true).SetCullFaceMode(GL_BACK).SetFrontFace(GL_CCW);
         renderState.GetBlendingState().SetIsBlendingEnabled(false);
         renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
@@ -274,6 +341,27 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
             .SetStencilMask(0x00);
 
         renderState.BindRenderState();
+
+        // Only enabled, visible and passed frustum-cull test proxies should be rendered
+        std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleNonSkeletalProxies;
+        visibleNonSkeletalProxies.reserve(mNonSkeletalProxiesVec.size());
+        std::copy_if(
+            mNonSkeletalProxiesVec.cbegin(),
+            mNonSkeletalProxiesVec.cend(),
+            std::back_inserter(visibleNonSkeletalProxies),
+            [&sceneView](const auto& proxy) {
+                return proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+            });
+
+        std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
+        visibleSkeletalProxies.reserve(mSkeletalProxiesVec.size());
+        std::copy_if(
+            mSkeletalProxiesVec.cbegin(),
+            mSkeletalProxiesVec.cend(),
+            std::back_inserter(visibleSkeletalProxies),
+            [&sceneView](const auto& proxy) {
+                return proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+            });
 
         for (auto& atlasLightGroup : mGroupedByShadowAtlasLights) {
             bool bNewDepthShadowAtlas = true;
@@ -291,13 +379,17 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
 
                             const BoundingBox3D& dirLightShadowOrthoBound = dirLightPtr->GetShadowOrthographicProjectionBound();
 
-                            if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
+                            PrimitiveSorter sorter;
+                            const auto sortedNonSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
+                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
+                                dirLightPtr->GetShadowCastPosition(),
+                                visibleNonSkeletalProxies);
+                            if (sortedNonSkeletalProxies.size() > 0) // Non - skeletal proxies
                             {
                                 mDepthCollectShaderNonSkeletal->ExecuteShader();
                                 mDepthCollectShaderNonSkeletal->GetShader()->SetWriteDepthLinearly(false);
-                                for (auto& proxy : mNonSkeletalProxiesVec) {
-                                    if (proxy->IsEnabled() && proxy->IsVisible()
-                                        && dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox())) {
+                                for (auto& proxy : sortedNonSkeletalProxies) {
+                                    if (dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox())) {
                                         const auto& worldMatrix = proxy->GetMatrix();
                                         const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
                                         const auto& projectionMatrix
@@ -311,13 +403,15 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
                                 mDepthCollectShaderNonSkeletal->StopShader();
                             }
 
-                            if (mSkeletalProxiesVec.size() > 0) // Skeletal proxies
+                            const auto sortedSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
+                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
+                                dirLightPtr->GetShadowCastPosition(),
+                                visibleSkeletalProxies);
+                            if (sortedSkeletalProxies.size() > 0) // Skeletal proxies
                             {
                                 mDepthCollectShaderSkeletal->ExecuteShader();
-                                for (auto& proxy : mSkeletalProxiesVec) {
-                                    const bool bShouldRender = proxy->IsEnabled() && proxy->IsVisible()
-                                        && dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox());
-                                    if (bShouldRender) {
+                                for (auto& proxy : sortedSkeletalProxies) {
+                                    if (dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox())) {
                                         const auto& worldMatrix = proxy->GetMatrix();
                                         const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
                                         const auto& projectionMatrix
@@ -346,57 +440,57 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
                         if (shadowInfo && shadowInfo->IsShadowMapDirty()) {
                             shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
 
-                            if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
+                            PrimitiveSorter sorter;
+                            const auto sortedNonSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
+                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
+                                spotlightPtr->GetShadowCastPosition(),
+                                visibleNonSkeletalProxies);
+                            if (sortedNonSkeletalProxies.size() > 0) // Non - skeletal proxies
                             {
                                 mDepthCollectShaderNonSkeletal->ExecuteShader();
                                 mDepthCollectShaderNonSkeletal->GetShader()->SetWriteDepthLinearly(true);
-                                for (auto& proxy : mNonSkeletalProxiesVec) {
-                                    const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled()
-                                        && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-                                    if (bShouldRender) {
-                                        const auto& worldMatrix = proxy->GetMatrix();
-                                        const auto& viewMatrix = shadowInfo->GetShadowViewMatrix();
-                                        const auto& projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
+                                for (auto& proxy : sortedNonSkeletalProxies) {
+                                    const auto& worldMatrix = proxy->GetMatrix();
+                                    const auto& viewMatrix = shadowInfo->GetShadowViewMatrix();
+                                    const auto& projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
 
-                                        mDepthCollectShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(
-                                            worldMatrix, viewMatrix, projectionMatrix);
-                                        mDepthCollectShaderNonSkeletal->GetShader()->SetShadowDistance(
-                                            spotlightPtr->GetRadianceRadius());
-                                        mDepthCollectShaderNonSkeletal->GetShader()->SetLightWorldPosition(
-                                            spotlightPtr->GetPosition());
+                                    mDepthCollectShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(
+                                        worldMatrix, viewMatrix, projectionMatrix);
+                                    mDepthCollectShaderNonSkeletal->GetShader()->SetInvShadowDistance(
+                                        1.0f / spotlightPtr->GetRadianceRadius());
+                                    mDepthCollectShaderNonSkeletal->GetShader()->SetLightWorldPosition(
+                                        spotlightPtr->GetPosition());
 
-                                        proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
-                                    }
+                                    proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
                                 }
                                 mDepthCollectShaderNonSkeletal->StopShader();
                             }
-                            if (mSkeletalProxiesVec.size() > 0) // Skeletal proxies
+
+                            const auto sortedSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
+                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
+                                spotlightPtr->GetShadowCastPosition(),
+                                visibleSkeletalProxies);
+                            if (sortedSkeletalProxies.size() > 0) // Skeletal proxies
                             {
                                 mDepthCollectShaderSkeletal->ExecuteShader();
                                 mDepthCollectShaderSkeletal->GetShader()->SetWriteDepthLinearly(true);
 
-                                for (auto& proxy : mSkeletalProxiesVec) {
-                                    const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled()
-                                        && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                                for (auto& proxy : sortedSkeletalProxies) {
+                                    const auto skeletalProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy);
 
-                                    if (bShouldRender) {
-                                        const auto skeletalProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy);
+                                    const auto& worldMatrix = skeletalProxy->GetMatrix();
+                                    const auto& viewMatrices = shadowInfo->GetShadowViewMatrix();
+                                    const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrix();
 
-                                        const auto& worldMatrix = skeletalProxy->GetMatrix();
-                                        const auto& viewMatrices = shadowInfo->GetShadowViewMatrix();
-                                        const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrix();
+                                    mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetMatrices(
+                                        worldMatrix, viewMatrices, projectionMatrices);
+                                    mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(
+                                        skeletalProxy->GetSkinningMatrices());
+                                    mDepthCollectShaderSkeletal->GetShader()->SetInvShadowDistance(
+                                        1.0f / spotlightPtr->GetRadianceRadius());
+                                    mDepthCollectShaderSkeletal->GetShader()->SetLightWorldPosition(spotlightPtr->GetPosition());
 
-                                        mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetMatrices(
-                                            worldMatrix, viewMatrices, projectionMatrices);
-                                        mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(
-                                            skeletalProxy->GetSkinningMatrices());
-                                        mDepthCollectShaderSkeletal->GetShader()->SetShadowDistance(
-                                            spotlightPtr->GetRadianceRadius());
-                                        mDepthCollectShaderSkeletal->GetShader()->SetLightWorldPosition(
-                                            spotlightPtr->GetPosition());
-
-                                        skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
-                                    }
+                                    skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
                                 }
                                 mDepthCollectShaderSkeletal->StopShader();
                             }
@@ -415,57 +509,60 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
                         if (shadowInfo && shadowInfo->IsShadowMapDirty()) {
                             shadowInfo->BindShadowFramebuffer(true, true); // every point light has it's own depth texture atlas
 
-                            if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
+                            PrimitiveSorter sorter;
+                            const auto sortedNonSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
+                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
+                                pointLightPtr->GetShadowCastPosition(),
+                                visibleNonSkeletalProxies);
+
+                            if (sortedNonSkeletalProxies.size() > 0) // Non - skeletal proxies
                             {
                                 mDepthCollectPointLightShaderNonSkeletal->ExecuteShader();
-                                for (auto& proxy : mNonSkeletalProxiesVec) {
-                                    const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled()
-                                        && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-                                    if (bShouldRender) {
-                                        const auto& worldMatrix = proxy->GetMatrix();
-                                        const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
-                                        const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
+                                for (auto& proxy : sortedNonSkeletalProxies) {
+                                    const auto& worldMatrix = proxy->GetMatrix();
+                                    const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
+                                    const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
-                                        mDepthCollectPointLightShaderNonSkeletal->GetShader()->SetTransformationMatrices(
-                                            viewMatrices, projectionMatrices);
-                                        mDepthCollectPointLightShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(
-                                            worldMatrix, glm::mat4(), glm::mat4());
-                                        mDepthCollectPointLightShaderNonSkeletal->GetShader()->SetFarPlane(
-                                            pointLightPtr->GetRadianceRadius());
-                                        mDepthCollectPointLightShaderNonSkeletal->GetShader()->SetPointLightPosition(
-                                            pointLightPtr->GetPosition());
+                                    mDepthCollectPointLightShaderNonSkeletal->GetShader()->SetTransformationMatrices(
+                                        viewMatrices, projectionMatrices);
+                                    mDepthCollectPointLightShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(
+                                        worldMatrix, glm::mat4(), glm::mat4());
+                                    mDepthCollectPointLightShaderNonSkeletal->GetShader()->SetFarPlane(
+                                        pointLightPtr->GetRadianceRadius());
+                                    mDepthCollectPointLightShaderNonSkeletal->GetShader()->SetPointLightPosition(
+                                        pointLightPtr->GetPosition());
 
-                                        proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
-                                    }
+                                    proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
                                 }
                                 mDepthCollectPointLightShaderNonSkeletal->StopShader();
                             }
-                            if (mSkeletalProxiesVec.size() > 0) // Skeletal proxies
+
+                            const auto sortedSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
+                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
+                                pointLightPtr->GetShadowCastPosition(),
+                                visibleSkeletalProxies);
+                            if (sortedSkeletalProxies.size() > 0) // Skeletal proxies
                             {
                                 mDepthCollectPointLightShaderSkeletal->ExecuteShader();
-                                for (auto& proxy : mSkeletalProxiesVec) {
-                                    const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled()
-                                        && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-                                    if (bShouldRender) {
-                                        const auto skeletalProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy);
+                                for (auto& proxy : sortedSkeletalProxies) {
+                                    const auto skeletalProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy);
 
-                                        const auto& worldMatrix = skeletalProxy->GetMatrix();
-                                        const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
-                                        const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
+                                    const auto& worldMatrix = skeletalProxy->GetMatrix();
+                                    const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
+                                    const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
-                                        mDepthCollectPointLightShaderSkeletal->GetVertexFactoryShader()->SetMatrices(
-                                            worldMatrix, glm::mat4(), glm::mat4());
-                                        mDepthCollectPointLightShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(
-                                            skeletalProxy->GetSkinningMatrices());
-                                        mDepthCollectPointLightShaderSkeletal->GetShader()->SetTransformationMatrices(
-                                            viewMatrices, projectionMatrices);
-                                        mDepthCollectPointLightShaderSkeletal->GetShader()->SetFarPlane(
-                                            pointLightPtr->GetRadianceRadius());
-                                        mDepthCollectPointLightShaderSkeletal->GetShader()->SetPointLightPosition(
-                                            pointLightPtr->GetPosition());
+                                    mDepthCollectPointLightShaderSkeletal->GetVertexFactoryShader()->SetMatrices(
+                                        worldMatrix, glm::mat4(), glm::mat4());
+                                    mDepthCollectPointLightShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(
+                                        skeletalProxy->GetSkinningMatrices());
+                                    mDepthCollectPointLightShaderSkeletal->GetShader()->SetTransformationMatrices(
+                                        viewMatrices, projectionMatrices);
+                                    mDepthCollectPointLightShaderSkeletal->GetShader()->SetFarPlane(
+                                        pointLightPtr->GetRadianceRadius());
+                                    mDepthCollectPointLightShaderSkeletal->GetShader()->SetPointLightPosition(
+                                        pointLightPtr->GetPosition());
 
-                                        skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
-                                    }
+                                    skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
                                 }
                                 mDepthCollectPointLightShaderSkeletal->StopShader();
                             }
@@ -482,9 +579,6 @@ void SceneRenderer::DepthPass(const std::shared_ptr<SceneView>& sceneView)
             }
         }
     }
-
-    renderState.GetCullingState().SetIsCullingEnabled(false);
-    renderState.BindRenderState();
 }
 
 void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneView>& sceneView)
@@ -493,12 +587,8 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     renderState.GetCullingState().SetIsCullingEnabled(true).SetCullFaceMode(GL_BACK).SetFrontFace(GL_CCW);
     renderState.BindRenderState();
 
-    m_gbuffer->BindDeferredGBuffer();
-
-    OutlinePass(sceneView);
-
     renderState.GetBlendingState().SetIsBlendingEnabled(false);
-    renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+    renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(false);
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
@@ -511,41 +601,41 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     const auto& viewMatrix = cameraProxy->GetViewMatrix();
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
-    renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF);
     mInstancedGeometryBatchRenderer->RenderAllBatches(
         cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::DEFERRED);
 
-    if (mSkeletalProxiesVec.size() > 0) {
-        for (auto& proxy : mSkeletalProxiesVec) {
-            const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
+    // Only enabled, visible and passed frustum-cull test proxies should be rendered
+    std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleProxies;
+    visibleProxies.reserve(mNonSkeletalProxiesVec.size() + mSkeletalProxiesVec.size());
+    std::copy_if(
+        mNonSkeletalProxiesVec.cbegin(),
+        mNonSkeletalProxiesVec.cend(),
+        std::back_inserter(visibleProxies),
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
                 && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-            if (bShouldRender) {
-                const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
-                                                                               : EngineConstants::eStencilValues::SCENE_DEFAULT;
-                renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, stencilFuncRefValue, 0xFF);
-                renderState.BindRenderState();
-                proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
-            }
-        }
-    }
+        });
 
-    if (mNonSkeletalProxiesVec.size() > 0) {
-        for (auto& proxy : mNonSkeletalProxiesVec) {
-            const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
+    std::copy_if(
+        mSkeletalProxiesVec.cbegin(),
+        mSkeletalProxiesVec.cend(),
+        std::back_inserter(visibleProxies),
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
                 && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-            if (bShouldRender) {
-                const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
-                                                                               : EngineConstants::eStencilValues::SCENE_DEFAULT;
-                renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, stencilFuncRefValue, 0xFF);
-                renderState.BindRenderState();
-                proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
-            }
+        });
+
+    if (visibleProxies.size() > 0) {
+        for (auto& proxy : visibleProxies) {
+            const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
+                                                                           : EngineConstants::eStencilValues::SCENE_DEFAULT;
+            renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, stencilFuncRefValue, 0xFF);
+            renderState.BindRenderState();
+            proxy->Render(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
         }
     }
 
     renderState.GetStencilState().SetIsStencilTestEnabled(false);
-
-    m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy>& cameraProxy)
@@ -642,6 +732,9 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
 
 void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView>& sceneView)
 {
+    if (mForwardRenderingProxiesVec.empty())
+        return;
+
     RenderState renderState;
     renderState.GetBlendingState().SetIsBlendingEnabled(true).SetBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -680,17 +773,16 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
     const auto& viewMatrix = cameraProxy->GetViewMatrix();
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
+    PrimitiveSorter sorter;
+    const auto sortedForwardProxies = sorter.SortPrimitivesByOrderAndShader(mForwardRenderingProxiesVec);
+
     mInstancedGeometryBatchRenderer->RenderAllBatches(
         cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::FORWARD);
 
     bool depthTestWriteMask = true;
-    bool depthTestWriteMaskDirty = false;
-    for (const auto& proxy : mForwardRenderingProxiesVec) {
+    for (const auto& proxy : sortedForwardProxies) {
         if (proxy->IsDepthWriteMaskEnabled() != depthTestWriteMask) {
             depthTestWriteMask = proxy->IsDepthWriteMaskEnabled();
-            depthTestWriteMaskDirty = true;
-        }
-        if (depthTestWriteMaskDirty) {
             renderState.GetDepthState().SetDepthTestWriteMask(depthTestWriteMask);
             renderState.BindRenderState();
         }
@@ -717,6 +809,31 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
 
 void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
 {
+    // Only enabled, visible and passed frustum-cull test proxies should be rendered
+    std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleProxies;
+    visibleProxies.reserve(mNonSkeletalProxiesVec.size() + mSkeletalProxiesVec.size());
+    std::copy_if(
+        mNonSkeletalProxiesVec.cbegin(),
+        mNonSkeletalProxiesVec.cend(),
+        std::back_inserter(visibleProxies),
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
+
+    std::copy_if(
+        mSkeletalProxiesVec.cbegin(),
+        mSkeletalProxiesVec.cend(),
+        std::back_inserter(visibleProxies),
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
+
+    if (visibleProxies.empty()) {
+        return;
+    }
+
     RenderState renderState;
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
@@ -724,6 +841,7 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
         .SetStencilFunction(GL_ALWAYS, EngineConstants::eStencilValues::OUTLINE, 0xFF)
         .SetStencilMask(0xFF);
     renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+    renderState.GetColorState().SetColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     renderState.BindRenderState();
 
     const auto& cameraProxy = sceneView->GetCameraProxy();
@@ -731,61 +849,30 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
     // Write outline value to stencil for objects which has to be outlined
-    {
-        glColorMask(false, false, false, false);
-        if (mSkeletalProxiesVec.size() > 0) {
-            for (auto& proxy : mSkeletalProxiesVec) {
-                const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
-                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-                if (bShouldRender && proxy->GetIsOutlineApplied()) {
-                    proxy->RenderOutlineStencil(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
-                }
-            }
-        }
 
-        if (mNonSkeletalProxiesVec.size() > 0) {
-            for (auto& proxy : mNonSkeletalProxiesVec) {
-                const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
-                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-                if (bShouldRender && proxy->GetIsOutlineApplied()) {
-                    proxy->RenderOutlineStencil(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
-                }
-            }
+    for (auto& proxy : visibleProxies) {
+        if (proxy->GetIsOutlineApplied()) {
+            proxy->RenderOutlineStencil(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
         }
-        glColorMask(true, true, true, true);
     }
+
+    renderState.GetColorState().SetColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    renderState.GetStencilState()
+        .SetIsStencilTestEnabled(true)
+        .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
+        .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::OUTLINE, 0xFF)
+        .SetStencilMask(0x00);
+
+    renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
+    renderState.BindRenderState();
 
     // Draw outline (scaled up objects) only where stencil value is not equal to outline
-    {
-        renderState.GetStencilState()
-            .SetIsStencilTestEnabled(true)
-            .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
-            .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::OUTLINE, 0xFF)
-            .SetStencilMask(0x00);
-
-        renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
-        renderState.BindRenderState();
-
-        if (mSkeletalProxiesVec.size() > 0) {
-            for (auto& proxy : mSkeletalProxiesVec) {
-                const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
-                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-                if (bShouldRender && proxy->GetIsOutlineApplied()) {
-                    proxy->RenderOutline(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
-                }
-            }
-        }
-
-        if (mNonSkeletalProxiesVec.size() > 0) {
-            for (auto& proxy : mNonSkeletalProxiesVec) {
-                const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
-                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-                if (bShouldRender && proxy->GetIsOutlineApplied()) {
-                    proxy->RenderOutline(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
-                }
-            }
+    for (auto& proxy : visibleProxies) {
+        if (proxy->GetIsOutlineApplied()) {
+            proxy->RenderOutline(cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState);
         }
     }
+
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(true)
         .SetStencilOperation(GL_KEEP, GL_KEEP, GL_REPLACE)
@@ -802,23 +889,20 @@ void SceneRenderer::PlanarReflectionPass()
 
     RenderState renderState;
     renderState.GetBlendingState().SetIsBlendingEnabled(false);
-
     renderState.GetDepthState().SetIsDepthTestEnabled(true).SetDepthTestFunc(GL_LEQUAL).SetDepthTestWriteMask(true);
-
     renderState.GetStencilState()
         .SetIsStencilTestEnabled(false)
         .SetStencilOperation(0, 0, 0)
         .SetStencilFunction(GL_NOTEQUAL, EngineConstants::eStencilValues::SCENE_DEFAULT, 0xFF)
         .SetStencilMask(0);
-
     renderState.GetCullingState().SetIsCullingEnabled(true).SetCullFaceMode(GL_BACK).SetFrontFace(GL_CW);
     renderState.GetClipPlaneState().SetIsClipPlaneEnabled(0, true);
-
+    renderState.GetColorState().SetColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     renderState.BindRenderState();
 
     for (const auto& planarReflectionProxy : mPlanarReflectionProxiesVec) {
-        auto wp = planarReflectionProxy->GetSceneViewWeakPtr();
-        if (auto scenViewSp = wp.lock()) {
+        auto sceneViewWp = planarReflectionProxy->GetSceneViewWeakPtr();
+        if (auto scenViewSp = sceneViewWp.lock()) {
             const auto& viewMatrix = scenViewSp->GetCameraProxy()->GetViewMatrix();
             const auto& projectionMatrix = scenViewSp->GetCameraProxy()->GetProjectionMatrix();
             const glm::mat4& mirrorMatrix = planarReflectionProxy->GetMirrorMatrix();
@@ -827,49 +911,56 @@ void SceneRenderer::PlanarReflectionPass()
             const CameraFrustum& mirroredCameraFrustum
                 = CameraFrustum::GetConstructedFromViewProjectionMatrices(viewMatrix * mirrorMatrix, projectionMatrix);
 
-            planarReflectionProxy->RenderToPlanarReflectionFBO();
-
-            if (mSkeletalProxiesVec.size() > 0) {
-                for (auto& proxy : mSkeletalProxiesVec) {
-                    if (proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()) {
-                        bool bDraw = proxy->IsFrustumCullTestNeeded()
+            std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleProxies;
+            visibleProxies.reserve(
+                mNonSkeletalProxiesVec.size() + mSkeletalProxiesVec.size() + mForwardRenderingProxiesVec.size());
+            std::copy_if(
+                mNonSkeletalProxiesVec.cbegin(),
+                mNonSkeletalProxiesVec.cend(),
+                std::back_inserter(visibleProxies),
+                [&mirroredCameraFrustum](const auto& proxy) {
+                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                    && (proxy->IsFrustumCullTestNeeded()
                             ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
-                            : true;
-                        if (bDraw)
-                            proxy->RenderPlanarReflection(
-                                mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
-                    }
-                }
-            }
-
-            if (mNonSkeletalProxiesVec.size() > 0) {
-                for (auto& proxy : mNonSkeletalProxiesVec) {
-                    if (proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()) {
-                        bool bDraw = proxy->IsFrustumCullTestNeeded()
+                            : true);
+                });
+            std::copy_if(
+                mSkeletalProxiesVec.cbegin(),
+                mSkeletalProxiesVec.cend(),
+                std::back_inserter(visibleProxies),
+                [&mirroredCameraFrustum](const auto& proxy) {
+                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                    && (proxy->IsFrustumCullTestNeeded()
                             ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
-                            : true;
-                        if (bDraw)
-                            proxy->RenderPlanarReflection(
-                                mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
-                    }
-                }
-            }
-
-            if (mForwardRenderingProxiesVec.size() > 0) {
-                for (auto& proxy : mForwardRenderingProxiesVec) {
-                    if (proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()) {
-                        bool bDraw = proxy->IsFrustumCullTestNeeded()
+                            : true);
+                });
+             std::copy_if(
+                mForwardRenderingProxiesVec.cbegin(),
+                mForwardRenderingProxiesVec.cend(),
+                std::back_inserter(visibleProxies),
+                [&mirroredCameraFrustum](const auto& proxy) {
+                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                    && (proxy->IsFrustumCullTestNeeded()
                             ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
-                            : true;
-                        if (bDraw)
-                            proxy->RenderPlanarReflection(
-                                mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
-                    }
-                }
-            }
+                            : true);
+                });
 
-            planarReflectionProxy->StopRenderingToPlanarReflectionFBO();
-            planarReflectionProxy->ResolveReflectionRenderTargetSurfaceData();
+             PrimitiveSorter sorter;
+             const auto sortedVisibleProxies = sorter.SortPrimitivesByDistanceToCamera(
+                 PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
+                 planarReflectionProxy->GetReflectionPlaneOrigin(),
+                 visibleProxies);
+
+             if (not sortedVisibleProxies.empty()) {
+                 planarReflectionProxy->RenderToPlanarReflectionFBO();
+
+                 for (auto& proxy : sortedVisibleProxies) {
+                     proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
+                 }
+
+                 planarReflectionProxy->StopRenderingToPlanarReflectionFBO();
+                 planarReflectionProxy->ResolveReflectionRenderTargetSurfaceData();
+             }
         }
     }
 
@@ -1019,6 +1110,7 @@ void SceneRenderer::RenderScene_RenderThread()
     for (const auto& sceneView : SceneViewsVector) {
         const auto& cameraProxy = sceneView->GetCameraProxy();
         if (cameraProxy->IsInitializedFirstTime()) {
+            // todo: do visibility test only if scene was changed (objects moved or camera position, orientation changed)
             sceneView->DoVisibilityTest();
 
             // Deferred shading is done with main camera
@@ -1026,18 +1118,24 @@ void SceneRenderer::RenderScene_RenderThread()
 
                 mActiveBindedState.Reset();
 
-                SortPrimitives(sceneView);
+                ShadowDepthPass(sceneView);
 
                 PlanarReflectionPass();
 
-                DepthPass(sceneView);
+                m_gbuffer->BindDeferredGBuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+                OutlinePass(sceneView);
+
+                DepthPrePass(sceneView);
 
                 DeferredBasePass_RenderThread(sceneView);
 
+                m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(
+                    GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
                 DeferredLightPass_RenderThread(cameraProxy);
 
-                if (not mForwardRenderingProxiesVec.empty())
-                    ForwardBasePass_RenderThread(sceneView);
+                ForwardBasePass_RenderThread(sceneView);
 
                 mPostFxRenderer->ExecuteResolveSceneColor(m_resolvedSceneFramebuffer);
 
@@ -2045,15 +2143,6 @@ void SceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t 
         canvasIt != mUiCanvasProxies.end(),
         "SceneRenderer::UnregisterUiSceneProxy: canvas with id {} not found" + std::to_string(canvasUId));
     (*canvasIt)->RemoveUiSceneProxy(uiItemUId);
-}
-
-void SceneRenderer::SortPrimitives(const std::shared_ptr<SceneView>& sceneView)
-{
-    PrimitiveSorter sorter;
-    mSkeletalProxiesVec = sorter.SortPrimitivesByShaderAndDistanceToCamera(sceneView->GetCameraProxy(), mSkeletalProxiesVec);
-    mNonSkeletalProxiesVec
-        = sorter.SortPrimitivesByShaderAndDistanceToCamera(sceneView->GetCameraProxy(), mNonSkeletalProxiesVec);
-    mForwardRenderingProxiesVec = sorter.SortPrimitivesByOrderAndShader(mForwardRenderingProxiesVec);
 }
 
 #if DEBUG

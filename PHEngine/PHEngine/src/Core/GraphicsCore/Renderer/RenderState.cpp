@@ -228,15 +228,15 @@ void CullingState::BindCullingState()
 {
     if (cullingEnableDirty) {
         glFuncMap.at(_cullingEnabled)(GL_CULL_FACE);
-        // cullingEnableDirty = false;
+        cullingEnableDirty = false;
     }
     if (cullFaceModeDirty) {
         glCullFace(_cullFaceMode);
-        // cullFaceModeDirty = false;
+        cullFaceModeDirty = false;
     }
     if (frontFaceDirty) {
         glFrontFace(_frontFace);
-        // frontFaceDirty = false;
+        frontFaceDirty = false;
     }
 }
 
@@ -291,5 +291,34 @@ void ClipPlaneState::SetIsClipPlaneEnabled(const uint32_t clipPlaneIndex, const 
         _clipPlaneEnabled[clipPlaneIndex] = enabled;
         clipPlaneEnabledDirty[clipPlaneIndex] = true;
     }
+}
+
+ColorState::ColorState()
+{
+    glGetBooleanv(GL_COLOR_WRITEMASK, mChannelsMask.data());
+}
+
+void ColorState::BindColorState()
+{
+    if (mChannelsMaskDirty) {
+        glColorMask(mChannelsMask[0], mChannelsMask[1], mChannelsMask[2], mChannelsMask[3]);
+        mChannelsMaskDirty = false;
+    }
+}
+
+void ColorState::SetColorMask(const GLboolean red, const GLboolean green, const GLboolean blue, const GLboolean alpha)
+{
+    if (mChannelsMask[0] != red || mChannelsMask[1] != green || mChannelsMask[2] != blue || mChannelsMask[3] != alpha) {
+        mChannelsMask[0] = red;
+        mChannelsMask[1] = green;
+        mChannelsMask[2] = blue;
+        mChannelsMask[3] = alpha;
+        mChannelsMaskDirty = true;
+    }
+}
+
+const std::array<GLboolean, 4>& ColorState::GetChannelsMask() const
+{
+    return mChannelsMask;
 }
 } // namespace Graphics

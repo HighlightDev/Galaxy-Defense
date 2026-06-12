@@ -9,7 +9,7 @@ namespace ShaderImpl {
 
 class DepthCollectShader : public Shader {
     Uniform u_lightWorldPosition;
-    Uniform u_shadowDistance;
+    Uniform u_invShadowDistance;
     Uniform u_bWriteDepthLinearly;
 
 protected:
@@ -20,7 +20,7 @@ public:
 
     void SetLightWorldPosition(const glm::vec3& position);
 
-    void SetShadowDistance(const float shadowDistance);
+    void SetInvShadowDistance(const float invShadowDistance);
 
     void SetWriteDepthLinearly(const bool value);
 

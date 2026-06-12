@@ -65,6 +65,11 @@ void ElectroRayChainActor::Tick(const float deltaTimeSec)
 
     const auto& toEndLineVec = mElectroLineEnd - mElectroLineBegin;
     const float distance = glm::length(toEndLineVec);
+    if (EngineMath::FloatsNearEqual(distance, 0.0f)) { // degenerate chain — avoid NaN from division by zero
+        mLineComponent->SetStartWorldPosition(mElectroLineBegin);
+        mLineComponent->SetEndWorldPosition(mElectroLineBegin);
+        return;
+    }
     const auto& nToEndLineVec = toEndLineVec / distance;
     const float t
         = std::clamp(EngineMath::LerpFloat(mChainingAnimationTime, 0.0f, mChainingAnimationTimeDuration, 0.0f, 1.0f), 0.0f, 1.0f);

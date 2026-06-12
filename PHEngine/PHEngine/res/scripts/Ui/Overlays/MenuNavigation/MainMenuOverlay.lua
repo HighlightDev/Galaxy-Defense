@@ -38,6 +38,8 @@ local UiTextSizing = require("Ui/Common/uiTextSizing")
 -- panel is used, so the skybox is still visible behind every UI element.
 MainMenuOverlay = {}
 
+local Combat = Styles.Combat
+
 local FONT = "JetBrainsMono-VariableFont_wght"
 
 local M = Styles.MainMenu
@@ -477,6 +479,7 @@ function MainMenuOverlay:new(host)
         titleMain:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
                             canvasName)
         titleMain:setZOrder(Z_TITLE)
+        titleMain:setTextGradientHexValues(UiLabel.TextGradientColorType.VERTICAL, Combat.cyanGlow, Combat.indigo)
 
         applyLabelInit(titleSub)
         titleSub:setParent(h, canvasName, canvasName)

@@ -59,15 +59,23 @@ void BeamComponentBase::Tick(const float deltaTime)
     Component::Tick(deltaTime);
 
     // No per-tick jitter regeneration: the animation is pre-baked into a frame set the render thread
-    // cycles through on its own. Re-bake (+ resend) only when flagged, then let the subclass push any
-    // cheap per-tick placement update (Dynamic only).
+    // cycles through on its own. Re-bake (+ resend) only when flagged.
     if (mAreFramesDirty) {
         GenerateAnimationFrames();
         SyncAnimationFrames();
         mAreFramesDirty = false;
     }
+}
 
+void BeamComponentBase::UnpausableTick(const float deltaTimeSec)
+{
+    // Placement must be synced here and not in Tick: components tick BEFORE the owning actor's Tick body
+    // sets the endpoints, so a Tick-time sync always ships the previous frame's matrix. UnpausableTick runs
+    // after the whole Scene::Tick pass, and calling SyncTransformIfDirty before Base::UnpausableTick puts
+    // the placement job in the render-thread queue ahead of the enable job — a pooled proxy re-enabled this
+    // frame can never render with the stale matrix of its previous use (old "electro chain flicker" bug).
     SyncTransformIfDirty();
+    Base::UnpausableTick(deltaTimeSec);
 }
 
 void BeamComponentBase::OnRegistered()

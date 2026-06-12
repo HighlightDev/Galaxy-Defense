@@ -45,6 +45,12 @@ void PlanarReflectionComponent::UpdateReflectionPlane()
 
     float d = glm::dot(normal, positionOnPlane);
     mReflectionPlane = glm::vec4(glm::vec3(normal), d);
+    mReflectionPlaneOrigin = positionOnPlane;
+}
+
+glm::vec3 PlanarReflectionComponent::GetReflectionPlaneOrigin() const
+{
+    return mReflectionPlaneOrigin;
 }
 
 std::shared_ptr<DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>>
@@ -159,7 +165,8 @@ void PlanarReflectionComponent::SyncDataWithRenderThread()
             functionId,
             [weak = weak_from_this(),
              planarReflectionSceneProxyId = mPlanarReflectionSceneProxyId,
-             reflectionPlane = mReflectionPlane](
+             reflectionPlane = mReflectionPlane,
+                reflectionPlaneOrigin = mReflectionPlaneOrigin](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
@@ -169,6 +176,7 @@ void PlanarReflectionComponent::SyncDataWithRenderThread()
                             sceneRendererSp->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId));
                         if (reflectionSp) {
                             reflectionSp->SetReflectionPlane(reflectionPlane);
+                            reflectionSp->SetReflectionPlaneOrigin(reflectionPlaneOrigin);
                         }
                     }
                 }

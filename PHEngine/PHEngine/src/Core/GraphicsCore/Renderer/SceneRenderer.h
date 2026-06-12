@@ -274,7 +274,7 @@ private:
 
     void GroupLightsByShadowMap();
 
-    void DepthPrePass(const std::shared_ptr<CameraSceneProxy>& cameraProxy);
+    void DepthPrePass(const std::shared_ptr<SceneView>& sceneView);
 
     void DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy>& cameraProxy);
 
@@ -282,15 +282,13 @@ private:
 
     void ForwardBasePass_RenderThread(const std::shared_ptr<SceneView>& sceneView);
 
-    void DepthPass(const std::shared_ptr<SceneView>& sceneView);
+    void ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView);
 
     void PlanarReflectionPass();
 
     void OutlinePass(const std::shared_ptr<SceneView>& sceneView);
 
     void GuiPass(const std::shared_ptr<SceneView>& sceneView);
-
-    void SortPrimitives(const std::shared_ptr<SceneView>& sceneView);
 };
 
 } // namespace Renderer

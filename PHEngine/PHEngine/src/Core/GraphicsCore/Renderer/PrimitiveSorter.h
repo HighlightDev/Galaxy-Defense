@@ -13,6 +13,8 @@ class CameraSceneProxy;
 using namespace Proxy;
 class PrimitiveSorter {
 public:
+    enum class ePrimitiveSortComparatorType { LESS, GREATER };
+
     PrimitiveSorter() = default;
 
     ~PrimitiveSorter() = default;
@@ -29,7 +31,13 @@ public:
     template<typename T>
     typename std::enable_if<std::is_base_of<PrimitiveSceneProxy, T>::value, std::vector<std::shared_ptr<T>>>::type
     SortPrimitivesByShaderAndDistanceToCamera(
-        const std::shared_ptr<::Graphics::CameraSceneProxy>& cameraProxy,
+        const glm::vec3& cameraPosition, const std::vector<std::shared_ptr<T>>& primitiveProxies);
+
+    template<typename T>
+    typename std::enable_if<std::is_base_of<PrimitiveSceneProxy, T>::value, std::vector<std::shared_ptr<T>>>::type
+    SortPrimitivesByDistanceToCamera(
+        const PrimitiveSorter::ePrimitiveSortComparatorType sortCmpType,
+        const glm::vec3& cameraPosition,
         const std::vector<std::shared_ptr<T>>& primitiveProxies);
 };
 } // namespace Graphics

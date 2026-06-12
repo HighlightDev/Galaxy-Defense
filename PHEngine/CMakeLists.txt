@@ -9,6 +9,7 @@ project(
   VERSION 1.0
   LANGUAGES CXX)
 
+option(ENABLE_PIC "Enable position independent code" OFF)
 option(DEBUG_BUILD "Enable debug build" ON)
 option(ENABLE_ASAN "Enable Address Sanitizer." OFF)
 option(ENABLE_TSAN "Enable Thread Sanitizer." OFF)

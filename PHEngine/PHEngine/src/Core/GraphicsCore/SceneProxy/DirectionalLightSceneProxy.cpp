@@ -79,6 +79,7 @@ std::shared_ptr<ProjectedShadowInfo> DirectionalLightSceneProxy::GetShadowInfo()
 
             shadowInfoSp->SetShadowViewMatrix(glm::lookAt(shadowCastPosition, targetPositon, glm::vec3(0, 1, 0)));
 
+            mShadowCastPosition = shadowCastPosition;
             SetIsTransformationDirty(false);
         }
     }

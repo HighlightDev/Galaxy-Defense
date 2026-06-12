@@ -2,6 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/AssimpToGlmConverter.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 #include <algorithm>
 #include <memory>
@@ -13,11 +14,11 @@ using namespace EngineUtility;
 namespace MeshLoader {
 namespace Assimp {
 
-void MeshDataCollector::VertexBoneData::AddBoneData(size_t boneIndex, float weight)
+void MeshDataCollector::VertexBoneData::AddBoneData(const uint32_t boneIndex, const float weight)
 {
     if (!IsFilled) {
-        for (size_t i = 0; i < MAX_BONES_PER_VERT; ++i) {
-            if (Weights[i] <= 0.0005f) {
+        for (uint32_t i = 0; i < MAX_BONES_PER_VERT; ++i) {
+            if (EngineMath::FloatsNearEqual(Weights[i], 0.0f)) {
                 BoneIndices[i] = boneIndex;
                 Weights[i] = weight;
                 IsFilled = (i == (MAX_BONES_PER_VERT - 1));
@@ -88,9 +89,9 @@ void MeshDataCollector::Collect()
 
 void MeshDataCollector::CollectVertexData()
 {
-    size_t verticesCount = 0;
+    uint32_t verticesCount = 0;
 
-    for (size_t i = 0; i < mScene->mNumMeshes; ++i) {
+    for (uint32_t i = 0; i < mScene->mNumMeshes; ++i) {
         verticesCount += mScene->mMeshes[i]->mNumVertices;
     }
 
@@ -103,15 +104,15 @@ void MeshDataCollector::CollectVertexData()
     std::vector<VertexBoneData> vertexBoneData;
     vertexBoneData.resize(verticesCount);
 
-    size_t currentMeshBaseVertexIndex = 0;
+    uint32_t currentMeshBaseVertexIndex = 0;
 
-    for (size_t i = 0; i < mScene->mNumMeshes; ++i) {
+    for (uint32_t i = 0; i < mScene->mNumMeshes; ++i) {
         VertexDataIterate(currentMeshBaseVertexIndex, mScene->mMeshes[i], vertexBoneData);
         currentMeshBaseVertexIndex += mScene->mMeshes[i]->mNumVertices;
     }
 
     if (mScene->HasAnimations()) {
-        const size_t boneAttribCountPerVertex = verticesCount * MAX_BONES_PER_VERT;
+        const uint32_t boneAttribCountPerVertex = verticesCount * MAX_BONES_PER_VERT;
         BoneWeights.resize(boneAttribCountPerVertex);
         BoneIndices.resize(boneAttribCountPerVertex);
 
@@ -120,17 +121,17 @@ void MeshDataCollector::CollectVertexData()
     }
 }
 
-void MeshDataCollector::StoreIndices(size_t meshBaseVertexIndex, const aiMesh* pMesh)
+void MeshDataCollector::StoreIndices(const uint32_t meshBaseVertexIndex, const aiMesh* pMesh)
 {
-    const size_t lastIndexPerMesh = VertexIndices.size();
-    const size_t countOfFaces = pMesh->mNumFaces;
+    const uint32_t lastIndexPerMesh = VertexIndices.size();
+    const uint32_t countOfFaces = pMesh->mNumFaces;
 
-    for (size_t faceIndex = 0; faceIndex < countOfFaces; faceIndex++) {
+    for (uint32_t faceIndex = 0; faceIndex < countOfFaces; faceIndex++) {
         const aiFace& face = pMesh->mFaces[faceIndex];
         ext_assert(face.mNumIndices == 3, "Only triangular faces are supported");
-        VertexIndices.emplace_back(face.mIndices[0] + meshBaseVertexIndex);
-        VertexIndices.emplace_back(face.mIndices[1] + meshBaseVertexIndex);
-        VertexIndices.emplace_back(face.mIndices[2] + meshBaseVertexIndex);
+        VertexIndices.emplace_back(static_cast<uint32_t>(face.mIndices[0]) + meshBaseVertexIndex);
+        VertexIndices.emplace_back(static_cast<uint32_t>(face.mIndices[1]) + meshBaseVertexIndex);
+        VertexIndices.emplace_back(static_cast<uint32_t>(face.mIndices[2]) + meshBaseVertexIndex);
     }
 }
 
@@ -140,7 +141,7 @@ void MeshDataCollector::StoreVertexData(const aiMesh* pMesh)
     const bool bCollectTexCoords = pMesh->HasTextureCoords(0);
     const bool bCollectTangBitang = pMesh->HasTangentsAndBitangents();
 
-    for (size_t attribIndex = 0; attribIndex < pMesh->mNumVertices; ++attribIndex) {
+    for (uint32_t attribIndex = 0; attribIndex < pMesh->mNumVertices; ++attribIndex) {
         Positions.emplace_back(pMesh->mVertices[attribIndex].x);
         Positions.emplace_back(pMesh->mVertices[attribIndex].y);
         Positions.emplace_back(pMesh->mVertices[attribIndex].z);
@@ -168,10 +169,10 @@ void MeshDataCollector::StoreVertexData(const aiMesh* pMesh)
 
 void MeshDataCollector::StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData)
 {
-    for (size_t i = 0; i < vertexBoneData.size(); ++i) {
+    for (uint32_t i = 0; i < vertexBoneData.size(); ++i) {
         const VertexBoneData& vertexBoneDataItem = vertexBoneData[i];
 
-        for (size_t j = 0; j < MAX_BONES_PER_VERT; ++j) {
+        for (uint32_t j = 0; j < MAX_BONES_PER_VERT; ++j) {
             BoneWeights[(i * MAX_BONES_PER_VERT) + j] = vertexBoneDataItem.Weights[j];
             BoneIndices[(i * MAX_BONES_PER_VERT) + j] = vertexBoneDataItem.BoneIndices[j];
         }
@@ -179,16 +180,16 @@ void MeshDataCollector::StoreVertexBoneData(const std::vector<VertexBoneData>& v
 }
 
 void MeshDataCollector::VertexDataIterate(
-    size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData)
+    const uint32_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData)
 {
-    for (size_t i = 0; i < pMesh->mNumBones; ++i) {
+    for (uint32_t i = 0; i < pMesh->mNumBones; ++i) {
 
         std::string boneName(pMesh->mBones[i]->mName.data);
-        size_t BoneIndex = BoneIndexMapping[boneName];
+        uint32_t BoneIndex = BoneIndexMapping[boneName];
 
-        for (size_t j = 0; j < pMesh->mBones[i]->mNumWeights; ++j) {
-            size_t VertexID = meshBaseVertexIndex + pMesh->mBones[i]->mWeights[j].mVertexId;
-            float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
+        for (uint32_t j = 0; j < pMesh->mBones[i]->mNumWeights; ++j) {
+            uint32_t VertexID = meshBaseVertexIndex + pMesh->mBones[i]->mWeights[j].mVertexId;
+            const float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
             vertexBoneData[VertexID].AddBoneData(BoneIndex, Weight);
         }
     }
@@ -201,7 +202,7 @@ void MeshDataCollector::CollectAnimation()
 {
     aiNode* rootNode = mScene->mRootNode;
 
-    for (size_t i = 0; i < mScene->mNumAnimations; ++i) {
+    for (uint32_t i = 0; i < mScene->mNumAnimations; ++i) {
         const aiAnimation* pAnimation = mScene->mAnimations[i];
 
         std::string animationName(pAnimation->mName.data);
@@ -222,21 +223,21 @@ void MeshDataCollector::AnimationIterateNodes(
     aiNodeAnim* pNodeAnim = FindAnimationNodeByName(pAnimation, nodeName);
 
     if (pNodeAnim) {
-        for (size_t i = 0; i < pNodeAnim->mNumRotationKeys; ++i) {
+        for (uint32_t i = 0; i < pNodeAnim->mNumRotationKeys; ++i) {
             FrameRotation rotation;
             rotation.Rotation = AssimpToGlmConverter::ConvertAssimpQuatToGlmQuat(pNodeAnim->mRotationKeys[i].mValue);
             rotation.Time = (float)pNodeAnim->mRotationKeys[i].mTime;
             nodeAnimationBindings[nodeName].RotationFrames.emplace_back(std::move(rotation));
         }
 
-        for (size_t i = 0; i < pNodeAnim->mNumPositionKeys; ++i) {
+        for (uint32_t i = 0; i < pNodeAnim->mNumPositionKeys; ++i) {
             FrameTranslation translation;
             translation.Translation = AssimpToGlmConverter::ConvertAssimpVec3ToGlmVec3(pNodeAnim->mPositionKeys[i].mValue);
             translation.Time = (float)pNodeAnim->mPositionKeys[i].mTime;
             nodeAnimationBindings[nodeName].TranslationFrames.emplace_back(std::move(translation));
         }
 
-        for (size_t i = 0; i < pNodeAnim->mNumScalingKeys; ++i) {
+        for (uint32_t i = 0; i < pNodeAnim->mNumScalingKeys; ++i) {
             FrameScale scale;
             scale.Scale = AssimpToGlmConverter::ConvertAssimpVec3ToGlmVec3(pNodeAnim->mScalingKeys[i].mValue);
             scale.Time = (float)pNodeAnim->mScalingKeys[i].mTime;
@@ -244,7 +245,7 @@ void MeshDataCollector::AnimationIterateNodes(
         }
     }
 
-    for (size_t i = 0; i < pNode->mNumChildren; ++i) {
+    for (uint32_t i = 0; i < pNode->mNumChildren; ++i) {
         aiNode* child = pNode->mChildren[i];
 
         if (child) {
@@ -257,7 +258,7 @@ aiNodeAnim* FindAnimationNodeByName(const aiAnimation* pAnimation, const std::st
 {
     aiNodeAnim* result = nullptr;
 
-    for (size_t i = 0; i < pAnimation->mNumChannels; ++i) {
+    for (uint32_t i = 0; i < pAnimation->mNumChannels; ++i) {
         aiNodeAnim* pNodeAnim = pAnimation->mChannels[i];
 
         if (std::string(pNodeAnim->mNodeName.data) == nodeName) {
@@ -271,14 +272,14 @@ aiNodeAnim* FindAnimationNodeByName(const aiAnimation* pAnimation, const std::st
 
 void MeshDataCollector::CollectBones()
 {
-    size_t meshCount = mScene->mNumMeshes;
+    uint32_t meshCount = mScene->mNumMeshes;
 
-    size_t totalCountBones = 0;
+    uint32_t totalCountBones = 0;
 
-    for (size_t i = 0; i < meshCount; ++i) {
+    for (uint32_t i = 0; i < meshCount; ++i) {
         aiMesh* mesh = mScene->mMeshes[i];
 
-        for (size_t j = 0; j < mesh->mNumBones; ++j) {
+        for (uint32_t j = 0; j < mesh->mNumBones; ++j) {
             aiBone* boneInfo = mesh->mBones[j];
             const std::string& boneName = std::string(boneInfo->mName.data);
             if (BoneMapping.find(boneName) == BoneMapping.end()) {
@@ -298,7 +299,7 @@ void MeshDataCollector::CollectNodeHierarchy(const aiNode* pNode, MeshNode* mesh
     if (!pNode)
         return;
 
-    for (size_t i = 0; i < pNode->mNumChildren; ++i) {
+    for (uint32_t i = 0; i < pNode->mNumChildren; ++i) {
         aiNode* pChildNode = pNode->mChildren[i];
         auto meshChildNode = std::make_shared<MeshNode>();
         meshChildNode->Name = pChildNode->mName.data;

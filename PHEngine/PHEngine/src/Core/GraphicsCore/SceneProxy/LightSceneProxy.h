@@ -25,6 +25,8 @@ protected:
 
     bool mIsVisible{true};
 
+    glm::vec3 mShadowCastPosition;
+
 public:
     glm::vec3 AmbientColor;
     glm::vec3 DiffuseColor;
@@ -58,6 +60,8 @@ public:
     virtual std::shared_ptr<ProjectedShadowInfo> GetShadowInfo();
 
     void CleanUp() override;
+
+    glm::vec3 GetShadowCastPosition() const;
 };
 
 } // namespace Proxy

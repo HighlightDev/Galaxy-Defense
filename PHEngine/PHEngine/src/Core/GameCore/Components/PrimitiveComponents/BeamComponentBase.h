@@ -71,6 +71,8 @@ public:
 
     void Tick(const float deltaTime) override;
 
+    void UnpausableTick(const float deltaTimeSec) override;
+
     void OnRegistered() override;
 
     void OnUnregistered() override;
@@ -115,7 +117,9 @@ protected:
     // Called whenever an endpoint changes. Default (Static): re-bake. Dynamic overrides to resend the matrix.
     virtual void OnEndpointsChanged() { mAreFramesDirty = true; }
 
-    // Called at the end of every Tick. Dynamic ships its world matrix here; Static does nothing.
+    // Called from UnpausableTick — i.e. after the owning actor's Tick has set the endpoints and BEFORE
+    // PrimitiveComponent::UnpausableTick enqueues the enable job, so the proxy never renders enabled with
+    // a stale placement. Dynamic ships its world matrix here; Static does nothing.
     virtual void SyncTransformIfDirty() {}
 
     void GenerateAnimationFrames();

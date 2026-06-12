@@ -70,5 +70,10 @@ std::shared_ptr<ProjectedShadowInfo> LightSceneProxy::GetShadowInfo()
     return m_shadowInfo;
 }
 
+glm::vec3 LightSceneProxy::GetShadowCastPosition() const
+{
+    return mShadowCastPosition;
+}
+
 } // namespace Proxy
 } // namespace Graphics
