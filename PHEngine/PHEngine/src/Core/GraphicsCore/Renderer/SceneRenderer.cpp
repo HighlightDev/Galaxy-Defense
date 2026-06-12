@@ -276,7 +276,8 @@ void SceneRenderer::DepthPrePass(const std::shared_ptr<SceneView>& sceneView)
         mNonSkeletalProxiesVec.cend(),
         std::back_inserter(visibleNonSkeletalProxies),
         [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
         });
 
     std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
@@ -286,7 +287,8 @@ void SceneRenderer::DepthPrePass(const std::shared_ptr<SceneView>& sceneView)
         mSkeletalProxiesVec.cend(),
         std::back_inserter(visibleSkeletalProxies),
         [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
         });
 
     if (!visibleNonSkeletalProxies.empty()) {
@@ -350,7 +352,8 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
             mNonSkeletalProxiesVec.cend(),
             std::back_inserter(visibleNonSkeletalProxies),
             [&sceneView](const auto& proxy) {
-                return proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
             });
 
         std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
@@ -360,7 +363,8 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
             mSkeletalProxiesVec.cend(),
             std::back_inserter(visibleSkeletalProxies),
             [&sceneView](const auto& proxy) {
-                return proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
             });
 
         for (auto& atlasLightGroup : mGroupedByShadowAtlasLights) {

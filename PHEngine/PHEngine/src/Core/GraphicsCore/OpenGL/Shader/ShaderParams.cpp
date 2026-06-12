@@ -125,8 +125,11 @@ std::size_t hash<ShaderParams>::operator()(const ShaderParams& k) const
         : "";
 
     const auto shaderCodeSnippetsHash = std::accumulate(
-        k.ShaderCodeSnippets.cbegin(), k.ShaderCodeSnippets.cend(), 0u, [](const auto& accumulatedHash, const auto& snippetPair) {
-            return accumulatedHash ^ (hash<uint32_t>()(snippetPair.first));
+        k.ShaderCodeSnippets.cbegin(),
+        k.ShaderCodeSnippets.cend(),
+        static_cast<uint64_t>(0),
+        [](const auto& accumulatedHash, const auto& snippetPair) {
+            return accumulatedHash ^ (hash<uint64_t>()(snippetPair.first));
         });
 
     return hash<std::string>()(k.ShaderName) ^ hash<std::string>()(vsFile) ^ hash<std::string>()(fsFile)

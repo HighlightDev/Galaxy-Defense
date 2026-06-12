@@ -86,7 +86,7 @@ public:
 
     const std::shared_ptr<CollisionShapeBase>& GetShape() const;
 
-    size_t GetId() const;
+    int32_t GetId() const;
 
     float GetMass() const;
 

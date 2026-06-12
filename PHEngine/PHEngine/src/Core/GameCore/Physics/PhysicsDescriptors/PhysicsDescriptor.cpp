@@ -118,7 +118,7 @@ const std::shared_ptr<CollisionShapeBase>& PhysicsDescriptor::GetShape() const
     return mShape;
 }
 
-size_t PhysicsDescriptor::GetId() const
+int32_t PhysicsDescriptor::GetId() const
 {
     return mCurrentId;
 }
@@ -175,9 +175,9 @@ void PhysicsDescriptor::SetIsCollisionEnabled(const bool isCollisionEnabled)
     ext_assert(mRigidBody, "PhysicsDescriptor::SetIsCollisionEnabled: mRigidBody is null");
     if (mIsCollisionEnabled != isCollisionEnabled) {
         if (isCollisionEnabled) {
-            mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
-        } else {
             mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+        } else {
+            mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
         }
         mIsCollisionEnabled = isCollisionEnabled;
     }

@@ -62,6 +62,8 @@ void GhostController::CompletePhysicsDescriptorConstruction()
     mGhostObject->setCollisionShape(mShape->GetCollisionShape());
     mGhostObject->setUserPointer(static_cast<PhysicsDescriptor*>(this));
     mGhostObject->setCollisionFlags(btCollisionObject::CF_DYNAMIC_OBJECT);
+    mGhostObject->setWorldTransform(mMotionTransform);
+    mTranslation = mMotionTransform.getOrigin();
     mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject, m_collisionFilterGroup, m_collisionFilterMask);
 }
 
@@ -74,7 +76,15 @@ void GhostController::SetIsCollisionEnabled(const bool isCollisionEnabled)
             m_collisionFilterGroup = mSavedCollisionFilterGroup;
             m_collisionFilterMask = mSavedCollisionFilterMask;
             mGhostObject->setCollisionFlags(btCollisionObject::CF_DYNAMIC_OBJECT);
-            mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject);
+            // Re-adding creates a new broadphase proxy: the saved filters MUST be passed again, otherwise
+            // a pooled object comes back with the default group/mask and collides with everything its
+            // original filters excluded.
+            mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject, mSavedCollisionFilterGroup, mSavedCollisionFilterMask);
+            // The ghost still carries the transform of its previous use (or identity); suppress contact
+            // parsing until the owning component pushes the actual spawn position, and restart the
+            // contact cooldown so the accumulated value can't trigger an immediate contactTest.
+            mAwaitTransformSyncAfterEnable = true;
+            mCollisionCooldown = 0.0f;
         } else {
             m_collisionFilterGroup = btBroadphaseProxy::DefaultFilter;
             m_collisionFilterMask = btBroadphaseProxy::SensorTrigger;
@@ -98,6 +108,7 @@ void GhostController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransfo
     mGhostObject->setWorldTransform(mMotionTransform);
     mTranslation = mMotionTransform.getOrigin();
     bIsWorldTransformDiry = false;
+    mAwaitTransformSyncAfterEnable = false; // the ghost is at its real position now — contacts may be parsed again
 }
 
 void GhostController::PostPhysicsSimulationUpdate(const float deltaTimeSec)
@@ -132,6 +143,9 @@ btScalar GhostController::addSingleResult(
 
 void GhostController::ParseGhostContacts()
 {
+    if (mAwaitTransformSyncAfterEnable) {
+        return; // the ghost transform is stale after (re-)enable — see SetIsCollisionEnabled
+    }
     if (mGhostObject && mCollisionCooldown > sCollisionCooldownTimeout) {
         mPhysicsWorld->GetWorld()->contactTest(mGhostObject, *this);
         mCollisionCooldown = fmod(mCollisionCooldown, sCollisionCooldownTimeout);

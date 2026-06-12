@@ -22,6 +22,12 @@ private:
     float mCollisionCooldown;
     static constexpr float sCollisionCooldownTimeout = 0.1f;
 
+    // Set on (re-)enable: the ghost world transform is stale (pool reuse keeps the previous position,
+    // a fresh ghost sits at identity) until the owning component ticks and pushes the actual spawn
+    // position. Contact parsing is suppressed while this is set, otherwise the first physics step after
+    // enable would run contactTest at the stale position and register phantom hits.
+    bool mAwaitTransformSyncAfterEnable{false};
+
 public:
     GhostController(
         const std::shared_ptr<PhysicsWorld>& pPhysicsWorld,

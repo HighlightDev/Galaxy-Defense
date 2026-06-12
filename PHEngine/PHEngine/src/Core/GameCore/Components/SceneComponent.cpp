@@ -137,6 +137,8 @@ void SceneComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
     const auto nRotator = glm::normalize(mTransform->Rotator);
     m_worldMatrix *= glm::toMat4(nRotator);
     m_worldMatrix *= glm::scale(identityMatrix, mTransform->Scale);
+
+    bWorldMatrixComputed = true;
 }
 
 void SceneComponent::SetIsTransformationDirty(const bool isDirty)
@@ -183,6 +185,11 @@ std::weak_ptr<Transform> SceneComponent::GetTransformWeakPtr() const
 bool SceneComponent::GetIsTransformationDirty() const
 {
     return bTransformationDirty;
+}
+
+bool SceneComponent::IsWorldMatrixComputed() const
+{
+    return bWorldMatrixComputed;
 }
 
 glm::vec3 SceneComponent::GetTranslation() const

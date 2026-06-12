@@ -12,46 +12,15 @@ private:
     std::hash<std::thread::id> mHasher;
 
 public:
-    ThreadHelper()
-        : mKnownThreads()
-        , mHasher()
-    {
-    }
+    explicit ThreadHelper();
 
-    static ThreadHelper* GetInstance()
-    {
-        static ThreadHelper* helper = new ThreadHelper();
-        return helper;
-    }
+    static ThreadHelper* GetInstance();
 
-    void RegisterThread(const std::string& threadName)
-    {
-        const size_t thisThreadId = mHasher(std::this_thread::get_id());
-        assert(!mKnownThreads.count(thisThreadId));
-        mKnownThreads.emplace(thisThreadId, threadName);
-    }
+    void RegisterThread(const std::string& threadName);
 
-    void UnregisterThread(const std::string& threadName)
-    {
-        auto removeIt = std::find_if(
-            mKnownThreads.begin(), mKnownThreads.end(), [&](const auto& pair) { return pair.second == threadName; });
-        assert(removeIt != mKnownThreads.end());
-        mKnownThreads.erase(removeIt->first);
-    }
+    void UnregisterThread(const std::string& threadName);
 
-    std::string GetCurrentThreadNameFromRegisteredThreads() const
-    {
-        const size_t thisThreadId = mHasher(std::this_thread::get_id());
-        if (mKnownThreads.count(thisThreadId)) {
-            return mKnownThreads.at(thisThreadId);
-        }
-        return "Unknown thread.";
-    }
+    std::string GetCurrentThreadNameFromRegisteredThreads() const;
 
-    bool IsCurrentThreadEqualToProvidedByName(const std::string& providedName)
-    {
-        const size_t thisThreadId = mHasher(std::this_thread::get_id());
-        assert(mKnownThreads.count(thisThreadId));
-        return mKnownThreads.at(thisThreadId) == providedName;
-    }
+    bool IsCurrentThreadEqualToProvidedByName(const std::string& providedName);
 };

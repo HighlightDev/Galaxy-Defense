@@ -171,7 +171,10 @@ void PrimitiveComponent::SyncRenderData()
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSP = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-                if (bTransformationDirty) {
+                // bTransformationDirty is true from construction, but m_worldMatrix stays identity until
+                // the owner's first UpdateTransform. Shipping it early would initialize the proxy at the
+                // world origin for the first frame — keep the flag set and retry next tick instead.
+                if (bTransformationDirty && IsWorldMatrixComputed()) {
                     static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
                     sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
                         eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,

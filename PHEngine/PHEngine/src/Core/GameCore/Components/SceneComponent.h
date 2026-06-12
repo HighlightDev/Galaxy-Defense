@@ -19,6 +19,11 @@ class SceneComponent : public Component {
 protected:
     bool bTransformationDirty;
 
+    // False until UpdateWorldMatrix runs for the first time: bTransformationDirty is set at construction,
+    // but m_worldMatrix is still identity, so syncing it to the render thread would draw the proxy at the
+    // world origin for the first frame(s).
+    bool bWorldMatrixComputed{false};
+
     std::shared_ptr<Transform> mTransform;
 
     std::shared_ptr<EngineObjectProperty<glm::vec3>> m_additionalRotationEuler;
@@ -67,6 +72,8 @@ public:
     std::weak_ptr<Transform> GetTransformWeakPtr() const;
 
     bool GetIsTransformationDirty() const;
+
+    bool IsWorldMatrixComputed() const;
 
     glm::vec3 GetTranslation() const;
 
