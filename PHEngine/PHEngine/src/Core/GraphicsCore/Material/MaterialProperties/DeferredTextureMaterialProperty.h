@@ -42,12 +42,11 @@ public:
             std::shared_ptr<ITexture> outResource = nullptr;
             const bool bHasResource = m_value->TryGetResource(outResource);
             if (bHasResource) {
-                int32_t slot = activeBindedState.GetBindedSlotIndexByTextureId(outResource->GetTextureDescriptor());
-                if (slot == -1) {
-                    slot = activeBindedState.OccupyTextureSlot(outResource->GetTextureDescriptor());
-                    outResource->BindTexture(slot);
+                const auto occupiedSlot = activeBindedState.OccupyTextureSlot(outResource->GetTextureDescriptor());
+                if (!occupiedSlot.bWasAlreadyBound) {
+                    outResource->BindTexture(occupiedSlot.SlotIndex);
                 }
-                uniform.LoadUniform(slot);
+                uniform.LoadUniform(occupiedSlot.SlotIndex);
             } else {
                 LogInfo(
                     "DeferredTextureMaterialProperty::SetValueToUniform: property { ", GetPropertyName(), " } is not ready yet.");

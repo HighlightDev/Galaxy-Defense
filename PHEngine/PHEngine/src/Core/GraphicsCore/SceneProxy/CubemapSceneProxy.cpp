@@ -95,12 +95,11 @@ void CubemapSceneProxy::Render(
         if (needToRebindShader) {
             cubemapShader->ExecuteShader();
         }
-        int32_t slot = activeBindedState.GetBindedSlotIndexByTextureId(texture->GetTextureDescriptor());
-        if (slot == -1) {
-            slot = activeBindedState.OccupyTextureSlot(texture->GetTextureDescriptor());
-            texture->BindTexture(slot);
+        const auto occupiedSlot = activeBindedState.OccupyTextureSlot(texture->GetTextureDescriptor());
+        if (!occupiedSlot.bWasAlreadyBound) {
+            texture->BindTexture(occupiedSlot.SlotIndex);
         }
-        cubemapShader->SetTexture(slot);
+        cubemapShader->SetTexture(occupiedSlot.SlotIndex);
         cubemapShader->SetTransformMatrices(m_worldMatrix, viewMatrix, projectionMatrix);
         m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
     }

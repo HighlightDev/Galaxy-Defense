@@ -1,5 +1,7 @@
 #include "DeferredShadingGBuffer.h"
 
+#include "ActiveBindedState.h"
+
 namespace Graphics {
 // Buffer should be recreated when window size was changed
 DeferredShadingGBuffer::DeferredShadingGBuffer(const ViewPortInfo& viewPortInfo)
@@ -174,36 +176,43 @@ void DeferredShadingGBuffer::UnbindDeferredGBuffer(const GLbitfield clearBufferB
     UnbindFramebuffer(clearBufferBit);
 }
 
-void DeferredShadingGBuffer::BindDepthTexture(int32_t slot)
+int32_t DeferredShadingGBuffer::BindRenderTarget(ActiveBindedState& activeBindedState, const RenderTarget& renderTarget)
 {
-
-    m_depthBuffer->BindTexture(slot);
+    const auto occupiedSlot = activeBindedState.OccupyTextureSlot(renderTarget->GetTextureDescriptor());
+    if (!occupiedSlot.bWasAlreadyBound) {
+        renderTarget->BindTexture(occupiedSlot.SlotIndex);
+    }
+    return occupiedSlot.SlotIndex;
 }
 
-void DeferredShadingGBuffer::BindPositionTexture(int32_t slot)
+int32_t DeferredShadingGBuffer::BindDepthTexture(ActiveBindedState& activeBindedState)
 {
-
-    m_positionBuffer->BindTexture(slot);
+    return BindRenderTarget(activeBindedState, m_depthBuffer);
 }
 
-void DeferredShadingGBuffer::BindNormalTexture(int32_t slot)
+int32_t DeferredShadingGBuffer::BindPositionTexture(ActiveBindedState& activeBindedState)
 {
-    m_normalBuffer->BindTexture(slot);
+    return BindRenderTarget(activeBindedState, m_positionBuffer);
 }
 
-void DeferredShadingGBuffer::BindAlbedoTexture(int32_t slot)
+int32_t DeferredShadingGBuffer::BindNormalTexture(ActiveBindedState& activeBindedState)
 {
-    m_albedoBuffer->BindTexture(slot);
+    return BindRenderTarget(activeBindedState, m_normalBuffer);
 }
 
-void DeferredShadingGBuffer::BindMetallicRoughnessTexture(int32_t slot)
+int32_t DeferredShadingGBuffer::BindAlbedoTexture(ActiveBindedState& activeBindedState)
 {
-    m_metallicRoughnessBuffer->BindTexture(slot);
+    return BindRenderTarget(activeBindedState, m_albedoBuffer);
 }
 
-void DeferredShadingGBuffer::BindEmissionTexture(const int32_t slot)
+int32_t DeferredShadingGBuffer::BindMetallicRoughnessTexture(ActiveBindedState& activeBindedState)
 {
-    m_emissionBuffer->BindTexture(slot);
+    return BindRenderTarget(activeBindedState, m_metallicRoughnessBuffer);
+}
+
+int32_t DeferredShadingGBuffer::BindEmissionTexture(ActiveBindedState& activeBindedState)
+{
+    return BindRenderTarget(activeBindedState, m_emissionBuffer);
 }
 
 void DeferredShadingGBuffer::CopyFramebufferDataToDefaultFramebuffer(

@@ -45,9 +45,11 @@ public:
     void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const override
     {
         if (m_value) {
-            int32_t slot = activeBindedState.OccupyTextureSlot(m_value->GetTextureDescriptor());
-            m_value->BindTexture(slot);
-            uniform.LoadUniform(slot);
+            const auto occupiedSlot = activeBindedState.OccupyTextureSlot(m_value->GetTextureDescriptor());
+            if (!occupiedSlot.bWasAlreadyBound) {
+                m_value->BindTexture(occupiedSlot.SlotIndex);
+            }
+            uniform.LoadUniform(occupiedSlot.SlotIndex);
         }
     }
 

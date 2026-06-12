@@ -9,6 +9,8 @@ using namespace Resources;
 
 namespace Graphics {
 
+class ActiveBindedState;
+
 class DeferredShadingGBuffer : public FramebufferBundle {
     using RenderTarget = std::shared_ptr<ITexture>;
 
@@ -41,17 +43,19 @@ public:
 
     void UnbindDeferredGBuffer(const GLbitfield clearBufferBit);
 
-    void BindDepthTexture(int32_t slot);
+    // Each Bind*Texture occupies a slot through ActiveBindedState (binding only when not already bound)
+    // and returns the slot index the caller should load into the sampler uniform.
+    int32_t BindDepthTexture(ActiveBindedState& activeBindedState);
 
-    void BindPositionTexture(int32_t slot);
+    int32_t BindPositionTexture(ActiveBindedState& activeBindedState);
 
-    void BindNormalTexture(int32_t slot);
+    int32_t BindNormalTexture(ActiveBindedState& activeBindedState);
 
-    void BindAlbedoTexture(int32_t slot);
+    int32_t BindAlbedoTexture(ActiveBindedState& activeBindedState);
 
-    void BindMetallicRoughnessTexture(int32_t slot);
+    int32_t BindMetallicRoughnessTexture(ActiveBindedState& activeBindedState);
 
-    void BindEmissionTexture(const int32_t slot);
+    int32_t BindEmissionTexture(ActiveBindedState& activeBindedState);
 
     std::shared_ptr<IFramebufferObject> GetFramebufferObjectInstance() const;
 
@@ -81,6 +85,8 @@ public:
     void ResizeRenderTargets(const ViewPortInfo& viewPortInfo);
 
 private:
+    int32_t BindRenderTarget(ActiveBindedState& activeBindedState, const RenderTarget& renderTarget);
+
     void DestroyGBuffer();
 
     void TryToFreeRenderTargetTextures();

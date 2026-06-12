@@ -8,14 +8,10 @@ namespace Graphics {
 
 ActiveBindedState::ActiveBindedState()
     : mActiveShaderName()
-    , mActiveTextures()
+    , mTextureSlots()
 {
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &mAvailableTextureSlotsCount);
-}
-
-const std::vector<std::pair<uint32_t, int32_t>>& ActiveBindedState::GetActiveTextures() const
-{
-    return mActiveTextures;
+    mTextureSlots.reserve(mAvailableTextureSlotsCount);
 }
 
 const std::string& ActiveBindedState::GetActiveShaderName() const
@@ -36,35 +32,43 @@ bool ActiveBindedState::TryUpdateActiveShaderName(const std::string& activeShade
 int32_t ActiveBindedState::GetBindedSlotIndexByTextureId(const uint32_t textureId) const
 {
     const auto foundIt = std::find_if(
-        mActiveTextures.cbegin(), mActiveTextures.cend(), [textureId](const auto& pair) { return pair.first == textureId; });
-    if (foundIt != mActiveTextures.cend()) {
-        return foundIt->second;
+        mTextureSlots.cbegin(), mTextureSlots.cend(), [textureId](const auto& slot) { return slot.TextureId == textureId; });
+    if (foundIt != mTextureSlots.cend()) {
+        return static_cast<int32_t>(std::distance(mTextureSlots.cbegin(), foundIt));
     }
     return -1;
 }
 
-int32_t ActiveBindedState::OccupyTextureSlot(const uint32_t textureId)
+ActiveBindedState::OccupiedSlot ActiveBindedState::OccupyTextureSlot(const uint32_t textureId)
 {
-    if (mActiveTextures.size() >= mAvailableTextureSlotsCount && mActiveTexturePointer >= mAvailableTextureSlotsCount) {
-        mActiveTexturePointer = 0;
+    // Already bound -> refresh its LRU stamp (so the rest of the current draw can't evict it) and reuse the slot.
+    const int32_t bindedSlotIndex = GetBindedSlotIndexByTextureId(textureId);
+    if (-1 != bindedSlotIndex) {
+        mTextureSlots[bindedSlotIndex].LastUseStamp = ++mUseStampCounter;
+        return {bindedSlotIndex, true};
     }
 
-    const auto value = std::make_pair(textureId, mActiveTexturePointer);
-    if (mActiveTextures.size() <= mActiveTexturePointer) {
-        mActiveTextures.emplace_back(value);
-    } else {
-        mActiveTextures[mActiveTexturePointer] = value;
+    // A free slot is still available -> take it.
+    if (mTextureSlots.size() < static_cast<size_t>(mAvailableTextureSlotsCount)) {
+        mTextureSlots.push_back({textureId, ++mUseStampCounter});
+        return {static_cast<int32_t>(mTextureSlots.size()) - 1, false};
     }
 
-    ++mActiveTexturePointer;
-
-    return value.second;
+    // Out of capacity -> evict the least-recently-used slot. Every texture of the current draw goes
+    // through OccupyTextureSlot (a hit refreshes the stamp too), so the current draw's textures always
+    // carry the highest stamps and the evicted slot is guaranteed not to be referenced by a sampler
+    // uniform of the draw being assembled
+    const auto lruIt = std::min_element(mTextureSlots.begin(), mTextureSlots.end(), [](const auto& left, const auto& right) {
+        return left.LastUseStamp < right.LastUseStamp;
+    });
+    lruIt->TextureId = textureId;
+    lruIt->LastUseStamp = ++mUseStampCounter;
+    return {static_cast<int32_t>(std::distance(mTextureSlots.begin(), lruIt)), false};
 }
 
 void ActiveBindedState::Reset()
 {
-    mActiveTexturePointer = 0;
-    mActiveTextures.clear();
+    mTextureSlots.clear();
     mActiveShaderName.clear();
 }
 } // namespace Graphics

@@ -658,18 +658,24 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
 #ifndef NO_LIT
     // ************************** SHADOWS ************************** //
     size_t pointLightIndex = 0, dirLightIndex = 0, spotlightIndex = 0;
-    size_t shadowMapSlot = 5, dirShadowMapCount = 0, pointShadowMapCount = 0, spotlightShadowMapCount = 0;
+    size_t dirShadowMapCount = 0, pointShadowMapCount = 0, spotlightShadowMapCount = 0;
+    const auto bindShadowAtlas = [this](const auto& atlasResource) {
+        const auto occupiedSlot = mActiveBindedState.OccupyTextureSlot(atlasResource->GetTextureDescriptor());
+        if (!occupiedSlot.bWasAlreadyBound) {
+            atlasResource->BindTexture(occupiedSlot.SlotIndex);
+        }
+        return occupiedSlot.SlotIndex;
+    };
     for (auto& dirLightProxy : mDirLightProxiesVec) {
         if (dirLightProxy->IsEnabled()) {
             const auto shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
             if (shadowInfo) {
-                shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
+                const int32_t shadowMapSlot = bindShadowAtlas(shadowInfo->GetAtlasResource());
                 m_deferredLightShader->SetDirectionalLightShadowMapSlot(
                     dirLightIndex, shadowMapSlot, shadowInfo->GetTextureAtlasOffset());
 
                 dirShadowMapCount++;
                 dirLightIndex++;
-                shadowMapSlot++;
             }
         }
     }
@@ -678,9 +684,8 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
         if (pointLightProxy->IsEnabled()) {
             const auto shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
             if (shadowInfo) {
-                shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
+                const int32_t shadowMapSlot = bindShadowAtlas(shadowInfo->GetAtlasResource());
                 m_deferredLightShader->SetPointLightShadowMapSlot(pointLightIndex, shadowMapSlot);
-                shadowMapSlot++;
                 pointShadowMapCount++;
                 pointLightIndex++;
             }
@@ -691,10 +696,9 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
         if (spotLightProxy->IsEnabled()) {
             const auto shadowInfo = spotLightProxy->GetProjectedSpotLightShadowInfo();
             if (shadowInfo) {
-                shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
+                const int32_t shadowMapSlot = bindShadowAtlas(shadowInfo->GetAtlasResource());
                 m_deferredLightShader->SetSpotlightShadowMapSlot(
                     spotlightIndex, shadowMapSlot, shadowInfo->GetTextureAtlasOffset());
-                shadowMapSlot++;
                 spotlightShadowMapCount++;
                 spotlightIndex++;
             }
@@ -704,19 +708,13 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
 #endif
     m_deferredLightShader->SetCameraWorldPosition(cameraProxy->GetEyeVector());
 
-    m_gbuffer->BindPositionTexture(0);
-    m_gbuffer->BindAlbedoTexture(1);
-    m_gbuffer->BindNormalTexture(2);
-    m_gbuffer->BindMetallicRoughnessTexture(3);
-    m_gbuffer->BindEmissionTexture(4);
-
-    m_deferredLightShader->SetGBufferPosition(0);
-    m_deferredLightShader->SetGBufferAlbedo(1);
-    m_deferredLightShader->SetGBufferNormal(2);
-    m_deferredLightShader->SetGBufferEmission(4);
+    m_deferredLightShader->SetGBufferPosition(m_gbuffer->BindPositionTexture(mActiveBindedState));
+    m_deferredLightShader->SetGBufferAlbedo(m_gbuffer->BindAlbedoTexture(mActiveBindedState));
+    m_deferredLightShader->SetGBufferNormal(m_gbuffer->BindNormalTexture(mActiveBindedState));
+    m_deferredLightShader->SetGBufferEmission(m_gbuffer->BindEmissionTexture(mActiveBindedState));
 
 #ifdef SHADING_MODEL_PBR
-    m_deferredLightShader->SetGBufferMetallicRoughness(3);
+    m_deferredLightShader->SetGBufferMetallicRoughness(m_gbuffer->BindMetallicRoughnessTexture(mActiveBindedState));
 #endif
 
 #ifndef NO_LIT
