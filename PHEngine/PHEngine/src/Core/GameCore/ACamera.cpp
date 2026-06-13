@@ -100,7 +100,7 @@ void ACamera::UpdateCameraProxyData()
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& cameraPtr = weak.lock()) {
                     if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
-                        if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId)) {
+                        if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByCameraProxyId(cameraProxyId)) {
                             ext_assert(sceneViewSp, "Scene view pointer is null in ACamera::UpdateCameraProxyData");
                             const auto& cameraProxy = sceneViewSp->GetCameraProxy();
                             cameraProxy->UpdateEyeVector(eyeVector);
@@ -162,7 +162,7 @@ void ACamera::ProcessEvent(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
-                    if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId)) {
+                    if (const auto& sceneViewSp = sceneRendererSp->GetSceneViewByCameraProxyId(cameraProxyId)) {
                         ext_assert(sceneViewSp, "Scene view pointer is null in ACamera::UpdateCameraProxyData");
                         const auto& cameraProxy = sceneViewSp->GetCameraProxy();
                         cameraProxy->SetViewPortInfo(newViewPortInfo);

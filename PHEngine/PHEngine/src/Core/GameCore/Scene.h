@@ -7,6 +7,7 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
+#include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 #include "Core/GameCore/Event/MouseButtonDownEvent.h"
 #include "Core/GameCore/Event/MouseScrollEvent.h"
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
@@ -63,7 +64,8 @@ class Scene : public EngineObject,
               public std::enable_shared_from_this<Scene>,
               public WindowSizeChangedGameThreadEvent,
               public MouseButtonDownRootEvent,
-              public MouseScrollRootEvent {
+              public MouseScrollRootEvent,
+              public CameraTransformChangedGameThreadEvent {
 private:
     std::shared_ptr<EnginePhysics::PhysicsWorld> mPhysicsWorld;
 
@@ -131,6 +133,10 @@ public:
     void ProcessEvent(const MouseButtonDownRootEvent* sender, const MouseButtonDownRootEvent::EventData_t& data) override;
 
     void ProcessEvent(const MouseScrollRootEvent* sender, const MouseScrollRootEvent::EventData_t& data) override;
+
+    void ProcessEvent(
+        const CameraTransformChangedGameThreadEvent* sender,
+        const CameraTransformChangedGameThreadEvent::EventData_t& data) override;
 
     void RegisterCamera(const std::shared_ptr<ACamera>& camera);
 

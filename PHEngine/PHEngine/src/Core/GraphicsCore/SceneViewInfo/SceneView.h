@@ -1,34 +1,39 @@
 #pragma once
-#include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
-#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 
 #include <memory>
 #include <unordered_map>
 #include <vector>
 
-using namespace Graphics::Proxy;
-
 namespace Graphics {
+class CameraSceneProxy;
+
+namespace Proxy {
+class PrimitiveSceneProxy;
+}
+
 class SceneView {
-    std::shared_ptr<CameraSceneProxy> mCameraProxy;
+    std::shared_ptr<CameraSceneProxy> mCameraProxySp;
 
-    const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& mPrimitiveProxies;
+    std::unordered_map<int32_t /*proxy id*/, bool> mVisibilityMap;
 
-    std::unordered_map<size_t /*proxy id*/, bool> mVisibilityMap;
-
+#if DEBUG
     int32_t mLastFrameVisiblePrimitives{0};
+#endif
 
 public:
-    SceneView(
-        const std::shared_ptr<CameraSceneProxy>& cameraProxy,
-        const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& primitiveProxies);
+    explicit SceneView(const std::shared_ptr<CameraSceneProxy>& cameraProxy);
 
     ~SceneView();
 
     std::shared_ptr<CameraSceneProxy> GetCameraProxy() const;
 
-    void DoVisibilityTest();
+    void FrustumCullTest(const std::vector<std::shared_ptr<::Graphics::Proxy::PrimitiveSceneProxy>>& primitiveProxies);
 
-    bool IsPrimitiveVisible(const size_t proxyId) const;
+    bool IsPrimitiveVisible(const int32_t proxyId) const;
+
+    void ResetVisibilityForPrimitive(const int32_t proxyId);
+
+    // should be called when all proxies must be retest for visibility (camera transform was changed)
+    void ResetVisibility();
 };
 } // namespace Graphics

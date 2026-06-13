@@ -9,7 +9,7 @@ namespace Game {
 class PathSegment {
     std::array<glm::vec3, 3> mQuadraticBezierControlPoints;
 
-    size_t mSubdivisionsCount{1};
+    uint32_t mSubdivisionsCount{1};
 
     std::vector<glm::vec3> mTotalSegmentPoints;
 
@@ -18,13 +18,13 @@ public:
 
     const std::array<glm::vec3, 3>& GetQuadraticBezierControlPoints() const;
 
-    void SetSubdivisionsCount(const size_t subdivisionsCount);
+    void SetSubdivisionsCount(const uint32_t subdivisionsCount);
 
-    size_t GetSubdivisionCount() const;
+    uint32_t GetSubdivisionCount() const;
 
     const std::vector<glm::vec3>& GetTotalSegmentPoints() const;
 
-    size_t GetTotalSegmentPointsCount() const;
+    uint32_t GetTotalSegmentPointsCount() const;
 
 private:
     void RecalculateTotalSegmentPoints();

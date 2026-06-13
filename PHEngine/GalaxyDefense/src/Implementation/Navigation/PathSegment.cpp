@@ -14,7 +14,7 @@ void PathSegment::SetControlPoints(const std::array<glm::vec3, 3>& controlPoints
     RecalculateTotalSegmentPoints();
 }
 
-void PathSegment::SetSubdivisionsCount(const size_t subdivisionsCount)
+void PathSegment::SetSubdivisionsCount(const uint32_t subdivisionsCount)
 {
     if (mSubdivisionsCount != subdivisionsCount) {
         mSubdivisionsCount = subdivisionsCount;
@@ -22,7 +22,7 @@ void PathSegment::SetSubdivisionsCount(const size_t subdivisionsCount)
     }
 }
 
-size_t PathSegment::GetSubdivisionCount() const
+uint32_t PathSegment::GetSubdivisionCount() const
 {
     return mSubdivisionsCount;
 }
@@ -32,27 +32,29 @@ const std::vector<glm::vec3>& PathSegment::GetTotalSegmentPoints() const
     return mTotalSegmentPoints;
 }
 
-size_t PathSegment::GetTotalSegmentPointsCount() const
+uint32_t PathSegment::GetTotalSegmentPointsCount() const
 {
-    return mTotalSegmentPoints.size();
+    return static_cast<uint32_t>(mTotalSegmentPoints.size());
 }
 
 void PathSegment::RecalculateTotalSegmentPoints()
 {
-    const size_t curvePathPointsCount
-        = mSubdivisionsCount <= static_cast<size_t>(1) ? static_cast<size_t>(2) : static_cast<size_t>(mSubdivisionsCount + 1);
+    const uint32_t curvePathPointsCount = mSubdivisionsCount <= static_cast<uint32_t>(1)
+        ? static_cast<uint32_t>(2)
+        : static_cast<uint32_t>(mSubdivisionsCount + 1);
     mTotalSegmentPoints.clear();
     mTotalSegmentPoints.reserve(curvePathPointsCount);
     mTotalSegmentPoints.emplace_back(mQuadraticBezierControlPoints.at(0));
     const float bezier_t_step = (1.0f / static_cast<float>(curvePathPointsCount));
     float bezier_t = 0.0f;
-    for (size_t i = 1; i < (curvePathPointsCount); ++i) {
+    for (uint32_t i = 1; i < (curvePathPointsCount); ++i) {
         bezier_t = static_cast<float>(i) * bezier_t_step;
-        mTotalSegmentPoints.emplace_back(EngineMath::QuadraticBezier(
-            mQuadraticBezierControlPoints.at(0),
-            mQuadraticBezierControlPoints.at(1),
-            mQuadraticBezierControlPoints.at(2),
-            bezier_t));
+        mTotalSegmentPoints.emplace_back(
+            EngineMath::QuadraticBezier(
+                mQuadraticBezierControlPoints.at(0),
+                mQuadraticBezierControlPoints.at(1),
+                mQuadraticBezierControlPoints.at(2),
+                bezier_t));
     }
     mTotalSegmentPoints.emplace_back(mQuadraticBezierControlPoints.at(2));
 }

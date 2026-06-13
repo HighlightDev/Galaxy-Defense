@@ -36,11 +36,12 @@ Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
     , mLuaReplicators()
     , m_interThreadMgr(interThreadMgr)
     , mGameThreadDeltaSec(std::make_shared<EngineObjectProperty<float>>(0.0f, "GT_DeltaSec"))
-    , mScreenResolutionProperty(std::make_shared<EngineObjectProperty<glm::vec2>>(
-          glm::vec2(
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
-          "ScreenResolution"))
+    , mScreenResolutionProperty(
+          std::make_shared<EngineObjectProperty<glm::vec2>>(
+              glm::vec2(
+                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
+              "ScreenResolution"))
     , mDeferredResourceCreators()
     , mActors()
     , mMainCamera()
@@ -72,6 +73,7 @@ Scene::~Scene()
     WindowSizeChangedGameThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedGameThreadEvent::GetInstanceId());
     MouseButtonDownRootEvent::GetInstance()->RemoveListener(MouseButtonDownRootEvent::GetInstanceId());
     MouseScrollRootEvent::GetInstance()->RemoveListener(MouseScrollRootEvent::GetInstanceId());
+    CameraTransformChangedGameThreadEvent::GetInstance()->RemoveListener(CameraTransformChangedGameThreadEvent::GetInstanceId());
 }
 
 void Scene::Initialize()
@@ -79,6 +81,7 @@ void Scene::Initialize()
     WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
     MouseButtonDownRootEvent::GetInstance()->AddListener(shared_from_this());
     MouseScrollRootEvent::GetInstance()->AddListener(shared_from_this());
+    CameraTransformChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
 }
 
 void Scene::OnLevelInit()
@@ -375,9 +378,10 @@ std::shared_ptr<UiHandler> Scene::GetUiHandler() const
 void Scene::Tick(const float delta)
 {
     mGameThreadDeltaSec->SetValue(delta);
-    mScreenResolutionProperty->SetValue(glm::vec2(
-        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
+    mScreenResolutionProperty->SetValue(
+        glm::vec2(
+            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
 
     mPhysicsWorld->Tick(delta);
 
@@ -523,6 +527,15 @@ void Scene::ProcessEvent(const MouseScrollRootEvent* sender, const MouseScrollRo
     MouseScrollGameThreadEvent::GetInstance()->SendEvent(
         eExecutionOrder::PRE_EXECUTION, receiverType, scrollDirection, scrollOffset);
     MouseScrollLuaThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, scrollDirection, scrollOffset);
+}
+
+void Scene::ProcessEvent(
+    const CameraTransformChangedGameThreadEvent* sender, const CameraTransformChangedGameThreadEvent::EventData_t& data)
+{
+    const auto& cameraPtr = std::get<0>(data);
+    if (const auto& sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock()) {
+        sceneRendererSp->ResetPrimitivesFrustumTestResultForCamera(cameraPtr->GetCameraProxyId());
+    }
 }
 
 void Scene::RemoveComponent(std::shared_ptr<Component> component)
@@ -722,7 +735,7 @@ glm::vec4 Scene::GetConvertedToClippedSpacePosition(const size_t cameraProxyId, 
     glm::vec4 result = worldPosition;
 
     if (const auto& sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock()) {
-        const auto& sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraProxyId);
+        const auto& sceneViewSp = sceneRenderer->GetSceneViewByCameraProxyId(cameraProxyId);
         if (sceneViewSp) {
             const auto& cameraProxySp = sceneViewSp->GetCameraProxy();
             const auto& viewMatrix = cameraProxySp->GetViewMatrix();
@@ -764,7 +777,7 @@ std::optional<CameraFrustum> Scene::GetCameraFrustum(const size_t cameraProxyId)
     std::optional<CameraFrustum> result(std::nullopt);
 
     if (const auto& sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock()) {
-        const auto& sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraProxyId);
+        const auto& sceneViewSp = sceneRenderer->GetSceneViewByCameraProxyId(cameraProxyId);
         if (sceneViewSp) {
             if (sceneViewSp->GetCameraProxy()->IsCameraFrustumBuilt()) {
                 result = sceneViewSp->GetCameraProxy()->GetCameraFrustum();

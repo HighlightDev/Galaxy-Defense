@@ -51,7 +51,10 @@ using namespace EngineCore::GUI;
 namespace Graphics {
 namespace Renderer {
 SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
-    : m_interThreadMgr(interThreadMgr)
+    : bPrimitiveProxiesDirty(false)
+    , bLightProxiesDirty(false)
+    , bPlanarReflectionProxiesDirty(false)
+    , m_interThreadMgr(interThreadMgr)
     , m_gbuffer(
           std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
               0,
@@ -75,9 +78,6 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , mDepthCollectShaderNonSkeletal()
     , mDepthCollectPointLightShaderSkeletal()
     , mDepthCollectPointLightShaderNonSkeletal()
-    , bProxiesDirty(false)
-    , bLightProxiesDirty(false)
-    , bPlanarReflectionProxiesDirty(false)
     , mActiveBindedState()
     , mPostFxRenderer(
           std::make_shared<PostFxRenderer>(ViewPortInfo(
@@ -213,10 +213,6 @@ void SceneRenderer::CleanUp()
     mPlanarReflectionProxiesVec.clear();
     mGroupedByShadowAtlasLights.clear();
 
-    bProxiesDirty = false;
-    bLightProxiesDirty = false;
-    bPlanarReflectionProxiesDirty = false;
-
     mDepthCollectShaderNonSkeletal->CleanUp(true);
     mDepthCollectShaderSkeletal->CleanUp(true);
     mDepthCollectPointLightShaderSkeletal->CleanUp(true);
@@ -275,10 +271,7 @@ void SceneRenderer::DepthPrePass(const std::shared_ptr<SceneView>& sceneView)
         mNonSkeletalProxiesVec.cbegin(),
         mNonSkeletalProxiesVec.cend(),
         std::back_inserter(visibleNonSkeletalProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
+        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
 
     std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
     visibleSkeletalProxies.reserve(mSkeletalProxiesVec.size());
@@ -286,10 +279,7 @@ void SceneRenderer::DepthPrePass(const std::shared_ptr<SceneView>& sceneView)
         mSkeletalProxiesVec.cbegin(),
         mSkeletalProxiesVec.cend(),
         std::back_inserter(visibleSkeletalProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
+        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
 
     if (!visibleNonSkeletalProxies.empty()) {
         PrimitiveSorter sorter;
@@ -351,10 +341,7 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
             mNonSkeletalProxiesVec.cbegin(),
             mNonSkeletalProxiesVec.cend(),
             std::back_inserter(visibleNonSkeletalProxies),
-            [&sceneView](const auto& proxy) {
-                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-            });
+            [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
 
         std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
         visibleSkeletalProxies.reserve(mSkeletalProxiesVec.size());
@@ -362,10 +349,7 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
             mSkeletalProxiesVec.cbegin(),
             mSkeletalProxiesVec.cend(),
             std::back_inserter(visibleSkeletalProxies),
-            [&sceneView](const auto& proxy) {
-                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-            });
+            [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
 
         for (auto& atlasLightGroup : mGroupedByShadowAtlasLights) {
             bool bNewDepthShadowAtlas = true;
@@ -615,19 +599,13 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
         mNonSkeletalProxiesVec.cbegin(),
         mNonSkeletalProxiesVec.cend(),
         std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
+        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
 
     std::copy_if(
         mSkeletalProxiesVec.cbegin(),
         mSkeletalProxiesVec.cend(),
         std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
+        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
 
     if (visibleProxies.size() > 0) {
         for (auto& proxy : visibleProxies) {
@@ -789,9 +767,7 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
             renderState.BindRenderState();
         }
 
-        const bool bShouldRender = proxy->IsTransformIntialized() && proxy->IsEnabled() && proxy->IsVisible()
-            && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        if (bShouldRender) {
+        if (sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId())) {
             const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
                                                                            : EngineConstants::eStencilValues::SCENE_DEFAULT;
             renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, stencilFuncRefValue, 0xFF);
@@ -818,19 +794,13 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
         mNonSkeletalProxiesVec.cbegin(),
         mNonSkeletalProxiesVec.cend(),
         std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
+        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
 
     std::copy_if(
         mSkeletalProxiesVec.cbegin(),
         mSkeletalProxiesVec.cend(),
         std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
+        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
 
     if (visibleProxies.empty()) {
         return;
@@ -921,48 +891,48 @@ void SceneRenderer::PlanarReflectionPass()
                 mNonSkeletalProxiesVec.cend(),
                 std::back_inserter(visibleProxies),
                 [&mirroredCameraFrustum](const auto& proxy) {
-                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                    && (proxy->IsFrustumCullTestNeeded()
-                            ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
-                            : true);
+                    return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                        && (proxy->IsFrustumCullTestNeeded()
+                                ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
+                                : true);
                 });
             std::copy_if(
                 mSkeletalProxiesVec.cbegin(),
                 mSkeletalProxiesVec.cend(),
                 std::back_inserter(visibleProxies),
                 [&mirroredCameraFrustum](const auto& proxy) {
-                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                    && (proxy->IsFrustumCullTestNeeded()
-                            ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
-                            : true);
+                    return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                        && (proxy->IsFrustumCullTestNeeded()
+                                ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
+                                : true);
                 });
-             std::copy_if(
+            std::copy_if(
                 mForwardRenderingProxiesVec.cbegin(),
                 mForwardRenderingProxiesVec.cend(),
                 std::back_inserter(visibleProxies),
                 [&mirroredCameraFrustum](const auto& proxy) {
-                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                    && (proxy->IsFrustumCullTestNeeded()
-                            ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
-                            : true);
+                    return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                        && (proxy->IsFrustumCullTestNeeded()
+                                ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
+                                : true);
                 });
 
-             PrimitiveSorter sorter;
-             const auto sortedVisibleProxies = sorter.SortPrimitivesByDistanceToCamera(
-                 PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
-                 planarReflectionProxy->GetReflectionPlaneOrigin(),
-                 visibleProxies);
+            PrimitiveSorter sorter;
+            const auto sortedVisibleProxies = sorter.SortPrimitivesByDistanceToCamera(
+                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
+                planarReflectionProxy->GetReflectionPlaneOrigin(),
+                visibleProxies);
 
-             if (not sortedVisibleProxies.empty()) {
-                 planarReflectionProxy->RenderToPlanarReflectionFBO();
+            if (not sortedVisibleProxies.empty()) {
+                planarReflectionProxy->RenderToPlanarReflectionFBO();
 
-                 for (auto& proxy : sortedVisibleProxies) {
-                     proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
-                 }
+                for (auto& proxy : sortedVisibleProxies) {
+                    proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
+                }
 
-                 planarReflectionProxy->StopRenderingToPlanarReflectionFBO();
-                 planarReflectionProxy->ResolveReflectionRenderTargetSurfaceData();
-             }
+                planarReflectionProxy->StopRenderingToPlanarReflectionFBO();
+                planarReflectionProxy->ResolveReflectionRenderTargetSurfaceData();
+            }
         }
     }
 
@@ -1014,9 +984,9 @@ void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
     renderState.BindRenderState();
 }
 
-void SceneRenderer::PrepareSceneProxiesForRender()
+void SceneRenderer::FilterSceneProxies()
 {
-    if (bProxiesDirty) {
+    if (IsPrimitiveProxiesDirty()) {
         mForwardRenderingProxiesVec.clear();
         mSkeletalProxiesVec.clear();
         mNonSkeletalProxiesVec.clear();
@@ -1034,16 +1004,16 @@ void SceneRenderer::PrepareSceneProxiesForRender()
                 }
             }
         }
-        SetProxiesAreDirty(false);
+        SetPrimitiveProxiesDirty(false);
     }
 
-    if (bLightProxiesDirty) {
+    if (IsLightProxiesDirty()) {
         mDirLightProxiesVec.clear();
         mPointLightProxiesVec.clear();
         mSpotlightProxiesVec.clear();
 
         for (auto& proxy : LightProxiesVector) {
-            const LightSceneProxyType& lightType = proxy->GetLightProxyType();
+            const LightSceneProxyType lightType = proxy->GetLightProxyType();
 
             if (lightType == LightSceneProxyType::DIR_LIGHT) {
                 mDirLightProxiesVec.emplace_back(std::static_pointer_cast<DirectionalLightSceneProxy>(proxy));
@@ -1056,22 +1026,12 @@ void SceneRenderer::PrepareSceneProxiesForRender()
 
         GroupLightsByShadowMap();
 
-        SetLightProxiesAreDirty(false);
+        SetLightProxiesDirty(false);
     }
 
-    if (bPlanarReflectionProxiesDirty) {
-        for (const auto& proxy : PlanarReflectionProxiesVector) {
-            auto findIt = std::find_if(
-                mPlanarReflectionProxiesVec.begin(), mPlanarReflectionProxiesVec.end(), [&](const auto& existingProxy) {
-                    return proxy->GetSceneProxyId() == existingProxy->GetSceneProxyId();
-                });
-
-            if (mPlanarReflectionProxiesVec.end() == findIt) {
-                mPlanarReflectionProxiesVec.emplace_back(proxy);
-            }
-        }
-
-        SetPlanarReflectionProxiesAreDirty(false);
+    if (IsPlanarReflectionProxiesDirty()) {
+        mPlanarReflectionProxiesVec = PlanarReflectionProxiesVector;
+        SetPlanarReflectionProxiesDirty(false);
     }
 }
 
@@ -1107,13 +1067,12 @@ void SceneRenderer::GroupLightsByShadowMap()
 void SceneRenderer::RenderScene_RenderThread()
 {
     ext_assert(mPostFxRenderer, "PostFxRenderer is not initialized!");
-    PrepareSceneProxiesForRender();
+    FilterSceneProxies();
 
     for (const auto& sceneView : SceneViewsVector) {
         const auto& cameraProxy = sceneView->GetCameraProxy();
         if (cameraProxy->IsInitializedFirstTime()) {
-            // todo: do visibility test only if scene was changed (objects moved or camera position, orientation changed)
-            sceneView->DoVisibilityTest();
+            sceneView->FrustumCullTest(PrimitiveProxiesVector);
 
             // Deferred shading is done with main camera
             if (eCameraSceneProxyType::MAIN_SCENE_CAMERA == cameraProxy->GetCameraSceneType()) {
@@ -1158,22 +1117,37 @@ void SceneRenderer::RenderScene_RenderThread()
     }
 }
 
-void SceneRenderer::SetProxiesAreDirty(const bool bDirty)
+void SceneRenderer::SetPrimitiveProxiesDirty(const bool bDirty)
 {
-    bProxiesDirty = bDirty;
+    bPrimitiveProxiesDirty = bDirty;
 }
 
-void SceneRenderer::SetLightProxiesAreDirty(const bool bDirty)
+void SceneRenderer::SetLightProxiesDirty(const bool bDirty)
 {
     bLightProxiesDirty = bDirty;
 }
 
-void SceneRenderer::SetPlanarReflectionProxiesAreDirty(const bool bDirty)
+void SceneRenderer::SetPlanarReflectionProxiesDirty(const bool bDirty)
 {
     bPlanarReflectionProxiesDirty = bDirty;
 }
 
-std::shared_ptr<SceneView> SceneRenderer::GetSceneViewByProxyId(const int32_t proxyId) const
+bool SceneRenderer::IsPrimitiveProxiesDirty() const
+{
+    return bPrimitiveProxiesDirty;
+}
+
+bool SceneRenderer::IsLightProxiesDirty() const
+{
+    return bLightProxiesDirty;
+}
+
+bool SceneRenderer::IsPlanarReflectionProxiesDirty() const
+{
+    return bPlanarReflectionProxiesDirty;
+}
+
+std::shared_ptr<SceneView> SceneRenderer::GetSceneViewByCameraProxyId(const int32_t proxyId) const
 {
     std::shared_ptr<SceneView> result = nullptr;
 
@@ -1549,7 +1523,7 @@ void SceneRenderer::RemovePrimitiveSceneProxy_OnRenderThread(const int32_t primi
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-        SetProxiesAreDirty(true);
+        SetPrimitiveProxiesDirty(true);
     } else {
         m_interThreadMgr.ExecuteOnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
@@ -1561,27 +1535,7 @@ void SceneRenderer::RemovePrimitiveSceneProxy_OnRenderThread(const int32_t primi
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     sceneRenderer->RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                    sceneRenderer->SetProxiesAreDirty(true);
-                }
-            });
-    }
-}
-
-void SceneRenderer::UpdatePrimitiveSceneProxies_OnRenderThread()
-{
-    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
-        SetProxiesAreDirty(true);
-    } else {
-        m_interThreadMgr.ExecuteOnRenderThread(
-            eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-            0,
-            Hash64_CT("SceneRenderer::UpdatePrimitiveSceneProxies_OnRenderThread"),
-            [weak = weak_from_this()](
-                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                std::weak_ptr<EngineCore::Scene> sceneWp,
-                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->SetProxiesAreDirty(true);
+                    sceneRenderer->SetPrimitiveProxiesDirty(true);
                 }
             });
     }
@@ -1591,7 +1545,7 @@ void SceneRenderer::DeleteLightSceneProxy_OnRenderThread(const int32_t lightScen
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         RemoveLightProxyByProxyId(lightSceneProxyIndex);
-        SetLightProxiesAreDirty(true);
+        SetLightProxiesDirty(true);
     } else {
         m_interThreadMgr.ExecuteOnRenderThread(
             eEnqueueJobPolicy::PUSH_ANYWAY,
@@ -1603,7 +1557,7 @@ void SceneRenderer::DeleteLightSceneProxy_OnRenderThread(const int32_t lightScen
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     sceneRenderer->RemoveLightProxyByProxyId(lightSceneProxyIndex);
-                    sceneRenderer->SetLightProxiesAreDirty(true);
+                    sceneRenderer->SetLightProxiesDirty(true);
                 }
             });
     }
@@ -1612,7 +1566,7 @@ void SceneRenderer::DeleteLightSceneProxy_OnRenderThread(const int32_t lightScen
 void SceneRenderer::UpdateLightSceneProxies_OnRenderThread()
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
-        SetLightProxiesAreDirty(true);
+        SetLightProxiesDirty(true);
     } else {
         constexpr int32_t creatorObjectId = 0;
         const uint64_t functionId = Hash64_CT("SceneRenderer::UpdateLightSceneProxies_OnRenderThread");
@@ -1625,7 +1579,7 @@ void SceneRenderer::UpdateLightSceneProxies_OnRenderThread()
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->SetLightProxiesAreDirty(true);
+                    sceneRenderer->SetLightProxiesDirty(true);
                 }
             });
     }
@@ -1635,7 +1589,7 @@ void SceneRenderer::AddCameraSceneProxy_OnRenderThread(
     const std::shared_ptr<ACamera>& camera, const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy)
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
-        SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, GetPrimitiveProxies()));
+        SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy));
         camera->SetIsCameraProxyReady(true);
     } else {
         LogInfo("SceneRenderer::AddCameraSceneProxy_OnRenderThread: camera proxyId: ", cameraSceneProxy->GetSceneProxyId());
@@ -1650,8 +1604,7 @@ void SceneRenderer::AddCameraSceneProxy_OnRenderThread(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    sceneRenderer->SceneViewsVector.emplace_back(
-                        std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->GetPrimitiveProxies()));
+                    sceneRenderer->SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy));
                     camera->SetIsCameraProxyReady(true);
                 }
             });
@@ -1706,7 +1659,7 @@ void SceneRenderer::AddPrimitiveSceneProxy_OnRenderThread(
             "Primitive proxy with id {} already exists" + std::to_string(primitiveSceneProxy->GetSceneProxyId()));
         primitiveSceneProxy->PostConstructorInitialize();
         PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
-        SetProxiesAreDirty(true);
+        SetPrimitiveProxiesDirty(true);
         primitiveComponent->SetIsSceneProxyReady(true);
     } else {
         m_interThreadMgr.ExecuteOnRenderThread(
@@ -1723,7 +1676,7 @@ void SceneRenderer::AddPrimitiveSceneProxy_OnRenderThread(
                         "Primitive proxy with id {} already exists" + std::to_string(primitiveSceneProxy->GetSceneProxyId()));
                     primitiveSceneProxy->PostConstructorInitialize();
                     sceneRenderer->GetPrimitiveProxies().emplace_back(primitiveSceneProxy);
-                    sceneRenderer->SetProxiesAreDirty(true);
+                    sceneRenderer->SetPrimitiveProxiesDirty(true);
                     primitiveComponent->SetIsSceneProxyReady(true);
                 }
             });
@@ -1741,7 +1694,7 @@ void SceneRenderer::AddLightSceneProxy_OnRenderThread(
             !GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()),
             "Light proxy with id {} already exists" + std::to_string(lightSceneProxy->GetSceneProxyId()));
         LightProxiesVector.emplace_back(lightSceneProxy);
-        SetLightProxiesAreDirty(true);
+        SetLightProxiesDirty(true);
         lightComponent->SetIsSceneProxyReady(true);
         lightSceneProxy->PostInitialize();
     } else {
@@ -1758,7 +1711,7 @@ void SceneRenderer::AddLightSceneProxy_OnRenderThread(
                         !sceneRenderer->GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()),
                         "Light proxy with id {} already exists" + std::to_string(lightSceneProxy->GetSceneProxyId()));
                     sceneRenderer->LightProxiesVector.emplace_back(lightSceneProxy);
-                    sceneRenderer->SetLightProxiesAreDirty(true);
+                    sceneRenderer->SetLightProxiesDirty(true);
                     lightComponent->SetIsSceneProxyReady(true);
                     lightSceneProxy->PostInitialize();
                 }
@@ -1915,7 +1868,7 @@ void SceneRenderer::AddPlanarReflectionSceneProxy_OnRenderThread(
         ext_assert(
             !reflectionProxySp, "Planar reflection proxy with id {} already exists" + std::to_string(proxy->GetSceneProxyId()));
         PlanarReflectionProxiesVector.emplace_back(proxy);
-        SetPlanarReflectionProxiesAreDirty(true);
+        SetPlanarReflectionProxiesDirty(true);
         planarReflectionComponent->SetIsSceneProxyReady(true);
     } else {
         constexpr uint64_t functionId = Hash64_CT("SceneRenderer::AddPlanarReflectionSceneProxy_OnRenderThread");
@@ -1933,7 +1886,7 @@ void SceneRenderer::AddPlanarReflectionSceneProxy_OnRenderThread(
                         !reflectionProxySp,
                         "Planar reflection proxy with id {} already exists" + std::to_string(proxy->GetSceneProxyId()));
                     sceneRenderer->PlanarReflectionProxiesVector.emplace_back(proxy);
-                    sceneRenderer->SetPlanarReflectionProxiesAreDirty(true);
+                    sceneRenderer->SetPlanarReflectionProxiesDirty(true);
                     planarReflectionComponent->SetIsSceneProxyReady(true);
                 }
             });
@@ -1944,7 +1897,7 @@ void SceneRenderer::RemovePlanarReflectionSceneProxy_OnRenderThread(const int32_
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
         RemovePlanarReflectionSceneProxyByProxyId(planarReflectionProxyIndex);
-        SetPlanarReflectionProxiesAreDirty(true);
+        SetPlanarReflectionProxiesDirty(true);
     } else {
         constexpr uint64_t functionId = Hash64_CT("SceneRenderer::RemovePlanarReflectionSceneProxy_OnRenderThread");
         m_interThreadMgr.ExecuteOnRenderThread(
@@ -1957,7 +1910,7 @@ void SceneRenderer::RemovePlanarReflectionSceneProxy_OnRenderThread(const int32_
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
                     sceneRenderer->RemovePlanarReflectionSceneProxyByProxyId(planarReflectionProxyIndex);
-                    sceneRenderer->SetPlanarReflectionProxiesAreDirty(true);
+                    sceneRenderer->SetPlanarReflectionProxiesDirty(true);
                 }
             });
     }
@@ -1967,7 +1920,7 @@ void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
     const std::shared_ptr<PlanarReflectionProxy>& planarReflectionProxy, const int32_t cameraSceneProxyId)
 {
     if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
-        const auto& sceneViewSp = GetSceneViewByProxyId(cameraSceneProxyId);
+        const auto& sceneViewSp = GetSceneViewByCameraProxyId(cameraSceneProxyId);
         if (sceneViewSp) {
             planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
         } else {
@@ -1987,7 +1940,7 @@ void SceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 if (const auto& sceneRenderer = weak.lock()) {
-                    const auto& sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraSceneProxyId);
+                    const auto& sceneViewSp = sceneRenderer->GetSceneViewByCameraProxyId(cameraSceneProxyId);
                     if (sceneViewSp) {
                         planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
                     } else {
@@ -2059,6 +2012,68 @@ void SceneRenderer::UpdateMeshModelPath_OnRenderThread(
                             "SceneRenderer::UpdateMeshModelPath_OnRenderThread: "
                             "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                             primitiveSceneProxyIndex);
+                    }
+                }
+            });
+    }
+}
+
+void SceneRenderer::ResetPrimitivesFrustumTestResultForCamera(const int32_t cameraProxyId)
+{
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
+        const auto& sceneView = GetSceneViewByCameraProxyId(cameraProxyId);
+        if (sceneView) {
+            sceneView->ResetVisibility();
+        } else {
+            LogInfo(
+                "SceneRenderer::ResetPrimitivesFrustumTestResultForCamera: "
+                "Error! Current camera proxy index doesn't exist on RT. Proxy index = ",
+                cameraProxyId);
+        }
+    } else {
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::ResetPrimitivesFrustumTestResultForCamera");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            cameraProxyId,
+            functionId,
+            [weak = weak_from_this(), cameraProxyId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = sceneRendererWp.lock()) {
+                    const auto& sceneView = sceneRenderer->GetSceneViewByCameraProxyId(cameraProxyId);
+                    if (sceneView) {
+                        sceneView->ResetVisibility();
+                    } else {
+                        LogInfo(
+                            "SceneRenderer::ResetPrimitivesFrustumTestResultForCamera: "
+                            "Error! Current camera proxy index doesn't exist on RT. Proxy index = ",
+                            cameraProxyId);
+                    }
+                }
+            });
+    }
+}
+
+void SceneRenderer::ResetPrimitiveFrustumTestResult(const int32_t primitiveProxyId)
+{
+    if (ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName)) {
+        for (const auto& sceneView : SceneViewsVector) {
+            sceneView->ResetVisibilityForPrimitive(primitiveProxyId);
+        }
+    } else {
+        constexpr uint64_t functionId = Hash64_CT("SceneRenderer::ResetPrimitiveFrustumTestResult");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            primitiveProxyId,
+            functionId,
+            [weak = weak_from_this(), primitiveProxyId](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                if (const auto& sceneRenderer = sceneRendererWp.lock()) {
+                    for (const auto& sceneView : sceneRenderer->SceneViewsVector) {
+                        sceneView->ResetVisibilityForPrimitive(primitiveProxyId);
                     }
                 }
             });

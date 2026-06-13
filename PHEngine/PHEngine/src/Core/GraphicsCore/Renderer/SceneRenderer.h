@@ -61,6 +61,13 @@ class FreeTypeTextFieldProxy;
 namespace Graphics {
 namespace Renderer {
 class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
+
+    bool bPrimitiveProxiesDirty;
+
+    bool bLightProxiesDirty;
+
+    bool bPlanarReflectionProxiesDirty;
+
     InterThreadCommunicationMgr& m_interThreadMgr;
 
     // G-buffers
@@ -82,10 +89,6 @@ class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
         mDepthCollectPointLightShaderNonSkeletal;
 
     std::shared_ptr<PostFxRenderer> mPostFxRenderer;
-
-    bool bProxiesDirty;
-    bool bLightProxiesDirty;
-    bool bPlanarReflectionProxiesDirty;
 
     ActiveBindedState mActiveBindedState;
 
@@ -126,7 +129,7 @@ public:
 
     void RenderScene_RenderThread();
 
-    std::shared_ptr<SceneView> GetSceneViewByProxyId(const int32_t proxyId) const;
+    std::shared_ptr<SceneView> GetSceneViewByCameraProxyId(const int32_t proxyId) const;
     std::shared_ptr<PrimitiveSceneProxy> GetPrimitiveProxyByProxyId(const int32_t proxyId) const;
     std::shared_ptr<LightSceneProxy> GetLightProxyByProxyId(const int32_t proxyId) const;
     std::shared_ptr<MaterialProxy> GetMaterialProxyByProxyId(const int32_t proxyId) const;
@@ -145,11 +148,17 @@ public:
 
     void RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId);
 
-    void SetProxiesAreDirty(const bool bDirty);
+    void SetPrimitiveProxiesDirty(const bool bDirty);
 
-    void SetLightProxiesAreDirty(const bool bDirty);
+    bool IsPrimitiveProxiesDirty() const;
 
-    void SetPlanarReflectionProxiesAreDirty(const bool bDirty);
+    void SetLightProxiesDirty(const bool bDirty);
+
+    bool IsLightProxiesDirty() const;
+
+    void SetPlanarReflectionProxiesDirty(const bool bDirty);
+
+    bool IsPlanarReflectionProxiesDirty() const;
 
     void AddMaterialProxy_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy);
 
@@ -186,8 +195,6 @@ public:
         const glm::mat4& newworldMatrix);
 
     void RemovePrimitiveSceneProxy_OnRenderThread(const int32_t primitiveSceneProxyIndex);
-
-    void UpdatePrimitiveSceneProxies_OnRenderThread();
 
     void DeleteLightSceneProxy_OnRenderThread(const int32_t lightSceneProxyIndex);
 
@@ -233,6 +240,10 @@ public:
     void UpdateMeshModelPath_OnRenderThread(
         const int32_t primitiveSceneProxyIndex, const ePrimitiveProxyType primitiveProxyType, const std::string& newModelPath);
 
+    void ResetPrimitivesFrustumTestResultForCamera(const int32_t cameraProxyId);
+
+    void ResetPrimitiveFrustumTestResult(const int32_t primitiveProxyId);
+
     void RegisterText(const std::shared_ptr<FreeTypeTextFieldProxy>& textFieldProxy);
 
     void UnregisterText(const int32_t textFieldProxyId);
@@ -270,7 +281,7 @@ private:
 
     void UnregisterUiSceneProxy(const size_t uiItemUId, const size_t canvasUId);
 
-    void PrepareSceneProxiesForRender();
+    void FilterSceneProxies();
 
     void GroupLightsByShadowMap();
 
