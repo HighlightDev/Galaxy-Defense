@@ -1,6 +1,6 @@
 <general>
-	name: "BlackHoleMisile material"
-	shader: "BlackHoleMissileMaterial.glsl"
+	name: "GravityBombMisile material"
+	shader: "GravityBombMissileMaterial.glsl"
 	material_type: "dynamic"
 </general>
 <properties>

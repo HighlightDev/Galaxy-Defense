@@ -47,6 +47,8 @@ public:
         const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
         const std::shared_ptr<CombatActorsPoolHandler>& poolHandler);
 
+    void CleanUp() override;
+
     void AttachTweener(std::shared_ptr<Tweener> tweener) override;
 
     void Tick(const float deltaTimeSec) override;

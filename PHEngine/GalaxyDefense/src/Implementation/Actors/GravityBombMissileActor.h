@@ -7,12 +7,16 @@
 
 using namespace EngineCore;
 
+namespace Graphics {
+class IMaterial;
+}
+
 namespace Game {
 class MissileExplosionVisitorBase;
 class CombatActorsPoolHandler;
 class SpaceStationActor;
 
-class BlackHoleMissileActor : public MissileActor, public ITweenStateChangeNotifyable {
+class GravityBombMissileActor : public MissileActor, public ITweenStateChangeNotifyable {
 protected:
     std::shared_ptr<Actor> mCombatActivePhaseActor;
 
@@ -22,11 +26,27 @@ protected:
 
     std::shared_ptr<SpaceStationActor> mSpawnerActor;
 
+    // Identity-transform host actor that owns the gravity tether curves, and their shared material. World-space tether
+    // geometry only renders correctly under an untransformed host (see GravityModifier).
+    std::shared_ptr<Actor> mTetherHostActor;
+
+    std::shared_ptr<Graphics::IMaterial> mTetherMaterial;
+
 public:
-    BlackHoleMissileActor(
+    void SetTetherHostActor(const std::shared_ptr<Actor>& hostActor);
+
+    const std::shared_ptr<Actor>& GetTetherHostActor() const;
+
+    void SetTetherMaterial(const std::shared_ptr<Graphics::IMaterial>& material);
+
+    const std::shared_ptr<Graphics::IMaterial>& GetTetherMaterial() const;
+
+    GravityBombMissileActor(
         const std::string& gameObjectName,
         const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
         const std::shared_ptr<CombatActorsPoolHandler>& poolHandler);
+
+    void CleanUp() override;
 
     void AttachTweener(std::shared_ptr<Tweener> tweener) override;
 
@@ -64,10 +84,14 @@ private:
 
     void TriggerLifecycle_FirstPhaseActiveCombat();
 
-    void TriggerLifecycle_FirstPhaseExplosion();
+    void TriggerLifecycle_Impact();
 
-    void TriggerLifecycle_SecondPhaseExplosion();
+    void TriggerLifecycle_GravityCapture();
 
-    void TriggerLifecycle_BlackHoleSuckIn();
+    void TriggerLifecycle_Collapse();
+
+    void TriggerLifecycle_Fade();
+
+    void TriggerLifecycle_GravityBombSuckIn();
 };
 } // namespace Game

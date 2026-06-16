@@ -26,6 +26,14 @@ LootActor::LootActor(const std::string& gameObjectName, const std::shared_ptr<En
 {
 }
 
+void LootActor::CleanUp()
+{
+    if (mLootTweener) {
+        mLootTweener->UnsubscribeFromOnStateChange(std::dynamic_pointer_cast<LootActor>(shared_from_this()));
+    }
+    Actor::CleanUp();
+}
+
 eLootCategory LootActor::GetLootCategory() const
 {
     return mLootCategory;

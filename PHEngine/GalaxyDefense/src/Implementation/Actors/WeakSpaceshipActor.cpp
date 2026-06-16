@@ -26,6 +26,14 @@ WeakSpaceshipActor::WeakSpaceshipActor(
     mRouteHandler = std::make_unique<WeakSpaceshipRouteHandler>(this);
 }
 
+void WeakSpaceshipActor::CleanUp()
+{
+    if (mWeakSpaceshipTweener) {
+        mWeakSpaceshipTweener->UnsubscribeFromOnStateChange(std::dynamic_pointer_cast<WeakSpaceshipActor>(shared_from_this()));
+    }
+    SpaceshipActor::CleanUp();
+}
+
 void WeakSpaceshipActor::AttachTweener(std::shared_ptr<Tweener> tweener)
 {
     ext_assert(tweener, "WeakSpaceshipActor tweener pointer is null");

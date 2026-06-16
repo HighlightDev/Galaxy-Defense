@@ -15,6 +15,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
 #include "Implementation/Actors/MissileActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 using namespace Resources;
@@ -31,6 +32,8 @@ std::shared_ptr<MissileActor> ElectroRayChainFactory::CreateMissile(
     const glm::vec3& rotation,
     const glm::vec3& scale)
 {
+    using namespace Constants::ElectroRayChain;
+
     const auto& rayChainIndexStr = std::to_string(s_electroRayChainCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_electroRayChain_rootComponent_" + rayChainIndexStr, translation, rotation, scale, true);
@@ -43,19 +46,26 @@ std::shared_ptr<MissileActor> ElectroRayChainFactory::CreateMissile(
     const std::shared_ptr<IMaterial>& electroRay_material = materialParser.ParseMaterialDescriptor("ElectroBeamMaterial.m");
     scene->RegisterMaterialInstance(electroRay_material);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "noise", noiseTex);
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamGlowColor", glm::vec3(0.8, 0.2, 0.8));
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamMainColor", glm::vec3(0.8, 1.0, 0.2));
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamGlowColor", c_beamGlowColor);
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamMainColor", c_beamMainColor);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, scene, "GT_DeltaSec", "gt_timeSec");
 
     const auto d_mesh = std::make_shared<ElectricBeamComponentData>(
-        "c_rayChainElectricLineMesh_" + rayChainIndexStr, glm::vec3(), glm::vec3(), 1.0f, 2, 0.7f, 0.05f, electroRay_material);
+        "c_rayChainElectricLineMesh_" + rayChainIndexStr,
+        glm::vec3(),
+        glm::vec3(),
+        c_beamThickness,
+        c_beamCount,
+        c_beamJitter,
+        c_beamUpdateFrequency,
+        electroRay_material);
     const std::shared_ptr<IComponentCreatable>& meshComponentCreator
         = std::make_shared<ElectricBeamComponentCreator<DynamicBeamComponent>>();
     const auto& c_mesh
         = std::static_pointer_cast<DynamicBeamComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-    c_mesh->SetUpdateFrequency(0.05f);
-    c_mesh->SetJitterAmount(0.3f);
-    c_mesh->SetAnimationSpeed(2.0f);
+    c_mesh->SetUpdateFrequency(c_dynamicUpdateFrequency);
+    c_mesh->SetJitterAmount(c_dynamicJitterAmount);
+    c_mesh->SetAnimationSpeed(c_dynamicAnimationSpeed);
 
     TweenerParser tweenerParser;
     const auto& rayChainTweener = tweenerParser.ParseTweenerDescriptor("electroRayChain.tween");

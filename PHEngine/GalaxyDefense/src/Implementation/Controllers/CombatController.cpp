@@ -10,7 +10,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Implementation/Actors/BarrierActor.h"
-#include "Implementation/Actors/BlackHoleMissileActor.h"
+#include "Implementation/Actors/GravityBombMissileActor.h"
 #include "Implementation/Actors/FighterSpaceshipActor.h"
 #include "Implementation/Actors/PortalActor.h"
 #include "Implementation/DataProviders/GameConstants.h"

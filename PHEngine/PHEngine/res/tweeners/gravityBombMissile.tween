@@ -1,0 +1,296 @@
+<tweener>
+  <tweener_name>
+    name: "GravityBombMissile"
+  </tweener_name>
+
+  <states>
+    <state>
+      name: "s_FirstPhasePreload"
+    </state>
+    <state>
+      name: "s_FirstPhaseActiveCombat"
+    </state>
+    <state>
+      name: "s_Impact"
+    </state>
+    <state>
+      name: "s_GravityCapture"
+    </state>
+    <state>
+      name: "s_Collapse"
+    </state>
+    <state>
+      name: "s_Fade"
+    </state>
+    <state>
+      name: "s_GravityBombSuckIn"
+    </state>
+  </states>
+  <transitions>
+    <transition>
+      name: "t_Preload_To_ActiveCombat"
+      from_state: "s_FirstPhasePreload"
+      to_state: "s_FirstPhaseActiveCombat"
+      duration: "0.001"
+    </transition>
+    <transition>
+      name: "t_ActiveCombat_To_Impact"
+      from_state: "s_FirstPhaseActiveCombat"
+      to_state: "s_Impact"
+      duration: "0.001"
+    </transition>
+    <transition>
+      name: "t_Impact_To_GravityCapture"
+      from_state: "s_Impact"
+      to_state: "s_GravityCapture"
+      duration: "0.55"
+    </transition>
+    <transition>
+      name: "t_GravityCapture_To_Collapse"
+      from_state: "s_GravityCapture"
+      to_state: "s_Collapse"
+      duration: "2.6"
+    </transition>
+    <transition>
+      name: "t_Collapse_To_Fade"
+      from_state: "s_Collapse"
+      to_state: "s_Fade"
+      duration: "0.9"
+    </transition>
+    <transition>
+      name: "t_Fade_To_GravityBombSuckIn"
+      from_state: "s_Fade"
+      to_state: "s_GravityBombSuckIn"
+      duration: "1.6"
+    </transition>
+  </transitions>
+  <bindings>
+    <binding>
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+    </binding>
+    <binding>
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+    </binding>
+    <binding>
+      binding_name: "b_gravityBombSize"
+      type: "vec3"
+    </binding>
+    <binding>
+      binding_name: "b_gravityBombHitBoxSize"
+      type: "vec3"
+    </binding>
+  </bindings>
+  <properties>
+    <!-- s_FirstPhasePreload: everything idle -->
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhasePreload"
+    </property>
+    <property>
+      name: "p_gravityBomb_enable"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhasePreload"
+    </property>
+    <property>
+      name: "p_gravityBomb_size"
+      binding_name: "b_gravityBombSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhasePreload"
+    </property>
+    <property>
+      name: "p_gravityBombHitBox_size"
+      binding_name: "b_gravityBombHitBoxSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhasePreload"
+    </property>
+
+    <!-- s_FirstPhaseActiveCombat: missile flies, singularity not spawned yet -->
+    <property>
+      name: "p_actor_visibility_combat1"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+    <property>
+      name: "p_actor_visibility_preload1"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+    <property>
+      name: "p_gravityBomb_size"
+      binding_name: "b_gravityBombSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+    <property>
+      name: "p_gravityBombHitBox_size"
+      binding_name: "b_gravityBombHitBoxSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+
+    <!-- s_Impact: missile consumed, singularity spawns at zero size (grows over the Impact->GravityCapture transition) -->
+    <property>
+      name: "p_actor_visibility_impact_missile"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_Impact"
+    </property>
+    <property>
+      name: "p_actor_visibility_impact_gravityBomb"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_Impact"
+    </property>
+    <property>
+      name: "p_gravityBomb_size"
+      binding_name: "b_gravityBombSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_Impact"
+    </property>
+    <property>
+      name: "p_gravityBombHitBox_size"
+      binding_name: "b_gravityBombHitBoxSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_Impact"
+    </property>
+
+    <!-- s_GravityCapture: singularity at full size, gravity well active -->
+    <property>
+      name: "p_gravityBomb_size"
+      binding_name: "b_gravityBombSize"
+      type: "vec3"
+      value: "x=2.5;y=2.5;z=2.5;"
+      state: "s_GravityCapture"
+    </property>
+    <property>
+      name: "p_gravityBombHitBox_size"
+      binding_name: "b_gravityBombHitBoxSize"
+      type: "vec3"
+      value: "x=5.0;y=5.0;z=5.0;"
+      state: "s_GravityCapture"
+    </property>
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_GravityCapture"
+    </property>
+    <property>
+      name: "p_gravityBomb_enable"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_GravityCapture"
+    </property>
+
+    <!-- s_Collapse: hold full size through the capture window (GravityCapture->Collapse holds 5 -> 5) -->
+    <property>
+      name: "p_gravityBomb_size"
+      binding_name: "b_gravityBombSize"
+      type: "vec3"
+      value: "x=2.5;y=2.5;z=2.5;"
+      state: "s_Collapse"
+    </property>
+    <property>
+      name: "p_gravityBombHitBox_size"
+      binding_name: "b_gravityBombHitBoxSize"
+      type: "vec3"
+      value: "x=5.0;y=5.0;z=5.0;"
+      state: "s_Collapse"
+    </property>
+    <property>
+      name: "p_gravityBomb_enable"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_Collapse"
+    </property>
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_Collapse"
+    </property>
+
+    <!-- s_Fade: singularity collapses inward (Collapse->Fade compresses 5 -> 0.8) -->
+    <property>
+      name: "p_gravityBomb_size"
+      binding_name: "b_gravityBombSize"
+      type: "vec3"
+      value: "x=0.4;y=0.4;z=0.4;"
+      state: "s_Fade"
+    </property>
+    <property>
+      name: "p_gravityBombHitBox_size"
+      binding_name: "b_gravityBombHitBoxSize"
+      type: "vec3"
+      value: "x=0.8;y=0.8;z=0.8;"
+      state: "s_Fade"
+    </property>
+    <property>
+      name: "p_gravityBomb_enable"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_Fade"
+    </property>
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_Fade"
+    </property>
+
+    <!-- s_GravityBombSuckIn: singularity fades out to nothing (Fade->GravityBombSuckIn shrinks 0.8 -> 0) -->
+    <property>
+      name: "p_gravityBomb_size"
+      binding_name: "b_gravityBombSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_GravityBombSuckIn"
+    </property>
+    <property>
+      name: "p_gravityBombHitBox_size"
+      binding_name: "b_gravityBombHitBoxSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_GravityBombSuckIn"
+    </property>
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_GravityBombSuckIn"
+    </property>
+    <property>
+      name: "p_gravityBomb_enable"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_GravityBombSuckIn"
+    </property>
+  </properties>
+</tweener>

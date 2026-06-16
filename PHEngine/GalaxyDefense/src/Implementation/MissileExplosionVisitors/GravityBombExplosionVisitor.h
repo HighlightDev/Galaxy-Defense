@@ -11,9 +11,9 @@ class MissileActor;
 class SpaceshipActor;
 class SpaceObjectActor;
 
-class BlackHoleExplosionVisitor : public MissileExplosionVisitorBase {
+class GravityBombExplosionVisitor : public MissileExplosionVisitorBase {
 public:
-    BlackHoleExplosionVisitor(const std::shared_ptr<MissileActor>& ownerMissile);
+    GravityBombExplosionVisitor(const std::shared_ptr<MissileActor>& ownerMissile);
 
     virtual void StartExplosionForSpaceship(
         const std::shared_ptr<SpaceshipActor>& spaceship,

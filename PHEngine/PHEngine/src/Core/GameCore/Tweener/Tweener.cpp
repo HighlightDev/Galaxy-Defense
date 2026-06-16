@@ -167,7 +167,18 @@ void Tweener::ChangeState(const std::string& dstStateName)
 
 void Tweener::SubscribeOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer)
 {
-    mStateChangedObservers.emplace_back(observer);
+    const size_t ptrAddress = reinterpret_cast<size_t>(observer.get());
+    if (not mStateChangedObservers.contains(ptrAddress)) {
+        mStateChangedObservers.emplace(ptrAddress, observer);
+    }
+}
+
+void Tweener::UnsubscribeFromOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer)
+{
+    const size_t ptrAddress = reinterpret_cast<size_t>(observer.get());
+    if (mStateChangedObservers.contains(ptrAddress)) {
+        mStateChangedObservers.erase(ptrAddress);
+    }
 }
 
 void Tweener::SetParentActor(const std::shared_ptr<Actor>& parent)
@@ -201,17 +212,18 @@ void Tweener::NotifyStateChangedObservers()
         // causing subsequent observers to receive the wrong (new) state name.
         const std::string stateName = mChangedStateName;
 
-        // Purge expired observers so the list does not grow unbounded.
-        mStateChangedObservers.erase(
-            std::remove_if(
-                mStateChangedObservers.begin(),
-                mStateChangedObservers.end(),
-                [](const std::weak_ptr<ITweenStateChangeNotifyable>& wp) { return wp.expired(); }),
-            mStateChangedObservers.end());
+        // Purge expired observers so the map does not grow unbounded.
+        for (auto it = mStateChangedObservers.begin(); it != mStateChangedObservers.end();) {
+            if (it->second.expired()) {
+                it = mStateChangedObservers.erase(it);
+            } else {
+                ++it;
+            }
+        }
 
-        for (const auto& observerWp : mStateChangedObservers) {
+        for (const auto& [ptrAddress, observerWp] : mStateChangedObservers) {
             if (const auto& observerSp = observerWp.lock()) {
-                observerSp->OnTweenStateChanged(mChangedStateName);
+                observerSp->OnTweenStateChanged(stateName);
             }
         }
     }

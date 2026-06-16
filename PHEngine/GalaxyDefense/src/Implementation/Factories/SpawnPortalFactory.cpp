@@ -8,6 +8,7 @@
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Implementation/Actors/PortalActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 
 using namespace Resources;
 using namespace EngineCore;
@@ -23,6 +24,8 @@ std::shared_ptr<PortalActor> SpawnPortalFactory::CreatePortal(
     const glm::vec3& scale,
     const float billboardSize)
 {
+    using namespace Constants::SpawnPortal;
+
     const auto& portalIndexStr = std::to_string(s_portalCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_portal_root_" + portalIndexStr, translation, glm::vec3(0), glm::vec3(1), true);
@@ -40,7 +43,7 @@ std::shared_ptr<PortalActor> SpawnPortalFactory::CreatePortal(
         "c_billboard_portal", billboardSize, true, glm::vec3(), 0.0f, false, glm::vec3(1.0f), billboard_material);
     const auto& portalComponent
         = std::static_pointer_cast<BillboardComponent>(scene->CreateComponent_GameThread(portalComponentCreator, data));
-    portalComponent->SetSortOrderValue(-1000);
+    portalComponent->SetSortOrderValue(c_sortOrderValue);
     portalComponent->SetDepthWriteMaskEnabled(false);
     a_portal->AddComponent(portalComponent);
 

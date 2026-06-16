@@ -26,6 +26,7 @@
 #include "Implementation/Actors/AsteroidActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Controllers/AiActorController.h"
+#include "Implementation/DataProviders/GameConstants.h"
 
 using namespace Resources;
 using namespace EngineCore;
@@ -40,6 +41,8 @@ std::shared_ptr<SpaceObjectActor> AsteroidFactory::CreateSpaceObject(
     const glm::vec3& rotation,
     const glm::vec3& scale)
 {
+    using namespace Constants::Asteroid;
+
     const auto& asteroidIndexStr = std::to_string(s_asteroidCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_asteroid_root_" + asteroidIndexStr, translation, glm::vec3(0), glm::vec3(1), true);
@@ -59,7 +62,7 @@ std::shared_ptr<SpaceObjectActor> AsteroidFactory::CreateSpaceObject(
     const auto& normal_tex = TexturePool::GetInstance()->GetOrAllocateResource(normalName);
     const auto& roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughnessName);
     const auto& metallic_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallicName);
-    const float uvScale = 1.0f;
+    const float uvScale = c_uvScale;
 
     MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "albedo", albedo_tex);
     MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "normalMap", normal_tex);
@@ -79,12 +82,12 @@ std::shared_ptr<SpaceObjectActor> AsteroidFactory::CreateSpaceObject(
     const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
     const auto& c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(
         scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
-    c_movement->SetReferenceSpeed(5.0f);
+    c_movement->SetReferenceSpeed(c_speed);
     c_movement->SetCurrentSpeedToReferenceValue();
-    c_movement->SetDirection(glm::vec3(1.0f, .0f, 0.0f));
+    c_movement->SetDirection(c_movementDirection);
     a_asteroid->AddComponent(c_movement);
 
-    const auto& sphereShape = std::make_shared<CollisionSphereShape>(3.0f);
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(c_colliderRadius);
     const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
     const auto& c_ghostPhysics = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(

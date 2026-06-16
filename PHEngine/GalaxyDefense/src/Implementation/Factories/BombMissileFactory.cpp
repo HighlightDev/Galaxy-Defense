@@ -24,6 +24,7 @@
 #include "Implementation/Actors/BombMissileActor.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Controllers/AiActorController.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 using namespace Resources;
@@ -40,6 +41,8 @@ std::shared_ptr<MissileActor> BombMissileFactory::CreateMissile(
     const glm::vec3& rotation,
     const glm::vec3& scale)
 {
+    using namespace Constants::BombMissile;
+
     const auto& shipBulletIndexStr = std::to_string(s_bombBulletCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_bombMissile_rootComponent_" + shipBulletIndexStr, translation, rotation, scale, true);
@@ -60,7 +63,7 @@ std::shared_ptr<MissileActor> BombMissileFactory::CreateMissile(
     const auto& normal_tex = TexturePool::GetInstance()->GetOrAllocateResource(normalName);
     const auto& roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughnessName);
     const auto& metallic_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallicName);
-    const float uvScale = 0.5f;
+    const float uvScale = c_uvScale;
 
     MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "albedo", albedo_tex);
     MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "normalMap", normal_tex);
@@ -68,10 +71,10 @@ std::shared_ptr<MissileActor> BombMissileFactory::CreateMissile(
     MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
     MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
     MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, scene->GetMainCamera(), "CameraPosition", "cameraPosition");
-    MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "outlineColor", glm::vec3(1.0f, 0.0f, 0.0f));
+    MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "outlineColor", c_outlineColor);
 
     const auto d_mesh = std::make_shared<MeshComponentData>(
-        "c_bombMissileMesh_" + shipBulletIndexStr, "missile1_model.fbx", glm::vec3(0), glm::vec3(0), glm::vec3(1.5), pbs_mat);
+        "c_bombMissileMesh_" + shipBulletIndexStr, "missile1_model.fbx", glm::vec3(0), glm::vec3(0), glm::vec3(c_meshScale), pbs_mat);
     const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
     const auto& c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
     a_missile->AddComponent(c_mesh);
@@ -81,7 +84,7 @@ std::shared_ptr<MissileActor> BombMissileFactory::CreateMissile(
     const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
     const auto& c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(
         scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
-    c_movement->SetReferenceSpeed(100.0f);
+    c_movement->SetReferenceSpeed(c_speed);
     c_movement->SetCurrentSpeedToReferenceValue();
     c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
     a_missile->AddComponent(c_movement);
@@ -90,10 +93,10 @@ std::shared_ptr<MissileActor> BombMissileFactory::CreateMissile(
     const auto& c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(
         soundComponentCreator, std::make_shared<ComponentData>("c_bombMissileSound_" + shipBulletIndexStr)));
     c_sound->CreateSoundBuffer("explosion1.ogg", "explosion");
-    c_sound->GetSoundSource()->SetGain(0.2f);
+    c_sound->GetSoundSource()->SetGain(c_soundGain);
     a_missile->AddComponent(c_sound);
 
-    const auto& sphereShape = std::make_shared<CollisionSphereShape>(3.0f);
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(c_colliderRadius);
     const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
     const auto& physData = std::make_shared<PhysicsComponentData>("c_bombMissilePhysics_" + shipBulletIndexStr, ghostController);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();

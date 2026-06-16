@@ -32,6 +32,14 @@ ElectroRayChainActor::ElectroRayChainActor(
     AddEngineProperty(mOpacity);
 }
 
+void ElectroRayChainActor::CleanUp()
+{
+    if (mFadeoutTweener) {
+        mFadeoutTweener->UnsubscribeFromOnStateChange(std::dynamic_pointer_cast<ElectroRayChainActor>(shared_from_this()));
+    }
+    MissileActor::CleanUp();
+}
+
 void ElectroRayChainActor::AttachTweener(std::shared_ptr<Tweener> tweener)
 {
     ext_assert(tweener, "ElectroRayChainActor tweener pointer is null");

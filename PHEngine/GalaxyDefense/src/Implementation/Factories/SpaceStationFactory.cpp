@@ -28,6 +28,8 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     const glm::vec3& rotation,
     const glm::vec3& scale) const
 {
+    using namespace Constants::SpaceStation;
+
     static int32_t index = 0;
     const auto& towerActor = std::make_shared<SpaceStationActor>(
         towerName, std::make_shared<SceneComponent>("c_root_" + towerName, translation, glm::vec3(), glm::vec3(1), true));
@@ -48,7 +50,7 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "normalMap", normal_tex);
     MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "roughnessMap", roughness_tex);
     MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "metallicMap", metallic_tex);
-    MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "uvScale", 1.0f);
+    MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "uvScale", c_uvScale);
     scene->RegisterMaterialInstance(towerMaterialPrefab);
 
     const auto& d_mesh = std::make_shared<MeshComponentData>(
@@ -60,7 +62,7 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     c_mesh->SetOutlineThickness(Game::Constants::c_outlineThickness);
     towerActor->SetMainMeshComponent(c_mesh);
 
-    const auto& sphereShape = std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f);
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(glm::length(scale) * c_colliderRadiusMultiplier);
     const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
     const auto physData = std::make_shared<PhysicsComponentData>("c_physics_" + towerName, ghostController);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
@@ -70,7 +72,7 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     towerActor->AddComponent(c_ghostPhysics);
 
     const auto& radiusMeshMaterial = materialParser.ParseMaterialDescriptor("SpaceStationRadiusMarkerMaterial.m");
-    MaterialPropertySetter::SetMaterialPropertyValue(radiusMeshMaterial, "color", glm::vec3(0.0, 0.2, 1.0));
+    MaterialPropertySetter::SetMaterialPropertyValue(radiusMeshMaterial, "color", c_radiusMarkerColor);
     MaterialPropertySetter::SetMaterialPropertyValue(radiusMeshMaterial, towerActor, "p_shootRadius", "b_ShootRadius");
     MaterialPropertySetter::SetMaterialPropertyValue(
         radiusMeshMaterial, towerActor->GetRootComponent(), "p_translation", "p_spacestation_translation");
@@ -79,7 +81,7 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     const auto& d_radiusMesh = std::make_shared<MeshComponentData>(
         "c_radiusMesh_" + towerName,
         "plane.obj",
-        glm::vec3(0, -2 - (index * 0.01f), 0),
+        glm::vec3(0.0f, c_radiusMeshBaseY - (index * c_radiusMeshIndexYStep), 0.0f),
         glm::vec3(),
         glm::vec3(1.0f),
         radiusMeshMaterial,
@@ -87,7 +89,7 @@ std::shared_ptr<SpaceStationActor> SpaceStationFactory::CreateSpaceStation(
     meshComponentCreator->SetIsDeferredShaderUsed(false);
     const auto& c_radiusMesh
         = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_radiusMesh));
-    c_radiusMesh->SetSortOrderValue(-100 - index);
+    c_radiusMesh->SetSortOrderValue(c_radiusMeshSortOrderBase - index);
     towerActor->SetRadiusMarkerComponent(c_radiusMesh);
 
     scene->AddActor(towerActor);

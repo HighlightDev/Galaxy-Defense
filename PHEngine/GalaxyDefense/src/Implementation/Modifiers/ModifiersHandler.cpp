@@ -72,11 +72,17 @@ std::shared_ptr<IModifiable> ModifiersHandler::GetModifier(const eModifierType m
 
 void ModifiersHandler::RemoveModifier(const eModifierType modifierType, const int32_t creatorObjectId)
 {
-    auto removeIt = std::remove_if(mModifiers.begin(), mModifiers.end(), [=](const auto& modifier) {
+    const auto matches = [=](const auto& modifier) {
         return (modifierType == modifier->GetModifierType() && creatorObjectId == modifier->CreatorObjectId());
-    });
-    if (mModifiers.end() != removeIt) {
-        mModifiers.erase(removeIt, mModifiers.end());
+    };
+
+    for (const auto& modifier : mModifiers) {
+        if (matches(modifier)) {
+            modifier->OnPreRemoved();
+        }
     }
+
+    const auto removeIt = std::remove_if(mModifiers.begin(), mModifiers.end(), matches);
+    mModifiers.erase(removeIt, mModifiers.end());
 }
 } // namespace Game

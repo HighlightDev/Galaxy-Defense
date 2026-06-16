@@ -5,7 +5,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/GameCore/Scene.h"
 #include "Implementation/Actors/BarrierActor.h"
-#include "Implementation/Actors/BlackHoleMissileActor.h"
+#include "Implementation/Actors/GravityBombMissileActor.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
 #include "Implementation/Actors/LootActor.h"
 #include "Implementation/Actors/MissileActor.h"
@@ -15,7 +15,7 @@
 #include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/Factories/BarrierFactory.h"
-#include "Implementation/Factories/BlackHoleMissileFactory.h"
+#include "Implementation/Factories/GravityBombMissileFactory.h"
 #include "Implementation/Factories/BombMissileFactory.h"
 #include "Implementation/Factories/ElectroRayChainFactory.h"
 #include "Implementation/Factories/ElectroRayFactory.h"
@@ -261,7 +261,7 @@ std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByTyp
     case eMissileType::ELECTRO_RAY:
         return std::make_unique<ElectroRayFactory>();
     case eMissileType::BLACK_HOLE:
-        return std::make_unique<BlackHoleMissileFactory>();
+        return std::make_unique<GravityBombMissileFactory>();
     case eMissileType::FREEZING_RAY:
         return std::make_unique<FreezingRayFactory>();
     default:
@@ -407,12 +407,12 @@ CombatActorsPoolHandler::GetMissilePhysicsComponents(const std::unordered_set<eM
         if (missileTypes.contains(missileType)
             && (missileType != eMissileType::FREEZING_RAY && missileType != eMissileType::ELECTRO_RAY)) {
             if (eMissileType::BLACK_HOLE == missileType) {
-                const auto& blackHoleMissile = std::static_pointer_cast<BlackHoleMissileActor>(missile);
+                const auto& gravityBombMissile = std::static_pointer_cast<GravityBombMissileActor>(missile);
                 ext_assert(
-                    physicsComponents.emplace_back(blackHoleMissile->GetCombatActivePhaseActor()->GetPhysicsComponent()),
+                    physicsComponents.emplace_back(gravityBombMissile->GetCombatActivePhaseActor()->GetPhysicsComponent()),
                     "Failed to get combat active phase physics component in GetMissilePhysicsComponents");
                 ext_assert(
-                    physicsComponents.emplace_back(blackHoleMissile->GetExplosionPhaseActor()->GetPhysicsComponent()),
+                    physicsComponents.emplace_back(gravityBombMissile->GetExplosionPhaseActor()->GetPhysicsComponent()),
                     "Failed to get explosion phase physics component in GetMissilePhysicsComponents");
             } else {
                 ext_assert(

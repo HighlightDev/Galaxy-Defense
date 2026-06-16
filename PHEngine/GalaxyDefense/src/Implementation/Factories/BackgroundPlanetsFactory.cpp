@@ -29,6 +29,7 @@
 #include "Implementation/Actors/BackgroundSpaceObjectActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Controllers/AiActorController.h"
+#include "Implementation/DataProviders/GameConstants.h"
 
 using namespace Resources;
 using namespace EngineCore;
@@ -45,6 +46,8 @@ std::shared_ptr<BackgroundSpaceObjectActor> BackgroundPlanetsFactory::CreateSpac
     const std::string& imageName,
     const float billboardSize)
 {
+    using namespace Constants::BackgroundPlanets;
+
     const auto& backgroundPlanetIndexStr = std::to_string(s_backgroundPlanetCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_backgroundPlanet_root_" + backgroundPlanetIndexStr, translation, glm::vec3(0), glm::vec3(1), true);
@@ -72,7 +75,7 @@ std::shared_ptr<BackgroundSpaceObjectActor> BackgroundPlanetsFactory::CreateSpac
         billboard_material);
     const auto& billboardComponent
         = std::static_pointer_cast<BillboardComponent>(scene->CreateComponent_GameThread(billboardComponentCreator, data));
-    billboardComponent->SetSortOrderValue(-10000);
+    billboardComponent->SetSortOrderValue(c_sortOrderValue);
     a_backgroundPlanet->AddComponent(billboardComponent);
 
     const auto d_movement = std::make_shared<MovementComponentData>(
@@ -80,9 +83,9 @@ std::shared_ptr<BackgroundSpaceObjectActor> BackgroundPlanetsFactory::CreateSpac
     const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
     const auto& c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(
         scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
-    c_movement->SetReferenceSpeed(8.5f);
+    c_movement->SetReferenceSpeed(c_speed);
     c_movement->SetCurrentSpeedToReferenceValue();
-    c_movement->SetDirection(glm::vec3(0.0f, .0f, -1.0f));
+    c_movement->SetDirection(c_movementDirection);
     a_backgroundPlanet->AddComponent(c_movement);
 
     scene->AddActorController(std::make_shared<AiActorController>(a_backgroundPlanet));

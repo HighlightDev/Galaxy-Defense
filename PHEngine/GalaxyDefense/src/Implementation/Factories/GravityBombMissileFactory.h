@@ -11,11 +11,11 @@ namespace Game {
 class MissileActor;
 class CombatActorsPoolHandler;
 
-class BlackHoleMissileFactory : public IMissileFactory {
-    static size_t s_blackHoleMissileCounter;
+class GravityBombMissileFactory : public IMissileFactory {
+    static size_t s_gravityBombMissileCounter;
 
 public:
-    BlackHoleMissileFactory() = default;
+    GravityBombMissileFactory() = default;
 
     virtual std::shared_ptr<MissileActor> CreateMissile(
         const std::shared_ptr<::EngineCore::Scene>& scene,

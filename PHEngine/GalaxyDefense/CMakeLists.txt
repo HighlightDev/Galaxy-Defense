@@ -56,7 +56,7 @@ set(HEADERS
     src/Implementation/Factories/FighterSpaceShipFactory.h
     src/Implementation/Factories/BombMissileFactory.h
     src/Implementation/Factories/FreezingMissileFactory.h
-    src/Implementation/Factories/BlackHoleMissileFactory.h
+    src/Implementation/Factories/GravityBombMissileFactory.h
     src/Implementation/Factories/AsteroidFactory.h
     src/Implementation/Factories/BackgroundPlanetsFactory.h
     src/Implementation/Factories/ElectroRayFactory.h
@@ -82,7 +82,7 @@ set(HEADERS
     src/Implementation/Actors/MissileActor.h
     src/Implementation/Actors/BombMissileActor.h
     src/Implementation/Actors/FreezingMissileActor.h
-    src/Implementation/Actors/BlackHoleMissileActor.h
+    src/Implementation/Actors/GravityBombMissileActor.h
     src/Implementation/Actors/SpaceshipActor.h
     src/Implementation/Actors/WeakSpaceshipActor.h
     src/Implementation/Actors/FighterSpaceshipActor.h
@@ -96,7 +96,7 @@ set(HEADERS
     src/Implementation/Actors/PortalActor.h
     src/Implementation/Actors/LootActor.h
     src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h
-    src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h
+    src/Implementation/MissileExplosionVisitors/GravityBombExplosionVisitor.h
     src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
     src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h
@@ -174,7 +174,7 @@ set(SOURCES
     src/Implementation/Factories/FighterSpaceShipFactory.cpp
     src/Implementation/Factories/BombMissileFactory.cpp
     src/Implementation/Factories/FreezingMissileFactory.cpp
-    src/Implementation/Factories/BlackHoleMissileFactory.cpp
+    src/Implementation/Factories/GravityBombMissileFactory.cpp
     src/Implementation/Factories/AsteroidFactory.cpp
     src/Implementation/Factories/BackgroundPlanetsFactory.cpp
     src/Implementation/Factories/ElectroRayFactory.cpp
@@ -198,7 +198,7 @@ set(SOURCES
     src/Implementation/Actors/MissileActor.cpp
     src/Implementation/Actors/BombMissileActor.cpp
     src/Implementation/Actors/FreezingMissileActor.cpp
-    src/Implementation/Actors/BlackHoleMissileActor.cpp
+    src/Implementation/Actors/GravityBombMissileActor.cpp
     src/Implementation/Actors/SpaceshipActor.cpp
     src/Implementation/Actors/WeakSpaceshipActor.cpp
     src/Implementation/Actors/FighterSpaceshipActor.cpp
@@ -212,7 +212,7 @@ set(SOURCES
     src/Implementation/Actors/PortalActor.cpp
     src/Implementation/Actors/LootActor.cpp
     src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.cpp
-    src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.cpp
+    src/Implementation/MissileExplosionVisitors/GravityBombExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.cpp

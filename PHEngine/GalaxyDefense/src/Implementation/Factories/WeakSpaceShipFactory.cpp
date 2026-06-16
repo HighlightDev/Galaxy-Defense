@@ -44,6 +44,7 @@
 #include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
 #include "Implementation/Components/UiComponents/SpaceObjectUiComponent.h"
 #include "Implementation/Controllers/AiActorController.h"
+#include "Implementation/DataProviders/GameConstants.h"
 
 using namespace Resources;
 using namespace EngineCore;
@@ -59,7 +60,9 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     const glm::vec3& scale,
     const int32_t textFontSize)
 {
-    const uint32_t health = static_cast<uint32_t>(Random::Float() * 10) + 20;
+    using namespace Constants::WeakSpaceShip;
+
+    const uint32_t health = static_cast<uint32_t>(Random::Float() * c_healthRandomRange) + c_healthBase;
 
     const auto& enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
@@ -80,7 +83,7 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         const auto& normal_tex = TexturePool::GetInstance()->GetOrAllocateResource("spaceship_normal.jpg");
         const auto& roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource("spaceship_roughness.jpg");
         const auto& metallic_tex = TexturePool::GetInstance()->GetOrAllocateResource("spaceship_metallic.jpg");
-        const float uvScale = 1.0f;
+        const float uvScale = c_uvScale;
 
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "albedo", albedo_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "normalMap", normal_tex);
@@ -118,11 +121,11 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<OnRouteMovementComponent>>();
     const auto& c_movement
         = std::static_pointer_cast<OnRouteMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
-    c_movement->SetReferenceSpeed(10.0f);
+    c_movement->SetReferenceSpeed(c_speed);
     c_movement->SetCurrentSpeedToReferenceValue();
     a_enemySpaceship->AddComponent(c_movement);
 
-    const auto& sphereShape = std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f);
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(glm::length(scale) * c_colliderRadiusMultiplier);
     const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
     const auto physData
         = std::make_shared<PhysicsComponentData>("c_spaceShipPhysicsComponent_" + enemyShipIndexStr, ghostController);
@@ -135,36 +138,36 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     MaterialParser materialParser;
     const std::shared_ptr<IMaterial>& particles_mat = materialParser.ParseMaterialDescriptor("OpaqueParticleMaterial.m");
     scene->RegisterMaterialInstance(particles_mat);
-    MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacity", 1.0f);
-    MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "clipRadius", 0.35f);
+    MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacity", c_particleOpacity);
+    MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "clipRadius", c_particleClipRadius);
 
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
-        "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), 500, false);
+        "c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), c_particleCount, false);
 
     d_particle->emitterData = std::make_shared<ParticleEmitterData>();
     d_particle->emitterData->emitterType = "explosion";
-    d_particle->emitterData->radius = 5.0f;
-    d_particle->emitterData->thetaSlicesCount = 10;
+    d_particle->emitterData->radius = c_emitRadius;
+    d_particle->emitterData->thetaSlicesCount = c_thetaSlices;
 
     d_particle->lifeTimeData = std::make_shared<LifeTimeModuleData>();
     d_particle->lifeTimeData->moduleType = "simple";
-    d_particle->lifeTimeData->lifeTime = 2.5f;
+    d_particle->lifeTimeData->lifeTime = c_particleLifeTime;
 
     d_particle->colorData = std::make_shared<ColorModuleData>();
     d_particle->colorData->moduleType = "simple";
-    d_particle->colorData->colorBegin = glm::vec4(1.0f, 0.7f, 0.2f, 1.0f);
-    d_particle->colorData->colorEnd = glm::vec4(1.0f, 0.2f, 0.02f, 1.0f);
+    d_particle->colorData->colorBegin = c_particleColorBegin;
+    d_particle->colorData->colorEnd = c_particleColorEnd;
 
     d_particle->sizeData = std::make_shared<SizeModuleData>();
     d_particle->sizeData->moduleType = "simple";
-    d_particle->sizeData->sizeBegin = 0.4f;
-    d_particle->sizeData->sizeEnd = 0.1f;
+    d_particle->sizeData->sizeBegin = c_particleSizeBegin;
+    d_particle->sizeData->sizeEnd = c_particleSizeEnd;
 
     d_particle->velocityModules.push_back(std::make_shared<VelocityModuleData>());
     d_particle->velocityModules.back()->moduleType = "simple";
-    d_particle->velocityModules.back()->velocityDirection = glm::vec3(0, -0.5f, 0);
+    d_particle->velocityModules.back()->velocityDirection = c_particleVelocityDirection;
     d_particle->velocityModules.back()->velocityDeviation = glm::vec3(0.0f, 0.0f, 0.0f);
-    d_particle->velocityModules.back()->speed = 15.0f;
+    d_particle->velocityModules.back()->speed = c_particleVelocitySpeed;
 
     const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<GpuParticleSystemComponent>>();
     const auto& c_particleSystemComponent = std::static_pointer_cast<GpuParticleSystemComponent>(
@@ -176,10 +179,10 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         "c_light_" + enemyShipIndexStr,
         glm::vec3(),
         glm::vec3(),
-        100.0f,
-        glm::vec3(0.0, 0.0, 0.0),
-        glm::vec3(0.4, 0.1, 0.1),
-        glm::vec3(0.4, 0.4, 0.4),
+        c_lightRadius,
+        c_lightAmbient,
+        c_lightDiffuse,
+        c_lightSpecular,
         nullptr,
         true,
         true);
@@ -200,8 +203,8 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
         "JetBrainsMono-VariableFont_wght",
         textFontSize,
         "",
-        glm::vec3(1.0f, 0.0f, 0.0f),
-        glm::ivec2(50),
+        c_uiTextColor,
+        c_uiPadding,
         eTextHorizontalAlignmentType::CENTER,
         eTextVerticalAlignmentType::CENTER);
 
@@ -215,9 +218,9 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     const auto d_engineMesh = std::make_shared<InstancedMeshComponentData>(
         "c_weak_mesh_engine" + enemyShipIndexStr,
         "ufo.obj",
-        glm::vec3(0, -0.05f, 1.2f),
-        glm::vec3(90, 0, 0.0f),
-        glm::vec3(0.2f, 1.1f, 0.2f),
+        c_engineMeshPosition,
+        c_engineMeshRotation,
+        c_engineMeshScale,
         engineMaterial);
 
     const auto& engineComponent = std::static_pointer_cast<InstancedStaticMeshComponent>(

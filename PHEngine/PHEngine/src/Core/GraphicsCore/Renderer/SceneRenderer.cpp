@@ -271,7 +271,10 @@ void SceneRenderer::DepthPrePass(const std::shared_ptr<SceneView>& sceneView)
         mNonSkeletalProxiesVec.cbegin(),
         mNonSkeletalProxiesVec.cend(),
         std::back_inserter(visibleNonSkeletalProxies),
-        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
 
     std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
     visibleSkeletalProxies.reserve(mSkeletalProxiesVec.size());
@@ -279,7 +282,10 @@ void SceneRenderer::DepthPrePass(const std::shared_ptr<SceneView>& sceneView)
         mSkeletalProxiesVec.cbegin(),
         mSkeletalProxiesVec.cend(),
         std::back_inserter(visibleSkeletalProxies),
-        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
 
     if (!visibleNonSkeletalProxies.empty()) {
         PrimitiveSorter sorter;
@@ -341,7 +347,10 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
             mNonSkeletalProxiesVec.cbegin(),
             mNonSkeletalProxiesVec.cend(),
             std::back_inserter(visibleNonSkeletalProxies),
-            [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
+            [&sceneView](const auto& proxy) {
+                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+            });
 
         std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
         visibleSkeletalProxies.reserve(mSkeletalProxiesVec.size());
@@ -349,7 +358,10 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
             mSkeletalProxiesVec.cbegin(),
             mSkeletalProxiesVec.cend(),
             std::back_inserter(visibleSkeletalProxies),
-            [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
+            [&sceneView](const auto& proxy) {
+                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+            });
 
         for (auto& atlasLightGroup : mGroupedByShadowAtlasLights) {
             bool bNewDepthShadowAtlas = true;
@@ -599,13 +611,19 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
         mNonSkeletalProxiesVec.cbegin(),
         mNonSkeletalProxiesVec.cend(),
         std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
 
     std::copy_if(
         mSkeletalProxiesVec.cbegin(),
         mSkeletalProxiesVec.cend(),
         std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
 
     if (visibleProxies.size() > 0) {
         for (auto& proxy : visibleProxies) {
@@ -767,7 +785,8 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
             renderState.BindRenderState();
         }
 
-        if (sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId())) {
+        if (proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+            && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId())) {
             const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
                                                                            : EngineConstants::eStencilValues::SCENE_DEFAULT;
             renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, stencilFuncRefValue, 0xFF);
@@ -794,13 +813,19 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
         mNonSkeletalProxiesVec.cbegin(),
         mNonSkeletalProxiesVec.cend(),
         std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
 
     std::copy_if(
         mSkeletalProxiesVec.cbegin(),
         mSkeletalProxiesVec.cend(),
         std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) { return sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()); });
+        [&sceneView](const auto& proxy) {
+            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+        });
 
     if (visibleProxies.empty()) {
         return;

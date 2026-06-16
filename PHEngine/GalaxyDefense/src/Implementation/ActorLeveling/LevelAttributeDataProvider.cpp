@@ -14,7 +14,7 @@ int32_t LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(const eMiss
         {eMissileType::BOMB, {1000, 900, 800, 700, 600}},
         {eMissileType::FREEZING_BOMB, {1200, 1100, 1000, 900, 800}},
         {eMissileType::ELECTRO_RAY, {3000, 2900, 2800, 2700, 2400}},
-        {eMissileType::BLACK_HOLE, {5000, 4500, 4000, 3500, 3000}},
+        {eMissileType::BLACK_HOLE, {6500, 4500, 4000, 3500, 3000}},
         {eMissileType::FREEZING_RAY, {1500, 1400, 1300, 1200, 1100}},
     };
 

@@ -24,6 +24,7 @@
 #include "Implementation/Actors/FreezingRayActor.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Controllers/AiActorController.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 using namespace Resources;
@@ -40,6 +41,8 @@ std::shared_ptr<MissileActor> FreezingRayFactory::CreateMissile(
     const glm::vec3& rotation,
     const glm::vec3& scale)
 {
+    using namespace Constants::FreezingRay;
+
     const auto& rayIndexStr = std::to_string(s_rayCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_freezingRay_rootComponent_" + rayIndexStr, translation, rotation, scale, true);
@@ -52,12 +55,19 @@ std::shared_ptr<MissileActor> FreezingRayFactory::CreateMissile(
     const std::shared_ptr<IMaterial>& electroRay_material = materialParser.ParseMaterialDescriptor("ElectroBeamMaterial.m");
     scene->RegisterMaterialInstance(electroRay_material);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "noise", noiseTex);
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamGlowColor", glm::vec3(0.8, 0.2, 1.0));
-    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamMainColor", glm::vec3(0.4, 0.2, 1.0));
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamGlowColor", c_beamGlowColor);
+    MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, "beamMainColor", c_beamMainColor);
     MaterialPropertySetter::SetMaterialPropertyValue(electroRay_material, scene, "GT_DeltaSec", "gt_timeSec");
 
     const auto d_mesh = std::make_shared<ElectricBeamComponentData>(
-        "c_runtimeElectricMesh_" + rayIndexStr, glm::vec3(), glm::vec3(), 1.0f, 2, 0.2f, 0.1f, electroRay_material);
+        "c_runtimeElectricMesh_" + rayIndexStr,
+        glm::vec3(),
+        glm::vec3(),
+        c_beamThickness,
+        c_beamCount,
+        c_beamJitter,
+        c_beamUpdateFrequency,
+        electroRay_material);
     const std::shared_ptr<IComponentCreatable>& meshComponentCreator
         = std::make_shared<ElectricBeamComponentCreator<DynamicBeamComponent>>();
     const auto& c_mesh

@@ -43,7 +43,7 @@ class Tweener : public ITickable {
 
     bool bIsStateChangedDirty;
     std::string mChangedStateName;
-    std::vector<std::weak_ptr<ITweenStateChangeNotifyable>> mStateChangedObservers;
+    std::unordered_map<size_t, std::weak_ptr<ITweenStateChangeNotifyable>> mStateChangedObservers;
 
 public:
     Tweener(
@@ -58,9 +58,11 @@ public:
 
     void Tick(const float deltaTimeSec) override;
 
-    void UnpausableTick(const float deltaTimeSec) override{};
+    void UnpausableTick(const float deltaTimeSec) override { };
 
     void SubscribeOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer);
+
+    void UnsubscribeFromOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer);
 
     std::shared_ptr<State> GetCurrentState() const;
 

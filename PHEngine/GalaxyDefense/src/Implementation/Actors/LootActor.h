@@ -35,6 +35,8 @@ class LootActor : public Actor, public ITweenStateChangeNotifyable {
 public:
     LootActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
+    void CleanUp() override;
+
     void Tick(const float deltaTimeSec) override;
 
     eLootCategory GetLootCategory() const;
