@@ -18,6 +18,7 @@
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
+#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
@@ -462,6 +463,78 @@ void Scene::UnpausableTick(const float deltaTimeSec)
     }
 
     mUiHandler->UnpausableTick(deltaTimeSec);
+
+    // Ship all primitive transforms moved this frame as a single batched render-thread job.
+    FlushPrimitiveTransformUpdates();
+}
+
+void Scene::EnqueuePrimitiveTransformUpdate(
+    const int32_t primitiveSceneProxyId,
+    const glm::mat4& worldMatrix,
+    const glm::mat4& outlineMatrix,
+    const BoundingBox3D& transformedBoundingBox,
+    const glm::vec3& originPosition)
+{
+    // Game-thread only: last write per proxy in a frame wins.
+    mPendingPrimitiveTransforms[primitiveSceneProxyId]
+        = PendingPrimitiveTransform{worldMatrix, outlineMatrix, transformedBoundingBox, originPosition};
+}
+
+void Scene::FlushPrimitiveTransformUpdates()
+{
+    if (mPendingPrimitiveTransforms.empty()) {
+        return;
+    }
+
+    static const uint64_t functionId = Hash("Scene::FlushPrimitiveTransformUpdates");
+    m_interThreadMgr.ExecuteOnRenderThread(
+        eEnqueueJobPolicy::PUSH_ANYWAY,
+        0,
+        functionId,
+        [updates = std::move(mPendingPrimitiveTransforms)](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+            const auto sceneRenderer = sceneRendererWp.lock();
+            if (!sceneRenderer) {
+                return;
+            }
+
+            bool bDeferredMoved = false;
+            bool bForwardMoved = false;
+            for (const auto& [proxyId, update] : updates) {
+                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(proxyId);
+                if (!primitiveSp) {
+                    continue;
+                }
+                primitiveSp->SetWorldMatrix(update.worldMatrix);
+                primitiveSp->SetOutlineMatrix(update.outlineMatrix);
+                primitiveSp->SetTransformedBoundingBox(update.transformedBoundingBox);
+                primitiveSp->SetOriginPosition(update.originPosition);
+
+                if (primitiveSp->IsDeferred()) {
+                    bDeferredMoved = true;
+                } else {
+                    bForwardMoved = true;
+                }
+
+                // Moved proxy: invalidate its cached frustum-visibility for every view (synchronous on the render thread).
+                sceneRenderer->ResetPrimitiveFrustumTestResult(proxyId);
+            }
+
+            // A move only changes the distance/plane sort *order* of the providers, which is an early-Z heuristic — not
+            // membership. Flag it as "moved" (not "dirty") so the distance-ordered providers refresh their order
+            // periodically instead of every frame (see SceneRenderer::SortSceneProxies).
+            if (bDeferredMoved) {
+                sceneRenderer->SetDeferredPrimitivesMoved(true);
+            }
+            if (bForwardMoved) {
+                sceneRenderer->SetForwardPrimitivesMoved(true);
+            }
+        });
+
+    // std::move left the map in an unspecified state; restore a defined empty one for the next frame.
+    mPendingPrimitiveTransforms.clear();
 }
 
 void Scene::ProcessEvent(

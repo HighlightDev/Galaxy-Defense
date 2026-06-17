@@ -29,6 +29,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "RenderPassProxies.h"
 
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -48,12 +49,16 @@ using namespace EngineCore::DataProviders;
 using namespace IO;
 using namespace EngineCore::GUI;
 
-namespace Graphics {
-namespace Renderer {
+namespace Graphics::Renderer {
 SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
-    : bPrimitiveProxiesDirty(false)
+    : bDeferredPrimitivesDirty(false)
+    , bForwardPrimitivesDirty(false)
     , bLightProxiesDirty(false)
+    , bLightProxiesTransformDirty(false)
     , bPlanarReflectionProxiesDirty(false)
+    , bDeferredPrimitivesMoved(false)
+    , bForwardPrimitivesMoved(false)
+    , mFramesSinceDistanceSortRefresh(0)
     , m_interThreadMgr(interThreadMgr)
     , m_gbuffer(
           std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
@@ -97,17 +102,20 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , PlanarReflectionProxiesVector()
     , mUiCanvasProxies()
     , mFreeTypeFontHandler(std::make_shared<FreeTypeFontHandler>())
-    , mForwardRenderingProxiesVec()
-    , mSkeletalProxiesVec()
-    , mNonSkeletalProxiesVec()
     , mDirLightProxiesVec()
     , mPointLightProxiesVec()
     , mSpotlightProxiesVec()
-    , mPlanarReflectionProxiesVec()
     , mGroupedByShadowAtlasLights()
     , mInstancedGeometryBatchRenderer(std::make_shared<InstancedGeometryBatchRenderer>())
 {
     LogInfo("SceneRenderer::ctor");
+
+    mProxiesProviders[eRenderPassType::SHADOW_DEPTH_PASS] = std::make_shared<ShadowDepthPassProxiesProvider>();
+    mProxiesProviders[eRenderPassType::PLANAR_REFLECTION_PASS] = std::make_shared<PlanarReflectionPassProxiesProvider>();
+    mProxiesProviders[eRenderPassType::OUTLINE_PASS] = std::make_shared<OutlinePassProxiesProvider>();
+    mProxiesProviders[eRenderPassType::DEPTH_PRE_PASS] = std::make_shared<DepthPrePassProxiesProvider>();
+    mProxiesProviders[eRenderPassType::DEFERRED_BASE_PASS] = std::make_shared<DeferredBasePassProxiesProvider>();
+    mProxiesProviders[eRenderPassType::FORWARD_BASE_PASS] = std::make_shared<ForwardPassProxiesProvider>();
 }
 
 void SceneRenderer::Initialize()
@@ -204,13 +212,13 @@ void SceneRenderer::CleanUp()
             [](const auto& materialProxy) { return "OutlineMaterial" != materialProxy->MaterialName; }),
         MaterialProxiesVector.end());
 
-    mForwardRenderingProxiesVec.clear();
-    mSkeletalProxiesVec.clear();
-    mNonSkeletalProxiesVec.clear();
+    for (const auto& [renderPassType, proxyProvider] : mProxiesProviders) {
+        proxyProvider->CleanUp();
+    }
+
     mDirLightProxiesVec.clear();
     mPointLightProxiesVec.clear();
     mSpotlightProxiesVec.clear();
-    mPlanarReflectionProxiesVec.clear();
     mGroupedByShadowAtlasLights.clear();
 
     mDepthCollectShaderNonSkeletal->CleanUp(true);
@@ -264,58 +272,40 @@ void SceneRenderer::DepthPrePass(const std::shared_ptr<SceneView>& sceneView)
     mInstancedGeometryBatchRenderer->RenderAllBatches(
         cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::DEFERRED);
 
-    // Only enabled, visible and passed frustum-cull test proxies should be rendered
-    std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleNonSkeletalProxies;
-    visibleNonSkeletalProxies.reserve(mNonSkeletalProxiesVec.size());
-    std::copy_if(
-        mNonSkeletalProxiesVec.cbegin(),
-        mNonSkeletalProxiesVec.cend(),
-        std::back_inserter(visibleNonSkeletalProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
+    const auto depthPrePassProvider
+        = std::static_pointer_cast<DepthPrePassProxiesProvider>(mProxiesProviders.at(eRenderPassType::DEPTH_PRE_PASS));
+    // Candidates are already filtered (deferred, non-indirect) and sorted by distance to camera by the provider;
+    // here we only skip the per-frame/per-view invisible ones.
+    const auto& [nonSkeletalProxies, skeletalProxies] = depthPrePassProvider->GetPrimitives();
 
-    std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
-    visibleSkeletalProxies.reserve(mSkeletalProxiesVec.size());
-    std::copy_if(
-        mSkeletalProxiesVec.cbegin(),
-        mSkeletalProxiesVec.cend(),
-        std::back_inserter(visibleSkeletalProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
-
-    if (!visibleNonSkeletalProxies.empty()) {
-        PrimitiveSorter sorter;
-        const auto sortedNonSkeletalPrimitives = sorter.SortPrimitivesByDistanceToCamera(
-            PrimitiveSorter::ePrimitiveSortComparatorType::LESS, cameraProxy->GetEyeVector(), visibleNonSkeletalProxies);
-
+    if (nonSkeletalProxies.size() > 0) {
         mDepthCollectShaderNonSkeletal->ExecuteShader();
         mDepthCollectShaderNonSkeletal->GetShader()->SetWriteDepthLinearly(false);
-        for (auto& proxy : sortedNonSkeletalPrimitives) {
-            mDepthCollectShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(
-                proxy->GetMatrix(), viewMatrix, projectionMatrix);
+        for (auto& proxy : nonSkeletalProxies) {
+            if (proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId())) {
+                mDepthCollectShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(
+                    proxy->GetMatrix(), viewMatrix, projectionMatrix);
 
-            proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+            }
         }
         mDepthCollectShaderNonSkeletal->StopShader();
     }
 
-    if (visibleSkeletalProxies.size() > 0) // Skeletal proxies
+    if (skeletalProxies.size() > 0) // Skeletal proxies
     {
-        PrimitiveSorter sorter;
-        const auto sortedSkeletalPrimitives = sorter.SortPrimitivesByDistanceToCamera(
-            PrimitiveSorter::ePrimitiveSortComparatorType::LESS, cameraProxy->GetEyeVector(), visibleSkeletalProxies);
-
         mDepthCollectShaderSkeletal->ExecuteShader();
         mDepthCollectShaderSkeletal->GetShader()->SetWriteDepthLinearly(false);
-        for (auto& proxy : sortedSkeletalPrimitives) {
-            mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetMatrices(proxy->GetMatrix(), viewMatrix, projectionMatrix);
-            mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(proxy->GetSkinningMatrices());
+        for (auto& proxy : skeletalProxies) {
+            if (proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId())) {
+                mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetMatrices(
+                    proxy->GetMatrix(), viewMatrix, projectionMatrix);
+                mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(proxy->GetSkinningMatrices());
 
-            proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+            }
         }
         mDepthCollectShaderSkeletal->StopShader();
     }
@@ -340,28 +330,8 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
 
         renderState.BindRenderState();
 
-        // Only enabled, visible and passed frustum-cull test proxies should be rendered
-        std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleNonSkeletalProxies;
-        visibleNonSkeletalProxies.reserve(mNonSkeletalProxiesVec.size());
-        std::copy_if(
-            mNonSkeletalProxiesVec.cbegin(),
-            mNonSkeletalProxiesVec.cend(),
-            std::back_inserter(visibleNonSkeletalProxies),
-            [&sceneView](const auto& proxy) {
-                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-            });
-
-        std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> visibleSkeletalProxies;
-        visibleSkeletalProxies.reserve(mSkeletalProxiesVec.size());
-        std::copy_if(
-            mSkeletalProxiesVec.cbegin(),
-            mSkeletalProxiesVec.cend(),
-            std::back_inserter(visibleSkeletalProxies),
-            [&sceneView](const auto& proxy) {
-                return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                    && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-            });
+        const auto& proxiesProvider
+            = std::static_pointer_cast<ShadowDepthPassProxiesProvider>(mProxiesProviders.at(eRenderPassType::SHADOW_DEPTH_PASS));
 
         for (auto& atlasLightGroup : mGroupedByShadowAtlasLights) {
             bool bNewDepthShadowAtlas = true;
@@ -379,17 +349,20 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
 
                             const BoundingBox3D& dirLightShadowOrthoBound = dirLightPtr->GetShadowOrthographicProjectionBound();
 
-                            PrimitiveSorter sorter;
-                            const auto sortedNonSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
-                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
-                                dirLightPtr->GetShadowCastPosition(),
-                                visibleNonSkeletalProxies);
-                            if (sortedNonSkeletalProxies.size() > 0) // Non - skeletal proxies
+                            const auto& [nonSkeletalProxies, skeletalProxies]
+                                = proxiesProvider->GetPrimitivesForShadowByDescriptorId(
+                                    shadowInfo->GetAtlasResource()->GetTextureDescriptor());
+
+                            if (nonSkeletalProxies.size() > 0) // Non - skeletal proxies
                             {
                                 mDepthCollectShaderNonSkeletal->ExecuteShader();
                                 mDepthCollectShaderNonSkeletal->GetShader()->SetWriteDepthLinearly(false);
-                                for (auto& proxy : sortedNonSkeletalProxies) {
-                                    if (dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox())) {
+                                for (auto& proxy : nonSkeletalProxies) {
+                                    const bool bRender = proxy->IsEnabled() && proxy->IsVisible()
+                                        && proxy->IsTransformIntialized()
+                                        && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                                    if (bRender
+                                        && dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox())) {
                                         const auto& worldMatrix = proxy->GetMatrix();
                                         const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
                                         const auto& projectionMatrix
@@ -403,14 +376,10 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
                                 mDepthCollectShaderNonSkeletal->StopShader();
                             }
 
-                            const auto sortedSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
-                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
-                                dirLightPtr->GetShadowCastPosition(),
-                                visibleSkeletalProxies);
-                            if (sortedSkeletalProxies.size() > 0) // Skeletal proxies
+                            if (skeletalProxies.size() > 0) // Skeletal proxies
                             {
                                 mDepthCollectShaderSkeletal->ExecuteShader();
-                                for (auto& proxy : sortedSkeletalProxies) {
+                                for (auto& proxy : skeletalProxies) {
                                     if (dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox())) {
                                         const auto& worldMatrix = proxy->GetMatrix();
                                         const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
@@ -440,16 +409,15 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
                         if (shadowInfo && shadowInfo->IsShadowMapDirty()) {
                             shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
 
-                            PrimitiveSorter sorter;
-                            const auto sortedNonSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
-                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
-                                spotlightPtr->GetShadowCastPosition(),
-                                visibleNonSkeletalProxies);
-                            if (sortedNonSkeletalProxies.size() > 0) // Non - skeletal proxies
+                            const auto& [nonSkeletalProxies, skeletalProxies]
+                                = proxiesProvider->GetPrimitivesForShadowByDescriptorId(
+                                    shadowInfo->GetAtlasResource()->GetTextureDescriptor());
+
+                            if (nonSkeletalProxies.size() > 0) // Non - skeletal proxies
                             {
                                 mDepthCollectShaderNonSkeletal->ExecuteShader();
                                 mDepthCollectShaderNonSkeletal->GetShader()->SetWriteDepthLinearly(true);
-                                for (auto& proxy : sortedNonSkeletalProxies) {
+                                for (auto& proxy : nonSkeletalProxies) {
                                     const auto& worldMatrix = proxy->GetMatrix();
                                     const auto& viewMatrix = shadowInfo->GetShadowViewMatrix();
                                     const auto& projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
@@ -466,16 +434,12 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
                                 mDepthCollectShaderNonSkeletal->StopShader();
                             }
 
-                            const auto sortedSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
-                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
-                                spotlightPtr->GetShadowCastPosition(),
-                                visibleSkeletalProxies);
-                            if (sortedSkeletalProxies.size() > 0) // Skeletal proxies
+                            if (skeletalProxies.size() > 0) // Skeletal proxies
                             {
                                 mDepthCollectShaderSkeletal->ExecuteShader();
                                 mDepthCollectShaderSkeletal->GetShader()->SetWriteDepthLinearly(true);
 
-                                for (auto& proxy : sortedSkeletalProxies) {
+                                for (auto& proxy : skeletalProxies) {
                                     const auto skeletalProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy);
 
                                     const auto& worldMatrix = skeletalProxy->GetMatrix();
@@ -509,16 +473,14 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
                         if (shadowInfo && shadowInfo->IsShadowMapDirty()) {
                             shadowInfo->BindShadowFramebuffer(true, true); // every point light has it's own depth texture atlas
 
-                            PrimitiveSorter sorter;
-                            const auto sortedNonSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
-                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
-                                pointLightPtr->GetShadowCastPosition(),
-                                visibleNonSkeletalProxies);
+                            const auto& [nonSkeletalProxies, skeletalProxies]
+                                = proxiesProvider->GetPrimitivesForShadowByDescriptorId(
+                                    shadowInfo->GetAtlasResource()->GetTextureDescriptor());
 
-                            if (sortedNonSkeletalProxies.size() > 0) // Non - skeletal proxies
+                            if (nonSkeletalProxies.size() > 0) // Non - skeletal proxies
                             {
                                 mDepthCollectPointLightShaderNonSkeletal->ExecuteShader();
-                                for (auto& proxy : sortedNonSkeletalProxies) {
+                                for (auto& proxy : nonSkeletalProxies) {
                                     const auto& worldMatrix = proxy->GetMatrix();
                                     const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
                                     const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
@@ -537,14 +499,10 @@ void SceneRenderer::ShadowDepthPass(const std::shared_ptr<SceneView>& sceneView)
                                 mDepthCollectPointLightShaderNonSkeletal->StopShader();
                             }
 
-                            const auto sortedSkeletalProxies = sorter.SortPrimitivesByDistanceToCamera(
-                                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
-                                pointLightPtr->GetShadowCastPosition(),
-                                visibleSkeletalProxies);
-                            if (sortedSkeletalProxies.size() > 0) // Skeletal proxies
+                            if (skeletalProxies.size() > 0) // Skeletal proxies
                             {
                                 mDepthCollectPointLightShaderSkeletal->ExecuteShader();
-                                for (auto& proxy : sortedSkeletalProxies) {
+                                for (auto& proxy : skeletalProxies) {
                                     const auto skeletalProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy);
 
                                     const auto& worldMatrix = skeletalProxy->GetMatrix();
@@ -604,29 +562,14 @@ void SceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneVie
     mInstancedGeometryBatchRenderer->RenderAllBatches(
         cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::DEFERRED);
 
+    const auto deferredBasePassProvider
+        = std::static_pointer_cast<DeferredBasePassProxiesProvider>(mProxiesProviders.at(eRenderPassType::DEFERRED_BASE_PASS));
+    const auto& deferredProxies = deferredBasePassProvider->GetPrimitives();
+
     // Only enabled, visible and passed frustum-cull test proxies should be rendered
-    std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleProxies;
-    visibleProxies.reserve(mNonSkeletalProxiesVec.size() + mSkeletalProxiesVec.size());
-    std::copy_if(
-        mNonSkeletalProxiesVec.cbegin(),
-        mNonSkeletalProxiesVec.cend(),
-        std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
-
-    std::copy_if(
-        mSkeletalProxiesVec.cbegin(),
-        mSkeletalProxiesVec.cend(),
-        std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
-
-    if (visibleProxies.size() > 0) {
-        for (auto& proxy : visibleProxies) {
+    for (auto& proxy : deferredProxies) {
+        if (proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
+            && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId())) {
             const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? EngineConstants::eStencilValues::BLOOM
                                                                            : EngineConstants::eStencilValues::SCENE_DEFAULT;
             renderState.GetStencilState().SetStencilFunction(GL_ALWAYS, stencilFuncRefValue, 0xFF);
@@ -730,7 +673,11 @@ void SceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraS
 
 void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView>& sceneView)
 {
-    if (mForwardRenderingProxiesVec.empty())
+    const auto forwardBasePassProvider
+        = std::static_pointer_cast<ForwardPassProxiesProvider>(mProxiesProviders.at(eRenderPassType::FORWARD_BASE_PASS));
+    // Candidates are already filtered (forward, non-indirect) and sorted by order and shader by the provider.
+    const auto& sortedForwardProxies = forwardBasePassProvider->GetPrimitives();
+    if (sortedForwardProxies.empty())
         return;
 
     RenderState renderState;
@@ -771,9 +718,6 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
     const auto& viewMatrix = cameraProxy->GetViewMatrix();
     const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
-    PrimitiveSorter sorter;
-    const auto sortedForwardProxies = sorter.SortPrimitivesByOrderAndShader(mForwardRenderingProxiesVec);
-
     mInstancedGeometryBatchRenderer->RenderAllBatches(
         cameraProxy, viewMatrix, projectionMatrix, mActiveBindedState, eInstancedGeometryBatchRenderType::FORWARD);
 
@@ -806,21 +750,16 @@ void SceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView
 
 void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
 {
+    const auto outlinePassProvider
+        = std::static_pointer_cast<OutlinePassProxiesProvider>(mProxiesProviders.at(eRenderPassType::OUTLINE_PASS));
+    const auto& outlineCandidates = outlinePassProvider->GetPrimitives();
+
     // Only enabled, visible and passed frustum-cull test proxies should be rendered
     std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleProxies;
-    visibleProxies.reserve(mNonSkeletalProxiesVec.size() + mSkeletalProxiesVec.size());
+    visibleProxies.reserve(outlineCandidates.size());
     std::copy_if(
-        mNonSkeletalProxiesVec.cbegin(),
-        mNonSkeletalProxiesVec.cend(),
-        std::back_inserter(visibleProxies),
-        [&sceneView](const auto& proxy) {
-            return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
-        });
-
-    std::copy_if(
-        mSkeletalProxiesVec.cbegin(),
-        mSkeletalProxiesVec.cend(),
+        outlineCandidates.cbegin(),
+        outlineCandidates.cend(),
         std::back_inserter(visibleProxies),
         [&sceneView](const auto& proxy) {
             return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
@@ -881,7 +820,7 @@ void SceneRenderer::OutlinePass(const std::shared_ptr<SceneView>& sceneView)
 
 void SceneRenderer::PlanarReflectionPass()
 {
-    if (mPlanarReflectionProxiesVec.size() <= 0)
+    if (PlanarReflectionProxiesVector.size() <= 0)
         return;
 
     RenderState renderState;
@@ -897,7 +836,10 @@ void SceneRenderer::PlanarReflectionPass()
     renderState.GetColorState().SetColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     renderState.BindRenderState();
 
-    for (const auto& planarReflectionProxy : mPlanarReflectionProxiesVec) {
+    const auto planarReflectionPassProvider = std::static_pointer_cast<PlanarReflectionPassProxiesProvider>(
+        mProxiesProviders.at(eRenderPassType::PLANAR_REFLECTION_PASS));
+
+    for (const auto& planarReflectionProxy : PlanarReflectionProxiesVector) {
         auto sceneViewWp = planarReflectionProxy->GetSceneViewWeakPtr();
         if (auto scenViewSp = sceneViewWp.lock()) {
             const auto& viewMatrix = scenViewSp->GetCameraProxy()->GetViewMatrix();
@@ -908,32 +850,16 @@ void SceneRenderer::PlanarReflectionPass()
             const CameraFrustum& mirroredCameraFrustum
                 = CameraFrustum::GetConstructedFromViewProjectionMatrices(viewMatrix * mirrorMatrix, projectionMatrix);
 
+            // Candidates are already collected (non-indirect) and sorted by distance to the reflection plane origin
+            // by the provider; here we only keep the ones visible from the mirrored camera frustum.
+            const auto& planarCandidates
+                = planarReflectionPassProvider->GetPrimitivesForPlane(planarReflectionProxy->GetSceneProxyId());
+
             std::vector<std::shared_ptr<PrimitiveSceneProxy>> visibleProxies;
-            visibleProxies.reserve(
-                mNonSkeletalProxiesVec.size() + mSkeletalProxiesVec.size() + mForwardRenderingProxiesVec.size());
+            visibleProxies.reserve(planarCandidates.size());
             std::copy_if(
-                mNonSkeletalProxiesVec.cbegin(),
-                mNonSkeletalProxiesVec.cend(),
-                std::back_inserter(visibleProxies),
-                [&mirroredCameraFrustum](const auto& proxy) {
-                    return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                        && (proxy->IsFrustumCullTestNeeded()
-                                ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
-                                : true);
-                });
-            std::copy_if(
-                mSkeletalProxiesVec.cbegin(),
-                mSkeletalProxiesVec.cend(),
-                std::back_inserter(visibleProxies),
-                [&mirroredCameraFrustum](const auto& proxy) {
-                    return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
-                        && (proxy->IsFrustumCullTestNeeded()
-                                ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox())
-                                : true);
-                });
-            std::copy_if(
-                mForwardRenderingProxiesVec.cbegin(),
-                mForwardRenderingProxiesVec.cend(),
+                planarCandidates.cbegin(),
+                planarCandidates.cend(),
                 std::back_inserter(visibleProxies),
                 [&mirroredCameraFrustum](const auto& proxy) {
                     return proxy->IsEnabled() && proxy->IsVisible() && proxy->IsTransformIntialized()
@@ -942,16 +868,10 @@ void SceneRenderer::PlanarReflectionPass()
                                 : true);
                 });
 
-            PrimitiveSorter sorter;
-            const auto sortedVisibleProxies = sorter.SortPrimitivesByDistanceToCamera(
-                PrimitiveSorter::ePrimitiveSortComparatorType::LESS,
-                planarReflectionProxy->GetReflectionPlaneOrigin(),
-                visibleProxies);
-
-            if (not sortedVisibleProxies.empty()) {
+            if (not visibleProxies.empty()) {
                 planarReflectionProxy->RenderToPlanarReflectionFBO();
 
-                for (auto& proxy : sortedVisibleProxies) {
+                for (auto& proxy : visibleProxies) {
                     proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix, mActiveBindedState);
                 }
 
@@ -1009,29 +929,8 @@ void SceneRenderer::GuiPass(const std::shared_ptr<SceneView>& sceneView)
     renderState.BindRenderState();
 }
 
-void SceneRenderer::FilterSceneProxies()
+void SceneRenderer::FilterLightProxies()
 {
-    if (IsPrimitiveProxiesDirty()) {
-        mForwardRenderingProxiesVec.clear();
-        mSkeletalProxiesVec.clear();
-        mNonSkeletalProxiesVec.clear();
-
-        for (auto& proxy : PrimitiveProxiesVector) {
-            const auto primitiveProxyType = proxy->GetPrimitiveProxyType();
-            if (primitiveProxyType != ePrimitiveProxyType::INDIRECT_RENDERED_PROXY) {
-                if (proxy->IsDeferred()) {
-                    if (proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY)
-                        mSkeletalProxiesVec.emplace_back(std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy));
-                    else
-                        mNonSkeletalProxiesVec.emplace_back(proxy);
-                } else {
-                    mForwardRenderingProxiesVec.emplace_back(proxy);
-                }
-            }
-        }
-        SetPrimitiveProxiesDirty(false);
-    }
-
     if (IsLightProxiesDirty()) {
         mDirLightProxiesVec.clear();
         mPointLightProxiesVec.clear();
@@ -1050,13 +949,75 @@ void SceneRenderer::FilterSceneProxies()
         }
 
         GroupLightsByShadowMap();
+        // Note: bLightProxiesDirty is intentionally not cleared here. SortSceneProxies still needs to observe it this
+        // frame to decide whether the shadow depth provider must be re-sorted, and it clears all the dirty flags afterwards.
+    }
+}
 
-        SetLightProxiesDirty(false);
+void SceneRenderer::SortSceneProxies(const std::shared_ptr<SceneView>& sceneView)
+{
+    const auto& cameraProxy = sceneView->GetCameraProxy();
+
+    // Distance/plane-ordered providers (shadow depth, depth pre-pass, outline, planar reflection) sort front-to-back as
+    // an early-Z heuristic, so an exact order is not required. Rather than re-sorting them every frame whenever a proxy
+    // moves, refresh that order at most once every c_distanceSortRefreshFrameInterval frames — and only if a relevant
+    // proxy actually moved. Membership (add/remove) and light changes still force an immediate re-sort.
+    static constexpr uint32_t c_distanceSortRefreshFrameInterval = 10;
+    ++mFramesSinceDistanceSortRefresh;
+    const bool bDistanceRefreshDue = mFramesSinceDistanceSortRefresh >= c_distanceSortRefreshFrameInterval;
+    const bool bDeferredOrderStale = bDistanceRefreshDue && bDeferredPrimitivesMoved;
+    const bool bAnyPrimitiveOrderStale = bDistanceRefreshDue && (bDeferredPrimitivesMoved || bForwardPrimitivesMoved);
+
+    // A deferred primitive membership change touches every provider that consumes deferred primitives; a forward
+    // membership/sort-order change touches the forward and planar reflection providers; a light change only touches the
+    // shadow depth provider; a planar reflection change only touches the planar reflection provider. Movement only
+    // restales the distance/plane order, refreshed on the periodic cadence above. The deferred base and forward base
+    // providers do not order by distance, so movement never restales them.
+    const bool bResetShadowDepth = bDeferredPrimitivesDirty || bLightProxiesDirty || bLightProxiesTransformDirty || bDeferredOrderStale;
+    const bool bResetPlanarReflection
+        = bDeferredPrimitivesDirty || bForwardPrimitivesDirty || bPlanarReflectionProxiesDirty || bAnyPrimitiveOrderStale;
+    const bool bResetOutline = bDeferredPrimitivesDirty || bDeferredOrderStale;
+    const bool bResetDepthPrePass = bDeferredPrimitivesDirty || bDeferredOrderStale;
+    const bool bResetDeferredBase = bDeferredPrimitivesDirty;
+    const bool bResetForwardBase = bForwardPrimitivesDirty;
+
+    if (bResetShadowDepth) {
+        std::static_pointer_cast<ShadowDepthPassProxiesProvider>(mProxiesProviders[eRenderPassType::SHADOW_DEPTH_PASS])
+            ->Reset(PrimitiveProxiesVector, LightProxiesVector);
+    }
+    if (bResetPlanarReflection) {
+        std::static_pointer_cast<PlanarReflectionPassProxiesProvider>(mProxiesProviders[eRenderPassType::PLANAR_REFLECTION_PASS])
+            ->Reset(PrimitiveProxiesVector, PlanarReflectionProxiesVector);
+    }
+    if (bResetOutline) {
+        std::static_pointer_cast<OutlinePassProxiesProvider>(mProxiesProviders[eRenderPassType::OUTLINE_PASS])
+            ->Reset(PrimitiveProxiesVector, cameraProxy->GetEyeVector());
+    }
+    if (bResetDepthPrePass) {
+        std::static_pointer_cast<DepthPrePassProxiesProvider>(mProxiesProviders[eRenderPassType::DEPTH_PRE_PASS])
+            ->Reset(PrimitiveProxiesVector, cameraProxy->GetEyeVector());
+    }
+    if (bResetDeferredBase) {
+        std::static_pointer_cast<DeferredBasePassProxiesProvider>(mProxiesProviders[eRenderPassType::DEFERRED_BASE_PASS])
+            ->Reset(PrimitiveProxiesVector);
+    }
+    if (bResetForwardBase) {
+        std::static_pointer_cast<ForwardPassProxiesProvider>(mProxiesProviders[eRenderPassType::FORWARD_BASE_PASS])
+            ->Reset(PrimitiveProxiesVector);
     }
 
-    if (IsPlanarReflectionProxiesDirty()) {
-        mPlanarReflectionProxiesVec = PlanarReflectionProxiesVector;
-        SetPlanarReflectionProxiesDirty(false);
+    bDeferredPrimitivesDirty = false;
+    bForwardPrimitivesDirty = false;
+    bLightProxiesDirty = false;
+    bLightProxiesTransformDirty = false;
+    bPlanarReflectionProxiesDirty = false;
+
+    // When the periodic refresh window elapsed, restart it and drop the accumulated movement flags (the distance/plane
+    // order is now considered up to date until the next move).
+    if (bDistanceRefreshDue) {
+        mFramesSinceDistanceSortRefresh = 0;
+        bDeferredPrimitivesMoved = false;
+        bForwardPrimitivesMoved = false;
     }
 }
 
@@ -1092,7 +1053,8 @@ void SceneRenderer::GroupLightsByShadowMap()
 void SceneRenderer::RenderScene_RenderThread()
 {
     ext_assert(mPostFxRenderer, "PostFxRenderer is not initialized!");
-    FilterSceneProxies();
+
+    FilterLightProxies();
 
     for (const auto& sceneView : SceneViewsVector) {
         const auto& cameraProxy = sceneView->GetCameraProxy();
@@ -1103,6 +1065,8 @@ void SceneRenderer::RenderScene_RenderThread()
             if (eCameraSceneProxyType::MAIN_SCENE_CAMERA == cameraProxy->GetCameraSceneType()) {
 
                 mActiveBindedState.Reset();
+
+                SortSceneProxies(sceneView);
 
                 ShadowDepthPass(sceneView);
 
@@ -1144,12 +1108,38 @@ void SceneRenderer::RenderScene_RenderThread()
 
 void SceneRenderer::SetPrimitiveProxiesDirty(const bool bDirty)
 {
-    bPrimitiveProxiesDirty = bDirty;
+    bDeferredPrimitivesDirty = bDirty;
+    bForwardPrimitivesDirty = bDirty;
+}
+
+void SceneRenderer::SetDeferredPrimitivesDirty(const bool bDirty)
+{
+    bDeferredPrimitivesDirty = bDirty;
+}
+
+void SceneRenderer::SetForwardPrimitivesDirty(const bool bDirty)
+{
+    bForwardPrimitivesDirty = bDirty;
+}
+
+void SceneRenderer::SetDeferredPrimitivesMoved(const bool bMoved)
+{
+    bDeferredPrimitivesMoved = bMoved;
+}
+
+void SceneRenderer::SetForwardPrimitivesMoved(const bool bMoved)
+{
+    bForwardPrimitivesMoved = bMoved;
 }
 
 void SceneRenderer::SetLightProxiesDirty(const bool bDirty)
 {
     bLightProxiesDirty = bDirty;
+}
+
+void SceneRenderer::SetLightProxiesTransformDirty(const bool bDirty)
+{
+    bLightProxiesTransformDirty = bDirty;
 }
 
 void SceneRenderer::SetPlanarReflectionProxiesDirty(const bool bDirty)
@@ -1159,7 +1149,7 @@ void SceneRenderer::SetPlanarReflectionProxiesDirty(const bool bDirty)
 
 bool SceneRenderer::IsPrimitiveProxiesDirty() const
 {
-    return bPrimitiveProxiesDirty;
+    return bDeferredPrimitivesDirty || bForwardPrimitivesDirty;
 }
 
 bool SceneRenderer::IsLightProxiesDirty() const
@@ -1461,6 +1451,10 @@ void SceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(
         const auto& primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
         if (primitiveSp) {
             primitiveSp->SetSortOrderValue(sortOrderValue);
+            // Only the forward provider orders by sort order value (SortPrimitivesByOrderAndShader).
+            if (!primitiveSp->IsDeferred()) {
+                SetForwardPrimitivesDirty(true);
+            }
         }
     } else {
         m_interThreadMgr.ExecuteOnRenderThread(
@@ -1475,6 +1469,9 @@ void SceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(
                     const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
                     if (primitiveSp) {
                         primitiveSp->SetSortOrderValue(sortOrderValue);
+                        if (!primitiveSp->IsDeferred()) {
+                            sceneRenderer->SetForwardPrimitivesDirty(true);
+                        }
                     }
                 }
             });
@@ -1495,6 +1492,7 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
             primitiveSp->SetWorldMatrix(newworldMatrix);
             primitiveSp->SetOutlineMatrix(newOutlineMatrix);
             primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+            primitiveSp->IsDeferred() ? SetDeferredPrimitivesDirty(true) : SetForwardPrimitivesDirty(true);
         }
     } else {
         m_interThreadMgr.ExecuteOnRenderThread(
@@ -1511,6 +1509,8 @@ void SceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(
                         primitiveSp->SetWorldMatrix(newworldMatrix);
                         primitiveSp->SetOutlineMatrix(newOutlineMatrix);
                         primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+                        primitiveSp->IsDeferred() ? sceneRenderer->SetDeferredPrimitivesDirty(true)
+                                                  : sceneRenderer->SetForwardPrimitivesDirty(true);
                     }
                 }
             });
@@ -1524,6 +1524,7 @@ void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
         const auto& lightSp = GetLightProxyByProxyId(lightSceneProxyIndex);
         if (lightSp) {
             lightSp->SetWorldMatrix(newworldMatrix);
+            SetLightProxiesTransformDirty(true);
         }
     } else {
         m_interThreadMgr.ExecuteOnRenderThread(
@@ -1538,6 +1539,7 @@ void SceneRenderer::UpdateLightComponentTransform_OnRenderThread(
                     const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
                     if (lightProxySp) {
                         lightProxySp->SetWorldMatrix(newworldMatrix);
+                        sceneRenderer->SetLightProxiesTransformDirty(true);
                     }
                 }
             });
@@ -2367,5 +2369,4 @@ void SceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::m
 }
 #endif
 
-} // namespace Renderer
-} // namespace Graphics
+} // namespace Graphics::Renderer

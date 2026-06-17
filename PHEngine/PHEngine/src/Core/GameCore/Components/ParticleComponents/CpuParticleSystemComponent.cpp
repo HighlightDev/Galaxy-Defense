@@ -147,7 +147,7 @@ void CpuParticleSystemComponent::UpdateWorldMatrix(const glm::mat4& parentWorldM
                 }
             }
         }
-        SetIsTransformationDirty(bIsSceneProxyReady.load(std::memory_order::seq_cst));
+        SetIsTransformationDirty(!bIsSceneProxyReady.load(std::memory_order::seq_cst));
     }
 }
 

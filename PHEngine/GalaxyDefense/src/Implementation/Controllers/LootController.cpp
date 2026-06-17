@@ -4,6 +4,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Implementation/Actors/LootActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Implementation/LootCategoryType.h"
 
@@ -67,8 +68,7 @@ void LootController::SetLevelBounds(const BoundingBox3D& levelBounds)
 
 void LootController::TrySpawnLootAt(const glm::vec3& position)
 {
-    constexpr float kLootDropChance = 1.0f;
-    if (Random::Float() < kLootDropChance) {
+    if (Random::Float() < Game::Constants::c_lootDropChance) {
         if (const auto lootActor = mCombatActorsPoolHandler->GetFreeLootActor(eLootCategory::LOOT)) {
             lootActor->SpawnLoot(glm::vec3(position.x, 0.0f, position.z));
         }

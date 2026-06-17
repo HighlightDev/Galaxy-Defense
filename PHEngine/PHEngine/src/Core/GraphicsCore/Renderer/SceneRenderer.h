@@ -15,6 +15,7 @@
 #include "Core/GraphicsCore/Renderer/ActiveBindedState.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"
 #include "Core/GraphicsCore/Renderer/RenderState.h"
+#include "Core/GraphicsCore/Renderer/RenderPassType.h"
 #include "Core/GraphicsCore/Renderer/ResolvedSceneFramebuffer.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
@@ -34,6 +35,7 @@
 #include <glm/vec3.hpp>
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -60,13 +62,38 @@ class FreeTypeTextFieldProxy;
 
 namespace Graphics {
 namespace Renderer {
+
+class IRenderPassProxiesProvider;
+
 class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
 
-    bool bPrimitiveProxiesDirty;
+    // Set when the membership or the transform of a deferred-rendered primitive proxy changed.
+    // Drives the re-sort of the providers that depend on deferred primitives
+    // (shadow depth, depth pre-pass, deferred base, outline, planar reflection).
+    bool bDeferredPrimitivesDirty;
 
+    // Set when the membership or the transform of a forward-rendered primitive proxy changed.
+    // Drives the re-sort of the providers that depend on forward primitives (forward base, planar reflection).
+    bool bForwardPrimitivesDirty;
+
+    // Set when a light proxy was added/removed/updated. Drives light re-categorization (FilterLightProxies)
+    // and the shadow depth provider re-sort.
     bool bLightProxiesDirty;
 
+    // Set when only a light proxy transform changed. Drives the shadow depth provider re-sort.
+    bool bLightProxiesTransformDirty;
+
+    // Set when a planar reflection proxy was added/removed. Drives the planar reflection provider re-sort.
     bool bPlanarReflectionProxiesDirty;
+
+    // Set when a deferred/forward primitive proxy *moved* (transform only, not membership). The distance/plane-ordered
+    // providers use these to refresh their front-to-back order periodically instead of every frame — the order is only
+    // an early-Z heuristic, so an exact per-frame sort is not required.
+    bool bDeferredPrimitivesMoved;
+    bool bForwardPrimitivesMoved;
+
+    // Frames elapsed since the last periodic distance/plane-sort refresh of the distance-ordered providers.
+    uint32_t mFramesSinceDistanceSortRefresh;
 
     InterThreadCommunicationMgr& m_interThreadMgr;
 
@@ -106,14 +133,13 @@ class SceneRenderer : public std::enable_shared_from_this<SceneRenderer> {
 
     std::shared_ptr<::EngineCore::GUI::FreeTypeFontHandler> mFreeTypeFontHandler;
 
-    // these proxies are collected from general type of proxies
-    std::vector<std::shared_ptr<PrimitiveSceneProxy>> mForwardRenderingProxiesVec;
-    std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> mSkeletalProxiesVec;
-    std::vector<std::shared_ptr<PrimitiveSceneProxy>> mNonSkeletalProxiesVec;
+    // Render proxies
+    std::unordered_map<eRenderPassType, std::shared_ptr<IRenderPassProxiesProvider>> mProxiesProviders;
+
+    // Light proxies
     std::vector<std::shared_ptr<DirectionalLightSceneProxy>> mDirLightProxiesVec;
     std::vector<std::shared_ptr<PointLightSceneProxy>> mPointLightProxiesVec;
     std::vector<std::shared_ptr<SpotlightSceneProxy>> mSpotlightProxiesVec;
-    std::vector<std::shared_ptr<PlanarReflectionProxy>> mPlanarReflectionProxiesVec;
     std::vector<std::pair<size_t, std::vector<std::shared_ptr<LightSceneProxy>>>> mGroupedByShadowAtlasLights;
 
     std::shared_ptr<InstancedGeometryBatchRenderer> mInstancedGeometryBatchRenderer;
@@ -148,13 +174,25 @@ public:
 
     void RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId);
 
+    // Marks both deferred and forward primitive proxies dirty (used on membership changes where the
+    // affected render category is not known up front).
     void SetPrimitiveProxiesDirty(const bool bDirty);
 
     bool IsPrimitiveProxiesDirty() const;
 
+    void SetDeferredPrimitivesDirty(const bool bDirty);
+
+    void SetForwardPrimitivesDirty(const bool bDirty);
+
+    void SetDeferredPrimitivesMoved(const bool bMoved);
+
+    void SetForwardPrimitivesMoved(const bool bMoved);
+
     void SetLightProxiesDirty(const bool bDirty);
 
     bool IsLightProxiesDirty() const;
+
+    void SetLightProxiesTransformDirty(const bool bDirty);
 
     void SetPlanarReflectionProxiesDirty(const bool bDirty);
 
@@ -281,7 +319,9 @@ private:
 
     void UnregisterUiSceneProxy(const size_t uiItemUId, const size_t canvasUId);
 
-    void FilterSceneProxies();
+    void FilterLightProxies();
+
+    void SortSceneProxies(const std::shared_ptr<SceneView>& sceneView);
 
     void GroupLightsByShadowMap();
 

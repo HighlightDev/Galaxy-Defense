@@ -38,7 +38,7 @@ class PrimitiveComponent;
 
 namespace Graphics {
 namespace Proxy {
-enum class ePrimitiveProxyType { PRIMITIVE_PROXY, STATIC_MESH_PROXY, SKELETAL_MESH_PROXY, INDIRECT_RENDERED_PROXY };
+enum class ePrimitiveProxyType : int8_t { PRIMITIVE_PROXY, STATIC_MESH_PROXY, SKELETAL_MESH_PROXY, INDIRECT_RENDERED_PROXY };
 
 enum class eMeshFacing {
     CLOCK_WISE,
@@ -103,8 +103,7 @@ public:
         const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
         const glm::mat4& projectionMatrix,
-        ActiveBindedState& activeBindedState)
-        = 0;
+        ActiveBindedState& activeBindedState) = 0;
 
     virtual void RenderPlanarReflection(
         const glm::vec4& plane,

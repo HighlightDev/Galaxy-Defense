@@ -83,16 +83,14 @@ void LightComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
     static const uint64_t functionId = Hash("LightComponent::UpdateLightComponentTransform_GameThread");
 
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
-        SetIsTransformationDirty(false);
         if (const auto& sceneSP = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
                 sceneRendererSp->UpdateLightComponentTransform_OnRenderThread(
                     mLightSceneProxyId, GetObjectId(), functionId, m_worldMatrix);
             }
         }
-    } else {
-        SetIsTransformationDirty(true);
     }
+    SetIsTransformationDirty(!bIsSceneProxyReady.load(std::memory_order::seq_cst));
 }
 
 void LightComponent::SyncRenderData()

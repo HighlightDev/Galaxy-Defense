@@ -13,7 +13,7 @@ const float c_barrierExclusionRadiusFromDestination = 10.0f;
 const glm::vec3 c_lootSize = glm::vec3(1.0f);
 const float c_lootTweenTimeSec = 1.0f;
 const float c_outlineThickness = 3.0f;
-
+const float c_lootDropChance = 0.5f; // 50%
 } // namespace Game::Constants
 
 namespace Game::Constants::GravityBombMissile {
@@ -210,7 +210,7 @@ const float c_speed = 10.0f;
 const float c_colliderRadiusMultiplier = 0.5f;
 const float c_particleOpacity = 1.0f;
 const float c_particleClipRadius = 0.35f;
-const size_t c_particleCount = 500;
+const size_t c_particleCount = 100;
 const float c_emitRadius = 5.0f;
 const int32_t c_thetaSlices = 10;
 const float c_particleLifeTime = 2.5f;

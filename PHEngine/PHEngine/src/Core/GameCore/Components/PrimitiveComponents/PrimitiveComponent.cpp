@@ -51,8 +51,10 @@ void PrimitiveComponent::UnpausableTick(const float deltaTimeSec)
 {
     SceneComponent::UnpausableTick(deltaTimeSec);
 
-    if (bTransformationDirty || bIsEnabledStateDirty || bIsVisibleStateDirty || bIsSortOrderStateDirty || bIsBloomStateDirty
-        || bIsDepthTestStateDirty || bIsOutlineStateDirty) {
+    // Transform changes are no longer synced here — they are shipped from UpdateWorldMatrix (transform path).
+    // SyncRenderData only pushes the state flags below, so bTransformationDirty must not gate it.
+    if (bIsEnabledStateDirty || bIsVisibleStateDirty || bIsSortOrderStateDirty || bIsBloomStateDirty || bIsDepthTestStateDirty
+        || bIsOutlineStateDirty) {
         SyncRenderData();
     }
 }
@@ -166,44 +168,36 @@ void PrimitiveComponent::SetDepthWriteMaskEnabled(const bool isEnabled)
     }
 }
 
+void PrimitiveComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
+{
+    SceneComponent::UpdateWorldMatrix(parentWorldMatrix);
+
+    if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
+        if (const auto& sceneSP = m_sceneWP.lock()) {
+
+            // Reaching UpdateWorldMatrix already means the world matrix was just recomputed: either this component is
+            // transform-dirty, or its owning actor force-updated the whole hierarchy because a parent moved. In both
+            // cases the new matrix must be pushed to the render thread. Instead of posting a per-object job (plus a
+            // separate frustum-reset job) every frame, accumulate into the scene's per-frame batch; the whole batch
+            // is flushed as a single render-thread job from Scene::UnpausableTick.
+            if (IsWorldMatrixComputed()) {
+                sceneSP->EnqueuePrimitiveTransformUpdate(
+                    mSceneProxyId, m_worldMatrix, m_outlineMatrix, GetTransformedBoundingBox(), mBoundingBox.GetOrigin());
+            }
+        }
+    }
+
+    SetIsTransformationDirty(!bIsSceneProxyReady.load(std::memory_order::seq_cst));
+}
+
 void PrimitiveComponent::SyncRenderData()
 {
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSP = m_sceneWP.lock()) {
             if (const auto& sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
 
-                if (IsWorldMatrixComputed() && (bTransformationDirty || bIsEnabledStateDirty || bIsVisibleStateDirty)) {
+                if (IsWorldMatrixComputed() && (bIsEnabledStateDirty || bIsVisibleStateDirty)) {
                     sceneRendererSp->ResetPrimitiveFrustumTestResult(mSceneProxyId);
-                }
-
-                // bTransformationDirty is true from construction, but m_worldMatrix stays identity until
-                // the owner's first UpdateTransform. Shipping it early would initialize the proxy at the
-                // world origin for the first frame — keep the flag set and retry next tick instead.
-                if (bTransformationDirty && IsWorldMatrixComputed()) {
-
-                    static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
-                    sceneSP->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                        GetObjectId(),
-                        functionId,
-                        [sceneRendererSp,
-                         sceneProxyId = mSceneProxyId,
-                         worldMatrix = m_worldMatrix,
-                         outlineMatrix = m_outlineMatrix,
-                         boundingBox = mBoundingBox,
-                         newTransformedBoundingBox = GetTransformedBoundingBox()](
-                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                            std::weak_ptr<EngineCore::Scene> sceneWp,
-                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                            const auto& primitiveSp = sceneRendererSp->GetPrimitiveProxyByProxyId(sceneProxyId);
-                            if (primitiveSp) {
-                                primitiveSp->SetWorldMatrix(worldMatrix);
-                                primitiveSp->SetOutlineMatrix(outlineMatrix);
-                                primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
-                                primitiveSp->SetOriginPosition(boundingBox.GetOrigin());
-                            }
-                        });
-                    bTransformationDirty = false;
                 }
 
                 if (bIsEnabledStateDirty) {

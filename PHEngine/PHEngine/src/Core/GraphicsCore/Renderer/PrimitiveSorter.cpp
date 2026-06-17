@@ -113,6 +113,7 @@ PrimitiveSorter::SortPrimitivesByDistanceToCamera(
     const std::vector<std::shared_ptr<T>>& primitiveProxies)
 {
     std::vector<std::shared_ptr<T>> sortedVector;
+    sortedVector.reserve(primitiveProxies.size());
     sortedVector.insert(sortedVector.begin(), primitiveProxies.begin(), primitiveProxies.end());
 
     std::sort(
@@ -138,8 +139,7 @@ template std::vector<std::shared_ptr<SkeletalMeshSceneProxy>>
 PrimitiveSorter::SortPrimitivesByShaderAndDistanceToCamera<SkeletalMeshSceneProxy>(
     const glm::vec3&, const std::vector<std::shared_ptr<SkeletalMeshSceneProxy>>&);
 
-template std::vector<std::shared_ptr<PrimitiveSceneProxy>>
-PrimitiveSorter::SortPrimitivesByDistanceToCamera<PrimitiveSceneProxy>(
+template std::vector<std::shared_ptr<PrimitiveSceneProxy>> PrimitiveSorter::SortPrimitivesByDistanceToCamera<PrimitiveSceneProxy>(
     const PrimitiveSorter::ePrimitiveSortComparatorType,
     const glm::vec3&,
     const std::vector<std::shared_ptr<PrimitiveSceneProxy>>&);

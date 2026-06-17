@@ -4,6 +4,7 @@
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/ActorController.h"
+#include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
@@ -18,8 +19,10 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
 
+#include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
+#include <cstdint>
 #include <optional>
 #include <type_traits>
 #include <unordered_map>
@@ -105,6 +108,19 @@ private:
 
     std::shared_ptr<UiHandler> mUiHandler;
 
+    // Per-frame batch of primitive transform updates, filled on the game thread (one entry per moved proxy, deduped by
+    // proxy id) and flushed to the render thread as a single job. Avoids posting two jobs per moving object every frame.
+    struct PendingPrimitiveTransform {
+        glm::mat4 worldMatrix;
+        glm::mat4 outlineMatrix;
+        BoundingBox3D transformedBoundingBox;
+        glm::vec3 originPosition;
+    };
+    std::unordered_map<int32_t, PendingPrimitiveTransform> mPendingPrimitiveTransforms;
+
+    // Game-thread: flush the accumulated transform batch to the render thread as one job. No-op when nothing moved.
+    void FlushPrimitiveTransformUpdates();
+
 public:
     explicit Scene(InterThreadCommunicationMgr& interThreadMgr);
 
@@ -126,6 +142,14 @@ public:
     void Tick(const float deltaTimeSec) override;
 
     void UnpausableTick(const float deltaTimeSec) override;
+
+    // Game-thread: record a moved primitive's transform into the per-frame batch (deduped by proxy id).
+    void EnqueuePrimitiveTransformUpdate(
+        const int32_t primitiveSceneProxyId,
+        const glm::mat4& worldMatrix,
+        const glm::mat4& outlineMatrix,
+        const BoundingBox3D& transformedBoundingBox,
+        const glm::vec3& originPosition);
 
     void ProcessEvent(
         const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t& data) override;

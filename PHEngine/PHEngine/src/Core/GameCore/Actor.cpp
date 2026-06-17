@@ -154,7 +154,6 @@ void Actor::UpdateComponentsTransform(const bool bForceUpdate)
                 auto sceneComp = std::static_pointer_cast<SceneComponent>(component);
                 if (bForceUpdate || sceneComp->GetIsTransformationDirty()) {
                     sceneComp->UpdateWorldMatrix(parentWorldMatrix);
-                    sceneComp->SetIsTransformationDirty(true);
                 }
             }
         }

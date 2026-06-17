@@ -71,6 +71,8 @@ public:
 
     eComponentType GetComponentType() const override;
 
+    void UpdateWorldMatrix(const glm::mat4& parentWorldMatrix) override;
+
     virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;
 
     void SetBoundingBox(const BoundingBox3D& boundingBox);
