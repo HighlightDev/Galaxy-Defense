@@ -7,7 +7,7 @@
 namespace Game {
 class SpaceshipActor;
 
-enum class eModifierType { Gravity, Freezing, ElectroChain, FreezingRay };
+enum class eModifierType { Gravity, Freezing, ElectroChain, FreezingRay, Plasma };
 
 class IModifiable : public ITickable {
 public:

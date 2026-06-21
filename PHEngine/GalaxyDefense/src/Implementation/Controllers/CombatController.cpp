@@ -136,6 +136,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_BOMB, 2);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::PLASMA_BOMB, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_RAY, 1);
 }
 
@@ -163,7 +164,8 @@ void CombatController::OnPostLevelInit()
         = {{eMissileType::BOMB, 10},
            {eMissileType::FREEZING_BOMB, 3},
            {eMissileType::ELECTRO_RAY, 1},
-           {eMissileType::BLACK_HOLE, 2}};
+           {eMissileType::BLACK_HOLE, 2},
+           {eMissileType::PLASMA_BOMB, 2}};
     PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 
     mCombatActorsPoolHandler->SpawnEnemySpaceships(5, eSpaceshipType::PAWN);

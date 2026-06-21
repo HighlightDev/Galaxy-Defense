@@ -15,6 +15,7 @@ int32_t LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(const eMiss
         {eMissileType::FREEZING_BOMB, {1200, 1100, 1000, 900, 800}},
         {eMissileType::ELECTRO_RAY, {3000, 2900, 2800, 2700, 2400}},
         {eMissileType::BLACK_HOLE, {6500, 4500, 4000, 3500, 3000}},
+        {eMissileType::PLASMA_BOMB, {4000, 3600, 3200, 2900, 2600}},
         {eMissileType::FREEZING_RAY, {1500, 1400, 1300, 1200, 1100}},
     };
 
@@ -36,6 +37,7 @@ float LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(const eMissileT
         {eMissileType::FREEZING_BOMB, {30.0, 40.0, 50.0, 55.0, 60.0}},
         {eMissileType::ELECTRO_RAY, {30.0, 35.0, 40.0, 45.0, 50.0}},
         {eMissileType::BLACK_HOLE, {50.0, 55.0, 55.0, 60.0, 60.0}},
+        {eMissileType::PLASMA_BOMB, {35.0, 40.0, 45.0, 50.0, 55.0}},
         {eMissileType::FREEZING_RAY, {50.0, 60.0, 70.0, 75.0, 80.0}},
     };
 

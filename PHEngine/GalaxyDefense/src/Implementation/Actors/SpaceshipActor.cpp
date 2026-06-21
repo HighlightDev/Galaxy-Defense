@@ -104,6 +104,7 @@ void SpaceshipActor::TriggerDisabled()
     mFreezingEffectProperty->SetValue(0.0f);
     mUiComponent->SetHealthBarVisibility(false);
     mUiComponent->SetLabelVisibility(false);
+    mIsDamageEffectActive = false;
 }
 
 void SpaceshipActor::Tick(const float deltaTimeSec)
@@ -113,16 +114,16 @@ void SpaceshipActor::Tick(const float deltaTimeSec)
     mModifiersHandler->Tick(deltaTimeSec);
 
     if (mIsDamageEffectActive) {
-        const float normDmgEffectTime = glm::clamp(mDamageEffectTimePassed / mDamageEffectDuration, 0.0f, 1.0f);
-        mDamageTimeProperty->SetValue(normDmgEffectTime);
-
+        float normDmgEffectTime = 0.0f;
+        mDamageEffectTimePassed += deltaTimeSec;
         if (mDamageEffectTimePassed < mDamageEffectDuration) {
-            mDamageEffectTimePassed += deltaTimeSec;
+            normDmgEffectTime = glm::clamp(mDamageEffectTimePassed / mDamageEffectDuration, 0.0f, 1.0f);
         } else {
             mIsDamageEffectActive = false;
             mDamageEffectTimePassed = 0.0f;
-            mDamageTimeProperty->SetValue(0.0f);
+            normDmgEffectTime = 0.0f;
         }
+        mDamageTimeProperty->SetValue(normDmgEffectTime);
     }
 
     // Shake Effect

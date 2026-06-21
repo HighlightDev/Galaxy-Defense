@@ -47,7 +47,8 @@ local TOWER_CARD_INFO = {
     [MissileType.FREEZING_BOMB] = {name = "КРИО-РАКЕТА", role = "ЗАМЕДЛ.", dps = 28, cost = 180, accent = Styles.Combat.cyan},
     [MissileType.ELECTRO_RAY] = {name = "ЭЛЕКТРО-ЛУЧ", role = "АОЕ", dps = 35, cost = 200, accent = Styles.Combat.lilac},
     [MissileType.BLACK_HOLE] = {name = "ЧЁРНАЯ ДЫРА", role = "ГРАВИТ.", dps = 42, cost = 240, accent = Styles.Combat.indigo},
-    [MissileType.FREEZING_RAY] = {name = "КРИО-ЛУЧ", role = "ЗАМЕДЛ.", dps = 22, cost = 150, accent = Styles.Combat.cyanGlow}
+    [MissileType.FREEZING_RAY] = {name = "КРИО-ЛУЧ", role = "ЗАМЕДЛ.", dps = 22, cost = 150, accent = Styles.Combat.cyanGlow},
+    [MissileType.PLASMA_BOMB] = {name = "ПЛАЗМА-БОМБА", role = "ОЖОГ", dps = 38, cost = 220, accent = Styles.Combat.danger}
 }
 
 -- Build-palette section sub-plates ("подплашки", mockup sections "01 · БАШНИ" / "02 · БАРЬЕРЫ").
@@ -166,7 +167,7 @@ function TowerGridPanel:new(host, overlay, config)
 
     -- One card per tower type. The card background (a plain rectangle) is the clickable / hoverable
     -- surface; the icon and text labels sit on top as non-interactive children.
-    for i = MissileType.BOMB, MissileType.FREEZING_RAY do
+    for i = MissileType.BOMB, MissileType.PLASMA_BOMB do
         local missileType = MissileTypes.nameByValue(i)
         local card = {
             missileType = missileType,

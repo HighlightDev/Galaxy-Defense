@@ -14,9 +14,11 @@ struct MATERIAL_VS_OUTPUT {
     vec3 WorldTangent;
 
     vec3 WorldBitangent;
+};
 
-    // float due to perspective interpolation between vertex and fragment shader
-    float InstanceID;
+struct FLAT_MATERIAL_VS_OUTPUT
+{
+    int InstanceID;
 };
 
 vec3 transformNormalFromTangentSpaceToWorld(in MATERIAL_VS_OUTPUT VsOutput, in vec3 tangentSpaceNormal)

@@ -6,6 +6,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Implementation/Actors/BarrierActor.h"
 #include "Implementation/Actors/GravityBombMissileActor.h"
+#include "Implementation/Actors/PlasmaBombMissileActor.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
 #include "Implementation/Actors/LootActor.h"
 #include "Implementation/Actors/MissileActor.h"
@@ -16,6 +17,7 @@
 #include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/Factories/BarrierFactory.h"
 #include "Implementation/Factories/GravityBombMissileFactory.h"
+#include "Implementation/Factories/PlasmaBombMissileFactory.h"
 #include "Implementation/Factories/BombMissileFactory.h"
 #include "Implementation/Factories/ElectroRayChainFactory.h"
 #include "Implementation/Factories/ElectroRayFactory.h"
@@ -262,6 +264,8 @@ std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByTyp
         return std::make_unique<ElectroRayFactory>();
     case eMissileType::BLACK_HOLE:
         return std::make_unique<GravityBombMissileFactory>();
+    case eMissileType::PLASMA_BOMB:
+        return std::make_unique<PlasmaBombMissileFactory>();
     case eMissileType::FREEZING_RAY:
         return std::make_unique<FreezingRayFactory>();
     default:
@@ -414,6 +418,12 @@ CombatActorsPoolHandler::GetMissilePhysicsComponents(const std::unordered_set<eM
                 ext_assert(
                     physicsComponents.emplace_back(gravityBombMissile->GetExplosionPhaseActor()->GetPhysicsComponent()),
                     "Failed to get explosion phase physics component in GetMissilePhysicsComponents");
+            } else if (eMissileType::PLASMA_BOMB == missileType) {
+                // Single projectile: only the flying combat phase carries a collider (no field/explosion collider).
+                const auto& plasmaBombMissile = std::static_pointer_cast<PlasmaBombMissileActor>(missile);
+                ext_assert(
+                    physicsComponents.emplace_back(plasmaBombMissile->GetCombatActivePhaseActor()->GetPhysicsComponent()),
+                    "Failed to get combat active phase physics component in GetMissilePhysicsComponents");
             } else {
                 ext_assert(
                     physicsComponents.emplace_back(missile->GetPhysicsComponent()),
@@ -460,7 +470,8 @@ CombatActorsPoolHandler::GetPhysicsComponentsByGameObjectType(const eGameObjects
         return GetSpaceShipsPhysicsComponents();
     case eGameObjectsType::TOWER_MISSILE:
     case eGameObjectsType::SPACESHIP_MISSILE:
-        return GetMissilePhysicsComponents({eMissileType::BOMB, eMissileType::FREEZING_BOMB, eMissileType::BLACK_HOLE});
+        return GetMissilePhysicsComponents(
+            {eMissileType::BOMB, eMissileType::FREEZING_BOMB, eMissileType::BLACK_HOLE, eMissileType::PLASMA_BOMB});
     case eGameObjectsType::NEUTRAL_SPACE_OBJECT:
         return GetSpaceStationsPhysicsComponents();
     case eGameObjectsType::SPACE_STATION:

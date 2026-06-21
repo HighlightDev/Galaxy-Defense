@@ -11,20 +11,20 @@ uniform float uvScale;
 uniform vec3 cameraPosition;
 uniform vec3 outlineColor;
 
-vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn);
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn);
 
-float calculateFresnel(in vec3 viewDir, in MATERIAL_VS_OUTPUT materialIn)
+float calculateFresnel(in vec3 viewDir, in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
-    float fresnel = clamp(0.0, 1.0, 1.0 - dot(viewDir, GetMaterialWorldNormal(materialIn)));
+    float fresnel = clamp(0.0, 1.0, 1.0 - dot(viewDir, GetMaterialWorldNormal(materialIn, flatMaterialIn)));
     return pow(fresnel, 2.0);
 }
 
-vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return texture(albedo, materialIn.TextureCoordinates.xy * uvScale).rgb;
 }
 
-vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     float metallic = texture(metallicMap, materialIn.TextureCoordinates.xy * uvScale).r;
     float roughnes = texture(roughnessMap, materialIn.TextureCoordinates.xy * uvScale).r;
@@ -32,25 +32,25 @@ vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
     return vec2(metallic, roughnes);
 }
 
-float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return texture(ambientOcclusionMap, materialIn.TextureCoordinates.xy * uvScale).r;
 }
 
-float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return 1.0;
 };
 
-vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     vec3 tangentSpaceNormal = (texture(normalMap, materialIn.TextureCoordinates.xy * uvScale).rgb * 2.0 - 1.0);
     return transformNormalFromTangentSpaceToWorld(materialIn, tangentSpaceNormal);
 }
 
-vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
+vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     vec3 viewDir = normalize(cameraPosition - materialIn.WorldCoordinates.xyz);
-    float fresnel = calculateFresnel(viewDir, materialIn);
+    float fresnel = calculateFresnel(viewDir, materialIn, flatMaterialIn);
     return vec4(outlineColor, fresnel);
 }

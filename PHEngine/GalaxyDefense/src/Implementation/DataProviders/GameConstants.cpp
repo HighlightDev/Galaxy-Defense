@@ -82,6 +82,44 @@ const float c_gridDipStrength = 7.0f;
 const float c_gridSoftening = 2.0f;
 } // namespace Game::Constants::GravityBombMissile
 
+namespace Game::Constants::PlasmaBombMissile {
+// Combat (flying) phase
+const float c_combatMeshScale = 1.5f;
+const float c_combatUvScale = 0.5f;
+const glm::vec3 c_combatOutlineColor = glm::vec3(1.0f, 0.25f, 0.55f);
+const float c_combatColliderRadius = 3.0f;
+const float c_combatSpeed = 95.0f;
+const float c_soundGain = 0.2f;
+// Small semi-transparent plasma sphere that pops at the impact point
+const float c_coreMeshScale = 1.2f;
+const float c_materialMulCoef = 2.5f;
+const glm::vec3 c_coreTintColor = glm::vec3(1.0f, 0.12f, 0.3f);
+const glm::vec3 c_coreGlowColor = glm::vec3(1.0f, 0.4f, 0.6f);
+const float c_sphereOpacity = 1.0f;
+// Damage-over-time burn applied to the ship on hit
+const float c_dotDamagePerSecond = 5.0f;
+const float c_dotDurationSec = 3.0f;
+// Scorch burst: short-lived sparks fired radially from the impact point when the plasma sears the target
+const size_t c_burnParticleCount = 250;
+const float c_burnEmitRadius = 1.0f;
+const size_t c_burnThetaSlices = 10;
+const float c_burnLifeTime = 0.55f;
+const float c_burnSizeBegin = 0.7f;
+const float c_burnSizeEnd = 0.0f;
+const float c_burnRadialSpeed = 10.0f;
+const glm::vec4 c_burnColorBegin = glm::vec4(1.0f, 0.7f, 0.75f, 1.0f);
+const glm::vec4 c_burnColorEnd = glm::vec4(0.6f, 0.05f, 0.12f, 0.0f);
+// Plasma trail (tapered, fading tail following the flying missile)
+const size_t c_trailMaxVertices = 1024;
+const size_t c_trailMaxPoints = 25;
+const float c_trailMinPointSpacing = 0.6f;
+const float c_trailLineWidth = 1.0f;
+const float c_trailOpacity = 1.0f;
+const glm::vec3 c_trailColor = glm::vec3(0.75f, 0.05f, 0.18f);
+const glm::vec3 c_trailGlowColor = glm::vec3(1.0f, 0.5f, 0.62f);
+const float c_trailFadeOutSec = 0.55f;
+} // namespace Game::Constants::PlasmaBombMissile
+
 namespace Game::Constants::BombMissile {
 const float c_uvScale = 0.5f;
 const glm::vec3 c_outlineColor = glm::vec3(1.0f, 0.0f, 0.0f);

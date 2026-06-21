@@ -10,7 +10,7 @@ float blendFactor;
 
 const float c_markerSqrWidth = 100.0;
 
-vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     vec3 pixelAndCenterVec = world_spacestation_position - materialIn.WorldCoordinates.xyz;
     float sqrPixelDistanceFromCenter = dot(pixelAndCenterVec, pixelAndCenterVec);
@@ -21,27 +21,27 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
     return color;
 }
 
-vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec2(0);
 }
 
-float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return 0.0;
 }
 
-float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return blendFactor;
 };
 
-vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec3(0);
 }
 
-vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
+vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec4(0.0);
 }

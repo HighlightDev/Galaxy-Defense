@@ -26,7 +26,7 @@ struct DynamicInstancedFloatMaterialProperty : public DynamicMaterialProperty {
 private:
     std::vector<std::pair<std::shared_ptr<PropertyBinding>, std::weak_ptr<MaterialInstanceDataProvider>>> mInstancedBindings;
 
-    bool bValueIncremental;
+    bool bValueIncremental{false};
 
     bool mRangeIsSet{false};
     glm::vec2 mRangeMinMax;
@@ -64,29 +64,36 @@ public:
 
     std::vector<float> GetValue()
     {
-        std::sort(mInstancedBindings.begin(), mInstancedBindings.end(), [](const auto& pairLeft, const auto& pairRight) {
-            const auto& leftProviderSp = pairLeft.second.lock();
-            const auto& rightProviderSp = pairRight.second.lock();
-            if (leftProviderSp && rightProviderSp) {
-                return leftProviderSp->GetRenderInstanceId() < rightProviderSp->GetRenderInstanceId();
-            }
-            return false;
-        });
-        int32_t instanceIndex = 0;
+        // The uniform array is read in the shader as property[gl_InstanceID], and gl_InstanceID is the render instance
+        // id (the instance's position in the batch's valid-instance list, always a contiguous 0..activeCount-1). So
+        // write each active binding's value straight to its render instance id, size the array exactly to the active
+        // count, and zero everything else. Rebuilding from scratch every frame (rather than overwriting a persistent,
+        // never-shrinking vector by a compacted counter) guarantees no stale slot survives a change in the active set
+        // and that the value at slot k always belongs to the instance rendered at gl_InstanceID == k.
+        int32_t activeInstanceCount = 0;
         for (const auto& [bindingSp, instanceDataWp] : mInstancedBindings) {
             const auto& instanceDataSp = instanceDataWp.lock();
             if (instanceDataSp && instanceDataSp->IsInstanceActive() && instanceDataSp->GetRenderInstanceId() >= 0) {
-                const auto& floatBinding = std::static_pointer_cast<FloatPropertyBinding>(bindingSp);
-                if (instanceIndex < mCachedValues.size()) {
-                    if (bValueIncremental) {
-                        mCachedValues[instanceIndex] += floatBinding->GetValue();
-                    } else {
-                        mCachedValues[instanceIndex] = floatBinding->GetValue();
-                    }
-                } else {
-                    mCachedValues.emplace_back(floatBinding->GetValue());
-                }
-                ++instanceIndex;
+                activeInstanceCount = std::max(activeInstanceCount, instanceDataSp->GetRenderInstanceId() + 1);
+            }
+        }
+
+        mCachedValues.assign(static_cast<size_t>(activeInstanceCount), 0.0f);
+
+        for (const auto& [bindingSp, instanceDataWp] : mInstancedBindings) {
+            const auto& instanceDataSp = instanceDataWp.lock();
+            if (!instanceDataSp || !instanceDataSp->IsInstanceActive()) {
+                continue;
+            }
+            const int32_t renderInstanceId = instanceDataSp->GetRenderInstanceId();
+            if (renderInstanceId < 0 || renderInstanceId >= activeInstanceCount) {
+                continue;
+            }
+            const auto& floatBinding = std::static_pointer_cast<FloatPropertyBinding>(bindingSp);
+            if (bValueIncremental) {
+                mCachedValues[renderInstanceId] += floatBinding->GetValue();
+            } else {
+                mCachedValues[renderInstanceId] = floatBinding->GetValue();
             }
         }
         return mCachedValues;

@@ -25,7 +25,7 @@ mat2 rot1 = mat2(cos(1.0), sin(1.0), -sin(1.0), cos(1.0));
 mat2 rot2 = mat2(cos(1.3), sin(1.3), -sin(1.3), cos(1.3));
 
 // this shader was taken from https://www.shadertoy.com/view/XlfGRj#
-vec3 getSpaceStarsColor(in MATERIAL_VS_OUTPUT materialIn)
+vec3 getSpaceStarsColor(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     // get coords and direction
     vec2 texCoords = materialIn.TextureCoordinates.xy;
@@ -71,32 +71,32 @@ vec3 getSpaceStarsColor(in MATERIAL_VS_OUTPUT materialIn)
     return vec3(v * 0.01);
 }
 
-vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
-    return getSpaceStarsColor(materialIn);
+    return getSpaceStarsColor(materialIn, flatMaterialIn);
 }
 
-vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec2(0);
 }
 
-float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return 0.0;
 }
 
-float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return 1.0;
 };
 
-vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec3(0);
 }
 
-vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
+vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec4(0.0);
 }

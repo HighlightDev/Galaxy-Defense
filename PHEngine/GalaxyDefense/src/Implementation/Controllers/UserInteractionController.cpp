@@ -788,6 +788,8 @@ eMissileType UserInteractionController::MissileTypeFromString(const std::string&
         return eMissileType::FREEZING_RAY;
     } else if (typeStr == "BLACK_HOLE") {
         return eMissileType::BLACK_HOLE;
+    } else if (typeStr == "PLASMA_BOMB") {
+        return eMissileType::PLASMA_BOMB;
     }
     return eMissileType::NONE;
 }

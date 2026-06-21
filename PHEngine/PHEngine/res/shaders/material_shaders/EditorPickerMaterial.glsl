@@ -6,22 +6,22 @@ uniform float opacity;
 uniform vec3 color;
 uniform float pulse_animation_time;
 
-vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return color;
 }
 
-vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec2(0);
 }
 
-float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return 0.0;
 }
 
-float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     float animationValue = pulse_animation_time > 1.0 ? (2.0 - pulse_animation_time) : pulse_animation_time;
     float maxSqrOuterRectangleRadius = pow(0.65, 2);
@@ -34,12 +34,12 @@ float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
     return innerRadiusOpacity * outerRadiusOpacity * opacity * clamp(animationValue, 0.1, 1.0);
 };
 
-vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec3(0);
 }
 
-vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
+vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec4(0.0);
 }

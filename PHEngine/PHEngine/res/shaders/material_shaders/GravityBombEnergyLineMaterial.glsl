@@ -35,34 +35,34 @@ vec3 computeBaseColor(in vec2 uv)
     return color * (0.35 + 0.4 * shimmer);
 }
 
-vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return computeBaseColor(materialIn.TextureCoordinates.xy);
 }
 
-vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec2(0);
 }
 
-float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return 0.0;
 }
 
-float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     // No dashes; instead feather the alpha toward the two long edges so the strip has soft, glowing edges.
     float edge = abs(materialIn.TextureCoordinates.y - 0.5) * 2.0;
     return opacity * (1.0 - pow(edge, 2.0));
 }
 
-vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return vec3(0);
 }
 
-vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
+vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     // Emit the bright running energy (alpha = intensity) so the forward-no-lit pass blends it over the base color and
     // the bloom pass picks up the highlights.

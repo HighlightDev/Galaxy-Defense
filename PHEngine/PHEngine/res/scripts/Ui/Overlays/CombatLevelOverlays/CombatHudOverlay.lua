@@ -51,7 +51,8 @@ local WEAPON_DISPLAY_NAME = {
     [MissileTypes.MissileType.FREEZING_BOMB] = "КРИО-РАКЕТА",
     [MissileTypes.MissileType.ELECTRO_RAY] = "ЭЛЕКТРО-ЛУЧ",
     [MissileTypes.MissileType.BLACK_HOLE] = "ЧЁРНАЯ ДЫРА",
-    [MissileTypes.MissileType.FREEZING_RAY] = "КРИО-ЛУЧ"
+    [MissileTypes.MissileType.FREEZING_RAY] = "КРИО-ЛУЧ",
+    [MissileTypes.MissileType.PLASMA_BOMB] = "ПЛАЗМА-БОМБА"
 }
 
 local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}
@@ -161,6 +162,7 @@ function CombatHudOverlay:new(host)
     combatOverlay:addCompoundWidget(speedPauseButton)
     local speedButtons = {}
     local speedValues = {1, 2, 4}
+    local isPaused = false
     for i = 1, #speedValues do
         local b = LabelButton:new(host, combatOverlay, FONT, "CombatSpeed" .. tostring(speedValues[i]))
         combatOverlay:addCompoundWidget(b)
@@ -494,8 +496,14 @@ function CombatHudOverlay:new(host)
         speedButtons[i]:subscribeOnMouseInputClickedCallback(function()
             selectedSpeed = value -- TODO: drive real game speed once the engine exposes it
             refreshSpeedButtons()
+            EventsHelper:sendChangePlaySpeedGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE, value)
         end)
     end
+
+    speedPauseButton:subscribeOnMouseInputClickedCallback(function ()
+        isPaused = not isPaused
+        EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE, isPaused)        
+    end)
 
     combatOverlay.onCurrentLevelProgressStageChanged = rebuildObjectives
 

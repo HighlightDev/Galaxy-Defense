@@ -32,6 +32,11 @@ std::string UniformArray::GetUniformName() const
     return m_uniformName;
 }
 
+const std::vector<int32_t>& UniformArray::GetUniformLocations() const
+{
+    return m_uniformLocations;
+}
+
 void UniformArray::LoadUniform(size_t uniformIndex, bool arg) const
 {
 #if DEBUG
@@ -231,6 +236,12 @@ std::string Uniform::GetUniformName() const
 {
     return mUniformName;
 }
+
+int32_t Uniform::GetUniformLocation() const
+{
+    return uniformLocation;
+}
+
 void Uniform::LoadUniform(bool arg)
 {
     if (uniformLocation == -1)

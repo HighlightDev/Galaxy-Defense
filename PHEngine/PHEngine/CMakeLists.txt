@@ -1,5 +1,6 @@
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(Utility)
+include(Flags)
 
 set(PROJECT_NAME PHEngine)
 
@@ -40,6 +41,11 @@ if (ENABLE_PIC)
   target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
 else()
   message(STATUS "Position independent code disabled for ${PROJECT_NAME}")
+endif()
+
+if (PROFILER_BUILD)
+  message(STATUS "Profile build enabled for ${PROJECT_NAME}")
+  target_compile_options(${PROJECT_NAME} PRIVATE ProfilerCompilationFlags)
 endif()
 
 set(ENGINE_DEPENDENCIES_DIR ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies)

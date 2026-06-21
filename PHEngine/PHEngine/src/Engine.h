@@ -5,6 +5,7 @@
 #include "Core/GameCore/Event/ExitGameEvent.h"
 #include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/GameCore/Event/PauseGameEvent.h"
+#include "Core/GameCore/Event/PlaySpeedEvent.h"
 #include "Core/GameCore/Event/RestartLevelEvent.h"
 #include "Core/GameCore/ILevelFactory.h"
 #include "Core/GameCore/Input/InputManager.h"
@@ -36,6 +37,7 @@ class Engine : public PauseGameThreadEvent,
                public ExitGameThreadEvent,
                public LoadLevelGameThreadEvent,
                public RestartLevelGameThreadEvent,
+               public PlaySpeedGameThreadEvent,
                public std::enable_shared_from_this<Engine> {
     InterThreadCommunicationMgr m_interThreadMgr;
 
@@ -89,6 +91,8 @@ class Engine : public PauseGameThreadEvent,
     std::atomic_bool mIsGameThreadIdle{false};
     std::atomic_bool mIsLuaThreadIdle{false};
 
+    float mPlaySpeed{1.0f};
+
 public:
     Engine();
 
@@ -123,6 +127,8 @@ public:
     void ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLevelGameThreadEvent::EventData_t& data) override;
 
     void ProcessEvent(const RestartLevelGameThreadEvent* sender, const RestartLevelGameThreadEvent::EventData_t& data) override;
+
+    void ProcessEvent(const PlaySpeedGameThreadEvent* sender, const PlaySpeedGameThreadEvent::EventData_t& data) override;
 
     void GameThreadPulse();
 

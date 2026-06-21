@@ -82,6 +82,20 @@ set(BULLET_LIBS
     ConvexDecomposition)
 
 if(WIN32)
+
+  add_custom_command(
+  TARGET ${EXECUTABLE_NAME}
+  POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E echo
+    "Copy dll files to binary directory: $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/r"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/bin/Debug/
+          ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/FreeType/bin/Release/
+          ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/bin/Release/x64/
+          ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/bin/Debug/
+          $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/)
+
   if(ARCH_x64)
     set(LIB_LOCATION_PREFIX Win/x64/)
   else()

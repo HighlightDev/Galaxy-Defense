@@ -14,12 +14,12 @@ uniform float uvScale;
 
 uniform float freezingBlendValue[MaxInstancesPerInstanceBatch];
 
-vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return texture(albedo, materialIn.TextureCoordinates.xy * uvScale).rgb;
 }
 
-vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     float metallic = texture(metallicMap, materialIn.TextureCoordinates.xy * uvScale).r;
     float roughnes = texture(roughnessMap, materialIn.TextureCoordinates.xy * uvScale).r;
@@ -27,24 +27,23 @@ vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
     return vec2(metallic, roughnes);
 }
 
-float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return texture(ambientOcclusionMap, materialIn.TextureCoordinates.xy * uvScale).r;
 }
 
-float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     return 1.0;
 };
 
-vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
     vec3 tangentSpaceNormal = (texture(normalMap, materialIn.TextureCoordinates.xy * uvScale).rgb * 2.0 - 1.0);
     return transformNormalFromTangentSpaceToWorld(materialIn, tangentSpaceNormal);
 }
 
-vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn)
+vec4 GetMaterialEmission(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUTPUT flatMaterialIn)
 {
-    // int instanceID = int(materialIn.InstanceID);
     return vec4(0);
 }

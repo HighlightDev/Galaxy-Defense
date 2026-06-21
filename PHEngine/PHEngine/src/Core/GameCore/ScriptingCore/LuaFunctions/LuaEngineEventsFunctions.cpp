@@ -8,6 +8,7 @@
 #include "Core/GameCore/Event/ExitGameEvent.h"
 #include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/GameCore/Event/PauseGameEvent.h"
+#include "Core/GameCore/Event/PlaySpeedEvent.h"
 #include "Core/GameCore/Event/RestartLevelEvent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
@@ -95,6 +96,12 @@ void LuaEngineEventsFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
         mOwnerPtr,
         std::bind(&LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent, this, std::placeholders::_1),
         "_SendRestartLevelGameThreadEvent");
+    LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendChangePlaySpeedGameThreadEvent"), void(int32_t, float)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaEngineEventsFunctions::SendChangePlaySpeedGameThreadEvent, this, std::placeholders::_1),
+            "_SendChangePlaySpeedGameThreadEvent");
 }
 
 void LuaEngineEventsFunctions::SendPauseGameThreadEvent(
@@ -194,6 +201,27 @@ void LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent(const std::tuple<
                std::weak_ptr<EngineCore::Scene> sceneWp,
                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                 RestartLevelGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION);
+            });
+    }
+}
+
+void LuaEngineEventsFunctions::SendChangePlaySpeedGameThreadEvent(
+    const std::tuple<int32_t /*enqueue policy*/, float /*0-1 speed coefficient*/>& data)
+{
+    const auto enqueuePolicy = std::get<0>(data);
+    const float playSpeed = std::get<1>(data);
+
+    if (const auto& sceneSp = mSceneWp.lock()) {
+        static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendChangePlaySpeedGameThreadEvent");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [playSpeed](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                PlaySpeedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, playSpeed);
             });
     }
 }

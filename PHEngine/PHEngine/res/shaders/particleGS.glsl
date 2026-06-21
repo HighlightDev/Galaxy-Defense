@@ -16,9 +16,11 @@ in vec2 vs_out_rotation_size[];
 in vec3 vs_out_particle_color[];
 
 in MATERIAL_VS_OUTPUT VsOutput[];
+flat in FLAT_MATERIAL_VS_OUTPUT FlatVsOutput[];
 
 out vec3 out_color;
 out MATERIAL_VS_OUTPUT GsOutput;
+flat out FLAT_MATERIAL_VS_OUTPUT FlatGsOutput;
 
 mat4 rollMatrix(float angle)
 {
@@ -53,21 +55,25 @@ void main()
 
     gl_Position = projectionMatrix * (rotatedVertex1 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];
+    FlatGsOutput = FlatVsOutput[0];
     GsOutput.TextureCoordinates = texCoordsVertex1;
     EmitVertex();
 
     gl_Position = projectionMatrix * (rotatedVertex2 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];
+    FlatGsOutput = FlatVsOutput[0];
     GsOutput.TextureCoordinates = texCoordsVertex2;
     EmitVertex();
 
     gl_Position = projectionMatrix * (rotatedVertex3 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];
+    FlatGsOutput = FlatVsOutput[0];
     GsOutput.TextureCoordinates = texCoordsVertex3;
     EmitVertex();
 
     gl_Position = projectionMatrix * (rotatedVertex4 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];
+    FlatGsOutput = FlatVsOutput[0];
     GsOutput.TextureCoordinates = texCoordsVertex4;
     EmitVertex();
 

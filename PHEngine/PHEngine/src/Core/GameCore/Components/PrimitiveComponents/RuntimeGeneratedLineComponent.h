@@ -38,7 +38,7 @@ public:
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec) override;
 
     const RuntimeGeneratedMeshPoolParameters& GetRuntimeMeshPoolParameters() const;
 

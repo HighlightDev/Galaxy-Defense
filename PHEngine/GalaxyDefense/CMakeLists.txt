@@ -1,5 +1,6 @@
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/PHEngine/cmake)
 include(Utility)
+include(Flags)
 
 set(HEADERS
     src/Implementation/Components/MovementComponents/LootDropMovementComponent.h
@@ -175,6 +176,7 @@ set(SOURCES
     src/Implementation/Factories/BombMissileFactory.cpp
     src/Implementation/Factories/FreezingMissileFactory.cpp
     src/Implementation/Factories/GravityBombMissileFactory.cpp
+    src/Implementation/Factories/PlasmaBombMissileFactory.cpp
     src/Implementation/Factories/AsteroidFactory.cpp
     src/Implementation/Factories/BackgroundPlanetsFactory.cpp
     src/Implementation/Factories/ElectroRayFactory.cpp
@@ -190,6 +192,7 @@ set(SOURCES
     src/Implementation/ActorLeveling/BarrierLevel.cpp
     src/Implementation/ActorLeveling/LevelAttributeDataProvider.cpp
     src/Implementation/Modifiers/GravityModifier.cpp
+    src/Implementation/Modifiers/PlasmaModifier.cpp
     src/Implementation/Modifiers/FreezingModifier.cpp
     src/Implementation/Modifiers/FreezingRayModifier.cpp
     src/Implementation/Modifiers/ElectroRayChainModifier.cpp
@@ -199,6 +202,7 @@ set(SOURCES
     src/Implementation/Actors/BombMissileActor.cpp
     src/Implementation/Actors/FreezingMissileActor.cpp
     src/Implementation/Actors/GravityBombMissileActor.cpp
+    src/Implementation/Actors/PlasmaBombMissileActor.cpp
     src/Implementation/Actors/SpaceshipActor.cpp
     src/Implementation/Actors/WeakSpaceshipActor.cpp
     src/Implementation/Actors/FighterSpaceshipActor.cpp
@@ -213,6 +217,7 @@ set(SOURCES
     src/Implementation/Actors/LootActor.cpp
     src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.cpp
     src/Implementation/MissileExplosionVisitors/GravityBombExplosionVisitor.cpp
+    src/Implementation/MissileExplosionVisitors/PlasmaBombExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.cpp
@@ -444,4 +449,9 @@ endif(ENABLE_LIBUNWIND)
 
 if (WIN32)
   target_compile_definitions(${EXECUTABLE_NAME} PRIVATE TINYLOGGER_IMPORTS)
+endif()
+
+if (PROFILER_BUILD)
+  message(STATUS "Profile build enabled for ${EXECUTABLE_NAME}")
+  target_compile_options(${EXECUTABLE_NAME} PRIVATE ProfilerCompilationFlags)
 endif()

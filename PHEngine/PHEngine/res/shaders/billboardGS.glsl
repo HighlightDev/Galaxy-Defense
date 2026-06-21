@@ -16,8 +16,10 @@ uniform float rotationRadians;
 uniform int isFlipped;
 
 in MATERIAL_VS_OUTPUT VsOutput[];
-
 out MATERIAL_VS_OUTPUT GsOutput;
+
+flat in FLAT_MATERIAL_VS_OUTPUT FlatVsOutput[];
+flat out FLAT_MATERIAL_VS_OUTPUT FlatGsOutput;
 
 mat4 rollMatrix(float radAngle)
 {
@@ -49,21 +51,25 @@ void main()
 
     gl_Position = projectionMatrix * (vertex1 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];
+    FlatGsOutput = FlatVsOutput[0];
     GsOutput.TextureCoordinates = texCoordsVertex1;
     EmitVertex();
 
     gl_Position = projectionMatrix * (vertex2 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];
+    FlatGsOutput = FlatVsOutput[0];
     GsOutput.TextureCoordinates = texCoordsVertex2;
     EmitVertex();
 
     gl_Position = projectionMatrix * (vertex3 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];
+    FlatGsOutput = FlatVsOutput[0];
     GsOutput.TextureCoordinates = texCoordsVertex3;
     EmitVertex();
 
     gl_Position = projectionMatrix * (vertex4 + gl_in[0].gl_Position);
     GsOutput = VsOutput[0];
+    FlatGsOutput = FlatVsOutput[0];
     GsOutput.TextureCoordinates = texCoordsVertex4;
     EmitVertex();
 

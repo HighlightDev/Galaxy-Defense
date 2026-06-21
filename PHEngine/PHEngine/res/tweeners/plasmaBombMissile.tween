@@ -1,0 +1,147 @@
+<tweener>
+  <tweener_name>
+    name: "PlasmaBombMissile"
+  </tweener_name>
+
+  <states>
+    <state>
+      name: "s_FirstPhasePreload"
+    </state>
+    <state>
+      name: "s_FirstPhaseActiveCombat"
+    </state>
+    <state>
+      name: "s_Impact"
+    </state>
+    <state>
+      name: "s_Dissipate"
+    </state>
+  </states>
+  <transitions>
+    <transition>
+      name: "t_Preload_To_ActiveCombat"
+      from_state: "s_FirstPhasePreload"
+      to_state: "s_FirstPhaseActiveCombat"
+      duration: "0.001"
+    </transition>
+    <transition>
+      name: "t_ActiveCombat_To_Impact"
+      from_state: "s_FirstPhaseActiveCombat"
+      to_state: "s_Impact"
+      duration: "0.001"
+    </transition>
+    <transition>
+      name: "t_Impact_To_Dissipate"
+      from_state: "s_Impact"
+      to_state: "s_Dissipate"
+      duration: "0.6"
+    </transition>
+  </transitions>
+  <bindings>
+    <binding>
+      binding_name: "b_plasmaActivePhaseEnabled"
+      type: "boolean"
+    </binding>
+    <binding>
+      binding_name: "b_plasmaBurstEnabled"
+      type: "boolean"
+    </binding>
+    <binding>
+      binding_name: "b_plasmaSize"
+      type: "vec3"
+    </binding>
+  </bindings>
+  <properties>
+    <!-- s_FirstPhasePreload: projectile and sphere idle -->
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_plasmaActivePhaseEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhasePreload"
+    </property>
+    <property>
+      name: "p_sphere_enable"
+      binding_name: "b_plasmaBurstEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhasePreload"
+    </property>
+    <property>
+      name: "p_sphere_size"
+      binding_name: "b_plasmaSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhasePreload"
+    </property>
+
+    <!-- s_FirstPhaseActiveCombat: projectile flies, no sphere yet -->
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_plasmaActivePhaseEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+    <property>
+      name: "p_sphere_enable"
+      binding_name: "b_plasmaBurstEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+    <property>
+      name: "p_sphere_size"
+      binding_name: "b_plasmaSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+
+    <!-- s_Impact: projectile vanishes, the small plasma sphere pops in at the impact point -->
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_plasmaActivePhaseEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_Impact"
+    </property>
+    <property>
+      name: "p_sphere_enable"
+      binding_name: "b_plasmaBurstEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_Impact"
+    </property>
+    <property>
+      name: "p_sphere_size"
+      binding_name: "b_plasmaSize"
+      type: "vec3"
+      value: "x=2.0;y=2.0;z=2.0;"
+      state: "s_Impact"
+    </property>
+
+    <!-- s_Dissipate: sphere shrinks away over the Impact->Dissipate transition -->
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_plasmaActivePhaseEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_Dissipate"
+    </property>
+    <property>
+      name: "p_sphere_enable"
+      binding_name: "b_plasmaBurstEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_Dissipate"
+    </property>
+    <property>
+      name: "p_sphere_size"
+      binding_name: "b_plasmaSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_Dissipate"
+    </property>
+  </properties>
+</tweener>

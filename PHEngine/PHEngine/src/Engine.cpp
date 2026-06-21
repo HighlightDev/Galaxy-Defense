@@ -16,6 +16,7 @@
 #include "Core/GameCore/Event/MouseScrollEvent.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
+#include "Core/GameCore/Event/PlaySpeedEvent.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
 #include "Core/GameCore/Event/TextureAtlasGeneratedEvent.h"
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
@@ -71,6 +72,7 @@ Engine::~Engine()
     ExitGameThreadEvent::GetInstance()->RemoveListener(ExitGameThreadEvent::GetInstanceId());
     LoadLevelGameThreadEvent::GetInstance()->RemoveListener(LoadLevelGameThreadEvent::GetInstanceId());
     RestartLevelGameThreadEvent::GetInstance()->RemoveListener(RestartLevelGameThreadEvent::GetInstanceId());
+    PlaySpeedGameThreadEvent::GetInstance()->RemoveListener(PlaySpeedGameThreadEvent::GetInstanceId());
 }
 
 void Engine::Initialize()
@@ -102,7 +104,8 @@ void Engine::Initialize()
             MouseButtonDownRootEvent,
             MouseScrollRootEvent,
             RestartLevelGameThreadEvent,
-            GeneralSystemSettingsChangedGameThreadEvent>();
+            GeneralSystemSettingsChangedGameThreadEvent,
+            PlaySpeedGameThreadEvent>();
 
     LuaThreadEventDispatcher::GetInstance()
         ->RegisterEventsByType<
@@ -141,6 +144,7 @@ void Engine::Initialize()
     ExitGameThreadEvent::GetInstance()->AddListener(thisSp);
     LoadLevelGameThreadEvent::GetInstance()->AddListener(thisSp);
     RestartLevelGameThreadEvent::GetInstance()->AddListener(thisSp);
+    PlaySpeedGameThreadEvent::GetInstance()->AddListener(thisSp);
 }
 
 void Engine::CleanUp()
@@ -368,6 +372,15 @@ void Engine::ProcessEvent(const RestartLevelGameThreadEvent* sender, const Resta
         });
 }
 
+void Engine::ProcessEvent(const PlaySpeedGameThreadEvent* sender, const PlaySpeedGameThreadEvent::EventData_t& data)
+{
+    const float newPlaySpeed = std::get<0>(data);
+    if (newPlaySpeed >= 0.0f) {
+        LogInfo("Engine::ProcessEvent:PlaySpeedGameThreadEvent: speed: ", newPlaySpeed);
+        mPlaySpeed = newPlaySpeed;
+    }
+}
+
 void Engine::LuaThreadPulse()
 {
     using namespace std::chrono_literals;
@@ -431,7 +444,7 @@ void Engine::GameThreadPulse()
             ProcessGameThreadEvents(eExecutionOrder::POST_EXECUTION);
         }
         mGameThreadDeltaTimeSeconds
-            = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(gtStartTimePoint));
+            = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(gtStartTimePoint)) * mPlaySpeed;
 
 #ifdef DEBUG
         if (sumGtSeconds >= 1.0f) { // duration is >= than one second

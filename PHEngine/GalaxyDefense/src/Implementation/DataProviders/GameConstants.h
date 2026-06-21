@@ -90,6 +90,46 @@ extern const float c_gridDipStrength;
 extern const float c_gridSoftening;
 } // namespace Game::Constants::GravityBombMissile
 
+namespace Game::Constants::PlasmaBombMissile {
+// Combat (flying) phase
+extern const float c_combatMeshScale;
+extern const float c_combatUvScale;
+extern const glm::vec3 c_combatOutlineColor;
+extern const float c_combatColliderRadius;
+extern const float c_combatSpeed;
+extern const float c_soundGain;
+// Small semi-transparent plasma sphere that pops at the impact point
+extern const float c_coreMeshScale;
+extern const float c_materialMulCoef;
+extern const glm::vec3 c_coreTintColor;
+extern const glm::vec3 c_coreGlowColor;
+extern const float c_sphereOpacity;
+// Damage-over-time burn applied to the ship on hit
+extern const float c_dotDamagePerSecond;
+extern const float c_dotDurationSec;
+// Scorch burst: short-lived sparks fired radially from the impact point when the plasma sears the target
+extern const size_t c_burnParticleCount;
+extern const float c_burnEmitRadius;
+extern const size_t c_burnThetaSlices;
+extern const float c_burnLifeTime;
+extern const float c_burnSizeBegin;
+extern const float c_burnSizeEnd;
+extern const float c_burnRadialSpeed;
+extern const glm::vec4 c_burnColorBegin;
+extern const glm::vec4 c_burnColorEnd;
+// Plasma trail (tapered, fading tail following the flying missile)
+extern const size_t c_trailMaxVertices;
+extern const size_t c_trailMaxPoints;
+extern const float c_trailMinPointSpacing;
+extern const float c_trailLineWidth;
+extern const float c_trailOpacity;
+extern const glm::vec3 c_trailColor;
+extern const glm::vec3 c_trailGlowColor;
+// Seconds over which the frozen trail tapers to nothing after impact. Kept just under the 0.6s Impact->Dissipate
+// window so the trail is already invisible by the time the missile disables (no abrupt pop).
+extern const float c_trailFadeOutSec;
+} // namespace Game::Constants::PlasmaBombMissile
+
 namespace Game::Constants::BombMissile {
 extern const float c_uvScale;
 extern const glm::vec3 c_outlineColor;

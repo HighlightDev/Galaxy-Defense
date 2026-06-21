@@ -59,6 +59,8 @@ private:
 
     void SendRestartLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/>& data);
 
+    void SendChangePlaySpeedGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, float /*0-1 speed coefficient*/>& data);
+
     void ProcessEvent(
         const WindowSizeChangedLuaThreadEvent* sender, const WindowSizeChangedLuaThreadEvent::EventData_t& data) override;
 

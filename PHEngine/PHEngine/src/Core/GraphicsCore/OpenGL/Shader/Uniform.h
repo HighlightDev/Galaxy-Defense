@@ -28,6 +28,8 @@ public:
 
     std::string GetUniformName() const;
 
+    const std::vector<int32_t>& GetUniformLocations() const;
+
     void LoadUniform(size_t uniformIndex, bool arg) const;
 
     void LoadUniform(size_t uniformIndex, float arg) const;
@@ -67,6 +69,8 @@ public:
     ~Uniform();
 
     std::string GetUniformName() const;
+
+    int32_t GetUniformLocation() const;
 
     void LoadUniform(bool arg);
 
