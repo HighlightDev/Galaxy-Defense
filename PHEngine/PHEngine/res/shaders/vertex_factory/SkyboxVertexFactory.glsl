@@ -4,33 +4,40 @@ in vec3 VertexPosition;
 
 #include "materialCommon.incl.glsl"
 
-layout(std140, binding = 0) uniform Matrices {
+layout(std140, binding = 0) uniform Matrices
+{
     mat4 worldMatrix;
     mat4 viewMatrix;
     mat4 projectionMatrix;
 };
 
-vec4 GetLocalToWorldSpacePosition() {
+vec4 GetLocalToWorldSpacePosition()
+{
     return worldMatrix * vec4(VertexPosition, 1.0);
 }
 
-vec3 GetLocalToWorldSpaceNormal() {
+vec3 GetLocalToWorldSpaceNormal()
+{
     return vec3(0);
 }
 
-vec3 GetLocalToWorldSpaceTangent() {
+vec3 GetLocalToWorldSpaceTangent()
+{
     return vec3(0);
 }
 
-vec3 GetLocalToWorldSpaceBitangent() {
+vec3 GetLocalToWorldSpaceBitangent()
+{
     return vec3(0);
 }
 
-vec2 GetLocalTexCoords() {
+vec2 GetLocalTexCoords()
+{
     return vec2(0);
 }
 
-MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput() {
+MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput()
+{
     MATERIAL_VS_OUTPUT result;
 
     result.TextureCoordinates = VertexPosition;
@@ -50,7 +57,8 @@ MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput() {
     return result;
 }
 
-FLAT_MATERIAL_VS_OUTPUT VertexFactoryGetFlatMaterialOutput() {
+FLAT_MATERIAL_VS_OUTPUT VertexFactoryGetFlatMaterialOutput()
+{
     FLAT_MATERIAL_VS_OUTPUT result;
 
     result.InstanceID = gl_InstanceID;

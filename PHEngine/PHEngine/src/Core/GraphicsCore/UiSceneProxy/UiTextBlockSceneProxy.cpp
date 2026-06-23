@@ -326,10 +326,9 @@ void UiTextBlockSceneProxy::RenderText()
             const auto textNormSize = mTextFieldProxy->GetCreatedMeshTextWidthHeightNormalized();
             const auto textAlignmentOffset = CalculateTextAlignmentOffset(normalizedWidthHeight, textNormSize);
 
-            mUiLabelShader->SetPosition(
-                glm::vec2(
-                    mNormalizedTranslation.x + mCenterOffset.x + textAlignmentOffset.x,
-                    1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textNormSize.y + textAlignmentOffset.y)));
+            mUiLabelShader->SetPosition(glm::vec2(
+                mNormalizedTranslation.x + mCenterOffset.x + textAlignmentOffset.x,
+                1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textNormSize.y + textAlignmentOffset.y)));
             mFontTexture->BindTexture(0);
             mUiLabelShader->SetFontAtlasSlot(0);
             mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);

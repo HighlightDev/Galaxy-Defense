@@ -101,18 +101,16 @@ function SelectedTowerPanel:new(host, overlay, widgetName, config)
     end
 
     newObj.demolishButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        newObj.demolishButton:setButtonColorHexValue(
-            newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and Styles.Combat.chipHoverColor or
-                Styles.Combat.chipColor)
+        newObj.demolishButton:setButtonColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
+                                                         Styles.Combat.chipHoverColor or Styles.Combat.chipColor)
     end)
     newObj.demolishButton:subscribeOnMouseInputClickedCallback(function()
         if newObj.onDemolishClicked then newObj.onDemolishClicked() end
     end)
 
     newObj.upgradeButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        newObj.upgradeButton:setButtonColorHexValue(
-            newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and Styles.Combat.cyanGlow or
-                Styles.Combat.cyan)
+        newObj.upgradeButton:setButtonColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
+                                                        Styles.Combat.cyanGlow or Styles.Combat.cyan)
     end)
     newObj.upgradeButton:subscribeOnMouseInputClickedCallback(function()
         if newObj.onUpgradeClicked then newObj.onUpgradeClicked() end

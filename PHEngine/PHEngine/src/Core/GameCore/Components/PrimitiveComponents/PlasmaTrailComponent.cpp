@@ -40,9 +40,7 @@ void PlasmaTrailComponent::Tick(const float deltaTimeSec, const float playSpeed)
 
     if (mIsFadingOut) {
         mFadeOutElapsedSec += deltaTimeSec;
-        mFadeFactor = mFadeOutDurationSec > 0.0f
-            ? glm::clamp(1.0f - mFadeOutElapsedSec / mFadeOutDurationSec, 0.0f, 1.0f)
-            : 0.0f;
+        mFadeFactor = mFadeOutDurationSec > 0.0f ? glm::clamp(1.0f - mFadeOutElapsedSec / mFadeOutDurationSec, 0.0f, 1.0f) : 0.0f;
         if (mFadeOutElapsedSec >= mFadeOutDurationSec) {
             // Fully tapered away: switch off so the proxy stops rendering (it is already invisible, so no pop).
             mIsFadingOut = false;

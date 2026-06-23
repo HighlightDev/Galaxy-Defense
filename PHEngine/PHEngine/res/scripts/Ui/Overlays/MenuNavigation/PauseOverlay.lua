@@ -41,14 +41,31 @@ PauseOverlay = {}
 -- `actionId` selects the click behaviour wired below.
 local function buildItems(Combat)
     return {
-        {id = "resume", label = "ПРОДОЛЖИТЬ", sub = "Вернуться к обороне станции", accent = Combat.cyanGlow,
-         icon = "play.png"},
-        {id = "settings", label = "НАСТРОЙКИ", sub = "Графика · звук · управление", accent = Combat.textBright,
-         icon = "gear.png"},
-        {id = "tomenu", label = "ВЫЙТИ В ГЛАВНОЕ МЕНЮ", sub = "Прогресс волны будет сохранён",
-         accent = Combat.dangerSoft, icon = "arrow-left.png"},
-        {id = "quit", label = "ВЫЙТИ ИЗ ИГРЫ", sub = "Завершить сеанс", accent = Combat.dangerSoft,
-         icon = "sign-out.png"}
+        {
+            id = "resume",
+            label = "ПРОДОЛЖИТЬ",
+            sub = "Вернуться к обороне станции",
+            accent = Combat.cyanGlow,
+            icon = "play.png"
+        }, {
+            id = "settings",
+            label = "НАСТРОЙКИ",
+            sub = "Графика · звук · управление",
+            accent = Combat.textBright,
+            icon = "gear.png"
+        }, {
+            id = "tomenu",
+            label = "ВЫЙТИ В ГЛАВНОЕ МЕНЮ",
+            sub = "Прогресс волны будет сохранён",
+            accent = Combat.dangerSoft,
+            icon = "arrow-left.png"
+        }, {
+            id = "quit",
+            label = "ВЫЙТИ ИЗ ИГРЫ",
+            sub = "Завершить сеанс",
+            accent = Combat.dangerSoft,
+            icon = "sign-out.png"
+        }
     }
 end
 
@@ -192,25 +209,22 @@ function PauseOverlay:new(host)
     end
 
     confirmCancelBg:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        confirmCancelBg:setColorHexValue(
-            newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and Combat.chipHoverColor or Combat.chipColor)
+        confirmCancelBg:setColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
+                                             Combat.chipHoverColor or Combat.chipColor)
     end)
     confirmCancelBg:subscribeOnMouseInputClickedCallback(function() hideConfirm() end)
     confirmActionBg:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        confirmActionBg:setColorHexValue(
-            newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and Combat.dangerSoft or Combat.danger)
+        confirmActionBg:setColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
+                                             Combat.dangerSoft or Combat.danger)
     end)
-    confirmActionBg:subscribeOnMouseInputClickedCallback(function()
-        if confirmAction then confirmAction() end
-    end)
+    confirmActionBg:subscribeOnMouseInputClickedCallback(function() if confirmAction then confirmAction() end end)
 
     for _, item in ipairs(items) do
         item.bg:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-            item.bg:setColorHexValue(
-                newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and Combat.chipHoverColor or Combat.chipColor)
+            item.bg:setColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
+                                         Combat.chipHoverColor or Combat.chipColor)
         end)
-        item.bg:subscribeOnMouseInputClickedCallback(function() 
-             runAction(item.id) end)
+        item.bg:subscribeOnMouseInputClickedCallback(function() runAction(item.id) end)
     end
 
     -- ── Layout ───────────────────────────────────────────────────────────────

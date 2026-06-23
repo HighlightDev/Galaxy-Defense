@@ -329,9 +329,9 @@ end
 -- Gradient text. NONE renders the flat text_color; VERTICAL / HORIZONTAL interpolate per glyph from
 -- the start colour to the end colour. Colours are normalized rgb in [0, 1].
 function UiTextBlock:setTextGradientColorType(gradientType)
-    assert(gradientType ~= nil and type(gradientType) == "number" and gradientType >=
-               UiLabel.TextGradientColorType.NONE and gradientType <= UiLabel.TextGradientColorType.HORIZONTAL,
-           debug.traceback())
+    assert(
+        gradientType ~= nil and type(gradientType) == "number" and gradientType >= UiLabel.TextGradientColorType.NONE and
+            gradientType <= UiLabel.TextGradientColorType.HORIZONTAL, debug.traceback())
     if self.textBlockProperties.text_gradient_type.value ~= gradientType then
         self.textBlockProperties.text_gradient_type.value = gradientType
         self.textBlockProperties.text_gradient_type.dirty = true
@@ -339,9 +339,10 @@ function UiTextBlock:setTextGradientColorType(gradientType)
 end
 
 function UiTextBlock:setGradientColors(startR, startG, startB, endR, endG, endB)
-    assert(startR ~= nil and type(startR) == "number" and startG ~= nil and type(startG) == "number" and startB ~= nil and
-               type(startB) == "number" and endR ~= nil and type(endR) == "number" and endG ~= nil and
-               type(endG) == "number" and endB ~= nil and type(endB) == "number", debug.traceback())
+    assert(
+        startR ~= nil and type(startR) == "number" and startG ~= nil and type(startG) == "number" and startB ~= nil and
+            type(startB) == "number" and endR ~= nil and type(endR) == "number" and endG ~= nil and type(endG) ==
+            "number" and endB ~= nil and type(endB) == "number", debug.traceback())
     self.textBlockProperties.gradient_color_start.value.r = startR
     self.textBlockProperties.gradient_color_start.value.g = startG
     self.textBlockProperties.gradient_color_start.value.b = startB

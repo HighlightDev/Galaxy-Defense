@@ -155,8 +155,8 @@ void GravityModifier::UpdateTether(const std::shared_ptr<SpaceshipActor>& spaces
             return;
         }
 
-        const auto& tetherCreator
-            = std::make_shared<EngineCore::RuntimeGeneratedMeshComponentCreator<EngineCore::RuntimeGeneratedQuadraticBezierCurveComponent>>();
+        const auto& tetherCreator = std::make_shared<
+            EngineCore::RuntimeGeneratedMeshComponentCreator<EngineCore::RuntimeGeneratedQuadraticBezierCurveComponent>>();
         const auto d_tether = std::make_shared<EngineCore::RuntimeGeneratedMeshComponentData>(
             "c_gravityBombTether_" + std::to_string(spaceship->GetObjectId()),
             static_cast<size_t>(64),

@@ -85,7 +85,7 @@ ShadowDepthPassProxiesProvider::GetPrimitivesForShadowByDescriptorId(const uint3
 
 void ShadowDepthPassProxiesProvider::CleanUp()
 {
-     mSortedPrimitivesByShadows.clear();
+    mSortedPrimitivesByShadows.clear();
 }
 
 /*  PlanarReflectionPassProxiesProvider */
@@ -131,7 +131,7 @@ PlanarReflectionPassProxiesProvider::GetPrimitivesForPlane(const int32_t planarR
 
 void PlanarReflectionPassProxiesProvider::CleanUp()
 {
-     mSortedPrimitivesByPlane.clear();
+    mSortedPrimitivesByPlane.clear();
 }
 
 /*  OutlinePassProxiesProvider */
@@ -167,7 +167,7 @@ const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& OutlinePassProxiesProvi
 
 void OutlinePassProxiesProvider::CleanUp()
 {
-     mSortedPrimitives.clear();
+    mSortedPrimitives.clear();
 }
 
 /*  DepthPrePassProxiesProvider */
@@ -215,8 +215,8 @@ DepthPrePassProxiesProvider::GetPrimitives() const
 
 void DepthPrePassProxiesProvider::CleanUp()
 {
-     mSortedPrimitives.first.clear();
-     mSortedPrimitives.second.clear();
+    mSortedPrimitives.first.clear();
+    mSortedPrimitives.second.clear();
 }
 
 /*  DeferredBasePassProxiesProvider */
@@ -245,7 +245,7 @@ const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& DeferredBasePassProxies
 
 void DeferredBasePassProxiesProvider::CleanUp()
 {
-     mSortedPrimitives.clear();
+    mSortedPrimitives.clear();
 }
 
 /*  ForwardPassProxiesProvider */
@@ -278,6 +278,6 @@ const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& ForwardPassProxiesProvi
 
 void ForwardPassProxiesProvider::CleanUp()
 {
-     mSortedPrimitives.clear();
+    mSortedPrimitives.clear();
 }
 } // namespace Graphics::Renderer

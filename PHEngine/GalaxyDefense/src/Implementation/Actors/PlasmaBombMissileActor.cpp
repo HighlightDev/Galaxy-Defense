@@ -26,7 +26,8 @@ PlasmaBombMissileActor::PlasmaBombMissileActor(
 void PlasmaBombMissileActor::CleanUp()
 {
     if (mPlasmaMissileTweener) {
-        mPlasmaMissileTweener->UnsubscribeFromOnStateChange(std::dynamic_pointer_cast<PlasmaBombMissileActor>(shared_from_this()));
+        mPlasmaMissileTweener->UnsubscribeFromOnStateChange(
+            std::dynamic_pointer_cast<PlasmaBombMissileActor>(shared_from_this()));
     }
 
     MissileActor::CleanUp();

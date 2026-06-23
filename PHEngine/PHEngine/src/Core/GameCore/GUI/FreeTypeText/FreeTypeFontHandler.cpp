@@ -56,9 +56,8 @@ void FreeTypeFontBatcher::UnregisterText(const int32_t textFieldId)
     ext_assert(
         freeTypeTextProxy != nullptr,
         "FreeTypeFontBatcher::UnregisterText: text field proxy is null for ID " + std::to_string(textFieldId));
-    mTextFields.erase(std::remove_if(mTextFields.begin(), mTextFields.end(), [=](const auto& mProxy) {
-        return textFieldId == mProxy->GetTextFieldId();
-    }));
+    mTextFields.erase(std::remove_if(
+        mTextFields.begin(), mTextFields.end(), [=](const auto& mProxy) { return textFieldId == mProxy->GetTextFieldId(); }));
 
     FreeAllocatedTextSpace(freeTypeTextProxy);
 }
@@ -109,8 +108,7 @@ void FreeTypeFontBatcher::TextColorGradientChanged(
 
     if (gradientColorType != eTextGradientColorType::NONE && freeTypeTextProxy->GetColorChunkSize() > 0) {
         FreeTypeTextMeshCreator textMeshCreator;
-        const auto& colors = textMeshCreator.CreateColorGradientForTextMesh(
-            freeTypeTextProxy, mTextFontAtlas);
+        const auto& colors = textMeshCreator.CreateColorGradientForTextMesh(freeTypeTextProxy, mTextFontAtlas);
         FontBufferSubColorData(freeTypeTextProxy, colorVBO, colors);
     }
 }
@@ -188,10 +186,9 @@ void FreeTypeFontBatcher::FontBufferSubData(
 
     const glm::ivec2 textWidthHeightScreenSpace = textMeshCreator.CalcTextScreenSpaceSize(textFieldProxy, mTextFontAtlas);
     textFieldProxy->SetCreatedMeshTextWidthHeightScreenSpace(textWidthHeightScreenSpace);
-    textFieldProxy->SetCreatedMeshTextWidthHeightNormalized(
-        glm::vec2(
-            static_cast<float>(textWidthHeightScreenSpace.x) / static_cast<float>(displayDeviceProvider->GetWindowWidth()),
-            static_cast<float>(textWidthHeightScreenSpace.y) / static_cast<float>(displayDeviceProvider->GetWindowHeight())));
+    textFieldProxy->SetCreatedMeshTextWidthHeightNormalized(glm::vec2(
+        static_cast<float>(textWidthHeightScreenSpace.x) / static_cast<float>(displayDeviceProvider->GetWindowWidth()),
+        static_cast<float>(textWidthHeightScreenSpace.y) / static_cast<float>(displayDeviceProvider->GetWindowHeight())));
 }
 
 void FreeTypeFontBatcher::FontBufferSubColorData(

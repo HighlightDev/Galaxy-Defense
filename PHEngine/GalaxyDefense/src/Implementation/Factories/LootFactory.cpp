@@ -67,8 +67,7 @@ std::shared_ptr<LootActor> LootFactory::CreateLoot(
     a_loot->SetScene(scene);
     a_loot->SetLootCategory(lootCategory);
 
-    const auto d_movement
-        = std::make_shared<MovementComponentData>("LootDropMoveData_" + lootIndexStr, c_movementDirection);
+    const auto d_movement = std::make_shared<MovementComponentData>("LootDropMoveData_" + lootIndexStr, c_movementDirection);
     const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<LootDropMovementComponent>>();
     const auto& c_movement = std::static_pointer_cast<LootDropMovementComponent>(
         scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
@@ -79,7 +78,8 @@ std::shared_ptr<LootActor> LootFactory::CreateLoot(
     a_loot->AddComponent(c_movement);
 
     const auto& sphereShape = std::make_shared<CollisionSphereShape>(
-        glm::length(scale) * c_colliderRadiusMultiplier); // make radius a bit bigger to make it more priority target for collision
+        glm::length(scale)
+        * c_colliderRadiusMultiplier); // make radius a bit bigger to make it more priority target for collision
     const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
     const auto physData = std::make_shared<PhysicsComponentData>("c_lootPhysicsComponent_" + lootIndexStr, ghostController);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();

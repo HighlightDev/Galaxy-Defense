@@ -44,13 +44,55 @@ local FONT = "JetBrainsMono-VariableFont_wght"
 -- DPS and crystal cost from the engine (Game::eMissileType metadata) once exposed to Lua — the values
 -- below are hard-coded mockup placeholders.
 local TOWER_CARD_INFO = {
-    [MissileType.BOMB] = {name = "РАКЕТА", role = "ТЯЖЁЛАЯ", dps = 60, cost = 160, accent = Styles.Combat.danger},
-    [MissileType.FREEZING_BOMB] = {name = "КРИО-РАКЕТА", role = "ЗАМЕДЛ.", dps = 28, cost = 180, accent = Styles.Combat.cyan},
-    [MissileType.ELECTRO_RAY] = {name = "ЭЛЕКТРО-ЛУЧ", role = "АОЕ", dps = 35, cost = 200, accent = Styles.Combat.lilac},
-    [MissileType.BLACK_HOLE] = {name = "ЧЁРНАЯ ДЫРА", role = "ГРАВИТ.", dps = 42, cost = 240, accent = Styles.Combat.indigo},
-    [MissileType.FREEZING_RAY] = {name = "КРИО-ЛУЧ", role = "ЗАМЕДЛ.", dps = 22, cost = 150, accent = Styles.Combat.cyanGlow},
-    [MissileType.PLASMA_BOMB] = {name = "ПЛАЗМА-БОМБА", role = "ОЖОГ", dps = 38, cost = 220, accent = Styles.Combat.danger},
-    [MissileType.REPAIR_BEAM] = {name = "РЕМОНТ-ЛУЧ", role = "ПОДДЕРЖКА", dps = 20, cost = 150, accent = Styles.Combat.green}
+    [MissileType.BOMB] = {
+        name = "РАКЕТА",
+        role = "ТЯЖЁЛАЯ",
+        dps = 60,
+        cost = 160,
+        accent = Styles.Combat.danger
+    },
+    [MissileType.FREEZING_BOMB] = {
+        name = "КРИО-РАКЕТА",
+        role = "ЗАМЕДЛ.",
+        dps = 28,
+        cost = 180,
+        accent = Styles.Combat.cyan
+    },
+    [MissileType.ELECTRO_RAY] = {
+        name = "ЭЛЕКТРО-ЛУЧ",
+        role = "АОЕ",
+        dps = 35,
+        cost = 200,
+        accent = Styles.Combat.lilac
+    },
+    [MissileType.BLACK_HOLE] = {
+        name = "ЧЁРНАЯ ДЫРА",
+        role = "ГРАВИТ.",
+        dps = 42,
+        cost = 240,
+        accent = Styles.Combat.indigo
+    },
+    [MissileType.FREEZING_RAY] = {
+        name = "КРИО-ЛУЧ",
+        role = "ЗАМЕДЛ.",
+        dps = 22,
+        cost = 150,
+        accent = Styles.Combat.cyanGlow
+    },
+    [MissileType.PLASMA_BOMB] = {
+        name = "ПЛАЗМА-БОМБА",
+        role = "ОЖОГ",
+        dps = 38,
+        cost = 220,
+        accent = Styles.Combat.danger
+    },
+    [MissileType.REPAIR_BEAM] = {
+        name = "РЕМОНТ-ЛУЧ",
+        role = "ПОДДЕРЖКА",
+        dps = 20,
+        cost = 150,
+        accent = Styles.Combat.green
+    }
 }
 
 -- Build-palette section sub-plates ("подплашки", mockup sections "01 · БАШНИ" / "02 · БАРЬЕРЫ").
@@ -58,7 +100,12 @@ local TOWER_SECTION = {num = "01", name = "БАШНИ"}
 -- Barrier build-palette section. Only the force-field barrier is exposed.
 -- Cost is a mockup placeholder (mirrors CB_BARRIERS_PAL.shield) until sourced from the engine.
 local BARRIER_SECTION = {num = "02", name = "БАРЬЕРЫ"}
-local BARRIER_CARD_INFO = {name = "СИЛОВОЕ ПОЛЕ", cost = 75, accent = Styles.Combat.lilac, icon = "shield.png"}
+local BARRIER_CARD_INFO = {
+    name = "СИЛОВОЕ ПОЛЕ",
+    cost = 75,
+    accent = Styles.Combat.lilac,
+    icon = "shield.png"
+}
 
 TowerGridPanel = {DEFAULT_BUTTON_RADIUS = 6}
 
@@ -90,8 +137,9 @@ function TowerGridPanel:new(host, overlay, config)
     local sectionGap = 12 -- extra gap separating the towers list from the barriers section
     local gridWidth = cardWidth + cardPad * 2
     -- towers section (sub-header + scrollable cards) + barriers section (sub-header + a single card)
-    local gridHeight = gridHeader + cardPad + sectionHeader + cardSpacing + towerListHeight + sectionGap + sectionHeader +
-                           cardSpacing + cardHeight + cardPad
+    local gridHeight =
+        gridHeader + cardPad + sectionHeader + cardSpacing + towerListHeight + sectionGap + sectionHeader + cardSpacing +
+            cardHeight + cardPad
 
     local obj = {
         host = host,
@@ -279,7 +327,11 @@ function TowerGridPanel:new(host, overlay, config)
     end
     obj.isCreatePanelVisible = function() return obj.gridBackground:getIsVisible() end
     obj.toggleCreatePanel = function()
-        if obj.gridBackground:getIsVisible() then obj.hideCreatePanel() else obj.showCreatePanel() end
+        if obj.gridBackground:getIsVisible() then
+            obj.hideCreatePanel()
+        else
+            obj.showCreatePanel()
+        end
     end
 
     -- Event handlers
@@ -335,9 +387,7 @@ function TowerGridPanel:subscribeOnLuaProxiesReady(callback) self.luaProxiesRead
 -- Toggle the bottom control bar (hammer / blueprint). Children follow the parent's visibility, so hiding
 -- the background tile hides the whole bar. The create popup is anchored to the canvas, not this bar, so it
 -- is unaffected.
-function TowerGridPanel:setControlBarVisible(isVisible)
-    self.backgroundRect:setIsVisible(isVisible)
-end
+function TowerGridPanel:setControlBarVisible(isVisible) self.backgroundRect:setIsVisible(isVisible) end
 
 function TowerGridPanel:onPreCompoundWidgetInitialize()
     self.widgetName = self.backgroundRect.widgetName
@@ -614,8 +664,8 @@ function TowerGridPanel:setupLayout(canvasName)
     self.barrierSectionLabel:setParent(host, canvasName, self.barrierSectionHeader.widgetName)
     self.barrierSectionLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
                                        self.barrierSectionHeader.widgetName, 10)
-    self.barrierSectionLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                                       UiItemBase.UiAnchorType.VERTICAL_CENTER, self.barrierSectionHeader.widgetName, 0)
+    self.barrierSectionLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
+                                       self.barrierSectionHeader.widgetName, 0)
     self.barrierSectionLabel:setWidth(cardWidth - 50)
     self.barrierSectionLabel:setHeight(self.sectionHeader)
     self.barrierSectionLabel:setFontSize(11)

@@ -37,9 +37,9 @@ std::shared_ptr<MissileActor> RepairBeamFactory::CreateMissile(
 {
     // Built on the baked-frame beam pipeline (like the electro/freezing rays). The actor drives targeting/endpoints in
     // its Tick; the beam starts at the origin and is positioned on spawn.
-    constexpr float c_beamThickness = 2.0f;    // -> tube radius (thickness * 0.1)
-    constexpr int32_t c_beamCount = 1;         // a single clean strand
-    constexpr float c_waveAmplitude = 2.5f;    // perpendicular wave offset (world units)
+    constexpr float c_beamThickness = 2.0f; // -> tube radius (thickness * 0.1)
+    constexpr int32_t c_beamCount = 1; // a single clean strand
+    constexpr float c_waveAmplitude = 2.5f; // perpendicular wave offset (world units)
     constexpr float c_updateFrequency = 0.05f; // frame step; loop length = framesCount * this
     const glm::vec3 c_coreColor = glm::vec3(0.85f, 1.0f, 0.9f);
     const glm::vec3 c_beamColor = glm::vec3(0.2f, 1.0f, 0.45f);
@@ -79,8 +79,16 @@ std::shared_ptr<MissileActor> RepairBeamFactory::CreateMissile(
     MaterialPropertySetter::SetMaterialPropertyValue(beam_mat, scene, "GT_DeltaSec", "gt_timeSec");
 
     const auto d_beam = std::make_shared<ElectricBeamComponentData>(
-        "c_repairBeam_" + indexStr, glm::vec3(), glm::vec3(), c_beamThickness, c_beamCount, c_waveAmplitude, c_updateFrequency,
-        beam_mat, true, true);
+        "c_repairBeam_" + indexStr,
+        glm::vec3(),
+        glm::vec3(),
+        c_beamThickness,
+        c_beamCount,
+        c_waveAmplitude,
+        c_updateFrequency,
+        beam_mat,
+        true,
+        true);
     const auto& beamComponentCreator = std::make_shared<ElectricBeamComponentCreator<RepairBeamComponent>>();
     const auto& c_beam
         = std::static_pointer_cast<RepairBeamComponent>(scene->CreateComponent_GameThread(beamComponentCreator, d_beam));
@@ -100,8 +108,12 @@ std::shared_ptr<MissileActor> RepairBeamFactory::CreateMissile(
     nanobots.reserve(c_nanobotCount);
     for (int32_t i = 0; i < c_nanobotCount; ++i) {
         const auto d_dot = std::make_shared<InstancedMeshComponentData>(
-            "c_repairNanobot_" + indexStr + "_" + std::to_string(i), "sphere.obj", glm::vec3(0), glm::vec3(0),
-            glm::vec3(c_nanobotScale), nanobot_mat);
+            "c_repairNanobot_" + indexStr + "_" + std::to_string(i),
+            "sphere.obj",
+            glm::vec3(0),
+            glm::vec3(0),
+            glm::vec3(c_nanobotScale),
+            nanobot_mat);
         const auto& c_dot
             = std::static_pointer_cast<InstancedStaticMeshComponent>(scene->CreateComponent_GameThread(nanobotCreator, d_dot));
         c_dot->SetCanBloomBeApplied(true);
@@ -133,7 +145,8 @@ std::shared_ptr<MissileActor> RepairBeamFactory::CreateMissile(
     const auto& pulseBallCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
     const auto d_ball = std::make_shared<MeshComponentData>(
         "c_repairPulseBall_" + indexStr, "sphere.obj", glm::vec3(0), glm::vec3(0), glm::vec3(c_pulseBallScale), nanobot_mat);
-    const auto& c_ball = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(pulseBallCreator, d_ball));
+    const auto& c_ball
+        = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(pulseBallCreator, d_ball));
     c_ball->SetCanBloomBeApplied(true);
     a_repairBeam->AddComponent(c_ball);
     a_repairBeam->SetPulseBall(c_ball);

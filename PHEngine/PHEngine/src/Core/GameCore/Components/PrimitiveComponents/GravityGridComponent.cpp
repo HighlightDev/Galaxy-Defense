@@ -118,7 +118,14 @@ void GravityGridComponent::SyncRenderData()
                     if (const auto& gridProxySp = std::static_pointer_cast<Graphics::Proxy::GravityGridSceneProxy>(
                             sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         gridProxySp->SetGridParams(
-                            center, halfExtent, lineCount, segmentsPerLine, deformStrength, dipStrength, softening, gridLineWidth);
+                            center,
+                            halfExtent,
+                            lineCount,
+                            segmentsPerLine,
+                            deformStrength,
+                            dipStrength,
+                            softening,
+                            gridLineWidth);
                     }
                 });
         }

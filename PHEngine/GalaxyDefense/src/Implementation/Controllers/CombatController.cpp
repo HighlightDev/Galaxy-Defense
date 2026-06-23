@@ -401,8 +401,8 @@ void CombatController::ProcessEvent(
         const std::shared_ptr<Actor>& srcCollisionActor = eGameObjectsType::SPACESHIP == srcActorGameObjectType
             ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(srcActorId))
             : eGameObjectsType::NEUTRAL_SPACE_OBJECT == srcActorGameObjectType
-            ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
-            : nullptr;
+                ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
+                : nullptr;
         ext_assert(srcCollisionActor, "Source collision actor not found");
         for (const auto& collidedActorId : collidedActorIds) {
             const auto& gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedActorId);

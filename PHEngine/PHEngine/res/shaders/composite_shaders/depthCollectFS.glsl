@@ -8,12 +8,14 @@ uniform bool bWriteDepthLinearly;
 uniform vec3 lightWorldPosition;
 uniform float invShadowDistance;
 
-float GetLinearDepth() {
+float GetLinearDepth()
+{
     float distanceToLight = length(VsOutput.WorldCoordinates.xyz - lightWorldPosition);
     distanceToLight *= invShadowDistance; // map to [0;1] range
     return distanceToLight;
 }
 
-void main() {
+void main()
+{
     gl_FragDepth = bWriteDepthLinearly ? GetLinearDepth() : gl_FragCoord.z;
 }

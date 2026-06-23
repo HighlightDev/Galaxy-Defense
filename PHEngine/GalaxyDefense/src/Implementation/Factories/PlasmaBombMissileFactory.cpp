@@ -69,7 +69,11 @@ std::shared_ptr<MissileActor> PlasmaBombMissileFactory::CreateMissile(
         a_missileCombatActivePhase = std::make_shared<Actor>(
             "a_plasmaMissileCombatActivePhase_" + missileIndexStr,
             std::make_shared<EngineCore::SceneComponent>(
-                "c_plasmaMissileCombatActivePhase_rootComponent_" + missileIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1), true));
+                "c_plasmaMissileCombatActivePhase_rootComponent_" + missileIndexStr,
+                glm::vec3(),
+                glm::vec3(),
+                glm::vec3(1),
+                true));
 
         MaterialParser materialParser;
         const std::shared_ptr<IMaterial>& pbs_mat = materialParser.ParseMaterialDescriptor("MissileMaterial.m");
@@ -106,8 +110,8 @@ std::shared_ptr<MissileActor> PlasmaBombMissileFactory::CreateMissile(
 
         const auto& sphereShape = std::make_shared<CollisionSphereShape>(c_combatColliderRadius);
         const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
-        const auto physData
-            = std::make_shared<PhysicsComponentData>("c_plasmaMissileCombatActivePhasePhysics_" + missileIndexStr, ghostController);
+        const auto physData = std::make_shared<PhysicsComponentData>(
+            "c_plasmaMissileCombatActivePhasePhysics_" + missileIndexStr, ghostController);
         const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
         const auto& c_ghostPhysics
             = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(physicsComponentCreator, physData));
@@ -132,7 +136,11 @@ std::shared_ptr<MissileActor> PlasmaBombMissileFactory::CreateMissile(
         a_missileExplosionSecondPhase = std::make_shared<MissileActor>(
             "a_plasmaMissileExplosionSecondPhase" + missileIndexStr,
             std::make_shared<EngineCore::SceneComponent>(
-                "c_plasmaMissileExplosionSecondPhase_rootComponent_" + missileIndexStr, glm::vec3(), glm::vec3(), glm::vec3(1), true),
+                "c_plasmaMissileExplosionSecondPhase_rootComponent_" + missileIndexStr,
+                glm::vec3(),
+                glm::vec3(),
+                glm::vec3(1),
+                true),
             combatActorsPoolHandler);
 
         MaterialParser materialParser;
@@ -154,7 +162,12 @@ std::shared_ptr<MissileActor> PlasmaBombMissileFactory::CreateMissile(
         MaterialPropertySetter::SetMaterialPropertyValue(sphere_mat, "opacity", c_sphereOpacity);
 
         const auto d_sphere = std::make_shared<MeshComponentData>(
-            "c_plasmaSphere_" + missileIndexStr, "sphere.obj", glm::vec3(0), glm::vec3(0), glm::vec3(c_coreMeshScale), sphere_mat);
+            "c_plasmaSphere_" + missileIndexStr,
+            "sphere.obj",
+            glm::vec3(0),
+            glm::vec3(0),
+            glm::vec3(c_coreMeshScale),
+            sphere_mat);
         const auto& sphereMeshCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
         const auto& c_sphere
             = std::static_pointer_cast<StaticMeshComponent>(scene->CreateComponent_GameThread(sphereMeshCreator, d_sphere));

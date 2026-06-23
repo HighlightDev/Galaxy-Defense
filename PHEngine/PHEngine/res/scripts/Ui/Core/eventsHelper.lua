@@ -1,10 +1,4 @@
-EventsHelper = {
-    enqueueJobPolicy = {
-        IF_DUPLICATE_NO_PUSH = 0,
-        IF_DUPLICATE_REPLACE = 1,
-        PUSH_ANYWAY = 2
-    }
-}
+EventsHelper = {enqueueJobPolicy = {IF_DUPLICATE_NO_PUSH = 0, IF_DUPLICATE_REPLACE = 1, PUSH_ANYWAY = 2}}
 
 function EventsHelper:sendPauseGameThreadEvent(host, enqueueJobPolicy, isPause)
     assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")

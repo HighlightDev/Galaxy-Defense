@@ -8,7 +8,7 @@ uniform sampler2D dudv;
 uniform float distortion;
 uniform vec3 tintColor; // plasma tint of the swirling core (crimson)
 uniform vec3 glowColor; // bloom/emission tone (hot pink)
-uniform float opacity;  // overall transparency of the plasma ball
+uniform float opacity; // overall transparency of the plasma ball
 
 const vec3 PLASMA_WHITE = vec3(1.0, 0.97, 0.97);
 const vec3 luminance = vec3(0.2126, 0.7152, 0.0722);

@@ -166,7 +166,7 @@ void PlanarReflectionComponent::SyncDataWithRenderThread()
             [weak = weak_from_this(),
              planarReflectionSceneProxyId = mPlanarReflectionSceneProxyId,
              reflectionPlane = mReflectionPlane,
-                reflectionPlaneOrigin = mReflectionPlaneOrigin](
+             reflectionPlaneOrigin = mReflectionPlaneOrigin](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {

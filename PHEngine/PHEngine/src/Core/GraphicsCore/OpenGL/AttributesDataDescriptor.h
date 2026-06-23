@@ -330,9 +330,8 @@ public:
     }
 };
 
-template <>
-class StandartAttributeData<eAttribArrayIndex::VertexColor> : public StandartAttributeDataBase 
-{
+template<>
+class StandartAttributeData<eAttribArrayIndex::VertexColor> : public StandartAttributeDataBase {
 public:
     explicit StandartAttributeData(const int32_t attributeIndex)
         : StandartAttributeDataBase(attributeIndex)

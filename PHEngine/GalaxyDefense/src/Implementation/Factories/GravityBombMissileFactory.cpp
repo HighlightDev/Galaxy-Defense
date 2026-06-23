@@ -271,9 +271,8 @@ std::shared_ptr<MissileActor> GravityBombMissileFactory::CreateMissile(
             a_missileExplosionSecondPhase->AddComponent(c_burst);
         }
 
-        const auto& ghostController
-            = std::make_shared<GhostController>(
-                scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(c_hitboxColliderRadius), 0.0f);
+        const auto& ghostController = std::make_shared<GhostController>(
+            scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(c_hitboxColliderRadius), 0.0f);
         const auto physData = std::make_shared<PhysicsComponentData>(
             "c_missileExplosionSecondPhase_PhysicsComponent_" + missileIndexStr, ghostController);
         const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
@@ -303,17 +302,10 @@ std::shared_ptr<MissileActor> GravityBombMissileFactory::CreateMissile(
             MaterialPropertySetter::SetMaterialPropertyValue(ring_mat, scene, "GT_DeltaSec", "gt_timeSec");
 
             const auto d_ring = std::make_shared<RuntimeGeneratedMeshComponentData>(
-                namePrefix + missileIndexStr,
-                c_ringMaxVertices,
-                glm::vec3(0),
-                glm::vec3(0),
-                glm::vec3(1),
-                ring_mat,
-                true,
-                true);
+                namePrefix + missileIndexStr, c_ringMaxVertices, glm::vec3(0), glm::vec3(0), glm::vec3(1), ring_mat, true, true);
             const auto& ringComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<OrbitalRingComponent>>();
-            const auto& c_ring = std::static_pointer_cast<OrbitalRingComponent>(
-                scene->CreateComponent_GameThread(ringComponentCreator, d_ring));
+            const auto& c_ring
+                = std::static_pointer_cast<OrbitalRingComponent>(scene->CreateComponent_GameThread(ringComponentCreator, d_ring));
             c_ring->SetCanBloomBeApplied(true);
             // Radius/width are in the singularity actor's local space; the bound root scale (b_gravityBombSize, 0 -> 5)
             // scales the rings together with the sphere, so they grow and shrink with it.
@@ -327,19 +319,9 @@ std::shared_ptr<MissileActor> GravityBombMissileFactory::CreateMissile(
         };
 
         createOrbitalRing(
-            "c_gravityBombRingA_",
-            c_ringA_TumbleAxis,
-            c_ringA_Radius,
-            c_ringA_SpinSpeed,
-            c_ringA_Color,
-            c_ringA_GlowColor);
+            "c_gravityBombRingA_", c_ringA_TumbleAxis, c_ringA_Radius, c_ringA_SpinSpeed, c_ringA_Color, c_ringA_GlowColor);
         createOrbitalRing(
-            "c_gravityBombRingB_",
-            c_ringB_TumbleAxis,
-            c_ringB_Radius,
-            c_ringB_SpinSpeed,
-            c_ringB_Color,
-            c_ringB_GlowColor);
+            "c_gravityBombRingB_", c_ringB_TumbleAxis, c_ringB_Radius, c_ringB_SpinSpeed, c_ringB_Color, c_ringB_GlowColor);
     }
 
     // Host actor (kept at the world origin with an identity transform) for the gravity tether curves, plus their shared
@@ -366,7 +348,8 @@ std::shared_ptr<MissileActor> GravityBombMissileFactory::CreateMissile(
 
         // Gravity-well grid on the same identity host (world-space geometry). Starts disabled; the missile actor enables
         // it and anchors it to the singularity on impact, and disables it when the black hole ends.
-        const std::shared_ptr<IMaterial>& grid_mat = tetherMaterialParser.ParseMaterialDescriptor("GravityBombEnergyLineMaterial.m");
+        const std::shared_ptr<IMaterial>& grid_mat
+            = tetherMaterialParser.ParseMaterialDescriptor("GravityBombEnergyLineMaterial.m");
         scene->RegisterMaterialInstance(grid_mat);
         MaterialPropertySetter::SetMaterialPropertyValue(grid_mat, "opacity", c_gridOpacity);
         MaterialPropertySetter::SetMaterialPropertyValue(grid_mat, "color", c_gridColor);

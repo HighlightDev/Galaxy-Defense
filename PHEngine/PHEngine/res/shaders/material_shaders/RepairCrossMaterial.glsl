@@ -3,7 +3,7 @@
 #include "materialCommon.incl.glsl"
 
 uniform vec3 coreColor; // white cross/dot
-uniform vec3 armColor;  // green cross arms
+uniform vec3 armColor; // green cross arms
 uniform vec3 glowColor; // green halo rings
 uniform float opacity;
 uniform float timeSec;
@@ -29,8 +29,7 @@ vec4 computeCross(in vec2 uv)
     float alpha = 0.0;
 
     // Three concentric halo rings, each pulsing on its own phase.
-    for (int i = 0; i < 3; ++i)
-    {
+    for (int i = 0; i < 3; ++i) {
         float radius = 0.35 + float(i) * 0.28;
         float pulse = 0.5 + 0.5 * sin(timeSec * 4.0 - float(i) * 0.85);
         float ring = smoothstep(0.045, 0.0, abs(r - radius)) * (0.2 + 0.55 * pulse);

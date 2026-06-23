@@ -14,15 +14,18 @@ uniform int orientation;
 uniform vec2 widthAndHeight;
 uniform vec2 screenResolution;
 
-float project(in vec2 left, in vec2 right) {
+float project(in vec2 left, in vec2 right)
+{
     return dot(left, right) / max(dot(right, right), 0.001);
 }
 
-float distSquared(in vec2 vector) {
+float distSquared(in vec2 vector)
+{
     return dot(vector, vector);
 }
 
-void main(void) {
+void main(void)
+{
     vec2 currentPixelPos = texCoords * widthAndHeight;
     // orientation == 1 -> vertical orientation, orientation == 2 -> horizontal orientation
     vec2 a = orientation == 1 ? vec2(widthAndHeight.x * 0.5, 0.0) : vec2(0.0, widthAndHeight.y * 0.5);

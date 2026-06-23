@@ -27,9 +27,8 @@ UiProgressBar::UiProgressBar(const std::string& name)
     , mOpacity(1.0f)
     , mFillPercentValue(0.0f)
     , mBorderRadius(0.0f)
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(mOpacity, "Opacity", [this](const float newOpacityValue) {
-        SetOpacity(newOpacityValue);
-    }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
+          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 {
     ext_assert(!mProperties.count("Opacity"), "UiProgressBar::ctor: Property 'Opacity' already exists");
     mProperties.emplace("Opacity", mOpacityProperty);

@@ -2,10 +2,10 @@
 
 #include "materialCommon.incl.glsl"
 
-uniform vec3 wallColorLow;     // wall tint at low HP (dark/grey)
-uniform vec3 wallColorHigh;    // wall tint at full HP (lighter)
-uniform vec3 fillColor;        // green heal fill rising from the bottom
-uniform vec3 outlineColorLow;  // border at low HP (grey)
+uniform vec3 wallColorLow; // wall tint at low HP (dark/grey)
+uniform vec3 wallColorHigh; // wall tint at full HP (lighter)
+uniform vec3 fillColor; // green heal fill rising from the bottom
+uniform vec3 outlineColorLow; // border at low HP (grey)
 uniform vec3 outlineColorHigh; // border at full HP (green)
 uniform float opacity;
 uniform float timeSec;

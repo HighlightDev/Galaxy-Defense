@@ -103,7 +103,8 @@ public:
         const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy,
         const glm::mat4& viewMatrix,
         const glm::mat4& projectionMatrix,
-        ActiveBindedState& activeBindedState) = 0;
+        ActiveBindedState& activeBindedState)
+        = 0;
 
     virtual void RenderPlanarReflection(
         const glm::vec4& plane,

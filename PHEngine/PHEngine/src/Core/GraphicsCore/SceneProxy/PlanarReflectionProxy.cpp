@@ -68,7 +68,7 @@ const glm::vec4& PlanarReflectionProxy::GetReflectionPlane() const
     return mReflectionPlane;
 }
 
-const glm::vec3& PlanarReflectionProxy::GetReflectionPlaneOrigin() const 
+const glm::vec3& PlanarReflectionProxy::GetReflectionPlaneOrigin() const
 {
     return mReflectionPlaneOrigin;
 }

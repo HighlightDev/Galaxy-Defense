@@ -49,12 +49,11 @@ void PathSegment::RecalculateTotalSegmentPoints()
     float bezier_t = 0.0f;
     for (uint32_t i = 1; i < (curvePathPointsCount); ++i) {
         bezier_t = static_cast<float>(i) * bezier_t_step;
-        mTotalSegmentPoints.emplace_back(
-            EngineMath::QuadraticBezier(
-                mQuadraticBezierControlPoints.at(0),
-                mQuadraticBezierControlPoints.at(1),
-                mQuadraticBezierControlPoints.at(2),
-                bezier_t));
+        mTotalSegmentPoints.emplace_back(EngineMath::QuadraticBezier(
+            mQuadraticBezierControlPoints.at(0),
+            mQuadraticBezierControlPoints.at(1),
+            mQuadraticBezierControlPoints.at(2),
+            bezier_t));
     }
     mTotalSegmentPoints.emplace_back(mQuadraticBezierControlPoints.at(2));
 }

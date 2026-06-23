@@ -10,7 +10,7 @@ using namespace EngineCore;
 namespace EngineCore {
 class PlasmaTrailComponent;
 class CpuParticleSystemComponent;
-}
+} // namespace EngineCore
 
 namespace Game {
 class MissileExplosionVisitorBase;

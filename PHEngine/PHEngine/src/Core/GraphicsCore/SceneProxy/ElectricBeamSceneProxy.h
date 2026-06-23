@@ -80,6 +80,7 @@ public:
     bool IsDeferred() const override;
 
     void CleanUp() override;
+
 protected:
     void AllocateBeamSkins(int frameCount, size_t verticesPerFrame, size_t indicesPerFrame);
     void UploadFrame(int frameIndex, const BeamFrame& frame);

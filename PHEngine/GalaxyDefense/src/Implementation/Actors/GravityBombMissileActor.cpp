@@ -25,7 +25,8 @@ GravityBombMissileActor::GravityBombMissileActor(
 void GravityBombMissileActor::CleanUp()
 {
     if (mBlackMissileTweener) {
-        mBlackMissileTweener->UnsubscribeFromOnStateChange(std::dynamic_pointer_cast<GravityBombMissileActor>(shared_from_this()));
+        mBlackMissileTweener->UnsubscribeFromOnStateChange(
+            std::dynamic_pointer_cast<GravityBombMissileActor>(shared_from_this()));
     }
 
     MissileActor::CleanUp();

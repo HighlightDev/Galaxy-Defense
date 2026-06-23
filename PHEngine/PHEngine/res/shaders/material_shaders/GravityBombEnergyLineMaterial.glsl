@@ -2,7 +2,7 @@
 
 #include "materialCommon.incl.glsl"
 
-uniform vec3 color;     // dim base color of the strip
+uniform vec3 color; // dim base color of the strip
 uniform vec3 glowColor; // bright energy running along it
 uniform float opacity;
 uniform float timeSec;

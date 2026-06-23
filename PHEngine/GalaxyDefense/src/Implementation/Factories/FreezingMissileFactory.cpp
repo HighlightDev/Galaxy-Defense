@@ -97,7 +97,12 @@ std::shared_ptr<MissileActor> FreezingMissileFactory::CreateMissile(
     MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "clipRadius", c_particleClipRadius);
 
     const auto d_particle = std::make_shared<ParticleSystemComponentData>(
-        "c_freezeParticleSystemComponent_" + shipBulletIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), c_particleCount, false);
+        "c_freezeParticleSystemComponent_" + shipBulletIndexStr,
+        particles_mat,
+        glm::vec3(0),
+        glm::vec3(1.0f),
+        c_particleCount,
+        false);
     d_particle->emitterData = std::make_shared<ParticleEmitterData>();
     d_particle->emitterData->emitterType = "explosion";
     d_particle->emitterData->radius = c_emitRadius;
@@ -147,8 +152,8 @@ std::shared_ptr<MissileActor> FreezingMissileFactory::CreateMissile(
     a_missile->AddComponent(c_sound);
 
     const auto& sphereShape = std::make_shared<CollisionSphereShape>(c_colliderRadius);
-    const auto& ghostController
-        = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(c_colliderRadius), 0.0f);
+    const auto& ghostController = std::make_shared<GhostController>(
+        scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(c_colliderRadius), 0.0f);
     const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
     const auto& c_ghostPhysics = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(
         physicsComponentCreator,

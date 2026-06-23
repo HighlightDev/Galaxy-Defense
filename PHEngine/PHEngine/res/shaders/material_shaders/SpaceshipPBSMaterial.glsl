@@ -46,8 +46,8 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn, in FLAT_MATERIAL_VS_OUT
 {
     vec3 albedoColor = texture(albedo, materialIn.TextureCoordinates.xy * uvScale).rgb;
     vec3 albedo_ice_color = texture(albedo_ice, materialIn.TextureCoordinates.xy).rgb;
-    vec3 mixedIceColor
-        = mix(albedoColor, albedo_ice_color, smoothstep(0.0, 0.5, GetFreezingEffectForCurrentInstance(materialIn, flatMaterialIn)));
+    vec3 mixedIceColor = mix(
+        albedoColor, albedo_ice_color, smoothstep(0.0, 0.5, GetFreezingEffectForCurrentInstance(materialIn, flatMaterialIn)));
     return mixedIceColor;
 }
 

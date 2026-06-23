@@ -2,8 +2,8 @@
 
 #include "materialCommon.incl.glsl"
 
-uniform vec3 coreColor;      // hot white center (faces the camera)
-uniform vec3 haloColor;      // green rim/halo
+uniform vec3 coreColor; // hot white center (faces the camera)
+uniform vec3 haloColor; // green rim/halo
 uniform vec3 cameraPosition;
 uniform float opacity;
 

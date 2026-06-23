@@ -60,7 +60,8 @@ void GravityBombExplosionVisitor::EndExplosionForSpaceship(
                 spaceship->TriggerDamageReceived(std::numeric_limits<uint32_t>::max(), ownerSp->GetDamageDealerType());
             } else if (spaceship->HasModifier(eModifierType::Gravity, ownerSp->GetObjectId())) {
                 spaceship->RemoveModifier(eModifierType::Gravity, ownerSp->GetObjectId());
-                LogInfo("GravityBombExplosionVisitor::EndExplosionForSpaceship: |-| gravity from missile ", ownerSp->GetObjectId());
+                LogInfo(
+                    "GravityBombExplosionVisitor::EndExplosionForSpaceship: |-| gravity from missile ", ownerSp->GetObjectId());
             }
         }
     }

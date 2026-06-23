@@ -81,9 +81,8 @@ function SelectedBarrierPanel:new(host, overlay, widgetName, config)
     }
 
     newObj.demolishButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        newObj.demolishButton:setButtonColorHexValue(
-            newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and Styles.Combat.chipHoverColor or
-                Styles.Combat.chipColor)
+        newObj.demolishButton:setButtonColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
+                                                         Styles.Combat.chipHoverColor or Styles.Combat.chipColor)
     end)
     newObj.demolishButton:subscribeOnMouseInputClickedCallback(function()
         if newObj.onDemolishClicked then newObj.onDemolishClicked() end

@@ -37,9 +37,8 @@ UiCanvas::UiCanvas(const ViewPortInfo& canvasScreenProperties, const std::string
     , mIsTransformDirty(true)
     , mInputSystem()
     , mDescendingByZOrderHierarchyChildren()
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(1.0f, "Opacity", [this](const float opacity) {
-        UpdateOpacityProperty();
-    }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
+          1.0f, "Opacity", [this](const float opacity) { UpdateOpacityProperty(); }))
 {
     LogInfo("UiCanvas::ctor: ", mUId);
 
@@ -621,8 +620,7 @@ std::shared_ptr<UiItemBase> UiCanvas::FindTopMostInterceptingChild(const glm::iv
 {
     // mDescendingByZOrderHierarchyChildren is sorted ascending by z-order, so iterate in reverse to test
     // the visually top-most widget first and return the first hit.
-    for (auto it = mDescendingByZOrderHierarchyChildren.rbegin(); it != mDescendingByZOrderHierarchyChildren.rend();
-         ++it) {
+    for (auto it = mDescendingByZOrderHierarchyChildren.rbegin(); it != mDescendingByZOrderHierarchyChildren.rend(); ++it) {
         if (const auto& childSp = it->lock()) {
             if (childSp->IsVisible() && childSp->GetIfCanInterceptMouseInputEvents()
                 && childSp->CheckIfInterceptsMouseEvent(mouseCursorPosition)) {

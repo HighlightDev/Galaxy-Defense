@@ -114,9 +114,8 @@ void UiRowLayout::RecalculatePositionsForChildren()
 
 void UiRowLayout::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
-    const auto childTransformDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto& child) {
-        return child->IsTransformDirty();
-    });
+    const auto childTransformDirty
+        = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto& child) { return child->IsTransformDirty(); });
 
     if (childTransformDirty) {
         SetIsTransformDirty(true);

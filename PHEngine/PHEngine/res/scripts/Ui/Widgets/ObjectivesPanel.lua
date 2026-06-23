@@ -277,9 +277,7 @@ function ObjectivesPanel:setIsVisible(isVisible)
     self.background:setIsVisible(isVisible)
     self.headerLabel:setIsVisible(isVisible)
     self.headerRule:setIsVisible(isVisible)
-    if not isVisible then
-        for i = 1, ITEM_POOL do hideItem(self.items[i]) end
-    end
+    if not isVisible then for i = 1, ITEM_POOL do hideItem(self.items[i]) end end
 end
 
 return ObjectivesPanel

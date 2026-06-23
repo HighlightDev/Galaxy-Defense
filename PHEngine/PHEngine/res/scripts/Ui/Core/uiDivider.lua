@@ -48,7 +48,7 @@ function UiDivider:new(host, name)
         opacity = {value = 1.0, dirty = false},
         line_width_px = {value = 20.0, dirty = false},
         edge_fade = {value = 0.0, dirty = false},
-        divider_orientation = {value = UiDivider.Orientation.HORIZONTAL, dirty = false},
+        divider_orientation = {value = UiDivider.Orientation.HORIZONTAL, dirty = false}
     }
 
     local uiDividerObj = UiDivider.uiItemBaseClass.new(self)
@@ -74,9 +74,7 @@ function UiDivider:updateFromReplicatorData(host)
                 self.dividerProperties.color.value.g = colorArray[2]
                 self.dividerProperties.color.value.b = colorArray[3]
             end
-            if parsedJson["opacity"] ~= nil then
-                self.dividerProperties.opacity.value = parsedJson["opacity"]
-            end
+            if parsedJson["opacity"] ~= nil then self.dividerProperties.opacity.value = parsedJson["opacity"] end
             if parsedJson["line_width_px"] ~= nil then
                 self.dividerProperties.line_width_px.value = parsedJson["line_width_px"]
             end

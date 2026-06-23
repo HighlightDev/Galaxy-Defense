@@ -2,7 +2,7 @@
 
 #include "materialCommon.incl.glsl"
 
-uniform vec3 color;     // deep base color (crimson)
+uniform vec3 color; // deep base color (crimson)
 uniform vec3 glowColor; // hot mid-tone energy (pink)
 uniform float opacity;
 uniform float timeSec;

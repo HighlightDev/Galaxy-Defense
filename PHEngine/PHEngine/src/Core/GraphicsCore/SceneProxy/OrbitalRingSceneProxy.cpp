@@ -3,9 +3,9 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/PrimitiveComponents/OrbitalRingComponent.h"
 
+#include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/geometric.hpp>
 
 #include <cmath>
 #include <vector>
@@ -73,9 +73,7 @@ void OrbitalRingSceneProxy::UpdateGeometry(const glm::mat4& viewMatrix)
         const glm::vec3 innerEdge = ringPoint - radialDir * halfWidth;
         const glm::vec3 outerEdge = ringPoint + radialDir * halfWidth;
 
-        vertices.insert(
-            vertices.end(),
-            {innerEdge.x, innerEdge.y, innerEdge.z, outerEdge.x, outerEdge.y, outerEdge.z});
+        vertices.insert(vertices.end(), {innerEdge.x, innerEdge.y, innerEdge.z, outerEdge.x, outerEdge.y, outerEdge.z});
         texCoords.insert(texCoords.end(), {t, 0.0f, t, 1.0f});
     }
 

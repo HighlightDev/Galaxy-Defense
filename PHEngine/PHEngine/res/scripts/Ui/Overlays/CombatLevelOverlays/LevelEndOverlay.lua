@@ -77,10 +77,8 @@ local VICTORY = {
         {k = "ВОЛН ОТРАЖЕНО", v = "30 / 30", tone = "cyan"},
         {k = "ВРАГОВ УНИЧТОЖЕНО", v = "1 247", tone = "cyan"},
         {k = "БАШЕН ПОСТРОЕНО", v = "18", tone = "cyan"},
-        {k = "БАРЬЕРОВ", v = "9", tone = "purple"},
-        {k = "ТОЧНОСТЬ", v = "87.4 %", tone = "cyan"},
-        {k = "ВРЕМЯ МИССИИ", v = "24:18", tone = "purple"},
-        {k = "ПРОПУЩЕНО", v = "0", tone = "ok"},
+        {k = "БАРЬЕРОВ", v = "9", tone = "purple"}, {k = "ТОЧНОСТЬ", v = "87.4 %", tone = "cyan"},
+        {k = "ВРЕМЯ МИССИИ", v = "24:18", tone = "purple"}, {k = "ПРОПУЩЕНО", v = "0", tone = "ok"},
         {k = "ЦЕЛОСТНОСТЬ", v = "94 %", tone = "cyan"}
     },
     info = {
@@ -110,17 +108,26 @@ local DEFEAT = {
     stats = {
         {k = "ВОЛН ОТРАЖЕНО", v = "17 / 30", tone = "fail"},
         {k = "ВРАГОВ УНИЧТОЖЕНО", v = "684", tone = "ink"},
-        {k = "БАШЕН ПОСТРОЕНО", v = "12", tone = "ink"},
-        {k = "БАРЬЕРОВ", v = "6", tone = "ink"},
+        {k = "БАШЕН ПОСТРОЕНО", v = "12", tone = "ink"}, {k = "БАРЬЕРОВ", v = "6", tone = "ink"},
         {k = "ТОЧНОСТЬ", v = "72.1 %", tone = "ink"},
-        {k = "ВРЕМЯ МИССИИ", v = "13:42", tone = "ink"},
-        {k = "ПРОПУЩЕНО", v = "21", tone = "fail"},
+        {k = "ВРЕМЯ МИССИИ", v = "13:42", tone = "ink"}, {k = "ПРОПУЩЕНО", v = "21", tone = "fail"},
         {k = "ЦЕЛОСТНОСТЬ", v = "0 %", tone = "fail"}
     },
     info = {
-        {k = "КРИТ. УЯЗВИМОСТЬ", v = "Сектор B-2 без дальнобойного покрытия.", tone = "fail"},
-        {k = "ДИСБАЛАНС ЭКОНОМИКИ", v = "68% бюджета — в башни ближнего боя.", tone = "warn"},
-        {k = "РЕКОМЕНДАЦИЯ", v = "Изучите ветку «Точные системы».", tone = "info"}
+        {
+            k = "КРИТ. УЯЗВИМОСТЬ",
+            v = "Сектор B-2 без дальнобойного покрытия.",
+            tone = "fail"
+        }, {
+            k = "ДИСБАЛАНС ЭКОНОМИКИ",
+            v = "68% бюджета — в башни ближнего боя.",
+            tone = "warn"
+        },
+        {
+            k = "РЕКОМЕНДАЦИЯ",
+            v = "Изучите ветку «Точные системы».",
+            tone = "info"
+        }
     },
     actions = {
         {label = "В ГЛАВНОЕ МЕНЮ", action = "menu", primary = false},
@@ -132,8 +139,7 @@ local DEFEAT = {
 -- Operation medals (victory only; static placeholders — no engine achievement data yet).
 local MEDALS_DATA = {
     {name = "БЕЗ ПРОПУСКОВ", sub = "0 врагов прошли"},
-    {name = "БЛИЦКРИГ", sub = "< 25:00"},
-    {name = "СНАЙПЕР", sub = "точность > 85%"}
+    {name = "БЛИЦКРИГ", sub = "< 25:00"}, {name = "СНАЙПЕР", sub = "точность > 85%"}
 }
 
 local function clamp_to(v, lo, hi)
@@ -265,8 +271,8 @@ function LevelEndOverlay:new(host)
 
     backButton:subscribeOnMouseInputClickedCallback(doMainMenu)
     backButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        backButton:setButtonColorHexValue(
-            newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and C.chipHoverColor or C.chipColor)
+        backButton:setButtonColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
+                                              C.chipHoverColor or C.chipColor)
     end)
 
     -- ── Mode application: swaps text, colours and the right column per mode ──────
@@ -343,9 +349,7 @@ function LevelEndOverlay:new(host)
 
     for i = 1, 3 do
         local btn = actionButtons[i]
-        btn:subscribeOnMouseInputClickedCallback(function()
-            if btn.__action then btn.__action() end
-        end)
+        btn:subscribeOnMouseInputClickedCallback(function() if btn.__action then btn.__action() end end)
         btn:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
             local hovered = (newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED)
             btn:setButtonColorHexValue(hovered and C.chipHoverColor or (btn.__baseColor or C.chipColor))

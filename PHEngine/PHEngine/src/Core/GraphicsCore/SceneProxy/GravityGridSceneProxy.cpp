@@ -108,7 +108,7 @@ void GravityGridSceneProxy::UpdateGeometry(const glm::mat4& viewMatrix)
 
             if (si == 0 && !isFirstRibbon) {
                 appendVertex(lastVertexPos, lastVertexUv); // close previous ribbon
-                appendVertex(left, glm::vec2(t, 0.0f));    // start of this ribbon
+                appendVertex(left, glm::vec2(t, 0.0f)); // start of this ribbon
             }
 
             appendVertex(left, glm::vec2(t, 0.0f));

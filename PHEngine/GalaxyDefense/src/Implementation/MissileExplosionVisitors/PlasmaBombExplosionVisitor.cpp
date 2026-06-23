@@ -28,7 +28,9 @@ void PlasmaBombExplosionVisitor::StartExplosionForSpaceship(
                 plasmaModifier->SetDamagePerSecond(Constants::PlasmaBombMissile::c_dotDamagePerSecond);
                 plasmaModifier->SetDurationSec(Constants::PlasmaBombMissile::c_dotDurationSec);
                 spaceship->AddModifier(plasmaModifier);
-                LogInfo("PlasmaBombExplosionVisitor::StartExplosionForSpaceship: |+| plasma burn from missile ", ownerSp->GetObjectId());
+                LogInfo(
+                    "PlasmaBombExplosionVisitor::StartExplosionForSpaceship: |+| plasma burn from missile ",
+                    ownerSp->GetObjectId());
             }
             ownerSp->TriggerExplosion();
         }

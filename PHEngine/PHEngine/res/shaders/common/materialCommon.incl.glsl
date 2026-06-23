@@ -16,8 +16,7 @@ struct MATERIAL_VS_OUTPUT {
     vec3 WorldBitangent;
 };
 
-struct FLAT_MATERIAL_VS_OUTPUT
-{
+struct FLAT_MATERIAL_VS_OUTPUT {
     int InstanceID;
 };
 

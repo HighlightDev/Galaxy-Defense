@@ -60,36 +60,32 @@ SceneRenderer::SceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
     , bForwardPrimitivesMoved(false)
     , mFramesSinceDistanceSortRefresh(0)
     , m_interThreadMgr(interThreadMgr)
-    , m_gbuffer(
-          std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
-              0,
-              0,
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
-    , m_resolvedSceneFramebuffer(
-          std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
-              0,
-              0,
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
-    , m_resolvedSceneAndUiFramebuffer(
-          std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
-              0,
-              0,
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
+    , m_gbuffer(std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(
+          0,
+          0,
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
+    , m_resolvedSceneFramebuffer(std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
+          0,
+          0,
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
+    , m_resolvedSceneAndUiFramebuffer(std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(
+          0,
+          0,
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
     , m_deferredLightShader()
     , mDepthCollectShaderSkeletal()
     , mDepthCollectShaderNonSkeletal()
     , mDepthCollectPointLightShaderSkeletal()
     , mDepthCollectPointLightShaderNonSkeletal()
     , mActiveBindedState()
-    , mPostFxRenderer(
-          std::make_shared<PostFxRenderer>(ViewPortInfo(
-              0,
-              0,
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
+    , mPostFxRenderer(std::make_shared<PostFxRenderer>(ViewPortInfo(
+          0,
+          0,
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+          GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight())))
     ,
 #if DEBUG
     mDebugPhysicsRenderData()
@@ -973,7 +969,8 @@ void SceneRenderer::SortSceneProxies(const std::shared_ptr<SceneView>& sceneView
     // shadow depth provider; a planar reflection change only touches the planar reflection provider. Movement only
     // restales the distance/plane order, refreshed on the periodic cadence above. The deferred base and forward base
     // providers do not order by distance, so movement never restales them.
-    const bool bResetShadowDepth = bDeferredPrimitivesDirty || bLightProxiesDirty || bLightProxiesTransformDirty || bDeferredOrderStale;
+    const bool bResetShadowDepth
+        = bDeferredPrimitivesDirty || bLightProxiesDirty || bLightProxiesTransformDirty || bDeferredOrderStale;
     const bool bResetPlanarReflection
         = bDeferredPrimitivesDirty || bForwardPrimitivesDirty || bPlanarReflectionProxiesDirty || bAnyPrimitiveOrderStale;
     const bool bResetOutline = bDeferredPrimitivesDirty || bDeferredOrderStale;
@@ -1288,11 +1285,10 @@ void SceneRenderer::RemoveLightProxyByProxyId(const int32_t proxyId)
 
 void SceneRenderer::RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId)
 {
-    PlanarReflectionProxiesVector.erase(
-        std::remove_if(
-            PlanarReflectionProxiesVector.begin(),
-            PlanarReflectionProxiesVector.end(),
-            [proxyId](const auto& planarReflectionProxy) { return planarReflectionProxy->GetSceneProxyId() == proxyId; }));
+    PlanarReflectionProxiesVector.erase(std::remove_if(
+        PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [proxyId](const auto& planarReflectionProxy) {
+            return planarReflectionProxy->GetSceneProxyId() == proxyId;
+        }));
 }
 
 void SceneRenderer::AddMaterialProxy_OnRenderThread(const std::shared_ptr<MaterialProxy>& materialProxy)

@@ -30,12 +30,10 @@ UiDivider::UiDivider(const std::string& name)
     , mLineWidthPx(20.0f)
     , mEdgeFade(0.0f)
     , mOrientation(eDividerOrientation::HORIZONTAL)
-    , mColorProperty(
-          std::make_shared<EngineObjectProperty<glm::vec3>>(
-              mColor, "Color", [this](const glm::vec3& newColorValue) { SetColor(newColorValue); }))
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(mOpacity, "Opacity", [this](const float newOpacityValue) {
-        SetOpacity(newOpacityValue);
-    }))
+    , mColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(
+          mColor, "Color", [this](const glm::vec3& newColorValue) { SetColor(newColorValue); }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
+          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 {
     ext_assert(!mProperties.count("Color"), "UiDivider::ctor: Property 'Color' already exists");
     ext_assert(!mProperties.count("Opacity"), "UiDivider::ctor: Property 'Opacity' already exists");

@@ -72,10 +72,7 @@ PlayerStatusType = {
 -- only a small subset of widgets is state-specific, so switching the state just toggles their visibility.
 local CombatState = {PREPARATION = 0, COMBAT = 1}
 
-local CombatHudOverlay = {
-    CombatState = CombatState,
-    preparationButtonRadius = 6
-}
+local CombatHudOverlay = {CombatState = CombatState, preparationButtonRadius = 6}
 
 local TileSize = 80 -- tower grid main button size (px)
 
@@ -248,8 +245,8 @@ function CombatHudOverlay:new(host)
     -- Combined hover + active visual for a dock button. Cached so it only replicates on actual change.
     local function refreshDockButton(d)
         local isActive = d.isActive()
-        local bg = isActive and Styles.Combat.dockActiveColor
-                       or (d.hovered and Styles.Combat.chipHoverColor or Styles.Combat.chipColor)
+        local bg = isActive and Styles.Combat.dockActiveColor or
+                       (d.hovered and Styles.Combat.chipHoverColor or Styles.Combat.chipColor)
         local tint = isActive and Styles.Combat.cyanGlow or Styles.Combat.textDim
         if d.appliedBg ~= bg then
             d.button:setButtonColorHexValue(bg)
@@ -264,16 +261,47 @@ function CombatHudOverlay:new(host)
 
     -- "active" reflects the real panel visibility for the wired buttons, and the local flag for placeholders.
     local dockButtons = {
-        {button = dockArsenalButton, icon = dockArsenalIcon, label = "АРСЕНАЛ", iconTexture = "castle-turret.png",
-         hovered = false, rotationDegrees = 180.0, isActive = function() return towerGridPanel.isCreatePanelVisible() end},
-        {button = dockObjButton, icon = dockObjIcon, label = "ЗАДАЧИ", iconTexture = "flag-banner-fold.png",
-         hovered = false, rotationDegrees = 180.0, isActive = function() return objectivesActive end},
-        {button = dockTechButton, icon = dockTechIcon, label = "РАЗВИТИЕ", iconTexture = "graph.png",
-         hovered = false, rotationDegrees = 0.0, isActive = function() return towerUpgradesPanel.background:getIsVisible() end},
-        {button = dockMapButton, icon = dockMapIcon, label = "КАРТА", iconTexture = "map-trifold.png",
-         hovered = false, rotationDegrees = 0.0, isActive = function() return dockMapActive end},
-        {button = dockLogButton, icon = dockLogIcon, label = "ЖУРНАЛ", iconTexture = "info.png",
-         hovered = false, rotationDegrees = 0.0, isActive = function() return dockLogActive end}
+        {
+            button = dockArsenalButton,
+            icon = dockArsenalIcon,
+            label = "АРСЕНАЛ",
+            iconTexture = "castle-turret.png",
+            hovered = false,
+            rotationDegrees = 180.0,
+            isActive = function() return towerGridPanel.isCreatePanelVisible() end
+        }, {
+            button = dockObjButton,
+            icon = dockObjIcon,
+            label = "ЗАДАЧИ",
+            iconTexture = "flag-banner-fold.png",
+            hovered = false,
+            rotationDegrees = 180.0,
+            isActive = function() return objectivesActive end
+        }, {
+            button = dockTechButton,
+            icon = dockTechIcon,
+            label = "РАЗВИТИЕ",
+            iconTexture = "graph.png",
+            hovered = false,
+            rotationDegrees = 0.0,
+            isActive = function() return towerUpgradesPanel.background:getIsVisible() end
+        }, {
+            button = dockMapButton,
+            icon = dockMapIcon,
+            label = "КАРТА",
+            iconTexture = "map-trifold.png",
+            hovered = false,
+            rotationDegrees = 0.0,
+            isActive = function() return dockMapActive end
+        }, {
+            button = dockLogButton,
+            icon = dockLogIcon,
+            label = "ЖУРНАЛ",
+            iconTexture = "info.png",
+            hovered = false,
+            rotationDegrees = 0.0,
+            isActive = function() return dockLogActive end
+        }
     }
 
     for _, d in ipairs(dockButtons) do
@@ -306,8 +334,7 @@ function CombatHudOverlay:new(host)
         onDemolishClicked = function()
             selectedTowerPanel:setIsVisible(false)
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
-                                                      "CombatLevelEvents",
-                                                      json.encode({action = "remove_tower"}))
+                                                      "CombatLevelEvents", json.encode({action = "remove_tower"}))
         end,
         -- ПРОКАЧАТЬ: open the tower tech tree (same path as the dock ТЕХ button).
         onUpgradeClicked = function()
@@ -322,8 +349,7 @@ function CombatHudOverlay:new(host)
         onDemolishClicked = function()
             selectedBarrierPanel:setIsVisible(false)
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
-                                                      "CombatLevelEvents",
-                                                      json.encode({action = "remove_barrier"}))
+                                                      "CombatLevelEvents", json.encode({action = "remove_barrier"}))
         end
     })
     combatOverlay:addCompoundWidget(selectedBarrierPanel)
@@ -354,9 +380,8 @@ function CombatHudOverlay:new(host)
         -- thread instantly, but the mode's text/colours only land via the per-frame replicator sync.
         -- Opening on the same frame would flash the overlay's previous (defeat-default) content first.
         local framesUntilOpen = 3
-        combatOverlay:addActionWithPredicate(function()
-            UiOverlayManager:openOverlay(host, "LevelEndOverlay")
-        end, function()
+        combatOverlay:addActionWithPredicate(function() UiOverlayManager:openOverlay(host, "LevelEndOverlay") end,
+                                             function()
             framesUntilOpen = framesUntilOpen - 1
             return framesUntilOpen <= 0
         end)
@@ -409,7 +434,9 @@ function CombatHudOverlay:new(host)
         if combatOverlay.allWidgetLuaProxiesReady then
             apply()
         else
-            combatOverlay:addActionWithPredicate(apply, function() return combatOverlay.allWidgetLuaProxiesReady end)
+            combatOverlay:addActionWithPredicate(apply, function()
+                return combatOverlay.allWidgetLuaProxiesReady
+            end)
         end
     end
 
@@ -462,7 +489,9 @@ function CombatHudOverlay:new(host)
         if combatOverlay.allWidgetLuaProxiesReady then
             apply()
         else
-            combatOverlay:addActionWithPredicate(apply, function() return combatOverlay.allWidgetLuaProxiesReady end)
+            combatOverlay:addActionWithPredicate(apply, function()
+                return combatOverlay.allWidgetLuaProxiesReady
+            end)
         end
     end
 
@@ -479,17 +508,17 @@ function CombatHudOverlay:new(host)
     end)
     startWaveButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if not canCompletePreparationStage then return end
-        startWaveButton:setButtonColorHexValue(
-            newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and Styles.Combat.green or Styles.Combat.cyan)
+        startWaveButton:setButtonColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
+                                                   Styles.Combat.green or Styles.Combat.cyan)
     end)
 
     -- ─── Wave-dock: speed controls (COMBAT) — placeholders, no game-speed API yet ──────────────────
     local function refreshSpeedButtons()
         for i = 1, #speedButtons do
-            speedButtons[i]:setButtonColorHexValue(
-                speedValues[i] == selectedSpeed and Styles.Combat.dockActiveColor or Styles.Combat.chipColor)
-            speedButtons[i]:setLabelTextColorHexValue(
-                speedValues[i] == selectedSpeed and Styles.Combat.cyanGlow or Styles.Combat.textDim)
+            speedButtons[i]:setButtonColorHexValue(speedValues[i] == selectedSpeed and Styles.Combat.dockActiveColor or
+                                                       Styles.Combat.chipColor)
+            speedButtons[i]:setLabelTextColorHexValue(speedValues[i] == selectedSpeed and Styles.Combat.cyanGlow or
+                                                          Styles.Combat.textDim)
         end
     end
     for i = 1, #speedButtons do
@@ -500,13 +529,14 @@ function CombatHudOverlay:new(host)
             -- While paused, only cache the choice: do not apply it (that would resume the game). The pause button
             -- restores selectedSpeed when it un-pauses.
             if not isPaused then
-                EventsHelper:sendChangePlaySpeedGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE,
+                EventsHelper:sendChangePlaySpeedGameThreadEvent(host,
+                                                                EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE,
                                                                 value)
             end
         end)
     end
 
-    speedPauseButton:subscribeOnMouseInputClickedCallback(function ()
+    speedPauseButton:subscribeOnMouseInputClickedCallback(function()
         -- Toggle first, then derive the icon + speed from the NEW state: when paused the button offers "play" (resume),
         -- otherwise "pause". (Deriving from the pre-toggle value showed the wrong icon on the first press.)
         isPaused = not isPaused
@@ -960,10 +990,10 @@ function CombatHudOverlay:new(host)
             -- СТАРТ ВОЛНЫ enabled visual (bright cyan + clickable) vs disabled (dim) — applied on change only
             if appliedStartEnabled ~= canCompletePreparationStage then
                 appliedStartEnabled = canCompletePreparationStage
-                startWaveButton:setButtonColorHexValue(
-                    canCompletePreparationStage and Styles.Combat.cyan or Styles.Combat.chipColor)
-                startWaveButton:setLabelTextColorHexValue(
-                    canCompletePreparationStage and Styles.Combat.textBright or Styles.Combat.textVeryDim)
+                startWaveButton:setButtonColorHexValue(canCompletePreparationStage and Styles.Combat.cyan or
+                                                           Styles.Combat.chipColor)
+                startWaveButton:setLabelTextColorHexValue(canCompletePreparationStage and Styles.Combat.textBright or
+                                                              Styles.Combat.textVeryDim)
             end
             -- keep the dock highlights in sync with the real panel visibility (handles panels closed
             -- via their own controls, not just via the dock)

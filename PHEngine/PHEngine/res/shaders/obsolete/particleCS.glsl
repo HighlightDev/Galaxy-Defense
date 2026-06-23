@@ -35,8 +35,8 @@ void main()
     // vec3 pp = p + va * DT + 0.5 * DT * DT * G;
     // vec3 vp = v + G * DT;
 
-    vec3 direction
-        = mix(normalize(gravityBomb1 - Positions[gid].xyz), normalize(gravityBomb2 - Positions[gid].xyz), gravityBomb2Acceleration);
+    vec3 direction = mix(
+        normalize(gravityBomb1 - Positions[gid].xyz), normalize(gravityBomb2 - Positions[gid].xyz), gravityBomb2Acceleration);
 
     vec3 pp = p + v * DT + 0.5 * DT * DT * G;
     vec3 vp = v + direction * DT;

@@ -108,19 +108,27 @@ public:
 protected:
     // Bake one beam mesh for the given animation time (frame time + per-beam offset). Strategy hook:
     // Static bakes in world space from the endpoints; Dynamic bakes the canonical unit beam.
-    virtual void BakeBeamMesh(
-        const float animationTime, std::vector<BeamVertex>& outVertices, std::vector<uint32_t>& outIndices) const = 0;
+    virtual void
+    BakeBeamMesh(const float animationTime, std::vector<BeamVertex>& outVertices, std::vector<uint32_t>& outIndices) const = 0;
 
     // Whether the current state can produce geometry (Static: non-degenerate endpoints; Dynamic: always).
-    virtual bool CanBakeGeometry() const { return true; }
+    virtual bool CanBakeGeometry() const
+    {
+        return true;
+    }
 
     // Called whenever an endpoint changes. Default (Static): re-bake. Dynamic overrides to resend the matrix.
-    virtual void OnEndpointsChanged() { mAreFramesDirty = true; }
+    virtual void OnEndpointsChanged()
+    {
+        mAreFramesDirty = true;
+    }
 
     // Called from UnpausableTick — i.e. after the owning actor's Tick has set the endpoints and BEFORE
     // PrimitiveComponent::UnpausableTick enqueues the enable job, so the proxy never renders enabled with
     // a stale placement. Dynamic ships its world matrix here; Static does nothing.
-    virtual void SyncTransformIfDirty() {}
+    virtual void SyncTransformIfDirty()
+    {
+    }
 
     void GenerateAnimationFrames();
     void SyncAnimationFrames();

@@ -9,9 +9,9 @@ uniform float timeSec;
 // Pulse timing (seconds). The burst loops on the scene clock so it stays roughly in step with the game-thread-driven
 // pulse ball that flies in over burstStart seconds, then this fires the rings.
 uniform float cyclePeriod; // full loop length (flight + burst + rest)
-uniform float burstStart;  // when the rings start within a cycle (== ball flight duration)
-uniform float ringDelay;   // per-ring stagger (i * ringDelay)
-uniform float ringLife;    // how long each ring expands + fades
+uniform float burstStart; // when the rings start within a cycle (== ball flight duration)
+uniform float ringDelay; // per-ring stagger (i * ringDelay)
+uniform float ringLife; // how long each ring expands + fades
 
 // Three concentric rings expanding outward from the centre and fading, each delayed by i * ringDelay.
 vec4 computeBurst(in vec2 uv)
@@ -24,15 +24,14 @@ vec4 computeBurst(in vec2 uv)
     vec3 color = vec3(0.0);
     float alpha = 0.0;
 
-    for (int i = 0; i < 3; ++i)
-    {
+    for (int i = 0; i < 3; ++i) {
         float ringTime = burstTime - float(i) * ringDelay;
         if (ringTime < 0.0 || ringTime > ringLife)
             continue;
 
-        float k = ringTime / ringLife;            // 0 -> 1 over the ring's life
-        float radius = mix(0.12, 0.95, k);        // expands outward
-        float fade = 1.0 - k;                      // fades out
+        float k = ringTime / ringLife; // 0 -> 1 over the ring's life
+        float radius = mix(0.12, 0.95, k); // expands outward
+        float fade = 1.0 - k; // fades out
         float ring = smoothstep(0.07, 0.0, abs(r - radius)) * fade;
 
         color = mix(color, ringColor, ring);

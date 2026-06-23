@@ -85,7 +85,7 @@ std::shared_ptr<ProjectedShadowInfo> PointLightSceneProxy::GetShadowInfo()
             matrices[3] = glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, -1.0, 0.0), -AXIS_FORWARD);
             matrices[4] = glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, 1.0), -AXIS_UP);
             matrices[5] = glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, -1.0), -AXIS_UP);
-            
+
             shadowInfo->SetShadowViewMatrices(matrices);
 
             mShadowCastPosition = lightPosition;

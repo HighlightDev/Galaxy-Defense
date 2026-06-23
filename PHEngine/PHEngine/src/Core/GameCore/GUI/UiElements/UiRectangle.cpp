@@ -36,12 +36,10 @@ UiRectangle::UiRectangle(const std::string& name)
     , mIsRoundBottom(true)
     , mApplyBlur(false)
     , mBlurMix(0.0f)
-    , mColorProperty(
-          std::make_shared<EngineObjectProperty<glm::vec3>>(
-              mColor, "Color", [this](const glm::vec3& newColorVaue) { SetColor(newColorVaue); }))
-    , mOpacityProperty(
-          std::make_shared<EngineObjectProperty<float>>(
-              mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
+    , mColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(
+          mColor, "Color", [this](const glm::vec3& newColorVaue) { SetColor(newColorVaue); }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
+          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 #ifdef DEBUG
     , mDebugLabel(
           std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "Rectangle_DebugLabel_" + std::to_string(GetUId())))

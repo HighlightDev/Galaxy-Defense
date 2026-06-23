@@ -51,15 +51,12 @@ UiItemBase::UiItemBase(const std::string& name)
     , mIsTransformDirty(false)
     , mIsPropertiesShouldBeUpdatedOnRenderThread(false)
     , mIsPropertiesShouldBeUpdatedOnLuaThread(false)
-    , mScaleProperty(
-          std::make_shared<EngineObjectProperty<glm::vec2>>(
-              glm::vec2(1.0f), "Scale", [this](const glm::vec2& newScaleValue) { UpdateScaleProperty(); }))
-    , mVerticalCenterOffsetProperty(
-          std::make_shared<EngineObjectProperty<int32_t>>(
-              0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
-    , mHorizontalCenterOffsetProperty(
-          std::make_shared<EngineObjectProperty<int32_t>>(
-              0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
+    , mScaleProperty(std::make_shared<EngineObjectProperty<glm::vec2>>(
+          glm::vec2(1.0f), "Scale", [this](const glm::vec2& newScaleValue) { UpdateScaleProperty(); }))
+    , mVerticalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
+          0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) { UpdateCenterOffsetProperties(); }))
+    , mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(
+          0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) { UpdateCenterOffsetProperties(); }))
     , mIsGuiScissorsSlave(false)
     , mIsGuiScissorsMaster(false)
     , mCanBloomBeApplied(false)
@@ -622,9 +619,9 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
                 leftAnchorUiItem, "UiItemBase::CalculateHorizontalAnchorPositions: leftAnchorUiItem is null, name: " + GetName());
             const auto& leftAnchorUiItemBoundingArea = leftAnchorUiItem->GetBoundingArea();
 
-            const int32_t originX = eUiAnchor::LEFT == leftAnchor.GetDstAnchor() ? leftAnchorUiItemBoundingArea.GetMin().x
-                : eUiAnchor::RIGHT == leftAnchor.GetDstAnchor()                  ? leftAnchorUiItemBoundingArea.GetMax().x
-                                                                                 : 0;
+            const int32_t originX = eUiAnchor::LEFT == leftAnchor.GetDstAnchor()
+                ? leftAnchorUiItemBoundingArea.GetMin().x
+                : eUiAnchor::RIGHT == leftAnchor.GetDstAnchor() ? leftAnchorUiItemBoundingArea.GetMax().x : 0;
             mAbsoluteOrigin.x = originX + leftAnchor.GetSrcAnchorMargin() + mHorizontalCenterOffset;
         } else if (mAnchors.count(eUiAnchor::RIGHT)) {
             const auto& rightAnchor = mAnchors.at(eUiAnchor::RIGHT);
@@ -635,9 +632,9 @@ void UiItemBase::CalculateHorizontalAnchorPositions()
 
             const auto& rightAnchorUiItemBoundingArea = rightAnchorUiItem->GetBoundingArea();
 
-            const int32_t anchorOriginX = eUiAnchor::LEFT == rightAnchor.GetDstAnchor() ? rightAnchorUiItemBoundingArea.GetMin().x
-                : eUiAnchor::RIGHT == rightAnchor.GetDstAnchor()                        ? rightAnchorUiItemBoundingArea.GetMax().x
-                                                                                        : 0;
+            const int32_t anchorOriginX = eUiAnchor::LEFT == rightAnchor.GetDstAnchor()
+                ? rightAnchorUiItemBoundingArea.GetMin().x
+                : eUiAnchor::RIGHT == rightAnchor.GetDstAnchor() ? rightAnchorUiItemBoundingArea.GetMax().x : 0;
             mAbsoluteOrigin.x = anchorOriginX - mWidth - rightAnchor.GetSrcAnchorMargin() + mHorizontalCenterOffset;
         }
     }
@@ -697,9 +694,9 @@ void UiItemBase::CalculateVerticalAnchorPositions()
                 "UiItemBase::CalculateVerticalAnchorPositions: bottomAnchorUiItem is null, name: " + GetName());
             const auto& bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
 
-            const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMin().y
-                : eUiAnchor::TOP == bottomAnchor.GetDstAnchor()                      ? bottomAnchorUiItemBoundingArea.GetMax().y
-                                                                                     : 0;
+            const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor()
+                ? bottomAnchorUiItemBoundingArea.GetMin().y
+                : eUiAnchor::TOP == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMax().y : 0;
             mAbsoluteOrigin.y = originY + bottomAnchor.GetSrcAnchorMargin() + mVerticalCenterOffset;
         } else if (mAnchors.count(eUiAnchor::TOP)) {
             const auto& topAnchor = mAnchors.at(eUiAnchor::TOP);
@@ -709,9 +706,9 @@ void UiItemBase::CalculateVerticalAnchorPositions()
 
             const auto& topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
 
-            const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMin().y
-                : eUiAnchor::TOP == topAnchor.GetDstAnchor()                            ? topAnchorUiItemBoundingArea.GetMax().y
-                                                                                        : 0;
+            const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.GetDstAnchor()
+                ? topAnchorUiItemBoundingArea.GetMin().y
+                : eUiAnchor::TOP == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMax().y : 0;
             mAbsoluteOrigin.y = anchorOriginY - mHeight - topAnchor.GetSrcAnchorMargin() + mVerticalCenterOffset;
         }
     }
