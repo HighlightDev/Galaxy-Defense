@@ -13,7 +13,7 @@ eComponentType LuaScriptComponent::GetComponentType() const
     return eComponentType::SCRIPT_COMPONENT;
 }
 
-void LuaScriptComponent::Tick(const float deltaTimeSec)
+void LuaScriptComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
 }
 

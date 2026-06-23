@@ -32,6 +32,23 @@ public:
         std::vector<BeamVertex>& outVertices,
         std::vector<uint32_t>& outIndices);
 
+    // Canonical (local-space) animated repair beam: a tube along +Z (0..1) whose spine is offset by a travelling sine
+    // wave in the perpendicular X plane (anchored to 0 at both ends so it meets its endpoints). Like the electric
+    // version, the wave only perturbs the perpendicular plane so the proxy's Z scale keeps it length-independent. The
+    // wave is normalised to loopPeriod so a fixed frame set cycles seamlessly: across one loop it advances exactly
+    // temporalCyclesPerLoop full cycles, with spatialCycles ripples visible along the beam at any instant.
+    static void GenerateCanonicalAnimatedWaveBeamGeometry(
+        float radius,
+        int radialSegments,
+        int lengthSegments,
+        float waveAmplitude,
+        float animationTime,
+        float loopPeriod,
+        float spatialCycles,
+        float temporalCyclesPerLoop,
+        std::vector<BeamVertex>& outVertices,
+        std::vector<uint32_t>& outIndices);
+
 private:
     static glm::vec3 GetJitteredPoint(const glm::vec3& point, float jitterAmount);
     static glm::vec3 GetAnimatedJitteredPoint(const glm::vec3& point, float jitterAmount, float time, float speed, int seed);

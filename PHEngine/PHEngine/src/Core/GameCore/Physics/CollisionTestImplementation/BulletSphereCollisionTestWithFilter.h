@@ -26,7 +26,7 @@ public:
     explicit BulletSphereCollisionTestWithFilter(
         const float sphereRadius, std::vector<btCollisionObject*> excludeCollisionObjects);
 
-    void SphereCollisionTest(btDiscreteDynamicsWorld* physWorld, const btVector3& translation);
+    void SphereCollisionTest(btDiscreteDynamicsWorld* physWorld, const btVector3& sphereOrigin);
 
     bool IsSphereHitCollision() const;
 

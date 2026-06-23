@@ -73,9 +73,9 @@ void BarrierUiComponent::CreateUiElements(
     }
 }
 
-void BarrierUiComponent::Tick(const float deltaTimeSec)
+void BarrierUiComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    UiComponent::Tick(deltaTimeSec);
+    UiComponent::Tick(deltaTimeSec, playSpeed);
 
     if (mHealthBar && mHealthBar->IsVisible()) {
         mHealthBar->SetAbsoluteOrigin(CalculateHealthBarPosition());

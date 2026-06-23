@@ -29,9 +29,9 @@ public:
 
     void RegisterTimerInstance(std::shared_ptr<GameThreadTimer> instance);
 
-    void Tick(const float deltaSeconds) override;
+    void Tick(const float deltaSeconds, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 };
 
 class GameThreadTimer : public std::enable_shared_from_this<GameThreadTimer> {

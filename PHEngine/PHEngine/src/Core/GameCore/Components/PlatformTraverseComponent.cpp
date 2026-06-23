@@ -78,9 +78,9 @@ void PlatformTraverseComponent::Move(const float deltaTimeSec)
     mTransitionTime = fmod(mTransitionTime, transitionTime);
 }
 
-void PlatformTraverseComponent::Tick(const float deltaTimeSec)
+void PlatformTraverseComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Component::Tick(deltaTimeSec);
+    Component::Tick(deltaTimeSec, playSpeed);
 
     if (mDestinationPoint) {
         Move(deltaTimeSec);

@@ -47,7 +47,7 @@ public:
 
     std::shared_ptr<PlanarReflectionProxy> CreatePlanarReflectionProxy();
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
     void OnPostRegistered() override;
 

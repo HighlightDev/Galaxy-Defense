@@ -107,9 +107,9 @@ eLootState LootActor::GetLootState() const
     return mLootState;
 }
 
-void LootActor::Tick(const float deltaTimeSec)
+void LootActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Actor::Tick(deltaTimeSec);
+    Actor::Tick(deltaTimeSec, playSpeed);
 }
 
 void LootActor::CollectLoot()

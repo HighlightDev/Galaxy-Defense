@@ -51,7 +51,7 @@ public:
 
     void AttachTweener(std::shared_ptr<Tweener> tweener) override;
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
     bool IsInsideLevel(const BoundingBox3D& boundingBox) const override;
 

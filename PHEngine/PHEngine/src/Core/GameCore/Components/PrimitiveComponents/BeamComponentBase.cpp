@@ -54,9 +54,9 @@ const MeshRenderData& BeamComponentBase::GetRenderData() const
     return mRenderData;
 }
 
-void BeamComponentBase::Tick(const float deltaTime)
+void BeamComponentBase::Tick(const float deltaTime, const float playSpeed)
 {
-    Component::Tick(deltaTime);
+    Component::Tick(deltaTime, playSpeed);
 
     // No per-tick jitter regeneration: the animation is pre-baked into a frame set the render thread
     // cycles through on its own. Re-bake (+ resend) only when flagged.
@@ -67,7 +67,7 @@ void BeamComponentBase::Tick(const float deltaTime)
     }
 }
 
-void BeamComponentBase::UnpausableTick(const float deltaTimeSec)
+void BeamComponentBase::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     // Placement must be synced here and not in Tick: components tick BEFORE the owning actor's Tick body
     // sets the endpoints, so a Tick-time sync always ships the previous frame's matrix. UnpausableTick runs
@@ -75,7 +75,7 @@ void BeamComponentBase::UnpausableTick(const float deltaTimeSec)
     // the placement job in the render-thread queue ahead of the enable job — a pooled proxy re-enabled this
     // frame can never render with the stale matrix of its previous use (old "electro chain flicker" bug).
     SyncTransformIfDirty();
-    Base::UnpausableTick(deltaTimeSec);
+    Base::UnpausableTick(deltaTimeSec, playSpeed);
 }
 
 void BeamComponentBase::OnRegistered()

@@ -49,7 +49,7 @@ void SoundComponent::CleanUp()
     mSoundSource = nullptr;
 }
 
-void SoundComponent::Tick(const float deltaTimeSec)
+void SoundComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
 }
 

@@ -36,7 +36,7 @@ std::string DestroySpaceshipsTracker::GetName() const
     return "DestroySpaceshipsTracker";
 }
 
-void DestroySpaceshipsTracker::Tick(const float deltaTimeSec)
+void DestroySpaceshipsTracker::Tick(const float deltaTimeSec, const float playSpeed)
 {
     SetDestroyedEnemySpaceships(
         PlayerDataProvider::GetInstance()->GetDestroyedEnemySpaceshipsCount()
@@ -51,7 +51,7 @@ void DestroySpaceshipsTracker::SetDestroyedEnemySpaceships(const int32_t value)
     }
 }
 
-void DestroySpaceshipsTracker::UnpausableTick(const float deltaTimeSec)
+void DestroySpaceshipsTracker::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
 }
 

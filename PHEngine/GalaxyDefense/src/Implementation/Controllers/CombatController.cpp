@@ -10,7 +10,6 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Implementation/Actors/BarrierActor.h"
-#include "Implementation/Actors/GravityBombMissileActor.h"
 #include "Implementation/Actors/FighterSpaceshipActor.h"
 #include "Implementation/Actors/PortalActor.h"
 #include "Implementation/DataProviders/GameConstants.h"
@@ -138,6 +137,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::PLASMA_BOMB, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_RAY, 1);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::REPAIR_BEAM, 4);
 }
 
 std::shared_ptr<NavigationController> CombatController::GetNavigationController() const
@@ -165,7 +165,8 @@ void CombatController::OnPostLevelInit()
            {eMissileType::FREEZING_BOMB, 3},
            {eMissileType::ELECTRO_RAY, 1},
            {eMissileType::BLACK_HOLE, 2},
-           {eMissileType::PLASMA_BOMB, 2}};
+           {eMissileType::PLASMA_BOMB, 2},
+           {eMissileType::REPAIR_BEAM, 2}};
     PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 
     mCombatActorsPoolHandler->SpawnEnemySpaceships(5, eSpaceshipType::PAWN);
@@ -468,18 +469,18 @@ void CombatController::ProcessEvent(const ChangeGameModeEvent* sender, const typ
     }
 }
 
-void CombatController::Tick(const float deltaTimeSec)
+void CombatController::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (eGameModeType::COMBAT == mGameModeType) {
         ValidatePoolObjects();
         UpdateMissilesData();
         ProcessAiAction();
-        mNavigationController->Tick(deltaTimeSec);
+        mNavigationController->Tick(deltaTimeSec, playSpeed);
     }
 
-    mUserInteractionController->Tick(deltaTimeSec);
+    mUserInteractionController->Tick(deltaTimeSec, playSpeed);
 
-    mLootController->Tick(deltaTimeSec);
+    mLootController->Tick(deltaTimeSec, playSpeed);
 }
 
 void CombatController::LaunchMissile(
@@ -570,22 +571,42 @@ void CombatController::ProcessAiAction()
 
     // Spacestations
     {
-        std::vector<std::shared_ptr<PhysicsComponent>> excludedPhysicsComponents;
-        excludedPhysicsComponents = mCombatActorsPoolHandler->GetPhysicsComponentsByGameObjectTypes(
+        std::vector<std::shared_ptr<PhysicsComponent>> damageExcludedPhysComponents;
+        std::vector<std::shared_ptr<PhysicsComponent>> assistExcludedPhysComponents;
+        damageExcludedPhysComponents = mCombatActorsPoolHandler->GetPhysicsComponentsByGameObjectTypes(
             {eGameObjectsType::SPACE_STATION,
              eGameObjectsType::TOWER_MISSILE,
              eGameObjectsType::SPACESHIP_MISSILE,
              eGameObjectsType::BARRIER,
              eGameObjectsType::LOOT});
+        assistExcludedPhysComponents = mCombatActorsPoolHandler->GetPhysicsComponentsByGameObjectTypes(
+            {eGameObjectsType::SPACESHIP,
+             eGameObjectsType::SPACESHIP_MISSILE,
+             eGameObjectsType::TOWER_MISSILE,
+             eGameObjectsType::SPACESHIP_MISSILE,
+             eGameObjectsType::SPACE_STATION,
+             eGameObjectsType::LOOT});
 
         const auto& spaceStations = mCombatActorsPoolHandler->GetSpaceStationActors();
         for (const auto& spaceStation : spaceStations) {
             if (eSpaceStationActivityState::ACTIVE == spaceStation->GetState() && spaceStation->CanShoot()) {
-                SphereCollisionTestWithFilterAdapter collisionTest(
-                    spaceStation->GetSpaceStationLevel()->GetShootRadius(), excludedPhysicsComponents);
-                collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceStation->GetRootComponent()->GetTranslation());
-                const auto& collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
                 std::vector<int32_t> descriptorActorIds;
+                std::vector<const PhysicsDescriptor*> collidedDescriptors;
+
+                if (eMissileType::REPAIR_BEAM == spaceStation->GetSpaceStationLevel()->GetMissileType()) {
+                    SphereCollisionTestWithFilterAdapter collisionTestForAssist(
+                        spaceStation->GetSpaceStationLevel()->GetShootRadius(), assistExcludedPhysComponents);
+                    collisionTestForAssist.SphereCollisionTest(
+                        sceneSp->GetPhysicsWorld(), spaceStation->GetRootComponent()->GetTranslation());
+                    collidedDescriptors = collisionTestForAssist.GetCollisionHitPhysicsDescriptors();
+                } else {
+                    SphereCollisionTestWithFilterAdapter collisionTestForDamage(
+                        spaceStation->GetSpaceStationLevel()->GetShootRadius(), damageExcludedPhysComponents);
+                    collisionTestForDamage.SphereCollisionTest(
+                        sceneSp->GetPhysicsWorld(), spaceStation->GetRootComponent()->GetTranslation());
+                    collidedDescriptors = collisionTestForDamage.GetCollisionHitPhysicsDescriptors();
+                }
+
                 std::transform(
                     collidedDescriptors.begin(),
                     collidedDescriptors.end(),
@@ -598,22 +619,19 @@ void CombatController::ProcessAiAction()
                         descriptorActorIds.begin(),
                         descriptorActorIds.end(),
                         [this, spaceStationTranslation](const auto& leftActorId, const auto& rightActorId) {
-                            const auto& leftShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(leftActorId);
-                            const auto& rightShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(rightActorId);
-                            ext_assert(
-                                leftShipActor && rightShipActor, "Failed to find enemy ship actors for distance comparison");
+                            const auto& firstActor = mCombatActorsPoolHandler->GetActorOwnerById(leftActorId);
+                            const auto& secondActor = mCombatActorsPoolHandler->GetActorOwnerById(rightActorId);
+                            ext_assert(firstActor && secondActor, "Failed to find collided actors for distance comparison");
                             const auto sqrDistanceToLeft
-                                = glm::distance2(leftShipActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
+                                = glm::distance2(firstActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
                             const auto sqrDistanceToRight
-                                = glm::distance2(rightShipActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
+                                = glm::distance2(secondActor->GetRootComponent()->GetTranslation(), spaceStationTranslation);
                             return sqrDistanceToLeft < sqrDistanceToRight;
                         });
                     if (foundNearestIt != descriptorActorIds.end()) {
-                        const auto gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(*foundNearestIt);
-                        ext_assert(eGameObjectsType::SPACESHIP == gameObjectType, "Expected game object type to be SPACESHIP");
-                        const auto& nearestEnemy = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(*foundNearestIt);
-                        const auto& enemyPosition = nearestEnemy->GetRootComponent()->GetTranslation();
-                        const auto& projectileShootDirection = glm::normalize(enemyPosition - spaceStationTranslation);
+                        const auto& nearestTarget = mCombatActorsPoolHandler->GetActorOwnerById(*foundNearestIt);
+                        const auto& targetPosition = nearestTarget->GetRootComponent()->GetTranslation();
+                        const auto& projectileShootDirection = glm::normalize(targetPosition - spaceStationTranslation);
                         LaunchMissile(
                             spaceStation,
                             spaceStationTranslation,

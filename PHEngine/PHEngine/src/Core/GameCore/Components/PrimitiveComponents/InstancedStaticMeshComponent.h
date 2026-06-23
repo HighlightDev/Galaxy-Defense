@@ -29,7 +29,7 @@ public:
 
     void SetIsVisible(bool isVisible) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 

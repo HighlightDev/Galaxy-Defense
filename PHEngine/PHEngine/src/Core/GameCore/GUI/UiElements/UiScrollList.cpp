@@ -272,7 +272,7 @@ void UiScrollList::UpdateAnchorTransform()
     PropagateGuiScissorsToChildren();
 }
 
-void UiScrollList::UnpausableTick(const float deltaTimeSec)
+void UiScrollList::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     const bool childDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto& c) {
         return c->IsTransformDirty();
@@ -281,7 +281,7 @@ void UiScrollList::UnpausableTick(const float deltaTimeSec)
         SetIsTransformDirty(true);
     }
 
-    UiItem::UnpausableTick(deltaTimeSec);
+    UiItem::UnpausableTick(deltaTimeSec, playSpeed);
 }
 
 void UiScrollList::RemoveUiItem(const std::shared_ptr<UiItemBase>& uiItem)

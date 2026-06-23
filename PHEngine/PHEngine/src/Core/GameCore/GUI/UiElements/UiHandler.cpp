@@ -86,19 +86,19 @@ std::shared_ptr<UiCanvas> UiHandler::CreateHudCanvas(const ViewPortInfo& canvasS
     return mHudCanvas;
 }
 
-void UiHandler::Tick(const float deltaTimeSec)
+void UiHandler::Tick(const float deltaTimeSec, const float playSpeed)
 {
     for (const auto& canvas : mUiCanvases) {
-        canvas->Tick(deltaTimeSec);
+        canvas->Tick(deltaTimeSec, playSpeed);
     }
 
     if (mHudCanvas) {
-        mHudCanvas->Tick(deltaTimeSec);
+        mHudCanvas->Tick(deltaTimeSec, playSpeed);
     }
 
 #ifdef DEBUG
     if (mDebugUiCanvas) {
-        mDebugUiCanvas->Tick(deltaTimeSec);
+        mDebugUiCanvas->Tick(deltaTimeSec, playSpeed);
     }
 
     static float mPressButtonCooldown = 0.0f;
@@ -137,19 +137,19 @@ void UiHandler::Tick(const float deltaTimeSec)
 #endif
 }
 
-void UiHandler::UnpausableTick(const float deltaTimeSec)
+void UiHandler::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     for (const auto& canvas : mUiCanvases) {
-        canvas->UnpausableTick(deltaTimeSec);
+        canvas->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     if (mHudCanvas) {
-        mHudCanvas->UnpausableTick(deltaTimeSec);
+        mHudCanvas->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
 #ifdef DEBUG
     if (mDebugUiCanvas) {
-        mDebugUiCanvas->UnpausableTick(deltaTimeSec);
+        mDebugUiCanvas->UnpausableTick(deltaTimeSec, playSpeed);
     }
 #endif
 }

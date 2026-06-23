@@ -391,7 +391,8 @@ void Engine::LuaThreadPulse()
         if (!bLevelIsLoading.load()) {
             ProcessLuaThreadEvents(eExecutionOrder::PRE_EXECUTION);
             m_interThreadMgr.SpinLuaThreadJob();
-            m_luaScriptProcessor->Tick(mLuaThreadDeltaTimeSeconds);
+            // Lua runs on its own thread at a fixed cadence; game play-speed does not apply here, so pass a neutral 1.0.
+            m_luaScriptProcessor->Tick(mLuaThreadDeltaTimeSeconds, 1.0f);
 
             ProcessLuaThreadEvents(eExecutionOrder::POST_EXECUTION);
         }
@@ -431,20 +432,22 @@ void Engine::GameThreadPulse()
             m_interThreadMgr.SpinGameThreadJobs();
 
             if (!bPauseGameThreadExecution.load()) {
-                GameThreadTimersHolder::GetInstance()->Tick(mGameThreadDeltaTimeSeconds);
-                m_scene->Tick(mGameThreadDeltaTimeSeconds);
-                m_level->Tick(mGameThreadDeltaTimeSeconds);
+                GameThreadTimersHolder::GetInstance()->Tick(mGameThreadDeltaTimeSeconds, mPlaySpeed);
+                m_scene->Tick(mGameThreadDeltaTimeSeconds, mPlaySpeed);
+                m_level->Tick(mGameThreadDeltaTimeSeconds, mPlaySpeed);
             }
 
-            GameThreadTimersHolder::GetInstance()->UnpausableTick(mGameThreadDeltaTimeSeconds);
-            m_scene->UnpausableTick(mGameThreadDeltaTimeSeconds);
-            m_level->UnpausableTick(mGameThreadDeltaTimeSeconds);
+            GameThreadTimersHolder::GetInstance()->UnpausableTick(mGameThreadDeltaTimeSeconds, mPlaySpeed);
+            m_scene->UnpausableTick(mGameThreadDeltaTimeSeconds, mPlaySpeed);
+            m_level->UnpausableTick(mGameThreadDeltaTimeSeconds, mPlaySpeed);
 
             /* Events: post execution */
             ProcessGameThreadEvents(eExecutionOrder::POST_EXECUTION);
         }
+        // Real (unscaled) frame time. Play speed is no longer baked in here: it is passed to Tick/UnpausableTick as a
+        // separate argument so each tickable decides whether to scale by it (deltaTimeSec * playSpeed) or run in real time.
         mGameThreadDeltaTimeSeconds
-            = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(gtStartTimePoint)) * mPlaySpeed;
+            = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(gtStartTimePoint));
 
 #ifdef DEBUG
         if (sumGtSeconds >= 1.0f) { // duration is >= than one second

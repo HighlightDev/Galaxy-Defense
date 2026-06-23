@@ -135,9 +135,9 @@ void UiConnectionLine::RecalculateAnchorPositions()
     ResolveAnchoredEndpoints();
 }
 
-void UiConnectionLine::UnpausableTick(const float deltaTimeSec)
+void UiConnectionLine::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
-    UiItemBase::UnpausableTick(deltaTimeSec);
+    UiItemBase::UnpausableTick(deltaTimeSec, playSpeed);
     // Reresolve endpoints each frame: this is robust to initialization order (target/parent may not be ready at the moment of
     // first RecalculateAnchorPositions) and keeps line anchored to nodes when they are moved.
     ResolveAnchoredEndpoints();

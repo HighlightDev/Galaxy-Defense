@@ -100,9 +100,9 @@ public:
 
     bool IsCameraProxyReady() const;
 
-    void Tick(const float DeltaTime) override;
+    void Tick(const float DeltaTime, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override{};
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override{};
 
     void ProcessEvent(
         const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t& data) override;

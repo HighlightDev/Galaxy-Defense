@@ -56,12 +56,12 @@ void FreezingMissileActor::TriggerExplosion()
     movement->SetIsEnabled(false);
 }
 
-void FreezingMissileActor::Tick(const float deltaTimeSec)
+void FreezingMissileActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    MissileActor::Tick(deltaTimeSec);
+    MissileActor::Tick(deltaTimeSec, playSpeed);
 
     if (mActivityState == eMissileActivityState::EXPLOSION) {
-        explosionTime += deltaTimeSec;
+        explosionTime += deltaTimeSec * playSpeed;
         if (explosionTime >= 2.0f) {
             explosionTime = 0.0f;
             TriggerExplosionFinished();

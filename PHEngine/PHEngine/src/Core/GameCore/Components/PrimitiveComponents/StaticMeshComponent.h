@@ -31,7 +31,7 @@ public:
 
     void SetIsVisible(bool isVisible) override;
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 

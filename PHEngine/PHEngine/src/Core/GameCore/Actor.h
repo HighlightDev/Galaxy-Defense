@@ -56,9 +56,9 @@ public:
     virtual ~Actor();
 
     // Tick is executed on game thread
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     virtual void ChangeTweenerState(const std::string& tweenerName, const std::string& stateName);
 

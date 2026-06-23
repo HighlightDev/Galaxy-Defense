@@ -49,9 +49,9 @@ void SceneComponent::SyncTranslation(const glm::vec3& translation)
     SetTranslation(translation);
 }
 
-void SceneComponent::Tick(const float deltaTimeSec)
+void SceneComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Component::Tick(deltaTimeSec);
+    Component::Tick(deltaTimeSec, playSpeed);
 }
 
 eComponentType SceneComponent::GetComponentType() const

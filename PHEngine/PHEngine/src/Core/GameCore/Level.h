@@ -37,9 +37,9 @@ public:
 
     virtual void UnloadLevel() = 0;
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     virtual void RestartLuaScripts();
 };

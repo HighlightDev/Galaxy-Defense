@@ -60,9 +60,9 @@ eComponentType PointLightComponent::GetComponentType() const
     return LIGHT_COMPONENT;
 }
 
-void PointLightComponent::Tick(const float deltaTimeSec)
+void PointLightComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Base::Tick(deltaTimeSec);
+    Base::Tick(deltaTimeSec, playSpeed);
 }
 
 void PointLightComponent::ProcessEvent(

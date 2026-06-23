@@ -41,7 +41,7 @@ public:
 
     void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
 protected:
     void UpdateAnchorTransform() override;

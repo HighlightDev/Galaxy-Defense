@@ -95,7 +95,7 @@ public:
 
     bool IsTransformDependentToUiItem(const std::string& uiItemName) const override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
 protected:
     void OnRegistered() override;

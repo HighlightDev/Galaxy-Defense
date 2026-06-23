@@ -149,17 +149,17 @@ void MainMenuLevel::UnloadLevel()
     mUiController.reset();
 }
 
-void MainMenuLevel::Tick(const float deltaTimeSec)
+void MainMenuLevel::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (mUiController) {
-        mUiController->Tick(deltaTimeSec);
+        mUiController->Tick(deltaTimeSec, playSpeed);
     }
 }
 
-void MainMenuLevel::UnpausableTick(const float deltaTimeSec)
+void MainMenuLevel::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     if (mUiController) {
-        mUiController->UnpausableTick(deltaTimeSec);
+        mUiController->UnpausableTick(deltaTimeSec, playSpeed);
     }
 }
 

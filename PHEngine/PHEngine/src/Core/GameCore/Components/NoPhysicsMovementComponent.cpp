@@ -34,9 +34,9 @@ eComponentType NoPhysicsMovementComponent::GetComponentType() const
     return MOVEMENT_COMPONENT;
 }
 
-void NoPhysicsMovementComponent::Tick(const float deltaTimeSec)
+void NoPhysicsMovementComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    MovementComponent::Tick(deltaTimeSec);
+    MovementComponent::Tick(deltaTimeSec, playSpeed);
 }
 
 void NoPhysicsMovementComponent::Move(const float deltaTimeSec)

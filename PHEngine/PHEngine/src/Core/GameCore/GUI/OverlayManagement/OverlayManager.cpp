@@ -193,17 +193,17 @@ std::string OverlayManager::GetCurrentOpenedOverlayName() const
     return mCurrentOpenedOverlay ? mCurrentOpenedOverlay->GetOverlayName() : "";
 }
 
-void OverlayManager::Tick(const float deltaTimeSec)
+void OverlayManager::Tick(const float deltaTimeSec, const float playSpeed)
 {
     for (const auto& overlay : mOverlays) {
-        overlay->Tick(deltaTimeSec);
+        overlay->Tick(deltaTimeSec, playSpeed);
     }
 }
 
-void OverlayManager::UnpausableTick(const float deltaTimeSec)
+void OverlayManager::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     for (const auto& overlay : mOverlays) {
-        overlay->UnpausableTick(deltaTimeSec);
+        overlay->UnpausableTick(deltaTimeSec, playSpeed);
     }
 }
 

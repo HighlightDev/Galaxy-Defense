@@ -223,72 +223,72 @@ void Actor::ChangeTweenerState(const std::string& tweenerName, const std::string
     }
 }
 
-void Actor::UnpausableTick(const float deltaTimeSec)
+void Actor::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     if (m_physicsComponent) {
-        m_physicsComponent->UnpausableTick(deltaTimeSec);
+        m_physicsComponent->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     if (m_rootComponent) {
-        m_rootComponent->UnpausableTick(deltaTimeSec);
+        m_rootComponent->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     for (auto& component : m_allComponents) {
-        component->UnpausableTick(deltaTimeSec);
+        component->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     for (const auto& childSp : m_children) {
-        childSp->UnpausableTick(deltaTimeSec);
+        childSp->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     if (m_inputComponent) {
-        m_inputComponent->UnpausableTick(deltaTimeSec);
+        m_inputComponent->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     if (m_movementComponent) {
-        m_movementComponent->UnpausableTick(deltaTimeSec);
+        m_movementComponent->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     for (const auto& tweener : mTweeners) {
-        tweener->UnpausableTick(deltaTimeSec);
+        tweener->UnpausableTick(deltaTimeSec, playSpeed);
     }
 }
 
-void Actor::Tick(const float deltaTimeSec)
+void Actor::Tick(const float deltaTimeSec, const float playSpeed)
 {
     UpdateTransform();
 
     // Update physics
     if (m_physicsComponent && m_physicsComponent->IsEnabled()) {
-        m_physicsComponent->Tick(deltaTimeSec);
+        m_physicsComponent->Tick(deltaTimeSec, playSpeed);
     }
 
     if (m_rootComponent && m_rootComponent->IsEnabled()) {
-        m_rootComponent->Tick(deltaTimeSec);
+        m_rootComponent->Tick(deltaTimeSec, playSpeed);
     }
 
     for (auto& component : m_allComponents) {
         if (component->IsEnabled()) {
             // tick all children components
-            component->Tick(deltaTimeSec);
+            component->Tick(deltaTimeSec, playSpeed);
         }
     }
 
     for (const auto& childSp : m_children) {
         // tick all attached actors
-        childSp->Tick(deltaTimeSec);
+        childSp->Tick(deltaTimeSec, playSpeed);
     }
 
     if (m_inputComponent && m_inputComponent->IsEnabled()) {
-        m_inputComponent->Tick(deltaTimeSec);
+        m_inputComponent->Tick(deltaTimeSec, playSpeed);
     }
 
     if (m_movementComponent && m_movementComponent->IsEnabled()) {
-        m_movementComponent->Tick(deltaTimeSec);
+        m_movementComponent->Tick(deltaTimeSec, playSpeed);
     }
 
     for (const auto& tweener : mTweeners) {
-        tweener->Tick(deltaTimeSec);
+        tweener->Tick(deltaTimeSec, playSpeed);
         tweener->NotifyStateChangedObservers();
     }
 }

@@ -47,9 +47,9 @@ eComponentType PrimitiveComponent::GetComponentType() const
     return PRIMITIVE_COMPONENT;
 }
 
-void PrimitiveComponent::UnpausableTick(const float deltaTimeSec)
+void PrimitiveComponent::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
-    SceneComponent::UnpausableTick(deltaTimeSec);
+    SceneComponent::UnpausableTick(deltaTimeSec, playSpeed);
 
     // Transform changes are no longer synced here — they are shipped from UpdateWorldMatrix (transform path).
     // SyncRenderData only pushes the state flags below, so bTransformationDirty must not gate it.

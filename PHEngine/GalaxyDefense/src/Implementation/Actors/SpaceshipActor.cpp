@@ -107,15 +107,15 @@ void SpaceshipActor::TriggerDisabled()
     mIsDamageEffectActive = false;
 }
 
-void SpaceshipActor::Tick(const float deltaTimeSec)
+void SpaceshipActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Actor::Tick(deltaTimeSec);
+    Actor::Tick(deltaTimeSec, playSpeed);
 
-    mModifiersHandler->Tick(deltaTimeSec);
+    mModifiersHandler->Tick(deltaTimeSec, playSpeed);
 
     if (mIsDamageEffectActive) {
         float normDmgEffectTime = 0.0f;
-        mDamageEffectTimePassed += deltaTimeSec;
+        mDamageEffectTimePassed += deltaTimeSec * playSpeed;
         if (mDamageEffectTimePassed < mDamageEffectDuration) {
             normDmgEffectTime = glm::clamp(mDamageEffectTimePassed / mDamageEffectDuration, 0.0f, 1.0f);
         } else {
@@ -128,7 +128,7 @@ void SpaceshipActor::Tick(const float deltaTimeSec)
 
     // Shake Effect
     if (mDmgShakeTimer->IsRunning()) {
-        mShakeTimePassed += deltaTimeSec;
+        mShakeTimePassed += deltaTimeSec * playSpeed;
         const auto& rootComponent = GetRootComponent();
         constexpr float c_shakeSpeed = 30.0f;
         constexpr float c_shakeAmplitudeDegrees = 10.0f;

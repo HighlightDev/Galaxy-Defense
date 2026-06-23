@@ -81,7 +81,7 @@ private:
 public:
     BarrierActor(const std::string& gameObjectName, const std::shared_ptr<::EngineCore::SceneComponent>& rootComponent);
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
     void ChangeHighlightState(const bool isHighlightEnabled) override;
 

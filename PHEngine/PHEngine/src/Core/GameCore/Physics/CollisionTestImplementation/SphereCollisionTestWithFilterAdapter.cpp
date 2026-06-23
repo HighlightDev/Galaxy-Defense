@@ -24,9 +24,9 @@ SphereCollisionTestWithFilterAdapter::SphereCollisionTestWithFilterAdapter(
 }
 
 void SphereCollisionTestWithFilterAdapter::SphereCollisionTest(
-    const std::shared_ptr<PhysicsWorld>& physWorld, const glm::vec3& translation)
+    const std::shared_ptr<PhysicsWorld>& physWorld, const glm::vec3& sphereOrigin)
 {
-    BulletSphereCollisionTestWithFilter::SphereCollisionTest(physWorld->GetWorld(), Converter::glmToBullet(translation));
+    BulletSphereCollisionTestWithFilter::SphereCollisionTest(physWorld->GetWorld(), Converter::glmToBullet(sphereOrigin));
 }
 
 std::vector<const PhysicsDescriptor*> SphereCollisionTestWithFilterAdapter::GetCollisionHitPhysicsDescriptors() const

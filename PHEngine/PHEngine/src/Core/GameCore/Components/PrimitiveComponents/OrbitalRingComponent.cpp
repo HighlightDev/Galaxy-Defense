@@ -20,7 +20,7 @@ std::shared_ptr<PrimitiveSceneProxy> OrbitalRingComponent::CreateSceneProxy() co
     return std::make_shared<Graphics::Proxy::OrbitalRingSceneProxy>(this);
 }
 
-void OrbitalRingComponent::UnpausableTick(const float deltaTimeSec)
+void OrbitalRingComponent::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     mRingSpinAngleDeg += mRingSpinSpeedDegPerSec * deltaTimeSec;
     if (mRingSpinAngleDeg >= 360.0f) {
@@ -31,7 +31,7 @@ void OrbitalRingComponent::UnpausableTick(const float deltaTimeSec)
 
     // Continuously re-push so the ring keeps tumbling; Base::UnpausableTick performs the actual sync when dirty.
     mIsRenderDataDirty = true;
-    Base::UnpausableTick(deltaTimeSec);
+    Base::UnpausableTick(deltaTimeSec, playSpeed);
 }
 
 void OrbitalRingComponent::SetRingCenterWorldSpacePosition(const glm::vec3& center)

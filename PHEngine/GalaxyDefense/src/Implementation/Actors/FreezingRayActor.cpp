@@ -93,7 +93,7 @@ std::vector<std::shared_ptr<PhysicsComponent>> FreezingRayActor::CreateExcludedC
     }
     const auto& spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
     const auto& missilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(
-        {eMissileType::BOMB, eMissileType::FREEZING_BOMB, eMissileType::BLACK_HOLE});
+        {eMissileType::BOMB, eMissileType::FREEZING_BOMB, eMissileType::BLACK_HOLE, eMissileType::PLASMA_BOMB});
     excludeCollisionPhysComponents.insert(
         excludeCollisionPhysComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
     excludeCollisionPhysComponents.insert(
@@ -102,9 +102,9 @@ std::vector<std::shared_ptr<PhysicsComponent>> FreezingRayActor::CreateExcludedC
     return excludeCollisionPhysComponents;
 }
 
-void FreezingRayActor::Tick(const float deltaTimeSec)
+void FreezingRayActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    MissileActor::Tick(deltaTimeSec);
+    MissileActor::Tick(deltaTimeSec, playSpeed);
     ext_assert(mLineComponent, "FreezingRayActor line component is null");
 
     if (const auto& sceneSp = mSceneOwner.lock()) {

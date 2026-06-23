@@ -25,6 +25,7 @@ setup()
 local json = require("Ui/Core/3rdparty/json")
 local UiRectangle = require("Ui/Core/uiRectangle")
 local UiRowLayout = require("Ui/Core/uiRowLayout")
+local UiScrollList = require("Ui/Core/uiScrollList")
 local UiGridLayout = require("Ui/Core/uiGridLayout")
 local UiLabel = require("Ui/Core/uiLabel")
 local UiImage = require("Ui/Core/uiImage")
@@ -48,7 +49,8 @@ local TOWER_CARD_INFO = {
     [MissileType.ELECTRO_RAY] = {name = "ЭЛЕКТРО-ЛУЧ", role = "АОЕ", dps = 35, cost = 200, accent = Styles.Combat.lilac},
     [MissileType.BLACK_HOLE] = {name = "ЧЁРНАЯ ДЫРА", role = "ГРАВИТ.", dps = 42, cost = 240, accent = Styles.Combat.indigo},
     [MissileType.FREEZING_RAY] = {name = "КРИО-ЛУЧ", role = "ЗАМЕДЛ.", dps = 22, cost = 150, accent = Styles.Combat.cyanGlow},
-    [MissileType.PLASMA_BOMB] = {name = "ПЛАЗМА-БОМБА", role = "ОЖОГ", dps = 38, cost = 220, accent = Styles.Combat.danger}
+    [MissileType.PLASMA_BOMB] = {name = "ПЛАЗМА-БОМБА", role = "ОЖОГ", dps = 38, cost = 220, accent = Styles.Combat.danger},
+    [MissileType.REPAIR_BEAM] = {name = "РЕМОНТ-ЛУЧ", role = "ПОДДЕРЖКА", dps = 20, cost = 150, accent = Styles.Combat.green}
 }
 
 -- Build-palette section sub-plates ("подплашки", mockup sections "01 · БАШНИ" / "02 · БАРЬЕРЫ").
@@ -77,15 +79,19 @@ function TowerGridPanel:new(host, overlay, config)
     local cardHeight = 54
     local cardSpacing = 8
     local cardPad = 12
-    local towerCount = MissileType.FREEZING_RAY - MissileType.BOMB + 1
+    local towerCount = MissileType.REPAIR_BEAM - MissileType.BOMB + 1
+    -- The towers list scrolls: only this many cards are shown at once, the rest are reachable by scrolling. Keeps the
+    -- palette a fixed height so it always fits on screen no matter how many weapon types exist.
+    local maxVisibleTowerCards = 4
+    local visibleTowerCards = math.min(towerCount, maxVisibleTowerCards)
+    local towerListHeight = visibleTowerCards * cardHeight + (visibleTowerCards - 1) * cardSpacing
     local gridHeader = 32
     local sectionHeader = 22 -- "02 · БАРЬЕРЫ" sub-plate strip
     local sectionGap = 12 -- extra gap separating the towers list from the barriers section
     local gridWidth = cardWidth + cardPad * 2
-    -- towers section (sub-header + cards) + barriers section (sub-header + a single card)
-    local gridHeight = gridHeader + cardPad + sectionHeader + cardSpacing + towerCount * cardHeight +
-                           (towerCount - 1) * cardSpacing + sectionGap + sectionHeader + cardSpacing + cardHeight +
-                           cardPad
+    -- towers section (sub-header + scrollable cards) + barriers section (sub-header + a single card)
+    local gridHeight = gridHeader + cardPad + sectionHeader + cardSpacing + towerListHeight + sectionGap + sectionHeader +
+                           cardSpacing + cardHeight + cardPad
 
     local obj = {
         host = host,
@@ -103,6 +109,8 @@ function TowerGridPanel:new(host, overlay, config)
         sectionGap = sectionGap,
         gridWidth = gridWidth,
         gridHeight = gridHeight,
+        towerListHeight = towerListHeight,
+        towerCardsScrollList = nil,
         towerCards = {},
         towerSectionHeader = nil,
         towerSectionLabel = nil,
@@ -165,9 +173,13 @@ function TowerGridPanel:new(host, overlay, config)
     obj.towerSectionDivider = UiDivider:new(host, "TowerSectionDivider")
     overlay:addWidget(obj.towerSectionDivider)
 
+    -- Scrollable container for the tower cards (the weapon list grows with the number of weapon types).
+    obj.towerCardsScrollList = UiScrollList:new(host, "TowerCardsScrollList")
+    overlay:addWidget(obj.towerCardsScrollList)
+
     -- One card per tower type. The card background (a plain rectangle) is the clickable / hoverable
     -- surface; the icon and text labels sit on top as non-interactive children.
-    for i = MissileType.BOMB, MissileType.PLASMA_BOMB do
+    for i = MissileType.BOMB, MissileType.REPAIR_BEAM do
         local missileType = MissileTypes.nameByValue(i)
         local card = {
             missileType = missileType,
@@ -503,22 +515,27 @@ function TowerGridPanel:setupLayout(canvasName)
     self.towerSectionDivider:setEdgeFade(0.12)
     self.towerSectionDivider:setZOrder(4)
 
+    -- Scrollable tower-card list: fixed height, cards stack inside and scroll (mouse wheel) when they overflow.
+    self.towerCardsScrollList:setParent(host, canvasName, self.gridBackground.widgetName)
+    self.towerCardsScrollList:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+                                        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
+    self.towerCardsScrollList:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
+                                        self.towerSectionHeader.widgetName, cardSpacing)
+    self.towerCardsScrollList:setWidth(cardWidth)
+    self.towerCardsScrollList:setHeight(self.towerListHeight)
+    self.towerCardsScrollList:setSpacing(cardSpacing)
+    self.towerCardsScrollList:setScrollSpeed(40)
+    self.towerCardsScrollList:setScrollbarSide(UiScrollList.ScrollbarSide.NONE)
+    self.towerCardsScrollList:setZOrder(3)
+
     for i = 1, #self.towerCards do
         local card = self.towerCards[i]
         local info = card.info
         local missileValue = MissileType.BOMB + (i - 1)
         local imageSource = MissileTypes.IconByValue[missileValue] or "space_station_img.png"
 
-        card.bg:setParent(host, canvasName, self.gridBackground.widgetName)
-        card.bg:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                          self.gridBackground.widgetName)
-        if i == 1 then
-            card.bg:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-                              self.towerSectionHeader.widgetName, cardSpacing)
-        else
-            card.bg:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-                              self.towerCards[i - 1].bg.widgetName, cardSpacing)
-        end
+        -- Cards are direct children of the scroll list (which stacks + scrolls them), so they carry NO anchors.
+        card.bg:setParent(host, canvasName, self.towerCardsScrollList.widgetName)
         card.bg:setWidth(cardWidth)
         card.bg:setHeight(cardHeight)
         card.bg:setColorHexValue(Styles.Combat.chipColor)
@@ -582,13 +599,12 @@ function TowerGridPanel:setupLayout(canvasName)
         card.costLabel:setZOrder(4)
     end
 
-    -- Barriers sub-plate header ("02 · БАРЬЕРЫ"), docked below the last tower card.
-    local lastTowerBg = self.towerCards[#self.towerCards].bg.widgetName
+    -- Barriers sub-plate header ("02 · БАРЬЕРЫ"), docked below the scrollable tower list.
     self.barrierSectionHeader:setParent(host, canvasName, self.gridBackground.widgetName)
     self.barrierSectionHeader:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
                                         UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
-    self.barrierSectionHeader:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, lastTowerBg,
-                                        self.sectionGap)
+    self.barrierSectionHeader:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
+                                        self.towerCardsScrollList.widgetName, self.sectionGap)
     self.barrierSectionHeader:setWidth(cardWidth)
     self.barrierSectionHeader:setHeight(self.sectionHeader)
     self.barrierSectionHeader:setColorHexValue(Styles.Combat.panelHeaderColor)

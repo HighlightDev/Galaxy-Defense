@@ -78,9 +78,9 @@ void SpaceObjectUiComponent::CreateUiElements(
     }
 }
 
-void SpaceObjectUiComponent::Tick(const float deltaTimeSec)
+void SpaceObjectUiComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    UiComponent::Tick(deltaTimeSec);
+    UiComponent::Tick(deltaTimeSec, playSpeed);
 
     const auto ownerRootComponentSp = mOwnerRootComponent.lock();
     if (ownerRootComponentSp == nullptr) {

@@ -66,7 +66,7 @@ eComponentType Component::GetComponentType() const
     return COMPONENT;
 }
 
-void Component::Tick(const float deltaTimeSec)
+void Component::Tick(const float deltaTimeSec, const float playSpeed)
 {
 }
 

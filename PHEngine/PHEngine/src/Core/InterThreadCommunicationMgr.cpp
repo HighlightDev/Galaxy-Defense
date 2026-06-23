@@ -101,6 +101,7 @@ void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const eEnqueueJobPo
     ProcessPushJob(
         policy,
         std::move(job),
+        mRenderThreadSwapChain.GetBufferStepIndexByChainType(mRenderThreadSwapChain.WriteChainType),
         mRenderThreadSwapChain.GetTasksByIndex(mRenderThreadSwapChain.WriteChainType),
         m_renderThreadJobsHashes);
 }
@@ -108,41 +109,56 @@ void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const eEnqueueJobPo
 void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, TaskJob_t&& job)
 {
     if (mIsAllowedPushGameThreadJobs.load(std::memory_order::acquire)) {
-        std::lock_guard<std::mutex> lock(m_gameThreadMutex);
-        ProcessPushJob(policy, std::move(job), m_gameThreadPendingJobs, m_gameThreadJobsHashes);
+        std::lock_guard<std::mutex> lock(mGameThreadSwapChain.StoreOperationMutex);
+        ProcessPushJob(
+            policy,
+            std::move(job),
+            mGameThreadSwapChain.GetBufferStepIndexByChainType(mGameThreadSwapChain.WriteChainType),
+            mGameThreadSwapChain.GetTasksByIndex(mGameThreadSwapChain.WriteChainType),
+            m_gameThreadJobsHashes);
     }
 }
 
 void InterThreadCommunicationMgr::ProcessPushLuaThreadJob(const eEnqueueJobPolicy policy, TaskJob_t&& job)
 {
     if (mIsAllowedPushLuaThreadJobs.load(std::memory_order::acquire)) {
-        std::lock_guard<std::mutex> lock(m_luaThreadMutex);
-        ProcessPushJob(policy, std::move(job), m_luaThreadPendingJobs, m_luaThreadJobsHashes);
+        std::lock_guard<std::mutex> lock(mLuaThreadSwapChain.StoreOperationMutex);
+        ProcessPushJob(
+            policy,
+            std::move(job),
+            mLuaThreadSwapChain.GetBufferStepIndexByChainType(mLuaThreadSwapChain.WriteChainType),
+            mLuaThreadSwapChain.GetTasksByIndex(mLuaThreadSwapChain.WriteChainType),
+            m_luaThreadJobsHashes);
     }
 }
 
 void InterThreadCommunicationMgr::ProcessPushJob(
     const eEnqueueJobPolicy policy,
     TaskJob_t&& job,
-    std::vector<TaskJob_t>& jobs,
+    uint16_t& writeBufferIndex,
+    JobsBuffer_t& jobs,
     std::unordered_map<uint64_t, std::vector<int32_t>>& jobsHashes)
 {
     const uint64_t jobHash = job.GetHash();
+
+    // Appends to the next free slot: records the slot in the dedup map (before the bump) then advances the step index.
+    const auto appendJob = [&](TaskJob_t&& jobToPush) {
+        ext_assert(
+            writeBufferIndex < jobs.size(),
+            "InterThreadCommunicationMgr::ProcessPushJob: job buffer overflow, increase c_renderThreadJobsPoolsSize");
+        jobsHashes[jobHash].push_back(writeBufferIndex);
+        jobs[writeBufferIndex++] = std::move(jobToPush);
+    };
+
     if (eEnqueueJobPolicy::PUSH_ANYWAY == policy) {
-        const auto newJobIndex = jobs.size();
-        jobs.emplace_back(std::move(job));
-        jobsHashes[jobHash].push_back(newJobIndex);
+        appendJob(std::move(job));
     } else if (eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH == policy) {
         if (jobsHashes.find(jobHash) == jobsHashes.end()) {
-            const auto newJobIndex = jobs.size();
-            jobs.emplace_back(std::move(job));
-            jobsHashes[jobHash].push_back(newJobIndex);
+            appendJob(std::move(job));
         }
     } else if (eEnqueueJobPolicy::IF_DUPLICATE_REPLACE == policy) {
         if (jobsHashes.find(jobHash) == jobsHashes.end()) {
-            const auto newJobIndex = jobs.size();
-            jobs.emplace_back(std::move(job));
-            jobsHashes[jobHash].push_back(newJobIndex);
+            appendJob(std::move(job));
         } else {
             const auto& jobIndexes = jobsHashes[jobHash];
             for (const auto& jobIndex : jobIndexes) {
@@ -152,66 +168,64 @@ void InterThreadCommunicationMgr::ProcessPushJob(
     }
 }
 
-void InterThreadCommunicationMgr::SpinGameThreadJobs()
+void InterThreadCommunicationMgr::SpinThreadJobs(
+    TasksSwapChain& swapChain, std::unordered_map<uint64_t, std::vector<int32_t>>& jobsHashes)
 {
     {
-        std::lock_guard<std::mutex> lock(m_gameThreadMutex);
-        m_gameThreadPendingJobs.swap(m_gameThreadExecutingJobs);
-        m_gameThreadJobsHashes.clear();
+        std::lock_guard<std::mutex> lock(swapChain.StoreOperationMutex);
+        SwapChain(swapChain);
+        jobsHashes.clear();
     }
 
-    for (const auto& job : m_gameThreadExecutingJobs) {
-        job(mSceneRenderer, mScene, mLuaScriptProcessor);
+    auto& readJobs = swapChain.GetTasksByIndex(swapChain.ReadChainType);
+    auto& readJobsStepIndex = swapChain.GetBufferStepIndexByChainType(swapChain.ReadChainType);
+
+    for (uint16_t i = 0; i < readJobsStepIndex; ++i) {
+        std::invoke(readJobs[i], mSceneRenderer, mScene, mLuaScriptProcessor);
     }
-    m_gameThreadExecutingJobs.clear();
+    readJobsStepIndex = 0;
+}
+
+void InterThreadCommunicationMgr::SpinGameThreadJobs()
+{
+    SpinThreadJobs(mGameThreadSwapChain, m_gameThreadJobsHashes);
 }
 
 void InterThreadCommunicationMgr::SpinRenderThreadJobs()
 {
-    auto& renderThreadChain = mRenderThreadSwapChain.GetTasksByIndex(mRenderThreadSwapChain.ReadChainType);
-
-    for (const auto& job : renderThreadChain) {
-        job(mSceneRenderer, mScene, mLuaScriptProcessor);
-    }
-    renderThreadChain.clear();
-
-    std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOperationMutex);
-    m_renderThreadJobsHashes.clear();
-    SwapRenderThreadChain();
+    SpinThreadJobs(mRenderThreadSwapChain, m_renderThreadJobsHashes);
 }
 
 void InterThreadCommunicationMgr::SpinLuaThreadJob()
 {
-    {
-        std::lock_guard<std::mutex> lock(m_luaThreadMutex);
-        m_luaThreadPendingJobs.swap(m_luaThreadExecutingJobs);
-        m_luaThreadJobsHashes.clear();
-    }
-
-    for (const auto& job : m_luaThreadExecutingJobs) {
-        job(mSceneRenderer, mScene, mLuaScriptProcessor);
-    }
-    m_luaThreadExecutingJobs.clear();
+    SpinThreadJobs(mLuaThreadSwapChain, m_luaThreadJobsHashes);
 }
 
-void InterThreadCommunicationMgr::SwapRenderThreadChain()
+void InterThreadCommunicationMgr::SwapChain(TasksSwapChain& swapChain)
 {
-    mRenderThreadSwapChain.ReadChainType = flipBits(mRenderThreadSwapChain.ReadChainType, 1);
-    mRenderThreadSwapChain.WriteChainType = flipBits(mRenderThreadSwapChain.WriteChainType, 1);
+    swapChain.ReadChainType = flipBits(swapChain.ReadChainType, 1);
+    swapChain.WriteChainType = flipBits(swapChain.WriteChainType, 1);
 }
 
 void InterThreadCommunicationMgr::ClearGameThreadJobs()
 {
-    std::lock_guard<std::mutex> lock(m_gameThreadMutex);
-    m_gameThreadPendingJobs.clear();
-    m_gameThreadExecutingJobs.clear();
+    std::lock_guard<std::mutex> lock(mGameThreadSwapChain.StoreOperationMutex);
+    // Reset both buffers to empty and release any captured resources held by pending jobs (called on level unload).
+    mGameThreadSwapChain.Jobs1.fill(TaskJob_t{});
+    mGameThreadSwapChain.Jobs2.fill(TaskJob_t{});
+    mGameThreadSwapChain.mBufferStepIndex1 = 0;
+    mGameThreadSwapChain.mBufferStepIndex2 = 0;
+    m_gameThreadJobsHashes.clear();
 }
 
 void InterThreadCommunicationMgr::ClearLuaThreadJobs()
 {
-    std::lock_guard<std::mutex> lock(m_luaThreadMutex);
-    m_luaThreadPendingJobs.clear();
-    m_luaThreadExecutingJobs.clear();
+    std::lock_guard<std::mutex> lock(mLuaThreadSwapChain.StoreOperationMutex);
+    mLuaThreadSwapChain.Jobs1.fill(TaskJob_t{});
+    mLuaThreadSwapChain.Jobs2.fill(TaskJob_t{});
+    mLuaThreadSwapChain.mBufferStepIndex1 = 0;
+    mLuaThreadSwapChain.mBufferStepIndex2 = 0;
+    m_luaThreadJobsHashes.clear();
 }
 
 void InterThreadCommunicationMgr::SetIsAllowedPushGameThreadJobs(const bool isAllowed)

@@ -139,9 +139,9 @@ public:
 
     void PostPlayLevelFinished();
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     // Game-thread: record a moved primitive's transform into the per-frame batch (deduped by proxy id).
     void EnqueuePrimitiveTransformUpdate(

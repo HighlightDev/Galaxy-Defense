@@ -169,7 +169,7 @@ bool LevelEditorController::IsTowerPositionValid(const glm::vec3 position) const
     return true;
 }
 
-void LevelEditorController::Tick(const float deltaTimeSec)
+void LevelEditorController::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (eEditModeType::IDLE != mCurrentEditModeType) {
         const auto& mouseBindings = mInputComponent->GetMouseBindings();
@@ -273,7 +273,7 @@ void LevelEditorController::Tick(const float deltaTimeSec)
     }
 }
 
-void LevelEditorController::UnpausableTick(const float deltaTimeSec)
+void LevelEditorController::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
 }
 

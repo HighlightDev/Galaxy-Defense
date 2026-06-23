@@ -69,9 +69,9 @@ void ThirdPersonCamera::PostLevelInit()
     ProcessDeferredThirdPersonTarget();
 }
 
-void ThirdPersonCamera::Tick(const float DeltaTime)
+void ThirdPersonCamera::Tick(const float DeltaTime, const float playSpeed)
 {
-    ACamera::Tick(DeltaTime);
+    ACamera::Tick(DeltaTime, playSpeed);
 
     const auto& mouseBindings = mInputComponent->GetMouseBindings();
     if (mouseBindings->IsMouseMoveEventDirty()) {

@@ -27,15 +27,17 @@ int32_t PlasmaModifier::CreatorObjectId() const
     return missileSp->GetObjectId();
 }
 
-void PlasmaModifier::Tick(const float deltaTimeSec)
+void PlasmaModifier::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    mElapsedSec += deltaTimeSec;
+    // The burn is gameplay time, so its duration and damage cadence advance with game speed.
+    const float scaledDeltaTimeSec = deltaTimeSec * playSpeed;
+    mElapsedSec += scaledDeltaTimeSec;
 
     const auto& spaceshipSp = mOwnerWp.lock();
     const auto& missileSp = mMissileWp.lock();
     if (spaceshipSp && missileSp) {
         // Damage-over-time: accumulate fractional HP and apply whole points so the burn reads as continuous.
-        mDamageAccumulator += mDamagePerSecond * deltaTimeSec;
+        mDamageAccumulator += mDamagePerSecond * scaledDeltaTimeSec;
         if (mDamageAccumulator >= 1.0f) {
             const auto wholeDamage = static_cast<size_t>(std::floor(mDamageAccumulator));
             mDamageAccumulator -= static_cast<float>(wholeDamage);

@@ -24,7 +24,7 @@ std::shared_ptr<PrimitiveSceneProxy> PlasmaTrailComponent::CreateSceneProxy() co
     return std::make_shared<Graphics::Proxy::PlasmaTrailSceneProxy>(this);
 }
 
-void PlasmaTrailComponent::Tick(const float deltaTimeSec)
+void PlasmaTrailComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (mIsRecording) {
         if (const auto& sourceSp = mSourceComponentWp.lock()) {
@@ -55,7 +55,7 @@ void PlasmaTrailComponent::Tick(const float deltaTimeSec)
     // itself did not change. Base::Tick performs the actual sync when dirty. Using Tick (not UnpausableTick) means the
     // component only updates while it is enabled — it sits idle in the pool and between launches instead of forever.
     mIsRenderDataDirty = true;
-    Base::Tick(deltaTimeSec);
+    Base::Tick(deltaTimeSec, playSpeed);
 }
 
 void PlasmaTrailComponent::SetSourceComponent(const std::weak_ptr<SceneComponent>& sourceComponent)

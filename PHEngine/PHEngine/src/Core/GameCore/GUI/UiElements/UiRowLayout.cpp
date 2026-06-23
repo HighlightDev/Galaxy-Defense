@@ -112,7 +112,7 @@ void UiRowLayout::RecalculatePositionsForChildren()
     }
 }
 
-void UiRowLayout::UnpausableTick(const float deltaTimeSec)
+void UiRowLayout::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     const auto childTransformDirty = std::any_of(mChildren.cbegin(), mChildren.cend(), [](const auto& child) {
         return child->IsTransformDirty();
@@ -122,7 +122,7 @@ void UiRowLayout::UnpausableTick(const float deltaTimeSec)
         SetIsTransformDirty(true);
     }
 
-    UiItem::UnpausableTick(deltaTimeSec);
+    UiItem::UnpausableTick(deltaTimeSec, playSpeed);
 }
 
 std::shared_ptr<LuaProxy> UiRowLayout::ReplicateLuaProxy()

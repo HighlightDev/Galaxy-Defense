@@ -29,7 +29,7 @@ public:
 
     ~FirstPersonCamera();
 
-    void Tick(const float DeltaTime) override;
+    void Tick(const float DeltaTime, const float playSpeed) override;
 
     std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const override;
 

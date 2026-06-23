@@ -126,17 +126,17 @@ void TestFeaturesLevel::UnloadLevel()
     mUiController.reset();
 }
 
-void TestFeaturesLevel::Tick(const float deltaTimeSec)
+void TestFeaturesLevel::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (mUiController) {
-        mUiController->Tick(deltaTimeSec);
+        mUiController->Tick(deltaTimeSec, playSpeed);
     }
 }
 
-void TestFeaturesLevel::UnpausableTick(const float deltaTimeSec)
+void TestFeaturesLevel::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     if (mUiController) {
-        mUiController->UnpausableTick(deltaTimeSec);
+        mUiController->UnpausableTick(deltaTimeSec, playSpeed);
     }
 }
 } // namespace TestFeatures

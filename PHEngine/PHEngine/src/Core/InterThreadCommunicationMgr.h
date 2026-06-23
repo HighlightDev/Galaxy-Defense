@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Core/CommonCore/EngineConstants.h"
 #include "Job.h"
 
+#include <array>
 #include <atomic>
 #include <memory>
 #include <mutex>
@@ -38,49 +40,41 @@ enum eReadChainType : uint8_t { READ_1 = 0, READ_2 = 1 };
 
 enum eWriteChainType : uint8_t { WRITE_1 = 0, WRITE_2 = 1 };
 
-/**
- * @struct TasksSwapChain
- * @brief Manages two job queues (swap chains) for inter-thread communication, ensuring thread safety and minimizing false
- * sharing.
- *
- * This structure provides two separate job vectors (`Jobs1` and `Jobs2`), each aligned to avoid hardware destructive
- * interference, which helps prevent performance degradation due to false sharing in multi-threaded environments. The
- * `StoreOperationMutex` protects operations on the swap chain. The `ReadChainType` and `WriteChainType` indicate which chain is
- * currently used for reading and writing.
- *
- * @var std::mutex StoreOperationMutex
- *      Mutex to synchronize access to the swap chain operations.
- * @var uint8_t ReadChainType
- *      Indicates the current read chain type.
- * @var uint8_t WriteChainType
- *      Indicates the current write chain type.
- * @var std::vector<TaskJob_t> Jobs1
- *      First job queue, aligned to avoid false sharing.
- * @var std::vector<TaskJob_t> Jobs2
- *      Second job queue, aligned to avoid false sharing.
- *
- * @fn std::vector<TaskJob_t>& GetTasksByIndex(const uint8_t index)
- * @brief Returns a reference to the job vector specified by the index (0 for Jobs1, otherwise Jobs2).
- * @param index Index of the job vector to retrieve.
- * @return Reference to the selected job vector.
- */
-
 using TaskJob_t = Job<
     std::weak_ptr<Graphics::Renderer::SceneRenderer>,
     std::weak_ptr<EngineCore::Scene>,
     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor>>;
+
+using JobsBuffer_t = std::array<TaskJob_t, EngineConstants::c_renderThreadJobsPoolsSize>;
+
+/**
+ * @struct TasksSwapChain
+ * @brief Double-buffered, fixed-size job swap chain for inter-thread communication, thread-safe and false-sharing aware.
+ *
+ * Holds two fixed-size job buffers (`Jobs1`/`Jobs2`) used as a read/write double buffer: producers append to the write
+ * buffer (under `StoreOperationMutex`) while the owning thread drains the read buffer, then the chains are swapped. Each
+ * buffer tracks how many slots are filled via its own step index (`mBufferStepIndex1`/`2`). Buffers and step indices are
+ * cache-line aligned to avoid false sharing. `ReadChainType`/`WriteChainType` select the current read/write buffer.
+ */
 struct TasksSwapChain {
     std::mutex StoreOperationMutex;
     uint8_t ReadChainType = {eReadChainType::READ_1};
     uint8_t WriteChainType = {eWriteChainType::WRITE_2};
 
-    // make sure we won't get false sharing for our jobs
-    alignas(hardware_destructive_interference_size) std::vector<TaskJob_t> Jobs1;
-    alignas(hardware_destructive_interference_size) std::vector<TaskJob_t> Jobs2;
+    // make sure we won't get false sharing for our cycle-buffer of jobs
+    alignas(hardware_destructive_interference_size) JobsBuffer_t Jobs1;
+    alignas(hardware_destructive_interference_size) JobsBuffer_t Jobs2;
+    alignas(hardware_destructive_interference_size) uint16_t mBufferStepIndex1{0};
+    alignas(hardware_destructive_interference_size) uint16_t mBufferStepIndex2{0};
 
-    inline std::vector<TaskJob_t>& GetTasksByIndex(const uint8_t index)
+    inline JobsBuffer_t& GetTasksByIndex(const uint8_t index)
     {
         return index == 0 ? Jobs1 : Jobs2;
+    }
+
+    inline uint16_t& GetBufferStepIndexByChainType(const uint8_t chainType)
+    {
+        return chainType == 0 ? mBufferStepIndex1 : mBufferStepIndex2;
     }
 };
 
@@ -112,14 +106,10 @@ class InterThreadCommunicationMgr {
 
     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> mLuaScriptProcessor;
 
-    std::mutex m_gameThreadMutex;
-    std::vector<TaskJob_t> m_gameThreadPendingJobs;
-    std::vector<TaskJob_t> m_gameThreadExecutingJobs;
+    TasksSwapChain mGameThreadSwapChain;
     std::unordered_map<uint64_t, std::vector<int32_t>> m_gameThreadJobsHashes;
 
-    std::mutex m_luaThreadMutex;
-    std::vector<TaskJob_t> m_luaThreadPendingJobs;
-    std::vector<TaskJob_t> m_luaThreadExecutingJobs;
+    TasksSwapChain mLuaThreadSwapChain;
     std::unordered_map<uint64_t, std::vector<int32_t>> m_luaThreadJobsHashes;
 
     TasksSwapChain mRenderThreadSwapChain;
@@ -199,10 +189,15 @@ private:
     void ProcessPushJob(
         const eEnqueueJobPolicy policy,
         TaskJob_t&& job,
-        std::vector<TaskJob_t>& jobs,
+        uint16_t& writeBufferIndex,
+        JobsBuffer_t& jobs,
         std::unordered_map<uint64_t, std::vector<int32_t>>& jobsHashes);
 
-    void SwapRenderThreadChain();
+    // Drains the swap chain's read buffer (invoking each job), resets it, clears the dedup hashes and flips the chains.
+    // Must be called on the thread that owns the swap chain (its read buffer is drained without the store mutex held).
+    void SpinThreadJobs(TasksSwapChain& swapChain, std::unordered_map<uint64_t, std::vector<int32_t>>& jobsHashes);
+
+    void SwapChain(TasksSwapChain& swapChain);
 };
 
 } // namespace Thread

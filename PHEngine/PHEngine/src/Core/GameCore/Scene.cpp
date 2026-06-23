@@ -376,7 +376,7 @@ std::shared_ptr<UiHandler> Scene::GetUiHandler() const
     return mUiHandler;
 }
 
-void Scene::Tick(const float delta)
+void Scene::Tick(const float delta, const float playSpeed)
 {
     mGameThreadDeltaSec->SetValue(delta);
     mScreenResolutionProperty->SetValue(
@@ -384,28 +384,28 @@ void Scene::Tick(const float delta)
             GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
             GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
 
-    mPhysicsWorld->Tick(delta);
+    mPhysicsWorld->Tick(delta, playSpeed);
 
     for (const auto cameraPtr : mActiveCameras) {
-        cameraPtr->Tick(delta);
+        cameraPtr->Tick(delta, playSpeed);
     }
 
     for (int i = 0; i < mActors.size(); ++i) {
         const auto& actor = mActors[i];
         if (actor && actor->IsEnabled()) {
-            actor->Tick(delta);
+            actor->Tick(delta, playSpeed);
         }
     }
 
-    mInstancedGeometryBatchHolder->Tick(delta);
+    mInstancedGeometryBatchHolder->Tick(delta, playSpeed);
 
     for (const auto actorController : mActorControllers) {
-        actorController->Tick(delta);
+        actorController->Tick(delta, playSpeed);
     }
 
     for (auto dynamicMaterial : mDynamicMaterials) {
         if (dynamicMaterial->IsEnabled()) {
-            dynamicMaterial->Tick(delta);
+            dynamicMaterial->Tick(delta, playSpeed);
         }
     }
 
@@ -423,34 +423,34 @@ void Scene::Tick(const float delta)
             }
         });
 
-    mDebugUiController->Tick(delta);
+    mDebugUiController->Tick(delta, playSpeed);
 #endif
 
-    mUiHandler->Tick(delta);
+    mUiHandler->Tick(delta, playSpeed);
 }
 
-void Scene::UnpausableTick(const float deltaTimeSec)
+void Scene::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
-    mPhysicsWorld->UnpausableTick(deltaTimeSec);
+    mPhysicsWorld->UnpausableTick(deltaTimeSec, playSpeed);
 
     for (const auto cameraPtr : mActiveCameras) {
-        cameraPtr->UnpausableTick(deltaTimeSec);
+        cameraPtr->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     for (auto actor : mActors) {
-        actor->UnpausableTick(deltaTimeSec);
+        actor->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     for (const auto actorController : mActorControllers) {
-        actorController->UnpausableTick(deltaTimeSec);
+        actorController->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     for (auto dynamicMaterial : mDynamicMaterials) {
-        dynamicMaterial->UnpausableTick(deltaTimeSec);
+        dynamicMaterial->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
 #if DEBUG
-    mDebugUiController->UnpausableTick(deltaTimeSec);
+    mDebugUiController->UnpausableTick(deltaTimeSec, playSpeed);
 #endif
 
     if (mLuaReplicatorsDirty) {
@@ -462,7 +462,7 @@ void Scene::UnpausableTick(const float deltaTimeSec)
         mLuaReplicatorsDirty = false;
     }
 
-    mUiHandler->UnpausableTick(deltaTimeSec);
+    mUiHandler->UnpausableTick(deltaTimeSec, playSpeed);
 
     // Ship all primitive transforms moved this frame as a single batched render-thread job.
     FlushPrimitiveTransformUpdates();

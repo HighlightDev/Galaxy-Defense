@@ -83,9 +83,9 @@ glm::vec3 GalaxySceneCamera::GetEyeVector() const
     return GetTargetVector() + offset;
 }
 
-void GalaxySceneCamera::Tick(const float deltaTimeSec)
+void GalaxySceneCamera::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    ACamera::Tick(deltaTimeSec);
+    ACamera::Tick(deltaTimeSec, playSpeed);
 
     const auto& mouseBindings = mInputComponent->GetMouseBindings();
     bool isUserMouseMoveIdle = true;

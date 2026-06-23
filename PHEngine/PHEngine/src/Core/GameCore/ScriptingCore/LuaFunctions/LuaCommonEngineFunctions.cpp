@@ -97,6 +97,9 @@ void LuaCommonEngineFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
             mOwnerPtr,
             std::bind(&LuaCommonEngineFunctions::GetLabelWidthPx, this, std::placeholders::_1),
             "_GetLabelWidthPx");
+
+    LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetPlaySpeed"), float(void)>::Bind(
+        luaWrapper, mOwnerPtr, std::bind(&LuaCommonEngineFunctions::GetPlaySpeed, this, std::placeholders::_1), "_GetPlaySpeed");
 }
 
 int32_t LuaCommonEngineFunctions::GetWindowHeight(const std::tuple<>& data) const
@@ -179,6 +182,11 @@ int32_t LuaCommonEngineFunctions::GetLabelWidthPx(const std::tuple<std::string, 
         return 0;
     }
     return FreeTypeTextMeshCreator::CalcWidth(text, atlas);
+}
+
+float LuaCommonEngineFunctions::GetPlaySpeed(const std::tuple<>& data) const
+{
+    return 1.0f; // todo: provide real speed
 }
 
 } // namespace Scripts

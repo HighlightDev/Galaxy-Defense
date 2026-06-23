@@ -66,16 +66,16 @@ bool ElectroRayActor::IsInsideLevel(const BoundingBox3D& boundingBox) const
         || EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mElectroLineBegin);
 }
 
-void ElectroRayActor::Tick(const float deltaTimeSec)
+void ElectroRayActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    MissileActor::Tick(deltaTimeSec);
+    MissileActor::Tick(deltaTimeSec, playSpeed);
 
     ext_assert(mLineComponent, "ElectroRayActor line component is null");
 
     glm::vec3 electroLineDirection = mElectroLineDirection;
 
     if (!bElectroLineCollided) {
-        mElectroLineEnd += mElectroLineDirection * mElectroLineDestinationSpeed * deltaTimeSec;
+        mElectroLineEnd += mElectroLineDirection * mElectroLineDestinationSpeed * deltaTimeSec * playSpeed;
 
         if (const auto& sceneSp = mSceneOwner.lock()) {
             if (const auto& spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock()) {
@@ -88,7 +88,7 @@ void ElectroRayActor::Tick(const float deltaTimeSec)
                 }
                 const auto& spaceStationsPhysComponents = mCombatActorsPoolHandler->GetSpaceStationsPhysicsComponents();
                 const auto& missilePhysComponents = mCombatActorsPoolHandler->GetMissilePhysicsComponents(
-                    {eMissileType::BOMB, eMissileType::FREEZING_BOMB, eMissileType::BLACK_HOLE});
+                    {eMissileType::BOMB, eMissileType::FREEZING_BOMB, eMissileType::BLACK_HOLE, eMissileType::PLASMA_BOMB});
                 excludeCollisionPhysComponents.insert(
                     excludeCollisionPhysComponents.end(), spaceStationsPhysComponents.begin(), spaceStationsPhysComponents.end());
                 excludeCollisionPhysComponents.insert(
@@ -127,7 +127,7 @@ void ElectroRayActor::Tick(const float deltaTimeSec)
     }
 
     if (bLineOriginStartMovement) {
-        mElectroLineBegin += electroLineDirection * mElectroLineOriginSpeed * deltaTimeSec;
+        mElectroLineBegin += electroLineDirection * mElectroLineOriginSpeed * deltaTimeSec * playSpeed;
         if (bElectroLineCollided
             && (EngineMath::CheckSimilarityVec3(mElectroLineBegin, mElectroLineEnd)
                 || (glm::dot(mElectroLineBegin, mElectroLineDirection) >= glm::dot(mElectroLineEnd, mElectroLineDirection)))) {

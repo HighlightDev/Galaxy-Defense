@@ -17,11 +17,11 @@ SequenceAnimator::SequenceAnimator(const std::shared_ptr<IAnimatable>& animatabl
     ext_assert(mAnimatable, "SequenceAnimator::SequenceAnimator: animatable is null");
 }
 
-void SequenceAnimator::Tick(const float deltaTimeSec)
+void SequenceAnimator::Tick(const float deltaTimeSec, const float playSpeed)
 {
 }
 
-void SequenceAnimator::UnpausableTick(const float deltaTimeSec)
+void SequenceAnimator::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     if (mAnimationInProgress) {
         ext_assert(

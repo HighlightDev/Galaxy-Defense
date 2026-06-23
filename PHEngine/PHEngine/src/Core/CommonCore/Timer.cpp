@@ -46,14 +46,15 @@ void GameThreadTimersHolder::checkTimersForExpiration()
     mCheckForExpiredTimersInProgress.store(false);
 }
 
-void GameThreadTimersHolder::Tick(const float deltaSeconds)
+void GameThreadTimersHolder::Tick(const float deltaSeconds, const float playSpeed)
 {
     checkTimersForExpiration();
 
     if (mCheckForExpiredTimersInProgress.load()) {
         return;
     }
-    const float deltaMilliseconds = deltaSeconds * 1000.0f;
+    // Pausable timers are gameplay timers (spawn cadence, cooldowns, ...), so they advance at game speed.
+    const float deltaMilliseconds = deltaSeconds * playSpeed * 1000.0f;
     for (const auto& timerWp : mTimerInstances) {
         if (const auto& timerSp = timerWp.lock()) {
             if (timerSp->m_isPausable) {
@@ -63,7 +64,7 @@ void GameThreadTimersHolder::Tick(const float deltaSeconds)
     }
 }
 
-void GameThreadTimersHolder::UnpausableTick(const float deltaSeconds)
+void GameThreadTimersHolder::UnpausableTick(const float deltaSeconds, const float playSpeed)
 {
     checkTimersForExpiration();
 

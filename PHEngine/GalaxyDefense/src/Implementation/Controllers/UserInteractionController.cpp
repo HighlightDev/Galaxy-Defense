@@ -271,7 +271,7 @@ std::shared_ptr<BarrierActor> UserInteractionController::GetBarrierAtPosition(co
     return nullptr;
 }
 
-void UserInteractionController::Tick(const float deltaTimeSec)
+void UserInteractionController::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (eGameModeType::SPACE_STATION_PLACEMENT == mCurrentGameModeType) {
         ProcessSpaceStationPlacementStage();
@@ -790,6 +790,8 @@ eMissileType UserInteractionController::MissileTypeFromString(const std::string&
         return eMissileType::BLACK_HOLE;
     } else if (typeStr == "PLASMA_BOMB") {
         return eMissileType::PLASMA_BOMB;
+    } else if (typeStr == "REPAIR_BEAM") {
+        return eMissileType::REPAIR_BEAM;
     }
     return eMissileType::NONE;
 }

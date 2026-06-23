@@ -61,9 +61,9 @@ void DirectionalLightComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMa
     Base::UpdateWorldMatrix(parentWorldMatrix);
 }
 
-void DirectionalLightComponent::Tick(float deltaTimeSec)
+void DirectionalLightComponent::Tick(float deltaTimeSec, const float playSpeed)
 {
-    Base::Tick(deltaTimeSec);
+    Base::Tick(deltaTimeSec, playSpeed);
 
     if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         SyncRenderData();

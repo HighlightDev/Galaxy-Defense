@@ -42,11 +42,11 @@ void UiInputSystem::Initialize()
     });
 }
 
-void UiInputSystem::Tick(const float deltaTimeSec)
+void UiInputSystem::Tick(const float deltaTimeSec, const float playSpeed)
 {
 }
 
-void UiInputSystem::UnpausableTick(const float deltaTimeSec)
+void UiInputSystem::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     const auto& mouseBindings = mInputComponent->GetMouseBindings();
 

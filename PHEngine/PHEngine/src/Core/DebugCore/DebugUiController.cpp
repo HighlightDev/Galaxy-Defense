@@ -240,11 +240,11 @@ void DebugUiController::InitializeWidgets()
     }
 }
 
-void DebugUiController::Tick(const float deltaTimeSec)
+void DebugUiController::Tick(const float deltaTimeSec, const float playSpeed)
 {
 }
 
-void DebugUiController::UnpausableTick(const float deltaTimeSec)
+void DebugUiController::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     const auto& keyboardBindings = mInputComponent->GetKeyboardBindings();
     static constexpr float buttonCooldown = 0.5f;

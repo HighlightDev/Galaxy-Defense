@@ -24,9 +24,9 @@ void PortalActor::SetNavigationController(const std::weak_ptr<NavigationControll
     mNavigationControllerWp = navigationControllerWp;
 }
 
-void PortalActor::Tick(const float deltaTimeSec)
+void PortalActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Actor::Tick(deltaTimeSec);
+    Actor::Tick(deltaTimeSec, playSpeed);
 
     const eSpaceshipType spaceshipType
         = static_cast<eSpaceshipType>(std::round(Random::Float() * static_cast<float>(eSpaceshipType::FIGHTER)));
@@ -35,7 +35,7 @@ void PortalActor::Tick(const float deltaTimeSec)
     const auto navController = mNavigationControllerWp.lock();
     if (poolSp && navController) {
         if (mIsSpawnActive && mSpawnInterval > 0.0f) {
-            mAccumulatedDeltaTime += deltaTimeSec;
+            mAccumulatedDeltaTime += deltaTimeSec * playSpeed;
             if (mAccumulatedDeltaTime >= mSpawnInterval) {
                 if (const auto& freeShip = poolSp->GetFreeSpaceshipActor(spaceshipType)) {
                     const auto portalPosition = GetRootComponent()->GetTranslation();

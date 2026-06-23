@@ -225,6 +225,7 @@ void CombatLevel::CreateScene()
         a_sceneCenterActorDummy->AddComponent(c_ismesh);
         a_sceneCenterActorDummy->SetScene(sceneSp);
     }
+    // Repair beams are now bound to towers and driven by CombatController (cast to the nearest barrier in range).
 }
 
 void CombatLevel::PostLevelInit()
@@ -272,29 +273,29 @@ void CombatLevel::UnloadLevel()
     Game::PlayerDataProvider::GetInstance()->ResetLevelData();
 }
 
-void CombatLevel::Tick(const float deltaTimeSec)
+void CombatLevel::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (mUiController) {
-        mUiController->Tick(deltaTimeSec);
+        mUiController->Tick(deltaTimeSec, playSpeed);
     }
 
     if (mCombatController) {
-        mCombatController->Tick(deltaTimeSec);
+        mCombatController->Tick(deltaTimeSec, playSpeed);
     }
 
     if (mLvlProgressController) {
-        mLvlProgressController->Tick(deltaTimeSec);
+        mLvlProgressController->Tick(deltaTimeSec, playSpeed);
     }
 }
 
-void CombatLevel::UnpausableTick(const float deltaTimeSec)
+void CombatLevel::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     if (mUiController) {
-        mUiController->UnpausableTick(deltaTimeSec);
+        mUiController->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     if (mCombatController) {
-        mCombatController->UnpausableTick(deltaTimeSec);
+        mCombatController->UnpausableTick(deltaTimeSec, playSpeed);
     }
 }
 

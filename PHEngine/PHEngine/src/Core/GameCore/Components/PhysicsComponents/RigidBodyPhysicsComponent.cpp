@@ -19,9 +19,9 @@ RigidBodyPhysicsComponent::~RigidBodyPhysicsComponent()
 {
 }
 
-void RigidBodyPhysicsComponent::Tick(const float deltaTimeSec)
+void RigidBodyPhysicsComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Component::Tick(deltaTimeSec);
+    Component::Tick(deltaTimeSec, playSpeed);
 
     if (mDescriptor->GetMotionState()) {
         bool bIsDirty;

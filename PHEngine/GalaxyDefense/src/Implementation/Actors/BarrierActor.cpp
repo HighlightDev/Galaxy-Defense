@@ -46,9 +46,9 @@ void BarrierActor::SetBarrierProtoData(const BarrierUiProtoData& protoData)
     mUiProtoData = protoData;
 }
 
-void BarrierActor::Tick(const float deltaTimeSec)
+void BarrierActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Actor::Tick(deltaTimeSec);
+    Actor::Tick(deltaTimeSec, playSpeed);
 
     // Actor can have only one physics component, so we can directly update it here without iterating through the list of pillars
     const auto& rootTranslation = GetRootComponent()->GetTranslation();

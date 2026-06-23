@@ -47,7 +47,7 @@ eComponentType HumanoidPhysicsMovementComponent::GetComponentType() const
     return CHARACTER_MOVEMENT_COMPONENT;
 }
 
-void HumanoidPhysicsMovementComponent::Tick(const float deltaTimeSec)
+void HumanoidPhysicsMovementComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (bIsCameraRotationDirty) {
         if (const auto& spOwner = GetOwner().lock()) {

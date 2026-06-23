@@ -33,9 +33,9 @@ eComponentType BillboardComponent::GetComponentType() const
     return PRIMITIVE_COMPONENT;
 }
 
-void BillboardComponent::UnpausableTick(float deltaTimeSec)
+void BillboardComponent::UnpausableTick(float deltaTimeSec, const float playSpeed)
 {
-    PrimitiveComponent::UnpausableTick(deltaTimeSec);
+    PrimitiveComponent::UnpausableTick(deltaTimeSec, playSpeed);
 
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && bIsRenderDataDirty) {
         SyncRenderData();

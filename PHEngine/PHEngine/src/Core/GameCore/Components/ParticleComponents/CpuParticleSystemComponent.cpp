@@ -43,7 +43,7 @@ CpuParticleSystemComponent::~CpuParticleSystemComponent()
 {
 }
 
-void CpuParticleSystemComponent::Tick(const float deltaTimeSec)
+void CpuParticleSystemComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (!mIsEmitting)
         return;

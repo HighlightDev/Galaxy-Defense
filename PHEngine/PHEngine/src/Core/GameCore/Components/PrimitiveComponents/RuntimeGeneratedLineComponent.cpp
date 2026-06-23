@@ -36,9 +36,9 @@ std::shared_ptr<PrimitiveSceneProxy> RuntimeGeneratedLineComponent::CreateSceneP
     return std::make_shared<RuntimeGeneratedLineSceneProxy>(this);
 }
 
-void RuntimeGeneratedLineComponent::Tick(const float deltaTimeSec)
+void RuntimeGeneratedLineComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    StaticMeshComponent::Tick(deltaTimeSec);
+    StaticMeshComponent::Tick(deltaTimeSec, playSpeed);
 
     if (mIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         SyncRenderData();

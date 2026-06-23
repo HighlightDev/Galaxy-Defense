@@ -22,7 +22,7 @@ public:
         const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
         const FighterSpaceshipLevel& fighterLevel);
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
     void TriggerSpawn(const glm::vec3& position) override;
 

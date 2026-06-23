@@ -131,10 +131,10 @@ void ACamera::SetTransformationDirty()
     bTransformationDirty = true;
 }
 
-void ACamera::Tick(const float DeltaTime)
+void ACamera::Tick(const float DeltaTime, const float playSpeed)
 {
     if (mPlanarReflectionComponent) {
-        mPlanarReflectionComponent->Tick(DeltaTime);
+        mPlanarReflectionComponent->Tick(DeltaTime, playSpeed);
     }
 
     if (bTransformationDirty && bIsCameraProxyReady.load(std::memory_order::seq_cst)) {

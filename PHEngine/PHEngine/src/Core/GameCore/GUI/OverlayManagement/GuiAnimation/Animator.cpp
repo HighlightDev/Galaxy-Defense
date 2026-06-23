@@ -15,11 +15,11 @@ Animator::Animator(const std::shared_ptr<IAnimatable>& animatable)
     ext_assert(mAnimatable, "Animator::Animator: animatable is null");
 }
 
-void Animator::Tick(const float deltaTimeSec)
+void Animator::Tick(const float deltaTimeSec, const float playSpeed)
 {
 }
 
-void Animator::UnpausableTick(const float deltaTimeSec)
+void Animator::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     if (mAnimationInProgress) {
         mAnimationTimePassed += deltaTimeSec;

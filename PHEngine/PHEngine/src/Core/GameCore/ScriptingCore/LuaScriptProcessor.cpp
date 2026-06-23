@@ -14,7 +14,7 @@ LuaScriptProcessor::LuaScriptProcessor(InterThreadCommunicationMgr& interThreadM
     Initialize();
 }
 
-void LuaScriptProcessor::Tick(const float deltaTimeSec)
+void LuaScriptProcessor::Tick(const float deltaTimeSec, const float playSpeed)
 {
     for (const auto& luaScriptExecutor : mLuaScriptExecutors) {
         if (luaScriptExecutor->IsEnabled()) {

@@ -42,7 +42,7 @@ GpuParticleSystemComponent::~GpuParticleSystemComponent()
 {
 }
 
-void GpuParticleSystemComponent::Tick(const float deltaTimeSec)
+void GpuParticleSystemComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst) && (IsParticlesDataDirty() || IsParticleModulesProxiesDirty() || IsEndlessRespawnEnabledDirty())) {
         SyncDataWithRenderThread(0);

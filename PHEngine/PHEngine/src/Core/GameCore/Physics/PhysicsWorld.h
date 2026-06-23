@@ -39,11 +39,11 @@ public:
 
     btDiscreteDynamicsWorld* GetWorld() const;
 
-    void Tick(const float deltaTimeSec);
+    void Tick(const float deltaTimeSec, const float playSpeed);
 
-    void UnpausableTick(const float deltaTimeSec) override{};
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override{};
 
-    void PostPhysicsSimulationUpdate(const float deltaTimeSec);
+    void PostPhysicsSimulationUpdate(const float deltaTimeSec, const float playSpeed);
 
     void AddPhysDescriptor(const std::shared_ptr<PhysicsDescriptor>& inDescriptor);
 

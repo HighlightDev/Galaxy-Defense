@@ -15,11 +15,11 @@ SpaceStationActor::SpaceStationActor(
     AddEngineProperty(mShootRadiusProperty);
 }
 
-void SpaceStationActor::Tick(const float deltaTimeSec)
+void SpaceStationActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Actor::Tick(deltaTimeSec);
+    Actor::Tick(deltaTimeSec, playSpeed);
 
-    mShootCooldown += deltaTimeSec;
+    mShootCooldown += deltaTimeSec * playSpeed;
 }
 
 bool SpaceStationActor::CanShoot() const

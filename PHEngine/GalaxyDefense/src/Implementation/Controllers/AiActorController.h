@@ -12,6 +12,6 @@ class AiActorController : public ActorController {
 public:
     AiActorController(const std::shared_ptr<Actor>& actor);
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 };
 } // namespace Game

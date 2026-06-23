@@ -56,7 +56,7 @@ int32_t GravityModifier::CreatorObjectId() const
     return missileSp->GetObjectId();
 }
 
-void GravityModifier::Tick(const float deltaTimeSec)
+void GravityModifier::Tick(const float deltaTimeSec, const float playSpeed)
 {
     const auto& spaceshipSp = mOwnerWp.lock();
     const auto& missileSp = mMissileWp.lock();
@@ -68,7 +68,7 @@ void GravityModifier::Tick(const float deltaTimeSec)
         if (vecLength > 0.001f) // check if length of vector is not zero otherwise normalized vector will be NaN
         {
             const auto nToGravityCenter = toGravityCenterVec / vecLength;
-            spaceshipSp->GetMovementComponent()->Move(nToGravityCenter * mGravityPower, deltaTimeSec);
+            spaceshipSp->GetMovementComponent()->Move(nToGravityCenter * mGravityPower, deltaTimeSec * playSpeed);
         }
 
         ApplySpaghettification(spaceshipSp, vecLength);

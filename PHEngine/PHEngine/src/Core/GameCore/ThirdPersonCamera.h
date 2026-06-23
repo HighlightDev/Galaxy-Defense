@@ -62,7 +62,7 @@ public:
 
     void Initialize() override;
 
-    void Tick(const float DeltaTime) override;
+    void Tick(const float DeltaTime, const float playSpeed) override;
 
     void
     ProcessEvent(const PlayerMovedGameThreadEvent* sender, const typename PlayerMovedGameThreadEvent::EventData_t& data) override;

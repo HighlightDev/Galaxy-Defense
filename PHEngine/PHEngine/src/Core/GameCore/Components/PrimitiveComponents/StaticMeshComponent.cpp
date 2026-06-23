@@ -32,9 +32,9 @@ StaticMeshComponent::~StaticMeshComponent()
 {
 }
 
-void StaticMeshComponent::Tick(const float deltaTimeSec)
+void StaticMeshComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Base::Tick(deltaTimeSec);
+    Base::Tick(deltaTimeSec, playSpeed);
 }
 
 void StaticMeshComponent::SetIsEnabled(const bool bEnabled)

@@ -37,7 +37,7 @@ public:
 
     void CleanUp() override;
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
     eLootCategory GetLootCategory() const;
 

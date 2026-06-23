@@ -52,7 +52,8 @@ local WEAPON_DISPLAY_NAME = {
     [MissileTypes.MissileType.ELECTRO_RAY] = "ЭЛЕКТРО-ЛУЧ",
     [MissileTypes.MissileType.BLACK_HOLE] = "ЧЁРНАЯ ДЫРА",
     [MissileTypes.MissileType.FREEZING_RAY] = "КРИО-ЛУЧ",
-    [MissileTypes.MissileType.PLASMA_BOMB] = "ПЛАЗМА-БОМБА"
+    [MissileTypes.MissileType.PLASMA_BOMB] = "ПЛАЗМА-БОМБА",
+    [MissileTypes.MissileType.REPAIR_BEAM] = "РЕМОНТ-ЛУЧ"
 }
 
 local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}
@@ -157,8 +158,8 @@ function CombatHudOverlay:new(host)
     local progressLegendLabel = UiLabel:new(host, FONT, "CombatWaveLegend")
     combatOverlay:addWidget(progressLegendLabel)
 
-    local selectedSpeed = 2 -- placeholder; no game-speed API yet
-    local speedPauseButton = LabelButton:new(host, combatOverlay, FONT, "CombatSpeedPause")
+    local selectedSpeed = _GetPlaySpeed(host)
+    local speedPauseButton = ImageButton:new(host, combatOverlay, "CombatSpeedPause")
     combatOverlay:addCompoundWidget(speedPauseButton)
     local speedButtons = {}
     local speedValues = {1, 2, 4}
@@ -494,15 +495,24 @@ function CombatHudOverlay:new(host)
     for i = 1, #speedButtons do
         local value = speedValues[i]
         speedButtons[i]:subscribeOnMouseInputClickedCallback(function()
-            selectedSpeed = value -- TODO: drive real game speed once the engine exposes it
+            selectedSpeed = value
             refreshSpeedButtons()
-            EventsHelper:sendChangePlaySpeedGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE, value)
+            -- While paused, only cache the choice: do not apply it (that would resume the game). The pause button
+            -- restores selectedSpeed when it un-pauses.
+            if not isPaused then
+                EventsHelper:sendChangePlaySpeedGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE,
+                                                                value)
+            end
         end)
     end
 
     speedPauseButton:subscribeOnMouseInputClickedCallback(function ()
+        -- Toggle first, then derive the icon + speed from the NEW state: when paused the button offers "play" (resume),
+        -- otherwise "pause". (Deriving from the pre-toggle value showed the wrong icon on the first press.)
         isPaused = not isPaused
-        EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE, isPaused)        
+        local value = isPaused and 0.0 or selectedSpeed
+        speedPauseButton:setImageTextureSource(isPaused and "play.png" or "pause.png")
+        EventsHelper:sendChangePlaySpeedGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE, value)
     end)
 
     combatOverlay.onCurrentLevelProgressStageChanged = rebuildObjectives
@@ -840,8 +850,7 @@ function CombatHudOverlay:new(host)
         speedButtons[3]:setAnchor(A.RIGHT, A.RIGHT, waveDockPanel.widgetName, 16)
         speedButtons[2]:setAnchor(A.RIGHT, A.LEFT, speedButtons[3].widgetName, speedGap)
         speedButtons[1]:setAnchor(A.RIGHT, A.LEFT, speedButtons[2].widgetName, speedGap)
-        speedPauseButton:setAnchor(A.RIGHT, A.LEFT, speedButtons[1].widgetName, speedGap)
-        for _, sb in ipairs({speedPauseButton, speedButtons[1], speedButtons[2], speedButtons[3]}) do
+        for _, sb in ipairs({speedButtons[1], speedButtons[2], speedButtons[3]}) do
             sb:setParent(host, canvasName, waveDockPanel.widgetName)
             sb:setWidth(speedBtnSize)
             sb:setHeight(speedBtnSize)
@@ -854,7 +863,18 @@ function CombatHudOverlay:new(host)
             sb:setLabelTextVerticalAlignment(VALIGN.CENTER)
             sb:setIsVisible(true)
         end
-        speedPauseButton:setLabelText("II")
+        speedPauseButton:setAnchor(A.RIGHT, A.LEFT, speedButtons[1].widgetName, speedGap)
+        speedPauseButton:setParent(host, canvasName, waveDockPanel.widgetName)
+        speedPauseButton:setWidth(speedBtnSize)
+        speedPauseButton:setHeight(speedBtnSize)
+        speedPauseButton:setAnchor(A.VERTICAL_CENTER, A.VERTICAL_CENTER, waveDockPanel.widgetName, 0)
+        speedPauseButton:setButtonColorHexValue(Combat.chipColor)
+        speedPauseButton:setButtonBorderRadius(Combat.chipBorderRadius)
+        speedPauseButton:setIsVisible(true)
+        speedPauseButton:setButtonColorHexValue(Combat.textDim)
+        speedPauseButton:setUseImageCustomColor(true)
+        speedPauseButton:setImageTextureSource("pause.png")
+
         for i = 1, #speedButtons do speedButtons[i]:setLabelText("×" .. tostring(speedValues[i])) end
         refreshSpeedButtons()
 

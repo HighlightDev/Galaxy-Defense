@@ -45,9 +45,9 @@ void SkyboxComponent::SetIsVisible(bool isVisible)
     }
 }
 
-void SkyboxComponent::Tick(const float deltaTimeSec)
+void SkyboxComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Base::Tick(deltaTimeSec);
+    Base::Tick(deltaTimeSec, playSpeed);
 
     SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTimeSec * m_rotateSpeed), AXIS_UP));
 }

@@ -61,7 +61,7 @@ public:
         const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
         const SpaceshipLevel& spaceshipLevel);
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
     void OnSceneOwnerInitialized() override;
 

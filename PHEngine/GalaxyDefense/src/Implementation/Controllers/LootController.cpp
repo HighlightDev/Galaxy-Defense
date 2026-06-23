@@ -53,11 +53,11 @@ void LootController::CleanUp()
 {
 }
 
-void LootController::Tick(const float deltaTimeSec)
+void LootController::Tick(const float deltaTimeSec, const float playSpeed)
 {
 }
 
-void LootController::UnpausableTick(const float deltaTimeSec)
+void LootController::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
 }
 

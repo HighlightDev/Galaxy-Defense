@@ -25,7 +25,7 @@ void InstancedGeometryBatch::AddInstancedMeshComponent(const std::shared_ptr<Ins
     mInstancedStaticMeshComponents.emplace_back(componentSp);
 }
 
-void InstancedGeometryBatch::Tick(const float deltaTimeSec)
+void InstancedGeometryBatch::Tick(const float deltaTimeSec, const float playSpeed)
 {
     mCachedValidInstances.clear();
     mCachedValidInstances.reserve(mInstancedStaticMeshComponents.size());
@@ -39,7 +39,7 @@ void InstancedGeometryBatch::Tick(const float deltaTimeSec)
     }
 }
 
-void InstancedGeometryBatch::UnpausableTick(const float deltaTimeSec)
+void InstancedGeometryBatch::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
 }
 

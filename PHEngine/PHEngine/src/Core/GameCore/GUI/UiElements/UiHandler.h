@@ -40,9 +40,9 @@ public:
 
     std::shared_ptr<UiCanvas> CreateHudCanvas(const ViewPortInfo& canvasScreenSize);
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     std::shared_ptr<UiCanvas> GetCanvasByName(const std::string& canvasName) const;
 

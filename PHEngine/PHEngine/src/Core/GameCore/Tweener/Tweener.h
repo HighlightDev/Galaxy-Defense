@@ -56,9 +56,9 @@ public:
 
     void ChangeState(const std::string& dstStateName);
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override { };
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override { };
 
     void SubscribeOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer);
 

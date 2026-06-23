@@ -19,7 +19,7 @@ public:
     explicit SphereCollisionTestWithFilterAdapter(
         const float sphereRadius, const std::vector<std::shared_ptr<PhysicsComponent>>& excludeCollisionComponents);
 
-    void SphereCollisionTest(const std::shared_ptr<PhysicsWorld>& physWorld, const glm::vec3& translation);
+    void SphereCollisionTest(const std::shared_ptr<PhysicsWorld>& physWorld, const glm::vec3& sphereOrigin);
 
     std::vector<const PhysicsDescriptor*> GetCollisionHitPhysicsDescriptors() const;
 

@@ -20,9 +20,9 @@ public:
 
     void SetScene(const std::weak_ptr<Scene>& sceneWp);
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     void AddInstancedGeometryBatch(const std::shared_ptr<InstancedGeometryBatch>& batch);
 

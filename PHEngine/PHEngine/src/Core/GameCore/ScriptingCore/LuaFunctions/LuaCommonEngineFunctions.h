@@ -69,6 +69,8 @@ private:
        terms of FreeTypeTextMeshCreator::CalcWidth, so the answer matches what
        the font batcher would actually draw. */
     int32_t GetLabelWidthPx(const std::tuple<std::string, int32_t, std::string>& data) const;
+
+    float GetPlaySpeed(const std::tuple<>& data) const;
 };
 } // namespace Scripts
 } // namespace EngineCore

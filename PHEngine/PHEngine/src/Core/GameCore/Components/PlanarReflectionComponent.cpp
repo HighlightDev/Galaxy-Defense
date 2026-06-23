@@ -109,7 +109,7 @@ void PlanarReflectionComponent::PostLevelInit()
     }
 }
 
-void PlanarReflectionComponent::Tick(const float deltaTimeSec)
+void PlanarReflectionComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (mIsEnabled) {
         if (bTransformationDirty && bIsSceneProxyReady.load(std::memory_order::seq_cst)) {

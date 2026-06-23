@@ -16,11 +16,11 @@ FighterSpaceshipActor::FighterSpaceshipActor(
     mRouteHandler = std::make_unique<FighterSpaceshipRouteHandler>(this);
 }
 
-void FighterSpaceshipActor::Tick(const float deltaTimeSec)
+void FighterSpaceshipActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    WeakSpaceshipActor::Tick(deltaTimeSec);
+    WeakSpaceshipActor::Tick(deltaTimeSec, playSpeed);
 
-    mShootCooldown += deltaTimeSec;
+    mShootCooldown += deltaTimeSec * playSpeed;
 }
 
 void FighterSpaceshipActor::TriggerSpawn(const glm::vec3& position)

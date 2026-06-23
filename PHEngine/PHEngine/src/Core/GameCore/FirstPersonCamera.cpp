@@ -46,7 +46,7 @@ glm::vec3 FirstPersonCamera::GetLocalSpaceUpVector() const
     return m_localSpaceUpVector;
 }
 
-void FirstPersonCamera::Tick(const float DeltaTime)
+void FirstPersonCamera::Tick(const float DeltaTime, const float playSpeed)
 {
     const auto& mouseBindings = mInputComponent->GetMouseBindings();
     if (mouseBindings->IsMouseMoveEventDirty()) {
@@ -70,7 +70,7 @@ void FirstPersonCamera::Tick(const float DeltaTime)
         MoveCamera(moveDirection);
     }
 
-    ACamera::Tick(DeltaTime);
+    ACamera::Tick(DeltaTime, playSpeed);
 }
 
 std::shared_ptr<CameraSceneProxy> FirstPersonCamera::CreateSceneProxy() const

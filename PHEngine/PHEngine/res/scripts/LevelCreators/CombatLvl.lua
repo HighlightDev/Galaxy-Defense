@@ -97,6 +97,7 @@ function CreateLevel(host)
         ,arrow-left.png
         ,sign-out.png
         ,play.png
+        ,pause.png
         ,shield.png
 		]])
 

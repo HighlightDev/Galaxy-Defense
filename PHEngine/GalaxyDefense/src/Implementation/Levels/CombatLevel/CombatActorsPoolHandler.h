@@ -80,6 +80,8 @@ public:
 
     std::shared_ptr<SpaceStationActor> GetFreeSpaceStationActor() const;
 
+    std::shared_ptr<Actor> GetActorOwnerById(const int32_t actorId) const;
+
     std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const int32_t actorId) const;
 
     std::shared_ptr<SpaceObjectActor> GetSpaceObjectOwnerActorById(const int32_t actorId) const;

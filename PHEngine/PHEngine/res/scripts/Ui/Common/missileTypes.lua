@@ -1,5 +1,14 @@
 -- Mirrors Game::eMissileType from GalaxyDefense/src/Implementation/MissileType.h
-local MissileType = {NONE = 0, BOMB = 1, FREEZING_BOMB = 2, ELECTRO_RAY = 3, BLACK_HOLE = 4, FREEZING_RAY = 5, PLASMA_BOMB = 6}
+local MissileType = {
+    NONE = 0,
+    BOMB = 1,
+    FREEZING_BOMB = 2,
+    ELECTRO_RAY = 3,
+    BLACK_HOLE = 4,
+    FREEZING_RAY = 5,
+    PLASMA_BOMB = 6,
+    REPAIR_BEAM = 7
+}
 
 local IconByName = {
     BOMB = "he_rocket.png",
@@ -7,7 +16,8 @@ local IconByName = {
     ELECTRO_RAY = "electric_beam.png",
     BLACK_HOLE = "gravity_bomb.png",
     FREEZING_RAY = "ice_beam.png",
-    PLASMA_BOMB = "plasma_rocket.png"
+    PLASMA_BOMB = "plasma_rocket.png",
+    REPAIR_BEAM = "repair_beam.png"
 }
 
 local IconByValue = {}

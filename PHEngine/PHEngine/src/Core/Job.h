@@ -23,6 +23,16 @@ class Job {
     }
 
 public:
+    // Empty job: required so the fixed-size std::array job buffers can be default-constructed and cleared. Slots holding
+    // an empty job are never invoked (the swap chain only runs slots below its step index).
+    Job()
+        : mCreatorObjectId(0)
+        , mFunctionId(0)
+        , mCallback(nullptr)
+        , mHash(0)
+    {
+    }
+
     Job(const int32_t creatorObjectId, const uint64_t functionId, callback_t callback)
         : mCreatorObjectId(creatorObjectId)
         , mFunctionId(functionId)

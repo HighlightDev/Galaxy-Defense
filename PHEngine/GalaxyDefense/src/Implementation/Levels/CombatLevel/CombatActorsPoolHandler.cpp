@@ -5,26 +5,27 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/GameCore/Scene.h"
 #include "Implementation/Actors/BarrierActor.h"
-#include "Implementation/Actors/GravityBombMissileActor.h"
-#include "Implementation/Actors/PlasmaBombMissileActor.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
+#include "Implementation/Actors/GravityBombMissileActor.h"
 #include "Implementation/Actors/LootActor.h"
 #include "Implementation/Actors/MissileActor.h"
+#include "Implementation/Actors/PlasmaBombMissileActor.h"
 #include "Implementation/Actors/PortalActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/Factories/BarrierFactory.h"
-#include "Implementation/Factories/GravityBombMissileFactory.h"
-#include "Implementation/Factories/PlasmaBombMissileFactory.h"
 #include "Implementation/Factories/BombMissileFactory.h"
 #include "Implementation/Factories/ElectroRayChainFactory.h"
 #include "Implementation/Factories/ElectroRayFactory.h"
 #include "Implementation/Factories/FighterSpaceShipFactory.h"
 #include "Implementation/Factories/FreezingMissileFactory.h"
 #include "Implementation/Factories/FreezingRayFactory.h"
+#include "Implementation/Factories/GravityBombMissileFactory.h"
 #include "Implementation/Factories/LootFactory.h"
+#include "Implementation/Factories/PlasmaBombMissileFactory.h"
+#include "Implementation/Factories/RepairBeamFactory.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Factories/SpawnPortalFactory.h"
 #include "Implementation/Factories/WeakSpaceShipFactory.h"
@@ -268,6 +269,8 @@ std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByTyp
         return std::make_unique<PlasmaBombMissileFactory>();
     case eMissileType::FREEZING_RAY:
         return std::make_unique<FreezingRayFactory>();
+    case eMissileType::REPAIR_BEAM:
+        return std::make_unique<RepairBeamFactory>();
     default:
         return nullptr;
     }
@@ -279,6 +282,29 @@ std::shared_ptr<MissileActor> CombatActorsPoolHandler::GetMissileOwnerActorById(
         return missile->HasEngineObjectIdInHierarchy(actorId);
     });
     return foundIt != mMissilesPool.cend() ? (*foundIt) : nullptr;
+}
+
+std::shared_ptr<Actor> CombatActorsPoolHandler::GetActorOwnerById(const int32_t actorId) const
+{
+    const auto goType = GetGameObjectTypeByActorId(actorId);
+
+    switch (goType) {
+    case eGameObjectsType::SPACESHIP:
+        return GetEnemyShipOwnerActorById(actorId);
+    case eGameObjectsType::TOWER_MISSILE:
+    case eGameObjectsType::SPACESHIP_MISSILE:
+        return GetMissileOwnerActorById(actorId);
+    case eGameObjectsType::NEUTRAL_SPACE_OBJECT:
+        return GetSpaceObjectOwnerActorById(actorId);
+    case eGameObjectsType::SPACE_STATION:
+        return GetSpaceStationOwnerActorById(actorId);
+    case eGameObjectsType::BARRIER:
+        return GetBarrierOwnerActorById(actorId);
+    case eGameObjectsType::LOOT:
+        return GetLootOwnerByActorId(actorId);
+    }
+
+    return nullptr;
 }
 
 std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetEnemyShipOwnerActorById(const int32_t actorId) const

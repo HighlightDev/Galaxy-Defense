@@ -23,9 +23,10 @@ int32_t FreezingModifier::CreatorObjectId() const
     return ownerSp->GetObjectId();
 }
 
-void FreezingModifier::Tick(const float deltaTimeSec)
+void FreezingModifier::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    mFreezingTimer += deltaTimeSec;
+    // Freeze build-up/duration is gameplay time, so it advances with game speed.
+    mFreezingTimer += deltaTimeSec * playSpeed;
 
     if (const auto& spaceshipSp = mOwnerWp.lock()) {
         const auto& movementComponent = spaceshipSp->GetMovementComponent();

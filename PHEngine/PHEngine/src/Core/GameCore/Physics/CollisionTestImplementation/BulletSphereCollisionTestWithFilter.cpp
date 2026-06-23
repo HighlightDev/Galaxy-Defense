@@ -55,9 +55,9 @@ btScalar BulletSphereCollisionTestWithFilter::addSingleResult(
     return 1.0f; // continue collecting collided objects
 }
 
-void BulletSphereCollisionTestWithFilter::SphereCollisionTest(btDiscreteDynamicsWorld* physWorld, const btVector3& translation)
+void BulletSphereCollisionTestWithFilter::SphereCollisionTest(btDiscreteDynamicsWorld* physWorld, const btVector3& sphereOrigin)
 {
-    const auto& collisionObjectTransform = btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f), translation);
+    const auto& collisionObjectTransform = btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f), sphereOrigin);
     mGhostSphereObject->setWorldTransform(collisionObjectTransform);
     physWorld->contactTest(mGhostSphereObject.get(), *this);
 }

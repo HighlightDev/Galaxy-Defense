@@ -53,9 +53,9 @@ void InstancedStaticMeshComponent::OnPostRegistered()
     }
 }
 
-void InstancedStaticMeshComponent::UnpausableTick(const float deltaTimeSec)
+void InstancedStaticMeshComponent::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
-    PrimitiveComponent::UnpausableTick(deltaTimeSec);
+    PrimitiveComponent::UnpausableTick(deltaTimeSec, playSpeed);
     InstancedStaticMeshMaterialDataProvider::UpdateInstancedDataProvider();
 }
 

@@ -104,9 +104,9 @@ public:
 
     void CleanUp() override;
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     void ProcessEvent(const ChangeEditModeEvent* sender, const ChangeEditModeEvent::EventData_t& data) override;
 

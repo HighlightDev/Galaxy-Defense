@@ -32,7 +32,7 @@ public:
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     void SetRingCenterWorldSpacePosition(const glm::vec3& center);
 

@@ -22,9 +22,9 @@ GhostPhysicsComponent::~GhostPhysicsComponent()
 {
 }
 
-void GhostPhysicsComponent::Tick(const float deltaTimeSec)
+void GhostPhysicsComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    Component::Tick(deltaTimeSec);
+    Component::Tick(deltaTimeSec, playSpeed);
 
     if (const auto& spOwner = GetOwner().lock()) {
         const auto rootComponentSp = spOwner->GetRootComponent();

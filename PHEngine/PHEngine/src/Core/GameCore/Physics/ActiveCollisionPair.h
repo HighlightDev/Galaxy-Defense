@@ -31,9 +31,9 @@ public:
     explicit ActiveCollisionPair(
         const std::shared_ptr<PhysicsDescriptor>& collisionBody1, const std::shared_ptr<PhysicsDescriptor>& collisionBody2);
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override{};
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override{};
 
     uint32_t GetFirstCollisionBodyId() const;
     uint32_t GetSecondCollisionBodyId() const;

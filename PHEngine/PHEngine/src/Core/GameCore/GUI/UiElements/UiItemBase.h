@@ -223,8 +223,8 @@ public:
     std::shared_ptr<IUiTransformable> TryFindHierarchyChildByUId(const uint32_t uid) const;
 
     // Implementation of ITickable
-    void Tick(const float deltaTimeSec) override;
-    void UnpausableTick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     std::shared_ptr<::EngineObjectPropertyBase> GetPropertyByName(const std::string& propName) const override;
 

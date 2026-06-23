@@ -63,7 +63,7 @@ public:
 
     virtual void SetIsVisible(bool isVisible);
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     bool IsVisible() const;
 

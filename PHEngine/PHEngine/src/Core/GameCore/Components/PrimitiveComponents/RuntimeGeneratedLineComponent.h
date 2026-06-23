@@ -38,7 +38,7 @@ public:
 
     std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
     const RuntimeGeneratedMeshPoolParameters& GetRuntimeMeshPoolParameters() const;
 

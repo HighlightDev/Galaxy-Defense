@@ -79,7 +79,7 @@ void ActiveCollisionPair::SetActiveCollisionTimeout(const float timeout)
     mActiveCollisionTimeout = timeout;
 }
 
-void ActiveCollisionPair::Tick(const float deltaTimeSec)
+void ActiveCollisionPair::Tick(const float deltaTimeSec, const float playSpeed)
 {
     mActiveCollisionLefitime += deltaTimeSec;
 

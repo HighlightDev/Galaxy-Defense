@@ -24,14 +24,14 @@ TestFeaturesLevelUiController::TestFeaturesLevelUiController(const std::weak_ptr
 {
 }
 
-void TestFeaturesLevelUiController::UnpausableTick(const float deltaTimeSec)
+void TestFeaturesLevelUiController::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
-    mOverlayManager->UnpausableTick(deltaTimeSec);
+    mOverlayManager->UnpausableTick(deltaTimeSec, playSpeed);
 }
 
-void TestFeaturesLevelUiController::Tick(const float deltaTimeSec)
+void TestFeaturesLevelUiController::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    mOverlayManager->Tick(deltaTimeSec);
+    mOverlayManager->Tick(deltaTimeSec, playSpeed);
 }
 
 void TestFeaturesLevelUiController::OnPreLevelInit()

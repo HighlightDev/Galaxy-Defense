@@ -764,7 +764,7 @@ void UiItemBase::UnregisterUiItem(const size_t uiId, const std::string& uiItemNa
     }
 }
 
-void UiItemBase::UnpausableTick(const float deltaTimeSec)
+void UiItemBase::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     if (mIsTransformDirty) {
         UpdateAnchorTransform();
@@ -782,19 +782,19 @@ void UiItemBase::UnpausableTick(const float deltaTimeSec)
     }
 
     for (const auto& child : mChildren) {
-        child->UnpausableTick(deltaTimeSec);
+        child->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     if (mAnimator) {
-        mAnimator->UnpausableTick(deltaTimeSec);
+        mAnimator->UnpausableTick(deltaTimeSec, playSpeed);
     }
 
     if (mSequenceAnimator) {
-        mSequenceAnimator->UnpausableTick(deltaTimeSec);
+        mSequenceAnimator->UnpausableTick(deltaTimeSec, playSpeed);
     }
 }
 
-void UiItemBase::Tick(const float deltaTimeSec)
+void UiItemBase::Tick(const float deltaTimeSec, const float playSpeed)
 {
 }
 

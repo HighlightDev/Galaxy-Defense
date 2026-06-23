@@ -21,7 +21,7 @@ CharacterPhysicsComponent::~CharacterPhysicsComponent()
 {
 }
 
-void CharacterPhysicsComponent::Tick(const float deltaTimeSec)
+void CharacterPhysicsComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
     characterController->UpdateMotionWorldTransformLocalState(bIsTransformationDirty, deltaTimeSec);
 

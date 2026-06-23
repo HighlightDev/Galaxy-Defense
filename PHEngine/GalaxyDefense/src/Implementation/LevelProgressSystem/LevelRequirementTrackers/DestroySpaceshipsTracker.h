@@ -29,9 +29,9 @@ public:
 
     std::string GetName() const override;
 
-    void Tick(const float deltaTimeSec) override;
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec) override;
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
 
     std::unordered_map<std::string, std::string> SerializeParameters() const override;
 

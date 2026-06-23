@@ -250,14 +250,17 @@ void Tweener::AddPropertyBinding(const std::string& propBindingName, std::shared
     mPropertyBindings[propBindingName] = binding;
 }
 
-void Tweener::Tick(const float deltaTimeSec)
+void Tweener::Tick(const float deltaTimeSec, const float playSpeed)
 {
+    // Tweeners drive gameplay state machines (missile lifecycles, loot), so transitions advance at game speed.
+    const float scaledDeltaTimeSec = deltaTimeSec * playSpeed;
+
     // process current transition
     if (bTransitionEnabled && mCurrentActiveStateTransition.has_value()) {
         if (auto spDestination = mCurrentActiveStateTransition->StateDestination.lock()) {
             std::shared_ptr<State> stateTo = spDestination;
 
-            mTransitionTime += deltaTimeSec;
+            mTransitionTime += scaledDeltaTimeSec;
 
             if (mTransitionTime > mTransitionDuration) {
                 SetTransitionValuesFinished(stateTo);
@@ -267,7 +270,7 @@ void Tweener::Tick(const float deltaTimeSec)
 
             for (const auto& controllerSp : CurrentActiveTransitionControllers) {
                 if (bTransitionEnabled) {
-                    controllerSp->OnTransitionUpdate(deltaTimeSec, mTransitionParameter);
+                    controllerSp->OnTransitionUpdate(scaledDeltaTimeSec, mTransitionParameter);
                 } else {
                     controllerSp->OnTransitionFinished();
                 }
