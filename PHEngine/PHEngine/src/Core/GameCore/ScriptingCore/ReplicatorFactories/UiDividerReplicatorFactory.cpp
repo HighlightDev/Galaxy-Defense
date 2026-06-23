@@ -3,7 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/EngineConstants.h"
 #include "Core/CommonCore/ThreadHelper.h"
-#include "Core/GameCore/GUI/UiElements/UiDIvider.h"
+#include "Core/GameCore/GUI/UiElements/UiDivider.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"

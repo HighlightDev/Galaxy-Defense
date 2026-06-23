@@ -12,6 +12,7 @@
 #include "Core/GameCore/Level.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
+#include "Core/InterThreadCommunicationMgr.h"
 
 #include <atomic>
 #include <chrono>
@@ -23,6 +24,13 @@
 using namespace EngineCore;
 using namespace Graphics::Renderer;
 using namespace Event;
+
+#if DEBUG
+struct alignas(hardware_destructive_interference_size) ThreadExecutionCounter {
+    size_t counter{0};
+    float sumThreadSeconds{0.0f};
+};
+#endif
 
 namespace EngineCore {
 namespace Scripts {
@@ -60,36 +68,34 @@ class Engine : public PauseGameThreadEvent,
 
     std::thread m_luaThread;
 
-    float mRenderThreadDeltaTimeSeconds;
+    alignas(hardware_destructive_interference_size) float mRenderThreadDeltaTimeSeconds;
 
-    float mGameThreadDeltaTimeSeconds;
+    alignas(hardware_destructive_interference_size) float mGameThreadDeltaTimeSeconds;
 
-    float mLuaThreadDeltaTimeSeconds;
+    alignas(hardware_destructive_interference_size) float mLuaThreadDeltaTimeSeconds;
 
-    std::atomic_bool bPauseGameThreadExecution{false};
+    alignas(hardware_destructive_interference_size) std::atomic_bool bPauseGameThreadExecution{false};
 
-    std::atomic_bool bLevelIsLoading{true};
+    alignas(hardware_destructive_interference_size) std::atomic_bool bLevelIsLoading{true};
 
-    std::atomic_bool bExitGame{false};
+    alignas(hardware_destructive_interference_size) std::atomic_bool bExitGame{false};
 
 #if DEBUG
+
     std::shared_ptr<GameThreadTimer> m_resourceConsumptionLogTimer;
 
-    size_t rtCounter{0};
-    size_t gtCounter{0};
-    size_t ltCounter{0};
+    ThreadExecutionCounter rtCounter;
+    ThreadExecutionCounter gtCounter;
+    ThreadExecutionCounter ltCounter;
 
-    float sumRtSeconds{0.0f};
-    float sumGtSeconds{0.0f};
-    float sumLtSeconds{0.0f};
 #endif
 
     std::condition_variable mUnloadLevelCv;
     std::mutex mUnloadLevelMutex;
 
-    std::atomic_bool mIsLevelUnloading{false};
-    std::atomic_bool mIsGameThreadIdle{false};
-    std::atomic_bool mIsLuaThreadIdle{false};
+    alignas(hardware_destructive_interference_size) std::atomic_bool mIsLevelUnloading{false};
+    alignas(hardware_destructive_interference_size) std::atomic_bool mIsGameThreadIdle{false};
+    alignas(hardware_destructive_interference_size) std::atomic_bool mIsLuaThreadIdle{false};
 
     float mPlaySpeed{1.0f};
 

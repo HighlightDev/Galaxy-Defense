@@ -455,5 +455,5 @@ endif()
 
 if (PROFILER_BUILD)
   message(STATUS "Profile build enabled for ${EXECUTABLE_NAME}")
-  target_compile_options(${EXECUTABLE_NAME} PRIVATE ProfilerCompilationFlags)
+  target_compile_options(${EXECUTABLE_NAME} PRIVATE ${ProfilerCompilationFlags})
 endif()

@@ -23,7 +23,7 @@ std::string RandomRangeLifeTimeModuleGpuProxy::GetShaderSnippet() const
         return 0.0;
     })";
     char buffer[512];
-    std::snprintf(buffer, sizeof(buffer), fmtStr, mMinLifeTime, mMaxLifeTime);
+    std::snprintf(buffer, sizeof(buffer), fmtStr);
     return EngineUtility::Trim(buffer);
 }
 

@@ -45,7 +45,7 @@ endif()
 
 if (PROFILER_BUILD)
   message(STATUS "Profile build enabled for ${PROJECT_NAME}")
-  target_compile_options(${PROJECT_NAME} PRIVATE ProfilerCompilationFlags)
+  target_compile_options(${PROJECT_NAME} PRIVATE ${ProfilerCompilationFlags})
 endif()
 
 set(ENGINE_DEPENDENCIES_DIR ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies)

@@ -21,7 +21,7 @@ std::string SimpleLifeTimeModuleGpuProxy::GetShaderSnippet() const
         return 0.0;
     })";
     char buffer[256];
-    std::snprintf(buffer, sizeof(buffer), fmtStr, mLifeTime);
+    std::snprintf(buffer, sizeof(buffer), fmtStr);
     return EngineUtility::Trim(buffer);
 }
 

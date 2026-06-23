@@ -401,14 +401,14 @@ void Engine::LuaThreadPulse()
             = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(ltStartTimePoint));
 
 #ifdef DEBUG
-        if (sumLtSeconds >= 1.0f) {
-            const float fps = static_cast<float>(ltCounter) * (1.0f / sumLtSeconds);
+        if (ltCounter.sumThreadSeconds >= 1.0f) {
+            const float fps = static_cast<float>(ltCounter.counter) * (1.0f / ltCounter.sumThreadSeconds);
             m_scene->SetLuaThreadFPSTextValue(fps);
-            ltCounter = 0;
-            sumLtSeconds = 0.0f;
+            ltCounter.counter = 0;
+            ltCounter.sumThreadSeconds = 0.0f;
         }
-        sumLtSeconds += mLuaThreadDeltaTimeSeconds;
-        ++ltCounter;
+        ltCounter.sumThreadSeconds += mLuaThreadDeltaTimeSeconds;
+        ++ltCounter.counter;
 #endif
         if (mIsLevelUnloading.load(std::memory_order::seq_cst)) {
             mIsLuaThreadIdle.store(true, std::memory_order::seq_cst);
@@ -450,14 +450,14 @@ void Engine::GameThreadPulse()
             = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(gtStartTimePoint));
 
 #ifdef DEBUG
-        if (sumGtSeconds >= 1.0f) { // duration is >= than one second
-            const float fps = static_cast<float>(gtCounter) * (1.0f / sumGtSeconds);
+        if (gtCounter.sumThreadSeconds >= 1.0f) {
+            const float fps = static_cast<float>(gtCounter.counter) * (1.0f / gtCounter.sumThreadSeconds);
             m_scene->SetGameThreadFPSTextValue(fps);
-            sumGtSeconds = 0.0f;
-            gtCounter = 0;
+            gtCounter.sumThreadSeconds = 0.0f;
+            gtCounter.counter = 0;
         }
-        sumGtSeconds += mGameThreadDeltaTimeSeconds;
-        ++gtCounter;
+        gtCounter.sumThreadSeconds += mGameThreadDeltaTimeSeconds;
+        ++gtCounter.counter;
 #endif
 
         if (mIsLevelUnloading.load(std::memory_order::seq_cst)) {
@@ -487,14 +487,14 @@ void Engine::RenderThreadPulse()
         = (float)EngineTime::GetTimeDifferenceInSeconds(EngineTime::GetPassedDuration(rtStartTimePoint));
 
 #ifdef DEBUG
-    if (sumRtSeconds >= 1.0f) {
-        const float fps = (static_cast<float>(rtCounter) * (1.0f / sumRtSeconds));
+    if (rtCounter.sumThreadSeconds >= 1.0f) {
+        const float fps = (static_cast<float>(rtCounter.counter) * (1.0f / rtCounter.sumThreadSeconds));
         m_scene->SetRenderThreadFPSTextValue(fps);
-        sumRtSeconds = 0.0f;
-        rtCounter = 0;
+        rtCounter.sumThreadSeconds = 0.0f;
+        rtCounter.counter = 0;
     }
-    sumRtSeconds += mRenderThreadDeltaTimeSeconds;
-    ++rtCounter;
+    rtCounter.sumThreadSeconds += mRenderThreadDeltaTimeSeconds;
+    ++rtCounter.counter;
 #endif
 }
 
