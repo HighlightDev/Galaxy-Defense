@@ -21,22 +21,23 @@ bool InstancedGeometryBatchRenderer::TryToAddBatchProxy(const std::shared_ptr<In
 
 bool InstancedGeometryBatchRenderer::CheckIfBatchProxyExists(const std::string& batchKey) const
 {
-    return mBatchProxies.count(batchKey) > 0;
+    return mBatchProxies.find(batchKey) != mBatchProxies.cend();
 }
 
 std::shared_ptr<InstancedGeometryBatchProxy> InstancedGeometryBatchRenderer::GetBatchProxy(const std::string& batchKey) const
 {
-    ext_assert(batchKey != "", "InstancedGeometryBatchRenderer::GetBatchProxy: batchKey is empty");
-    if (mBatchProxies.count(batchKey)) {
-        return mBatchProxies.at(batchKey);
-    }
-    return nullptr;
+    ext_assert(not batchKey.empty(), "InstancedGeometryBatchRenderer::GetBatchProxy: batchKey is empty");
+    const auto foundIt = mBatchProxies.find(batchKey);
+    return foundIt != mBatchProxies.cend() ? foundIt->second : nullptr;
 }
 
 void InstancedGeometryBatchRenderer::RemoveBatchProxy(const std::string& batchKey)
 {
-    ext_assert(mBatchProxies.count(batchKey), "Batch proxy with sought batch name doesn't exist.");
-    mBatchProxies.erase(batchKey);
+    const auto foundIt = mBatchProxies.find(batchKey);
+    ext_assert(foundIt != mBatchProxies.cend(), "Batch proxy with sought batch name doesn't exist.");
+    if (foundIt != mBatchProxies.cend()) {
+        mBatchProxies.erase(foundIt);
+    }
 }
 
 void InstancedGeometryBatchRenderer::RenderAllBatches(
@@ -47,7 +48,7 @@ void InstancedGeometryBatchRenderer::RenderAllBatches(
     const eInstancedGeometryBatchRenderType renderType)
 {
     if (not mBatchProxies.empty()) {
-        for (const auto& [key, batchProxySp] : mBatchProxies) {
+        for (const auto& [_, batchProxySp] : mBatchProxies) {
             if (batchProxySp->IsDeferred() and renderType != eInstancedGeometryBatchRenderType::FORWARD
                 || not batchProxySp->IsDeferred() and renderType == eInstancedGeometryBatchRenderType::FORWARD) {
                 batchProxySp->Render(cameraSceneProxy, viewMatrix, projectionMatrix, activeBindedState);
@@ -56,13 +57,16 @@ void InstancedGeometryBatchRenderer::RenderAllBatches(
     }
 }
 
-void InstancedGeometryBatchRenderer::UpdateBatchInstancesData(const std::unordered_map<std::string, std::vector<int32_t>>& data)
+void InstancedGeometryBatchRenderer::UpdateBatchInstancesData(std::unordered_map<std::string, std::vector<int32_t>>&& data)
 {
-    for (const auto& [batchKey, batchProxySp] : mBatchProxies) {
+    for (auto&& [updatedBatchKey, udpatedBatchProxyData] : data) {
+        const auto foundIt = mBatchProxies.find(updatedBatchKey);
         ext_assert(
-            data.count(batchKey),
-            "InstancedGeometryBatchRenderer::UpdateBatchInstancesData: No data found for batchKey: " + batchKey);
-        batchProxySp->UpdateValidInstances(data.at(batchKey));
+            foundIt != mBatchProxies.cend(),
+            "InstancedGeometryBatchRenderer::UpdateBatchInstancesData: No batch found for batchKey: " + updatedBatchKey);
+        if (foundIt != mBatchProxies.cend()) {
+            foundIt->second->UpdateValidInstances(std::move(udpatedBatchProxyData));
+        }
     }
 }
 

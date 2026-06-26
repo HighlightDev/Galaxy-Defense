@@ -83,7 +83,7 @@ public:
 
     void CleanUp() override;
 
-    void SetWorldMatrix(const glm::mat4& worldMatrix);
+    virtual void SetWorldMatrix(const glm::mat4& worldMatrix);
 
     void SetDeferredShadingSceneRenderer(const std::weak_ptr<::Graphics::Renderer::SceneRenderer>& deferredShadingSceneRenderer);
 

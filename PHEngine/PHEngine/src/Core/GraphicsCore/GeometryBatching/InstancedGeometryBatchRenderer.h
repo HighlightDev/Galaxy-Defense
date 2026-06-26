@@ -36,7 +36,7 @@ public:
         ActiveBindedState& activeBindedState,
         const eInstancedGeometryBatchRenderType renderType);
 
-    void UpdateBatchInstancesData(const std::unordered_map<std::string, std::vector<int32_t>>& data);
+    void UpdateBatchInstancesData(std::unordered_map<std::string, std::vector<int32_t>>&& data);
 
     void CleanUp();
 };

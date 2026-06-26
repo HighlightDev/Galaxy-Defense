@@ -37,7 +37,8 @@ void InstancedStaticMeshComponent::OnPostRegistered()
 
     if (const auto& sceneSp = m_sceneWP.lock()) {
         const auto thisSp = std::static_pointer_cast<InstancedStaticMeshComponent>(shared_from_this());
-        const auto& batchHolderSp = sceneSp->GetInstancedGeometryBatchHolder();
+        const auto batchHolderSp = sceneSp->GetInstancedGeometryBatchHolder();
+        mBatchHolderWp = batchHolderSp;
         const auto& batchKey = GetBatchKey();
         if (batchHolderSp->CheckIfBatchExists(batchKey)) {
             const auto& batchSp = batchHolderSp->GetBatch(batchKey);
@@ -67,6 +68,12 @@ void InstancedStaticMeshComponent::SetIsEnabled(const bool bEnabled)
     if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType()) {
         material->SetIsEnabled(mIsVisible && mIsEnabled);
     }
+
+    if (const auto& batchHolderSp = mBatchHolderWp.lock()) {
+        const auto& batchKey = GetBatchKey();
+        const auto& batchSp = batchHolderSp->GetBatch(batchKey);
+        batchSp->SetInstanceValidityDirty();
+    }
 }
 
 void InstancedStaticMeshComponent::SetIsVisible(bool isVisible)
@@ -76,6 +83,12 @@ void InstancedStaticMeshComponent::SetIsVisible(bool isVisible)
     const auto& material = GetMaterial();
     if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType()) {
         material->SetIsEnabled(mIsVisible && mIsEnabled);
+    }
+
+    if (const auto& batchHolderSp = mBatchHolderWp.lock()) {
+        const auto& batchKey = GetBatchKey();
+        const auto& batchSp = batchHolderSp->GetBatch(batchKey);
+        batchSp->SetInstanceValidityDirty();
     }
 }
 

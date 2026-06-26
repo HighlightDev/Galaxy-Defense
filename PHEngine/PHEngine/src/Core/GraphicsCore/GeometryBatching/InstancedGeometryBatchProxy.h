@@ -39,11 +39,15 @@ class InstancedGeometryBatchProxy {
 
     std::string mBatchKey; // model name + material name
 
-    std::vector<std::weak_ptr<InstancedStaticMeshSceneProxy>> mInstancedStaticMeshSceneProxies;
+    std::unordered_map<int32_t /*scene proxy id*/, std::weak_ptr<InstancedStaticMeshSceneProxy>> mInstancedStaticMeshSceneProxies;
 
     std::vector<glm::mat4> mCachedWorldMatrices;
 
     std::vector<int32_t /*scene proxy id*/> mSceneProxiesRenderOrder;
+
+    bool mIsProxiesRenderOrderChanged;
+
+    bool mIsProxiesTransformChanged;
 
 public:
     explicit InstancedGeometryBatchProxy(
@@ -61,13 +65,15 @@ public:
 
     void Initialize();
 
-    std::string GetBatchKey() const;
+    const std::string& GetBatchKey() const;
 
-    void UpdateValidInstances(const std::vector<int32_t>& data);
+    void UpdateValidInstances(std::vector<int32_t> data);
 
     std::shared_ptr<IShader> GetBatchShader() const;
 
     bool IsDeferred() const;
+
+    void SetIsSlaveTransformDirty(const bool value);
 
 private:
     std::shared_ptr<ShaderType> GetShader() const;

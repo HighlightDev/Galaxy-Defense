@@ -244,6 +244,7 @@ bool UiCanvas::CheckIfInterceptsMouseEvent(const glm::ivec2& currentMousePositio
             if (const auto& childSp = childWp.lock()) {
                 if (childSp->IsVisible() && childSp->GetIfCanInterceptMouseInputEvents()
                     && childSp->CheckIfInterceptsMouseEvent(currentMousePosition)) {
+                    LogInfo("UiCanvas::CheckIfInterceptsMouseEvent: ", childSp->GetName());
                     return true;
                 }
             }
@@ -571,7 +572,7 @@ void UiCanvas::CollectChildrenWithDescendingZOrder()
     }
 
     std::sort(childrenWithDescendingOrder.begin(), childrenWithDescendingOrder.end(), [](const auto& left, const auto& right) {
-        return left->GetZOrder() < right->GetZOrder();
+        return left->GetZPath() < right->GetZPath();
     });
 
     mDescendingByZOrderHierarchyChildren.clear();
@@ -624,6 +625,7 @@ std::shared_ptr<UiItemBase> UiCanvas::FindTopMostInterceptingChild(const glm::iv
         if (const auto& childSp = it->lock()) {
             if (childSp->IsVisible() && childSp->GetIfCanInterceptMouseInputEvents()
                 && childSp->CheckIfInterceptsMouseEvent(mouseCursorPosition)) {
+                LogInfo("UiCanvas::FindTopMostInterceptingChild: ", childSp->GetName());
                 return childSp;
             }
         }
@@ -637,6 +639,7 @@ void UiCanvas::OnMousePressed(const glm::ivec2& mouseCursorPosition)
     if (EngineMath::TestPointInAABB(boundingArea.GetMin(), boundingArea.GetMax(), mouseCursorPosition)) {
         mMouseButtonWasPressedLastFrame = true;
         if (const auto& topMostChild = FindTopMostInterceptingChild(mouseCursorPosition)) {
+            LogInfo("UiCanvas::OnMousePressed: ", topMostChild->GetName());
             topMostChild->OnMousePressed(mouseCursorPosition);
         }
     }
@@ -647,6 +650,7 @@ void UiCanvas::OnMouseClicked(const glm::ivec2& mouseCursorPosition)
     const auto& boundingArea = GetBoundingArea();
     if (EngineMath::TestPointInAABB(boundingArea.GetMin(), boundingArea.GetMax(), mouseCursorPosition)) {
         if (const auto& topMostChild = FindTopMostInterceptingChild(mouseCursorPosition)) {
+            LogInfo("UiCanvas::OnMouseClicked: ", topMostChild->GetName());
             topMostChild->OnMouseClicked(mouseCursorPosition);
         }
     }
@@ -734,7 +738,14 @@ void UiCanvas::RemoveLuaProxy()
 {
     if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& luaProcessorSp = GetLuaScriptProcessorWp().lock()) {
-            luaProcessorSp->RemoveLuaProxy(GetLuaProxyId());
+            constexpr auto functionId = Hash64_CT("UiCanvas::RemoveLuaProxy()");
+            luaProcessorSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                GetUId(),
+                functionId,
+                [luaProcessorSp, luaProxyId = GetLuaProxyId()](const auto&, const auto&, const auto&) {
+                    luaProcessorSp->RemoveLuaProxy(luaProxyId);
+                });
         }
         SetIsLuaProxyReady(false);
     }

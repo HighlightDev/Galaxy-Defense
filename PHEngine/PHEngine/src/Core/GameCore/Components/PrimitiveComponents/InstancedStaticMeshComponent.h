@@ -9,9 +9,14 @@ using namespace Graphics::Data;
 using namespace Graphics;
 
 namespace EngineCore {
+class InstancedGeometryBatchHolder;
+
 struct InstancedMeshComponentData;
 
 class InstancedStaticMeshComponent : public PrimitiveComponent, public InstancedStaticMeshMaterialDataProvider {
+
+    std::weak_ptr<InstancedGeometryBatchHolder> mBatchHolderWp;
+
 protected:
     MeshRenderData m_renderData;
 

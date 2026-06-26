@@ -43,7 +43,7 @@ public:
             return nullptr;
     }
 
-    std::string GetPropertyName() const
+    const std::string& GetPropertyName() const
     {
         return mPropertyName;
     }

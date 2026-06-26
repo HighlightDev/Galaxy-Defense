@@ -1308,11 +1308,14 @@ void UiItemBase::RemoveSceneProxy()
 void UiItemBase::RemoveLuaProxy()
 {
     static constexpr uint64_t functionId = Hash64_CT("UiItemBase::RemoveLuaProxy");
-    if (mIsLuaProxyReady.load(std::memory_order::seq_cst)) {
-        if (const auto& luaProcessorSp = GetLuaScriptProcessorWp().lock()) {
-            luaProcessorSp->RemoveLuaProxy(GetLuaProxyId());
-        }
-        SetIsLuaProxyReady(false);
+    if (const auto& luaProcessorSp = GetLuaScriptProcessorWp().lock()) {
+        luaProcessorSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+            eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+            GetUId(),
+            functionId,
+            [luaProcessorSp, luaProxyId = GetLuaProxyId()](const auto&, const auto&, const auto&) {
+                luaProcessorSp->RemoveLuaProxy(luaProxyId);
+            });
     }
 }
 } // namespace GUI

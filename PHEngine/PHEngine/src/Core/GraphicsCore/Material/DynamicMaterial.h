@@ -16,6 +16,8 @@ class DynamicMaterial : public IMaterial, public ITickable {
 protected:
     std::vector<std::shared_ptr<DynamicMaterialProperty>> mDynamicProperties;
 
+    std::vector<std::shared_ptr<MaterialProperty>> mDynamicStaticProperties;
+
     std::weak_ptr<EngineCore::Scene> mScene;
 
 public:

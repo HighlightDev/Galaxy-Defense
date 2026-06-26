@@ -6,7 +6,7 @@
 #include "Core/InterThreadCommunicationMgr.h"
 
 #include <memory>
-#include <vector>
+#include <unordered_map>
 
 using namespace EngineCore;
 using namespace Thread;
@@ -38,7 +38,7 @@ class LuaScriptProcessor : public std::enable_shared_from_this<LuaScriptProcesso
 
     std::vector<std::shared_ptr<LuaScriptExecutorBase>> mLuaScriptExecutors;
 
-    std::vector<std::shared_ptr<LuaProxy>> mLuaProxies;
+    std::unordered_map<int32_t, std::shared_ptr<LuaProxy>> mLuaProxies;
 
     // input events receiver for lua
     std::shared_ptr<EngineInputLuaProxy> mInputLuaProxy;
@@ -65,7 +65,7 @@ public:
 
     void SetOverlayManagerLuaProxy(const std::shared_ptr<OverlayManagerLuaProxy>& overlayManagerLuaProxy);
 
-    std::shared_ptr<LuaProxy> GetLuaProxy(const size_t luaProxyId) const;
+    std::shared_ptr<LuaProxy> GetLuaProxy(const int32_t luaProxyId) const;
 
     void AddLuaProxy(const std::shared_ptr<LuaProxy>& luaProxy);
 

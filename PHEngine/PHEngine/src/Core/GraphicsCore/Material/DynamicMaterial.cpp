@@ -31,6 +31,7 @@ void DynamicMaterial::CleanUp()
 
     mDirtyProperties.clear();
     mDynamicProperties.clear();
+    mDynamicStaticProperties.clear();
 }
 
 void DynamicMaterial::SetScene(std::weak_ptr<Scene> scene)
@@ -66,19 +67,20 @@ void DynamicMaterial::SyncDataWithRenderThread()
 
 void DynamicMaterial::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    for (auto dynProp : mDynamicProperties) {
-        const auto staticProperty = GetMaterialPropertyByName(dynProp->GetPropertyName());
-        ext_assert(
-            staticProperty,
-            "DynamicMaterial::Tick: Static property not found for dynamic property: " + dynProp->GetPropertyName());
-        dynProp->UpdateStaticPropertyWithDynamicValue(staticProperty);
+    const size_t propertyCount = mDynamicProperties.size();
+    if (propertyCount == 0) {
+        return;
+    }
+
+    mDirtyProperties.reserve(propertyCount);
+    for (size_t i = 0; i < propertyCount; ++i) {
+        const auto& staticProperty = mDynamicStaticProperties[i];
+        mDynamicProperties[i]->UpdateStaticPropertyWithDynamicValue(staticProperty);
         mDirtyProperties.push_back(staticProperty);
     }
 
-    if (mDirtyProperties.size()) {
-        SyncDataWithRenderThread();
-        mDirtyProperties.clear();
-    }
+    SyncDataWithRenderThread();
+    mDirtyProperties.clear();
 }
 
 void DynamicMaterial::PushDynamicProperty(const std::shared_ptr<DynamicMaterialProperty>& dynamicProperty)
@@ -112,6 +114,7 @@ void DynamicMaterial::PushDynamicProperty(const std::shared_ptr<DynamicMaterialP
     PushMaterialProperty(staticProperty);
 
     mDynamicProperties.emplace_back(dynamicProperty);
+    mDynamicStaticProperties.emplace_back(std::move(staticProperty));
 }
 
 std::shared_ptr<MaterialProperty> DynamicMaterial::TryGetAnyMaterialPropertyByName(const std::string& propertyName) const

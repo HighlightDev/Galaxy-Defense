@@ -92,12 +92,20 @@ glm::vec2 UiConnectionLine::GetEndPoint() const
     return mEndPoint;
 }
 
-void UiConnectionLine::SetStartAnchorTarget(const std::string& targetUiItemName)
+void UiConnectionLine::SetStartAnchorTarget(const std::string& targetUiItemName, const bool notifyLuaThread)
 {
     if (mStartAnchorTarget != targetUiItemName) {
         mStartAnchorTarget = targetUiItemName;
-        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
         SetIsTransformDirty(true);
+        if (notifyLuaThread) {
+            SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+        }
+        const auto& rootParentSp = GetParentCanvas().lock();
+        if (!rootParentSp)
+            return;
+        if (const auto& targetSp = rootParentSp->TryFindHierarchyChildByName(mStartAnchorTarget)) {
+            mStartAnchorTargetWp = targetSp;
+        }
     }
 }
 
@@ -106,12 +114,20 @@ std::string UiConnectionLine::GetStartAnchorTarget() const
     return mStartAnchorTarget;
 }
 
-void UiConnectionLine::SetEndAnchorTarget(const std::string& targetUiItemName)
+void UiConnectionLine::SetEndAnchorTarget(const std::string& targetUiItemName, const bool notifyLuaThread)
 {
     if (mEndAnchorTarget != targetUiItemName) {
         mEndAnchorTarget = targetUiItemName;
-        SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
         SetIsTransformDirty(true);
+        if (notifyLuaThread) {
+            SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+        }
+        const auto& rootParentSp = GetParentCanvas().lock();
+        if (!rootParentSp)
+            return;
+        if (const auto& targetSp = rootParentSp->TryFindHierarchyChildByName(mEndAnchorTarget)) {
+            mEndAnchorTargetWp = targetSp;
+        }
     }
 }
 
@@ -138,14 +154,19 @@ void UiConnectionLine::RecalculateAnchorPositions()
 void UiConnectionLine::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 {
     UiItemBase::UnpausableTick(deltaTimeSec, playSpeed);
-    // Reresolve endpoints each frame: this is robust to initialization order (target/parent may not be ready at the moment of
-    // first RecalculateAnchorPositions) and keeps line anchored to nodes when they are moved.
-    ResolveAnchoredEndpoints();
+    const auto startTargetSp = mStartAnchorTargetWp.lock();
+    const auto endTargetSp = mEndAnchorTargetWp.lock();
+    const bool selfTransformChanged = IsTransformDirty();
+    const bool targetsTransformChanged
+        = startTargetSp && endTargetSp && (startTargetSp->IsTransformDirty() || endTargetSp->IsTransformDirty());
+    if (selfTransformChanged || targetsTransformChanged) {
+        ResolveAnchoredEndpoints();
+    }
 }
 
 void UiConnectionLine::ResolveAnchoredEndpoints()
 {
-    if (mStartAnchorTarget.empty() && mEndAnchorTarget.empty()) {
+    if (mStartAnchorTargetWp.expired() || mEndAnchorTargetWp.expired()) {
         return;
     }
 
@@ -157,24 +178,25 @@ void UiConnectionLine::ResolveAnchoredEndpoints()
     }
 
     bool changed = false;
-    const auto resolveEndpoint = [&](const std::string& targetName, glm::vec2& endpoint) {
-        if (targetName.empty()) {
-            return;
+    const auto tryResolveEndpoint = [&](const std::weak_ptr<IUiTransformable>& targetWp, glm::vec2& endpoint) -> bool {
+        if (targetWp.expired()) {
+            return false;
         }
-        const auto& targetUiItem = TryFindAncestryUiItem(targetName);
+        const auto& targetUiItem = targetWp.lock();
         if (!targetUiItem) {
-            return;
+            return false;
         }
         const auto& targetBox = targetUiItem->GetBoundingArea();
         const glm::vec2 targetCenter = glm::vec2(targetBox.GetOrigin());
         glm::vec2 normalized = (targetCenter - lineMin) / lineSize;
         if (!EngineMath::CheckSimilarityVec2(normalized, endpoint)) {
             endpoint = normalized;
-            changed = true;
+            return true;
         }
+        return false;
     };
-    resolveEndpoint(mStartAnchorTarget, mStartPoint);
-    resolveEndpoint(mEndAnchorTarget, mEndPoint);
+    changed |= tryResolveEndpoint(mStartAnchorTargetWp, mStartPoint);
+    changed |= tryResolveEndpoint(mEndAnchorTargetWp, mEndPoint);
 
     if (changed) {
         SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
@@ -328,17 +350,11 @@ void UiConnectionLine::SyncFromLuaJsonProperties(const std::string& luaJsonProps
     }
     if (jsonObj.contains("start_anchor_target")) {
         const auto startAnchorTarget = jsonObj["start_anchor_target"].get<std::string>();
-        if (mStartAnchorTarget != startAnchorTarget) {
-            mStartAnchorTarget = startAnchorTarget;
-            SetIsTransformDirty(true);
-        }
+        SetStartAnchorTarget(startAnchorTarget, false);
     }
     if (jsonObj.contains("end_anchor_target")) {
         const auto endAnchorTarget = jsonObj["end_anchor_target"].get<std::string>();
-        if (mEndAnchorTarget != endAnchorTarget) {
-            mEndAnchorTarget = endAnchorTarget;
-            SetIsTransformDirty(true);
-        }
+        SetEndAnchorTarget(endAnchorTarget, false);
     }
 }
 

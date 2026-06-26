@@ -42,7 +42,7 @@ public:
 
     virtual eMaterialPropertyType GetPropertyType() const = 0;
 
-    std::string GetPropertyName() const
+    const std::string& GetPropertyName() const
     {
         return mPropertyName;
     }

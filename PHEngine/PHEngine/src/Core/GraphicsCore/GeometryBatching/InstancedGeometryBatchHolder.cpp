@@ -25,27 +25,28 @@ void InstancedGeometryBatchHolder::Tick(const float deltaTimeSec, const float pl
     if (!mInstancedGeometryBatches.size())
         return;
 
-    if (const auto& sceneSp = mSceneWp.lock()) {
-        auto& threadMngr = sceneSp->GetInterThreadCommunicationManager();
-        if (const auto& sceneRendererSp = threadMngr.GetSceneRendererWP().lock()) {
-            std::unordered_map<std::string /*batch key*/, std::vector<int32_t> /*proxy ids with correct render order*/> batchData;
-            batchData.reserve(mInstancedGeometryBatches.size());
-            for (const auto& batchSp : mInstancedGeometryBatches) {
-                batchSp->Tick(deltaTimeSec, playSpeed);
-                batchData[batchSp->GetBatchKey()] = batchSp->GetValidInstances();
-            }
+    std::unordered_map<std::string /*batch key*/, std::vector<int32_t> /*proxy ids with correct render order*/> batchData;
+    for (const auto& batchSp : mInstancedGeometryBatches) {
+        if (batchSp->UpdateBatchValidityState()) {
+            batchData[batchSp->GetBatchKey()] = batchSp->GetValidInstances();
+        }
+    }
 
-            static constexpr auto functionId = Hash64_CT("InstancedGeometryBatchHolder::SyncBatchData");
+    if (not batchData.empty()) {
+        if (const auto& sceneSp = mSceneWp.lock()) {
+            auto& threadMngr = sceneSp->GetInterThreadCommunicationManager();
             threadMngr.ExecuteOnRenderThread(
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                 0,
-                functionId,
-                [sceneRendererSp, data = std::move(batchData)](
+                Hash64_CT("InstancedGeometryBatchHolder::SyncBatchData"),
+                [data = std::move(batchData)](
                     std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                     std::weak_ptr<EngineCore::Scene> sceneWp,
-                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                    const auto& geometryBatcherRenderer = sceneRendererSp->GetInstancedGeometryBatchRenderer();
-                    geometryBatcherRenderer->UpdateBatchInstancesData(data);
+                    std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) mutable {
+                    if (const auto& sceneRendererSp = sceneRendererWp.lock()) {
+                        const auto& geometryBatcherRenderer = sceneRendererSp->GetInstancedGeometryBatchRenderer();
+                        geometryBatcherRenderer->UpdateBatchInstancesData(std::move(data));
+                    }
                 });
         }
     }
@@ -71,7 +72,7 @@ void InstancedGeometryBatchHolder::CleanUp()
     mInstancedGeometryBatches.clear();
 }
 
-bool InstancedGeometryBatchHolder::CheckIfBatchExists(const std::string& batchKey) const
+bool InstancedGeometryBatchHolder::CheckIfBatchExists(std::string_view batchKey) const
 {
     const auto bBatchExists
         = std::any_of(mInstancedGeometryBatches.cbegin(), mInstancedGeometryBatches.cend(), [batchKey](const auto& batchSp) {
@@ -80,7 +81,7 @@ bool InstancedGeometryBatchHolder::CheckIfBatchExists(const std::string& batchKe
     return bBatchExists;
 }
 
-std::shared_ptr<InstancedGeometryBatch> InstancedGeometryBatchHolder::GetBatch(const std::string& batchKey) const
+std::shared_ptr<InstancedGeometryBatch> InstancedGeometryBatchHolder::GetBatch(std::string_view batchKey) const
 {
     const auto foundIt
         = std::find_if(mInstancedGeometryBatches.cbegin(), mInstancedGeometryBatches.cend(), [batchKey](const auto& batchSp) {

@@ -51,6 +51,8 @@ public:
 
     ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
+    void SetWorldMatrix(const glm::mat4& worldMatrix) override;
+
     MeshRenderData GetRenderData() const;
 
     std::string GetBatchKey() const;

@@ -66,12 +66,13 @@ std::shared_ptr<EngineInputLuaProxy> LuaScriptProcessor::GetEngineInputLuaProxy(
     return mInputLuaProxy;
 }
 
-std::shared_ptr<LuaProxy> LuaScriptProcessor::GetLuaProxy(const size_t luaProxyId) const
+std::shared_ptr<LuaProxy> LuaScriptProcessor::GetLuaProxy(const int32_t luaProxyId) const
 {
-    for (const auto luaProxy : mLuaProxies) {
-        if (luaProxy && (luaProxy->GetLuaProxyId() == luaProxyId)) {
-            return luaProxy;
-        }
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
+        "Called on wrong thread: " + ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads());
+    if (mLuaProxies.contains(luaProxyId)) {
+        return mLuaProxies.at(luaProxyId);
     }
     return nullptr;
 }
@@ -95,19 +96,23 @@ void LuaScriptProcessor::SetOverlayManagerLuaProxy(const std::shared_ptr<Overlay
 void LuaScriptProcessor::AddLuaProxy(const std::shared_ptr<LuaProxy>& luaProxy)
 {
     ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
+        "Called on wrong thread: " + ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads());
+    ext_assert(
         !GetLuaProxy(luaProxy->GetLuaProxyId()),
         "LuaScriptProcessor::AddLuaProxy: LuaProxy with the same LuaProxyId already exists");
-    mLuaProxies.emplace_back(luaProxy);
+    mLuaProxies.emplace(luaProxy->GetLuaProxyId(), luaProxy);
 }
 
 void LuaScriptProcessor::RemoveLuaProxy(const int32_t luaProxyId)
 {
+    ext_assert(
+        ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_luaThreadName),
+        "Called on wrong thread: " + ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads());
     const auto& luaProxySp = GetLuaProxy(luaProxyId);
     ext_assert(luaProxySp, "LuaScriptProcessor::RemoveLuaProxy: LuaProxy with provided LuaProxyId not found");
     luaProxySp->CleanUp();
-    mLuaProxies.erase(std::remove_if(mLuaProxies.begin(), mLuaProxies.end(), [luaProxyId](const auto& luaProxySp) {
-        return luaProxySp->GetLuaProxyId() == luaProxyId;
-    }));
+    mLuaProxies.erase(luaProxyId);
 }
 
 void LuaScriptProcessor::Initialize()
@@ -127,7 +132,7 @@ void LuaScriptProcessor::CleanUp()
     }
     mLuaScriptExecutors.clear();
 
-    for (const auto& luaProxy : mLuaProxies) {
+    for (const auto& [proxyID, luaProxy] : mLuaProxies) {
         luaProxy->CleanUp();
     }
     mLuaProxies.clear();

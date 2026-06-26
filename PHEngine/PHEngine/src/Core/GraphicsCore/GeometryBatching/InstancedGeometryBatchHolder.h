@@ -28,8 +28,8 @@ public:
 
     void CleanUp();
 
-    bool CheckIfBatchExists(const std::string& batchKey) const;
+    bool CheckIfBatchExists(std::string_view batchKey) const;
 
-    std::shared_ptr<InstancedGeometryBatch> GetBatch(const std::string& batchKey) const;
+    std::shared_ptr<InstancedGeometryBatch> GetBatch(std::string_view batchKey) const;
 };
 } // namespace EngineCore

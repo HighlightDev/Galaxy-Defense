@@ -30,6 +30,7 @@ void InstancedStaticMeshSceneProxy::PostConstructorInitialize()
         if (batcherRendererSp->CheckIfBatchProxyExists(GetBatchKey())) {
             const auto& batchProxy = batcherRendererSp->GetBatchProxy(GetBatchKey());
             batchProxy->AddInstancedStaticMeshSceneProxy(shared_from_this());
+            mBatchProxy = batchProxy;
         } else {
             const auto& batchProxy = std::make_shared<InstancedGeometryBatchProxy>(shared_from_this());
             const bool bSuccess = batcherRendererSp->TryToAddBatchProxy(batchProxy);
@@ -92,6 +93,16 @@ RenderInfo InstancedStaticMeshSceneProxy::GetRenderInfo() const
 {
     ext_assert(mBatchProxy, "InstancedStaticMeshSceneProxy::GetRenderInfo: Batch proxy is null");
     return RenderInfo{mBatchProxy->GetBatchShader()->GetShaderName()};
+}
+
+void InstancedStaticMeshSceneProxy::SetWorldMatrix(const glm::mat4& worldMatrix)
+{
+    PrimitiveSceneProxy::SetWorldMatrix(worldMatrix);
+
+    // mBatchProxy is cached in PostConstructorInitialize, so no per-update string lookup is needed.
+    if (mBatchProxy) {
+        mBatchProxy->SetIsSlaveTransformDirty(true);
+    }
 }
 
 } // namespace Proxy

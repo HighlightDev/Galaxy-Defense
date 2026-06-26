@@ -25,10 +25,11 @@ class UiConnectionLine : public UiItemBase {
     glm::vec2 mStartPoint;
     glm::vec2 mEndPoint;
 
-    // Если имя задано — соответствующий endpoint привязывается к центру виджета с этим именем
-    // и пересчитывается при смещении цели (скролл и т.п.). Пусто — endpoint задаётся вручную.
     std::string mStartAnchorTarget;
     std::string mEndAnchorTarget;
+
+    std::weak_ptr<IUiTransformable> mStartAnchorTargetWp;
+    std::weak_ptr<IUiTransformable> mEndAnchorTargetWp;
 
     glm::vec3 mColor;
 
@@ -51,11 +52,11 @@ public:
 
     glm::vec2 GetEndPoint() const;
 
-    void SetStartAnchorTarget(const std::string& targetUiItemName);
+    void SetStartAnchorTarget(const std::string& targetUiItemName, const bool notifyLuaThread);
 
     std::string GetStartAnchorTarget() const;
 
-    void SetEndAnchorTarget(const std::string& targetUiItemName);
+    void SetEndAnchorTarget(const std::string& targetUiItemName, const bool notifyLuaThread);
 
     std::string GetEndAnchorTarget() const;
 

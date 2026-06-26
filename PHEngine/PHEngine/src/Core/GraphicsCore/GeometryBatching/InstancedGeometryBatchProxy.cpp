@@ -16,8 +16,10 @@ namespace Graphics::GeometryBatching {
 InstancedGeometryBatchProxy::InstancedGeometryBatchProxy(const std::shared_ptr<InstancedStaticMeshSceneProxy>& initialSceneProxy)
     : m_renderData(initialSceneProxy->GetRenderData())
     , mBatchKey(initialSceneProxy->GetBatchKey())
+    , mIsProxiesRenderOrderChanged(true)
+    , mIsProxiesTransformChanged(true)
 {
-    mInstancedStaticMeshSceneProxies.emplace_back(initialSceneProxy);
+    mInstancedStaticMeshSceneProxies.emplace(initialSceneProxy->GetSceneProxyId(), initialSceneProxy);
 }
 
 void InstancedGeometryBatchProxy::Initialize()
@@ -42,7 +44,7 @@ void InstancedGeometryBatchProxy::Initialize()
     m_skin = InstancedMeshPool::GetInstance()->GetOrAllocateResource(poolParameters);
 }
 
-std::string InstancedGeometryBatchProxy::GetBatchKey() const
+const std::string& InstancedGeometryBatchProxy::GetBatchKey() const
 {
     return mBatchKey;
 }
@@ -69,30 +71,17 @@ void InstancedGeometryBatchProxy::Render(
 void InstancedGeometryBatchProxy::AddInstancedStaticMeshSceneProxy(
     const std::shared_ptr<::Graphics::Proxy::InstancedStaticMeshSceneProxy>& sceneProxy)
 {
-    const auto alreadyContains = std::any_of(
-        mInstancedStaticMeshSceneProxies.cbegin(), mInstancedStaticMeshSceneProxies.cend(), [sceneProxy](const auto& proxyWp) {
-            if (const auto& proxySp = proxyWp.lock()) {
-                return proxySp->GetSceneProxyId() == sceneProxy->GetSceneProxyId();
-            }
-            return false;
-        });
-
-    if (!alreadyContains) {
-        mInstancedStaticMeshSceneProxies.emplace_back(sceneProxy);
+    const auto [insertedIt, inserted] = mInstancedStaticMeshSceneProxies.try_emplace(sceneProxy->GetSceneProxyId(), sceneProxy);
+    if (inserted) {
+        mIsProxiesRenderOrderChanged = true;
     }
 }
 
 void InstancedGeometryBatchProxy::RemoveInstancedStaticMeshSceneProxy(
     const std::shared_ptr<::Graphics::Proxy::InstancedStaticMeshSceneProxy>& sceneProxy)
 {
-    auto removeIt = std::remove_if(
-        mInstancedStaticMeshSceneProxies.begin(), mInstancedStaticMeshSceneProxies.end(), [sceneProxy](const auto& proxyWp) {
-            if (const auto& proxySp = proxyWp.lock()) {
-                return proxySp->GetSceneProxyId() == sceneProxy->GetSceneProxyId();
-            }
-            return false;
-        });
-    mInstancedStaticMeshSceneProxies.erase(removeIt);
+    mInstancedStaticMeshSceneProxies.erase(sceneProxy->GetSceneProxyId());
+    mIsProxiesRenderOrderChanged = true;
 }
 
 std::shared_ptr<InstancedGeometryBatchProxy::ShaderType> InstancedGeometryBatchProxy::GetShader() const
@@ -107,35 +96,40 @@ std::shared_ptr<IShader> InstancedGeometryBatchProxy::GetBatchShader() const
 
 void InstancedGeometryBatchProxy::PrepareRenderData()
 {
+    if (!mIsProxiesRenderOrderChanged && !mIsProxiesTransformChanged) {
+        return;
+    }
+
     mCachedWorldMatrices.clear();
-    mCachedWorldMatrices.reserve(mInstancedStaticMeshSceneProxies.size());
+    mCachedWorldMatrices.reserve(mSceneProxiesRenderOrder.size());
 
     for (const auto sceneProxyId : mSceneProxiesRenderOrder) {
-        const auto foundIt = std::find_if(
-            mInstancedStaticMeshSceneProxies.cbegin(),
-            mInstancedStaticMeshSceneProxies.cend(),
-            [sceneProxyId](const auto& proxyWp) {
-                if (const auto& proxySp = proxyWp.lock()) {
-                    return proxySp->GetSceneProxyId() == sceneProxyId;
-                }
-                return false;
-            });
+        const auto foundIt = mInstancedStaticMeshSceneProxies.find(sceneProxyId);
         ext_assert(
             foundIt != mInstancedStaticMeshSceneProxies.cend(),
             "InstancedGeometryBatchProxy::PrepareRenderData: Scene proxy not found in batch");
-        const auto& proxySp = foundIt->lock();
+        const auto& proxySp = foundIt->second.lock();
         ext_assert(proxySp, "InstancedGeometryBatchProxy::PrepareRenderData: Scene proxy weak pointer is expired");
         mCachedWorldMatrices.emplace_back(proxySp->GetMatrix());
     }
+
+    mIsProxiesRenderOrderChanged = false;
+    mIsProxiesTransformChanged = false;
 }
 
-void InstancedGeometryBatchProxy::UpdateValidInstances(const std::vector<int32_t>& data)
+void InstancedGeometryBatchProxy::UpdateValidInstances(std::vector<int32_t> data)
 {
-    mSceneProxiesRenderOrder = data;
+    mSceneProxiesRenderOrder = std::move(data);
+    mIsProxiesRenderOrderChanged = true;
 }
 
 bool InstancedGeometryBatchProxy::IsDeferred() const
 {
     return m_renderData.mIsDeferredShaded;
+}
+
+void InstancedGeometryBatchProxy::SetIsSlaveTransformDirty(const bool value)
+{
+    mIsProxiesTransformChanged = value;
 }
 } // namespace Graphics::GeometryBatching

@@ -6,6 +6,7 @@
 namespace EngineCore {
 InstancedGeometryBatch::InstancedGeometryBatch(const std::string& batchKey)
     : mBatchKey(batchKey)
+    , mIsInstanceValidityDirty(false)
 {
 }
 
@@ -23,10 +24,15 @@ void InstancedGeometryBatch::AddInstancedMeshComponent(const std::shared_ptr<Ins
     ext_assert(isNewComp, "InstancedGeometryBatch::AddInstancedMeshComponent: Component already exists in batch");
 
     mInstancedStaticMeshComponents.emplace_back(componentSp);
+    mIsInstanceValidityDirty = true;
 }
 
-void InstancedGeometryBatch::Tick(const float deltaTimeSec, const float playSpeed)
+bool InstancedGeometryBatch::UpdateBatchValidityState()
 {
+    if (not mIsInstanceValidityDirty) {
+        return false;
+    }
+
     mCachedValidInstances.clear();
     mCachedValidInstances.reserve(mInstancedStaticMeshComponents.size());
 
@@ -37,18 +43,16 @@ void InstancedGeometryBatch::Tick(const float deltaTimeSec, const float playSpee
             }
         }
     }
+    mIsInstanceValidityDirty = false;
+    return true;
 }
 
-void InstancedGeometryBatch::UnpausableTick(const float deltaTimeSec, const float playSpeed)
-{
-}
-
-std::vector<int32_t> InstancedGeometryBatch::GetValidInstances() const
+const std::vector<int32_t>& InstancedGeometryBatch::GetValidInstances() const
 {
     return mCachedValidInstances;
 }
 
-std::string InstancedGeometryBatch::GetBatchKey() const
+const std::string& InstancedGeometryBatch::GetBatchKey() const
 {
     return mBatchKey;
 }
@@ -70,6 +74,11 @@ int32_t InstancedGeometryBatch::GetRenderInstanceId(const int32_t proxyId) const
 int32_t InstancedGeometryBatch::GetInstancesCount() const
 {
     return static_cast<int32_t>(mInstancedStaticMeshComponents.size());
+}
+
+void InstancedGeometryBatch::SetInstanceValidityDirty()
+{
+    mIsInstanceValidityDirty = true;
 }
 
 } // namespace EngineCore
