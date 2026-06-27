@@ -57,4 +57,14 @@ void PlasmaBombExplosionVisitor::EndExplosionForSpaceObject(
     const std::shared_ptr<SpaceObjectActor>& spaceObject, const std::shared_ptr<Actor>& missileCollidedActor)
 {
 }
+
+void PlasmaBombExplosionVisitor::StartExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
+
+void PlasmaBombExplosionVisitor::EndExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
 } // namespace Game

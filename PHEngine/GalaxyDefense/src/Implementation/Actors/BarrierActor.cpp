@@ -28,6 +28,7 @@
 #include "Implementation/Components/UiComponents/BarrierUiComponent.h"
 #include "Implementation/DataProviders/GameConstants.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
+#include "Implementation/Modifiers/ModifiersHandler.h"
 
 #include <glm/gtx/quaternion.hpp>
 
@@ -37,9 +38,12 @@ using namespace EnginePhysics;
 namespace Game {
 BarrierActor::BarrierActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent)
     : Actor(gameObjectName, rootComponent)
-    , mDamageMessageTimers()
+    , mHealthChangedMessageTimers()
+    , mModifiersHandler(std::make_unique<ModifiersHandler>())
 {
 }
+
+BarrierActor::~BarrierActor() = default;
 
 void BarrierActor::SetBarrierProtoData(const BarrierUiProtoData& protoData)
 {
@@ -49,6 +53,8 @@ void BarrierActor::SetBarrierProtoData(const BarrierUiProtoData& protoData)
 void BarrierActor::Tick(const float deltaTimeSec, const float playSpeed)
 {
     Actor::Tick(deltaTimeSec, playSpeed);
+
+    mModifiersHandler->Tick(deltaTimeSec, playSpeed);
 
     // Actor can have only one physics component, so we can directly update it here without iterating through the list of pillars
     const auto& rootTranslation = GetRootComponent()->GetTranslation();
@@ -144,7 +150,7 @@ void BarrierActor::CreateNewBarrierPillar(const glm::vec3& position, const glm::
             mUiProtoData.font,
             mUiProtoData.fontSize,
             mUiProtoData.text,
-            mUiProtoData.color,
+            mUiProtoData.healColor,
             mUiProtoData.lineMaxWidthHeight,
             mUiProtoData.textHorizontalAlignment,
             mUiProtoData.textVerticalAlignment);
@@ -152,8 +158,8 @@ void BarrierActor::CreateNewBarrierPillar(const glm::vec3& position, const glm::
         mUiComponents.emplace_back(c_uiComponent);
     }
 
-    mDamageMessageTimers.emplace(std::make_pair(static_cast<int32_t>(pillarIndex), std::make_shared<GameThreadTimer>()));
-    auto& insertedTimer = mDamageMessageTimers.at(static_cast<int32_t>(pillarIndex));
+    mHealthChangedMessageTimers.emplace(std::make_pair(static_cast<int32_t>(pillarIndex), std::make_shared<GameThreadTimer>()));
+    auto& insertedTimer = mHealthChangedMessageTimers.at(static_cast<int32_t>(pillarIndex));
     insertedTimer->Initialize();
     insertedTimer->SetIntervalMs(Game::Constants::c_dmgTextShowDuration);
     insertedTimer->SetIsRepeat(false);
@@ -238,7 +244,7 @@ void BarrierActor::RemoveAllBarrierPillars()
     mPillarAlive.clear();
     mPillarLevels.clear();
     mUiComponents.clear();
-    mDamageMessageTimers.clear();
+    mHealthChangedMessageTimers.clear();
 
     for (const auto& physComp : mPillarPhysicsComponents) {
         physComp->CleanUp();
@@ -315,7 +321,7 @@ void BarrierActor::SetState(const eBarrierActivityState barrierState)
             uiComp->SetLabelVisibility(false);
         }
 
-        for (const auto& [timerId, timer] : mDamageMessageTimers) {
+        for (const auto& [timerId, timer] : mHealthChangedMessageTimers) {
             timer->StopTimer();
         }
     } else {
@@ -382,14 +388,19 @@ void BarrierActor::TriggerPillarDamage(
         return;
     }
 
+    if (mIsForceShieldActive) {
+        return; // the force-barrier shield absorbs all pillar damage while a force-barrier ray is connected
+    }
+
     mPillarLevels[pillarIndex].DecreasePillarHealth(damage);
     mUiComponents[pillarIndex]->SetLabelText(std::to_string(damage));
+    mUiComponents[pillarIndex]->SetLabelTextColor(mUiProtoData.dmgColor);
     mUiComponents[pillarIndex]->FadeIn();
     const auto fillPercent = static_cast<float>(mPillarLevels[pillarIndex].GetPillarHealth())
         / static_cast<float>(mPillarLevels[pillarIndex].GetNominalPillarHealth());
     mUiComponents[pillarIndex]->SetHealthBarFillPercent(fillPercent);
 
-    mDamageMessageTimers[static_cast<int32_t>(pillarIndex)]->RestartTimer();
+    mHealthChangedMessageTimers[static_cast<int32_t>(pillarIndex)]->RestartTimer();
 
     bool pillarsChanged = false;
     if (mPillarLevels[pillarIndex].GetPillarHealth() == 0) {
@@ -416,7 +427,7 @@ void BarrierActor::DestroyPillar(const int32_t pillarIndex)
     mUiComponents[pillarIndex]->SetIsEnabled(false);
     mUiComponents[pillarIndex]->SetHealthBarVisibility(false);
     mUiComponents[pillarIndex]->SetLabelVisibility(false);
-    mDamageMessageTimers[static_cast<int32_t>(pillarIndex)]->StopTimer();
+    mHealthChangedMessageTimers[static_cast<int32_t>(pillarIndex)]->StopTimer();
     if (mExplosionParticleComponent) {
         const auto& pillarWorldPos = GetBarrierPillarPosition(pillarIndex);
         mExplosionParticleComponent->SetTranslation(pillarWorldPos);
@@ -476,6 +487,60 @@ void BarrierActor::SetBarrierPillarSize(const glm::vec3& size)
 const glm::vec3& BarrierActor::GetBarrierPillarSize() const
 {
     return mBarrierPillarSize;
+}
+
+void BarrierActor::AddModifier(const std::shared_ptr<IModifiable>& modifier)
+{
+    mModifiersHandler->AddModifier(modifier);
+}
+
+bool BarrierActor::HasModifier(const eModifierType modifierType) const
+{
+    return mModifiersHandler->HasModifier(modifierType);
+}
+
+std::shared_ptr<IModifiable> BarrierActor::GetModifier(const eModifierType modifierType) const
+{
+    return mModifiersHandler->GetModifier(modifierType);
+}
+
+void BarrierActor::SetForceShieldActive(const bool isActive)
+{
+    mIsForceShieldActive = isActive;
+}
+
+bool BarrierActor::IsForceShieldActive() const
+{
+    return mIsForceShieldActive;
+}
+
+void BarrierActor::HealMostDamagedPillar(const uint32_t healAmount)
+{
+    int32_t targetIndex = -1;
+    uint32_t lowestHealth = 0;
+    for (size_t i = 0; i < mPillarLevels.size() && i < mPillarAlive.size(); ++i) {
+        if (!mPillarAlive[i]) {
+            continue;
+        }
+        const uint32_t health = mPillarLevels[i].GetPillarHealth();
+        if (health < mPillarLevels[i].GetNominalPillarHealth() && (targetIndex < 0 || health < lowestHealth)) {
+            lowestHealth = health;
+            targetIndex = static_cast<int32_t>(i);
+        }
+    }
+
+    if (targetIndex < 0) {
+        return; // every alive pillar is already at full health
+    }
+
+    mPillarLevels[targetIndex].IncreasePillarHealth(healAmount);
+    const auto fillPercent = static_cast<float>(mPillarLevels[targetIndex].GetPillarHealth())
+        / static_cast<float>(mPillarLevels[targetIndex].GetNominalPillarHealth());
+    mUiComponents[targetIndex]->SetLabelText(std::to_string(healAmount));
+    mUiComponents[targetIndex]->SetLabelTextColor(mUiProtoData.healColor);
+    mUiComponents[targetIndex]->FadeIn();
+    mUiComponents[targetIndex]->SetHealthBarFillPercent(fillPercent);
+    mHealthChangedMessageTimers[static_cast<int32_t>(targetIndex)]->RestartTimer();
 }
 
 void BarrierActor::ChangeHighlightState(const bool isHighlightEnabled)

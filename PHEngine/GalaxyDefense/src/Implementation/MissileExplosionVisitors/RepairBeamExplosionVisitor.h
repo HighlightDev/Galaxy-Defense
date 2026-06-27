@@ -10,10 +10,11 @@ namespace Game {
 class MissileActor;
 class SpaceshipActor;
 class SpaceObjectActor;
+class BarrierActor;
 
-class GravityBombExplosionVisitor : public MissileExplosionVisitorBase {
+class RepairBeamExplosionVisitor : public MissileExplosionVisitorBase {
 public:
-    GravityBombExplosionVisitor(const std::shared_ptr<MissileActor>& ownerMissile);
+    RepairBeamExplosionVisitor(const std::shared_ptr<MissileActor>& ownerMissile);
 
     void StartExplosionForSpaceship(
         const std::shared_ptr<SpaceshipActor>& spaceship,
@@ -36,5 +37,8 @@ public:
 
     void EndExplosionForBarrier(
         const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
+
+private:
+    void AddRepairBeamModifier(const std::shared_ptr<BarrierActor>& barrier);
 };
 } // namespace Game

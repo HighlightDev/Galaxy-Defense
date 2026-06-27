@@ -18,6 +18,8 @@ public:
 
     void DecreasePillarHealth(const uint32_t dmg);
 
+    void IncreasePillarHealth(const uint32_t heal);
+
     void RestorePillarHealth();
 };
 } // namespace Game

@@ -19,6 +19,7 @@ namespace Game {
 class CombatActorsPoolHandler;
 class SpaceStationActor;
 class BarrierActor;
+class MissileExplosionVisitorBase;
 
 class RepairBeamActor : public MissileActor {
     std::shared_ptr<EngineCore::RepairBeamComponent> mBeamComponent;
@@ -79,6 +80,11 @@ public:
     void SetBurstRings(const std::shared_ptr<EngineCore::BillboardComponent>& burstRings);
 
     void SetPulseBall(const std::shared_ptr<EngineCore::StaticMeshComponent>& pulseBall);
+
+    std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
+
+    // The space station that launched this beam (the one whose "ray active" flag is toggled while the beam is connected).
+    std::weak_ptr<SpaceStationActor> GetActorWhoSpawnedMeWp() const;
 
 private:
     // Casts the beam from the tower (RayCastWithFilterAdapter), locks onto the first barrier hit and registers the

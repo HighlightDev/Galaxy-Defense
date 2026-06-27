@@ -178,6 +178,7 @@ set(SOURCES
     src/Implementation/Factories/GravityBombMissileFactory.cpp
     src/Implementation/Factories/PlasmaBombMissileFactory.cpp
     src/Implementation/Factories/RepairBeamFactory.cpp
+    src/Implementation/Factories/ForceBarrierRayFactory.cpp
     src/Implementation/Factories/AsteroidFactory.cpp
     src/Implementation/Factories/BackgroundPlanetsFactory.cpp
     src/Implementation/Factories/ElectroRayFactory.cpp
@@ -196,6 +197,8 @@ set(SOURCES
     src/Implementation/Modifiers/PlasmaModifier.cpp
     src/Implementation/Modifiers/FreezingModifier.cpp
     src/Implementation/Modifiers/FreezingRayModifier.cpp
+    src/Implementation/Modifiers/ForceBarrierModifier.cpp
+    src/Implementation/Modifiers/RepairBeamModifier.cpp
     src/Implementation/Modifiers/ElectroRayChainModifier.cpp
     src/Implementation/Modifiers/ModifiersHandler.cpp
     src/Implementation/Actors/ElectroRayChainActor.cpp
@@ -205,6 +208,7 @@ set(SOURCES
     src/Implementation/Actors/GravityBombMissileActor.cpp
     src/Implementation/Actors/PlasmaBombMissileActor.cpp
     src/Implementation/Actors/RepairBeamActor.cpp
+    src/Implementation/Actors/ForceBarrierRayActor.cpp
     src/Implementation/Actors/SpaceshipActor.cpp
     src/Implementation/Actors/WeakSpaceshipActor.cpp
     src/Implementation/Actors/FighterSpaceshipActor.cpp
@@ -224,6 +228,8 @@ set(SOURCES
     src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.cpp
     src/Implementation/MissileExplosionVisitors/FreezingRayExplosionVisitor.cpp
+    src/Implementation/MissileExplosionVisitors/ForceBarrierRayExplosionVisitor.cpp
+    src/Implementation/MissileExplosionVisitors/RepairBeamExplosionVisitor.cpp
     src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
     src/Implementation/LuaExecutors/LuaCombatLevelExecutor.cpp
     src/Implementation/LuaExecutors/LuaCombatLevelUiControllerExecutor.cpp

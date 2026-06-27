@@ -216,7 +216,8 @@ extern const glm::vec3 c_beamGlowColor;
 extern const glm::vec3 c_beamMainColor;
 extern const uint32_t c_pillarHealth;
 extern const uint32_t c_protoFontSize;
-extern const glm::vec3 c_protoTextColor;
+extern const glm::vec3 c_protoHealTextColor;
+extern const glm::vec3 c_protoDamageTextColor;
 extern const glm::ivec2 c_protoPadding;
 } // namespace Game::Constants::Barrier
 

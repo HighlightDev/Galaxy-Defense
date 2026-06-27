@@ -25,6 +25,7 @@
 #include "Implementation/Factories/GravityBombMissileFactory.h"
 #include "Implementation/Factories/LootFactory.h"
 #include "Implementation/Factories/PlasmaBombMissileFactory.h"
+#include "Implementation/Factories/ForceBarrierRayFactory.h"
 #include "Implementation/Factories/RepairBeamFactory.h"
 #include "Implementation/Factories/SpaceStationFactory.h"
 #include "Implementation/Factories/SpawnPortalFactory.h"
@@ -270,6 +271,8 @@ std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByTyp
         return std::make_unique<FreezingRayFactory>();
     case eMissileType::REPAIR_BEAM:
         return std::make_unique<RepairBeamFactory>();
+    case eMissileType::FORCE_BARRIER:
+        return std::make_unique<ForceBarrierRayFactory>();
     default:
         return nullptr;
     }

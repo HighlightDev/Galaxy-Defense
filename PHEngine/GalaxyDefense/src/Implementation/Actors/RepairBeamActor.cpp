@@ -15,6 +15,7 @@
 #include "Implementation/Events/ShootRayCollisionEvent.h"
 #include "Implementation/GameObjectsType.h"
 #include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
+#include "Implementation/MissileExplosionVisitors/RepairBeamExplosionVisitor.h"
 
 #include <glm/geometric.hpp>
 
@@ -206,6 +207,16 @@ void RepairBeamActor::SetBurstRings(const std::shared_ptr<EngineCore::BillboardC
 void RepairBeamActor::SetPulseBall(const std::shared_ptr<EngineCore::StaticMeshComponent>& pulseBall)
 {
     mPulseBall = pulseBall;
+}
+
+std::shared_ptr<MissileExplosionVisitorBase> RepairBeamActor::CreateMissileExplosionVisitor()
+{
+    return std::make_shared<RepairBeamExplosionVisitor>(std::static_pointer_cast<MissileActor>(shared_from_this()));
+}
+
+std::weak_ptr<SpaceStationActor> RepairBeamActor::GetActorWhoSpawnedMeWp() const
+{
+    return mSpawnerWp;
 }
 
 void RepairBeamActor::SetEndpoints(const glm::vec3& beginWorldSpacePosition, const glm::vec3& endWorldSpacePosition)

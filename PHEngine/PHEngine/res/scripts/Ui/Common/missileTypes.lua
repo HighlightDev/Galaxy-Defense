@@ -7,7 +7,8 @@ local MissileType = {
     BLACK_HOLE = 4,
     FREEZING_RAY = 5,
     PLASMA_BOMB = 6,
-    REPAIR_BEAM = 7
+    REPAIR_BEAM = 7,
+    FORCE_BARRIER = 8
 }
 
 local IconByName = {
@@ -17,7 +18,8 @@ local IconByName = {
     BLACK_HOLE = "gravity_bomb.png",
     FREEZING_RAY = "ice_beam.png",
     PLASMA_BOMB = "plasma_rocket.png",
-    REPAIR_BEAM = "repair_beam.png"
+    REPAIR_BEAM = "repair_beam.png",
+    FORCE_BARRIER = "force_barrier.png"
 }
 
 local IconByValue = {}

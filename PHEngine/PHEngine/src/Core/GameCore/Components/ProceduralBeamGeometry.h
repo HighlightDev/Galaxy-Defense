@@ -49,6 +49,22 @@ public:
         std::vector<BeamVertex>& outVertices,
         std::vector<uint32_t>& outIndices);
 
+    // Canonical (local-space) animated spiral beam: a tube along +Z (0..1) whose spine winds around the axis (the
+    // perpendicular offset rotates with the angle), making the beam corkscrew toward the target. Anchored to 0 at both
+    // ends. spatialTurns = how many full turns are visible along the beam; the rotation is normalised to loopPeriod so a
+    // fixed frame set cycles seamlessly (advances temporalCyclesPerLoop full turns of phase per loop).
+    static void GenerateCanonicalAnimatedSpiralBeamGeometry(
+        float radius,
+        int radialSegments,
+        int lengthSegments,
+        float spiralRadius,
+        float animationTime,
+        float loopPeriod,
+        float spatialTurns,
+        float temporalCyclesPerLoop,
+        std::vector<BeamVertex>& outVertices,
+        std::vector<uint32_t>& outIndices);
+
 private:
     static glm::vec3 GetJitteredPoint(const glm::vec3& point, float jitterAmount);
     static glm::vec3 GetAnimatedJitteredPoint(const glm::vec3& point, float jitterAmount, float time, float speed, int seed);

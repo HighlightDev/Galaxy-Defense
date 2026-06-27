@@ -2,6 +2,8 @@
 
 #include "Core/CommonCore/Assertion.h"
 
+#include <algorithm>
+
 namespace Game {
 BarrierLevel::BarrierLevel(const uint32_t pillarHealth)
     : mNominalPillarHealth(pillarHealth)
@@ -27,6 +29,11 @@ void BarrierLevel::DecreasePillarHealth(const uint32_t dmg)
     } else {
         mCurrentPillarHealth -= dmg;
     }
+}
+
+void BarrierLevel::IncreasePillarHealth(const uint32_t heal)
+{
+    mCurrentPillarHealth = std::min(mCurrentPillarHealth + heal, mNominalPillarHealth);
 }
 
 void BarrierLevel::RestorePillarHealth()

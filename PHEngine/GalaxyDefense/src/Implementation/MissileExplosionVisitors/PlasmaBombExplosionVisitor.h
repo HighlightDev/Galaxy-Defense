@@ -15,20 +15,26 @@ class PlasmaBombExplosionVisitor : public MissileExplosionVisitorBase {
 public:
     PlasmaBombExplosionVisitor(const std::shared_ptr<MissileActor>& ownerMissile);
 
-    virtual void StartExplosionForSpaceship(
+    void StartExplosionForSpaceship(
         const std::shared_ptr<SpaceshipActor>& spaceship,
         const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
-    virtual void EndExplosionForSpaceship(
+    void EndExplosionForSpaceship(
         const std::shared_ptr<SpaceshipActor>& spaceship,
         const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
-    virtual void StartExplosionForSpaceObject(
+    void StartExplosionForSpaceObject(
         const std::shared_ptr<SpaceObjectActor>& spaceObject,
         const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
-    virtual void EndExplosionForSpaceObject(
+    void EndExplosionForSpaceObject(
         const std::shared_ptr<SpaceObjectActor>& spaceObject,
         const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
+
+    void StartExplosionForBarrier(
+        const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
+
+    void EndExplosionForBarrier(
+        const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 };
 } // namespace Game

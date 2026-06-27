@@ -5,6 +5,7 @@
 #include "Core/GameCore/GUI/Common/TextEnums.h"
 #include "IHighlightable.h"
 #include "Implementation/ActorLeveling/BarrierLevel.h"
+#include "Implementation/Modifiers/IModifiable.h"
 
 #include <glm/vec3.hpp>
 
@@ -31,6 +32,7 @@ using namespace EngineCore;
 namespace Game {
 
 class BarrierUiComponent;
+class ModifiersHandler;
 
 enum class eBarrierActivityState { IDLE, ACTIVE };
 
@@ -41,7 +43,8 @@ public:
         std::string font;
         uint32_t fontSize;
         std::string text;
-        glm::vec3 color;
+        glm::vec3 dmgColor;
+        glm::vec3 healColor;
         glm::ivec2 lineMaxWidthHeight;
         eTextHorizontalAlignmentType textHorizontalAlignment;
         eTextVerticalAlignmentType textVerticalAlignment;
@@ -74,12 +77,20 @@ private:
 
     std::vector<std::shared_ptr<BarrierUiComponent>> mUiComponents;
 
-    std::unordered_map<int32_t, std::shared_ptr<GameThreadTimer>> mDamageMessageTimers;
+    std::unordered_map<int32_t, std::shared_ptr<GameThreadTimer>> mHealthChangedMessageTimers;
 
     glm::vec3 mBarrierPillarSize;
 
+    std::unique_ptr<ModifiersHandler> mModifiersHandler;
+
+    // While a force-barrier ray is connected, the barrier is shielded and ignores pillar damage (driven by
+    // ForceBarrierModifier).
+    bool mIsForceShieldActive{false};
+
 public:
     BarrierActor(const std::string& gameObjectName, const std::shared_ptr<::EngineCore::SceneComponent>& rootComponent);
+
+    ~BarrierActor();
 
     void Tick(const float deltaTimeSec, const float playSpeed) override;
 
@@ -130,6 +141,18 @@ public:
     void SetBarrierPillarSize(const glm::vec3& size);
 
     const glm::vec3& GetBarrierPillarSize() const;
+
+    void AddModifier(const std::shared_ptr<IModifiable>& modifier);
+
+    bool HasModifier(const eModifierType modifierType) const;
+
+    std::shared_ptr<IModifiable> GetModifier(const eModifierType modifierType) const;
+
+    void SetForceShieldActive(const bool isActive);
+
+    bool IsForceShieldActive() const;
+
+    void HealMostDamagedPillar(const uint32_t healAmount);
 
 private:
     void DestroyPillar(const int32_t pillarIndex);

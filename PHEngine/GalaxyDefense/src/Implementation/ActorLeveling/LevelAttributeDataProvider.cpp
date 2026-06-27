@@ -18,6 +18,7 @@ int32_t LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(const eMiss
         {eMissileType::PLASMA_BOMB, {4000, 3600, 3200, 2900, 2600}},
         {eMissileType::FREEZING_RAY, {1500, 1400, 1300, 1200, 1100}},
         {eMissileType::REPAIR_BEAM, {1500, 1400, 1300, 1200, 1100}},
+        {eMissileType::FORCE_BARRIER, {2000, 1900, 1800, 1700, 1600}},
     };
 
     if (cooldownData.find(missileType) != cooldownData.end()) {
@@ -41,6 +42,7 @@ float LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(const eMissileT
         {eMissileType::PLASMA_BOMB, {35.0, 40.0, 45.0, 50.0, 55.0}},
         {eMissileType::FREEZING_RAY, {50.0, 60.0, 70.0, 75.0, 80.0}},
         {eMissileType::REPAIR_BEAM, {40.0, 50.0, 60.0, 65.0, 70.0}},
+        {eMissileType::FORCE_BARRIER, {40.0, 50.0, 60.0, 65.0, 70.0}},
     };
 
     if (radiusesData.contains(missileType)) {

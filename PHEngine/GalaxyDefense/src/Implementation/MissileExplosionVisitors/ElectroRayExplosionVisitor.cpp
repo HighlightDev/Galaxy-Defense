@@ -89,4 +89,14 @@ void ElectroRayExplosionVisitor::EndExplosionForSpaceObject(
     const std::shared_ptr<SpaceObjectActor>& spaceObject, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
 {
 }
+
+void ElectroRayExplosionVisitor::StartExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
+
+void ElectroRayExplosionVisitor::EndExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
 } // namespace Game

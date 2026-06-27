@@ -53,6 +53,16 @@ void FreezingExplosionVisitor::EndExplosionForSpaceObject(
 {
 }
 
+void FreezingExplosionVisitor::StartExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
+
+void FreezingExplosionVisitor::EndExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
+
 void FreezingExplosionVisitor::ProcessProjectileWithSpaceshipsCollision(const glm::vec3& explosionCenterPosition)
 {
     if (const auto& ownerSp = mOwnerWp.lock()) {

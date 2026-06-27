@@ -206,7 +206,8 @@ const glm::vec3 c_beamGlowColor = glm::vec3(0.2f, 1.0f, 1.0f);
 const glm::vec3 c_beamMainColor = glm::vec3(0.6f, 0.4f, 1.0f);
 const uint32_t c_pillarHealth = 50;
 const uint32_t c_protoFontSize = 16;
-const glm::vec3 c_protoTextColor = glm::vec3(0.3f, 0.5f, 1.0f);
+const glm::vec3 c_protoHealTextColor = glm::vec3(0.3f, 0.5f, 1.0f);
+const glm::vec3 c_protoDamageTextColor = glm::vec3(1.0f, 0.0f, 0.0f);
 const glm::ivec2 c_protoPadding = glm::ivec2(50);
 } // namespace Game::Constants::Barrier
 

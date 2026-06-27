@@ -53,7 +53,8 @@ local WEAPON_DISPLAY_NAME = {
     [MissileTypes.MissileType.BLACK_HOLE] = "ЧЁРНАЯ ДЫРА",
     [MissileTypes.MissileType.FREEZING_RAY] = "КРИО-ЛУЧ",
     [MissileTypes.MissileType.PLASMA_BOMB] = "ПЛАЗМА-БОМБА",
-    [MissileTypes.MissileType.REPAIR_BEAM] = "РЕМОНТ-ЛУЧ"
+    [MissileTypes.MissileType.REPAIR_BEAM] = "РЕМОНТ-ЛУЧ",
+    [MissileTypes.MissileType.FORCE_BARRIER] = "СИЛОВОЙ ЩИТ"
 }
 
 local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}

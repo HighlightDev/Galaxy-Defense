@@ -789,6 +789,8 @@ eMissileType UserInteractionController::MissileTypeFromString(const std::string&
         return eMissileType::PLASMA_BOMB;
     } else if (typeStr == "REPAIR_BEAM") {
         return eMissileType::REPAIR_BEAM;
+    } else if (typeStr == "FORCE_BARRIER") {
+        return eMissileType::FORCE_BARRIER;
     }
     return eMissileType::NONE;
 }

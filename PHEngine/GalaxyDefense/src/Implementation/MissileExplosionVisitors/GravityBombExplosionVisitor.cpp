@@ -87,4 +87,14 @@ void GravityBombExplosionVisitor::EndExplosionForSpaceObject(
     const std::shared_ptr<SpaceObjectActor>& spaceObject, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
 {
 }
+
+void GravityBombExplosionVisitor::StartExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
+
+void GravityBombExplosionVisitor::EndExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
 } // namespace Game

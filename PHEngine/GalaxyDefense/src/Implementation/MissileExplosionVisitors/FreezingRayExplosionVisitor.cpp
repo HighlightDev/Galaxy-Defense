@@ -69,6 +69,16 @@ void FreezingRayExplosionVisitor::EndExplosionForSpaceObject(
     ext_assert(false, "FreezingRay should not collide with space objects - invalid EndExplosion call");
 }
 
+void FreezingRayExplosionVisitor::StartExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
+
+void FreezingRayExplosionVisitor::EndExplosionForBarrier(
+    const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor)
+{
+}
+
 void FreezingRayExplosionVisitor::AddFreezingModifier(const std::shared_ptr<SpaceshipActor>& spaceship)
 {
     if (!spaceship->HasModifier(eModifierType::FreezingRay)) {

@@ -92,6 +92,13 @@ local TOWER_CARD_INFO = {
         dps = 20,
         cost = 150,
         accent = Styles.Combat.green
+    },
+    [MissileType.FORCE_BARRIER] = {
+        name = "СИЛОВОЙ ЩИТ",
+        role = "ЗАЩИТА",
+        dps = 0,
+        cost = 200,
+        accent = Styles.Combat.amber
     }
 }
 
@@ -126,7 +133,7 @@ function TowerGridPanel:new(host, overlay, config)
     local cardHeight = 54
     local cardSpacing = 8
     local cardPad = 12
-    local towerCount = MissileType.REPAIR_BEAM - MissileType.BOMB + 1
+    local towerCount = MissileType.FORCE_BARRIER - MissileType.BOMB + 1
     -- The towers list scrolls: only this many cards are shown at once, the rest are reachable by scrolling. Keeps the
     -- palette a fixed height so it always fits on screen no matter how many weapon types exist.
     local maxVisibleTowerCards = 4
@@ -227,7 +234,7 @@ function TowerGridPanel:new(host, overlay, config)
 
     -- One card per tower type. The card background (a plain rectangle) is the clickable / hoverable
     -- surface; the icon and text labels sit on top as non-interactive children.
-    for i = MissileType.BOMB, MissileType.REPAIR_BEAM do
+    for i = MissileType.BOMB, MissileType.FORCE_BARRIER do
         local missileType = MissileTypes.nameByValue(i)
         local card = {
             missileType = missileType,

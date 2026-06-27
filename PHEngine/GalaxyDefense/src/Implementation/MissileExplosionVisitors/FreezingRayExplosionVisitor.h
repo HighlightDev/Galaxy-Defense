@@ -15,21 +15,27 @@ class FreezingRayExplosionVisitor : public MissileExplosionVisitorBase {
 public:
     FreezingRayExplosionVisitor(const std::shared_ptr<MissileActor>& ownerMissile);
 
-    virtual void StartExplosionForSpaceship(
+    void StartExplosionForSpaceship(
         const std::shared_ptr<SpaceshipActor>& spaceship,
         const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
-    virtual void EndExplosionForSpaceship(
+    void EndExplosionForSpaceship(
         const std::shared_ptr<SpaceshipActor>& spaceship,
         const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
-    virtual void StartExplosionForSpaceObject(
+    void StartExplosionForSpaceObject(
         const std::shared_ptr<SpaceObjectActor>& spaceObject,
         const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
-    virtual void EndExplosionForSpaceObject(
+    void EndExplosionForSpaceObject(
         const std::shared_ptr<SpaceObjectActor>& spaceObject,
         const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
+
+    void StartExplosionForBarrier(
+        const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
+
+    void EndExplosionForBarrier(
+        const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
 private:
     void AddFreezingModifier(const std::shared_ptr<SpaceshipActor>& spaceship);

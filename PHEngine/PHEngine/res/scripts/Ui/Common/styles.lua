@@ -52,6 +52,7 @@ Styles = {
         danger = 0xf43f5e,
         dangerSoft = 0xfda4af,
         green = 0x22c55e,
+        amber = 0xf5b942, -- golden accent (force-barrier shield)
         -- Text
         textBright = 0xcdd6f4,
         textDim = 0x8a99ac,

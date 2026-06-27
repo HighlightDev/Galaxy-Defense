@@ -210,4 +210,79 @@ void ProceduralBeamGeometry::GenerateCanonicalAnimatedWaveBeamGeometry(
     }
 }
 
+void ProceduralBeamGeometry::GenerateCanonicalAnimatedSpiralBeamGeometry(
+    float radius,
+    int radialSegments,
+    int lengthSegments,
+    float spiralRadius,
+    float animationTime,
+    float loopPeriod,
+    float spatialTurns,
+    float temporalCyclesPerLoop,
+    std::vector<BeamVertex>& outVertices,
+    std::vector<uint32_t>& outIndices)
+{
+    outVertices.clear();
+    outIndices.clear();
+
+    if (radialSegments < 3)
+        radialSegments = 3;
+    if (lengthSegments < 2)
+        lengthSegments = 2;
+
+    const float twoPi = 2.0f * glm::pi<float>();
+    const float loopPhase = (loopPeriod > 0.0001f) ? (animationTime / loopPeriod) * twoPi * temporalCyclesPerLoop : 0.0f;
+
+    std::vector<glm::vec3> spinePoints;
+    spinePoints.reserve(lengthSegments + 1);
+
+    for (int seg = 0; seg <= lengthSegments; ++seg) {
+        const float t = static_cast<float>(seg) / lengthSegments;
+        const float window = std::sin(t * glm::pi<float>()); // 0 at both ends → the beam meets its endpoints cleanly
+        // The perpendicular offset rotates with the angle, so the spine corkscrews around the +Z axis.
+        const float angle = t * spatialTurns * twoPi - loopPhase;
+        const float r = spiralRadius * window;
+        spinePoints.emplace_back(std::cos(angle) * r, std::sin(angle) * r, t);
+    }
+
+    const glm::vec3 segTangent(1.0f, 0.0f, 0.0f);
+    const glm::vec3 segBitangent(0.0f, 1.0f, 0.0f);
+
+    for (int seg = 0; seg <= lengthSegments; ++seg) {
+        const glm::vec3& center = spinePoints[seg];
+        const float vCoord = static_cast<float>(seg) / lengthSegments;
+
+        const float pulse = 1.0f + std::sin(loopPhase + seg * 0.3f) * 0.1f;
+        const float segmentRadius = radius * pulse;
+
+        for (int i = 0; i <= radialSegments; ++i) {
+            const float angle = (static_cast<float>(i) / radialSegments) * twoPi;
+            const glm::vec3 offset = (segTangent * std::cos(angle) + segBitangent * std::sin(angle)) * segmentRadius;
+            const glm::vec3 position = center + offset;
+            const glm::vec3 normal = glm::normalize(offset);
+            const glm::vec2 texCoord(static_cast<float>(i) / radialSegments, vCoord);
+
+            outVertices.push_back({position, normal, texCoord});
+        }
+    }
+
+    const int vertsPerRing = radialSegments + 1;
+    for (int seg = 0; seg < lengthSegments; ++seg) {
+        for (int i = 0; i < radialSegments; ++i) {
+            const uint32_t topLeft = seg * vertsPerRing + i;
+            const uint32_t topRight = seg * vertsPerRing + i + 1;
+            const uint32_t bottomLeft = (seg + 1) * vertsPerRing + i;
+            const uint32_t bottomRight = (seg + 1) * vertsPerRing + i + 1;
+
+            outIndices.push_back(topLeft);
+            outIndices.push_back(bottomLeft);
+            outIndices.push_back(topRight);
+
+            outIndices.push_back(topRight);
+            outIndices.push_back(bottomLeft);
+            outIndices.push_back(bottomRight);
+        }
+    }
+}
+
 } // namespace EngineCore

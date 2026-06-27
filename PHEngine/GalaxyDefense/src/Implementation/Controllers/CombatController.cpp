@@ -138,6 +138,7 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::PLASMA_BOMB, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_RAY, 1);
     mCombatActorsPoolHandler->SpawnMissiles(eMissileType::REPAIR_BEAM, 4);
+    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FORCE_BARRIER, 4);
 }
 
 std::shared_ptr<NavigationController> CombatController::GetNavigationController() const
@@ -166,7 +167,8 @@ void CombatController::OnPostLevelInit()
            {eMissileType::ELECTRO_RAY, 1},
            {eMissileType::BLACK_HOLE, 2},
            {eMissileType::PLASMA_BOMB, 2},
-           {eMissileType::REPAIR_BEAM, 2}};
+           {eMissileType::REPAIR_BEAM, 2},
+           {eMissileType::FORCE_BARRIER, 2}};
     PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 
     mCombatActorsPoolHandler->SpawnEnemySpaceships(5, eSpaceshipType::PAWN);
@@ -362,8 +364,8 @@ void CombatController::ProcessEvent(
     if (const auto& rayMissileActorSp = eventSenderMissileWp.lock()) {
         if (const auto& collidedActorSp = collidedActorWp.lock()) {
             const auto& gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedActorSp->GetObjectId());
-            if (eGameObjectsType::UNDEFINED != gameObjectType) {
-                const auto explosionVisitor = rayMissileActorSp->CreateMissileExplosionVisitor();
+            const auto explosionVisitor = rayMissileActorSp->CreateMissileExplosionVisitor();
+            if (eGameObjectsType::UNDEFINED != gameObjectType && explosionVisitor) {
                 if (eCollisionActionType::COLLISION_STARTED == collisionActionType) {
                     if (eGameObjectsType::SPACESHIP == gameObjectType) {
                         const auto& ownerEnemyShipActor
@@ -373,6 +375,10 @@ void CombatController::ProcessEvent(
                         const auto& ownerSpaceObjectActor
                             = mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(collidedActorSp->GetObjectId());
                         explosionVisitor->StartExplosionForSpaceObject(ownerSpaceObjectActor, rayMissileActorSp);
+                    } else if (eGameObjectsType::BARRIER == gameObjectType) {
+                        const auto& ownerBarrierActor
+                            = mCombatActorsPoolHandler->GetBarrierOwnerActorById(collidedActorSp->GetObjectId());
+                        explosionVisitor->StartExplosionForBarrier(ownerBarrierActor, rayMissileActorSp);
                     }
                 } else if (eCollisionActionType::COLLISION_FINISHED == collisionActionType) {
                     if (eGameObjectsType::SPACESHIP == gameObjectType) {
@@ -383,6 +389,10 @@ void CombatController::ProcessEvent(
                         const auto& ownerSpaceObjectActor
                             = mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(collidedActorSp->GetObjectId());
                         explosionVisitor->EndExplosionForSpaceObject(ownerSpaceObjectActor, rayMissileActorSp);
+                    } else if (eGameObjectsType::BARRIER == gameObjectType) {
+                        const auto& ownerBarrierActor
+                            = mCombatActorsPoolHandler->GetBarrierOwnerActorById(collidedActorSp->GetObjectId());
+                        explosionVisitor->EndExplosionForBarrier(ownerBarrierActor, rayMissileActorSp);
                     }
                 }
             }
@@ -593,7 +603,8 @@ void CombatController::ProcessAiAction()
                 std::vector<int32_t> descriptorActorIds;
                 std::vector<const PhysicsDescriptor*> collidedDescriptors;
 
-                if (eMissileType::REPAIR_BEAM == spaceStation->GetSpaceStationLevel()->GetMissileType()) {
+                const eMissileType stationMissileType = spaceStation->GetSpaceStationLevel()->GetMissileType();
+                if (eMissileType::REPAIR_BEAM == stationMissileType || eMissileType::FORCE_BARRIER == stationMissileType) {
                     SphereCollisionTestWithFilterAdapter collisionTestForAssist(
                         spaceStation->GetSpaceStationLevel()->GetShootRadius(), assistExcludedPhysComponents);
                     collisionTestForAssist.SphereCollisionTest(

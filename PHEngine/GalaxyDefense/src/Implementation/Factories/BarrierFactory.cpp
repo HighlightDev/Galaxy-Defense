@@ -59,7 +59,8 @@ std::shared_ptr<BarrierActor> BarrierFactory::CreateBarrier(
         {"JetBrainsMono-VariableFont_wght",
          c_protoFontSize,
          "",
-         c_protoTextColor,
+         c_protoDamageTextColor,
+         c_protoHealTextColor,
          c_protoPadding,
          eTextHorizontalAlignmentType::CENTER,
          eTextVerticalAlignmentType::CENTER});
