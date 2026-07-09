@@ -1,15 +1,18 @@
-#!/bin/bash
+echo "Process name: $1"
+echo "Output directory: $2"
 
-echo "Binary path provided: $1"
-echo "Binary name provided: $2"
-echo "Binary arguments: $3"
+PID=$(pidof $1)
+if [ -z "${PID}" ]; then
+    echo "Process not found"
+    exit 1
+fi
 
-CURRENT_DIR=`pwd`
-OUTPUT_PATH="$(pwd)/output"
-OUTPUT_DATA="$OUTPUT_PATH/perf.data"
-mkdir $OUTPUT_PATH
-cd "$1"
-perf record -F 99 -a -g -o "$OUTPUT_DATA" ./"$2" "$3"
-cd $CURRENT_DIR
+sysctl -w kernel.perf_event_paranoid=-1
+sysctl -w kernel.kptr_restrict=0
 
-echo "Data with callstack created, check $OUTPUT_PATH"
+OUT_PATH="$2"
+TIMESTAMP=$(date +%s)
+OUT_FILE="$OUT_PATH/$TIMESTAMP.perf.data"
+perf record -F 999 -g --call-graph fp -o "$OUT_FILE" -p $PID
+
+echo "Data with callstack created, check $OUT_FILE"

@@ -12,7 +12,7 @@ enum eStencilValues : uint32_t {
 
 extern const int32_t c_maxInstancesPerInstanceBatch;
 // constexpr so it can size the fixed std::array job swap-chains (a template/array size needs a compile-time constant).
-constexpr uint32_t c_renderThreadJobsPoolsSize = 2000;
+constexpr uint32_t c_renderThreadJobsPoolsSize = 20000;
 extern const char* c_gameThreadName;
 extern const char* c_renderThreadName;
 extern const char* c_luaThreadName;

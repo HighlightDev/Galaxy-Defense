@@ -19,6 +19,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
+#include "Core/GraphicsCore/UiSceneProxy/UiRectangleSceneProxy.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
@@ -462,77 +463,151 @@ void Scene::UnpausableTick(const float deltaTimeSec, const float playSpeed)
 
     mUiHandler->UnpausableTick(deltaTimeSec, playSpeed);
 
-    // Ship all primitive transforms moved this frame as a single batched render-thread job.
-    FlushPrimitiveTransformUpdates();
+    FlushPendingSynchronizeUpdates();
 }
 
-void Scene::EnqueuePrimitiveTransformUpdate(
-    const int32_t primitiveSceneProxyId,
-    const glm::mat4& worldMatrix,
-    const glm::mat4& outlineMatrix,
-    const BoundingBox3D& transformedBoundingBox,
-    const glm::vec3& originPosition)
+void Scene::EnqueuePrimitiveTransformUpdate(const int32_t sceneProxyId, PendingPrimitiveTransform pendingTransform)
 {
-    // Game-thread only: last write per proxy in a frame wins.
-    mPendingPrimitiveTransforms[primitiveSceneProxyId]
-        = PendingPrimitiveTransform{worldMatrix, outlineMatrix, transformedBoundingBox, originPosition};
+    mPendingPrimitiveTransforms[sceneProxyId] = std::move(pendingTransform);
 }
 
-void Scene::FlushPrimitiveTransformUpdates()
+void Scene::EnqueueUiItemBaseUpdate(const int32_t uiItemUid, PendingUiItemBaseUpdates pendingUpdates)
 {
-    if (mPendingPrimitiveTransforms.empty()) {
-        return;
+    mPendingUiItemBaseUpdates[uiItemUid] = std::move(pendingUpdates);
+}
+
+void Scene::EnqueueUiRectangleUpdate(const int32_t uiItemUid, PendingUiRectangleUpdates pendingUpdates)
+{
+    mPendingUiRectangleUpdates[uiItemUid] = std::move(pendingUpdates);
+}
+
+void Scene::FlushPendingSynchronizeUpdates()
+{
+    if (not mPendingPrimitiveTransforms.empty()) {
+
+        static const uint64_t functionId = Hash("Scene::FlushPendingSynchronizeUpdates: mPendingPrimitiveTransforms");
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            0,
+            functionId,
+            [updates = std::move(mPendingPrimitiveTransforms)](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                const auto sceneRenderer = sceneRendererWp.lock();
+                if (!sceneRenderer) {
+                    return;
+                }
+
+                bool bDeferredMoved = false;
+                bool bForwardMoved = false;
+                for (const auto& [proxyId, update] : updates) {
+                    const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(proxyId);
+                    if (!primitiveSp) {
+                        continue;
+                    }
+                    primitiveSp->SetWorldMatrix(update.worldMatrix);
+                    primitiveSp->SetOutlineMatrix(update.outlineMatrix);
+                    primitiveSp->SetTransformedBoundingBox(update.transformedBoundingBox);
+                    primitiveSp->SetOriginPosition(update.originPosition);
+
+                    if (primitiveSp->IsDeferred()) {
+                        bDeferredMoved = true;
+                    } else {
+                        bForwardMoved = true;
+                    }
+
+                    sceneRenderer->ResetPrimitiveFrustumTestResult(proxyId);
+                }
+
+                if (bDeferredMoved) {
+                    sceneRenderer->SetDeferredPrimitivesMoved(true);
+                }
+                if (bForwardMoved) {
+                    sceneRenderer->SetForwardPrimitivesMoved(true);
+                }
+            });
+
+        mPendingPrimitiveTransforms.clear();
     }
 
-    static const uint64_t functionId = Hash("Scene::FlushPrimitiveTransformUpdates");
-    m_interThreadMgr.ExecuteOnRenderThread(
-        eEnqueueJobPolicy::PUSH_ANYWAY,
-        0,
-        functionId,
-        [updates = std::move(mPendingPrimitiveTransforms)](
-            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-            std::weak_ptr<EngineCore::Scene> sceneWp,
-            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-            const auto sceneRenderer = sceneRendererWp.lock();
-            if (!sceneRenderer) {
-                return;
-            }
+    if (not mPendingUiItemBaseUpdates.empty()) {
+        static const uint64_t functionId = Hash("Scene::FlushPendingSynchronizeUpdates: mPendingUiItemBaseUpdates");
 
-            bool bDeferredMoved = false;
-            bool bForwardMoved = false;
-            for (const auto& [proxyId, update] : updates) {
-                const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(proxyId);
-                if (!primitiveSp) {
-                    continue;
-                }
-                primitiveSp->SetWorldMatrix(update.worldMatrix);
-                primitiveSp->SetOutlineMatrix(update.outlineMatrix);
-                primitiveSp->SetTransformedBoundingBox(update.transformedBoundingBox);
-                primitiveSp->SetOriginPosition(update.originPosition);
-
-                if (primitiveSp->IsDeferred()) {
-                    bDeferredMoved = true;
-                } else {
-                    bForwardMoved = true;
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            0,
+            functionId,
+            [updates = std::move(mPendingUiItemBaseUpdates)](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                const auto sceneRenderer = sceneRendererWp.lock();
+                if (!sceneRenderer) {
+                    return;
                 }
 
-                // Moved proxy: invalidate its cached frustum-visibility for every view (synchronous on the render thread).
-                sceneRenderer->ResetPrimitiveFrustumTestResult(proxyId);
-            }
+                for (const auto& [itemUid, updateStruct] : updates) {
+                    if (const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(itemUid, updateStruct.canvasUid)) {
+#ifdef DEBUG
+                        uiSceneProxy->SetIsVisible(updateStruct.isVisible && not updateStruct.isHiddenForDebugging);
+#else
+                        uiSceneProxy->SetIsVisible(updateStruct.isVisible);
+#endif
+                        uiSceneProxy->SetIsGuiScissorsSlave(updateStruct.isGuiScissorsSlave);
+                        uiSceneProxy->SetIsGuiScissorsMaster(updateStruct.isGuiScissorsMaster);
+                        uiSceneProxy->SetCanBloomBeApplied(updateStruct.canBloomBeApplied);
+                        uiSceneProxy->SetZPath(updateStruct.zPath);
+                        uiSceneProxy->SetTransform(updateStruct.normTranslation, updateStruct.normScale);
+                        uiSceneProxy->SetWidthHeightPixels(
+                            glm::ivec2(static_cast<int32_t>(updateStruct.width), static_cast<int32_t>(updateStruct.height)));
+                    } else {
+                        LogInfo(
+                            "Scene::FlushPendingSynchronizeUpdates: mPendingUiItemBaseUpdates: Error, uiSceneProxy wasn't found");
+                    }
+                }
+            });
 
-            // A move only changes the distance/plane sort *order* of the providers, which is an early-Z heuristic — not
-            // membership. Flag it as "moved" (not "dirty") so the distance-ordered providers refresh their order
-            // periodically instead of every frame (see SceneRenderer::SortSceneProxies).
-            if (bDeferredMoved) {
-                sceneRenderer->SetDeferredPrimitivesMoved(true);
-            }
-            if (bForwardMoved) {
-                sceneRenderer->SetForwardPrimitivesMoved(true);
-            }
-        });
+        mPendingUiItemBaseUpdates.clear();
+    }
 
-    // std::move left the map in an unspecified state; restore a defined empty one for the next frame.
-    mPendingPrimitiveTransforms.clear();
+    if (not mPendingUiRectangleUpdates.empty()) {
+        static const uint64_t functionId = Hash("Scene::FlushPendingSynchronizeUpdates: mPendingUiRectangleUpdates");
+
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            0,
+            functionId,
+            [updates = std::move(mPendingUiRectangleUpdates)](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                const auto sceneRenderer = sceneRendererWp.lock();
+                if (!sceneRenderer) {
+                    return;
+                }
+
+                for (const auto& [itemUid, updateStruct] : updates) {
+                    if (const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(itemUid, updateStruct.canvasUid)) {
+                        const auto& rectangleSceneProxy = std::dynamic_pointer_cast<UiRectangleSceneProxy>(uiSceneProxy);
+                        if (rectangleSceneProxy) {
+                            rectangleSceneProxy->SetColor(updateStruct.color);
+                            rectangleSceneProxy->SetOpacity(updateStruct.opacity);
+                            rectangleSceneProxy->SetBorderRadius(updateStruct.borderRadius);
+                            rectangleSceneProxy->SetBlurMix(updateStruct.blurMix);
+                            rectangleSceneProxy->SetIsRoundTop(updateStruct.isRoundTop);
+                            rectangleSceneProxy->SetIsRoundBottom(updateStruct.isRoundBottom);
+                            rectangleSceneProxy->SetApplyBlur(updateStruct.applyBlur);
+                        } else {
+                            LogInfo("Scene::FlushPendingSynchronizeUpdates: mPendingUiRectangleUpdates: Error, uiSceneProxy is "
+                                    "not a UiRectangleSceneProxy");
+                        }
+                    }
+                }
+            });
+
+        mPendingUiRectangleUpdates.clear();
+    }
 }
 
 void Scene::ProcessEvent(

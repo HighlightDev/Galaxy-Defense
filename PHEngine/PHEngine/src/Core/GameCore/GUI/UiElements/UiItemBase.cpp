@@ -1020,56 +1020,31 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 
 bool UiItemBase::SyncDataOnRenderThread()
 {
-    static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnRenderThread");
+    const auto& canvasSp = GetParentCanvas().lock();
+    if (!canvasSp) {
+        return false;
+    }
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
-            if (const auto& canvasSp = GetParentCanvas().lock()) {
-                SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                    eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                    GetUId(),
-                    functionId,
-                    [sceneSp,
-                     myUId = GetUId(),
-                     canvasUId = canvasSp->GetUId(),
-                     isVisible = mIsVisible,
-                     zPath = GetZPath(),
-                     normTranslation = mNormalizedTranslation,
-                     normScale = mNormalizedScale,
-                     width = mWidth,
-                     height = mHeight,
-                     isHiddenForDebugging = mIsHiddenForDebugging,
-                     isGuiScissorsSlave = mIsGuiScissorsSlave,
-                     isGuiScissorsMaster = mIsGuiScissorsMaster,
-                     canBloomBeApplied = mCanBloomBeApplied](
-                        std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                        std::weak_ptr<EngineCore::Scene> sceneWp,
-                        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                        if (const auto& sceneRenderer
-                            = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-                            const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
-                            if (uiSceneProxy) {
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
+            PendingUiItemBaseUpdates updateStruct
+                = {static_cast<int32_t>(canvasSp->GetUId()),
+                   mIsVisible,
+                   GetZPath(),
+                   mNormalizedTranslation,
+                   mNormalizedScale,
+                   mWidth,
+                   mHeight,
 #ifdef DEBUG
-                                uiSceneProxy->SetIsVisible(isVisible && not isHiddenForDebugging);
-#else
-                                uiSceneProxy->SetIsVisible(isVisible);
+                   mIsHiddenForDebugging,
 #endif
-                                uiSceneProxy->SetIsGuiScissorsSlave(isGuiScissorsSlave);
-                                uiSceneProxy->SetIsGuiScissorsMaster(isGuiScissorsMaster);
-                                uiSceneProxy->SetCanBloomBeApplied(canBloomBeApplied);
-                                uiSceneProxy->SetZPath(zPath);
-                                uiSceneProxy->SetTransform(normTranslation, normScale);
-                                uiSceneProxy->SetWidthHeightPixels(
-                                    glm::ivec2(static_cast<int32_t>(width), static_cast<int32_t>(height)));
-                            }
-                        }
-                    });
-            }
+                   mIsGuiScissorsSlave,
+                   mIsGuiScissorsMaster,
+                   mCanBloomBeApplied};
+            sceneSp->EnqueueUiItemBaseUpdate(GetUId(), updateStruct);
         }
-        return true;
     }
-
-    return false;
+    return mIsSceneProxyReady.load();
 }
 
 bool UiItemBase::SyncDataOnLuaThread()

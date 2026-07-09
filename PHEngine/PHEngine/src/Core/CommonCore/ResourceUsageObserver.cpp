@@ -35,17 +35,17 @@ void ResourceUsageObserver::CollectResourceConsumptionInfo()
     uint64_t mHeapCapacity = static_cast<uint64_t>(pmc.WorkingSetSize);
     mLastMemUsageMegabytes = static_cast<double>(mHeapCapacity) * INV_BYTES_IN_MBYTE;
 #elif __linux__
-    std::string _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16;
+    static std::string _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16;
     // RAM
-    int64_t rss;
-    uint64_t vsize;
+    static int64_t rss;
+    static uint64_t vsize;
 
     // CPU
-    uint32_t utime;
-    uint32_t stime;
-    uint32_t cutime;
-    uint32_t cstime;
-    uint64_t starttime;
+    static uint32_t utime;
+    static uint32_t stime;
+    static uint32_t cutime;
+    static uint32_t cstime;
+    static uint64_t starttime;
 
     std::ifstream statStream("/proc/self/stat");
     statStream >> mPid >> _1 >> _2 >> _3 >> _4 >> _5 >> _6 >> _7 >> _8 >> _9 >> _10 >> _11 >> _12 >> utime >> stime >> cutime

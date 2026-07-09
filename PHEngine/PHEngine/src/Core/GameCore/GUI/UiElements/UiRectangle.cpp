@@ -306,48 +306,26 @@ void UiRectangle::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 
 bool UiRectangle::SyncDataOnRenderThread()
 {
-    static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnRenderThread");
+    const auto& canvasSp = GetParentCanvas().lock();
+    if (!canvasSp) {
+        return false;
+    }
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
-            if (const auto& canvasSp = GetParentCanvas().lock()) {
-                if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-
-                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                        GetUId(),
-                        functionId,
-                        [sceneRenderer,
-                         myUId = GetUId(),
-                         canvasUId = canvasSp->GetUId(),
-                         color = mColor,
-                         opacity = mOpacity,
-                         borderRadius = mBorderRadius,
-                         isRoundTop = mIsRoundTop,
-                         isRoundBottom = mIsRoundBottom,
-                         applyBlur = mApplyBlur,
-                         blurMix = mBlurMix](
-                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                            std::weak_ptr<EngineCore::Scene> sceneWp,
-                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                            const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
-                            if (uiSceneProxy) {
-                                const auto& rectangleSceneProxy = std::static_pointer_cast<UiRectangleSceneProxy>(uiSceneProxy);
-                                rectangleSceneProxy->SetColor(color);
-                                rectangleSceneProxy->SetOpacity(opacity);
-                                rectangleSceneProxy->SetBorderRadius(borderRadius);
-                                rectangleSceneProxy->SetIsRoundTop(isRoundTop);
-                                rectangleSceneProxy->SetIsRoundBottom(isRoundBottom);
-                                rectangleSceneProxy->SetApplyBlur(applyBlur);
-                                rectangleSceneProxy->SetBlurMix(blurMix);
-                            }
-                        });
-                }
-            }
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
+            PendingUiRectangleUpdates updateStruct
+                = {static_cast<int32_t>(canvasSp->GetUId()),
+                   mColor,
+                   mOpacity,
+                   mBorderRadius,
+                   mBlurMix,
+                   mIsRoundTop,
+                   mIsRoundBottom,
+                   mApplyBlur};
+            sceneSp->EnqueueUiRectangleUpdate(GetUId(), updateStruct);
         }
-
-        return true;
     }
-    return false;
+    return mIsSceneProxyReady.load();
 }
 
 bool UiRectangle::SyncDataOnLuaThread()

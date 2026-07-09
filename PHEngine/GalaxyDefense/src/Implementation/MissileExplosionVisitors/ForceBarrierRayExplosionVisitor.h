@@ -33,12 +33,10 @@ public:
         const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
     virtual void StartExplosionForBarrier(
-        const std::shared_ptr<BarrierActor>& barrier,
-        const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
+        const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
     virtual void EndExplosionForBarrier(
-        const std::shared_ptr<BarrierActor>& barrier,
-        const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
+        const std::shared_ptr<BarrierActor>& barrier, const std::shared_ptr<::EngineCore::Actor>& missileCollidedActor) override;
 
 private:
     void AddForceBarrierModifier(const std::shared_ptr<BarrierActor>& barrier);

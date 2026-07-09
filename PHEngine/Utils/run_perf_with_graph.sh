@@ -9,7 +9,7 @@ OUTPUT_PATH="$(pwd)/output"
 OUTPUT_DATA="$OUTPUT_PATH/perf.data"
 mkdir $OUTPUT_PATH
 cd "$1"
-perf record -F 99 -g --call-graph fp -o "$OUTPUT_DATA" ./"$2" "$3"
+perf record -F 999 -g --call-graph fp -o "$OUTPUT_DATA" ./"$2" "$3"
 cd $CURRENT_DIR
 
 perf script -i "$OUTPUT_DATA" | ./FlameGraph/stackcollapse-perf.pl > ./output/out.perf-folded

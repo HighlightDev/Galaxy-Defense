@@ -175,14 +175,9 @@ void PrimitiveComponent::UpdateWorldMatrix(const glm::mat4& parentWorldMatrix)
     if (bIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSP = m_sceneWP.lock()) {
 
-            // Reaching UpdateWorldMatrix already means the world matrix was just recomputed: either this component is
-            // transform-dirty, or its owning actor force-updated the whole hierarchy because a parent moved. In both
-            // cases the new matrix must be pushed to the render thread. Instead of posting a per-object job (plus a
-            // separate frustum-reset job) every frame, accumulate into the scene's per-frame batch; the whole batch
-            // is flushed as a single render-thread job from Scene::UnpausableTick.
             if (IsWorldMatrixComputed()) {
                 sceneSP->EnqueuePrimitiveTransformUpdate(
-                    mSceneProxyId, m_worldMatrix, m_outlineMatrix, GetTransformedBoundingBox(), mBoundingBox.GetOrigin());
+                    mSceneProxyId, {m_worldMatrix, m_outlineMatrix, GetTransformedBoundingBox(), mBoundingBox.GetOrigin()});
             }
         }
     }

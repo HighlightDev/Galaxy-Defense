@@ -2,7 +2,7 @@
 
 #include "materialCommon.incl.glsl"
 
-uniform vec3 amberColor;  // dark amber (bottom of the top->bottom gradient)
+uniform vec3 amberColor; // dark amber (bottom of the top->bottom gradient)
 uniform vec3 brightColor; // bright/white (top of the gradient + highlights)
 uniform float opacity;
 uniform float timeSec;
