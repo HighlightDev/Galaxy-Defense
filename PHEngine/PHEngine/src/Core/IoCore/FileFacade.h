@@ -30,9 +30,10 @@ public:
         const std::string& separateBy) const;
     bool ReplaceSourceLineAt(const size_t index, const std::string& insertText);
 
+    bool CheckIfFileExists(const std::string& pathToFile);
+
 private:
     bool LoadFile(const std::string& pathToFile);
-    bool CheckIfFileExists(const std::string& pathToFile);
 
     std::string ConcatFileSrc() const;
 };

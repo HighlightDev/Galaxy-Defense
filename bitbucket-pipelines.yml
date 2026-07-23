@@ -21,5 +21,5 @@ pipelines:
                 - cmake --version
                 - mkdir build
                 - ls -la
-                - cmake -B build -S ./PHEngine/ -DBUILD_GALAXY_DEFENSE=ON -DBUILD_ENGINE_TEST=ON -DENABLE_ASAN=OFF -DENABLE_TSAN=OFF -DENABLE_LIBUNWIND=OFF -DBUILD_UBO_TEST=OFF
+                - cmake -B build -S ./PHEngine/ -DBUILD_GALAXY_DEFENSE=ON -DBUILD_ENGINE_TEST=ON -DENABLE_ASAN=OFF -DENABLE_TSAN=OFF -DENABLE_LIBUNWIND=OFF -DBUILD_UBO_TEST=OFF -DENABLE_PIC=ON
                 - cmake --build build -j$(nproc)

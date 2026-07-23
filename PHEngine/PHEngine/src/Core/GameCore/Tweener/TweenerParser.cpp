@@ -139,7 +139,7 @@ typename std::enable_if<std::is_same<float, T>::value, T>::type GetTrivialValueA
 
 std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string& tweenerName)
 {
-    const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePath(tweenerName);
+    const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePathToRes(tweenerName);
 
     FileFacade fileWorker;
     fileWorker.OpenAndReadFile(absolutePath);

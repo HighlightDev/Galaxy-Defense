@@ -34,8 +34,8 @@ void BloomPostFxPass::Init()
 {
     auto bloomFxShaderParams = ShaderParams("BloomFxShader");
     bloomFxShaderParams.SetMainShaders(
-        IO::FolderManager::GetInstance()->GetAbsolutePath("postFxVS.glsl"),
-        IO::FolderManager::GetInstance()->GetAbsolutePath("bloomFS.glsl"));
+        IO::FolderManager::GetInstance()->GetAbsolutePathToRes("postFxVS.glsl"),
+        IO::FolderManager::GetInstance()->GetAbsolutePathToRes("bloomFS.glsl"));
     mBloomFxShader = ShaderPool::GetInstance()->template GetOrAllocateResource<BloomFxShader>(bloomFxShaderParams);
     const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
     ext_assert(

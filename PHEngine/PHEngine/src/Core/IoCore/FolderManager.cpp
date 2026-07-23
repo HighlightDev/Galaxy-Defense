@@ -71,15 +71,15 @@ void FolderManager::BuildSystemPathToFolders()
     }
 }
 
-std::string FolderManager::GetAbsolutePath(const std::string& fileName) const
+std::string FolderManager::GetAbsolutePathToRes(const std::string& fileName) const
 {
-    ext_assert(mAbsFilesPathMap.count(fileName), "FolderManager::GetAbsolutePath: missing file: " + fileName);
+    ext_assert(mAbsFilesPathMap.count(fileName), "FolderManager::GetAbsolutePathToRes: missing file: " + fileName);
     return mAbsFilesPathMap.at(fileName);
 }
 
-std::string FolderManager::GetPathToExeFile() const
+std::string FolderManager::GetAbsPathToExeFile() const
 {
-    ext_assert(m_pathToExe != "", "FolderManager::GetPathToExeFile: forgot to invoke BuildSystemPathToFolders");
+    ext_assert(m_pathToExe != "", "FolderManager::GetAbsPathToExeFile: forgot to invoke BuildSystemPathToFolders");
 #ifdef _WIN32
     return m_pathToExe + SLASH;
 #elif __linux__
@@ -90,9 +90,9 @@ std::string FolderManager::GetPathToExeFile() const
 std::string FolderManager::GetRootPath() const
 {
 #ifdef _WIN32
-    static std::string pathToRes = GetPathToExeFile() + SLASH + "res" + SLASH;
+    static std::string pathToRes = GetAbsPathToExeFile() + SLASH + "res" + SLASH;
 #elif __linux__
-    static std::string pathToRes = GetPathToExeFile() + "res" + SLASH;
+    static std::string pathToRes = GetAbsPathToExeFile() + "res" + SLASH;
 #endif
     return pathToRes;
 }

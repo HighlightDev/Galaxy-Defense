@@ -44,12 +44,12 @@ void UiUpgradeIconSceneProxy::OnSceneProxyRegistered()
     const auto& folderManager = FolderManager::GetInstance();
     ShaderParams shaderParams("UiUpgradeIcon Shader");
     shaderParams.SetMainShaders(
-        folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiUpgradeIconFS.glsl"));
+        folderManager->GetAbsolutePathToRes("uiVS.glsl"), folderManager->GetAbsolutePathToRes("uiUpgradeIconFS.glsl"));
     mShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiUpgradeIconShader>(shaderParams);
 
     ShaderParams glowShaderParams("UiUpgradeIconGlow Shader");
     glowShaderParams.SetMainShaders(
-        folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiUpgradeIconGlowFS.glsl"));
+        folderManager->GetAbsolutePathToRes("uiVS.glsl"), folderManager->GetAbsolutePathToRes("uiUpgradeIconGlowFS.glsl"));
     mGlowShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiUpgradeIconGlowShader>(glowShaderParams);
 }
 

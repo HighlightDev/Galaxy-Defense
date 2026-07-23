@@ -129,12 +129,12 @@ void SceneRenderer::InitializeCoreShaders()
 
     ShaderParams depthCollectShaderParams("DepthCollectShader");
     depthCollectShaderParams.SetMainShaders(
-        folderManager->GetAbsolutePath("depthCollectVS.glsl"), folderManager->GetAbsolutePath("depthCollectFS.glsl"));
+        folderManager->GetAbsolutePathToRes("depthCollectVS.glsl"), folderManager->GetAbsolutePathToRes("depthCollectFS.glsl"));
     ShaderParams plDepthCollectShaderParams("PointLightDepthCollectShader");
     plDepthCollectShaderParams.SetMainShaders(
-        folderManager->GetAbsolutePath("depthCollectPointLightVS.glsl"),
-        folderManager->GetAbsolutePath("depthCollectPointLightFS.glsl"));
-    plDepthCollectShaderParams.SetGeometryShader(folderManager->GetAbsolutePath("depthCollectPointLightGS.glsl"));
+        folderManager->GetAbsolutePathToRes("depthCollectPointLightVS.glsl"),
+        folderManager->GetAbsolutePathToRes("depthCollectPointLightFS.glsl"));
+    plDepthCollectShaderParams.SetGeometryShader(folderManager->GetAbsolutePathToRes("depthCollectPointLightGS.glsl"));
 
     const CompositeShaderParams staticMeshParams("StaticMeshVertexFactory", depthCollectShaderParams);
     const CompositeShaderParams skeletalMeshParams("SkeletalMeshVertexFactory<4>", depthCollectShaderParams);
@@ -142,7 +142,7 @@ void SceneRenderer::InitializeCoreShaders()
     const CompositeShaderParams skeletalMeshCompositeParams("SkeletalMeshVertexFactory<4>", plDepthCollectShaderParams);
     ShaderParams deferredLightShaderParams("DeferredLight Shader");
     deferredLightShaderParams.SetMainShaders(
-        folderManager->GetAbsolutePath("deferredLightPassVS.glsl"), folderManager->GetAbsolutePath("deferredLightPassFS.glsl"));
+        folderManager->GetAbsolutePathToRes("deferredLightPassVS.glsl"), folderManager->GetAbsolutePathToRes("deferredLightPassFS.glsl"));
 
     mDepthCollectShaderNonSkeletal
         = std::make_shared<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);

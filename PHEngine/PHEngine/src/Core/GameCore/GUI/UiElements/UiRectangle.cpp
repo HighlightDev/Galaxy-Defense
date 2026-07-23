@@ -313,15 +313,16 @@ bool UiRectangle::SyncDataOnRenderThread()
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
-            PendingUiRectangleUpdates updateStruct
-                = {static_cast<int32_t>(canvasSp->GetUId()),
-                   mColor,
-                   mOpacity,
-                   mBorderRadius,
-                   mBlurMix,
-                   mIsRoundTop,
-                   mIsRoundBottom,
-                   mApplyBlur};
+            PendingUiRectangleUpdates updateStruct = {
+                canvasUid : static_cast<int32_t>(canvasSp->GetUId()),
+                color : mColor,
+                opacity : mOpacity,
+                borderRadius : mBorderRadius,
+                blurMix : mBlurMix,
+                isRoundTop : mIsRoundTop,
+                isRoundBottom : mIsRoundBottom,
+                applyBlur : mApplyBlur
+            };
             sceneSp->EnqueueUiRectangleUpdate(GetUId(), updateStruct);
         }
     }

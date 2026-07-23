@@ -29,8 +29,8 @@ void GaussianBlurPostFxPass::Init()
 {
     auto bloomFxShaderParams = ShaderParams("BloomFxShader");
     bloomFxShaderParams.SetMainShaders(
-        IO::FolderManager::GetInstance()->GetAbsolutePath("postFxVS.glsl"),
-        IO::FolderManager::GetInstance()->GetAbsolutePath("bloomFS.glsl"));
+        IO::FolderManager::GetInstance()->GetAbsolutePathToRes("postFxVS.glsl"),
+        IO::FolderManager::GetInstance()->GetAbsolutePathToRes("bloomFS.glsl"));
     mBlurShader = ShaderPool::GetInstance()->template GetOrAllocateResource<BloomFxShader>(bloomFxShaderParams);
     const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
     mBlurPassCount = 5;

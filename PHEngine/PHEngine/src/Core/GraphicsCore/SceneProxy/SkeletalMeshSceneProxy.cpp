@@ -41,16 +41,16 @@ void SkeletalMeshSceneProxy::PostConstructorInitialize()
 
     ShaderParams shaderParams("DeferredNonSkeletalBase Shader");
     shaderParams.SetMainShaders(
-        FolderManager::GetInstance()->GetAbsolutePath("simpleVS.glsl"),
-        FolderManager::GetInstance()->GetAbsolutePath("deferredFS.glsl"));
+        FolderManager::GetInstance()->GetAbsolutePathToRes("simpleVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePathToRes("deferredFS.glsl"));
 
     m_shader = CreateMaterialShader<SkeletalMeshVertexFactory<4>, SimpleShader>(
         "SkeletalMeshVertexFactory<4>_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
 
     ShaderParams planarReflectionParams("PlanarReflectionShader");
     planarReflectionParams.SetMainShaders(
-        FolderManager::GetInstance()->GetAbsolutePath("planarReflectionVS.glsl"),
-        FolderManager::GetInstance()->GetAbsolutePath("forwardNoLitFS.glsl"));
+        FolderManager::GetInstance()->GetAbsolutePathToRes("planarReflectionVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePathToRes("forwardNoLitFS.glsl"));
 
     m_planarReflectionShader = CreateMaterialShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>(
         "SkeletalMeshVertexFactory<4>_CapturePlanarReflectionShader" + mMaterialProxy->MaterialName,

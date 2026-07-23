@@ -163,7 +163,7 @@ int32_t main(int32_t argc, char** argv)
     Logger::StartLogThread();
 
     FolderManager::GetInstance()->BuildSystemPathToFolders();
-    EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetAbsolutePath("engineConfig.cfg"));
+    EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetAbsolutePathToRes("engineConfig.cfg"));
 
     GLFWwindow* window;
     // Initialize the library

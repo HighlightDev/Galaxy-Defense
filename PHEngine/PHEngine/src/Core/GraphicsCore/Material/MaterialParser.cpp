@@ -116,7 +116,7 @@ std::shared_ptr<MaterialProperty> GetMaterialPropertyAndAdvanceIterator(
 
 std::string MaterialParser::ReadMaterialNameFromMaterialDescriptor(const std::string& materialFileName)
 {
-    const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePath(materialFileName);
+    const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePathToRes(materialFileName);
     FileFacade fileWorker;
     fileWorker.OpenAndReadFile(absolutePath);
 
@@ -145,7 +145,7 @@ std::string MaterialParser::ReadMaterialNameFromMaterialDescriptor(const std::st
 
 std::shared_ptr<IMaterial> MaterialParser::ParseMaterialDescriptor(const std::string& materialFileName)
 {
-    const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePath(materialFileName);
+    const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePathToRes(materialFileName);
     FileFacade fileWorker;
     fileWorker.OpenAndReadFile(absolutePath);
 

@@ -32,7 +32,7 @@ public:
         : VertexFactoryShader("SkeletalMeshVertexFactory")
         , MaxBones(EngineConfigHolder::GetInstance()->GetEngineConfig().MaxSkeletBones)
     {
-        InitShader(FolderManager::GetInstance()->GetAbsolutePath("SkeletalMeshVertexFactory.glsl"));
+        InitShader(FolderManager::GetInstance()->GetAbsolutePathToRes("SkeletalMeshVertexFactory.glsl"));
     }
 
     void AccessAllUniformLocations(uint32_t shaderProgramID) override

@@ -28,8 +28,8 @@ void InstancedGeometryBatchProxy::Initialize()
     const auto fragmentShaderName = m_renderData.mIsDeferredShaded ? "deferredFS.glsl" : "forwardNoLitFS.glsl";
     ShaderParams shaderParams(shaderIdName);
     shaderParams.SetMainShaders(
-        FolderManager::GetInstance()->GetAbsolutePath("simpleVS.glsl"),
-        FolderManager::GetInstance()->GetAbsolutePath(fragmentShaderName));
+        FolderManager::GetInstance()->GetAbsolutePathToRes("simpleVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePathToRes(fragmentShaderName));
 
     mShader = std::static_pointer_cast<typename InstancedGeometryBatchProxy::ShaderType>(
         PrimitiveSceneProxy::CreateMaterialShader<InstancedStaticMeshVertexFactory, SimpleShader>(

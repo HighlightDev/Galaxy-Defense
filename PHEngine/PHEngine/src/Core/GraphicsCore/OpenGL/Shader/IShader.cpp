@@ -123,7 +123,7 @@ bool IShader::ProcessShaderIncludes(std::string& shaderSource)
                         includes.insert(name);
                         name.erase(std::remove(name.begin(), name.end(), '\"'), name.end()); // remove quotes
 
-                        const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePath(name);
+                        const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePathToRes(name);
                         includingSources += LoadShaderSource(absolutePath) + "\n";
                     }
                     it = sourceVector.erase(it);

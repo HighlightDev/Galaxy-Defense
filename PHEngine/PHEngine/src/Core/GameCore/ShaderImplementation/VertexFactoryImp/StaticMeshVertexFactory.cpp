@@ -15,7 +15,7 @@ int32_t StaticMeshVertexFactory::s_instanceId = 0;
 StaticMeshVertexFactory::StaticMeshVertexFactory()
     : VertexFactoryShader("StaticMeshVertexFactory")
 {
-    InitShader(FolderManager::GetInstance()->GetAbsolutePath("StaticMeshVertexFactory.glsl"));
+    InitShader(FolderManager::GetInstance()->GetAbsolutePathToRes("StaticMeshVertexFactory.glsl"));
 }
 
 void StaticMeshVertexFactory::AccessAllUniformLocations(uint32_t shaderProgramID)

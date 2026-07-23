@@ -34,7 +34,7 @@ void UiDividerSceneProxy::OnSceneProxyRegistered()
 {
     const auto& folderManager = FolderManager::GetInstance();
     ShaderParams shaderParams("UiDivider Shader");
-    shaderParams.SetMainShaders(folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiDividerFS.glsl"));
+    shaderParams.SetMainShaders(folderManager->GetAbsolutePathToRes("uiVS.glsl"), folderManager->GetAbsolutePathToRes("uiDividerFS.glsl"));
     mUiDividerShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiDividerShader>(shaderParams);
 }
 

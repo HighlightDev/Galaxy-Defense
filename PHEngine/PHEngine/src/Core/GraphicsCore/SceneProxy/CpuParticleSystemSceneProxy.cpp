@@ -37,9 +37,9 @@ void CpuParticleSystemSceneProxy::PostConstructorInitialize()
 
     ShaderParams particlesShaderParams("ParticleShader");
     particlesShaderParams.SetMainShaders(
-        FolderManager::GetInstance()->GetAbsolutePath("particleVS.glsl"),
-        FolderManager::GetInstance()->GetAbsolutePath("particleFS.glsl"));
-    particlesShaderParams.SetGeometryShader(FolderManager::GetInstance()->GetAbsolutePath("particleGS.glsl"));
+        FolderManager::GetInstance()->GetAbsolutePathToRes("particleVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePathToRes("particleFS.glsl"));
+    particlesShaderParams.SetGeometryShader(FolderManager::GetInstance()->GetAbsolutePathToRes("particleGS.glsl"));
 
     CompositeShaderParams particlesCompositeShaderParams("ParticleVertexFactory_SimpleShader", particlesShaderParams);
 

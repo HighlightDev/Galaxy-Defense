@@ -35,7 +35,7 @@ void UiConnectionLineSceneProxy::OnSceneProxyRegistered()
     const auto& folderManager = FolderManager::GetInstance();
     ShaderParams shaderParams("UiConnectionLine Shader");
     shaderParams.SetMainShaders(
-        folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiConnectionLineFS.glsl"));
+        folderManager->GetAbsolutePathToRes("uiVS.glsl"), folderManager->GetAbsolutePathToRes("uiConnectionLineFS.glsl"));
     mShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiConnectionLineShader>(shaderParams);
 }
 

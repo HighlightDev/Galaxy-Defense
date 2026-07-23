@@ -58,7 +58,7 @@ void UiLabelSceneProxy::Initialize()
             const auto& folderManager = FolderManager::GetInstance();
             ShaderParams shaderParams("UiLabel Shader");
             shaderParams.SetMainShaders(
-                folderManager->GetAbsolutePath("fontVS.glsl"), folderManager->GetAbsolutePath("fontFS.glsl"));
+                folderManager->GetAbsolutePathToRes("fontVS.glsl"), folderManager->GetAbsolutePathToRes("fontFS.glsl"));
             mUiLabelShader = ShaderPool::GetInstance()->template GetOrAllocateResource<FontRenderingShader>(shaderParams);
             mTextFieldProxy = FreeTypeTextFieldProxy::CreateTextFieldProxyInstance(
                 UniqueFontTextIdGenerator::GenerateUniqueFontTextId(),

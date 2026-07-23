@@ -43,6 +43,10 @@
 #include "Core/CommonCore/ResourceUsageObserver.h"
 #endif
 
+#include "Core/IoCore/FileFacade.h"
+
+#include <dlfcn.h>
+
 #undef GetCurrentTime
 
 using namespace TinyLogger;
@@ -77,6 +81,8 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
+    LoadPlugins();
+
     GLint majorVersion, minorVersion;
     glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
     glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
@@ -145,6 +151,33 @@ void Engine::Initialize()
     LoadLevelGameThreadEvent::GetInstance()->AddListener(thisSp);
     RestartLevelGameThreadEvent::GetInstance()->AddListener(thisSp);
     PlaySpeedGameThreadEvent::GetInstance()->AddListener(thisSp);
+}
+
+typedef void (*PluginFunc)();
+PluginFunc testFunc;
+
+void Engine::LoadPlugins()
+{
+    FileFacade ff;
+    const std::string path = FolderManager::GetInstance()->GetAbsPathToExeFile() + "/plugins/libtest-plugin.so";
+    ext_assert(ff.CheckIfFileExists(path), "Engine::LoadPlugins: plugin file does not exist: plugins/libtest-plugin.so");
+    void* handle = dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
+    if (handle == NULL) {
+        LogInfo("Engine::LoadPlugins: failed to load plugin: ", dlerror());
+        return;
+    }
+
+    void* func = dlsym(handle, "TestPluginFunc");
+    if (func == NULL && dlerror() != NULL) {
+        LogInfo("Engine::LoadPlugins: failed to find TestPluginFunc in plugin: ", dlerror());
+        dlclose(handle);
+        return;
+    }
+
+    typedef void (*PluginFunc)();
+    testFunc = reinterpret_cast<PluginFunc>(func);
+    testFunc();
+    LogInfo("Engine::LoadPlugins: successfully loaded plugin and called TestPluginFunc");
 }
 
 void Engine::CleanUp()
@@ -532,6 +565,9 @@ std::shared_ptr<Scene> Engine::GetSceneSp() const
 
 void Engine::RecompileAllShaders()
 {
+    if (testFunc != NULL) {
+        testFunc();
+    }
     LogInfo("Engine::RecompileAllShaders");
     Resources::ShaderPool::GetInstance()->RecompileShaders();
     Resources::CompositeShaderPool::GetInstance()->RecompileShaders();

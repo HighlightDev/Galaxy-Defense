@@ -24,8 +24,8 @@ public:
 
     void BuildSystemPathToFolders();
 
-    std::string GetAbsolutePath(const std::string& fileName) const;
-    std::string GetPathToExeFile() const;
+    std::string GetAbsolutePathToRes(const std::string& fileName) const;
+    std::string GetAbsPathToExeFile() const;
     std::string GetRootPath() const;
 };
 } // namespace IO

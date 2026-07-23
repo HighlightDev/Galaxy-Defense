@@ -32,7 +32,7 @@ void UiProgressBarSceneProxy::OnSceneProxyRegistered()
     const auto& folderManager = FolderManager::GetInstance();
     ShaderParams shaderParams("UiProgressBar Shader");
     shaderParams.SetMainShaders(
-        folderManager->GetAbsolutePath("uiVS.glsl"), folderManager->GetAbsolutePath("uiProgressBarFS.glsl"));
+        folderManager->GetAbsolutePathToRes("uiVS.glsl"), folderManager->GetAbsolutePathToRes("uiProgressBarFS.glsl"));
     mUiProgressBarShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiProgressBarShader>(shaderParams);
 }
 

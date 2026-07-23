@@ -165,7 +165,7 @@ void FileWatcher::start()
 #else
 void FileWatcher::initialize()
 {
-    std::string fullPath = FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch;
+    std::string fullPath = FolderManager::GetInstance()->GetAbsPathToExeFile() + mPathToWatch;
     for (auto& file : std::filesystem::recursive_directory_iterator(fullPath)) {
         mPaths[file.path().string()] = std::filesystem::last_write_time(file);
     }
@@ -175,7 +175,7 @@ void FileWatcher::initialize()
 void FileWatcher::start()
 {
     ThreadHelper::GetInstance()->RegisterThread("FileWatcherThread_" + std::to_string(mInstanceId));
-    std::string fullPath = FolderManager::GetInstance()->GetPathToExeFile() + mPathToWatch;
+    std::string fullPath = FolderManager::GetInstance()->GetAbsPathToExeFile() + mPathToWatch;
     while (mIsRunning) {
         // Wait for "mDelay" milliseconds
         std::this_thread::sleep_for(mDelay);

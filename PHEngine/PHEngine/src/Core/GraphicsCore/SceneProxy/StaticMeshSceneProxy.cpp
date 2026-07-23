@@ -31,16 +31,16 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
     const auto fragmentShaderName = m_renderData.mIsDeferredShaded ? "deferredFS.glsl" : "forwardNoLitFS.glsl";
     ShaderParams shaderParams(shaderIdName);
     shaderParams.SetMainShaders(
-        FolderManager::GetInstance()->GetAbsolutePath("simpleVS.glsl"),
-        FolderManager::GetInstance()->GetAbsolutePath(fragmentShaderName));
+        FolderManager::GetInstance()->GetAbsolutePathToRes("simpleVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePathToRes(fragmentShaderName));
 
     m_shader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
         "StaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
 
     ShaderParams planarReflectionParams("PlanarReflectionShader");
     planarReflectionParams.SetMainShaders(
-        FolderManager::GetInstance()->GetAbsolutePath("planarReflectionVS.glsl"),
-        FolderManager::GetInstance()->GetAbsolutePath("forwardNoLitFS.glsl"));
+        FolderManager::GetInstance()->GetAbsolutePathToRes("planarReflectionVS.glsl"),
+        FolderManager::GetInstance()->GetAbsolutePathToRes("forwardNoLitFS.glsl"));
 
     m_planarReflectionShader = CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(
         "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName,
@@ -59,8 +59,8 @@ void StaticMeshSceneProxy::PostConstructorInitialize()
                 mOutlineMaterialProxy = outlineMatProxySp;
                 ShaderParams outlineShaderParams("OutlineShader");
                 outlineShaderParams.SetMainShaders(
-                    FolderManager::GetInstance()->GetAbsolutePath("simpleVS.glsl"),
-                    FolderManager::GetInstance()->GetAbsolutePath(fragmentShaderName));
+                    FolderManager::GetInstance()->GetAbsolutePathToRes("simpleVS.glsl"),
+                    FolderManager::GetInstance()->GetAbsolutePathToRes(fragmentShaderName));
                 m_outlineShader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
                     "StaticMeshVertexFactory_OutlineShader_OutlineMaterial", outlineShaderParams, outlineMatProxySp);
             }
