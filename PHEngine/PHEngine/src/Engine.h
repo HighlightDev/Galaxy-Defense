@@ -104,8 +104,6 @@ public:
 
     ~Engine();
 
-    void LoadPlugins();
-
     void Initialize();
 
     void SetLevelFactory(const std::shared_ptr<ILevelFactory>& lvlFactory);

@@ -153,3 +153,18 @@ cmake --build build -j$(nproc)
 ```
 
 ---
+
+## 5. Screenshots
+
+The project includes reference screenshots for the main game states:
+
+- `Gameplay1` — a representative in-game battle / combat view.
+- `MainMenu` — the main menu and navigation screen.
+
+### 5.1 Gameplay1
+
+![Gameplay1 screenshot](Screenshots/Gameplay1.png)
+
+### 5.2 MainMenu
+
+![MainMenu screenshot](Screenshots/MainMenu.png)
