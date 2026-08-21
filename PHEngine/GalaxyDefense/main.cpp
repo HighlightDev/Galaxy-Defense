@@ -14,6 +14,7 @@
 #include "src/Implementation/Levels/GameLevelFactory.h"
 
 #include <TinyLogger/LogInterface.h>
+#include <getopt.h>
 #include <gl/glew.h>
 #include <glfw/glfw3.h>
 #include <stdint.h>
@@ -153,11 +154,20 @@ int32_t main(int32_t argc, char** argv)
 #ifdef USE_LIBUNWIND
     std::signal(SIGSEGV, handler); // install our handler
 #endif
-
     ThreadHelper::GetInstance()->RegisterThread(EngineConstants::c_renderThreadName);
 
+    std::string logOutputPath = "./";
+    int character;
+    while ((character = getopt(argc, argv, "l:")) != -1) {
+        if ('l' == character) {
+            logOutputPath = optarg;
+        } else {
+            // unkwnown argument
+        }
+    }
+
     // Logger::InitLog(std::make_shared<LoggerClientConsole>());
-    Logger::InitLog(std::make_shared<LoggerClientFile>());
+    Logger::InitLog(std::make_shared<LoggerClientFile>(logOutputPath));
     Logger::StartLogThread();
 
     FolderManager::GetInstance()->BuildSystemPathToFolders();

@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "CodeLLDB Launch",
             "program": "${workspaceFolder}/build/GalaxyDefense/GalaxyDefense",
-            "args": [],
+            "args": ["-l", "${workspaceFolder}/build/"],
             "cwd": "${workspaceFolder}"
         },
         {

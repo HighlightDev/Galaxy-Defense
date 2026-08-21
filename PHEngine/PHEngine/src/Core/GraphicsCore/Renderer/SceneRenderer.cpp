@@ -142,7 +142,8 @@ void SceneRenderer::InitializeCoreShaders()
     const CompositeShaderParams skeletalMeshCompositeParams("SkeletalMeshVertexFactory<4>", plDepthCollectShaderParams);
     ShaderParams deferredLightShaderParams("DeferredLight Shader");
     deferredLightShaderParams.SetMainShaders(
-        folderManager->GetAbsolutePathToRes("deferredLightPassVS.glsl"), folderManager->GetAbsolutePathToRes("deferredLightPassFS.glsl"));
+        folderManager->GetAbsolutePathToRes("deferredLightPassVS.glsl"),
+        folderManager->GetAbsolutePathToRes("deferredLightPassFS.glsl"));
 
     mDepthCollectShaderNonSkeletal
         = std::make_shared<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);

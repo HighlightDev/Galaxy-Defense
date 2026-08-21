@@ -1,48 +1,33 @@
 #pragma once
 
-#include <fstream>
-#include <iostream>
 #include <string>
 
 namespace TinyLogger {
 
 class LoggerClientBase {
+
 public:
     virtual void WriteLog(const std::string& message) = 0;
 };
 
 class LoggerClientConsole : public LoggerClientBase {
+
 public:
-    void WriteLog(const std::string& message) override
-    {
-        std::cout << message << std::endl;
-    }
+    void WriteLog(const std::string& message) override;
 };
 
 class LoggerClientFile : public LoggerClientBase {
-    bool bClearFileAtStart = true;
 
-    void WriteToFile(const std::string message)
-    {
-        std::ofstream stream;
+    std::string mPathToOutput;
 
-        std::ios_base::openmode openFileFlag = std::ios_base::app;
+    bool bClearFileAtStart{true};
 
-        if (bClearFileAtStart) {
-            openFileFlag = std::ios_base::out;
-            bClearFileAtStart = false;
-        }
-
-        stream.open("DebugTrace.log", openFileFlag);
-
-        stream << message;
-    }
+    void WriteToFile(const std::string& message);
 
 public:
-    void WriteLog(const std::string& message) override
-    {
-        WriteToFile(message);
-    }
+    explicit LoggerClientFile(const std::string& pathToOutput);
+
+    void WriteLog(const std::string& message) override;
 };
 
 } // namespace TinyLogger

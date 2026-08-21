@@ -17,7 +17,7 @@ option(PROFILER_BUILD "Build with debug symbols and no optimizations." OFF)
 option(BUILD_GALAXY_DEFENSE "Build GalaxyDefense game." ON)
 option(BUILD_ENGINE_TEST "Build test scene." ON)
 option(BUILD_UBO_TEST "Build test UBO." OFF)
-option(ENABLE_LIBUNWIND "Enables compilation of libunwind dependent code" ON)
+option(ENABLE_LIBUNWIND "Enables compilation of libunwind dependent code" OFF)
 
 file(
   GLOB_RECURSE
