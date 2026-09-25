@@ -39,23 +39,23 @@ std::string get_module_file_name()
 
 std::string GetExecutablePath()
 {
-    if ("" == sPATH_TO_EXE) {
+    if (sPathToExecutable.empty()) {
 #ifdef _WIN32
         const char* exeFilePathCharPtr = get_module_file_name();
         std::string exeFilePathStr = exeFilePathCharPtr;
         delete exeFilePathCharPtr;
         size_t indexToCurrentDir = LastIndexOf(exeFilePathStr, "\\");
         ext_assert(std::string::npos != indexToCurrentDir, "EngineUtility::GetExecutablePath: Invalid executable path");
-        sPATH_TO_EXE = exeFilePathStr.substr(0, indexToCurrentDir);
+        sPathToExecutable = exeFilePathStr.substr(0, indexToCurrentDir);
 #elif __linux__
         const std::string& fullPath = get_module_file_name();
         const auto indexOfExecutable = LastIndexOf(fullPath, "/");
         ext_assert(indexOfExecutable != std::string::npos, "EngineUtility::GetExecutablePath: Invalid executable path");
-        sPATH_TO_EXE = fullPath.substr(0, indexOfExecutable + 1);
+        sPathToExecutable = fullPath.substr(0, indexOfExecutable + 1);
 #endif
     }
 
-    return sPATH_TO_EXE;
+    return sPathToExecutable;
 }
 
 std::string ConvertFromRelativeToAbsolutePath(const std::string& relativePath)
@@ -63,7 +63,7 @@ std::string ConvertFromRelativeToAbsolutePath(const std::string& relativePath)
     if ("" == relativePath)
         return relativePath;
 
-    std::string absolutePath = sPATH_TO_EXE;
+    std::string absolutePath = sPathToExecutable;
 
     int32_t countOfGoBack = 0;
     size_t relativeOffset = 0;

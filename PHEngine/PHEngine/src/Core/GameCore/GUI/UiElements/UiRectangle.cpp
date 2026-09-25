@@ -36,10 +36,12 @@ UiRectangle::UiRectangle(const std::string& name)
     , mIsRoundBottom(true)
     , mApplyBlur(false)
     , mBlurMix(0.0f)
-    , mColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(
-          mColor, "Color", [this](const glm::vec3& newColorVaue) { SetColor(newColorVaue); }))
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
-          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
+    , mColorProperty(
+          std::make_shared<EngineObjectProperty<glm::vec3>>(
+              mColor, "Color", [this](const glm::vec3& newColorVaue) { SetColor(newColorVaue); }))
+    , mOpacityProperty(
+          std::make_shared<EngineObjectProperty<float>>(
+              mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 #ifdef DEBUG
     , mDebugLabel(
           std::make_shared<UiLabel>("JetBrainsMono-VariableFont_wght", "Rectangle_DebugLabel_" + std::to_string(GetUId())))
@@ -313,16 +315,15 @@ bool UiRectangle::SyncDataOnRenderThread()
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
             SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
-            PendingUiRectangleUpdates updateStruct = {
-                canvasUid : static_cast<int32_t>(canvasSp->GetUId()),
-                color : mColor,
-                opacity : mOpacity,
-                borderRadius : mBorderRadius,
-                blurMix : mBlurMix,
-                isRoundTop : mIsRoundTop,
-                isRoundBottom : mIsRoundBottom,
-                applyBlur : mApplyBlur
-            };
+            PendingUiRectangleUpdates updateStruct;
+            updateStruct.canvasUid = static_cast<int32_t>(canvasSp->GetUId());
+            updateStruct.color = mColor;
+            updateStruct.opacity = mOpacity;
+            updateStruct.borderRadius = mBorderRadius;
+            updateStruct.blurMix = mBlurMix;
+            updateStruct.isRoundTop = mIsRoundTop;
+            updateStruct.isRoundBottom = mIsRoundBottom;
+            updateStruct.applyBlur = mApplyBlur;
             sceneSp->EnqueueUiRectangleUpdate(GetUId(), updateStruct);
         }
     }

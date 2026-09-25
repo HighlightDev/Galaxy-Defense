@@ -45,8 +45,6 @@
 
 #include "Core/IoCore/FileFacade.h"
 
-#include <dlfcn.h>
-
 #undef GetCurrentTime
 
 using namespace TinyLogger;

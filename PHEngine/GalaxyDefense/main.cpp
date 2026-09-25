@@ -14,7 +14,9 @@
 #include "src/Implementation/Levels/GameLevelFactory.h"
 
 #include <TinyLogger/LogInterface.h>
+#if defined(__linux__)
 #include <getopt.h>
+#endif
 #include <gl/glew.h>
 #include <glfw/glfw3.h>
 #include <stdint.h>
@@ -155,8 +157,10 @@ int32_t main(int32_t argc, char** argv)
     std::signal(SIGSEGV, handler); // install our handler
 #endif
     ThreadHelper::GetInstance()->RegisterThread(EngineConstants::c_renderThreadName);
+    FolderManager::GetInstance()->BuildSystemPathToFolders();
 
-    std::string logOutputPath = "./";
+    std::string logOutputPath = FolderManager::GetInstance()->GetAbsPathToExeFile();
+#if defined(__linux__)
     int character;
     while ((character = getopt(argc, argv, "l:")) != -1) {
         if ('l' == character) {
@@ -165,12 +169,12 @@ int32_t main(int32_t argc, char** argv)
             // unkwnown argument
         }
     }
+#endif
 
     // Logger::InitLog(std::make_shared<LoggerClientConsole>());
     Logger::InitLog(std::make_shared<LoggerClientFile>(logOutputPath));
     Logger::StartLogThread();
 
-    FolderManager::GetInstance()->BuildSystemPathToFolders();
     EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetAbsolutePathToRes("engineConfig.cfg"));
 
     GLFWwindow* window;

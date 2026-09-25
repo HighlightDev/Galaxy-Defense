@@ -16,7 +16,7 @@ constexpr auto SLASH = '\\';
 #define GENERAL_SLASH '|'
 
 namespace EngineUtility {
-static std::string sPATH_TO_EXE = "";
+static std::string sPathToExecutable = "";
 
 #ifdef _WIN32 // compile only for windows operating system
 const char* get_module_file_name(HMODULE module = NULL);
