@@ -1,0 +1,98 @@
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/PHEngine/cmake)
+include(Utility)
+include(Flags)
+
+set(HEADERS
+    src/Implementation/Levels/TestFeaturesLevelFactory.h
+    src/Implementation/Levels/TestFeaturesLevel.h
+    src/Implementation/Levels/Controllers/TestFeaturesLevelUiController.h
+    src/Implementation/LuaExecutors/LuaUiControllerExecutor.h)
+
+set(SOURCES
+    src/Implementation/Levels/TestFeaturesLevelFactory.cpp
+    src/Implementation/Levels/TestFeaturesLevel.cpp
+    src/Implementation/Levels/Controllers/TestFeaturesLevelUiController.cpp
+    src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
+    main.cpp)
+
+set(EXECUTABLE_NAME EngineTest)
+add_executable(${EXECUTABLE_NAME} ${HEADERS} ${SOURCES})
+
+# Engine-wide definitions (DEBUG, BT_USE_DOUBLE_PRECISION, ...) come from PHEngine
+ApplyBuildOptions(${EXECUTABLE_NAME})
+
+add_custom_command(
+  TARGET ${EXECUTABLE_NAME}
+  POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E echo
+    "Start copy of resources to build directory: $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/res"
+)
+
+add_custom_command(
+  TARGET ${EXECUTABLE_NAME}
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${PROJECT_SOURCE_DIR}/PHEngine/res/
+          $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/res)
+
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+
+set(GAME_SRC_INCLUDE ${PROJECT_SOURCE_DIR}/${EXECUTABLE_NAME}/src/)
+set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
+set(LOGGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
+
+target_include_directories(
+  ${EXECUTABLE_NAME}
+  PUBLIC ${GAME_SRC_INCLUDE}
+  PUBLIC ${ENGINE_CORE_INCLUDE}
+  PUBLIC ${LOGGER_DEPENDENCE_INCLUDE}
+)
+
+add_custom_command(
+  TARGET ${EXECUTABLE_NAME}
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo
+  "Copy GLEW and OpenAL to $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "$<TARGET_FILE:libglew_shared>"
+  "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "$<TARGET_FILE:OpenAL>"
+  "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>"
+)
+
+if(UNIX)
+  target_link_libraries(${EXECUTABLE_NAME} PRIVATE X11)
+  target_link_libraries(${EXECUTABLE_NAME} PRIVATE Threads::Threads)
+
+  if(NOT CMAKE_DL_LIBS)
+    message(FATAL_ERROR "DL library wasn't found!")
+  else()
+    target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${CMAKE_DL_LIBS})
+  endif()
+endif()
+
+target_link_libraries(
+  ${EXECUTABLE_NAME}
+  PRIVATE PHEngine)
+
+message(STATUS "LibUnwind enabled: ${ENABLE_LIBUNWIND}")
+if(ENABLE_LIBUNWIND)
+  target_link_libraries(${EXECUTABLE_NAME} PRIVATE UnwindTool)
+endif(ENABLE_LIBUNWIND)
+
+file(
+  GLOB_RECURSE
+  FORMAT_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/*.h
+)
+
+if(NOT WIN32)
+  add_custom_target(
+    enginetest_codeformat
+    COMMAND clang-format -i ${FORMAT_SRC}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Formatting enginetest source files...")
+endif()

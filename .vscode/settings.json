@@ -195,5 +195,5 @@
         "${addons}/lualogging/module/library"
     ],
     "Lua.workspace.checkThirdParty": false,
-    "cmake.sourceDirectory": "/home/dzinoviev/MyProjects/GameEngine/PHEngine"
+    "cmake.sourceDirectory": "${workspaceFolder}/root"
 }

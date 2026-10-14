@@ -3,13 +3,32 @@
 How to build the engine (`PHEngine`), the game (`GalaxyDefense`), and the test
 scene (`EngineTest`) on **Linux** and **Windows**.
 
-The build is CMake-based. Third-party libraries are shipped **prebuilt** inside
-`PHEngine/Dependencies/` (one folder per platform: `lib/Unix/…` and
-`lib/Win/x64/…` | `lib/Win/x86/…`), so you normally do **not** need to build
-them yourself.
+The build is CMake-based and the CMake project lives in [`root/`](root/).
+All third-party libraries are pulled in as **git submodules** under
+`root/PHEngine/submodules/` and **built from source** together with the engine —
+nothing is shipped prebuilt and nothing needs to be installed separately
+(apart from the system packages listed below).
 
-Game resources (shaders / models / textures / lua / config) are **copied 
-automatically** into `<output>/res` as a post-build step.
+| Library | Submodule |
+|---|---|
+| Assimp | `assimp` |
+| Bullet3 (double precision) | `bullet3` |
+| GLEW | `glew` (glew-cmake) |
+| GLFW | `glfw` |
+| GLM | `glm` |
+| FreeType | `freetype` |
+| nlohmann/json | `nlohmann_json` |
+| Lua 5.4 | `lua` |
+| stb | `stb` |
+| libsndfile + ogg / vorbis / flac / opus | `libsndfile`, `ogg`, `vorbis`, `flac`, `opus` |
+| OpenAL Soft | `openal` |
+
+Post-build steps automatically put next to each executable:
+
+- the game resources (shaders / models / textures / lua / config) → `<output>/res`;
+- the only shared libraries of the project — **GLEW** and **OpenAL**.
+
+Everything else is linked statically.
 
 ---
 
@@ -17,154 +36,181 @@ automatically** into `<output>/res` as a post-build step.
 
 Common to both platforms:
 
-- **CMake ≥ 3.16.3**
-- A **C++20** compiler (GCC 13+, Clang, or MSVC v143 / Visual Studio 2022)
+- **Git** (to fetch the submodules)
+- **CMake ≥ 3.21** (needed for `CMakePresets.json`; a plain `cmake -B … -S root`
+  configure works with ≥ 3.16.3)
+- A **C/C++20** compiler: GCC 13+, Clang, or MSVC (the Windows preset targets
+  Visual Studio 2026)
 - An **OpenGL**-capable GPU + drivers
 
 ---
 
-## 2. Build on Linux
+## 2. Get the sources
 
-### 2.1 Install system packages
+Clone together with all submodules:
 
-The engine needs OpenGL, GLU, GLUT, X11, threads, and **OpenAL** development
-headers/libs (OpenAL is resolved on Linux via `find_package(OpenAL)`):
+```bash
+git clone --recurse-submodules <repo-url>
+```
+
+Or, in an existing checkout:
+
+```bash
+git submodule update --init --recursive
+```
+
+> The first build compiles all dependencies (Assimp, Bullet, OpenAL, …) and
+> takes noticeably longer than subsequent incremental builds.
+
+---
+
+## 3. Build on Linux
+
+### 3.1 Install system packages
+
+Only the system-level pieces are needed: compiler, OpenGL, X11 / Wayland headers
+for GLFW, and audio backends for OpenAL Soft.
 
 ```bash
 sudo apt update
 sudo apt install -y \
-    build-essential cmake \
-    libgl1-mesa-dev libglu1-mesa-dev freeglut3-dev \
-    libopenal-dev libx11-dev
+    build-essential cmake git \
+    libgl1-mesa-dev libglu1-mesa-dev \
+    libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
+    libwayland-dev libxkbcommon-dev wayland-protocols \
+    libasound2-dev libpulse-dev
 ```
 
-> If you build with `ENABLE_LIBUNWIND=ON` (the default), also install
-> `libunwind-dev`. The commands below turn it **off**, matching CI.
+> - GLFW builds both X11 and Wayland backends by default. If you don't need
+>   Wayland, configure with `-DGLFW_BUILD_WAYLAND=OFF` and skip the Wayland
+>   packages.
+> - Without `libasound2-dev` / `libpulse-dev` OpenAL Soft still builds, but
+>   without a real audio backend — the game will run with no sound.
+> - If you build with `ENABLE_LIBUNWIND=ON`, also install `libunwind-dev`.
 
-### 2.2 Configure & build
+### 3.2 Configure & build (presets)
 
-From this directory (the one containing the top-level `CMakeLists.txt`):
+Presets are defined in `root/CMakePresets.json`, so run them from `root/`:
 
 ```bash
-cmake -B build -S . \
+cd root
+cmake --preset linux-debug                # or: linux-release
+cmake --build --preset linux-debug -j$(nproc)
+```
+
+Build trees are created in `build/<preset>/` at the repository root
+(e.g. `build/linux-debug/`).
+
+Without presets, from the repository root (equivalent, as used in CI):
+
+```bash
+cmake -B build -S root \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DBUILD_GALAXY_DEFENSE=ON \
-    -DBUILD_ENGINE_TEST=ON \
-    -DENABLE_LIBUNWIND=OFF \
-    -DENABLE_PIC=ON
+    -DBUILD_ENGINE_TEST=ON
 
 cmake --build build -j$(nproc)
 ```
 
-### 2.3 Run
+### 3.3 Run
 
-Resources are copied automatically next to the binary during the build.
+From the repository root:
 
 ```bash
-cd build/GalaxyDefense
+cd build/linux-debug/GalaxyDefense
 ./GalaxyDefense
 ```
 
-The test scene, if built: `build/EngineTest/EngineTest`.
-
-> If you edit assets under `PHEngine/res/` after a build, you can re-sync them
-> without a full rebuild using `./copy_resources.sh -a` (copies **a**ll; other
-> flags: `-m` models, `-l` lua, `-s` shaders, `-t` textures, `-c` config).
-> Note: `copy_resources.sh` has a hard-coded `PATH_TO_ROOT` — adjust it if your
-> checkout lives elsewhere.
+The test scene, if built: `build/linux-debug/EngineTest/EngineTest`.
 
 ---
 
-## 3. Build on Windows
+## 4. Build on Windows
 
-Prebuilt Windows libs live in `PHEngine/Dependencies/*/lib/Win/x64/` (and
-`x86/`). Use the **x64** architecture — that's what the shipped libs target.
+Use the **x64** architecture. Run the commands in a
+*Developer PowerShell / Command Prompt for VS*.
 
-### 3.1 Configure & build (Visual Studio 2022)
+### 4.1 Configure & build (presets, Visual Studio 2026)
 
-From this directory, in a *Developer* PowerShell / Command Prompt:
+Presets are defined in `root/CMakePresets.json`, so run them from `root\`:
 
 ```bat
-cmake -B build -S . -G "Visual Studio 17 2022" -A x64 ^
+cd root
+cmake --preset windows
+cmake --build --preset windows-debug
+```
+
+Use `windows-release` for a Release build.
+
+The solution is generated in `build\windows\` — you can also open
+`build\windows\GalaxyDefenseProject.slnx` in Visual Studio and build from there.
+
+### 4.2 Other Visual Studio versions
+
+The preset is pinned to the `Visual Studio 18 2026` generator. With another
+version, configure manually from the repository root:
+
+```bat
+cmake -B build -S root -G "Visual Studio 17 2022" -A x64 ^
     -DBUILD_GALAXY_DEFENSE=ON ^
-    -DBUILD_ENGINE_TEST=ON ^
-    -DENABLE_LIBUNWIND=OFF
+    -DBUILD_ENGINE_TEST=ON
 
 cmake --build build --config Debug
 ```
 
-`ENABLE_LIBUNWIND` must be **OFF** on Windows (libunwind is Unix-only).
 `/bigobj`, `/utf-8` and `/MP` are set automatically for MSVC.
+`ENABLE_LIBUNWIND` must stay **OFF** on Windows (libunwind is Unix-only).
 
-### 3.2 Runtime DLLs
+### 4.3 Run
 
-A post-build step **automatically copies** these DLLs next to the exe:
+From the repository root:
 
-- `assimp-vc143-mtd.dll`
-- `freetype.dll`
-- `glew32.dll` (x64)
-- `glfw3.dll`
-
-### 3.3 ⚠️ Install the OpenAL DLL manually (required)
-
-**`OpenAL32.dll` is NOT bundled and NOT copied by the build** — the repo ships
-only the `OpenAL32.lib` import library. Without the DLL the game will fail to
-start with a "OpenAL32.dll not found" error.
-
-You must place `OpenAL32.dll` **in the same directory as `GalaxyDefense.exe`**:
-
-```
-build\GalaxyDefense\Debug\OpenAL32.dll   <-- put it here (next to the .exe)
+```bat
+cd build\windows\GalaxyDefense\Debug
+GalaxyDefense.exe
 ```
 
-Where to get it:
+No manual DLL copying is required: the post-build step places the GLEW and
+OpenAL DLLs (built from the submodules) and the `res` folder next to the exe.
+The same applies to `EngineTest`.
 
-- Download **OpenAL Soft** (https://openal-soft.org/) — grab the Windows binary
-  ZIP, take `bin\Win64\soft_oal.dll`, and **rename it to `OpenAL32.dll`**.
-- Or install the official OpenAL runtime (`oalinst.exe`) and copy the
-  `OpenAL32.dll` it installs into `System32`.
+---
 
-Use the **64-bit** DLL to match the x64 build. Do the same for the `EngineTest`
-output directory if you run that target.
-
-> If you also hit missing `lua54.dll` or `sndfile.dll` at runtime (these are not
-> auto-copied for x64 either), copy them next to the exe the same way — from
-> `PHEngine/Dependencies/Lua54/…` and `PHEngine/Dependencies/SndFile/…`, or a
-> matching x64 build of each.
-
-## 4. CMake options reference
+## 5. CMake options reference
 
 | Option | Default | Purpose |
 |---|---|---|
 | `BUILD_GALAXY_DEFENSE` | ON | Build the game executable |
 | `BUILD_ENGINE_TEST` | ON | Build the engine test scene |
-| `BUILD_UBO_TEST` | OFF | Build the UBO test target |
-| `ENABLE_LIBUNWIND` | ON | Compile libunwind-backed stack tracing (Linux only — set **OFF** on Windows) |
-| `ENABLE_PIC` | OFF | Position-independent code |
-| `DEBUG_BUILD` | ON | Define `DEBUG` (debug logging etc.) |
-| `ENABLE_ASAN` | OFF | Address + UB sanitizer |
-| `ENABLE_TSAN` | OFF | Thread sanitizer (ignored if ASAN on) |
-| `PROFILER_BUILD` | OFF | Debug symbols, no optimizations |
+| `ENABLE_LIBUNWIND` | OFF | Compile libunwind-backed stack tracing (Linux only) |
+| `ENABLE_ASAN` | OFF | Address sanitizer (+ UB sanitizer on GCC/Clang; ASan only on MSVC) |
+| `ENABLE_TSAN` | OFF | Thread sanitizer (GCC/Clang only; ignored if ASAN is on) |
+| `PROFILER_BUILD` | OFF | Optimized build with debug symbols, for profiling |
+
+The `DEBUG` define is set automatically for the **Debug** configuration — choose
+it via `CMAKE_BUILD_TYPE` (Linux) or `--config` / build preset (Windows).
 
 Example — sanitized Linux debug build:
 
 ```bash
-cmake -B build -S . -DENABLE_ASAN=ON -DENABLE_LIBUNWIND=OFF
-cmake --build build -j$(nproc)
+cd root
+cmake --preset linux-debug -DENABLE_ASAN=ON
+cmake --build --preset linux-debug -j$(nproc)
 ```
 
 ---
 
-## 5. Screenshots
+## 6. Screenshots
 
 The project includes reference screenshots for the main game states:
 
 - `Gameplay1` — a representative in-game battle / combat view.
 - `MainMenu` — the main menu and navigation screen.
 
-### 5.1 Gameplay1
+### 6.1 Gameplay1
 
-![Gameplay1 screenshot](Screenshots/Gameplay1.png)
+![Gameplay1 screenshot](gameplay_screenshots/Gameplay1.png)
 
-### 5.2 MainMenu
+### 6.2 MainMenu
 
-![MainMenu screenshot](Screenshots/MainMenu.png)
+![MainMenu screenshot](gameplay_screenshots/MainMenu.png)

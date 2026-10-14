@@ -1,6 +1,45 @@
-[submodule "PHEngine/External/Assimp"]
-	path = PHEngine/External/Assimp
+[submodule "PHEngine/PHEngine/submodules/assimp"]
+	path = root/PHEngine/submodules/assimp
 	url = https://github.com/assimp/assimp.git
-[submodule "PHEngine/External/bullet3"]
-	path = PHEngine/External/bullet3
+[submodule "PHEngine/PHEngine/submodules/bullet3"]
+	path = root/PHEngine/submodules/bullet3
 	url = https://github.com/bulletphysics/bullet3.git
+[submodule "PHEngine/PHEngine/submodules/glm"]
+	path = root/PHEngine/submodules/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "PHEngine/PHEngine/submodules/glew"]
+	path = root/PHEngine/submodules/glew
+	url = https://github.com/Perlmint/glew-cmake.git
+[submodule "PHEngine/PHEngine/submodules/glfw"]
+	path = root/PHEngine/submodules/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "PHEngine/PHEngine/submodules/freetype"]
+	path = root/PHEngine/submodules/freetype
+	url = https://github.com/freetype/freetype.git
+[submodule "PHEngine/PHEngine/submodules/nlohmann_json"]
+	path = root/PHEngine/submodules/nlohmann_json
+	url = https://github.com/nlohmann/json.git
+[submodule "PHEngine/PHEngine/submodules/lua"]
+	path = root/PHEngine/submodules/lua
+	url = https://github.com/walterschell/Lua.git
+[submodule "PHEngine/PHEngine/submodules/stb"]
+	path = root/PHEngine/submodules/stb
+	url = https://github.com/nothings/stb.git
+[submodule "PHEngine/PHEngine/submodules/libsndfile"]
+	path = root/PHEngine/submodules/libsndfile
+	url = https://github.com/libsndfile/libsndfile.git
+[submodule "PHEngine/PHEngine/submodules/ogg"]
+	path = root/PHEngine/submodules/ogg
+	url = https://github.com/xiph/ogg.git
+[submodule "PHEngine/PHEngine/submodules/vorbis"]
+	path = root/PHEngine/submodules/vorbis
+	url = https://github.com/xiph/vorbis.git
+[submodule "PHEngine/PHEngine/submodules/flac"]
+	path = root/PHEngine/submodules/flac
+	url = https://github.com/xiph/flac.git
+[submodule "PHEngine/PHEngine/submodules/opus"]
+	path = root/PHEngine/submodules/opus
+	url = https://github.com/xiph/opus.git
+[submodule "PHEngine/PHEngine/submodules/openal"]
+	path = root/PHEngine/submodules/openal
+	url = https://github.com/kcat/openal-soft.git

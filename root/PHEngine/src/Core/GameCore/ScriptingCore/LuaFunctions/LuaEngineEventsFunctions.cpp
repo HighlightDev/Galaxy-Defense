@@ -1,0 +1,272 @@
+#include "LuaEngineEventsFunctions.h"
+
+#include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/StringHash.h"
+#include "Core/CommonCore/ThreadHelper.h"
+#include "Core/GameCore/DataProviders/GeneralSystemSettingsDataProvider.h"
+#include "Core/GameCore/Event/BroadcastEvent.h"
+#include "Core/GameCore/Event/ExitGameEvent.h"
+#include "Core/GameCore/Event/LoadLevelEvent.h"
+#include "Core/GameCore/Event/PauseGameEvent.h"
+#include "Core/GameCore/Event/PlaySpeedEvent.h"
+#include "Core/GameCore/Event/RestartLevelEvent.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/UtilityCore/JsonUtilities.h"
+
+#include <nlohmann/json.hpp>
+
+#include <unordered_map>
+
+using namespace EngineCore;
+using namespace EngineCore::DataProviders;
+using namespace IO;
+using namespace Event;
+
+namespace EngineCore {
+namespace Scripts {
+LuaEngineEventsFunctions::LuaEngineEventsFunctions(LuaScriptExecutorBase* ownerPtr)
+    : mOwnerPtr(ownerPtr)
+{
+}
+
+LuaEngineEventsFunctions::~LuaEngineEventsFunctions()
+{
+    WindowSizeChangedLuaThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedLuaThreadEvent::GetInstanceId());
+    GeneralSystemSettingsChangedLuaThreadEvent::GetInstance()->RemoveListener(
+        GeneralSystemSettingsChangedLuaThreadEvent::GetInstanceId());
+    BroadcastLuaThreadEvent::GetInstance()->RemoveListener(BroadcastLuaThreadEvent::GetInstanceId());
+}
+
+void LuaEngineEventsFunctions::Initialize()
+{
+    WindowSizeChangedLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
+    GeneralSystemSettingsChangedLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
+    BroadcastLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
+}
+
+void LuaEngineEventsFunctions::SetScene(const std::weak_ptr<Scene>& sceneWp)
+{
+    mSceneWp = sceneWp;
+}
+
+void LuaEngineEventsFunctions::SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor)
+{
+    mLuaScriptProcessor = scriptProcessor;
+}
+
+void LuaEngineEventsFunctions::OnScriptStarted(const LuaWrapper& luaWrapper)
+{
+}
+
+void LuaEngineEventsFunctions::OnScriptStopped(const LuaWrapper& luaWrapper)
+{
+}
+
+void LuaEngineEventsFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
+{
+    LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendPauseGameThreadEvent"), void(int32_t, bool)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaEngineEventsFunctions::SendPauseGameThreadEvent, this, std::placeholders::_1),
+        "_SendPauseGameThreadEvent");
+    LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendExitGameThreadEvent"), void(int32_t)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaEngineEventsFunctions::SendExitGameThreadEvent, this, std::placeholders::_1),
+        "_SendExitGameThreadEvent");
+    LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent"), void(int32_t, std::string)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent, this, std::placeholders::_1),
+            "_SendLoadLevelGameThreadEvent");
+    LuaCallbackBindingHelper<
+        Hash64_CT("LuaEngineEventsFunctions::SendBroadcastGameThreadEvent"),
+        void(int32_t, std::string, std::string)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaEngineEventsFunctions::SendBroadcastGameThreadEvent, this, std::placeholders::_1),
+            "_SendBroadcastGameThreadEvent");
+    LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent"), void(int32_t)>::Bind(
+        luaWrapper,
+        mOwnerPtr,
+        std::bind(&LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent, this, std::placeholders::_1),
+        "_SendRestartLevelGameThreadEvent");
+    LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendChangePlaySpeedGameThreadEvent"), void(int32_t, float)>::
+        Bind(
+            luaWrapper,
+            mOwnerPtr,
+            std::bind(&LuaEngineEventsFunctions::SendChangePlaySpeedGameThreadEvent, this, std::placeholders::_1),
+            "_SendChangePlaySpeedGameThreadEvent");
+}
+
+void LuaEngineEventsFunctions::SendPauseGameThreadEvent(
+    const std::tuple<int32_t /*enqueue policy*/, bool /*true: pause, false: unpause*/>& data)
+{
+    const auto enqueuePolicy = std::get<0>(data);
+    const auto isPause = std::get<1>(data);
+
+    if (const auto& sceneSp = mSceneWp.lock()) {
+        static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendPauseGameThreadEvent");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [isPause](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                PauseGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, isPause);
+            });
+    }
+}
+
+void LuaEngineEventsFunctions::SendExitGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/>& data)
+{
+    const auto enqueuePolicy = std::get<0>(data);
+
+    if (const auto& sceneSp = mSceneWp.lock()) {
+        static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendExitGameThreadEvent");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+               std::weak_ptr<EngineCore::Scene> sceneWp,
+               std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                ExitGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION);
+            });
+    }
+}
+
+void LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent(
+    const std::tuple<int32_t /*enqueue policy*/, std::string /*level name*/>& data)
+{
+    const auto enqueuePolicy = std::get<0>(data);
+    const auto levelName = std::get<1>(data);
+
+    if (const auto& sceneSp = mSceneWp.lock()) {
+        static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [levelName](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                LoadLevelGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, levelName);
+            });
+    }
+}
+
+void LuaEngineEventsFunctions::SendBroadcastGameThreadEvent(
+    const std::tuple<int32_t /*enqueue policy*/, std::string /*event header*/, std::string /*json parameters*/>& data)
+{
+    const auto enqueuePolicy = std::get<0>(data);
+    const auto& eventHeader = std::get<1>(data);
+    const auto& eventJsonParameters = std::get<2>(data);
+
+    if (const auto& sceneSp = mSceneWp.lock()) {
+        static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendBroadcastGameThreadEvent");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [eventHeader, eventJsonParameters](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                BroadcastGameThreadEvent::GetInstance()->SendEvent(
+                    eExecutionOrder::POST_EXECUTION, eventHeader, eventJsonParameters);
+            });
+    }
+}
+
+void LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/>& data)
+{
+    const auto enqueuePolicy = std::get<0>(data);
+
+    if (const auto& sceneSp = mSceneWp.lock()) {
+        static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendRestartLevelGameThreadEvent");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+               std::weak_ptr<EngineCore::Scene> sceneWp,
+               std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                RestartLevelGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION);
+            });
+    }
+}
+
+void LuaEngineEventsFunctions::SendChangePlaySpeedGameThreadEvent(
+    const std::tuple<int32_t /*enqueue policy*/, float /*0-1 speed coefficient*/>& data)
+{
+    const auto enqueuePolicy = std::get<0>(data);
+    const float playSpeed = std::get<1>(data);
+
+    if (const auto& sceneSp = mSceneWp.lock()) {
+        static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendChangePlaySpeedGameThreadEvent");
+        sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+            static_cast<eEnqueueJobPolicy>(enqueuePolicy),
+            0,
+            functionId,
+            [playSpeed](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                PlaySpeedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, playSpeed);
+            });
+    }
+}
+
+void LuaEngineEventsFunctions::ProcessEvent(
+    const WindowSizeChangedLuaThreadEvent* sender, const WindowSizeChangedLuaThreadEvent::EventData_t& data)
+{
+    const auto viewPortInfo = std::get<0>(data);
+    nlohmann::json jsonObj;
+    jsonObj["width"] = viewPortInfo.Width;
+    jsonObj["height"] = viewPortInfo.Height;
+    const auto& eventParams = jsonObj.dump();
+    LuaFunctionInvoker<void(void*, std::string, std::string)>::Invoke(
+        mOwnerPtr->GetLuaInstance(),
+        "System_OnEngineEventTriggered",
+        (void*)mOwnerPtr,
+        std::string("WindowSizeChanged"),
+        eventParams);
+}
+
+void LuaEngineEventsFunctions::ProcessEvent(
+    const GeneralSystemSettingsChangedLuaThreadEvent* sender, const GeneralSystemSettingsChangedLuaThreadEvent::EventData_t& data)
+{
+    const std::unordered_map<eSystemSettingsEventType, std::string> eventTypeToStringMap = {
+        {eSystemSettingsEventType::SOUND_SETTINGS_CHANGED, "sound"}, {eSystemSettingsEventType::MUSIC_SETTINGS_CHANGED, "music"}};
+    const auto& eventType = std::get<0>(data);
+    const auto& jsonParameters = std::get<1>(data);
+
+    ext_assert(eventTypeToStringMap.count(eventType), "LuaEngineEventsFunctions::ProcessEvent: unknown event type");
+    LuaFunctionInvoker<void(void*, std::string, std::string)>::Invoke(
+        mOwnerPtr->GetLuaInstance(),
+        "System_OnEngineEventTriggered",
+        (void*)mOwnerPtr,
+        std::string("GeneralSystemSettingsChanged"),
+        jsonParameters);
+}
+
+void LuaEngineEventsFunctions::ProcessEvent(
+    const BroadcastLuaThreadEvent* sender, const BroadcastLuaThreadEvent::EventData_t& data)
+{
+    const std::string& eventHeader = std::get<0>(data);
+    const std::string& jsonParameters = std::get<1>(data);
+
+    LuaFunctionInvoker<void(void*, std::string, std::string)>::Invoke(
+        mOwnerPtr->GetLuaInstance(), "System_OnBroadcastEventTriggered", (void*)mOwnerPtr, eventHeader, jsonParameters);
+}
+} // namespace Scripts
+} // namespace EngineCore

@@ -1,0 +1,37 @@
+if(MSVC)
+  set(ProfilerCompilationFlags /O2 /Zi)
+else()
+  set(ProfilerCompilationFlags -O2 -g -fno-omit-frame-pointer)
+endif()
+
+# Applies ENABLE_ASAN / ENABLE_TSAN / PROFILER_BUILD to a target
+function(ApplyBuildOptions targetName)
+  if(ENABLE_ASAN)
+    message(STATUS "ASAN enabled for ${targetName}")
+    if(MSVC)
+      # MSVC supports only AddressSanitizer, no UBSan
+      target_compile_options(${targetName} PRIVATE /fsanitize=address /Zi)
+    else()
+      target_compile_options(${targetName} PRIVATE -fsanitize=address,undefined -g -O1
+                                                   -fno-omit-frame-pointer)
+      target_link_options(${targetName} PRIVATE -fsanitize=address,undefined)
+    endif()
+  endif()
+
+  if(ENABLE_ASAN AND ENABLE_TSAN)
+    message(WARNING "ASAN enabled for ${targetName}, Thread sanitizer will be disabled")
+  elseif(ENABLE_TSAN)
+    if(MSVC)
+      message(WARNING "Thread sanitizer isn't supported by MSVC, ignored for ${targetName}")
+    else()
+      message(STATUS "TSAN enabled for ${targetName}")
+      target_compile_options(${targetName} PRIVATE -fsanitize=thread -g -O1)
+      target_link_options(${targetName} PRIVATE -fsanitize=thread)
+    endif()
+  endif()
+
+  if(PROFILER_BUILD)
+    message(STATUS "Profile build enabled for ${targetName}")
+    target_compile_options(${targetName} PRIVATE ${ProfilerCompilationFlags})
+  endif()
+endfunction()
