@@ -55,7 +55,8 @@ public:
 
     std::shared_ptr<IUiOverlay> GetBackgroundOverlayByName(const std::string& name);
 
-    void OpenOverlay(const std::string& overlayName, const bool isRestoreFromHistory = false);
+    void
+    OpenOverlay(const std::string& overlayName, const bool isRestoreFromHistory, const bool closePreviousOverlay);
 
     void OpenBackgroundOverlay(const std::string& overlayName);
 

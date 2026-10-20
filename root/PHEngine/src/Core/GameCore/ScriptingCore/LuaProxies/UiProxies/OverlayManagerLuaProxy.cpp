@@ -57,7 +57,7 @@ void OverlayManagerLuaProxy::OpenOverlay(const std::string& overlayName)
                 ext_assert(replicator, "OverlayManagerLuaProxy::OpenOverlay: replicator is null");
                 const auto& overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
                 ext_assert(overlayManager, "OverlayManagerLuaProxy::OpenOverlay: overlayManager is null");
-                overlayManager->OpenOverlay(overlayName);
+                overlayManager->OpenOverlay(overlayName, false, true);
             });
     }
 }

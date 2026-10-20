@@ -104,12 +104,12 @@ std::weak_ptr<::EngineCore::Scene> OverlayManager::GetSceneWp() const
     return mSceneWp;
 }
 
-void OverlayManager::OpenOverlay(const std::string& overlayName, const bool isRestoreFromHistory)
+void OverlayManager::OpenOverlay(const std::string& overlayName, const bool isRestoreFromHistory, const bool closePreviousOverlay)
 {
     const auto& foundOverlay = FindOverlay(overlayName);
     ext_assert(foundOverlay, "OverlayManager::OpenOverlay: overlay not found: " + overlayName);
 
-    if (mCurrentOpenedOverlay) {
+    if (closePreviousOverlay && mCurrentOpenedOverlay) {
         if (mCurrentOpenedOverlay->GetOverlayName() == overlayName) {
             LogInfo("OverlayManager::OpenOverlay: Attempt to open already opened overlay ", overlayName);
             return;
@@ -163,7 +163,7 @@ void OverlayManager::CloseCurrentOverlay()
             // Restore previously opened overlay
             const auto currentActiveOverlayName = mActiveOverlaysHistory.top();
             mActiveOverlaysHistory.pop();
-            OpenOverlay(currentActiveOverlayName, true);
+            OpenOverlay(currentActiveOverlayName, true, false);
             LogInfo("OverlayManager::CloseCurrentOverlay: remove from history ", currentActiveOverlayName);
         } else {
             // History is empty, nothing to restore
