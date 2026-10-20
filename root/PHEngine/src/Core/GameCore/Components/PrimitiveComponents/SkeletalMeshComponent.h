@@ -32,21 +32,7 @@ protected:
 public:
     std::string LuaScriptName;
 
-    /* src is the main animation time counter*/
-    std::shared_ptr<EngineObjectProperty<float>> SrcAnimationTime;
-
-    /* dst time is used when blending of animations is being calculated*/
-    std::shared_ptr<EngineObjectProperty<float>> DstAnimationTime;
-
-    /* src is the main animation name*/
-    std::shared_ptr<EngineObjectProperty<std::string>> SrcAnimationName;
-
-    /* dst animation name is used when blending of animations is being occurred*/
-    std::shared_ptr<EngineObjectProperty<std::string>> DstAnimationName;
-
-    std::shared_ptr<EngineObjectProperty<bool>> bTransitionEnabled;
-
-    std::shared_ptr<EngineObjectProperty<float>> TransitionValue;
+    std::shared_ptr<EngineObjectProperty<AnimationBlendState>> AnimationState;
 
 public:
     SkeletalMeshComponent(const std::shared_ptr<MeshComponentData>& meshComponentData, const MeshRenderData& renderData);

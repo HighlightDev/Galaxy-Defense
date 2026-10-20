@@ -16,16 +16,16 @@ public:
     void OnTransitionStarted(
         const std::shared_ptr<BaseStateProperty>& srcState,
         const std::shared_ptr<BaseStateProperty>& dstState,
-        const float duration) override;
+        const float duration,
+        const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty) override;
 
     void OnTransitionFinished() override;
 
     void OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter) override;
 
-    void InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty) override;
-
-private:
-    std::shared_ptr<Vec3PropertyBinding> GetVec3PropertyBindingSP() const;
+    void InitWithPropsInstant(
+        const std::shared_ptr<BaseStateProperty>& dstStateProperty,
+        const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty) override;
 };
 
 } // namespace EngineCore

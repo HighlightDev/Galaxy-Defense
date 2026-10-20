@@ -49,7 +49,8 @@ namespace Graphics {
 #define DYNAMIC_PROPERTY_OPERATION_START_NODE_NAME "<operation>"
 #define DYNAMIC_PROPERTY_OPERATION_END_NODE_NAME "</operation>"
 
-std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& propertyType, const std::string& propertyName)
+std::shared_ptr<MaterialProperty> CreatePropertyByType(
+    const std::string& propertyType, const std::string& propertyName, const std::shared_ptr<IMaterial>& ownerMaterial)
 {
     std::shared_ptr<MaterialProperty> resultProperty;
 
@@ -68,17 +69,13 @@ std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& proper
     } else if ("vec3" == propertyType) {
         resultProperty = std::make_shared<Vec3MaterialProperty>(propertyName);
     } else if ("binding_float" == propertyType) {
-        resultProperty
-            = std::make_shared<FloatBindingMaterialProperty>(std::make_shared<FloatPropertyBinding>(propertyName), propertyName);
+        resultProperty = std::make_shared<FloatBindingMaterialProperty>(propertyName, ownerMaterial);
     } else if ("binding_ivec2" == propertyType) {
-        resultProperty
-            = std::make_shared<iVec2BindingMaterialProperty>(std::make_shared<iVec2PropertyBinding>(propertyName), propertyName);
+        resultProperty = std::make_shared<iVec2BindingMaterialProperty>(propertyName, ownerMaterial);
     } else if ("binding_vec2" == propertyType) {
-        resultProperty
-            = std::make_shared<Vec2BindingMaterialProperty>(std::make_shared<Vec2PropertyBinding>(propertyName), propertyName);
+        resultProperty = std::make_shared<Vec2BindingMaterialProperty>(propertyName, ownerMaterial);
     } else if ("binding_vec3" == propertyType) {
-        resultProperty
-            = std::make_shared<Vec3BindingMaterialProperty>(std::make_shared<Vec3PropertyBinding>(propertyName), propertyName);
+        resultProperty = std::make_shared<Vec3BindingMaterialProperty>(propertyName, ownerMaterial);
     } else {
         ext_assert(false, "Unknown property type.");
     }
@@ -87,7 +84,9 @@ std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& proper
 }
 
 std::shared_ptr<MaterialProperty> GetMaterialPropertyAndAdvanceIterator(
-    XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt)
+    XMLParserHelper::iterator_t& propertiesBeginIt,
+    const XMLParserHelper::iterator_t& propertiesEndIt,
+    const std::shared_ptr<IMaterial>& ownerMaterial)
 {
     auto propertyStartNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_START_NODE_NAME);
     auto propertyEndNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_END_NODE_NAME);
@@ -111,7 +110,7 @@ std::shared_ptr<MaterialProperty> GetMaterialPropertyAndAdvanceIterator(
 
     propertiesBeginIt = propertyEndNode;
 
-    return CreatePropertyByType(propertyType, propertyName);
+    return CreatePropertyByType(propertyType, propertyName, ownerMaterial);
 }
 
 std::string MaterialParser::ReadMaterialNameFromMaterialDescriptor(const std::string& materialFileName)
@@ -197,7 +196,8 @@ std::shared_ptr<IMaterial> MaterialParser::ParseStaticMaterial(
 
     ++propertiesStartNode;
     for (auto it = propertiesStartNode; it != propertiesEndNode; ++it) {
-        std::shared_ptr<MaterialProperty> materialProperty = GetMaterialPropertyAndAdvanceIterator(it, propertiesEndNode);
+        std::shared_ptr<MaterialProperty> materialProperty
+            = GetMaterialPropertyAndAdvanceIterator(it, propertiesEndNode, materialInstance);
         materialInstance->PushMaterialProperty(materialProperty);
     }
 
@@ -209,7 +209,8 @@ XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(
     std::shared_ptr<MaterialNode> node,
     XMLParserHelper::iterator_t& propertiesBeginIt,
     const XMLParserHelper::iterator_t& propertiesEndIt,
-    std::vector<std::shared_ptr<MaterialProperty>>& innerDynamicMaterialProperties)
+    std::vector<std::shared_ptr<MaterialProperty>>& innerDynamicMaterialProperties,
+    const std::shared_ptr<IMaterial>& ownerMaterial)
 {
     XMLParserHelper::iterator_t lastProcessedIt = propertiesBeginIt;
 
@@ -221,18 +222,18 @@ XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(
         auto nodeIt = mMaterialNodeDecorator.GetOneOfTagWithNames(
             lastProcessedIt,
             next,
-            UNARY_NO_OP_START,
-            UNARY_INCR_OP_START,
-            UNARY_DECR_OP_START,
-            BINARY_ADD_OP_START,
-            BINARY_SUB_OP_START,
-            BINARY_MUL_OP_START,
-            BINARY_DIV_OP_START);
+            {UNARY_NO_OP_START,
+             UNARY_INCR_OP_START,
+             UNARY_DECR_OP_START,
+             BINARY_ADD_OP_START,
+             BINARY_SUB_OP_START,
+             BINARY_MUL_OP_START,
+             BINARY_DIV_OP_START});
         bOperation = nodeIt != next;
 
         if (!bOperation) {
             nodeIt = mMaterialNodeDecorator.GetOneOfTagWithNames(
-                lastProcessedIt, next, FLOAT_CONSTANT_START, PROPERTY_START_NODE_NAME);
+                lastProcessedIt, next, {FLOAT_CONSTANT_START, PROPERTY_START_NODE_NAME});
             bValue = nodeIt != next;
         }
 
@@ -246,8 +247,8 @@ XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(
             node->AttachInputNode(operationNode);
 
             lastProcessedIt = ++nodeIt;
-            lastProcessedIt
-                = ProcessDynamicProperty(propertyType, operationNode, nodeIt, propertiesEndIt, innerDynamicMaterialProperties);
+            lastProcessedIt = ProcessDynamicProperty(
+                propertyType, operationNode, nodeIt, propertiesEndIt, innerDynamicMaterialProperties, ownerMaterial);
         } else if (bValue) {
             const std::string& currentNodeStr = EngineUtility::TrimStart(*nodeIt);
             auto currentNodeIt = nodeIt;
@@ -256,7 +257,7 @@ XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(
             std::shared_ptr<MaterialNode> valueNode = nullptr;
 
             if (EngineUtility::StartsWith(currentNodeStr, PROPERTY_START_NODE_NAME)) {
-                auto materialProperty = GetMaterialPropertyAndAdvanceIterator(currentNodeIt, propertiesEndIt);
+                auto materialProperty = GetMaterialPropertyAndAdvanceIterator(currentNodeIt, propertiesEndIt, ownerMaterial);
                 const std::unordered_map<MaterialProperty::eMaterialPropertyType, MaterialNode::eMaterialPropertyType>
                     supportedDynamicProperties
                     = {{MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY, MaterialNode::eMaterialPropertyType::FLOAT},
@@ -353,7 +354,9 @@ std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialInstancedDyn
 }
 
 std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialDynamicPropertyAndAdvanceIterator(
-    XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt)
+    XMLParserHelper::iterator_t& propertiesBeginIt,
+    const XMLParserHelper::iterator_t& propertiesEndIt,
+    const std::shared_ptr<IMaterial>& ownerMaterial)
 {
     auto dynamicPropertyStartNode
         = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_START_NODE_NAME);
@@ -379,7 +382,8 @@ std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialDynamicPrope
                 operationEnterNode,
                 ++dynamicPropertyStartNode,
                 dynamicPropertyEndNode,
-                innerDynamicMaterialProperties);
+                innerDynamicMaterialProperties,
+                ownerMaterial);
         } else {
             if (EngineUtility::StartsWith(currentNodeStr, "name")) {
                 propertyName = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
@@ -464,10 +468,10 @@ std::shared_ptr<IMaterial> MaterialParser::ParseDynamicMaterial(
             auto property = GetMaterialInstancedDynamicPropertyAndAdvanceIterator(it, propertiesEndNode);
             materialInstance->PushDynamicProperty(property);
         } else if (EngineUtility::StartsWith(currentNodeStr, DYNAMIC_PROPERTY_START_NODE_NAME)) {
-            auto property = GetMaterialDynamicPropertyAndAdvanceIterator(it, propertiesEndNode);
+            auto property = GetMaterialDynamicPropertyAndAdvanceIterator(it, propertiesEndNode, materialInstance);
             materialInstance->PushDynamicProperty(property);
         } else if (EngineUtility::StartsWith(currentNodeStr, PROPERTY_START_NODE_NAME)) {
-            auto property = GetMaterialPropertyAndAdvanceIterator(it, propertiesEndNode);
+            auto property = GetMaterialPropertyAndAdvanceIterator(it, propertiesEndNode, materialInstance);
             materialInstance->PushMaterialProperty(property);
         }
     }

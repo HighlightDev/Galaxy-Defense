@@ -1,25 +1,15 @@
 #pragma once
 
 #include "BindingMaterialProperty.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/Vec3PropertyBinding.h"
 
-using namespace EngineCore;
+#include <glm/vec3.hpp>
 
 namespace Graphics {
 
-struct Vec3BindingMaterialProperty : public BindingMaterialProperty
-
-{
-    using MaterialPropertyValueType = std::shared_ptr<Vec3PropertyBinding>;
-
+struct Vec3BindingMaterialProperty : public BindingMaterialProperty {
 public:
-    Vec3BindingMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
-        : BindingMaterialProperty(propertyValue, propertyName)
-    {
-    }
-
-    Vec3BindingMaterialProperty(const std::string& propertyName)
-        : BindingMaterialProperty(propertyName)
+    explicit Vec3BindingMaterialProperty(const std::string& propertyName, const std::shared_ptr<IMaterial>& ownerMaterial)
+        : BindingMaterialProperty(propertyName, ownerMaterial)
     {
     }
 
@@ -28,8 +18,9 @@ public:
         return MaterialProperty::eMaterialPropertyType::VEC3_BINDING_PROPERTY;
     }
 
-    void SetValueToUniformArray(const UniformArray& uniformArray) const override
+    eEnginePropertyType GetBindingEnginePropertyType() const override
     {
+        return eEnginePropertyType::Vec3;
     }
 
     void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const override
@@ -39,14 +30,13 @@ public:
             "Vec3BindingMaterialProperty::SetValueToUniform: this code should not be called, use proxy on render thread part");
     } // this code should not be called, use proxy on render thread part
 
-    void SetValue(MaterialPropertyValueType value)
+    void SetValueToUniformArray(const UniformArray& uniformArray) const override
     {
-        mPropertyBinding = value;
     }
 
     glm::vec3 GetValue() const
     {
-        return std::static_pointer_cast<Vec3PropertyBinding>(mPropertyBinding)->GetValue();
+        return GetEngineObjectPropertyValue<glm::vec3>();
     }
 };
 } // namespace Graphics

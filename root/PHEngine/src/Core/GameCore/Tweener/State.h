@@ -35,9 +35,7 @@ public:
 
     void AddStateProperty(const std::shared_ptr<BaseStateProperty>& stateProperty)
     {
-        auto bindingSP = stateProperty->Binding.lock();
-        ext_assert(bindingSP, "State property binding is null in State::AddStateProperty");
-        const std::string& name = bindingSP->BindingName;
+        const std::string& name = stateProperty->BindingName;
         ext_assert(
             mStateProperties.count(name) == 0,
             "State property already exists in State::AddStateProperty"); // make sure that property doesn't duplicate

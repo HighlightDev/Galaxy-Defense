@@ -12,4 +12,4 @@ enum class eEnginePropertyBindingType {
     Vec3QuadraticBezier
 };
 
-enum class eEnginePropertyType { Undefined, Float, Vec3, Boolean, Integer, iVec2, Vec2 };
+enum class eEnginePropertyType { Undefined, Float, Vec3, Boolean, Integer, iVec2, Vec2, Animation };

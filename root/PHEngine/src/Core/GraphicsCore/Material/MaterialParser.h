@@ -31,10 +31,13 @@ private:
         std::shared_ptr<MaterialNode> node,
         XMLParserHelper::iterator_t& propertiesBeginIt,
         const XMLParserHelper::iterator_t& propertiesEndIt,
-        std::vector<std::shared_ptr<MaterialProperty>>& innerDynamicMaterialProperties);
+        std::vector<std::shared_ptr<MaterialProperty>>& innerDynamicMaterialProperties,
+        const std::shared_ptr<IMaterial>& ownerMaterial);
 
     std::shared_ptr<DynamicMaterialProperty> GetMaterialDynamicPropertyAndAdvanceIterator(
-        XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt);
+        XMLParserHelper::iterator_t& propertiesBeginIt,
+        const XMLParserHelper::iterator_t& propertiesEndIt,
+        const std::shared_ptr<IMaterial>& ownerMaterial);
 
     std::shared_ptr<DynamicMaterialProperty> GetMaterialInstancedDynamicPropertyAndAdvanceIterator(
         XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt);

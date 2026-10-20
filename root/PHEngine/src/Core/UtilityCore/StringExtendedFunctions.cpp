@@ -43,30 +43,30 @@ size_t LastIndexOf(const std::string& sourceStr, const std::string& lookfor, siz
 
 std::string TrimStart(const std::string& sourceStr)
 {
-    std::string str = sourceStr;
-    auto trim = [](std::string& s) -> void {
-        auto it = std::find_if(s.begin(), s.end(), [](int32_t ch) { return !std::isspace(ch); });
-        if (it != s.end()) {
-            s.erase(s.begin(), it);
-        }
-    };
+    return std::string(TrimStartView(sourceStr));
+}
 
-    trim(str);
-    return str;
+std::string_view TrimStartView(std::string_view sourceStr)
+{
+    const auto trimmedIndex = sourceStr.find_first_not_of(" \t\r\n\v\f");
+    if (std::string_view::npos != trimmedIndex) {
+        return sourceStr.substr(trimmedIndex);
+    }
+    return std::string_view{};
 }
 
 std::string TrimEnd(const std::string& sourceStr)
 {
-    std::string str = sourceStr;
-    auto trim = [](std::string& s) -> void {
-        auto it = std::find_if(s.rbegin(), s.rend(), [](int ch) { return !std::isspace(ch); });
-        if (it != s.rend()) {
-            s.erase(it.base(), s.end());
-        }
-    };
+    return std::string(TrimEndView(sourceStr));
+}
 
-    trim(str);
-    return str;
+std::string_view TrimEndView(std::string_view sourceStr)
+{
+    const auto lastTrimmedIndex = sourceStr.find_last_not_of(" \t\r\n\v\f");
+    if (std::string_view::npos != lastTrimmedIndex) {
+        return sourceStr.substr(0, lastTrimmedIndex + 1);
+    }
+    return std::string_view{};
 }
 
 std::string Trim(const std::string& source)

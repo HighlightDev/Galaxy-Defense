@@ -26,7 +26,6 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
@@ -279,8 +278,7 @@ std::shared_ptr<MissileActor> GravityBombMissileFactory::CreateMissile(
         const auto& c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
         a_missileExplosionSecondPhase->AddComponent(c_ghostPhysics);
 
-        const auto& b_gravityBombHitBoxSize = missileTweener->GetPropertyBindingByName("b_gravityBombHitBoxSize");
-        BindingAttachmentBuilder::SetAttachment(c_ghostPhysics, b_gravityBombHitBoxSize, "p_hitBoxScale");
+        missileTweener->BindEngineObjectProperty("b_gravityBombHitBoxSize", c_ghostPhysics, "p_hitBoxScale");
     }
 
     // Two orbital rings tumbling in different planes around the singularity. They are components of the explosion
@@ -391,15 +389,10 @@ std::shared_ptr<MissileActor> GravityBombMissileFactory::CreateMissile(
 
     a_missile->AttachTweener(missileTweener);
 
-    const auto& b_activePhaseActorIsEnabled = missileTweener->GetPropertyBindingByName("b_activePhaseActorIsEnabled");
-    const auto& b_missileExplosionSecondPhaseActorIsEnabled
-        = missileTweener->GetPropertyBindingByName("b_missileExplosionSecondPhaseActorIsEnabled");
-    const auto& b_gravityBombSize = missileTweener->GetPropertyBindingByName("b_gravityBombSize");
-
-    BindingAttachmentBuilder::SetAttachment(a_missileCombatActivePhase, b_activePhaseActorIsEnabled, "p_isEnabled");
-    BindingAttachmentBuilder::SetAttachment(
-        a_missileExplosionSecondPhase, b_missileExplosionSecondPhaseActorIsEnabled, "p_isEnabled");
-    BindingAttachmentBuilder::SetAttachment(a_missileExplosionSecondPhase->GetRootComponent(), b_gravityBombSize, "p_scale");
+    missileTweener->BindEngineObjectProperty("b_activePhaseActorIsEnabled", a_missileCombatActivePhase, "p_isEnabled");
+    missileTweener->BindEngineObjectProperty(
+        "b_missileExplosionSecondPhaseActorIsEnabled", a_missileExplosionSecondPhase, "p_isEnabled");
+    missileTweener->BindEngineObjectProperty("b_gravityBombSize", a_missileExplosionSecondPhase->GetRootComponent(), "p_scale");
 
     a_missile->SetScene(scene);
 

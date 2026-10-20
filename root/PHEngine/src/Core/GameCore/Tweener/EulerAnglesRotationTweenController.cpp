@@ -16,26 +16,11 @@ EulerAnglesRotationTweenController::~EulerAnglesRotationTweenController()
 {
 }
 
-std::shared_ptr<EulerAnglesRotationPropertyBinding> EulerAnglesRotationTweenController::GetRotationPropertyBindingSP() const
-{
-    std::shared_ptr<EulerAnglesRotationPropertyBinding> result(nullptr);
-
-    if (auto baseSp = mPropertyBinding.lock()) {
-        result = std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(baseSp);
-        ext_assert(
-            result,
-            "EulerAnglesRotationTweenController::GetRotationPropertyBindingSP: Failed to cast to "
-            "EulerAnglesRotationPropertyBinding");
-    }
-
-    return result;
-}
-
 void EulerAnglesRotationTweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
     Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
-    if (auto rotationBinding = GetRotationPropertyBindingSP()) {
+    if (auto rotationProperty = GetEngineObjectPropertySp<glm::vec3>()) {
         auto srcRotationProperty
             = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
         auto dstRotationProperty
@@ -44,42 +29,45 @@ void EulerAnglesRotationTweenController::OnTransitionUpdate(const float deltaTim
         glm::quat srcQuat = srcRotationProperty->QuatValue;
         glm::quat dstQuat = dstRotationProperty->QuatValue;
 
-        rotationBinding->SetValue(EngineMath::QuatToEulerAngles(EngineMath::SLerpQuat(transitionParameter, srcQuat, dstQuat)));
+        rotationProperty->SetValue(EngineMath::QuatToEulerAngles(EngineMath::SLerpQuat(transitionParameter, srcQuat, dstQuat)));
     }
 }
 
-void EulerAnglesRotationTweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
+void EulerAnglesRotationTweenController::InitWithPropsInstant(
+    const std::shared_ptr<BaseStateProperty>& dstStateProperty,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    mPropertyBinding = dstStateProperty->Binding;
-    if (auto rotationBinding = GetRotationPropertyBindingSP()) {
+    Base::InitWithPropsInstant(dstStateProperty, engineObjectProperty);
+    if (auto rotationProperty = GetEngineObjectPropertySp<glm::vec3>()) {
         auto dstRotationProperty = std::static_pointer_cast<TweenStateProperty_t>(dstStateProperty);
 
-        rotationBinding->SetValue(dstRotationProperty->Value);
+        rotationProperty->SetValue(dstRotationProperty->Value);
     }
 }
 
 void EulerAnglesRotationTweenController::OnTransitionStarted(
     const std::shared_ptr<BaseStateProperty>& srcProperty,
     const std::shared_ptr<BaseStateProperty>& dstProperty,
-    const float transitionDuration)
+    const float transitionDuration,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
+    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration, engineObjectProperty);
 
-    if (auto rotationBinding = GetRotationPropertyBindingSP()) {
+    if (auto rotationProperty = GetEngineObjectPropertySp<glm::vec3>()) {
         auto srcRotationProperty
             = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
 
-        rotationBinding->SetValue(srcRotationProperty->Value);
+        rotationProperty->SetValue(srcRotationProperty->Value);
     }
 }
 
 void EulerAnglesRotationTweenController::OnTransitionFinished()
 {
-    if (auto rotationBinding = GetRotationPropertyBindingSP()) {
+    if (auto rotationProperty = GetEngineObjectPropertySp<glm::vec3>()) {
         auto dstRotationProperty
             = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
 
-        rotationBinding->SetValue(dstRotationProperty->Value);
+        rotationProperty->SetValue(dstRotationProperty->Value);
     }
 }
 

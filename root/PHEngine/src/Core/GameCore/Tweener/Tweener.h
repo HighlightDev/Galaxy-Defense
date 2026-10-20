@@ -10,6 +10,7 @@
 
 namespace EngineCore {
 class Actor;
+class EngineObject;
 
 class Tweener : public ITickable {
     static int32_t s_id;
@@ -31,7 +32,9 @@ class Tweener : public ITickable {
 
     std::optional<StateTransition> mCurrentActiveStateTransition{std::nullopt};
 
-    std::unordered_map<std::string /*name of binding property*/, std::shared_ptr<PropertyBinding>> mPropertyBindings;
+    std::unordered_map<std::string /*binding name*/, eEnginePropertyBindingType> mPropertyBindingTypes;
+
+    std::unordered_map<std::string /*binding name*/, std::weak_ptr<EngineObjectPropertyBase>> mBoundEngineObjectProperties;
 
     std::vector<std::shared_ptr<ITweenController>> CurrentActiveTransitionControllers;
 
@@ -74,9 +77,12 @@ public:
 
     const std::string& GetTweenerName() const;
 
-    void AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<PropertyBinding> binding);
+    void AddPropertyBinding(const std::string& bindingName, const eEnginePropertyBindingType bindingType);
 
-    std::shared_ptr<PropertyBinding> GetPropertyBindingByName(const std::string& name) const;
+    void BindEngineObjectProperty(
+        const std::string& bindingName,
+        const std::shared_ptr<EngineObject>& engineObject,
+        const std::string& enginePropertyName);
 
     void InitRootState();
 
@@ -89,6 +95,8 @@ public:
     void CleanUp();
 
 private:
+    std::shared_ptr<EngineObjectPropertyBase> GetBoundEngineObjectProperty(const std::string& bindingName) const;
+
     void DoTransition(const std::string& dstStateName);
 
     void DoTranstionInstantly(const std::string& dstStateName);

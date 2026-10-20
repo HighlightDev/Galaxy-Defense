@@ -403,8 +403,9 @@ void Scene::Tick(const float delta, const float playSpeed)
     }
 
     for (auto dynamicMaterial : mDynamicMaterials) {
-        if (dynamicMaterial->IsEnabled()) {
+        if (dynamicMaterial->IsEnabled() && dynamicMaterial->IsTickRequired()) {
             dynamicMaterial->Tick(delta, playSpeed);
+            dynamicMaterial->SetIsDataDirty(false);
         }
     }
 

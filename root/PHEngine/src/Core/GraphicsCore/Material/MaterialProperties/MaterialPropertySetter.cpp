@@ -4,8 +4,6 @@
 #include "BindingMaterialProperty.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/EngineObject.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicInstancedFloatMaterialProperty.h"
@@ -62,9 +60,11 @@ void MaterialPropertySetter::SetMaterialPropertyValue(
 
     // first try to find material property among related to dynamic property
     if (const auto& dynamicMaterial = TryCastToDynamicMaterial(materialInstance)) {
-        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
+        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName)) {
             SetIntegerValue(property, value);
-        else
+            // property may be an input of dynamic property graph, so it has to be recalculated
+            dynamicMaterial->SetIsDataDirty(true);
+        } else
             ext_assert(false, "MaterialPropertySetter::SetMaterialPropertyValue: property not found in dynamic material");
     } else {
         SetIntegerValue(materialInstance->GetMaterialPropertyByName(propertyName), value);
@@ -155,9 +155,11 @@ void MaterialPropertySetter::SetMaterialPropertyValue(
 
     // first try to find material property among related to dynamic property
     if (const auto& dynamicMaterial = TryCastToDynamicMaterial(materialInstance)) {
-        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
+        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName)) {
             SetFloatValue(property, value);
-        else
+            // property may be an input of dynamic property graph, so it has to be recalculated
+            dynamicMaterial->SetIsDataDirty(true);
+        } else
             ext_assert(false, "MaterialPropertySetter::SetMaterialPropertyValue: property not found in dynamic material");
     } else {
         SetFloatValue(materialInstance->GetMaterialPropertyByName(propertyName), value);
@@ -171,9 +173,11 @@ void MaterialPropertySetter::SetMaterialPropertyValue(
 
     // first try to find material property among related to dynamic property
     if (const auto& dynamicMaterial = TryCastToDynamicMaterial(materialInstance)) {
-        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
+        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName)) {
             SetIVec2Value(property, value);
-        else
+            // property may be an input of dynamic property graph, so it has to be recalculated
+            dynamicMaterial->SetIsDataDirty(true);
+        } else
             ext_assert(false, "MaterialPropertySetter::SetMaterialPropertyValue: property not found in dynamic material");
     } else {
         SetIVec2Value(materialInstance->GetMaterialPropertyByName(propertyName), value);
@@ -187,9 +191,11 @@ void MaterialPropertySetter::SetMaterialPropertyValue(
 
     // first try to find material property among related to dynamic property
     if (const auto& dynamicMaterial = TryCastToDynamicMaterial(materialInstance)) {
-        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
+        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName)) {
             SetVec2Value(property, value);
-        else
+            // property may be an input of dynamic property graph, so it has to be recalculated
+            dynamicMaterial->SetIsDataDirty(true);
+        } else
             ext_assert(false, "MaterialPropertySetter::SetMaterialPropertyValue: property not found in dynamic material");
     } else {
         SetVec2Value(materialInstance->GetMaterialPropertyByName(propertyName), value);
@@ -203,9 +209,11 @@ void MaterialPropertySetter::SetMaterialPropertyValue(
 
     // first try to find material property among related to dynamic property
     if (const auto& dynamicMaterial = TryCastToDynamicMaterial(materialInstance)) {
-        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
+        if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName)) {
             SetVec3Value(property, value);
-        else
+            // property may be an input of dynamic property graph, so it has to be recalculated
+            dynamicMaterial->SetIsDataDirty(true);
+        } else
             ext_assert(false, "MaterialPropertySetter::SetMaterialPropertyValue: property not found in dynamic material");
     } else {
         SetVec3Value(materialInstance->GetMaterialPropertyByName(propertyName), value);
@@ -252,7 +260,7 @@ void MaterialPropertySetter::SetMaterialPropertyValue(
         if (const auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(bindingName)) {
             if (IsPropertyBindingType(property)) {
                 const auto bindingProperty = std::static_pointer_cast<BindingMaterialProperty>(property);
-                BindingAttachmentBuilder::SetAttachment(gameObjectSp, bindingProperty->GetMaterialBinding(), gamePropertyName);
+                bindingProperty->BindEngineObjectProperty(gameObjectSp->GetEnginePropertyByName(gamePropertyName).lock());
             } else
                 ext_assert(false, "MaterialPropertySetter::SetMaterialPropertyValue: property is not a binding type");
         } else
@@ -279,9 +287,12 @@ void MaterialPropertySetter::SetMaterialInstancedPropertyValue(
     ext_assert(
         property,
         "MaterialPropertySetter::SetMaterialInstancedPropertyValue: property is not a DynamicInstancedFloatMaterialProperty");
-    auto floatBinding = std::make_shared<FloatPropertyBinding>(bindingName);
-    property->AddInstancedBinding(floatBinding, instanceDataProvider);
-    BindingAttachmentBuilder::SetAttachment(gameObjectSp, floatBinding, gamePropertyName);
+    const auto engineObjectProperty = gameObjectSp->GetEnginePropertyByName(gamePropertyName).lock();
+    ext_assert(
+        engineObjectProperty && eEnginePropertyType::Float == engineObjectProperty->GetPropertyType(),
+        "MaterialPropertySetter::SetMaterialInstancedPropertyValue: float engine property not found: " + gamePropertyName);
+    property->AddInstancedProperty(
+        std::static_pointer_cast<EngineObjectProperty<float>>(engineObjectProperty), instanceDataProvider);
 }
 
 } // namespace Graphics

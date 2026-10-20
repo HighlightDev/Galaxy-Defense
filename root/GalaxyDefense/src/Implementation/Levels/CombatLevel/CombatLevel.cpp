@@ -21,7 +21,6 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"

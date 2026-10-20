@@ -1,11 +1,6 @@
 #pragma once
 
-#include "Core/GameCore/EngineObjectPropertyBindings/AnimationPropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/BooleanPropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/Vec3PropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/Vec3QuadraticBezierPropertyBinding.h"
+#include "Core/GameCore/EnginePropertyType.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -19,12 +14,12 @@ using namespace EngineMath;
 
 namespace EngineCore {
 struct BaseStateProperty {
-    std::weak_ptr<PropertyBinding> Binding;
+    std::string BindingName;
 
     virtual eEnginePropertyBindingType GetStatePropertyType() const = 0;
 
-    BaseStateProperty(std::weak_ptr<PropertyBinding> propertyBinding)
-        : Binding(propertyBinding)
+    explicit BaseStateProperty(const std::string& bindingName)
+        : BindingName(bindingName)
     {
     }
 
@@ -43,8 +38,8 @@ struct StateProperty<eEnginePropertyBindingType::Animation> : public BaseStatePr
         return eEnginePropertyBindingType::Animation;
     }
 
-    StateProperty(const std::string& animationName, const std::shared_ptr<AnimationPropertyBinding>& animationPropertyBinding)
-        : BaseStateProperty(animationPropertyBinding)
+    StateProperty(const std::string& animationName, const std::string& bindingName)
+        : BaseStateProperty(bindingName)
         , AnimationName(animationName)
     {
     }
@@ -59,8 +54,8 @@ struct StateProperty<eEnginePropertyBindingType::FloatScalar> : public BaseState
         return eEnginePropertyBindingType::FloatScalar;
     }
 
-    StateProperty(const float value, const std::shared_ptr<FloatPropertyBinding>& floatPropertyBinding)
-        : BaseStateProperty(floatPropertyBinding)
+    StateProperty(const float value, const std::string& bindingName)
+        : BaseStateProperty(bindingName)
         , Value(value)
     {
     }
@@ -76,8 +71,8 @@ struct StateProperty<eEnginePropertyBindingType::EulerAnglesRotation> : public B
         return eEnginePropertyBindingType::EulerAnglesRotation;
     }
 
-    StateProperty(const glm::vec3& value, const std::shared_ptr<EulerAnglesRotationPropertyBinding>& rotationPropertyBinding)
-        : BaseStateProperty(rotationPropertyBinding)
+    StateProperty(const glm::vec3& value, const std::string& bindingName)
+        : BaseStateProperty(bindingName)
         , Value(value)
         , QuatValue()
     {
@@ -117,8 +112,8 @@ struct StateProperty<eEnginePropertyBindingType::Boolean> : public BaseStateProp
         return eEnginePropertyBindingType::Boolean;
     }
 
-    StateProperty(const bool value, const std::shared_ptr<BooleanPropertyBinding>& booleanPropertyBinding)
-        : BaseStateProperty(booleanPropertyBinding)
+    StateProperty(const bool value, const std::string& bindingName)
+        : BaseStateProperty(bindingName)
         , Value(value)
     {
     }
@@ -133,8 +128,8 @@ struct StateProperty<eEnginePropertyBindingType::Vec3> : public BaseStatePropert
         return eEnginePropertyBindingType::Vec3;
     }
 
-    StateProperty(const glm::vec3& value, const std::shared_ptr<Vec3PropertyBinding>& vec3PropertyBinding)
-        : BaseStateProperty(vec3PropertyBinding)
+    StateProperty(const glm::vec3& value, const std::string& bindingName)
+        : BaseStateProperty(bindingName)
         , Value(value)
     {
     }
@@ -153,8 +148,8 @@ struct StateProperty<eEnginePropertyBindingType::Vec3QuadraticBezier> : public B
     StateProperty(
         const glm::vec3& value,
         const glm::vec3& controlPoint,
-        const std::shared_ptr<Vec3QuadraticBezierPropertyBinding>& bezierPropertyBinding)
-        : BaseStateProperty(bezierPropertyBinding)
+        const std::string& bindingName)
+        : BaseStateProperty(bindingName)
         , Value(value)
         , ControlPoint(controlPoint)
     {

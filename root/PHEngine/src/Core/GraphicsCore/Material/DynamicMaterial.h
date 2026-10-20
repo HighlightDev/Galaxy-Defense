@@ -13,6 +13,9 @@ class DynamicMaterial : public IMaterial, public ITickable {
 
     bool mIsEnabled;
 
+    // instanced values depend on the active instance set, which changes without any property notification
+    bool mHasInstancedDynamicProperties;
+
 protected:
     std::vector<std::shared_ptr<DynamicMaterialProperty>> mDynamicProperties;
 
@@ -36,6 +39,8 @@ public:
     void SetIsEnabled(const bool bIsEnabled) override;
 
     bool IsEnabled() const override;
+
+    bool IsTickRequired() const;
 
     void SetScene(std::weak_ptr<EngineCore::Scene> scene);
 

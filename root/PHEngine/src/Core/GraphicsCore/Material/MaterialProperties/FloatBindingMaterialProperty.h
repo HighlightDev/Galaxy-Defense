@@ -1,31 +1,24 @@
 #pragma once
 
 #include "BindingMaterialProperty.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
-
-using namespace EngineCore;
 
 namespace Graphics {
 
-struct FloatBindingMaterialProperty : public BindingMaterialProperty
-
-{
-    using MaterialPropertyValueType = std::shared_ptr<FloatPropertyBinding>;
-
+struct FloatBindingMaterialProperty : public BindingMaterialProperty {
 public:
-    FloatBindingMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
-        : BindingMaterialProperty(propertyValue, propertyName)
-    {
-    }
-
-    FloatBindingMaterialProperty(const std::string& propertyName)
-        : BindingMaterialProperty(propertyName)
+    explicit FloatBindingMaterialProperty(const std::string& propertyName, const std::shared_ptr<IMaterial>& ownerMaterial)
+        : BindingMaterialProperty(propertyName, ownerMaterial)
     {
     }
 
     eMaterialPropertyType GetPropertyType() const override
     {
         return MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY;
+    }
+
+    eEnginePropertyType GetBindingEnginePropertyType() const override
+    {
+        return eEnginePropertyType::Float;
     }
 
     void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const override
@@ -39,14 +32,9 @@ public:
     {
     }
 
-    void SetValue(MaterialPropertyValueType value)
-    {
-        mPropertyBinding = value;
-    }
-
     float GetValue() const
     {
-        return std::static_pointer_cast<FloatPropertyBinding>(mPropertyBinding)->GetValue();
+        return GetEngineObjectPropertyValue<float>();
     }
 };
 } // namespace Graphics

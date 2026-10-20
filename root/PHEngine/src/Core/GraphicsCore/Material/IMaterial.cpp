@@ -9,14 +9,11 @@
 namespace Graphics {
 
 IMaterial::IMaterial(const std::string& materialName, const std::string& materialShaderName)
-    : MaterialProxyId(-1)
+    : mIsDataDirty(true)
+    , MaterialProxyId(-1)
     , MaterialName(materialName)
     , MaterialShaderName(materialShaderName)
     , MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetAbsolutePathToRes(materialShaderName))
-{
-}
-
-IMaterial::~IMaterial()
 {
 }
 
@@ -74,5 +71,15 @@ void IMaterial::SetIsEnabled(const bool bIsEnabled)
 bool IMaterial::IsEnabled() const
 {
     return true;
+}
+
+bool IMaterial::GetIsDataDirty() const
+{
+    return mIsDataDirty;
+}
+
+void IMaterial::SetIsDataDirty(const bool value)
+{
+    mIsDataDirty = value;
 }
 } // namespace Graphics

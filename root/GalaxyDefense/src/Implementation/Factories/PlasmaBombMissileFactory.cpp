@@ -25,7 +25,6 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
@@ -271,13 +270,9 @@ std::shared_ptr<MissileActor> PlasmaBombMissileFactory::CreateMissile(
 
     a_missile->AttachTweener(missileTweener);
 
-    const auto& b_plasmaActivePhaseEnabled = missileTweener->GetPropertyBindingByName("b_plasmaActivePhaseEnabled");
-    const auto& b_plasmaBurstEnabled = missileTweener->GetPropertyBindingByName("b_plasmaBurstEnabled");
-    const auto& b_plasmaSize = missileTweener->GetPropertyBindingByName("b_plasmaSize");
-
-    BindingAttachmentBuilder::SetAttachment(a_missileCombatActivePhase, b_plasmaActivePhaseEnabled, "p_isEnabled");
-    BindingAttachmentBuilder::SetAttachment(a_missileExplosionSecondPhase, b_plasmaBurstEnabled, "p_isEnabled");
-    BindingAttachmentBuilder::SetAttachment(a_missileExplosionSecondPhase->GetRootComponent(), b_plasmaSize, "p_scale");
+    missileTweener->BindEngineObjectProperty("b_plasmaActivePhaseEnabled", a_missileCombatActivePhase, "p_isEnabled");
+    missileTweener->BindEngineObjectProperty("b_plasmaBurstEnabled", a_missileExplosionSecondPhase, "p_isEnabled");
+    missileTweener->BindEngineObjectProperty("b_plasmaSize", a_missileExplosionSecondPhase->GetRootComponent(), "p_scale");
 
     a_missile->SetScene(scene);
 

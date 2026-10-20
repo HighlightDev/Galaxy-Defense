@@ -19,6 +19,7 @@ protected:
 
     std::weak_ptr<MaterialProxy> mMaterialProxyWp;
 
+    bool mIsDataDirty;
 public:
     int32_t MaterialProxyId;
 
@@ -29,7 +30,7 @@ public:
 public:
     IMaterial(const std::string& materialName, const std::string& materialShaderName);
 
-    virtual ~IMaterial();
+    virtual ~IMaterial() = default;
 
     virtual void CleanUp();
 
@@ -50,6 +51,10 @@ public:
     virtual void SetIsEnabled(const bool bIsEnabled);
 
     virtual bool IsEnabled() const;
+
+    bool GetIsDataDirty() const;
+
+    void SetIsDataDirty(const bool value);
 };
 
 } // namespace Graphics

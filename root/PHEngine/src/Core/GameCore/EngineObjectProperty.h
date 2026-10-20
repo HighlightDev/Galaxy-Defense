@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/CommonCore/ObserverConnection.h"
+#include "Core/GameCore/AnimationBlendState.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "EnginePropertyType.h"
 
@@ -10,46 +12,14 @@
 #include <memory>
 #include <string>
 #include <type_traits>
-namespace {
-template<typename T>
-struct ConvertTypeToEnginePropertyType;
-
-template<>
-struct ConvertTypeToEnginePropertyType<float> {
-    static constexpr eEnginePropertyType value = eEnginePropertyType::Float;
-};
-
-template<>
-struct ConvertTypeToEnginePropertyType<bool> {
-    static constexpr eEnginePropertyType value = eEnginePropertyType::Boolean;
-};
-
-template<>
-struct ConvertTypeToEnginePropertyType<glm::vec3> {
-    static constexpr eEnginePropertyType value = eEnginePropertyType::Vec3;
-};
-
-template<>
-struct ConvertTypeToEnginePropertyType<glm::ivec2> {
-    static constexpr eEnginePropertyType value = eEnginePropertyType::iVec2;
-};
-
-template<>
-struct ConvertTypeToEnginePropertyType<glm::vec2> {
-    static constexpr eEnginePropertyType value = eEnginePropertyType::Vec2;
-};
-
-template<>
-struct ConvertTypeToEnginePropertyType<int32_t> {
-    static constexpr eEnginePropertyType value = eEnginePropertyType::Integer;
-};
-} // namespace
 
 struct EngineObjectPropertyBase {
     std::string Key;
 
 protected:
     eEnginePropertyType mEnginePropertyType{eEnginePropertyType::Undefined};
+
+    mutable std::shared_ptr<EngineCore::ObserverConnection<void(void)>> mObserverConnection;
 
 public:
     EngineObjectPropertyBase(const std::string& key)
@@ -60,6 +30,14 @@ public:
     eEnginePropertyType GetPropertyType() const
     {
         return mEnginePropertyType;
+    }
+
+    std::weak_ptr<EngineCore::ObserverConnection<void(void)>> GetObserverConnection() const
+    {
+        if (mObserverConnection == nullptr) {
+            mObserverConnection = EngineCore::ObserverConnection<void(void)>::CreateInstance();
+        }
+        return mObserverConnection;
     }
 };
 
@@ -83,7 +61,22 @@ public:
         , Action(std::make_unique<Action_t>(action))
         , InitialValue(value)
     {
-        mEnginePropertyType = ConvertTypeToEnginePropertyType<typename std::decay<Type>::type>::value;
+        using decayed_type_t = typename std::decay<Type>::type;
+        if constexpr (std::is_same_v<decayed_type_t, bool>) {
+            mEnginePropertyType = eEnginePropertyType::Boolean;
+        } else if constexpr (std::is_same_v<decayed_type_t, float>) {
+            mEnginePropertyType = eEnginePropertyType::Float;
+        } else if constexpr (std::is_same_v<decayed_type_t, int32_t>) {
+            mEnginePropertyType = eEnginePropertyType::Integer;
+        } else if constexpr (std::is_same_v<decayed_type_t, glm::ivec2>) {
+            mEnginePropertyType = eEnginePropertyType::iVec2;
+        } else if constexpr (std::is_same_v<decayed_type_t, glm::vec2>) {
+            mEnginePropertyType = eEnginePropertyType::Vec2;
+        } else if constexpr (std::is_same_v<decayed_type_t, glm::vec3>) {
+            mEnginePropertyType = eEnginePropertyType::Vec3;
+        } else if constexpr (std::is_same_v<decayed_type_t, EngineCore::AnimationBlendState>) {
+            mEnginePropertyType = eEnginePropertyType::Animation;
+        }
     }
 
     template<typename ValueType>
@@ -93,6 +86,22 @@ public:
         , Action()
         , InitialValue(value)
     {
+        using decayed_type_t = typename std::decay<Type>::type;
+        if constexpr (std::is_same_v<decayed_type_t, bool>) {
+            mEnginePropertyType = eEnginePropertyType::Boolean;
+        } else if constexpr (std::is_same_v<decayed_type_t, float>) {
+            mEnginePropertyType = eEnginePropertyType::Float;
+        } else if constexpr (std::is_same_v<decayed_type_t, int32_t>) {
+            mEnginePropertyType = eEnginePropertyType::Integer;
+        } else if constexpr (std::is_same_v<decayed_type_t, glm::ivec2>) {
+            mEnginePropertyType = eEnginePropertyType::iVec2;
+        } else if constexpr (std::is_same_v<decayed_type_t, glm::vec2>) {
+            mEnginePropertyType = eEnginePropertyType::Vec2;
+        } else if constexpr (std::is_same_v<decayed_type_t, glm::vec3>) {
+            mEnginePropertyType = eEnginePropertyType::Vec3;
+        } else if constexpr (std::is_same_v<decayed_type_t, EngineCore::AnimationBlendState>) {
+            mEnginePropertyType = eEnginePropertyType::Animation;
+        }
     }
 
     std::shared_ptr<Type> GetValuePtr()
@@ -112,10 +121,16 @@ public:
 
     void SetValue(const Type& value, const bool triggerAction = true)
     {
-        *ValuePtr = value;
+        if (value != *ValuePtr) {
+            *ValuePtr = value;
 
-        if (triggerAction && Action) {
-            (*(Action.get()))(value);
+            if (triggerAction && Action) {
+                (*(Action.get()))(value);
+            }
+
+            if (mObserverConnection) {
+                mObserverConnection->NotifyAll();
+            }
         }
     }
 

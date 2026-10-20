@@ -33,7 +33,7 @@ std::string ThreadHelper::GetCurrentThreadNameFromRegisteredThreads() const
     if (mKnownThreads.count(thisThreadId)) {
         return mKnownThreads.at(thisThreadId);
     }
-    return "Unknown thread.";
+    return std::to_string(thisThreadId);
 }
 
 bool ThreadHelper::IsCurrentThreadEqualToProvidedByName(const std::string& providedName)

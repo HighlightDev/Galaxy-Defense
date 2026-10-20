@@ -22,7 +22,6 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"

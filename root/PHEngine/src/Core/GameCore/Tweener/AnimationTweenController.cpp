@@ -8,71 +8,71 @@ AnimationTweenController::AnimationTweenController()
 {
 }
 
-std::shared_ptr<AnimationPropertyBinding> AnimationTweenController::GetAnimationPropertyBindingSP() const
-{
-    std::shared_ptr<AnimationPropertyBinding> result(nullptr);
-
-    if (auto baseSp = mPropertyBinding.lock()) {
-        result = std::static_pointer_cast<AnimationPropertyBinding>(baseSp);
-    }
-
-    return result;
-}
-
 void AnimationTweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
     Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
-    if (auto animBinding = GetAnimationPropertyBindingSP()) {
-        animBinding->SetDstTime(animBinding->GetDstTime() + deltaTimeSec);
-        animBinding->SetIsTransitionEnabled(true);
-        animBinding->SetTransitionValue(transitionParameter);
+    if (auto animProperty = GetEngineObjectPropertySp<AnimationBlendState>()) {
+        AnimationBlendState animState = animProperty->GetValue();
+        animState.DstTime += deltaTimeSec;
+        animState.bTransitionEnabled = true;
+        animState.TransitionValue = transitionParameter;
+        animProperty->SetValue(animState);
     }
 }
 
-void AnimationTweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
+void AnimationTweenController::InitWithPropsInstant(
+    const std::shared_ptr<BaseStateProperty>& dstStateProperty,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    mPropertyBinding = dstStateProperty->Binding;
-    if (auto animBinding = GetAnimationPropertyBindingSP()) {
+    Base::InitWithPropsInstant(dstStateProperty, engineObjectProperty);
+    if (auto animProperty = GetEngineObjectPropertySp<AnimationBlendState>()) {
         auto dstAnimationProperty = std::static_pointer_cast<TweenStateProperty_t>(dstStateProperty);
 
-        animBinding->SetSrcName(dstAnimationProperty->AnimationName);
-        animBinding->SetSrcTime(0.0f);
-        animBinding->SetDstTime(0.0f);
-        animBinding->SetDstName("NoAnimation");
-        animBinding->SetIsTransitionEnabled(false);
-        animBinding->SetTransitionValue(0.0f);
+        AnimationBlendState animState;
+        animState.SrcName = dstAnimationProperty->AnimationName;
+        animState.SrcTime = 0.0f;
+        animState.DstTime = 0.0f;
+        animState.DstName = "NoAnimation";
+        animState.bTransitionEnabled = false;
+        animState.TransitionValue = 0.0f;
+        animProperty->SetValue(animState);
     }
 }
 
 void AnimationTweenController::OnTransitionStarted(
     const std::shared_ptr<BaseStateProperty>& srcProperty,
     const std::shared_ptr<BaseStateProperty>& dstProperty,
-    const float transitionDuration)
+    const float transitionDuration,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
+    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration, engineObjectProperty);
 
     auto srcAnimationProperty = std::static_pointer_cast<TweenStateProperty_t>(srcProperty);
     auto dstAnimationProperty = std::static_pointer_cast<TweenStateProperty_t>(dstProperty);
 
-    if (auto animBinding = GetAnimationPropertyBindingSP()) {
-        animBinding->SetSrcName(srcAnimationProperty->AnimationName);
-        animBinding->SetDstName(dstAnimationProperty->AnimationName);
-        animBinding->SetDstTime(0.0f);
-        animBinding->SetIsTransitionEnabled(true);
-        animBinding->SetTransitionValue(0.0f);
+    if (auto animProperty = GetEngineObjectPropertySp<AnimationBlendState>()) {
+        AnimationBlendState animState = animProperty->GetValue();
+        animState.SrcName = srcAnimationProperty->AnimationName;
+        animState.DstName = dstAnimationProperty->AnimationName;
+        animState.DstTime = 0.0f;
+        animState.bTransitionEnabled = true;
+        animState.TransitionValue = 0.0f;
+        animProperty->SetValue(animState);
     }
 }
 
 void AnimationTweenController::OnTransitionFinished()
 {
-    if (auto animBinding = GetAnimationPropertyBindingSP()) {
-        animBinding->SetSrcName(animBinding->GetDstName());
-        animBinding->SetSrcTime(animBinding->GetDstTime());
-        animBinding->SetDstTime(0.0f);
-        animBinding->SetDstName("NoAnimation");
-        animBinding->SetIsTransitionEnabled(false);
-        animBinding->SetTransitionValue(0.0f);
+    if (auto animProperty = GetEngineObjectPropertySp<AnimationBlendState>()) {
+        AnimationBlendState animState = animProperty->GetValue();
+        animState.SrcName = animState.DstName;
+        animState.SrcTime = animState.DstTime;
+        animState.DstTime = 0.0f;
+        animState.DstName = "NoAnimation";
+        animState.bTransitionEnabled = false;
+        animState.TransitionValue = 0.0f;
+        animProperty->SetValue(animState);
     }
 }
 } // namespace EngineCore

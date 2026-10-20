@@ -2,6 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/EngineObject.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Tweener/AnimationTweenController.h"
 #include "Core/GameCore/Tweener/BooleanTweenController.h"
@@ -34,6 +35,28 @@ Tweener::Tweener(
 int32_t Tweener::GetId() const
 {
     return m_id;
+}
+
+eEnginePropertyType GetExpectedEnginePropertyType(const eEnginePropertyBindingType bindingType)
+{
+    switch (bindingType) {
+    case eEnginePropertyBindingType::FloatScalar:
+        return eEnginePropertyType::Float;
+    case eEnginePropertyBindingType::Boolean:
+        return eEnginePropertyType::Boolean;
+    case eEnginePropertyBindingType::Vec3:
+    case eEnginePropertyBindingType::EulerAnglesRotation:
+    case eEnginePropertyBindingType::Vec3QuadraticBezier:
+        return eEnginePropertyType::Vec3;
+    case eEnginePropertyBindingType::iVec2:
+        return eEnginePropertyType::iVec2;
+    case eEnginePropertyBindingType::Vec2:
+        return eEnginePropertyType::Vec2;
+    case eEnginePropertyBindingType::Animation:
+        return eEnginePropertyType::Animation;
+    default:
+        return eEnginePropertyType::Undefined;
+    }
 }
 
 std::shared_ptr<ITweenController> GetPropertyTweenerController(const eEnginePropertyBindingType propertyType)
@@ -70,7 +93,7 @@ void Tweener::InitRootState()
         std::shared_ptr<BaseStateProperty> dstProperty = dstNameAndPropertyPair.second;
 
         const auto propertyController = GetPropertyTweenerController(dstProperty->GetStatePropertyType());
-        propertyController->InitWithPropsInstant(dstProperty);
+        propertyController->InitWithPropsInstant(dstProperty, GetBoundEngineObjectProperty(dstProperty->BindingName));
     }
 
     SetTransitionValuesFinished(mStateNodeInitRoot);
@@ -102,7 +125,7 @@ void Tweener::DoTranstionInstantly(const std::string& dstStateName)
             const std::shared_ptr<BaseStateProperty>& dstProperty = dstNameAndPropertyPair.second;
 
             const auto propertyController = GetPropertyTweenerController(dstProperty->GetStatePropertyType());
-            propertyController->InitWithPropsInstant(dstProperty);
+            propertyController->InitWithPropsInstant(dstProperty, GetBoundEngineObjectProperty(dstProperty->BindingName));
         }
 
         SetTransitionValuesFinished(dstStateSp);
@@ -148,7 +171,8 @@ void Tweener::DoTransition(const std::string& dstStateName)
 
             const auto propertyController = GetPropertyTweenerController(dstProperty->GetStatePropertyType());
             CurrentActiveTransitionControllers.emplace_back(propertyController);
-            propertyController->OnTransitionStarted(srcProperty, dstProperty, mTransitionDuration);
+            propertyController->OnTransitionStarted(
+                srcProperty, dstProperty, mTransitionDuration, GetBoundEngineObjectProperty(dstProperty->BindingName));
         }
     }
 }
@@ -233,21 +257,46 @@ void Tweener::CleanUp()
 {
     LogInfo("Tweener::CleanUp: name: ", mTweenerName);
     mMyAllStates.clear();
-    mPropertyBindings.clear();
+    mPropertyBindingTypes.clear();
+    mBoundEngineObjectProperties.clear();
     CurrentActiveTransitionControllers.clear();
     mStateChangedObservers.clear();
 }
 
-std::shared_ptr<PropertyBinding> Tweener::GetPropertyBindingByName(const std::string& name) const
+void Tweener::AddPropertyBinding(const std::string& bindingName, const eEnginePropertyBindingType bindingType)
 {
-    ext_assert(mPropertyBindings.count(name), "GetPropertyBindingByName: Property binding not found: " + name);
-    return mPropertyBindings.at(name);
+    ext_assert(
+        bindingType != eEnginePropertyBindingType::Undefined, "AddPropertyBinding: binding type is undefined: " + bindingName);
+    mPropertyBindingTypes[bindingName] = bindingType;
 }
 
-void Tweener::AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<PropertyBinding> binding)
+void Tweener::BindEngineObjectProperty(
+    const std::string& bindingName, const std::shared_ptr<EngineObject>& engineObject, const std::string& enginePropertyName)
 {
-    ext_assert(binding, "AddPropertyBinding: binding is null: " + propBindingName);
-    mPropertyBindings[propBindingName] = binding;
+    ext_assert(mPropertyBindingTypes.count(bindingName), "BindEngineObjectProperty: Property binding not found: " + bindingName);
+    ext_assert(engineObject, "BindEngineObjectProperty: engine object is null, binding: " + bindingName);
+
+    const auto engineProperty = engineObject->GetEnginePropertyByName(enginePropertyName).lock();
+    ext_assert(
+        engineProperty,
+        "BindEngineObjectProperty: property not found: " + enginePropertyName + ", engine object: "
+            + engineObject->GetEngineObjectName());
+    if (!engineProperty) {
+        return;
+    }
+
+    ext_assert(
+        GetExpectedEnginePropertyType(mPropertyBindingTypes.at(bindingName)) == engineProperty->GetPropertyType(),
+        "BindEngineObjectProperty: property type mismatch, binding: " + bindingName + ", property: " + enginePropertyName);
+
+    mBoundEngineObjectProperties[bindingName] = engineProperty;
+}
+
+std::shared_ptr<EngineObjectPropertyBase> Tweener::GetBoundEngineObjectProperty(const std::string& bindingName) const
+{
+    // binding may be not bound yet (e.g. root state is initialized before attachment), controllers skip null property
+    const auto foundIt = mBoundEngineObjectProperties.find(bindingName);
+    return foundIt != mBoundEngineObjectProperties.cend() ? foundIt->second.lock() : nullptr;
 }
 
 void Tweener::Tick(const float deltaTimeSec, const float playSpeed)

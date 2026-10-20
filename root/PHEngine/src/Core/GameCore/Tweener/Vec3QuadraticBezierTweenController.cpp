@@ -16,27 +16,11 @@ Vec3QuadraticBezierTweenController::~Vec3QuadraticBezierTweenController()
 {
 }
 
-std::shared_ptr<Vec3QuadraticBezierPropertyBinding>
-Vec3QuadraticBezierTweenController::GetVec3QuadraticBezierPropertyBindingSP() const
-{
-    std::shared_ptr<Vec3QuadraticBezierPropertyBinding> result(nullptr);
-
-    if (auto baseSp = mPropertyBinding.lock()) {
-        result = std::static_pointer_cast<Vec3QuadraticBezierPropertyBinding>(baseSp);
-        ext_assert(
-            result,
-            "Vec3QuadraticBezierTweenController::GetVec3QuadraticBezierPropertyBindingSP: Failed to cast to "
-            "Vec3QuadraticBezierPropertyBinding");
-    }
-
-    return result;
-}
-
 void Vec3QuadraticBezierTweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
     Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
-    if (auto bezierBinding = GetVec3QuadraticBezierPropertyBindingSP()) {
+    if (auto vec3Property = GetEngineObjectPropertySp<glm::vec3>()) {
         auto srcBezierProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
         auto dstBezierProperty
             = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
@@ -47,42 +31,44 @@ void Vec3QuadraticBezierTweenController::OnTransitionUpdate(const float deltaTim
         const glm::vec3 dstControlPoint = dstBezierProperty->ControlPoint;
         const glm::vec3 finalControlPoint
             = (srcControlPoint + dstControlPoint) * 0.5f; // simple way to calculate control point for bezier curve
-        bezierBinding->SetValue(
-            EngineMath::QuadraticBezier(srcValue, finalControlPoint, dstValue, transitionParameter), finalControlPoint);
+        vec3Property->SetValue(EngineMath::QuadraticBezier(srcValue, finalControlPoint, dstValue, transitionParameter));
     }
 }
 
-void Vec3QuadraticBezierTweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
+void Vec3QuadraticBezierTweenController::InitWithPropsInstant(
+    const std::shared_ptr<BaseStateProperty>& dstStateProperty,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    mPropertyBinding = dstStateProperty->Binding;
-    if (auto bezierBinding = GetVec3QuadraticBezierPropertyBindingSP()) {
+    Base::InitWithPropsInstant(dstStateProperty, engineObjectProperty);
+    if (auto vec3Property = GetEngineObjectPropertySp<glm::vec3>()) {
         auto dstBezierProperty = std::static_pointer_cast<TweenStateProperty_t>(dstStateProperty);
 
-        bezierBinding->SetValue(dstBezierProperty->Value, dstBezierProperty->ControlPoint);
+        vec3Property->SetValue(dstBezierProperty->Value);
     }
 }
 
 void Vec3QuadraticBezierTweenController::OnTransitionStarted(
     const std::shared_ptr<BaseStateProperty>& srcProperty,
     const std::shared_ptr<BaseStateProperty>& dstProperty,
-    const float transitionDuration)
+    const float transitionDuration,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
+    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration, engineObjectProperty);
 
-    if (auto bezierBinding = GetVec3QuadraticBezierPropertyBindingSP()) {
+    if (auto vec3Property = GetEngineObjectPropertySp<glm::vec3>()) {
         auto srcBezierProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
 
-        bezierBinding->SetValue(srcBezierProperty->Value, srcBezierProperty->ControlPoint);
+        vec3Property->SetValue(srcBezierProperty->Value);
     }
 }
 
 void Vec3QuadraticBezierTweenController::OnTransitionFinished()
 {
-    if (auto bezierBinding = GetVec3QuadraticBezierPropertyBindingSP()) {
+    if (auto vec3Property = GetEngineObjectPropertySp<glm::vec3>()) {
         auto dstBezierProperty
             = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
 
-        bezierBinding->SetValue(dstBezierProperty->Value, dstBezierProperty->ControlPoint);
+        vec3Property->SetValue(dstBezierProperty->Value);
     }
 }
 

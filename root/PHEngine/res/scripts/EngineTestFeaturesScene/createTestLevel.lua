@@ -425,7 +425,7 @@ function CreateTestLevel(host)
     --                        Json.encode({cameraName = "MainCamera"}))
 
     -- local skeletAnimationTweener = _CreateTweener(host, a_skelet, "playerAnimation.tween")
-    -- _SetTweenerBinding(host, a_skelet, skeletAnimationTweener, "SkeletMeshComponent", "animationBinding", "")
+    -- _SetTweenerBinding(host, a_skelet, skeletAnimationTweener, "SkeletMeshComponent", "animationBinding", "AnimationState")
 
     -- -- ****************************WATER***************************** --
     local a_water = _CreateActor(host, "Actor", "WaterActor", 20, 2, 0, 0, 0, 0, 1, 1, 1, "")

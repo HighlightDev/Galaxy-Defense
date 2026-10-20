@@ -1,11 +1,6 @@
 #include "TweenerParser.h"
 
 #include "Core/CommonCore/XMLParserHelper.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/BooleanPropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/Vec3PropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/Vec3QuadraticBezierPropertyBinding.h"
 #include "Core/IoCore/FileFacade.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
@@ -210,27 +205,24 @@ std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string
     return BuildTweener(tweenerName, tweenerInnerName);
 }
 
-std::shared_ptr<PropertyBinding> CreatePropertyBinding(const TweenerParser::TweenerParser_Binding& binding)
+eEnginePropertyBindingType ParseBindingType(const std::string& bindingType)
 {
-    std::shared_ptr<PropertyBinding> result;
-
-    if ("animation" == binding.Type) {
-        result = std::make_shared<AnimationPropertyBinding>(binding.BindingName);
-    } else if ("scalar_float" == binding.Type) {
-        result = std::make_shared<FloatPropertyBinding>(binding.BindingName);
-    } else if ("euler_angles_rotation" == binding.Type) {
-        result = std::make_shared<EulerAnglesRotationPropertyBinding>(binding.BindingName);
-    } else if ("boolean" == binding.Type) {
-        result = std::make_shared<BooleanPropertyBinding>(binding.BindingName);
-    } else if ("vec3" == binding.Type) {
-        result = std::make_shared<Vec3PropertyBinding>(binding.BindingName);
-    } else if ("vec3_quadratic_bezier" == binding.Type) {
-        result = std::make_shared<Vec3QuadraticBezierPropertyBinding>(binding.BindingName);
-    } else {
-        ext_assert(false, "CreatePropertyBinding: Unsupported binding type: " + binding.Type);
+    if ("animation" == bindingType) {
+        return eEnginePropertyBindingType::Animation;
+    } else if ("scalar_float" == bindingType) {
+        return eEnginePropertyBindingType::FloatScalar;
+    } else if ("euler_angles_rotation" == bindingType) {
+        return eEnginePropertyBindingType::EulerAnglesRotation;
+    } else if ("boolean" == bindingType) {
+        return eEnginePropertyBindingType::Boolean;
+    } else if ("vec3" == bindingType) {
+        return eEnginePropertyBindingType::Vec3;
+    } else if ("vec3_quadratic_bezier" == bindingType) {
+        return eEnginePropertyBindingType::Vec3QuadraticBezier;
     }
 
-    return result;
+    ext_assert(false, "ParseBindingType: Unsupported binding type: " + bindingType);
+    return eEnginePropertyBindingType::Undefined;
 }
 
 glm::vec3 ExtractVec3FromStrings(const std::vector<std::string>& valuesStr)
@@ -264,41 +256,44 @@ glm::vec3 ExtractVec3FromStrings(const std::vector<std::string>& valuesStr)
 
 std::unique_ptr<BaseStateProperty> CreateProperty(
     const TweenerParser::TweenerParser_Property& property,
-    const std::unordered_map<std::string, std::shared_ptr<PropertyBinding>>& bindings)
+    const std::unordered_map<std::string, eEnginePropertyBindingType>& bindings)
 {
     std::unique_ptr<BaseStateProperty> result;
 
     ext_assert(bindings.count(property.BindingName), "CreateProperty: Binding not found: " + property.BindingName);
+    ext_assert(
+        bindings.at(property.BindingName) == ParseBindingType(property.Type),
+        "CreateProperty: property type doesn't match binding type: " + property.BindingName);
 
     if ("animation" == property.Type) {
         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Animation>>(
-            property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
+            property.Value, property.BindingName);
     } else if ("scalar_float" == property.Type) {
         const float value = std::stof(property.Value);
         result = std::make_unique<StateProperty<eEnginePropertyBindingType::FloatScalar>>(
-            value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
+            value, property.BindingName);
     } else if ("euler_angles_rotation" == property.Type) {
         const auto& values = Split(property.Value, ';');
         const glm::vec3 eulerAngles = ExtractVec3FromStrings(values);
         result = std::make_unique<StateProperty<eEnginePropertyBindingType::EulerAnglesRotation>>(
-            eulerAngles, std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindings.at(property.BindingName)));
+            eulerAngles, property.BindingName);
     } else if ("boolean" == property.Type) {
         const std::string& value = ToLower(property.Value);
         const bool booleanValue = "true" == value;
         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Boolean>>(
-            booleanValue, std::static_pointer_cast<BooleanPropertyBinding>(bindings.at(property.BindingName)));
+            booleanValue, property.BindingName);
     } else if ("vec3" == property.Type) {
         const auto& values = Split(property.Value, ';');
         const glm::vec3 vec3Value = ExtractVec3FromStrings(values);
         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Vec3>>(
-            vec3Value, std::static_pointer_cast<Vec3PropertyBinding>(bindings.at(property.BindingName)));
+            vec3Value, property.BindingName);
     } else if ("vec3_quadratic_bezier" == property.Type) {
         const auto& values = Split(property.Value, ';');
         const glm::vec3 vec3Value = ExtractVec3FromStrings(values);
         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Vec3QuadraticBezier>>(
             vec3Value,
             glm::vec3(0.0f),
-            std::static_pointer_cast<Vec3QuadraticBezierPropertyBinding>(bindings.at(property.BindingName)));
+            property.BindingName);
     } else {
         ext_assert(false, "CreateProperty: Unsupported property type: " + property.Type);
     }
@@ -310,7 +305,7 @@ std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string& relPathT
 {
     std::unordered_map<std::string, std::shared_ptr<State>> states;
     std::vector<std::shared_ptr<State>> allStates;
-    std::unordered_map<std::string, std::shared_ptr<PropertyBinding>> bindings;
+    std::unordered_map<std::string, eEnginePropertyBindingType> bindings;
 
     for (const auto& item : mStates) {
         states[item.Name] = std::make_shared<State>(item.Name);
@@ -326,7 +321,7 @@ std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string& relPathT
     }
 
     for (const auto& item : mBindings) {
-        bindings[item.BindingName] = CreatePropertyBinding(item);
+        bindings[item.BindingName] = ParseBindingType(item.Type);
         tweener->AddPropertyBinding(item.BindingName, bindings.at(item.BindingName));
     }
 

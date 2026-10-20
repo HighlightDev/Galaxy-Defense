@@ -12,9 +12,10 @@ ITweenController::ITweenController()
 void ITweenController::OnTransitionStarted(
     const std::shared_ptr<BaseStateProperty>& srcStateProperty,
     const std::shared_ptr<BaseStateProperty>& dstStateProperty,
-    const float transitionDuration)
+    const float transitionDuration,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    mPropertyBinding = srcStateProperty->Binding;
+    mEngineObjectPropertyWp = engineObjectProperty;
     TranstionProperties[(int)StateType::SourceState] = srcStateProperty;
     TranstionProperties[(int)StateType::DestinationState] = dstStateProperty;
 }
@@ -30,7 +31,10 @@ eEnginePropertyBindingType ITweenController::GetControllerPropertyType() const
     return srcProp->GetStatePropertyType();
 }
 
-void ITweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
+void ITweenController::InitWithPropsInstant(
+    const std::shared_ptr<BaseStateProperty>& dstStateProperty,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
+    mEngineObjectPropertyWp = engineObjectProperty;
 }
 } // namespace EngineCore

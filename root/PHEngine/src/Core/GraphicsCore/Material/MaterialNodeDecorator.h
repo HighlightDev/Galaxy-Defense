@@ -4,7 +4,9 @@
 
 #include <glm/vec2.hpp>
 
+#include <initializer_list>
 #include <memory>
+#include <string_view>
 
 using namespace Common;
 
@@ -43,18 +45,16 @@ public:
     std::shared_ptr<MaterialNode> CreateValueNode(const std::string& propertyName, const std::string& propertyValue) const;
 
     XMLParserHelper::iterator_t GetTagWithName(
-        const std::string& operationName,
+        std::string_view operationName,
         XMLParserHelper::iterator_t& propertiesBeginIt,
         const XMLParserHelper::iterator_t& propertiesEndIt);
 
-    template<typename... NamesT>
     XMLParserHelper::iterator_t GetOneOfTagWithNames(
         XMLParserHelper::iterator_t& propertiesBeginIt,
         const XMLParserHelper::iterator_t& propertiesEndIt,
-        NamesT&&... operationNames)
+        std::initializer_list<std::string_view> operationNames)
     {
-        std::vector<std::string> operationTags = {std::forward<NamesT>(operationNames)...};
-        for (auto tag : operationTags) {
+        for (auto tag : operationNames) {
             auto it = GetTagWithName(tag, propertiesBeginIt, propertiesEndIt);
             if (it != propertiesEndIt) {
                 return it;

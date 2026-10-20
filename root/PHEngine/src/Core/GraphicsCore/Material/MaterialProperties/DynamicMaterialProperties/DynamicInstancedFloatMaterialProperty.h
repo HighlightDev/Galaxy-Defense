@@ -1,7 +1,6 @@
 #pragma once
 #include "Core/CommonCore/Assertion.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/PropertyBinding.h"
+#include "Core/GameCore/EngineObjectProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/InstancedFloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialProperty.h"
 #include "Core/ResourceManagerCore/MaterialInstanceDataProviders/MaterialInstanceDataProvider.h"
@@ -24,7 +23,8 @@ namespace Graphics {
 
 struct DynamicInstancedFloatMaterialProperty : public DynamicMaterialProperty {
 private:
-    std::vector<std::pair<std::shared_ptr<PropertyBinding>, std::weak_ptr<MaterialInstanceDataProvider>>> mInstancedBindings;
+    std::vector<std::pair<std::weak_ptr<EngineObjectProperty<float>>, std::weak_ptr<MaterialInstanceDataProvider>>>
+        mInstancedProperties;
 
     bool bValueIncremental{false};
 
@@ -55,11 +55,11 @@ public:
         staticInstancedFloatMaterialProperty->SetValue(GetValue());
     }
 
-    void AddInstancedBinding(
-        const std::shared_ptr<PropertyBinding>& propertyBinding,
+    void AddInstancedProperty(
+        const std::shared_ptr<EngineObjectProperty<float>>& engineObjectProperty,
         const std::shared_ptr<MaterialInstanceDataProvider>& instanceDataProvider)
     {
-        mInstancedBindings.emplace_back(std::make_pair(propertyBinding, instanceDataProvider));
+        mInstancedProperties.emplace_back(engineObjectProperty, instanceDataProvider);
     }
 
     std::vector<float> GetValue()
@@ -71,7 +71,7 @@ public:
         // never-shrinking vector by a compacted counter) guarantees no stale slot survives a change in the active set
         // and that the value at slot k always belongs to the instance rendered at gl_InstanceID == k.
         int32_t activeInstanceCount = 0;
-        for (const auto& [bindingSp, instanceDataWp] : mInstancedBindings) {
+        for (const auto& [propertyWp, instanceDataWp] : mInstancedProperties) {
             const auto& instanceDataSp = instanceDataWp.lock();
             if (instanceDataSp && instanceDataSp->IsInstanceActive() && instanceDataSp->GetRenderInstanceId() >= 0) {
                 activeInstanceCount = std::max(activeInstanceCount, instanceDataSp->GetRenderInstanceId() + 1);
@@ -80,7 +80,7 @@ public:
 
         mCachedValues.assign(static_cast<size_t>(activeInstanceCount), 0.0f);
 
-        for (const auto& [bindingSp, instanceDataWp] : mInstancedBindings) {
+        for (const auto& [propertyWp, instanceDataWp] : mInstancedProperties) {
             const auto& instanceDataSp = instanceDataWp.lock();
             if (!instanceDataSp || !instanceDataSp->IsInstanceActive()) {
                 continue;
@@ -89,11 +89,12 @@ public:
             if (renderInstanceId < 0 || renderInstanceId >= activeInstanceCount) {
                 continue;
             }
-            const auto& floatBinding = std::static_pointer_cast<FloatPropertyBinding>(bindingSp);
+            const auto& propertySp = propertyWp.lock();
+            const float propertyValue = propertySp ? propertySp->GetValue() : 0.0f;
             if (bValueIncremental) {
-                mCachedValues[renderInstanceId] += floatBinding->GetValue();
+                mCachedValues[renderInstanceId] += propertyValue;
             } else {
-                mCachedValues[renderInstanceId] = floatBinding->GetValue();
+                mCachedValues[renderInstanceId] = propertyValue;
             }
         }
         return mCachedValues;

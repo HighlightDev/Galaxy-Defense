@@ -18,6 +18,7 @@ namespace Graphics {
 DynamicMaterial::DynamicMaterial(const std::string& materialName, const std::string& materialShaderName)
     : IMaterial(materialName, materialShaderName)
     , mIsEnabled(true)
+    , mHasInstancedDynamicProperties(false)
 {
 }
 
@@ -54,6 +55,11 @@ void DynamicMaterial::SetIsEnabled(const bool bIsEnabled)
 bool DynamicMaterial::IsEnabled() const
 {
     return mIsEnabled;
+}
+
+bool DynamicMaterial::IsTickRequired() const
+{
+    return GetIsDataDirty() || mHasInstancedDynamicProperties;
 }
 
 void DynamicMaterial::SyncDataWithRenderThread()
@@ -108,6 +114,7 @@ void DynamicMaterial::PushDynamicProperty(const std::shared_ptr<DynamicMaterialP
     } else if (
         dynamicProperty->GetPropertyType() == DynamicMaterialProperty::eDynamicMaterialPropertyType::InstancedFloatProperty) {
         staticProperty = std::make_shared<InstancedFloatMaterialProperty>(propertyName);
+        mHasInstancedDynamicProperties = true;
     }
 
     ext_assert(staticProperty, "DynamicMaterial::PushDynamicProperty: Unsupported dynamic property type: " + propertyName);
@@ -115,6 +122,7 @@ void DynamicMaterial::PushDynamicProperty(const std::shared_ptr<DynamicMaterialP
 
     mDynamicProperties.emplace_back(dynamicProperty);
     mDynamicStaticProperties.emplace_back(std::move(staticProperty));
+    SetIsDataDirty(true);
 }
 
 std::shared_ptr<MaterialProperty> DynamicMaterial::TryGetAnyMaterialPropertyByName(const std::string& propertyName) const

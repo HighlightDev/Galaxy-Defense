@@ -18,7 +18,6 @@
 #include "Core/GameCore/Particles/Modules/Velocity/RadialVelocityModule.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Tweener/State.h"
 #include "Core/GameCore/Tweener/StateTransition.h"
 #include "Core/GameCore/Tweener/Tweener.h"
@@ -136,9 +135,7 @@ std::shared_ptr<LootActor> LootFactory::CreateLoot(
     // at each SpawnLoot() call with the actual dynamic spawn position.
     {
         using BezierProp_t = StateProperty<eEnginePropertyBindingType::Vec3QuadraticBezier>;
-        using BezierBinding_t = Vec3QuadraticBezierPropertyBinding;
         using RotProp_t = StateProperty<eEnginePropertyBindingType::EulerAnglesRotation>;
-        using RotBinding_t = EulerAnglesRotationPropertyBinding;
 
         auto stateIdle = std::make_shared<State>("s_Idle");
         auto stateCollected = std::make_shared<State>("s_Collected");
@@ -149,13 +146,13 @@ std::shared_ptr<LootActor> LootFactory::CreateLoot(
         StateTransition collectTransition(stateIdle, stateCollected, Game::Constants::c_lootTweenTimeSec);
         stateIdle->AddStateTransition(collectTransition);
 
-        const auto b_translation = std::make_shared<BezierBinding_t>("b_lootTranslation");
-        lootTweener->AddPropertyBinding("b_lootTranslation", b_translation);
-        BindingAttachmentBuilder::SetAttachment(rootComponent, b_translation, "p_translation");
+        const std::string b_translation = "b_lootTranslation";
+        lootTweener->AddPropertyBinding(b_translation, eEnginePropertyBindingType::Vec3QuadraticBezier);
+        lootTweener->BindEngineObjectProperty(b_translation, rootComponent, "p_translation");
 
-        const auto b_rotator = std::make_shared<RotBinding_t>("b_lootRotator");
-        lootTweener->AddPropertyBinding("b_lootRotator", b_rotator);
-        BindingAttachmentBuilder::SetAttachment(rootComponent, b_rotator, "p_rotator");
+        const std::string b_rotator = "b_lootRotator";
+        lootTweener->AddPropertyBinding(b_rotator, eEnginePropertyBindingType::EulerAnglesRotation);
+        lootTweener->BindEngineObjectProperty(b_rotator, rootComponent, "p_rotator");
 
         const glm::vec3 dummyPos(0.0f);
         const auto idleProp = std::make_shared<BezierProp_t>(dummyPos, dummyPos, b_translation);

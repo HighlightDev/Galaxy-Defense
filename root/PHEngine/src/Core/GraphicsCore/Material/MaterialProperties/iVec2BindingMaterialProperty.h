@@ -1,25 +1,15 @@
 #pragma once
 
 #include "BindingMaterialProperty.h"
-#include "Core/GameCore/EngineObjectPropertyBindings/iVec2PropertyBinding.h"
 
-using namespace EngineCore;
+#include <glm/vec2.hpp>
 
 namespace Graphics {
 
-struct iVec2BindingMaterialProperty : public BindingMaterialProperty
-
-{
-    using MaterialPropertyValueType = std::shared_ptr<iVec2PropertyBinding>;
-
+struct iVec2BindingMaterialProperty : public BindingMaterialProperty {
 public:
-    iVec2BindingMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
-        : BindingMaterialProperty(propertyValue, propertyName)
-    {
-    }
-
-    iVec2BindingMaterialProperty(const std::string& propertyName)
-        : BindingMaterialProperty(propertyName)
+    explicit iVec2BindingMaterialProperty(const std::string& propertyName, const std::shared_ptr<IMaterial>& ownerMaterial)
+        : BindingMaterialProperty(propertyName, ownerMaterial)
     {
     }
 
@@ -28,8 +18,9 @@ public:
         return MaterialProperty::eMaterialPropertyType::IVEC2_BINDING_PROPERTY;
     }
 
-    void SetValueToUniformArray(const UniformArray& uniformArray) const override
+    eEnginePropertyType GetBindingEnginePropertyType() const override
     {
+        return eEnginePropertyType::iVec2;
     }
 
     void SetValueToUniform(ActiveBindedState& activeBindedState, Uniform uniform, const int32_t propertyIndex) const override
@@ -39,14 +30,13 @@ public:
             "iVec2BindingMaterialProperty::SetValueToUniform: this code should not be called, use proxy on render thread part");
     } // this code should not be called, use proxy on render thread part
 
-    void SetValue(MaterialPropertyValueType value)
+    void SetValueToUniformArray(const UniformArray& uniformArray) const override
     {
-        mPropertyBinding = value;
     }
 
     glm::ivec2 GetValue() const
     {
-        return std::static_pointer_cast<iVec2PropertyBinding>(mPropertyBinding)->GetValue();
+        return GetEngineObjectPropertyValue<glm::ivec2>();
     }
 };
 } // namespace Graphics

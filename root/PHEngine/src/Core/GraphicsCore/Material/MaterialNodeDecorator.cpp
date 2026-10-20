@@ -73,7 +73,7 @@ std::shared_ptr<MaterialNode> MaterialNodeDecorator::CreateMaterialOperationNode
 }
 
 XMLParserHelper::iterator_t MaterialNodeDecorator::GetTagWithName(
-    const std::string& operationName,
+    std::string_view operationName,
     XMLParserHelper::iterator_t& propertiesBeginIt,
     const XMLParserHelper::iterator_t& propertiesEndIt)
 {

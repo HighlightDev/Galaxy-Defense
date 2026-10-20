@@ -31,7 +31,6 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
@@ -229,14 +228,12 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
 
     auto tweenerParser = std::make_unique<TweenerParser>();
     const auto movementTweener = tweenerParser->ParseTweenerDescriptor("spaceshipMove.tween");
-    const auto& rotator_binding = movementTweener->GetPropertyBindingByName("b_rotator");
-    BindingAttachmentBuilder::SetAttachment(rootComponent, rotator_binding, "p_rotator");
+    movementTweener->BindEngineObjectProperty("b_rotator", rootComponent, "p_rotator");
     a_enemySpaceship->AttachTweener(movementTweener);
 
     tweenerParser = std::make_unique<TweenerParser>();
     const auto lifecycleTweener = tweenerParser->ParseTweenerDescriptor("weakSpaceshipLifecycle.tween");
-    const auto& spaceship_enabled_binding = lifecycleTweener->GetPropertyBindingByName("b_isSpaceshipEnabled");
-    BindingAttachmentBuilder::SetAttachment(a_enemySpaceship, spaceship_enabled_binding, "p_isEnabled");
+    lifecycleTweener->BindEngineObjectProperty("b_isSpaceshipEnabled", a_enemySpaceship, "p_isEnabled");
     a_enemySpaceship->AttachTweener(lifecycleTweener);
 
     a_enemySpaceship->SetScene(scene);

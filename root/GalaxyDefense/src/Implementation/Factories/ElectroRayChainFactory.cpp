@@ -7,7 +7,6 @@
 #include "Core/GameCore/Components/PrimitiveComponents/DynamicBeamComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
@@ -70,8 +69,7 @@ std::shared_ptr<MissileActor> ElectroRayChainFactory::CreateMissile(
     TweenerParser tweenerParser;
     const auto& rayChainTweener = tweenerParser.ParseTweenerDescriptor("electroRayChain.tween");
     a_electroRayChain->AttachTweener(rayChainTweener);
-    const auto& b_rayOpacity = rayChainTweener->GetPropertyBindingByName("b_opacity");
-    BindingAttachmentBuilder::SetAttachment(a_electroRayChain, b_rayOpacity, "p_opacity");
+    rayChainTweener->BindEngineObjectProperty("b_opacity", a_electroRayChain, "p_opacity");
 
     a_electroRayChain->SetLineComponent(c_mesh);
     a_electroRayChain->AddComponent(c_mesh);

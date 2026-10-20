@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace EngineUtility {
@@ -18,7 +19,11 @@ size_t LastIndexOf(const std::string& source, const std::string& lookfor, size_t
 
 std::string TrimStart(const std::string& source);
 
+std::string_view TrimStartView(std::string_view sourceStr);
+
 std::string TrimEnd(const std::string& source);
+
+std::string_view TrimEndView(std::string_view sourceStr);
 
 std::string Trim(const std::string& source);
 

@@ -13,23 +13,11 @@ Vec3TweenController::~Vec3TweenController()
 {
 }
 
-std::shared_ptr<Vec3PropertyBinding> Vec3TweenController::GetVec3PropertyBindingSP() const
-{
-    std::shared_ptr<Vec3PropertyBinding> result(nullptr);
-
-    if (auto baseSp = mPropertyBinding.lock()) {
-        result = std::static_pointer_cast<Vec3PropertyBinding>(baseSp);
-        ext_assert(result, "Vec3TweenController::GetVec3PropertyBindingSP: Failed to cast to Vec3PropertyBinding");
-    }
-
-    return result;
-}
-
 void Vec3TweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
     Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
-    if (auto vec3Binding = GetVec3PropertyBindingSP()) {
+    if (auto vec3Property = GetEngineObjectPropertySp<glm::vec3>()) {
         auto srcVec3Property = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
         auto dstVec3Property
             = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
@@ -37,41 +25,44 @@ void Vec3TweenController::OnTransitionUpdate(const float deltaTimeSec, const flo
         const auto& srcVec = srcVec3Property->Value;
         const auto& dstVec = dstVec3Property->Value;
 
-        vec3Binding->SetValue(EngineMath::LerpVec3(transitionParameter, 0.0f, 1.0f, srcVec, dstVec));
+        vec3Property->SetValue(EngineMath::LerpVec3(transitionParameter, 0.0f, 1.0f, srcVec, dstVec));
     }
 }
 
-void Vec3TweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
+void Vec3TweenController::InitWithPropsInstant(
+    const std::shared_ptr<BaseStateProperty>& dstStateProperty,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    mPropertyBinding = dstStateProperty->Binding;
-    if (auto vec3Binding = GetVec3PropertyBindingSP()) {
+    Base::InitWithPropsInstant(dstStateProperty, engineObjectProperty);
+    if (auto vec3Property = GetEngineObjectPropertySp<glm::vec3>()) {
         auto dstVec3Property = std::static_pointer_cast<TweenStateProperty_t>(dstStateProperty);
 
-        vec3Binding->SetValue(dstVec3Property->Value);
+        vec3Property->SetValue(dstVec3Property->Value);
     }
 }
 
 void Vec3TweenController::OnTransitionStarted(
     const std::shared_ptr<BaseStateProperty>& srcProperty,
     const std::shared_ptr<BaseStateProperty>& dstProperty,
-    const float transitionDuration)
+    const float transitionDuration,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
+    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration, engineObjectProperty);
 
-    if (auto vec3Binding = GetVec3PropertyBindingSP()) {
+    if (auto vec3Property = GetEngineObjectPropertySp<glm::vec3>()) {
         auto srcVec3Property = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
 
-        vec3Binding->SetValue(srcVec3Property->Value);
+        vec3Property->SetValue(srcVec3Property->Value);
     }
 }
 
 void Vec3TweenController::OnTransitionFinished()
 {
-    if (auto vec3Binding = GetVec3PropertyBindingSP()) {
+    if (auto vec3Property = GetEngineObjectPropertySp<glm::vec3>()) {
         auto dstVec3Property
             = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
 
-        vec3Binding->SetValue(dstVec3Property->Value);
+        vec3Property->SetValue(dstVec3Property->Value);
     }
 }
 

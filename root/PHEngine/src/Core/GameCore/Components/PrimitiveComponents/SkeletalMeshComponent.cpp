@@ -30,20 +30,10 @@ SkeletalMeshComponent::SkeletalMeshComponent(
     , mUpdateDataResetTimeCounter(0.0f)
     , mUpdateDataResetTime(0.1f)
     , mTimeIncreaseMultiply(1.0f)
-    , SrcAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "SrcAnimTime"))
-    , DstAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "DstAnimTime"))
-    , SrcAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "SrcAnimName"))
-    , DstAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "DstAnimName"))
-    , TransitionValue(std::make_shared<EngineObjectProperty<float>>(0.0f, "AnimTransitionValue"))
-    , bTransitionEnabled(std::make_shared<EngineObjectProperty<bool>>(false, "bAnimTransitionEnabled"))
+    , AnimationState(std::make_shared<EngineObjectProperty<AnimationBlendState>>(AnimationBlendState{}, "AnimationState"))
 {
     /* Meta table */
-    AddEngineProperty(SrcAnimationTime);
-    AddEngineProperty(DstAnimationTime);
-    AddEngineProperty(SrcAnimationName);
-    AddEngineProperty(DstAnimationName);
-    AddEngineProperty(TransitionValue);
-    AddEngineProperty(bTransitionEnabled);
+    AddEngineProperty(AnimationState);
     /* Meta table */
 }
 
@@ -99,7 +89,9 @@ eComponentType SkeletalMeshComponent::GetComponentType() const
 
 void SkeletalMeshComponent::Tick(const float deltaTimeSec, const float playSpeed)
 {
-    SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTimeSec * mTimeIncreaseMultiply));
+    AnimationBlendState animationState = AnimationState->GetValue();
+    animationState.SrcTime += deltaTimeSec * mTimeIncreaseMultiply;
+    AnimationState->SetValue(animationState);
     mUpdateDataResetTimeCounter += deltaTimeSec;
     const bool bUpdateData = mUpdateDataResetTimeCounter >= mUpdateDataResetTime;
     mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, mUpdateDataResetTime);
@@ -121,19 +113,19 @@ void SkeletalMeshComponent::SyncDataWithRenderThread()
                 functionId,
                 [sceneRenderer,
                  sceneProxyId = mSceneProxyId,
-                 isTransition = bTransitionEnabled->GetValue(),
-                 transitionValue = TransitionValue->GetValue(),
-                 srcAnimationTime = SrcAnimationTime->GetValue(),
-                 dstAnimationTime = DstAnimationTime->GetValue(),
-                 srcAnimation = SrcAnimationName->GetValue(),
-                 dstAnimation = DstAnimationName->GetValue()](
+                 animationState = AnimationState->GetValue()](
                     std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
                     if (const auto& primitiveProxySp = std::static_pointer_cast<SkeletalMeshSceneProxy>(
                             sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId))) {
                         primitiveProxySp->UpdateAnimationData(
-                            isTransition, transitionValue, srcAnimationTime, dstAnimationTime, srcAnimation, dstAnimation);
+                            animationState.bTransitionEnabled,
+                            animationState.TransitionValue,
+                            animationState.SrcTime,
+                            animationState.DstTime,
+                            animationState.SrcName,
+                            animationState.DstName);
                     }
                 });
         }

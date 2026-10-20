@@ -10,7 +10,6 @@
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
@@ -485,8 +484,7 @@ void LuaEngineObjectsCreatorFunctions::SetTweenerBinding(const std::tuple<
         const auto tweenerSp = actorSp->GetTweenerById(tweenerId);
         ext_assert(tweenerSp, "LuaEngineObjectsCreatorFunctions::SetTweenerBinding: tweener pointer is null");
         const auto& gameObjectSp = sceneSp->GetEngineObjectByName(std::get<2>(tweenerData));
-        const auto& bindingSp = tweenerSp->GetPropertyBindingByName(std::get<3>(tweenerData));
-        BindingAttachmentBuilder::SetAttachment(gameObjectSp, bindingSp, std::get<4>(tweenerData));
+        tweenerSp->BindEngineObjectProperty(std::get<3>(tweenerData), gameObjectSp, std::get<4>(tweenerData));
     }
 }
 

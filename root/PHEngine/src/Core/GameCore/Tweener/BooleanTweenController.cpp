@@ -14,57 +14,48 @@ BooleanTweenController::~BooleanTweenController()
 {
 }
 
-std::shared_ptr<BooleanPropertyBinding> BooleanTweenController::GetBooleanPropertyBindingSP() const
-{
-    std::shared_ptr<BooleanPropertyBinding> result(nullptr);
-
-    if (auto baseSp = mPropertyBinding.lock()) {
-        result = std::static_pointer_cast<BooleanPropertyBinding>(baseSp);
-        ext_assert(result, "BooleanTweenController::GetBooleanPropertyBindingSP: Failed to cast to BooleanPropertyBinding");
-    }
-
-    return result;
-}
-
 void BooleanTweenController::OnTransitionUpdate(const float deltaTimeSec, const float transitionParameter)
 {
     Base::OnTransitionUpdate(deltaTimeSec, transitionParameter);
 
-    if (auto booleanBinding = GetBooleanPropertyBindingSP()) {
+    if (auto booleanProperty = GetEngineObjectPropertySp<bool>()) {
         auto srcBoolProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
 
-        booleanBinding->SetValue(srcBoolProperty->Value);
+        booleanProperty->SetValue(srcBoolProperty->Value);
     }
 }
 
-void BooleanTweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
+void BooleanTweenController::InitWithPropsInstant(
+    const std::shared_ptr<BaseStateProperty>& dstStateProperty,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    mPropertyBinding = dstStateProperty->Binding;
-    if (auto booleanBinding = GetBooleanPropertyBindingSP()) {
+    Base::InitWithPropsInstant(dstStateProperty, engineObjectProperty);
+    if (auto booleanProperty = GetEngineObjectPropertySp<bool>()) {
         auto dstBoolProperty = std::static_pointer_cast<TweenStateProperty_t>(dstStateProperty);
-        booleanBinding->SetValue(dstBoolProperty->Value);
+        booleanProperty->SetValue(dstBoolProperty->Value);
     }
 }
 
 void BooleanTweenController::OnTransitionStarted(
     const std::shared_ptr<BaseStateProperty>& srcProperty,
     const std::shared_ptr<BaseStateProperty>& dstProperty,
-    const float transitionDuration)
+    const float transitionDuration,
+    const std::shared_ptr<EngineObjectPropertyBase>& engineObjectProperty)
 {
-    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
+    Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration, engineObjectProperty);
 
-    if (auto booleanBinding = GetBooleanPropertyBindingSP()) {
+    if (auto booleanProperty = GetEngineObjectPropertySp<bool>()) {
         auto srcBoolProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
-        booleanBinding->SetValue(srcBoolProperty->Value);
+        booleanProperty->SetValue(srcBoolProperty->Value);
     }
 }
 
 void BooleanTweenController::OnTransitionFinished()
 {
-    if (auto booleanBinding = GetBooleanPropertyBindingSP()) {
+    if (auto booleanProperty = GetEngineObjectPropertySp<bool>()) {
         auto dstBoolProperty
             = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
-        booleanBinding->SetValue(dstBoolProperty->Value);
+        booleanProperty->SetValue(dstBoolProperty->Value);
     }
 }
 
