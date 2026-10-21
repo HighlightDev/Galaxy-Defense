@@ -5,7 +5,7 @@
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Implementation/GUI/UiConnectionLine.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 using namespace Resources;
 using namespace IO;

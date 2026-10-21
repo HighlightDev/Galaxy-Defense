@@ -266,34 +266,28 @@ std::unique_ptr<BaseStateProperty> CreateProperty(
         "CreateProperty: property type doesn't match binding type: " + property.BindingName);
 
     if ("animation" == property.Type) {
-        result = std::make_unique<StateProperty<eEnginePropertyBindingType::Animation>>(
-            property.Value, property.BindingName);
+        result = std::make_unique<StateProperty<eEnginePropertyBindingType::Animation>>(property.Value, property.BindingName);
     } else if ("scalar_float" == property.Type) {
         const float value = std::stof(property.Value);
-        result = std::make_unique<StateProperty<eEnginePropertyBindingType::FloatScalar>>(
-            value, property.BindingName);
+        result = std::make_unique<StateProperty<eEnginePropertyBindingType::FloatScalar>>(value, property.BindingName);
     } else if ("euler_angles_rotation" == property.Type) {
         const auto& values = Split(property.Value, ';');
         const glm::vec3 eulerAngles = ExtractVec3FromStrings(values);
-        result = std::make_unique<StateProperty<eEnginePropertyBindingType::EulerAnglesRotation>>(
-            eulerAngles, property.BindingName);
+        result
+            = std::make_unique<StateProperty<eEnginePropertyBindingType::EulerAnglesRotation>>(eulerAngles, property.BindingName);
     } else if ("boolean" == property.Type) {
         const std::string& value = ToLower(property.Value);
         const bool booleanValue = "true" == value;
-        result = std::make_unique<StateProperty<eEnginePropertyBindingType::Boolean>>(
-            booleanValue, property.BindingName);
+        result = std::make_unique<StateProperty<eEnginePropertyBindingType::Boolean>>(booleanValue, property.BindingName);
     } else if ("vec3" == property.Type) {
         const auto& values = Split(property.Value, ';');
         const glm::vec3 vec3Value = ExtractVec3FromStrings(values);
-        result = std::make_unique<StateProperty<eEnginePropertyBindingType::Vec3>>(
-            vec3Value, property.BindingName);
+        result = std::make_unique<StateProperty<eEnginePropertyBindingType::Vec3>>(vec3Value, property.BindingName);
     } else if ("vec3_quadratic_bezier" == property.Type) {
         const auto& values = Split(property.Value, ';');
         const glm::vec3 vec3Value = ExtractVec3FromStrings(values);
         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Vec3QuadraticBezier>>(
-            vec3Value,
-            glm::vec3(0.0f),
-            property.BindingName);
+            vec3Value, glm::vec3(0.0f), property.BindingName);
     } else {
         ext_assert(false, "CreateProperty: Unsupported property type: " + property.Type);
     }

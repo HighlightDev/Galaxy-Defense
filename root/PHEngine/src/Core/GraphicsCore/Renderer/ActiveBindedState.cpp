@@ -1,6 +1,6 @@
 #include "ActiveBindedState.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include <algorithm>
 

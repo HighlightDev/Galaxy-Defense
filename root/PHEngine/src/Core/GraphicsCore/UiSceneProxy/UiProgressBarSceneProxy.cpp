@@ -5,7 +5,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 using namespace Resources;
 using namespace IO;

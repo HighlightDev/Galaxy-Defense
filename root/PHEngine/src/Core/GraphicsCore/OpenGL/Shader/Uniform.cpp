@@ -3,7 +3,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/StringStreamWrapper.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 
 using namespace EngineCore;

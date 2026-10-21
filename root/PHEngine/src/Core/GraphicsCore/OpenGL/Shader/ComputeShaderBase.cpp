@@ -1,6 +1,6 @@
 #include "ComputeShaderBase.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 using namespace EngineUtility;
 using namespace Graphics;

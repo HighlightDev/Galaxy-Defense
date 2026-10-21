@@ -111,9 +111,7 @@ void SkeletalMeshComponent::SyncDataWithRenderThread()
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                 GetObjectId(),
                 functionId,
-                [sceneRenderer,
-                 sceneProxyId = mSceneProxyId,
-                 animationState = AnimationState->GetValue()](
+                [sceneRenderer, sceneProxyId = mSceneProxyId, animationState = AnimationState->GetValue()](
                     std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {

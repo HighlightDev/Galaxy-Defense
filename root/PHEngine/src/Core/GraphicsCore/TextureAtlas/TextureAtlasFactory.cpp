@@ -6,7 +6,7 @@
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "TextureAtlasSpaceRequest.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include <algorithm>
 

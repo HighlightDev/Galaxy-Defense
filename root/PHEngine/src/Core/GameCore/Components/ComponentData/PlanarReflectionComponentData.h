@@ -4,7 +4,7 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <glm/vec3.hpp>
 
 #include <memory>

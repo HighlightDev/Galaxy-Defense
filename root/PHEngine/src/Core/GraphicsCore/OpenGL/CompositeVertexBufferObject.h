@@ -3,7 +3,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "DataCarryFlag.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <stdint.h>
 
 #include <cstddef>

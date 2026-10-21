@@ -15,7 +15,7 @@
 #include "Core/ResourceManagerCore/Pool/PoolParameters/ParticlePoolParameters.h"
 #include "IComponentCreatable.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <glm/vec3.hpp>
 
 #include <type_traits>

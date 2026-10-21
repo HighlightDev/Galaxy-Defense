@@ -2,7 +2,7 @@
 
 #include "Core/GraphicsCore/OpenGL/UniformBuffer/UniformBufferUserInfo.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat4x4.hpp>

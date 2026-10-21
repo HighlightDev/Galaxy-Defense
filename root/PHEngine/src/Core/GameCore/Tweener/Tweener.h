@@ -80,9 +80,7 @@ public:
     void AddPropertyBinding(const std::string& bindingName, const eEnginePropertyBindingType bindingType);
 
     void BindEngineObjectProperty(
-        const std::string& bindingName,
-        const std::shared_ptr<EngineObject>& engineObject,
-        const std::string& enginePropertyName);
+        const std::string& bindingName, const std::shared_ptr<EngineObject>& engineObject, const std::string& enginePropertyName);
 
     void InitRootState();
 

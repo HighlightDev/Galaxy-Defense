@@ -4,7 +4,7 @@
 #include "FreeTypeFlags.h"
 #include "FreeTypeFont.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 namespace EngineCore::GUI {
 FreeTypeFontAtlas::FreeTypeFontAtlas(

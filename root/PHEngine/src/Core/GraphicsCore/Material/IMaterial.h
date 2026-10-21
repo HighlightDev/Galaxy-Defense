@@ -20,6 +20,7 @@ protected:
     std::weak_ptr<MaterialProxy> mMaterialProxyWp;
 
     bool mIsDataDirty;
+
 public:
     int32_t MaterialProxyId;
 

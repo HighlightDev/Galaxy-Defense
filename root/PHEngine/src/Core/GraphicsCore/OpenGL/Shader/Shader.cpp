@@ -3,7 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <glm/vec2.hpp>
 
 #include <fstream>

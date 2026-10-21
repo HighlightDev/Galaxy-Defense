@@ -9,7 +9,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include <vector>
 

@@ -145,10 +145,7 @@ struct StateProperty<eEnginePropertyBindingType::Vec3QuadraticBezier> : public B
         return eEnginePropertyBindingType::Vec3QuadraticBezier;
     }
 
-    StateProperty(
-        const glm::vec3& value,
-        const glm::vec3& controlPoint,
-        const std::string& bindingName)
+    StateProperty(const glm::vec3& value, const glm::vec3& controlPoint, const std::string& bindingName)
         : BaseStateProperty(bindingName)
         , Value(value)
         , ControlPoint(controlPoint)

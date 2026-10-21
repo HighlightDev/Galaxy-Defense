@@ -71,8 +71,10 @@ std::string SimpleVelocityModuleGpuProxy::GetShaderSnippet() const
 
 uint64_t SimpleVelocityModuleGpuProxy::GetModuleTypeHash() const
 {
-    return Hash64_CT("SimpleVelocityModuleGpuProxy") ^ std::hash<glm::vec3>{}(mVelocityDirection)
-        ^ std::hash<glm::vec3>{}(mVelocityDeviation) ^ std::hash<float>{}(mSpeed);
+    return Hash64_CT("SimpleVelocityModuleGpuProxy") ^ std::hash<float>{}(mVelocityDirection.x)
+        ^ std::hash<float>{}(mVelocityDirection.y) ^ std::hash<float>{}(mVelocityDirection.z)
+        ^ std::hash<float>{}(mVelocityDeviation.x) ^ std::hash<float>{}(mVelocityDeviation.y)
+        ^ std::hash<float>{}(mVelocityDeviation.z) ^ std::hash<float>{}(mSpeed);
 }
 
 } // namespace EngineCore

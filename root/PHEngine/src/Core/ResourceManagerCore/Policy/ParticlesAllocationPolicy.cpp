@@ -6,7 +6,7 @@
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include <vector>
 

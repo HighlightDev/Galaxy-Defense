@@ -6,7 +6,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include <algorithm>
 

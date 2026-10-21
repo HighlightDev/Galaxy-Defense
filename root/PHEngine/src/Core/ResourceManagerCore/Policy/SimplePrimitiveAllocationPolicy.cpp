@@ -8,7 +8,7 @@
 #include "Core/GraphicsCore/OpenGL/eAttribArrayIndex.h"
 #include "Core/ResourceManagerCore/SimpleMeshType.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;

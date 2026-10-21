@@ -38,12 +38,11 @@ Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
     , mLuaReplicators()
     , m_interThreadMgr(interThreadMgr)
     , mGameThreadDeltaSec(std::make_shared<EngineObjectProperty<float>>(0.0f, "GT_DeltaSec"))
-    , mScreenResolutionProperty(
-          std::make_shared<EngineObjectProperty<glm::vec2>>(
-              glm::vec2(
-                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
-              "ScreenResolution"))
+    , mScreenResolutionProperty(std::make_shared<EngineObjectProperty<glm::vec2>>(
+          glm::vec2(
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
+          "ScreenResolution"))
     , mDeferredResourceCreators()
     , mActors()
     , mMainCamera()
@@ -378,10 +377,9 @@ std::shared_ptr<UiHandler> Scene::GetUiHandler() const
 void Scene::Tick(const float delta, const float playSpeed)
 {
     mGameThreadDeltaSec->SetValue(delta);
-    mScreenResolutionProperty->SetValue(
-        glm::vec2(
-            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
+    mScreenResolutionProperty->SetValue(glm::vec2(
+        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
 
     mPhysicsWorld->Tick(delta, playSpeed);
 
@@ -600,9 +598,8 @@ void Scene::FlushPendingSynchronizeUpdates()
                             rectangleSceneProxy->SetIsRoundBottom(updateStruct.isRoundBottom);
                             rectangleSceneProxy->SetApplyBlur(updateStruct.applyBlur);
                         } else {
-                            LogInfo(
-                                "Scene::FlushPendingSynchronizeUpdates: mPendingUiRectangleUpdates: Error, uiSceneProxy is "
-                                "not a UiRectangleSceneProxy");
+                            LogInfo("Scene::FlushPendingSynchronizeUpdates: mPendingUiRectangleUpdates: Error, uiSceneProxy is "
+                                    "not a UiRectangleSceneProxy");
                         }
                     }
                 }

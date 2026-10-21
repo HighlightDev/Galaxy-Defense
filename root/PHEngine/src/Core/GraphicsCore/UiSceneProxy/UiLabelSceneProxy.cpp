@@ -16,7 +16,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "UiCanvasSceneProxy.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 using namespace Resources;
 using namespace IO;

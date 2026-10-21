@@ -31,7 +31,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "RenderPassProxies.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <algorithm>

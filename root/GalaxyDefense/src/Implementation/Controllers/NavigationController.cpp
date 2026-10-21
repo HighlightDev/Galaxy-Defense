@@ -39,11 +39,10 @@ bool NavigationController::cEnableDebugPathRendering = false;
 
 NavigationController::NavigationController(const std::weak_ptr<::EngineCore::Scene>& sceneWp)
     : mSceneWp(sceneWp)
-    , mNavPathDummyActor(
-          std::make_shared<Actor>(
-              "NavPathDummyActor",
-              std::make_shared<EngineCore::SceneComponent>(
-                  "NavPathDummy_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true)))
+    , mNavPathDummyActor(std::make_shared<Actor>(
+          "NavPathDummyActor",
+          std::make_shared<EngineCore::SceneComponent>(
+              "NavPathDummy_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true)))
 {
 }
 
@@ -555,9 +554,8 @@ void NavigationController::InitializeNavMeshDebugRendering()
 {
     const auto sceneSp = mSceneWp.lock();
     if (!sceneSp || !mNavMesh) {
-        LogInfo(
-            "NavigationController::InitializeNavMeshDebugRendering: cannot initialize nav mesh debug rendering, because "
-            "scene pointer or nav mesh is null");
+        LogInfo("NavigationController::InitializeNavMeshDebugRendering: cannot initialize nav mesh debug rendering, because "
+                "scene pointer or nav mesh is null");
         return;
     }
 

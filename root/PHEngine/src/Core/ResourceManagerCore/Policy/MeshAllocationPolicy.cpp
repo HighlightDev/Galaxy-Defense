@@ -15,7 +15,7 @@
 #include "Core/IoCore/RawResource.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include <vector>
 

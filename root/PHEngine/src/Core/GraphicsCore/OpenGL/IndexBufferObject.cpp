@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/LoggerExtension.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 using namespace EngineCore;
 

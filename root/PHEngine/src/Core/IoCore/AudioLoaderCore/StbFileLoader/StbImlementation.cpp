@@ -4,9 +4,10 @@
 #include "Core/GameCore/LoggerExtension.h"
 
 #include <AL/alext.h>
-#include <stb_vorbis.c>
 
 #include <limits>
+
+#include <stb_vorbis.c>
 
 namespace IO {
 namespace Audio {

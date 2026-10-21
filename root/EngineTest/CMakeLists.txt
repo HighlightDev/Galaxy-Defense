@@ -1,6 +1,7 @@
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/PHEngine/cmake)
 include(Utility)
 include(Flags)
+include(Dependencies)
 
 set(HEADERS
     src/Implementation/Levels/TestFeaturesLevelFactory.h
@@ -18,8 +19,9 @@ set(SOURCES
 set(EXECUTABLE_NAME EngineTest)
 add_executable(${EXECUTABLE_NAME} ${HEADERS} ${SOURCES})
 
-# Engine-wide definitions (DEBUG, BT_USE_DOUBLE_PRECISION, ...) come from PHEngine
-ApplyBuildOptions(${EXECUTABLE_NAME})
+# Engine-wide definitions (DEBUG, BT_USE_DOUBLE_PRECISION, ...) come from
+# PHEngine
+applybuildoptions(${EXECUTABLE_NAME})
 
 add_custom_command(
   TARGET ${EXECUTABLE_NAME}
@@ -46,21 +48,20 @@ target_include_directories(
   ${EXECUTABLE_NAME}
   PUBLIC ${GAME_SRC_INCLUDE}
   PUBLIC ${ENGINE_CORE_INCLUDE}
-  PUBLIC ${LOGGER_DEPENDENCE_INCLUDE}
-)
+  PUBLIC ${LOGGER_DEPENDENCE_INCLUDE})
 
-add_custom_command(
-  TARGET ${EXECUTABLE_NAME}
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E echo
-  "Copy GLEW and OpenAL to $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>"
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "$<TARGET_FILE:libglew_shared>"
-  "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>"
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "$<TARGET_FILE:OpenAL>"
-  "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>"
-)
+if(WIN32)
+  add_custom_command(
+    TARGET ${EXECUTABLE_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo
+            "Copy GLEW and OpenAL to $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:libglew_shared>"
+            "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
+            "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>")
+endif()
 
 if(UNIX)
   target_link_libraries(${EXECUTABLE_NAME} PRIVATE X11)
@@ -73,21 +74,15 @@ if(UNIX)
   endif()
 endif()
 
-target_link_libraries(
-  ${EXECUTABLE_NAME}
-  PRIVATE PHEngine)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE PHEngine)
 
 message(STATUS "LibUnwind enabled: ${ENABLE_LIBUNWIND}")
 if(ENABLE_LIBUNWIND)
   target_link_libraries(${EXECUTABLE_NAME} PRIVATE UnwindTool)
 endif(ENABLE_LIBUNWIND)
 
-file(
-  GLOB_RECURSE
-  FORMAT_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-)
+file(GLOB_RECURSE FORMAT_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 
 if(NOT WIN32)
   add_custom_target(

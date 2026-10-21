@@ -4,7 +4,7 @@
 #include "IndexBufferObject.h"
 #include "VertexBufferObject.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include <algorithm>
 #include <memory>

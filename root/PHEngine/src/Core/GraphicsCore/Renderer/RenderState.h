@@ -2,7 +2,7 @@
 
 #include "Core/CommonCore/Assertion.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <stdint.h>
 
 #include <array>

@@ -44,7 +44,9 @@ std::string SimpleColorModuleGpuProxy::GetShaderSnippet() const
 
 uint64_t SimpleColorModuleGpuProxy::GetModuleTypeHash() const
 {
-    return Hash64_CT("SimpleColorModuleGpuProxy") ^ std::hash<glm::vec3>{}(mColorBegin) ^ std::hash<glm::vec3>{}(mColorEnd);
+    return Hash64_CT("SimpleColorModuleGpuProxy") ^ std::hash<float>()(mColorBegin.r) ^ std::hash<float>()(mColorBegin.g)
+        ^ std::hash<float>()(mColorBegin.b) ^ std::hash<float>()(mColorEnd.r) ^ std::hash<float>()(mColorEnd.g)
+        ^ std::hash<float>()(mColorEnd.b);
 }
 
 } // namespace EngineCore

@@ -279,8 +279,8 @@ void Tweener::BindEngineObjectProperty(
     const auto engineProperty = engineObject->GetEnginePropertyByName(enginePropertyName).lock();
     ext_assert(
         engineProperty,
-        "BindEngineObjectProperty: property not found: " + enginePropertyName + ", engine object: "
-            + engineObject->GetEngineObjectName());
+        "BindEngineObjectProperty: property not found: " + enginePropertyName
+            + ", engine object: " + engineObject->GetEngineObjectName());
     if (!engineProperty) {
         return;
     }

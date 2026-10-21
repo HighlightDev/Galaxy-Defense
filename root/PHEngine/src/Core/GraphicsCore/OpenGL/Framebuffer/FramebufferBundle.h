@@ -4,7 +4,7 @@
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "FramebufferObject.h"
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <glm/vec4.hpp>
 
 #include <memory>
