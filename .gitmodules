@@ -43,3 +43,6 @@
 [submodule "PHEngine/PHEngine/submodules/openal"]
 	path = root/PHEngine/submodules/openal
 	url = https://github.com/kcat/openal-soft.git
+[submodule "root/PHEngine/submodules/pathfindinglib"]
+	path = root/PHEngine/submodules/pathfindinglib
+	url = https://github.com/Bucephalus-Studios/PathfindingLib.git

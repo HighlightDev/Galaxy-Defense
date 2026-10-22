@@ -7,11 +7,14 @@
 #include <cmath>
 #include <queue>
 
+using namespace PathfindingLib;
+
 namespace EngineCore::NavigationMesh {
 
 NavMesh2D::NavMesh2D(const BoundingBox2D<glm::vec2>& levelBoundingBox, const float cellSize)
     : mLevelBoundingBox(levelBoundingBox)
     , mCellSize(cellSize)
+    , mPathfindingGrid(1, 1) // As grid doesn't have default constructor - create dummy instance first
 {
     Initialize();
 }
@@ -24,12 +27,40 @@ void NavMesh2D::Initialize()
     mCellsCountX = static_cast<int32_t>((levelMax.x - levelMin.x) / mCellSize);
     mCellsCountY = static_cast<int32_t>((levelMax.y - levelMin.y) / mCellSize);
 
-    mWalkableCells.assign(mCellsCountX * mCellsCountY, true);
+    mPathfindingGrid = Pathfinding_Grid<int32_t>(mCellsCountX, mCellsCountY);
 }
 
 void NavMesh2D::ResetAllCellsWalkable()
 {
-    std::fill(mWalkableCells.begin(), mWalkableCells.end(), true);
+    mPathfindingGrid = Pathfinding_Grid<int32_t>(mCellsCountX, mCellsCountY);
+}
+
+const BoundingBox2D<glm::vec2>& NavMesh2D::GetLevelBoundingBox() const
+{
+    return mLevelBoundingBox;
+}
+
+float NavMesh2D::GetCellSize() const
+{
+    return mCellSize;
+}
+
+int32_t NavMesh2D::GetCellsCountX() const
+{
+    return mCellsCountX;
+}
+
+int32_t NavMesh2D::GetCellsCountY() const
+{
+    return mCellsCountY;
+}
+
+bool NavMesh2D::IsCellWalkable(const int32_t x, const int32_t y) const
+{
+    if (mPathfindingGrid.isWithinBounds(x, y)) {
+        return mPathfindingGrid.getNode(x, y).isWalkable;
+    }
+    return false;
 }
 
 void NavMesh2D::SetCellsStateByWorldPosition(const glm::vec2& worldPosition, const glm::vec2& size, const bool isWalkable)
@@ -48,8 +79,10 @@ void NavMesh2D::SetCellsStateByWorldPosition(const glm::vec2& worldPosition, con
                 minCornerPos.y + mCellSize * (0.5f + static_cast<float>(y)));
             const int32_t cellX = std::min(static_cast<int32_t>((cellCenter.x - levelMin.x) / mCellSize), mCellsCountX - 1);
             const int32_t cellY = std::min(static_cast<int32_t>((cellCenter.y - levelMin.y) / mCellSize), mCellsCountY - 1);
-            if (cellX >= 0 && cellX < mCellsCountX && cellY >= 0 && cellY < mCellsCountY) {
-                mWalkableCells[cellX * mCellsCountY + cellY] = isWalkable;
+            if (isWalkable) {
+                mPathfindingGrid.setWalkable(cellX, cellY);
+            } else {
+                mPathfindingGrid.setObstacle(cellX, cellY);
             }
         }
     }
@@ -61,9 +94,8 @@ bool NavMesh2D::IsCellWalkableByWorldPosition(const glm::vec2& worldPosition) co
 
     const int32_t cellX = std::min(static_cast<int32_t>((worldPosition.x - levelMin.x) / mCellSize), mCellsCountX - 1);
     const int32_t cellY = std::min(static_cast<int32_t>((worldPosition.y - levelMin.y) / mCellSize), mCellsCountY - 1);
-
-    if (cellX >= 0 && cellX < mCellsCountX && cellY >= 0 && cellY < mCellsCountY) {
-        return mWalkableCells[cellX * mCellsCountY + cellY];
+    if (mPathfindingGrid.isWithinBounds(cellX, cellY)) {
+        return mPathfindingGrid.getNode(cellX, cellY).isWalkable;
     }
     return false;
 }
@@ -117,16 +149,12 @@ void NavMesh2D::FillCellStatesBetweenWorldPositions(
     }
 }
 
-std::vector<glm::vec2>
-NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition) const
+std::vector<glm::vec2> NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition)
 {
     LogInfo("NavMesh2D::BuildRouteBetweenPoints: start: ", startWorldPosition, "), end: (", endWorldPosition, ")");
     const auto& levelMin = mLevelBoundingBox.GetMin();
     const int32_t colsCount = mCellsCountX;
     const int32_t rowsCount = mCellsCountY;
-    const int32_t totalCells = colsCount * rowsCount;
-
-    auto cellIndex = [rowsCount](const int32_t x, const int32_t y) -> int32_t { return x * rowsCount + y; };
 
     auto worldToCell = [&](const glm::vec2& worldPos, int32_t& outX, int32_t& outY) {
         outX = std::min(static_cast<int32_t>((worldPos.x - levelMin.x) / mCellSize), colsCount - 1);
@@ -138,121 +166,26 @@ NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const gl
             levelMin.x + (static_cast<float>(cx) + 0.5f) * mCellSize, levelMin.y + (static_cast<float>(cy) + 0.5f) * mCellSize};
     };
 
-    auto inBounds
-        = [&](const int32_t cx, const int32_t cy) -> bool { return cx >= 0 && cx < colsCount && cy >= 0 && cy < rowsCount; };
-
     int32_t startX, startY, endX, endY;
     worldToCell(startWorldPosition, startX, startY);
     worldToCell(endWorldPosition, endX, endY);
 
-    if (!inBounds(startX, startY) || !inBounds(endX, endY)) {
-        LogInfo(
-            "NavMesh2D::BuildRouteBetweenPoints: start or end cell is out of bounds, startCell: (",
-            startX,
-            ", ",
-            startY,
-            "), endCell: (",
-            endX,
-            ", ",
-            endY,
-            ")");
+    auto resultPathInTuples = findPathAStar(mPathfindingGrid, std::make_tuple(startX, startY), std::make_tuple(endX, endY));
+    if (resultPathInTuples.empty()) {
+        LogInfo("NavMesh2D::BuildRouteBetweenPoints: no path found");
         return {};
     }
 
-    // Start/end cells are allowed to be non-walkable: the start is where the ship already is,
-    // and the end is the goal we want to reach (a barrier ray can clip the destination cell).
-    // They are valid endpoints but cannot be used as pass-through cells.
-    auto isValid = [&](const int32_t cx, const int32_t cy) -> bool {
-        if (!inBounds(cx, cy)) {
-            return false;
-        }
-        if ((cx == startX && cy == startY) || (cx == endX && cy == endY)) {
-            return true;
-        }
-        return mWalkableCells[cellIndex(cx, cy)];
-    };
-
-    const int32_t startIdx = cellIndex(startX, startY);
-    const int32_t endIdx = cellIndex(endX, endY);
-
-    auto heuristic = [](const int32_t ax, const int32_t ay, const int32_t bx, const int32_t by) -> float {
-        const float dx = static_cast<float>(std::abs(ax - bx));
-        const float dy = static_cast<float>(std::abs(ay - by));
-        // Octile distance: accounts for diagonal moves costing sqrt(2)
-        return std::max(dx, dy) + (1.41421356f - 1.0f) * std::min(dx, dy);
-    };
-
-    struct AStarNode {
-        int32_t idx;
-        float fCost;
-        bool operator>(const AStarNode& other) const
-        {
-            return fCost > other.fCost;
-        }
-    };
-
-    // Cardinals first (indices 0-3), then diagonals (indices 4-7)
-    static constexpr int32_t c_dx[] = {0, 0, 1, -1, 1, 1, -1, -1};
-    static constexpr int32_t c_dy[] = {1, -1, 0, 0, 1, -1, 1, -1};
-    static constexpr float c_moveCost[] = {1.0f, 1.0f, 1.0f, 1.0f, 1.41421356f, 1.41421356f, 1.41421356f, 1.41421356f};
-
-    std::vector<float> gScore(totalCells, std::numeric_limits<float>::max());
-    std::vector<int32_t> cameFrom(totalCells, -1);
-    std::priority_queue<AStarNode, std::vector<AStarNode>, std::greater<AStarNode>> openSet;
-
-    gScore[startIdx] = 0.0f;
-    openSet.push({startIdx, heuristic(startX, startY, endX, endY)});
-
-    while (!openSet.empty()) {
-        const AStarNode current = openSet.top();
-        openSet.pop();
-
-        if (current.idx == endIdx) {
-            std::vector<glm::vec2> path;
-            int32_t traceIdx = endIdx;
-            while (traceIdx != startIdx) {
-                const int32_t tx = traceIdx / rowsCount;
-                const int32_t ty = traceIdx % rowsCount;
-                path.emplace_back(cellToWorld(tx, ty));
-                traceIdx = cameFrom[traceIdx];
-            }
-            path.emplace_back(cellToWorld(startX, startY));
-            std::reverse(path.begin(), path.end());
-            LogInfo("NavMesh2D::BuildRouteBetweenPoints: path found with ", path.size(), " points");
-            return path;
-        }
-
-        const int32_t cx = current.idx / rowsCount;
-        const int32_t cy = current.idx % rowsCount;
-        const float currentG = gScore[current.idx];
-
-        if (current.fCost > currentG + heuristic(cx, cy, endX, endY) + 0.001f) {
-            continue;
-        }
-
-        for (int32_t d = 0; d < 8; ++d) {
-            const int32_t nx = cx + c_dx[d];
-            const int32_t ny = cy + c_dy[d];
-            if (!isValid(nx, ny)) {
-                continue;
-            }
-            // Prevent corner cutting: both cardinal neighbors must be walkable for diagonal moves
-            if (d >= 4 && (!isValid(cx + c_dx[d], cy) || !isValid(cx, cy + c_dy[d]))) {
-                continue;
-            }
-
-            const int32_t neighborIdx = cellIndex(nx, ny);
-            const float tentativeG = currentG + c_moveCost[d];
-            if (tentativeG < gScore[neighborIdx]) {
-                gScore[neighborIdx] = tentativeG;
-                cameFrom[neighborIdx] = current.idx;
-                openSet.push({neighborIdx, tentativeG + heuristic(nx, ny, endX, endY)});
-            }
-        }
-    }
-
-    LogInfo("NavMesh2D::BuildRouteBetweenPoints: no path found");
-    return {};
+    std::vector<glm::vec2> resultPath;
+    resultPath.reserve(resultPathInTuples.size());
+    std::transform(
+        resultPathInTuples.cbegin(),
+        resultPathInTuples.cend(),
+        std::back_inserter(resultPath),
+        [&cellToWorld](const auto& coordsTuple) {
+            return glm::vec2(cellToWorld(std::get<0>(coordsTuple), std::get<1>(coordsTuple)));
+        });
+    return resultPath;
 }
 
 } // namespace EngineCore::NavigationMesh

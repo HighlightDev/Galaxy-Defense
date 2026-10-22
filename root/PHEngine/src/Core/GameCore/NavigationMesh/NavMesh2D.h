@@ -2,6 +2,11 @@
 
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 
+#undef min
+#undef max
+
+#include <PathfindingLib.hpp>
+
 #include <vector>
 
 using namespace EngineCore::GUI;
@@ -18,7 +23,7 @@ class NavMesh2D {
 
     int32_t mCellsCountY{0};
 
-    std::vector<bool> mWalkableCells;
+    Pathfinding_Grid<int32_t> mPathfindingGrid;
 
 public:
     explicit NavMesh2D(const BoundingBox2D<glm::vec2>& levelBoundingBox, const float cellSize);
@@ -32,32 +37,17 @@ public:
 
     bool IsSegmentWalkable(const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition) const;
 
-    std::vector<glm::vec2> BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition) const;
+    std::vector<glm::vec2> BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition);
 
-    const BoundingBox2D<glm::vec2>& GetLevelBoundingBox() const
-    {
-        return mLevelBoundingBox;
-    }
+    const BoundingBox2D<glm::vec2>& GetLevelBoundingBox() const;
 
-    float GetCellSize() const
-    {
-        return mCellSize;
-    }
+    float GetCellSize() const;
 
-    int32_t GetCellsCountX() const
-    {
-        return mCellsCountX;
-    }
+    int32_t GetCellsCountX() const;
 
-    int32_t GetCellsCountY() const
-    {
-        return mCellsCountY;
-    }
+    int32_t GetCellsCountY() const;
 
-    bool IsCellWalkable(const int32_t x, const int32_t y) const
-    {
-        return mWalkableCells[x * mCellsCountY + y];
-    }
+    bool IsCellWalkable(const int32_t x, const int32_t y) const;
 
     void ResetAllCellsWalkable();
 
