@@ -1,0 +1,48 @@
+#pragma once
+
+#include "Core/GameCore/Level.h"
+#include "Game/Levels/Controllers/TestFeaturesLevelUiController.h"
+
+#include <memory>
+
+using namespace EngineCore;
+
+namespace EngineCore {
+class Actor;
+}
+
+namespace TestFeatures {
+
+class TestFeaturesLevel : public Level {
+    using Base = Level;
+
+    std::unique_ptr<TestFeaturesLevelUiController> mUiController;
+
+    std::shared_ptr<Actor> mAmbientMusicDummy;
+
+public:
+    TestFeaturesLevel();
+
+    ~TestFeaturesLevel() override;
+
+    void InitLevel() override;
+
+    void PreLevelInit() override;
+
+    void PostLevelInit() override;
+
+    void PostPlayLevelFinished() override;
+
+    void UnloadLevel() override;
+
+    void Tick(const float deltaTimeSec, const float playSpeed) override;
+
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override;
+
+private:
+    void CreateScene();
+
+    void RunLuaBuildLevelScript();
+};
+
+} // namespace TestFeatures

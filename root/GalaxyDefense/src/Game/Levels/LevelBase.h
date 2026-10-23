@@ -1,0 +1,22 @@
+#pragma once
+
+#include "Core/GameCore/Level.h"
+#include "Game/LevelProgressSystem/LevelProgressController.h"
+
+#include <memory>
+
+using namespace EngineCore;
+
+namespace Game {
+
+class LevelBase : public Level {
+protected:
+    std::shared_ptr<LevelProgressController> mLvlProgressController;
+
+public:
+    explicit LevelBase(const std::string& levelName);
+
+    ~LevelBase() = default;
+};
+
+} // namespace Game

@@ -1,0 +1,10 @@
+#include "MissileExplosionVisitorBase.h"
+
+#include "Game/Actors/MissileActor.h"
+
+namespace Game {
+MissileExplosionVisitorBase::MissileExplosionVisitorBase(const std::shared_ptr<MissileActor>& ownerMissile)
+    : mOwnerWp(ownerMissile)
+{
+}
+} // namespace Game

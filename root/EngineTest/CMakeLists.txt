@@ -4,16 +4,16 @@ include(Flags)
 include(Dependencies)
 
 set(HEADERS
-    src/Implementation/Levels/TestFeaturesLevelFactory.h
-    src/Implementation/Levels/TestFeaturesLevel.h
-    src/Implementation/Levels/Controllers/TestFeaturesLevelUiController.h
-    src/Implementation/LuaExecutors/LuaUiControllerExecutor.h)
+    src/Game/Levels/TestFeaturesLevelFactory.h
+    src/Game/Levels/TestFeaturesLevel.h
+    src/Game/Levels/Controllers/TestFeaturesLevelUiController.h
+    src/Game/LuaExecutors/LuaUiControllerExecutor.h)
 
 set(SOURCES
-    src/Implementation/Levels/TestFeaturesLevelFactory.cpp
-    src/Implementation/Levels/TestFeaturesLevel.cpp
-    src/Implementation/Levels/Controllers/TestFeaturesLevelUiController.cpp
-    src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
+    src/Game/Levels/TestFeaturesLevelFactory.cpp
+    src/Game/Levels/TestFeaturesLevel.cpp
+    src/Game/Levels/Controllers/TestFeaturesLevelUiController.cpp
+    src/Game/LuaExecutors/LuaUiControllerExecutor.cpp
     main.cpp)
 
 set(EXECUTABLE_NAME EngineTest)

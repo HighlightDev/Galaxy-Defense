@@ -1,4 +1,4 @@
--- Mirrors Game::eMissileType from GalaxyDefense/src/Implementation/MissileType.h
+-- Mirrors Game::eMissileType from GalaxyDefense/src/Game/MissileType.h
 local MissileType = {
     NONE = 0,
     BOMB = 1,

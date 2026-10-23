@@ -8,10 +8,10 @@
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Engine.h"
-#include "src/Implementation/GUI/GameUiWidgetType.h"
-#include "src/Implementation/GUI/UiConnectionLineReplicatorFactory.h"
-#include "src/Implementation/GUI/UiUpgradeIconReplicatorFactory.h"
-#include "src/Implementation/Levels/GameLevelFactory.h"
+#include "Game/GUI/GameUiWidgetType.h"
+#include "Game/GUI/UiConnectionLineReplicatorFactory.h"
+#include "Game/GUI/UiUpgradeIconReplicatorFactory.h"
+#include "Game/Levels/GameLevelFactory.h"
 
 #include <TinyLogger/LogInterface.h>
 #if defined(__linux__)

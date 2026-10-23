@@ -1,0 +1,173 @@
+#include "LootFactory.h"
+
+#include "Core/GameCore/Components/ComponentCreators/InstancedStaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
+#include "Core/GameCore/Components/ComponentData/InstancedMeshComponentData.h"
+#include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
+#include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+#include "Core/GameCore/Components/ParticleComponents/CpuParticleSystemComponent.h"
+#include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/InstancedStaticMeshComponent.h"
+#include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
+#include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
+#include "Core/GameCore/Particles/Modules/Lifetime/RandomRangeLifeTimeModule.h"
+#include "Core/GameCore/Particles/Modules/Size/SimpleSizeModule.h"
+#include "Core/GameCore/Particles/Modules/Velocity/RadialVelocityModule.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
+#include "Core/GameCore/Tweener/State.h"
+#include "Core/GameCore/Tweener/StateTransition.h"
+#include "Core/GameCore/Tweener/Tweener.h"
+#include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Game/Actors/LootActor.h"
+#include "Game/Components/MovementComponents/LootDropMovementComponent.h"
+#include "Game/Controllers/AiActorController.h"
+#include "Game/DataProviders/GameConstants.h"
+
+using namespace EngineCore;
+using namespace Graphics;
+
+namespace Game {
+size_t LootFactory::s_lootCounter = 0;
+
+std::shared_ptr<LootActor> LootFactory::CreateLoot(
+    const std::shared_ptr<::EngineCore::Scene>& scene,
+    const glm::vec3& translation,
+    const glm::vec3& rotation,
+    const glm::vec3& scale,
+    const eLootCategory lootCategory)
+{
+    using namespace Constants::Loot;
+
+    const auto& lootIndexStr = std::to_string(s_lootCounter++);
+    const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
+        "c_loot_root_" + lootIndexStr, translation, glm::vec3(0), glm::vec3(1), true);
+    const auto& a_loot = std::make_shared<LootActor>("a_loot_" + lootIndexStr, rootComponent);
+    scene->AddActor(a_loot);
+
+    MaterialParser materialParser;
+    const std::shared_ptr<IMaterial>& loot_material = materialParser.ParseMaterialDescriptor("PbrSingleValueMaterial.m");
+    scene->RegisterMaterialInstance(loot_material);
+    MaterialPropertySetter::SetMaterialPropertyValue(loot_material, "albedo", c_albedo);
+    MaterialPropertySetter::SetMaterialPropertyValue(loot_material, "metallicValue", c_metallicValue);
+    MaterialPropertySetter::SetMaterialPropertyValue(loot_material, "roughnessValue", c_roughnessValue);
+    MaterialPropertySetter::SetMaterialPropertyValue(loot_material, "opacity", c_opacity);
+    auto meshComponentCreator = std::make_shared<InstancedStaticMeshComponentCreator<InstancedStaticMeshComponent>>(false);
+    const auto data = std::make_shared<InstancedMeshComponentData>(
+        "c_loot_mesh_" + lootIndexStr, "crystal_1.obj", glm::vec3(0), glm::vec3(0), glm::vec3(1.0f), loot_material);
+    const auto& meshComponent
+        = std::static_pointer_cast<InstancedStaticMeshComponent>(scene->CreateComponent_GameThread(meshComponentCreator, data));
+    a_loot->AddComponent(meshComponent);
+    a_loot->SetScene(scene);
+    a_loot->SetLootCategory(lootCategory);
+
+    const auto d_movement = std::make_shared<MovementComponentData>("LootDropMoveData_" + lootIndexStr, c_movementDirection);
+    const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<LootDropMovementComponent>>();
+    const auto& c_movement = std::static_pointer_cast<LootDropMovementComponent>(
+        scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
+    c_movement->SetFallDistance(c_fallDistance);
+    c_movement->SetBounceAmplitude(c_bounceAmplitude);
+    c_movement->SetBounceDuration(c_bounceDuration);
+    c_movement->SetCurrentSpeed(c_dropSpeed);
+    a_loot->AddComponent(c_movement);
+
+    const auto& sphereShape = std::make_shared<CollisionSphereShape>(
+        glm::length(scale)
+        * c_colliderRadiusMultiplier); // make radius a bit bigger to make it more priority target for collision
+    const auto& ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), sphereShape, 0.0f);
+    const auto physData = std::make_shared<PhysicsComponentData>("c_lootPhysicsComponent_" + lootIndexStr, ghostController);
+    const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
+    const auto& c_ghostPhysics
+        = std::static_pointer_cast<PhysicsComponent>(scene->CreateComponent_GameThread(physicsComponentCreator, physData));
+    sphereShape->SetParentPhysicsComponent(c_ghostPhysics);
+    a_loot->AddComponent(c_ghostPhysics);
+
+    const std::shared_ptr<IMaterial>& particles_mat = materialParser.ParseMaterialDescriptor("OpacityMaskParticleMaterial.m");
+    scene->RegisterMaterialInstance(particles_mat);
+    const auto& shiningMask = Resources::TexturePool::GetInstance()->GetOrAllocateResource("shining_mask.png");
+    MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacityMask", shiningMask);
+    const auto d_particle = std::make_shared<ParticleSystemComponentData>(
+        "c_lootParticles_" + lootIndexStr, particles_mat, glm::vec3(0), glm::vec3(1.0f), c_particleCount, true);
+    const auto& particleCreator = std::make_shared<ParticleSystemComponentCreator<GpuParticleSystemComponent>>();
+    const auto& c_particles
+        = std::static_pointer_cast<GpuParticleSystemComponent>(scene->CreateComponent_GameThread(particleCreator, d_particle));
+
+    auto emitter = std::make_shared<ParticleExplosionEmitter>();
+    emitter->SetOwner(c_particles);
+    emitter->SetExplosionRadius(c_emitRadius);
+    emitter->SetThetaSlicesCount(c_thetaSlices);
+    c_particles->SetParticleEmitter(emitter);
+
+    auto lifeTimeModule = std::make_shared<RandomRangeLifeTimeModule>();
+    lifeTimeModule->SetOwner(c_particles);
+    lifeTimeModule->SetMinLifeTime(c_particleMinLifeTime);
+    lifeTimeModule->SetMaxLifeTime(c_particleMaxLifeTime);
+    c_particles->AddParticleModule(lifeTimeModule);
+
+    auto velocityModule = std::make_shared<RadialVelocityModule>();
+    velocityModule->SetOwner(c_particles);
+    velocityModule->SetSpeed(c_particleSpeed);
+    c_particles->AddParticleModule(velocityModule);
+
+    auto sizeModule = std::make_shared<SimpleSizeModule>();
+    sizeModule->SetOwner(c_particles);
+    sizeModule->SetSizeBegin(c_sizeBegin);
+    sizeModule->SetSizeEnd(c_sizeEnd);
+    c_particles->AddParticleModule(sizeModule);
+
+    auto colorModule = std::make_shared<SimpleColorModule>();
+    colorModule->SetOwner(c_particles);
+    colorModule->SetColorBegin(c_colorBegin);
+    colorModule->SetColorEnd(c_colorEnd);
+    c_particles->AddParticleModule(colorModule);
+
+    a_loot->AddComponent(c_particles);
+
+    scene->AddActorController(std::make_shared<AiActorController>(a_loot));
+
+    // Build the collect fly-off tweener programmatically: s_Idle → s_Collected via a
+    // quadratic-bezier arc.  Property values are placeholders here; they are overwritten
+    // at each SpawnLoot() call with the actual dynamic spawn position.
+    {
+        using BezierProp_t = StateProperty<eEnginePropertyBindingType::Vec3QuadraticBezier>;
+        using RotProp_t = StateProperty<eEnginePropertyBindingType::EulerAnglesRotation>;
+
+        auto stateIdle = std::make_shared<State>("s_Idle");
+        auto stateCollected = std::make_shared<State>("s_Collected");
+        std::vector<std::shared_ptr<State>> allStates = {stateIdle, stateCollected};
+
+        auto lootTweener = std::make_shared<Tweener>("lootCollect", "LootCollect", stateIdle, std::move(allStates));
+
+        StateTransition collectTransition(stateIdle, stateCollected, Game::Constants::c_lootTweenTimeSec);
+        stateIdle->AddStateTransition(collectTransition);
+
+        const std::string b_translation = "b_lootTranslation";
+        lootTweener->AddPropertyBinding(b_translation, eEnginePropertyBindingType::Vec3QuadraticBezier);
+        lootTweener->BindEngineObjectProperty(b_translation, rootComponent, "p_translation");
+
+        const std::string b_rotator = "b_lootRotator";
+        lootTweener->AddPropertyBinding(b_rotator, eEnginePropertyBindingType::EulerAnglesRotation);
+        lootTweener->BindEngineObjectProperty(b_rotator, rootComponent, "p_rotator");
+
+        const glm::vec3 dummyPos(0.0f);
+        const auto idleProp = std::make_shared<BezierProp_t>(dummyPos, dummyPos, b_translation);
+        const auto collectedProp = std::make_shared<BezierProp_t>(dummyPos, dummyPos, b_translation);
+        stateIdle->AddStateProperty(idleProp);
+        stateCollected->AddStateProperty(collectedProp);
+
+        const auto idleRotProp = std::make_shared<RotProp_t>(glm::vec3(0.0f), b_rotator);
+        const auto collectedRotProp = std::make_shared<RotProp_t>(glm::vec3(0.0f), b_rotator);
+        stateIdle->AddStateProperty(idleRotProp);
+        stateCollected->AddStateProperty(collectedRotProp);
+
+        a_loot->SetupLootTweener(lootTweener, idleProp, collectedProp, collectedRotProp);
+    }
+
+    return a_loot;
+}
+} // namespace Game
