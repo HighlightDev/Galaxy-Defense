@@ -115,6 +115,8 @@ private:
 
     std::unordered_map<int32_t, PendingUiRectangleUpdates> mPendingUiRectangleUpdates;
 
+    std::unordered_map<int32_t, PendingUiLabelUpdates> mPendingUiLabelUpdates;
+
 public:
     explicit Scene(InterThreadCommunicationMgr& interThreadMgr);
 
@@ -139,9 +141,11 @@ public:
 
     void EnqueuePrimitiveTransformUpdate(const int32_t uiItemUid, PendingPrimitiveTransform pendingTransform);
 
-    void EnqueueUiItemBaseUpdate(const int32_t sceneProxyId, PendingUiItemBaseUpdates pendingUpdates);
+    void EnqueueUiItemBaseUpdate(const int32_t uiItemUid, PendingUiItemBaseUpdates pendingUpdates);
 
-    void EnqueueUiRectangleUpdate(const int32_t sceneProxyId, PendingUiRectangleUpdates pendingUpdates);
+    void EnqueueUiRectangleUpdate(const int32_t uiItemUid, PendingUiRectangleUpdates pendingUpdates);
+
+    void EnqueueUiLabelUpdates(const int32_t uiItemUid, PendingUiLabelUpdates pendingUpdates);
 
     void ProcessEvent(
         const WindowSizeChangedGameThreadEvent* sender, const WindowSizeChangedGameThreadEvent::EventData_t& data) override;

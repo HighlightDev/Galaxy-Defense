@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/BoundingBox3D.h"
+#include "Core/GameCore/GUI/Common/TextEnums.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -43,5 +44,19 @@ struct PendingUiRectangleUpdates {
     bool isRoundTop;
     bool isRoundBottom;
     bool applyBlur;
+};
+
+struct PendingUiLabelUpdates {
+    int32_t CanvasUid;
+    std::string Text;
+    float Opacity;
+    int32_t FontSize;
+    glm::ivec2 TextLineWidthHeight;
+    glm::vec3 TextColor;
+    eTextHorizontalAlignmentType TextHorizontalAlignment;
+    eTextVerticalAlignmentType TextVerticalAlignment;
+    eTextGradientColorType TextGradientColorType;
+    glm::vec3 GradientTextColorStart;
+    glm::vec3 GradientTextColorEnd;
 };
 } // namespace EngineCore

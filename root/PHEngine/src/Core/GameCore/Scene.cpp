@@ -19,6 +19,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GraphicsCore/Renderer/SceneRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
+#include "Core/GraphicsCore/UiSceneProxy/UiLabelSceneProxy.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiRectangleSceneProxy.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
@@ -38,11 +39,12 @@ Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
     , mLuaReplicators()
     , m_interThreadMgr(interThreadMgr)
     , mGameThreadDeltaSec(std::make_shared<EngineObjectProperty<float>>(0.0f, "GT_DeltaSec"))
-    , mScreenResolutionProperty(std::make_shared<EngineObjectProperty<glm::vec2>>(
-          glm::vec2(
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-              GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
-          "ScreenResolution"))
+    , mScreenResolutionProperty(
+          std::make_shared<EngineObjectProperty<glm::vec2>>(
+              glm::vec2(
+                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+                  GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()),
+              "ScreenResolution"))
     , mDeferredResourceCreators()
     , mActors()
     , mMainCamera()
@@ -377,9 +379,10 @@ std::shared_ptr<UiHandler> Scene::GetUiHandler() const
 void Scene::Tick(const float delta, const float playSpeed)
 {
     mGameThreadDeltaSec->SetValue(delta);
-    mScreenResolutionProperty->SetValue(glm::vec2(
-        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
-        GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
+    mScreenResolutionProperty->SetValue(
+        glm::vec2(
+            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowWidth(),
+            GeneralSystemSettingsDataProvider::GetInstance()->GetWindowHeight()));
 
     mPhysicsWorld->Tick(delta, playSpeed);
 
@@ -478,6 +481,11 @@ void Scene::EnqueueUiItemBaseUpdate(const int32_t uiItemUid, PendingUiItemBaseUp
 void Scene::EnqueueUiRectangleUpdate(const int32_t uiItemUid, PendingUiRectangleUpdates pendingUpdates)
 {
     mPendingUiRectangleUpdates[uiItemUid] = std::move(pendingUpdates);
+}
+
+void Scene::EnqueueUiLabelUpdates(const int32_t uiItemUid, PendingUiLabelUpdates pendingUpdates)
+{
+    mPendingUiLabelUpdates[uiItemUid] = std::move(pendingUpdates);
 }
 
 void Scene::FlushPendingSynchronizeUpdates()
@@ -598,14 +606,57 @@ void Scene::FlushPendingSynchronizeUpdates()
                             rectangleSceneProxy->SetIsRoundBottom(updateStruct.isRoundBottom);
                             rectangleSceneProxy->SetApplyBlur(updateStruct.applyBlur);
                         } else {
-                            LogInfo("Scene::FlushPendingSynchronizeUpdates: mPendingUiRectangleUpdates: Error, uiSceneProxy is "
-                                    "not a UiRectangleSceneProxy");
+                            LogInfo(
+                                "Scene::FlushPendingSynchronizeUpdates: mPendingUiRectangleUpdates: Error, uiSceneProxy is "
+                                "not a UiRectangleSceneProxy");
                         }
                     }
                 }
             });
 
         mPendingUiRectangleUpdates.clear();
+    }
+
+    if (not mPendingUiLabelUpdates.empty()) {
+        static constexpr uint64_t functionId = Hash64_CT("Scene::FlushPendingSynchronizeUpdates: mPendingUiLabelUpdates");
+
+        m_interThreadMgr.ExecuteOnRenderThread(
+            eEnqueueJobPolicy::PUSH_ANYWAY,
+            0,
+            functionId,
+            [updates = std::move(mPendingUiLabelUpdates)](
+                std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+                std::weak_ptr<EngineCore::Scene> sceneWp,
+                std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+                const auto sceneRenderer = sceneRendererWp.lock();
+                if (!sceneRenderer) {
+                    return;
+                }
+
+                for (const auto& [itemUid, updateStruct] : updates) {
+                    const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(itemUid, updateStruct.CanvasUid);
+                    if (uiSceneProxy) {
+                        const auto& labelSceneProxy = std::static_pointer_cast<UiLabelSceneProxy>(uiSceneProxy);
+                        labelSceneProxy->SetOpacity(updateStruct.Opacity);
+                        labelSceneProxy->SetText(updateStruct.Text);
+                        labelSceneProxy->SetTextLineWidthHeight(updateStruct.TextLineWidthHeight);
+                        labelSceneProxy->SetFontSize(updateStruct.FontSize);
+                        labelSceneProxy->SetTextColor(updateStruct.TextColor);
+                        labelSceneProxy->SetTextHorizontalAlignment(updateStruct.TextHorizontalAlignment);
+                        labelSceneProxy->SetTextVerticalAlignment(updateStruct.TextVerticalAlignment);
+                        labelSceneProxy->SetGradientColor(
+                            updateStruct.TextGradientColorType,
+                            updateStruct.GradientTextColorStart,
+                            updateStruct.GradientTextColorEnd);
+                    } else {
+                        LogInfo(
+                            "Scene::FlushPendingSynchronizeUpdates: mPendingUiLabelUpdates: Error, uiSceneProxy is "
+                            "not a UiLabelSceneProxy");
+                    }
+                }
+            });
+
+        mPendingUiLabelUpdates.clear();
     }
 }
 

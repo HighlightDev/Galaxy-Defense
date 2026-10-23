@@ -29,8 +29,9 @@ UiLabel::UiLabel(const std::string& fontName, const std::string& name)
     , mTextLineWidthHeight()
     , mFontSize(15)
     , mTextColor(glm::vec3())
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
-          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(mOpacity, "Opacity", [this](const float newOpacityValue) {
+        SetOpacity(newOpacityValue);
+    }))
 {
     ext_assert(mFontName.size(), "UiLabel::ctor: fontName is empty");
     ext_assert(!mProperties.count("Opacity"), "UiLabel::ctor: Property 'Opacity' already exists");
@@ -330,53 +331,29 @@ glm::ivec2 UiLabel::GetTextScreenSpaceSize() const
 
 bool UiLabel::SyncDataOnRenderThread()
 {
-    static constexpr uint64_t functionId = Hash64_CT("UiLabel::SyncDataOnRenderThread");
+    const auto& canvasSp = GetParentCanvas().lock();
+    if (!canvasSp) {
+        return false;
+    }
     if (mIsSceneProxyReady.load(std::memory_order::seq_cst)) {
         if (const auto& sceneSp = GetScene().lock()) {
-            if (const auto& canvasSp = GetParentCanvas().lock()) {
-                if (const auto& sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock()) {
-
-                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(
-                        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                        GetUId(),
-                        functionId,
-                        [sceneRenderer,
-                         myUid = GetUId(),
-                         canvasUId = canvasSp->GetUId(),
-                         opacity = mOpacity,
-                         text = mText,
-                         textLineWidthHeight = mTextLineWidthHeight,
-                         fontSize = mFontSize,
-                         textColor = mTextColor,
-                         textHorizontalAlignment = mTextHorizontalAlignment,
-                         textVerticalAlignment = mTextVerticalAlignment,
-                         textGradientColorType = mTextGradientColorType,
-                         gradientTextColorStart = mGradientTextColorStart,
-                         gradientTextColorEnd = mGradientTextColorEnd](
-                            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-                            std::weak_ptr<EngineCore::Scene> sceneWp,
-                            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                            const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUid, canvasUId);
-                            if (uiSceneProxy) {
-                                const auto& labelSceneProxy = std::static_pointer_cast<UiLabelSceneProxy>(uiSceneProxy);
-                                labelSceneProxy->SetOpacity(opacity);
-                                labelSceneProxy->SetText(text);
-                                labelSceneProxy->SetTextLineWidthHeight(textLineWidthHeight);
-                                labelSceneProxy->SetFontSize(fontSize);
-                                labelSceneProxy->SetTextColor(textColor);
-                                labelSceneProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
-                                labelSceneProxy->SetTextVerticalAlignment(textVerticalAlignment);
-                                labelSceneProxy->SetGradientColor(
-                                    textGradientColorType, gradientTextColorStart, gradientTextColorEnd);
-                            }
-                        });
-                }
-            }
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
+            PendingUiLabelUpdates updateStruct;
+            updateStruct.CanvasUid = static_cast<int32_t>(canvasSp->GetUId());
+            updateStruct.Text = mText;
+            updateStruct.Opacity = mOpacity;
+            updateStruct.TextColor = mTextColor;
+            updateStruct.FontSize = mFontSize;
+            updateStruct.TextLineWidthHeight = mTextLineWidthHeight;
+            updateStruct.TextHorizontalAlignment = mTextHorizontalAlignment;
+            updateStruct.TextVerticalAlignment = mTextVerticalAlignment;
+            updateStruct.TextGradientColorType = mTextGradientColorType;
+            updateStruct.GradientTextColorStart = mGradientTextColorStart;
+            updateStruct.GradientTextColorEnd = mGradientTextColorEnd;
+            sceneSp->EnqueueUiLabelUpdates(GetUId(), updateStruct);
         }
-
-        return true;
     }
-    return false;
+    return mIsSceneProxyReady.load();
 }
 
 bool UiLabel::SyncDataOnLuaThread()
