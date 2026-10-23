@@ -151,7 +151,6 @@ void NavMesh2D::FillCellStatesBetweenWorldPositions(
 
 std::vector<glm::vec2> NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& startWorldPosition, const glm::vec2& endWorldPosition)
 {
-    LogInfo("NavMesh2D::BuildRouteBetweenPoints: start: ", startWorldPosition, "), end: (", endWorldPosition, ")");
     const auto& levelMin = mLevelBoundingBox.GetMin();
     const int32_t colsCount = mCellsCountX;
     const int32_t rowsCount = mCellsCountY;
@@ -170,7 +169,7 @@ std::vector<glm::vec2> NavMesh2D::BuildRouteBetweenPoints(const glm::vec2& start
     worldToCell(startWorldPosition, startX, startY);
     worldToCell(endWorldPosition, endX, endY);
 
-    auto resultPathInTuples = findPathAStar(mPathfindingGrid, std::make_tuple(startX, startY), std::make_tuple(endX, endY));
+    auto resultPathInTuples = findPath(mPathfindingGrid, std::make_tuple(startX, startY), std::make_tuple(endX, endY));
     if (resultPathInTuples.empty()) {
         LogInfo("NavMesh2D::BuildRouteBetweenPoints: no path found");
         return {};

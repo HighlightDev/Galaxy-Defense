@@ -22,6 +22,7 @@
 
 #include <glm/vec3.hpp>
 
+#include <algorithm>
 #include <array>
 #include <limits>
 
@@ -39,10 +40,11 @@ bool NavigationController::cEnableDebugPathRendering = false;
 
 NavigationController::NavigationController(const std::weak_ptr<::EngineCore::Scene>& sceneWp)
     : mSceneWp(sceneWp)
-    , mNavPathDummyActor(std::make_shared<Actor>(
-          "NavPathDummyActor",
-          std::make_shared<EngineCore::SceneComponent>(
-              "NavPathDummy_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true)))
+    , mNavPathDummyActor(
+          std::make_shared<Actor>(
+              "NavPathDummyActor",
+              std::make_shared<EngineCore::SceneComponent>(
+                  "NavPathDummy_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true)))
 {
 }
 
@@ -63,11 +65,50 @@ void NavigationController::SetPortalPositions(const std::vector<glm::vec3>& port
     mPortalPositions = portalPositions;
 }
 
+const std::vector<glm::vec3>& NavigationController::GetPortalPositions() const
+{
+    return mPortalPositions;
+}
+
 bool NavigationController::IsPositionNearFinalDestination(const glm::vec3& position, const float radius) const
 {
     const float dist
         = glm::distance(glm::vec2(position.x, position.z), glm::vec2(mFinalDestinationPoint.x, mFinalDestinationPoint.z));
     return dist < radius;
+}
+
+bool NavigationController::WillBarrierBlockRouteFromAnyPortalToFinalPosition(
+    const std::shared_ptr<BarrierActor>& barrierActor, const glm::vec3& hypotheticalBarrierPillarPosition)
+{
+    const int32_t existingPillarsCount = barrierActor->GetBarrierPillarsCount();
+    if (existingPillarsCount <= 0) {
+        return false;
+    }
+
+    const auto& lastPillarPosition = barrierActor->GetBarrierPillarPosition(existingPillarsCount - 1);
+    // Same position as the last pillar - no new ray would be created
+    if (EngineMath::CheckSimilarityVec3(lastPillarPosition, hypotheticalBarrierPillarPosition)) {
+        return false;
+    }
+
+    const auto& barrierPillarSize = barrierActor->GetBarrierPillarSize();
+    mNavMesh->FillCellStatesBetweenWorldPositions(
+        glm::vec2(lastPillarPosition.x, lastPillarPosition.z),
+        glm::vec2(hypotheticalBarrierPillarPosition.x, hypotheticalBarrierPillarPosition.z),
+        glm::vec2(barrierPillarSize.x, barrierPillarSize.z),
+        false);
+
+    const bool isAnyRouteBlocked
+        = std::any_of(mPortalPositions.cbegin(), mPortalPositions.cend(), [this](const auto& portalPosition) {
+              return mNavMesh
+                  ->BuildRouteBetweenPoints(
+                      {portalPosition.x, portalPosition.z}, {mFinalDestinationPoint.x, mFinalDestinationPoint.z})
+                  .empty(); // Empty route -> it will be blocked
+          });
+
+    // Restore actual nav mesh state
+    ReapplyAllObstaclesToNavMesh();
+    return isAnyRouteBlocked;
 }
 
 void NavigationController::SetLevelBounds(const BoundingBox3D& levelBounds)
@@ -554,8 +595,9 @@ void NavigationController::InitializeNavMeshDebugRendering()
 {
     const auto sceneSp = mSceneWp.lock();
     if (!sceneSp || !mNavMesh) {
-        LogInfo("NavigationController::InitializeNavMeshDebugRendering: cannot initialize nav mesh debug rendering, because "
-                "scene pointer or nav mesh is null");
+        LogInfo(
+            "NavigationController::InitializeNavMeshDebugRendering: cannot initialize nav mesh debug rendering, because "
+            "scene pointer or nav mesh is null");
         return;
     }
 

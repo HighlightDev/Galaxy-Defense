@@ -71,6 +71,8 @@ public:
 
     void SetPortalPositions(const std::vector<glm::vec3>& portalPositions);
 
+    const std::vector<glm::vec3>& GetPortalPositions() const;
+
     void OnPreLevelInit() override;
 
     void OnLevelInit() override;
@@ -104,6 +106,9 @@ public:
     void RemoveMissileFromNavigation(const int32_t missileActorId);
 
     bool IsPositionNearFinalDestination(const glm::vec3& position, const float radius) const;
+
+    bool WillBarrierBlockRouteFromAnyPortalToFinalPosition(
+        const std::shared_ptr<BarrierActor>& barrierActor, const glm::vec3& hypotheticalBarrierPillarPosition);
 
 private:
     void Initialize();

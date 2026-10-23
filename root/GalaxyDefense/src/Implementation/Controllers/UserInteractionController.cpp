@@ -54,13 +54,15 @@ UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>&
     , mLevelBounds()
     , mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>("GameFlowController_InputComponent")))
     , mMainSceneCamera()
-    , mGhostTowerActor(std::make_shared<Actor>(
-          "GhostTowerActor",
-          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
-    , mGhostBarrierPillarActor(std::make_shared<Actor>(
-          "GhostBarrierPillarActor",
-          std::make_shared<SceneComponent>(
-              "GhostBarrierPillarActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mGhostTowerActor(
+          std::make_shared<Actor>(
+              "GhostTowerActor",
+              std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mGhostBarrierPillarActor(
+          std::make_shared<Actor>(
+              "GhostBarrierPillarActor",
+              std::make_shared<SceneComponent>(
+                  "GhostBarrierPillarActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mReloadPlacementTower(std::make_shared<GameThreadTimer>())
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mGhostBarrierPillarBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
@@ -220,8 +222,17 @@ bool UserInteractionController::IsTowerPositionValid(const glm::vec3 position) c
 bool UserInteractionController::IsBarrierPositionValid(const glm::vec3& position) const
 {
     if (auto parentControllerSp = mParentController.lock()) {
-        return not parentControllerSp->GetNavigationController()->IsPositionNearFinalDestination(
-            position, Game::Constants::c_barrierExclusionRadiusFromDestination);
+        const auto navControllerSp = parentControllerSp->GetNavigationController();
+        if (navControllerSp->IsPositionNearFinalDestination(position, Game::Constants::c_barrierExclusionRadiusFromDestination)) {
+            return false;
+        }
+
+        // We are about to create a new barrier - no need to check route for blockage
+        if (not mCurrentBarrierActor) {
+            return true;
+        }
+
+        return not navControllerSp->WillBarrierBlockRouteFromAnyPortalToFinalPosition(mCurrentBarrierActor, position);
     }
     return false;
 }
@@ -347,11 +358,12 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
                     const auto spaceStationSp = mCombatActorsPoolHandler->GetFreeSpaceStationActor();
                     ext_assert(spaceStationSp, "Failed to get free space station actor");
                     spaceStationSp->GetRootComponent()->SetTranslation(cellPositionVec3);
-                    spaceStationSp->SetSpaceStationLevel(std::make_shared<SpaceStationLevel>(
-                        mTowerMissileType,
-                        1,
-                        LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(mTowerMissileType, 1),
-                        LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
+                    spaceStationSp->SetSpaceStationLevel(
+                        std::make_shared<SpaceStationLevel>(
+                            mTowerMissileType,
+                            1,
+                            LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(mTowerMissileType, 1),
+                            LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
                     spaceStationSp->SetState(eSpaceStationActivityState::ACTIVE);
                     if (auto parentControllerSp = mParentController.lock()) {
                         parentControllerSp->GetNavigationController()->PutActiveSpaceStationOnLevel(spaceStationSp);
