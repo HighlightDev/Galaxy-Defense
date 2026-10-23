@@ -12,7 +12,7 @@ add_executable(${EXECUTABLE_NAME} ${HEADERS} ${SOURCES})
 
 # Engine-wide definitions (DEBUG, BT_USE_DOUBLE_PRECISION, ...) come from
 # PHEngine
-applybuildoptions(${EXECUTABLE_NAME})
+ApplyBuildOptions(${EXECUTABLE_NAME})
 
 add_custom_command(
   TARGET ${EXECUTABLE_NAME}
