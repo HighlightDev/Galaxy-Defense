@@ -525,7 +525,7 @@ CombatActorsPoolHandler::GetPhysicsComponentsByGameObjectTypes(const std::unorde
     return physicsComponents;
 }
 
-void CombatActorsPoolHandler::SpawnLoot(const int32_t count, const eLootCategory lootCategory)
+void CombatActorsPoolHandler::SpawnLoot(const int32_t count, const eDropLootType lootCategory)
 {
     const auto& sceneSp = mSceneWp.lock();
     ext_assert(sceneSp, "Scene pointer is null in SpawnLoot");
@@ -537,7 +537,7 @@ void CombatActorsPoolHandler::SpawnLoot(const int32_t count, const eLootCategory
     }
 }
 
-std::shared_ptr<LootActor> CombatActorsPoolHandler::GetFreeLootActor(const eLootCategory lootCategory)
+std::shared_ptr<LootActor> CombatActorsPoolHandler::GetFreeLootActor(const eDropLootType lootCategory)
 {
     auto idleLootIt = std::find_if(mLootActors.cbegin(), mLootActors.cend(), [lootCategory](const auto& loot) {
         return loot->GetLootState() == eLootState::IDLE && loot->GetLootCategory() == lootCategory;

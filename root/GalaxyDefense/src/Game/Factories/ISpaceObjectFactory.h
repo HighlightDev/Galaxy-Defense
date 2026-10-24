@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/LootCategoryType.h"
+#include "Game/DropLootType.h"
 
 #include <glm/vec3.hpp>
 
@@ -65,7 +65,7 @@ class ILootFactory {
         const glm::vec3& translation,
         const glm::vec3& rotation,
         const glm::vec3& scale,
-        const eLootCategory lootCategory)
+        const eDropLootType lootCategory)
         = 0;
 };
 } // namespace Game

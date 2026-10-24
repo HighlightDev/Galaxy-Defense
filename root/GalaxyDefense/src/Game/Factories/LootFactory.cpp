@@ -40,7 +40,7 @@ std::shared_ptr<LootActor> LootFactory::CreateLoot(
     const glm::vec3& translation,
     const glm::vec3& rotation,
     const glm::vec3& scale,
-    const eLootCategory lootCategory)
+    const eDropLootType lootCategory)
 {
     using namespace Constants::Loot;
 

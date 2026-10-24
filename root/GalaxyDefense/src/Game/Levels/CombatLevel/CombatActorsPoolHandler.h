@@ -4,7 +4,7 @@
 #include "Game/Actors/SpaceshipActor.h"
 #include "Game/GameObjectsCollisionType.h"
 #include "Game/GameObjectsType.h"
-#include "Game/LootCategoryType.h"
+#include "Game/DropLootType.h"
 #include "Game/MissileType.h"
 
 #include <glm/vec3.hpp>
@@ -107,7 +107,7 @@ public:
     eGameObjectsCollisionType
     GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const;
 
-    std::shared_ptr<LootActor> GetFreeLootActor(const eLootCategory lootCategory);
+    std::shared_ptr<LootActor> GetFreeLootActor(const eDropLootType lootCategory);
 
     void SpawnEnemySpaceships(const int32_t count, const eSpaceshipType spaceshipType);
 
@@ -121,7 +121,7 @@ public:
 
     void SpawnPortals(const int32_t count, const float portalSize);
 
-    void SpawnLoot(const int32_t count, const eLootCategory lootCategory);
+    void SpawnLoot(const int32_t count, const eDropLootType lootCategory);
 
     int32_t GetSpaceStationsCount() const;
 

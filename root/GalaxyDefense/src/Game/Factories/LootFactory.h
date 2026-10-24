@@ -21,6 +21,6 @@ public:
         const glm::vec3& translation,
         const glm::vec3& rotation,
         const glm::vec3& scale,
-        const eLootCategory lootCategory) override;
+        const eDropLootType lootCategory) override;
 };
 } // namespace Game

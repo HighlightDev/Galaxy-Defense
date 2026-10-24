@@ -5,8 +5,9 @@
 #include "Game/Actors/LootActor.h"
 #include "Game/Actors/SpaceshipActor.h"
 #include "Game/DataProviders/GameConstants.h"
+#include "Game/DropLootType.h"
 #include "Game/Levels/CombatLevel/CombatActorsPoolHandler.h"
-#include "Game/LootCategoryType.h"
+#include "Game/LootSystem/PandoraBox.h"
 
 using namespace EngineCore;
 
@@ -42,7 +43,7 @@ void LootController::OnLevelInit()
 void LootController::OnPostLevelInit()
 {
     ext_assert(mCombatActorsPoolHandler, "CombatActorsPoolHandler is not set in LootController::OnPostLevelInit");
-    mCombatActorsPoolHandler->SpawnLoot(10, eLootCategory::LOOT);
+    mCombatActorsPoolHandler->SpawnLoot(10, eDropLootType::CRYSTALS);
 }
 
 void LootController::PostPlayLevelFinished()
@@ -68,8 +69,8 @@ void LootController::SetLevelBounds(const BoundingBox3D& levelBounds)
 
 void LootController::TrySpawnLootAt(const glm::vec3& position)
 {
-    if (Random::Float() < Game::Constants::c_lootDropChance) {
-        if (const auto lootActor = mCombatActorsPoolHandler->GetFreeLootActor(eLootCategory::LOOT)) {
+    if (PandoraBox::GetInstance()->CheckIfLootDrops()) {
+        if (const auto lootActor = mCombatActorsPoolHandler->GetFreeLootActor(eDropLootType::CRYSTALS)) {
             lootActor->SpawnLoot(glm::vec3(position.x, 0.0f, position.z));
         }
     }

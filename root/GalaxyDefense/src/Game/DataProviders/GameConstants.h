@@ -21,7 +21,8 @@ extern const float c_barrierExclusionRadiusFromDestination;
 extern const glm::vec3 c_lootSize;
 extern const float c_lootTweenTimeSec;
 extern const float c_outlineThickness;
-extern const float c_lootDropChance;
+extern const float c_lootChanceCoef;
+extern const int32_t c_numberOfPRDIterations;
 } // namespace Game::Constants
 
 namespace Game::Constants::GravityBombMissile {

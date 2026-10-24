@@ -39,6 +39,7 @@
 #include "Game/GalaxySceneCamera.h"
 #include "Game/Levels/LevelSerializationHelper.h"
 #include "Game/Levels/ProceduralSpaceBackgroundBuilder.h"
+#include "Game/LootSystem/PandoraBox.h"
 #include "Game/LuaExecutors/LuaCombatLevelExecutor.h"
 
 #include <glm/vec2.hpp>
@@ -270,6 +271,7 @@ void CombatLevel::UnloadLevel()
     }
 
     Game::PlayerDataProvider::GetInstance()->ResetLevelData();
+    Game::PandoraBox::GetInstance()->ResetState();
 }
 
 void CombatLevel::Tick(const float deltaTimeSec, const float playSpeed)

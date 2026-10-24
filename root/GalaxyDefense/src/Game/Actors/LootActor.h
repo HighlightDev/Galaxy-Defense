@@ -4,7 +4,7 @@
 #include "Core/GameCore/GUI/UiElements/IUiTransformable.h"
 #include "Core/GameCore/Tweener/ITweenStateChangeNotifyable.h"
 #include "Core/GameCore/Tweener/StateProperty.h"
-#include "Game/LootCategoryType.h"
+#include "Game/DropLootType.h"
 
 using namespace EngineCore;
 
@@ -19,7 +19,7 @@ enum class eLootState { NA, IDLE, ACTIVE };
 
 class LootActor : public Actor, public ITweenStateChangeNotifyable {
 
-    eLootCategory mLootCategory;
+    eDropLootType mLootCategory;
 
     eLootState mLootState;
 
@@ -39,9 +39,9 @@ public:
 
     void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    eLootCategory GetLootCategory() const;
+    eDropLootType GetLootCategory() const;
 
-    void SetLootCategory(const eLootCategory lootCategory);
+    void SetLootCategory(const eDropLootType lootCategory);
 
     void SetLootState(const eLootState lootState);
 

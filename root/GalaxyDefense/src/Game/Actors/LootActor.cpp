@@ -20,7 +20,7 @@
 namespace Game {
 LootActor::LootActor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent)
     : Actor(gameObjectName, rootComponent)
-    , mLootCategory(eLootCategory::LOOT)
+    , mLootCategory(eDropLootType::CRYSTALS)
     , mLootState(eLootState::NA)
     , bIsCollecting(false)
 {
@@ -34,7 +34,7 @@ void LootActor::CleanUp()
     Actor::CleanUp();
 }
 
-eLootCategory LootActor::GetLootCategory() const
+eDropLootType LootActor::GetLootCategory() const
 {
     return mLootCategory;
 }
@@ -59,14 +59,14 @@ void LootActor::OnTweenStateChanged(const std::string& stateName)
     LogInfo("LootActor::OnTweenStateChanged: name: ", GetName(), " stateName: ", stateName);
     if ("s_Collected" == stateName) {
         // Award crystals to player when the collect animation finishes
-        if (mLootCategory == eLootCategory::LOOT) {
+        if (mLootCategory == eDropLootType::CRYSTALS) {
             PlayerDataProvider::GetInstance()->SetCrystalsCount(PlayerDataProvider::GetInstance()->GetCrystalsCount() + 1);
         }
         SetLootState(eLootState::IDLE);
     }
 }
 
-void LootActor::SetLootCategory(const eLootCategory lootCategory)
+void LootActor::SetLootCategory(const eDropLootType lootCategory)
 {
     mLootCategory = lootCategory;
 }
