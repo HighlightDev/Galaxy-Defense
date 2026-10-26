@@ -47,6 +47,11 @@ void LuaCommonEngineFunctions::OnScriptStopped(const LuaWrapper& luaWrapper)
 
 void LuaCommonEngineFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
 {
+#ifndef DEBUG
+    //  Make lua print function empty in non-debug build configs
+    HidePrintFunction(luaWrapper);
+#endif
+
     LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetWindowHeight"), int32_t(void)>::Bind(
         luaWrapper,
         mOwnerPtr,

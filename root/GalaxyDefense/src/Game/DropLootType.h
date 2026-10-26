@@ -2,5 +2,5 @@
 
 namespace Game {
 
-enum class eDropLootType { CRYSTALS };
+enum class eDropLootType { NONE, CRYSTALS };
 } // namespace Game

@@ -59,15 +59,26 @@ void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                 mSceneProxyId,
                 functionId,
-                [sceneSp, boundingBox, goID = GetGameObjectId()](
+                [boundingBox, goID = GetGameObjectId()](
                     std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                     std::weak_ptr<EngineCore::Scene> sceneWp,
                     std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                    const auto& engineObject = sceneSp->GetEngineObjectById(goID);
+                    const auto sceneSp = sceneWp.lock();
+                    if (not sceneSp) {
+                        return;
+                    }
+                    const auto engineObject = sceneSp->GetEngineObjectById(goID);
                     ext_assert(engineObject, "Engine object not found by ID");
-                    const auto& primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                    ext_assert(primitiveComponent, "Failed to cast engine object to PrimitiveComponent");
-                    primitiveComponent->SetBoundingBox(boundingBox);
+                    if (not engineObject) {
+                        return;
+                    }
+
+                    const auto primitiveComponentSp = std::dynamic_pointer_cast<PrimitiveComponent>(engineObject);
+                    ext_assert(primitiveComponentSp, "Failed to cast engine object to PrimitiveComponent");
+                    if (not primitiveComponentSp) {
+                        return;
+                    }
+                    primitiveComponentSp->SetBoundingBox(boundingBox);
                 });
         }
     }

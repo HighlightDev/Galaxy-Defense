@@ -17,5 +17,6 @@ TEST_BUILD_CMAKE/
 External/
 Models/
 build/
+PHEngine/
 DEV_NOTES.md
 CMakeUserPresets.json

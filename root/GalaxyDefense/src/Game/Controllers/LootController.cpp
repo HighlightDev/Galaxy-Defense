@@ -69,8 +69,9 @@ void LootController::SetLevelBounds(const BoundingBox3D& levelBounds)
 
 void LootController::TrySpawnLootAt(const glm::vec3& position)
 {
-    if (PandoraBox::GetInstance()->CheckIfLootDrops()) {
-        if (const auto lootActor = mCombatActorsPoolHandler->GetFreeLootActor(eDropLootType::CRYSTALS)) {
+    const eDropLootType lootType = PandoraBox::GetInstance()->AttemptToPickLootFromTheBox();
+    if (eDropLootType::NONE != lootType) {
+        if (const auto lootActor = mCombatActorsPoolHandler->GetFreeLootActor(lootType)) {
             lootActor->SpawnLoot(glm::vec3(position.x, 0.0f, position.z));
         }
     }

@@ -17,10 +17,11 @@ public:
 
     void ResetState();
 
-    bool CheckIfLootDrops();
+    eDropLootType AttemptToPickLootFromTheBox();
 
 private:
-
     explicit PandoraBox();
+
+    bool CheckIfLootDrops();
 };
 } // namespace Game

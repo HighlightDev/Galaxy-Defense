@@ -59,7 +59,7 @@ extern "C" {
 #ifdef _WIN32
 #define FORCEINLINE __forceinline
 #elif __linux__
-#define FORCEINLINE __attribute__((always_inline))
+#define FORCEINLINE __attribute__((always_inline)) inline
 #endif
 
 using namespace EngineCore;
@@ -582,4 +582,11 @@ private:
             state, ownerPtr, sFuncHash, parameterPack);
     }
 };
+
+#ifndef DEBUG
+FORCEINLINE static void HidePrintFunction(const LuaWrapper& luaStateWrapper)
+{
+    lua_register(luaStateWrapper.GetState(), "print", [](lua_State* state) -> int32_t { return 0; });
+}
+#endif
 } // namespace EngineCore::Scripts

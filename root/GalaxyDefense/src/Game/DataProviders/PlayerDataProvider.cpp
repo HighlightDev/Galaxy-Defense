@@ -14,8 +14,8 @@ namespace Game {
 PlayerDataProvider::PlayerDataProvider()
 {
 #if defined(DEBUG)
-    LogInfo("PlayerDataProvider::Give a lot of crystals from the start for debug purposes");
     mCrystalsCount = 9999;
+    LogInfo("PlayerDataProvider::Give a lot of crystals from the start for debug purposes");
 #endif
 }
 
@@ -155,6 +155,11 @@ void PlayerDataProvider::ResetLevelData()
     mSelectedMissileType = eMissileType::NONE;
     mDestroyedEnemySpaceshipsCount = 0;
     mSelectedSpaceObjectId = -1;
+#if defined(DEBUG)
+    mCrystalsCount = 9999;
+    LogInfo("PlayerDataProvider::ResetLevelData: Give a lot of crystals from the start for debug purposes");
+#else
     mCrystalsCount = 0;
+#endif
 }
 } // namespace Game
