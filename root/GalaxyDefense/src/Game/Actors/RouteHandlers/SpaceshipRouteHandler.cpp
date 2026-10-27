@@ -20,10 +20,10 @@ std::string ToString(const eSpaceshipRouteGoal goal)
     }
 }
 
-SpaceshipRouteHandler::SpaceshipRouteHandler(SpaceshipActor* spaceship)
+SpaceshipRouteHandler::SpaceshipRouteHandler(std::weak_ptr<SpaceshipActor> spaceship)
     : mSpaceship(spaceship)
 {
-    ext_assert(mSpaceship, "SpaceshipRouteHandler: null spaceship pointer");
+    ext_assert(!mSpaceship.expired(), "SpaceshipRouteHandler: null spaceship pointer");
 }
 
 void SpaceshipRouteHandler::SetRouteBuildFunctions(
@@ -36,14 +36,16 @@ void SpaceshipRouteHandler::SetRouteBuildFunctions(
 
 void SpaceshipRouteHandler::InitializeAndStartFrom(const glm::vec3& startPosition)
 {
-    ext_assert(mSpaceship, "SpaceshipRouteHandler spaceship is null in InitializeAndStartFrom");
-    mSpaceship->TriggerSpawn(startPosition);
+    const auto spaceship = mSpaceship.lock();
+    ext_assert(spaceship, "SpaceshipRouteHandler spaceship is null in InitializeAndStartFrom");
+    spaceship->TriggerSpawn(startPosition);
     AssignRoute(startPosition);
 }
 
 bool SpaceshipRouteHandler::UpdateRoutesAndCheckIfCompleted()
 {
-    if (!mSpaceship || eSpaceshipActivityState::ACTIVE != mSpaceship->GetSpaceshipActivityState()) {
+    const auto spaceship = mSpaceship.lock();
+    if (!spaceship || eSpaceshipActivityState::ACTIVE != spaceship->GetSpaceshipActivityState()) {
         return false;
     }
 
@@ -71,11 +73,12 @@ bool SpaceshipRouteHandler::UpdateRoutesAndCheckIfCompleted()
 
 void SpaceshipRouteHandler::RebuildFromCurrentPosition()
 {
-    if (!mSpaceship || eSpaceshipActivityState::ACTIVE != mSpaceship->GetSpaceshipActivityState()) {
+    const auto spaceship = mSpaceship.lock();
+    if (!spaceship || eSpaceshipActivityState::ACTIVE != spaceship->GetSpaceshipActivityState()) {
         return;
     }
 
-    AssignRoute(mSpaceship->GetWorldPosition());
+    AssignRoute(spaceship->GetWorldPosition());
 }
 
 std::vector<glm::vec3> SpaceshipRouteHandler::GetCurrentRoutePoints() const
@@ -86,14 +89,21 @@ std::vector<glm::vec3> SpaceshipRouteHandler::GetCurrentRoutePoints() const
 
 std::shared_ptr<OnRouteMovementComponent> SpaceshipRouteHandler::GetMovementComponent() const
 {
-    return mSpaceship ? mSpaceship->GetOnRouteMovementComponent() : nullptr;
+    const auto spaceship = mSpaceship.lock();
+    return spaceship ? spaceship->GetOnRouteMovementComponent() : nullptr;
+}
+
+int32_t SpaceshipRouteHandler::GetSpaceshipId() const
+{
+    const auto spaceship = mSpaceship.lock();
+    return spaceship ? spaceship->GetObjectId() : -1;
 }
 
 void SpaceshipRouteHandler::ApplyRoute(const std::vector<glm::vec3>& routePoints, const eSpaceshipRouteGoal routeGoal)
 {
     LogInfo(
         "SpaceshipRouteHandler::ApplyRoute: applying route for spaceship ",
-        mSpaceship->GetObjectId(),
+        GetSpaceshipId(),
         " with goal ",
         ToString(routeGoal),
         " and points count: ",
@@ -112,7 +122,7 @@ void SpaceshipRouteHandler::StopMovement()
 {
     LogInfo(
         "SpaceshipRouteHandler::StopMovement: stopping movement for spaceship ",
-        mSpaceship->GetObjectId(),
+        GetSpaceshipId(),
         ", was goal: ",
         ToString(mCurrentGoal));
     const auto movementComp = GetMovementComponent();
@@ -125,7 +135,7 @@ void SpaceshipRouteHandler::ResetState()
 {
     LogInfo(
         "SpaceshipRouteHandler::ResetState: resetting route handler state for spaceship ",
-        mSpaceship->GetObjectId(),
+        GetSpaceshipId(),
         ", was goal: ",
         ToString(mCurrentGoal));
     StopMovement();

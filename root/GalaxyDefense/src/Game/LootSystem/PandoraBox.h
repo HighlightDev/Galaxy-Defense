@@ -17,11 +17,11 @@ public:
 
     void ResetState();
 
-    eDropLootType AttemptToPickLootFromTheBox();
+    eDropLootType AttemptToPickLootFromTheBox(const uint32_t spaceshipDanger);
 
 private:
     explicit PandoraBox();
 
-    bool CheckIfLootDrops();
+    bool CheckIfLootDrops(const uint32_t spaceshipDanger);
 };
 } // namespace Game

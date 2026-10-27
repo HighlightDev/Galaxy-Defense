@@ -23,23 +23,26 @@ void PandoraBox::ResetState()
     mPRDData.Reset();
 }
 
-bool PandoraBox::CheckIfLootDrops()
+bool PandoraBox::CheckIfLootDrops(const uint32_t spaceshipDanger)
 {
     bool isDrop = false;
     if (mPRDData.N >= mPRDData.NMax) {
         isDrop = true;
     } else {
-        const auto currentChance = mPRDData.C * mPRDData.N;
+        constexpr float k = 0.5f;
+        // More danger -> more chance for drop
+        const auto Ceff = mPRDData.C * std::pow((float)spaceshipDanger / (float)Game::Constants::c_weakSpaceshipDanger, k);
+        const auto currentChance = Ceff * mPRDData.N;
         isDrop = Random::Float() < currentChance;
     }
     mPRDData.N = isDrop ? 1 : (mPRDData.N + 1);
     return isDrop;
 }
 
-eDropLootType PandoraBox::AttemptToPickLootFromTheBox()
+eDropLootType PandoraBox::AttemptToPickLootFromTheBox(const uint32_t spaceshipDanger)
 {
     eDropLootType result{eDropLootType::NONE};
-    if (CheckIfLootDrops()) {
+    if (CheckIfLootDrops(spaceshipDanger)) {
 
         const auto target = Random::Float() * c_totalWeight;
 

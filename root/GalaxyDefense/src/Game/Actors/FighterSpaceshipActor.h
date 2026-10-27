@@ -16,6 +16,9 @@ class FighterSpaceshipActor : public WeakSpaceshipActor {
 
     bool mIsRayActive{false};
 
+protected:
+    std::shared_ptr<SpaceshipRouteHandler> CreateRouteHandler() override;
+
 public:
     FighterSpaceshipActor(
         const std::string& gameObjectName,

@@ -40,11 +40,10 @@ bool NavigationController::cEnableDebugPathRendering = false;
 
 NavigationController::NavigationController(const std::weak_ptr<::EngineCore::Scene>& sceneWp)
     : mSceneWp(sceneWp)
-    , mNavPathDummyActor(
-          std::make_shared<Actor>(
-              "NavPathDummyActor",
-              std::make_shared<EngineCore::SceneComponent>(
-                  "NavPathDummy_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true)))
+    , mNavPathDummyActor(std::make_shared<Actor>(
+          "NavPathDummyActor",
+          std::make_shared<EngineCore::SceneComponent>(
+              "NavPathDummy_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1), true)))
 {
 }
 
@@ -167,7 +166,7 @@ void NavigationController::Tick(const float deltaTimeSec, const float playSpeed)
     }
 
     for (const auto& spaceship : mEnemies) {
-        auto* handler = spaceship->GetRouteHandler();
+        auto handler = spaceship->GetRouteHandler();
         if (handler && handler->UpdateRoutesAndCheckIfCompleted()) {
             handler->ResetState();
             const auto& levelDataProviderPtr = LevelDataProvider::GetInstance();
@@ -288,7 +287,7 @@ void NavigationController::PutSpaceshipOnRoute(const glm::vec3& startPosition, c
         spaceship->GetObjectId(),
         " on route from position: ",
         startPosition);
-    auto* handler = spaceship->GetRouteHandler();
+    auto handler = spaceship->GetRouteHandler();
     ext_assert(handler, "SpaceshipRouteHandler is null in PutSpaceshipOnRoute");
     handler->SetRouteBuildFunctions(
         [weakMe = std::weak_ptr<NavigationController>(shared_from_this())](const glm::vec3& fromPosition) {
@@ -321,7 +320,7 @@ bool NavigationController::IsRemainingRouteStillWalkable(const std::shared_ptr<S
     if (!spaceship || !mNavMesh) {
         return false;
     }
-    auto* handler = spaceship->GetRouteHandler();
+    auto handler = spaceship->GetRouteHandler();
     if (!handler) {
         return false;
     }
@@ -377,7 +376,7 @@ void NavigationController::RebuildActiveShipRoutes()
         if (eSpaceshipActivityState::ACTIVE != spaceship->GetSpaceshipActivityState()) {
             continue;
         }
-        auto* handler = spaceship->GetRouteHandler();
+        auto handler = spaceship->GetRouteHandler();
         if (!handler) {
             continue;
         }
@@ -595,9 +594,8 @@ void NavigationController::InitializeNavMeshDebugRendering()
 {
     const auto sceneSp = mSceneWp.lock();
     if (!sceneSp || !mNavMesh) {
-        LogInfo(
-            "NavigationController::InitializeNavMeshDebugRendering: cannot initialize nav mesh debug rendering, because "
-            "scene pointer or nav mesh is null");
+        LogInfo("NavigationController::InitializeNavMeshDebugRendering: cannot initialize nav mesh debug rendering, because "
+                "scene pointer or nav mesh is null");
         return;
     }
 
@@ -772,7 +770,7 @@ void NavigationController::RefreshAllDebugPaths()
         if (eSpaceshipActivityState::ACTIVE != spaceship->GetSpaceshipActivityState()) {
             continue;
         }
-        auto* handler = spaceship->GetRouteHandler();
+        auto handler = spaceship->GetRouteHandler();
         if (handler) {
             const auto route = handler->GetCurrentRoutePoints();
             if (route.size() > 1) {

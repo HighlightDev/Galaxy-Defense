@@ -50,7 +50,7 @@ public:
 
     void SetLevelBounds(const EngineCore::BoundingBox3D& levelBounds);
 
-    void TrySpawnLootAt(const glm::vec3& position);
+    void TrySpawnLootAt(const glm::vec3& position, const uint32_t spaceshipDanger);
 
     void SubscribeSpaceship(const std::shared_ptr<SpaceshipActor>& spaceship);
 

@@ -67,9 +67,9 @@ void LootController::SetLevelBounds(const BoundingBox3D& levelBounds)
     mLevelBounds = levelBounds;
 }
 
-void LootController::TrySpawnLootAt(const glm::vec3& position)
+void LootController::TrySpawnLootAt(const glm::vec3& position, const uint32_t spaceshipDanger)
 {
-    const eDropLootType lootType = PandoraBox::GetInstance()->AttemptToPickLootFromTheBox();
+    const eDropLootType lootType = PandoraBox::GetInstance()->AttemptToPickLootFromTheBox(spaceshipDanger);
     if (eDropLootType::NONE != lootType) {
         if (const auto lootActor = mCombatActorsPoolHandler->GetFreeLootActor(lootType)) {
             lootActor->SpawnLoot(glm::vec3(position.x, 0.0f, position.z));
@@ -79,11 +79,13 @@ void LootController::TrySpawnLootAt(const glm::vec3& position)
 
 void LootController::SubscribeSpaceship(const std::shared_ptr<SpaceshipActor>& spaceship)
 {
-    spaceship->SetOnExplosionCallback([selfWp = weak_from_this()](const glm::vec3& position) {
-        if (const auto selfSp = selfWp.lock()) {
-            selfSp->TrySpawnLootAt(position);
-        }
-    });
+    spaceship->SetOnExplosionCallback(
+        [selfWp = weak_from_this(),
+         spaceshipDanger = spaceship->GetSpaceshipLevel().GetSpaceshipDanger()](const glm::vec3& position) {
+            if (const auto selfSp = selfWp.lock()) {
+                selfSp->TrySpawnLootAt(position, spaceshipDanger);
+            }
+        });
 }
 
 void LootController::SubscribeToEnemySpaceships(const std::vector<std::shared_ptr<SpaceshipActor>>& spaceships)

@@ -65,7 +65,7 @@ std::shared_ptr<SpaceshipActor> FighterSpaceShipFactory::CreateSpaceShip(
     const auto& fighterShipIndexStr = std::to_string(s_fighterSpaceShipCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_fighterShip_rootComponent_" + fighterShipIndexStr, translation, rotation, scale, true);
-    const FighterSpaceshipLevel fighterLevel(health, eMissileType::BOMB, c_level, c_shootRadius, c_cooldownMs);
+    const FighterSpaceshipLevel fighterLevel(health,  Constants::c_weakSpaceshipDanger, eMissileType::BOMB, c_level, c_shootRadius, c_cooldownMs);
     const auto& a_fighterSpaceship
         = std::make_shared<FighterSpaceshipActor>("a_fighterShip_" + fighterShipIndexStr, rootComponent, fighterLevel);
     scene->AddActor(a_fighterSpaceship);

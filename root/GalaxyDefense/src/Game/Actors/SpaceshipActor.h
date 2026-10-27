@@ -51,15 +51,19 @@ protected:
     std::shared_ptr<EngineObjectProperty<float>> mDamageTimeProperty;
     std::shared_ptr<EngineObjectProperty<float>> mFreezingEffectProperty;
 
-    std::unique_ptr<SpaceshipRouteHandler> mRouteHandler;
+    std::shared_ptr<SpaceshipRouteHandler> mRouteHandler;
 
     std::function<void(const glm::vec3&)> mOnExplosionCallback;
+
+    virtual std::shared_ptr<SpaceshipRouteHandler> CreateRouteHandler();
 
 public:
     SpaceshipActor(
         const std::string& gameObjectName,
         const std::shared_ptr<EngineCore::SceneComponent>& rootComponent,
         const SpaceshipLevel& spaceshipLevel);
+
+    ~SpaceshipActor();
 
     void Tick(const float deltaTimeSec, const float playSpeed) override;
 
@@ -109,10 +113,10 @@ public:
 
     eSpaceshipType GetSpaceshipType() const;
 
-    SpaceshipRouteHandler* GetRouteHandler() const;
+    std::shared_ptr<SpaceshipRouteHandler> GetRouteHandler() const;
 
     void SetOnExplosionCallback(std::function<void(const glm::vec3&)> callback);
 
-    ~SpaceshipActor();
+    const SpaceshipLevel& GetSpaceshipLevel() const;
 };
 } // namespace Game

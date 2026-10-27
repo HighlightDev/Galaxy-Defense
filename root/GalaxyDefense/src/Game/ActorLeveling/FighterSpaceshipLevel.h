@@ -21,6 +21,7 @@ public:
 
     FighterSpaceshipLevel(
         const uint32_t health,
+        const uint32_t danger,
         const eMissileType missileType,
         const int32_t lvl,
         const float shootRadius,

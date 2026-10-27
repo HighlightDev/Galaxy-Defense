@@ -6,7 +6,7 @@ namespace Game {
 
 class WeakSpaceshipRouteHandler : public SpaceshipRouteHandler {
 public:
-    explicit WeakSpaceshipRouteHandler(SpaceshipActor* spaceship);
+    explicit WeakSpaceshipRouteHandler(std::weak_ptr<SpaceshipActor> spaceship);
 
 protected:
     void AssignRoute(const glm::vec3& startPosition) override;

@@ -23,6 +23,9 @@ extern const float c_lootTweenTimeSec;
 extern const float c_outlineThickness;
 extern const float c_lootChanceCoef;
 extern const int32_t c_numberOfPRDIterations;
+extern const int32_t c_crystalsCountFromStartup;
+extern const uint32_t c_weakSpaceshipDanger;
+extern const uint32_t c_fighterSpaceshipDanger;
 } // namespace Game::Constants
 
 namespace Game::Constants::GravityBombMissile {

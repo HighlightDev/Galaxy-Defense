@@ -66,8 +66,8 @@ std::shared_ptr<SpaceshipActor> WeakSpaceShipFactory::CreateSpaceShip(
     const auto& enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
     const auto& rootComponent = std::make_shared<EngineCore::SceneComponent>(
         "c_enemyShip_rootComponent_" + enemyShipIndexStr, translation, rotation, scale, true);
-    const auto& a_enemySpaceship
-        = std::make_shared<WeakSpaceshipActor>("a_enemyShip_" + enemyShipIndexStr, rootComponent, SpaceshipLevel(health));
+    const auto& a_enemySpaceship = std::make_shared<WeakSpaceshipActor>(
+        "a_enemyShip_" + enemyShipIndexStr, rootComponent, SpaceshipLevel(health, Game::Constants::c_weakSpaceshipDanger));
     scene->AddActor(a_enemySpaceship);
 
     bool bAlreadyExists = false;

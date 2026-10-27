@@ -13,7 +13,11 @@ FighterSpaceshipActor::FighterSpaceshipActor(
     , mFighterLevel(fighterLevel)
 {
     mSpaceshipType = eSpaceshipType::FIGHTER;
-    mRouteHandler = std::make_unique<FighterSpaceshipRouteHandler>(this);
+}
+
+std::shared_ptr<SpaceshipRouteHandler> FighterSpaceshipActor::CreateRouteHandler()
+{
+    return std::make_shared<FighterSpaceshipRouteHandler>(std::static_pointer_cast<SpaceshipActor>(shared_from_this()));
 }
 
 void FighterSpaceshipActor::Tick(const float deltaTimeSec, const float playSpeed)

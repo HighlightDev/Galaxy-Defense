@@ -23,7 +23,11 @@ WeakSpaceshipActor::WeakSpaceshipActor(
     , mWeakSpaceshipTweener()
 {
     mSpaceshipType = eSpaceshipType::PAWN;
-    mRouteHandler = std::make_unique<WeakSpaceshipRouteHandler>(this);
+}
+
+std::shared_ptr<SpaceshipRouteHandler> WeakSpaceshipActor::CreateRouteHandler()
+{
+    return std::make_shared<WeakSpaceshipRouteHandler>(std::static_pointer_cast<SpaceshipActor>(shared_from_this()));
 }
 
 void WeakSpaceshipActor::CleanUp()

@@ -16,10 +16,12 @@ enum class eSpaceshipRouteGoal { NONE, DESTINATION, BARRIER };
 std::string ToString(const eSpaceshipRouteGoal goal);
 
 class SpaceshipRouteHandler {
-    SpaceshipActor* mSpaceship{nullptr};
+    std::weak_ptr<SpaceshipActor> mSpaceship;
     eSpaceshipRouteGoal mCurrentGoal{eSpaceshipRouteGoal::NONE};
 
     std::shared_ptr<OnRouteMovementComponent> GetMovementComponent() const;
+
+    int32_t GetSpaceshipId() const;
 
 protected:
     std::function<std::vector<glm::vec3>(const glm::vec3&)> mBuildRouteToDestinationFn;
@@ -32,7 +34,7 @@ protected:
     void StopMovement();
 
 public:
-    explicit SpaceshipRouteHandler(SpaceshipActor* spaceship);
+    explicit SpaceshipRouteHandler(std::weak_ptr<SpaceshipActor> spaceship);
 
     virtual ~SpaceshipRouteHandler() = default;
 

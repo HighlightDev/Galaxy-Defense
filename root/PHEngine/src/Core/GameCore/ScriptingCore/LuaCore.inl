@@ -73,7 +73,7 @@ struct LuaValuePusher;
 
 template<>
 struct LuaValuePusher<void*> {
-    FORCEINLINE static void Push(lua_State* state, void* value)
+    static void Push(lua_State* state, void* value)
     {
         lua_pushlightuserdata(state, value);
     }
@@ -81,7 +81,7 @@ struct LuaValuePusher<void*> {
 
 template<>
 struct LuaValuePusher<std::string> {
-    FORCEINLINE static void Push(lua_State* state, const std::string& value)
+    static void Push(lua_State* state, const std::string& value)
     {
         lua_pushstring(state, value.c_str());
     }
@@ -89,7 +89,7 @@ struct LuaValuePusher<std::string> {
 
 template<>
 struct LuaValuePusher<float> {
-    FORCEINLINE static void Push(lua_State* state, const float& value)
+    static void Push(lua_State* state, const float& value)
     {
         lua_pushnumber(state, value);
     }
@@ -97,7 +97,7 @@ struct LuaValuePusher<float> {
 
 template<>
 struct LuaValuePusher<int32_t> {
-    FORCEINLINE static void Push(lua_State* state, const int32_t& value)
+    static void Push(lua_State* state, const int32_t& value)
     {
         lua_pushinteger(state, value);
     }
@@ -105,7 +105,7 @@ struct LuaValuePusher<int32_t> {
 
 template<>
 struct LuaValuePusher<bool> {
-    FORCEINLINE static void Push(lua_State* state, const bool& value)
+    static void Push(lua_State* state, const bool& value)
     {
         lua_pushboolean(state, value);
     }
@@ -113,7 +113,7 @@ struct LuaValuePusher<bool> {
 
 template<>
 struct LuaValuePusher<double> {
-    FORCEINLINE static void Push(lua_State* state, const double& value)
+    static void Push(lua_State* state, const double& value)
     {
         lua_pushnumber(state, value);
     }
@@ -121,7 +121,7 @@ struct LuaValuePusher<double> {
 
 template<>
 struct LuaValuePusher<int64_t> {
-    FORCEINLINE static void Push(lua_State* state, const int64_t& value)
+    static void Push(lua_State* state, const int64_t& value)
     {
         lua_pushinteger(state, value);
     }
@@ -132,7 +132,7 @@ struct LuaMultipleValuesPusher;
 
 template<typename Arg, typename... Args>
 struct LuaMultipleValuesPusher<Arg, Args...> {
-    FORCEINLINE static void Push(const LuaWrapper& instanceWrapper, Arg&& arg, Args&&... args)
+    static void Push(const LuaWrapper& instanceWrapper, Arg&& arg, Args&&... args)
     {
         LuaValuePusher<typename std::decay<Arg>::type>::Push(instanceWrapper.GetState(), std::forward<Arg>(arg));
         LuaMultipleValuesPusher<Args...>::Push(instanceWrapper, std::forward<Args>(args)...);
@@ -159,7 +159,7 @@ struct GetLuaValue {
     }
 
 private:
-    FORCEINLINE static typename std::enable_if<std::is_pointer<VariableType>::value, VariableType>::type
+    static typename std::enable_if<std::is_pointer<VariableType>::value, VariableType>::type
     Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
@@ -181,7 +181,7 @@ public:
     }
 
 private:
-    FORCEINLINE static std::string Inner_Value(lua_State* state, int32_t& stackIndex)
+    static std::string Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
         ext_assert(lua_isstring(state, currentStackIndex), "Expected string at stack index " + std::to_string(currentStackIndex));
@@ -203,7 +203,7 @@ public:
     }
 
 private:
-    FORCEINLINE static int64_t Inner_Value(lua_State* state, int32_t& stackIndex)
+    static int64_t Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
         ext_assert(
@@ -226,7 +226,7 @@ public:
     }
 
 private:
-    FORCEINLINE static bool Inner_Value(lua_State* state, int32_t& stackIndex)
+    static bool Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
         ext_assert(
@@ -249,7 +249,7 @@ public:
     }
 
 private:
-    FORCEINLINE static double Inner_Value(lua_State* state, int32_t& stackIndex)
+    static double Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
         ext_assert(lua_isnumber(state, currentStackIndex), "Expected number at stack index " + std::to_string(currentStackIndex));
@@ -271,7 +271,7 @@ public:
     }
 
 private:
-    FORCEINLINE static int32_t Inner_Value(lua_State* state, int32_t& stackIndex)
+    static int32_t Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
         ext_assert(
@@ -294,7 +294,7 @@ public:
     }
 
 private:
-    FORCEINLINE static float Inner_Value(lua_State* state, int32_t& stackIndex)
+    static float Inner_Value(lua_State* state, int32_t& stackIndex)
     {
         const int32_t currentStackIndex = stackIndex--;
         ext_assert(lua_isnumber(state, currentStackIndex), "Expected number at stack index " + std::to_string(currentStackIndex));
@@ -427,7 +427,7 @@ struct GetLuaArgsPack<tuple_type, 0> {
 };
 
 struct GetGlobalBase {
-    FORCEINLINE static void GetGlobal(const LuaWrapper& instanceWrapper, const std::string& variableName)
+    static void GetGlobal(const LuaWrapper& instanceWrapper, const std::string& variableName)
     {
         lua_getglobal(instanceWrapper.GetState(), variableName.c_str());
     }
@@ -502,7 +502,7 @@ template<typename RetType, typename... Args>
 struct LuaFunctionInvoker<RetType(Args...)> {
 
     template<typename... TArgs>
-    FORCEINLINE static RetType Invoke(const LuaWrapper& instanceWrapper, const std::string& functionName, TArgs&&... args)
+    inline static RetType Invoke(const LuaWrapper& instanceWrapper, const std::string& functionName, TArgs&&... args)
     {
         lua_getglobal(instanceWrapper.GetState(), functionName.c_str());
         ext_assert(lua_isfunction(instanceWrapper.GetState(), -1), "Expected function at stack index -1");
@@ -529,7 +529,7 @@ template<typename... Args>
 struct LuaFunctionInvoker<void(Args...)> {
 
     template<typename... TArgs>
-    FORCEINLINE static void Invoke(const LuaWrapper& instanceWrapper, const std::string& functionName, TArgs&&... args)
+    inline static void Invoke(const LuaWrapper& instanceWrapper, const std::string& functionName, TArgs&&... args)
     {
         lua_getglobal(instanceWrapper.GetState(), functionName.c_str());
         ext_assert(lua_isfunction(instanceWrapper.GetState(), -1), "Expected function at stack index -1");
@@ -559,13 +559,13 @@ struct LuaCallbackBinder<funcHash, ReturnType(ArgsType...)> {
 
     static constexpr auto sFuncHash = funcHash;
 
-    FORCEINLINE static void Bind(const LuaWrapper& luaStateWrapper, const std::string& functionName)
+    inline static void Bind(const LuaWrapper& luaStateWrapper, const std::string& functionName)
     {
         lua_register(luaStateWrapper.GetState(), functionName.c_str(), this_t::InnerInvokeCallback);
     }
 
 private:
-    FORCEINLINE static int InnerInvokeCallback(lua_State* state)
+    inline static int InnerInvokeCallback(lua_State* state)
     {
         using namespace LuaInnerCore;
         ext_assert(lua_gettop(state) != 0, "Check missing host data"); // Check missing host data
@@ -584,7 +584,7 @@ private:
 };
 
 #ifndef DEBUG
-FORCEINLINE static void HidePrintFunction(const LuaWrapper& luaStateWrapper)
+inline void HidePrintFunction(const LuaWrapper& luaStateWrapper)
 {
     lua_register(luaStateWrapper.GetState(), "print", [](lua_State* state) -> int32_t { return 0; });
 }

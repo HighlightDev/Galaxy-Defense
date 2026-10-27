@@ -43,8 +43,11 @@ SpaceshipActor::SpaceshipActor(
     mDmgShakeTimer->SetIsPausable(true);
 }
 
+SpaceshipActor::~SpaceshipActor() = default;
+
 void SpaceshipActor::OnSceneOwnerInitialized()
 {
+    mRouteHandler = CreateRouteHandler();
     mUiComponent = GetComponentsByType<SpaceObjectUiComponent>().back();
 
     mDamageMessageTimer->Initialize();
@@ -255,11 +258,19 @@ eSpaceshipType SpaceshipActor::GetSpaceshipType() const
     return mSpaceshipType;
 }
 
-SpaceshipRouteHandler* SpaceshipActor::GetRouteHandler() const
+std::shared_ptr<SpaceshipRouteHandler> SpaceshipActor::GetRouteHandler() const
 {
-    return mRouteHandler.get();
+    return mRouteHandler;
 }
 
-SpaceshipActor::~SpaceshipActor() = default;
+const SpaceshipLevel& SpaceshipActor::GetSpaceshipLevel() const
+{
+    return mSpaceshipLevel;
+}
+
+std::shared_ptr<SpaceshipRouteHandler> SpaceshipActor::CreateRouteHandler()
+{
+    return nullptr;
+}
 
 } // namespace Game

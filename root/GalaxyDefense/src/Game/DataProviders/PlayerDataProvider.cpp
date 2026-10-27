@@ -1,6 +1,7 @@
 #include "PlayerDataProvider.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Game/DataProviders/GameConstants.h"
 #include "Game/Events/MainPlayerStatusChangedEvent.h"
 #include "Game/StatusTypes.h"
 
@@ -13,10 +14,7 @@ using namespace Event;
 namespace Game {
 PlayerDataProvider::PlayerDataProvider()
 {
-#if defined(DEBUG)
-    mCrystalsCount = 9999;
-    LogInfo("PlayerDataProvider::Give a lot of crystals from the start for debug purposes");
-#endif
+    mCrystalsCount = Game::Constants::c_crystalsCountFromStartup; // todo: should be reworked
 }
 
 PlayerDataProvider* PlayerDataProvider::GetInstance()
@@ -155,11 +153,5 @@ void PlayerDataProvider::ResetLevelData()
     mSelectedMissileType = eMissileType::NONE;
     mDestroyedEnemySpaceshipsCount = 0;
     mSelectedSpaceObjectId = -1;
-#if defined(DEBUG)
-    mCrystalsCount = 9999;
-    LogInfo("PlayerDataProvider::ResetLevelData: Give a lot of crystals from the start for debug purposes");
-#else
-    mCrystalsCount = 0;
-#endif
 }
 } // namespace Game

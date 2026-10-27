@@ -12,6 +12,9 @@ class WeakSpaceshipActor : public SpaceshipActor, public ITweenStateChangeNotify
 
     std::shared_ptr<Tweener> mWeakSpaceshipTweener;
 
+protected:
+    std::shared_ptr<SpaceshipRouteHandler> CreateRouteHandler() override;
+
 public:
     WeakSpaceshipActor(
         const std::string& gameObjectName,

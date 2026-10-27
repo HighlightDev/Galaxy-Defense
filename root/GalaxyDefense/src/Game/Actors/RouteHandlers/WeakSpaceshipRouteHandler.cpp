@@ -2,7 +2,7 @@
 
 namespace Game {
 
-WeakSpaceshipRouteHandler::WeakSpaceshipRouteHandler(SpaceshipActor* spaceship)
+WeakSpaceshipRouteHandler::WeakSpaceshipRouteHandler(std::weak_ptr<SpaceshipActor> spaceship)
     : SpaceshipRouteHandler(spaceship)
 {
 }

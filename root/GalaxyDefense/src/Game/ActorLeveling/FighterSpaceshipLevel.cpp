@@ -2,8 +2,13 @@
 
 namespace Game {
 FighterSpaceshipLevel::FighterSpaceshipLevel(
-    const uint32_t health, const eMissileType missileType, const int32_t lvl, const float shootRadius, const int32_t cooldownMs)
-    : SpaceshipLevel(health)
+    const uint32_t health,
+    const uint32_t danger,
+    const eMissileType missileType,
+    const int32_t lvl,
+    const float shootRadius,
+    const int32_t cooldownMs)
+    : SpaceshipLevel(health, danger)
     , mMissileType(missileType)
     , mLvl(lvl)
     , mShootRadius(shootRadius)

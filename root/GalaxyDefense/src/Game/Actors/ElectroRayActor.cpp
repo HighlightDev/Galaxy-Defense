@@ -62,8 +62,7 @@ void ElectroRayActor::OnSceneOwnerInitialized()
 
 bool ElectroRayActor::IsInsideLevel(const BoundingBox3D& boundingBox) const
 {
-    return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mElectroLineBegin)
-        || EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mElectroLineBegin);
+    return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mElectroLineBegin);
 }
 
 void ElectroRayActor::Tick(const float deltaTimeSec, const float playSpeed)
@@ -98,16 +97,18 @@ void ElectroRayActor::Tick(const float deltaTimeSec, const float playSpeed)
                 rayWithoutSpawnSpaceship.RayTest(sceneSp->GetPhysicsWorld(), mElectroLineBegin, mElectroLineEnd);
                 if (rayWithoutSpawnSpaceship.IsRayHitCollision()) {
                     if (const auto& collidedPhysDescriptor = rayWithoutSpawnSpaceship.GetCollisionHitPhysicsDescriptor()) {
-                        const auto& collidedActor = sceneSp->GetActorById(collidedPhysDescriptor->GetOwnerActorEngineObjectId());
-                        mElectroLineEnd = collidedActor->GetRootComponent()->GetTranslation();
-                        mCollidedSpaceship = collidedActor;
-                        bElectroLineCollided = true;
-                        ShootRayCollisionEvent::GetInstance()->SendEvent(
-                            eExecutionOrder::POST_EXECUTION,
-                            std::static_pointer_cast<MissileActor>(shared_from_this()),
-                            collidedActor->shared_from_this(),
-                            eRayType::ELECTRO_RAY,
-                            eCollisionActionType::COLLISION_STARTED);
+                        if (const auto collidedActor
+                            = sceneSp->GetActorById(collidedPhysDescriptor->GetOwnerActorEngineObjectId())) {
+                            mElectroLineEnd = collidedActor->GetRootComponent()->GetTranslation();
+                            mCollidedSpaceship = collidedActor;
+                            bElectroLineCollided = true;
+                            ShootRayCollisionEvent::GetInstance()->SendEvent(
+                                eExecutionOrder::POST_EXECUTION,
+                                std::static_pointer_cast<MissileActor>(shared_from_this()),
+                                collidedActor->shared_from_this(),
+                                eRayType::ELECTRO_RAY,
+                                eCollisionActionType::COLLISION_STARTED);
+                        }
                     }
                 }
             }

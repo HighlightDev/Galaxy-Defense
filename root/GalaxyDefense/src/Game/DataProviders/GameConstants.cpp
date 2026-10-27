@@ -15,6 +15,13 @@ const float c_lootTweenTimeSec = 1.0f;
 const float c_outlineThickness = 3.0f;
 const float c_lootChanceCoef = 0.05f;
 const int32_t c_numberOfPRDIterations = 20;
+#ifdef DEBUG
+const int32_t c_crystalsCountFromStartup = 9999;
+#else
+const int32_t c_crystalsCountFromStartup = 500;
+#endif
+const uint32_t c_weakSpaceshipDanger = 10;
+const uint32_t c_fighterSpaceshipDanger = 20;
 } // namespace Game::Constants
 
 namespace Game::Constants::GravityBombMissile {
