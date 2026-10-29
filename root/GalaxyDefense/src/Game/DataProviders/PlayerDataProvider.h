@@ -3,20 +3,20 @@
 #include "Game/MissileType.h"
 
 #include <atomic>
-#include <unordered_map>
-#include <vector>
+#include <mutex>
+#include <set>
 
 namespace Game {
 class PlayerDataProvider {
-    std::unordered_map<eMissileType, size_t> mAvailableMissiles;
-
-    std::atomic<eMissileType> mSelectedMissileType{eMissileType::BOMB};
+    std::set<eMissileType> mAvailableMissileTypes; // ordered: Lua shows towers in enum order
 
     int32_t mDestroyedEnemySpaceshipsCount{0};
 
     int32_t mSelectedSpaceObjectId{-1};
 
-    size_t mCrystalsCount{0};
+    std::atomic<int32_t> mCrystalsCount{0}; // written on the game thread, read from Lua thread
+
+    mutable std::mutex mMissileTypesLock;
 
 private:
     explicit PlayerDataProvider();
@@ -24,21 +24,9 @@ private:
 public:
     static PlayerDataProvider* GetInstance();
 
-    eMissileType GetSelectedMissileType() const;
+    void SetAvailableMissileTypes(std::set<eMissileType> availableMissileTypes);
 
-    void SetSelectedMissileType(const eMissileType missileType);
-
-    void SetMissilesCountForType(const eMissileType missileType, const size_t missilesCount);
-
-    void SetMissilesCount(const std::unordered_map<eMissileType, size_t>& missilesMap);
-
-    size_t GetMissilesCount(const eMissileType missileType) const;
-
-    bool IsMissileAvailable(const eMissileType missileType) const;
-
-    void SetAvailableMissileTypes(const std::unordered_map<eMissileType, size_t>& availableMissileTypes);
-
-    std::vector<eMissileType> GetAvailableMissileTypes() const;
+    std::set<eMissileType> GetAvailableMissileTypes() const;
 
     void SetDestroyedEnemySpaceshipsCount(const int32_t enemySpaceshipsCount);
 
@@ -50,9 +38,9 @@ public:
 
     int32_t GetSelectedSpaceObjectId() const;
 
-    size_t GetCrystalsCount() const;
+    int32_t GetCrystalsCount() const;
 
-    void SetCrystalsCount(const size_t crystalsCount);
+    void SetCrystalsCount(const int32_t crystalsCount);
 
     void ResetLevelData();
 };

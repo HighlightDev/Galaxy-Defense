@@ -22,7 +22,7 @@
 #include "Core/UtilityCore/JsonUtilities.h"
 #include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Game/Actors/PortalActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/DataProviders/LevelDataProvider.h"
 #include "Game/Factories/SpawnPortalFactory.h"
 #include "Game/Levels/LevelSerializationHelper.h"

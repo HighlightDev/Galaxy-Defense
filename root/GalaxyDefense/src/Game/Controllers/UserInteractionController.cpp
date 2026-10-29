@@ -27,9 +27,10 @@
 #include "Game/Actors/BarrierActor.h"
 #include "Game/Actors/LootActor.h"
 #include "Game/Actors/SpaceStationActor.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/Controllers/CombatController.h"
 #include "Game/Controllers/NavigationController.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/DataProviders/PlayerDataProvider.h"
 #include "Game/Events/MainPlayerStatusChangedEvent.h"
 #include "Game/GameObjectsType.h"
 #include "Game/Levels/CombatLevel/CombatActorsPoolHandler.h"
@@ -46,7 +47,27 @@ using namespace Resources;
 
 namespace {
 constexpr int32_t cNoObject = -1;
+
+constexpr std::string_view InteractionTypeToString(const Game::UserInteractionController::eUserInteractionType value)
+{
+    std::string_view result = "IDLE";
+
+    using UIC = Game::UserInteractionController;
+    switch (value) {
+    case UIC::eUserInteractionType::IDLE:
+        break;
+    case UIC::eUserInteractionType::TOWER_PLACE_SELECTION:
+        result = "TOWER_PLACE_SELECTION";
+        break;
+    case UIC::eUserInteractionType::BARRIER_PLACEMENT:
+        result = "BARRIER_PLACEMENT";
+        break;
+    default:
+        break;
+    }
+    return result;
 }
+} // namespace
 
 namespace Game {
 UserInteractionController::UserInteractionController(const std::weak_ptr<Scene>& sceneWp)
@@ -339,45 +360,70 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
 
     if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED) {
         if (!mReloadPlacementTower->IsRunning() && (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType)) {
+            ext_assert(mTowerMissileType != eMissileType::NONE, "Tower missile type is NONE");
+            const auto playerDP = PlayerDataProvider::GetInstance();
+
+            const auto priceIt = Constants::c_missileTypePrices.find(mTowerMissileType);
+            if (priceIt == Constants::c_missileTypePrices.cend()) {
+                // unknown or NONE missile type: can't be bought
+                return;
+            }
+            const int32_t towerPrice = priceIt->second;
+
+            if (playerDP->GetCrystalsCount() < towerPrice) {
+                // not enough crystals
+                return;
+            }
+
             const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
             const auto& lastMousePosition = mouseBindings->GetLastMouseCursorPosition();
             const glm::ivec2& screenSpacePosition = glm::ivec2(lastMousePosition.x, lastMousePosition.y);
             const auto& worldSpaceRay
                 = mSmartPicker->CreateWorldSpaceRayFromScreenSpacePosition(sceneCameraSp, screenSpacePosition);
             const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
-            if (tParam >= 0.0f) {
-                const auto& placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
-                const auto& cellOriginPosition
-                    = mLevelPlacementGrid
-                          ->GetNearestToPositionTowerCellBoundingBox(glm::vec2(placementPosition.x, placementPosition.z))
-                          .GetOrigin();
-                const auto cellPositionVec3 = glm::vec3(cellOriginPosition.x, 0.0f, cellOriginPosition.y);
-
-                if (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType && IsTowerPositionValid(cellPositionVec3)) {
-                    ext_assert(mTowerMissileType != eMissileType::NONE, "Tower missile type is NONE");
-                    const auto spaceStationSp = mCombatActorsPoolHandler->GetFreeSpaceStationActor();
-                    ext_assert(spaceStationSp, "Failed to get free space station actor");
-                    spaceStationSp->GetRootComponent()->SetTranslation(cellPositionVec3);
-                    spaceStationSp->SetSpaceStationLevel(
-                        std::make_shared<SpaceStationLevel>(
-                            mTowerMissileType,
-                            1,
-                            LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(mTowerMissileType, 1),
-                            LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
-                    spaceStationSp->SetState(eSpaceStationActivityState::ACTIVE);
-                    if (auto parentControllerSp = mParentController.lock()) {
-                        parentControllerSp->GetNavigationController()->PutActiveSpaceStationOnLevel(spaceStationSp);
-                    }
-                    SetUserInteractionType(eUserInteractionType::IDLE);
-                    TriggerSwitchToIdleInteractionMode();
-                }
-                nlohmann::json root;
-                root["player_status_type"] = static_cast<int32_t>(eMainPlayerStatusType::TOWERS_COUNT_CHANGED);
-                root["towers_count"] = std::to_string(
-                    mCombatActorsPoolHandler->GetSpaceStationsCountWithState(eSpaceStationActivityState::ACTIVE));
-                TriggerPlayerStatusChangedEvent(root.dump());
-                mReloadPlacementTower->StartTimer();
+            if (tParam < 0.0f) {
+                return;
             }
+
+            const auto& placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
+            const auto& cellOriginPosition
+                = mLevelPlacementGrid
+                      ->GetNearestToPositionTowerCellBoundingBox(glm::vec2(placementPosition.x, placementPosition.z))
+                      .GetOrigin();
+            const auto cellPositionVec3 = glm::vec3(cellOriginPosition.x, 0.0f, cellOriginPosition.y);
+
+            const bool isPositionValid = IsTowerPositionValid(cellPositionVec3);
+            if (eUserInteractionType::TOWER_PLACE_SELECTION != mInteractionType || !isPositionValid) {
+                return;
+            }
+
+            const auto spaceStationSp = mCombatActorsPoolHandler->GetFreeSpaceStationActor();
+            if (not spaceStationSp) {
+                LogInfo("UserInteractionController::ProcessSpaceStationPacementStage: no free spacestation actor!");
+                return;
+            }
+            playerDP->SetCrystalsCount(playerDP->GetCrystalsCount() - towerPrice);
+
+            spaceStationSp->GetRootComponent()->SetTranslation(cellPositionVec3);
+            spaceStationSp->SetSpaceStationLevel(
+                std::make_shared<SpaceStationLevel>(
+                    mTowerMissileType,
+                    1,
+                    LevelAttributeDataProvider::GetRadiusForMissileTypeAtLevel(mTowerMissileType, 1),
+                    LevelAttributeDataProvider::GetCooldownForMissileTypeAtLevel(mTowerMissileType, 1)));
+            spaceStationSp->SetState(eSpaceStationActivityState::ACTIVE);
+            if (auto parentControllerSp = mParentController.lock()) {
+                parentControllerSp->GetNavigationController()->PutActiveSpaceStationOnLevel(spaceStationSp);
+            }
+            SetUserInteractionType(eUserInteractionType::IDLE);
+            NotifyInteractionModeChanged(eUserInteractionType::IDLE);
+
+            nlohmann::json root;
+            root["player_status_type"] = static_cast<int32_t>(eMainPlayerStatusType::TOWERS_COUNT_CHANGED);
+            root["towers_count"]
+                = std::to_string(mCombatActorsPoolHandler->GetSpaceStationsCountWithState(eSpaceStationActivityState::ACTIVE));
+            TriggerPlayerStatusChangedEvent(root.dump());
+            mReloadPlacementTower->StartTimer();
         } else if (!mReloadPlacementTower->IsRunning() && eUserInteractionType::BARRIER_PLACEMENT == mInteractionType) {
             const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
             const auto& lastMousePosition = mouseBindings->GetLastMouseCursorPosition();
@@ -440,7 +486,7 @@ void UserInteractionController::ProcessSpaceStationPlacementStage()
         mouseBindings->GetKeyState(eMouseKeys::MouseButtonRight) == KeyState::PRESSED
         && (eUserInteractionType::TOWER_PLACE_SELECTION == mInteractionType
             || eUserInteractionType::BARRIER_PLACEMENT == mInteractionType)) {
-        TriggerSwitchToIdleInteractionMode();
+        NotifyInteractionModeChanged(eUserInteractionType::IDLE);
     }
 }
 
@@ -765,21 +811,22 @@ void UserInteractionController::TriggerPlayerStatusChangedEvent(const std::strin
         });
 }
 
-void UserInteractionController::TriggerSwitchToIdleInteractionMode()
+void UserInteractionController::NotifyInteractionModeChanged(const eUserInteractionType newInteractionType)
 {
     const auto& sceneSp = mSceneWp.lock();
-    ext_assert(sceneSp, "Scene pointer is null in TriggerSwitchToIdleInteractionMode");
-    static constexpr auto functionId = Hash64_CT("UserInteractionController::TriggerSwitchToIdleInteractionMode");
+    ext_assert(sceneSp, "Scene pointer is null in NotifyInteractionModeChanged");
+    static constexpr auto functionId = Hash64_CT("UserInteractionController::NotifyInteractionModeChanged");
     sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
-        eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+        eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         0,
         functionId,
-        [](std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
-           std::weak_ptr<EngineCore::Scene> sceneWp,
-           std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
+        [newInteractionType](
+            std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
+            std::weak_ptr<EngineCore::Scene> sceneWp,
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             nlohmann::json root;
             root["action"] = "switch_mode";
-            root["mode"] = "IDLE";
+            root["mode"] = InteractionTypeToString(newInteractionType);
             Event::BroadcastLuaThreadEvent::GetInstance()->SendEvent(
                 eExecutionOrder::POST_EXECUTION, "CombatLevelEvents", root.dump());
         });

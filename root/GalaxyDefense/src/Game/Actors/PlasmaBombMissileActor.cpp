@@ -7,7 +7,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Game/Actors/SpaceStationActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Game/MissileExplosionVisitors/PlasmaBombExplosionVisitor.h"
 

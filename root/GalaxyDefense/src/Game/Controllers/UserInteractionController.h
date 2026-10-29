@@ -16,6 +16,7 @@
 #include <glm/vec3.hpp>
 
 #include <functional>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -42,9 +43,10 @@ class UserInteractionController : public ILevelController,
                                   public ChangeGameModeEvent,
                                   public BroadcastGameThreadEvent,
                                   public std::enable_shared_from_this<UserInteractionController> {
-
+public:
     enum class eUserInteractionType { IDLE, TOWER_PLACE_SELECTION, BARRIER_PLACEMENT };
 
+private:
     std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
     std::weak_ptr<CombatController> mParentController;
@@ -94,7 +96,7 @@ class UserInteractionController : public ILevelController,
     std::shared_ptr<GameThreadTimer> mSelectedSpaceObjectHighlightTimer;
 
 public:
-    UserInteractionController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
+    explicit UserInteractionController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
     ~UserInteractionController() override;
 
@@ -156,7 +158,7 @@ private:
 
     void TriggerPlayerStatusChangedEvent(const std::string& jsonArgs);
 
-    void TriggerSwitchToIdleInteractionMode();
+    void NotifyInteractionModeChanged(const eUserInteractionType newInteractionType);
 
     eMissileType MissileTypeFromString(const std::string& typeStr) const;
 

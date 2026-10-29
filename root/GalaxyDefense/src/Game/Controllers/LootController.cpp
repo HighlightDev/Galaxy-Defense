@@ -4,7 +4,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Game/Actors/LootActor.h"
 #include "Game/Actors/SpaceshipActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/DropLootType.h"
 #include "Game/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Game/LootSystem/PandoraBox.h"

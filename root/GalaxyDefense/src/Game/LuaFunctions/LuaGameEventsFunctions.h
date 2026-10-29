@@ -4,7 +4,6 @@
 #include "Game/Events/ChangeGameModeEvent.h"
 #include "Game/Events/LevelAreaBBChangedEvent.h"
 #include "Game/Events/LevelProgressChangedEvent.h"
-#include "Game/Events/MainPlayerStatusChangedEvent.h"
 
 using namespace Event;
 using namespace EngineCore::Scripts;
@@ -18,7 +17,6 @@ class LuaScriptProcessor;
 
 namespace Game {
 class LuaGameEventsFunctions : public ILuaFunctionable,
-                               public LuaMainPlayerStatusChangedEvent,
                                public LuaLevelProgressChangedEvent,
                                public LuaChangeGameModeEvent,
                                public LevelAreaBBChangedLuaThreadEvent,
@@ -47,9 +45,6 @@ public:
 
     void RegisterCallbacks(const LuaWrapper& luaWrapper) override;
 
-    void ProcessEvent(
-        const LuaMainPlayerStatusChangedEvent* sender, const LuaMainPlayerStatusChangedEvent::EventData_t& data) override;
-
     void ProcessEvent(const LuaLevelProgressChangedEvent* sender, const LuaLevelProgressChangedEvent::EventData_t& data) override;
 
     void ProcessEvent(const LuaChangeGameModeEvent* sender, const LuaChangeGameModeEvent::EventData_t& data) override;
@@ -58,13 +53,6 @@ public:
         const LevelAreaBBChangedLuaThreadEvent* sender, const LevelAreaBBChangedLuaThreadEvent::EventData_t& data) override;
 
 private:
-    int32_t GetSelectedMissileType(const std::tuple<>& data) const;
-
-    int32_t GetCollectedCrystalsCount(const std::tuple<>& data) const;
-
-    std::string GetAllMissilesData(const std::tuple<>& data) const;
-
-    int32_t GetEnemySpaceshipsCountDestroyedByPlayer(const std::tuple<>& data) const;
 
     float GetEditorLevelAreaBoundingBoxWidth(const std::tuple<>& data) const;
 

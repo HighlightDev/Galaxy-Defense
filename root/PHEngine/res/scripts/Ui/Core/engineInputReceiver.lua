@@ -69,8 +69,6 @@ function EngineInputReceiver:update(host, deltaTimeSec)
     end
 end
 
-function EngineInputReceiver:__gc(self) end
-
 function EngineInputReceiver:subscribeOnPressedKeyboardButton(callback) self.onPressedKeyboardButtonCallback = callback end
 
 function EngineInputReceiver:subscribeOnReleasedKeyboardButton(callback) self.onReleasedKeyboardButtonCallback =

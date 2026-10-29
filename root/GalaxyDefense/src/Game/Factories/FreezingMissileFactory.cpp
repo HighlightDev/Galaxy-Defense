@@ -30,7 +30,7 @@
 #include "Game/Actors/FreezingMissileActor.h"
 #include "Game/Actors/MissileActor.h"
 #include "Game/Controllers/AiActorController.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 using namespace Resources;

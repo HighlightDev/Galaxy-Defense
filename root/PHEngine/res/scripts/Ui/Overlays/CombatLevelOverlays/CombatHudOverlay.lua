@@ -57,23 +57,38 @@ local WEAPON_DISPLAY_NAME = {
     [MissileTypes.MissileType.FORCE_BARRIER] = "СИЛОВОЙ ЩИТ"
 }
 
-local LevelProgressStatusType = {NONE = 0, CURRENT_STAGE_CHANGED = 1, REQUIREMENT_TRACKERS_STATUS_CHANGED = 2}
+local LevelProgressStatusType = {
+    NONE = 0,
+    CURRENT_STAGE_CHANGED = 1,
+    REQUIREMENT_TRACKERS_STATUS_CHANGED = 2
+}
 
-local GameModeType = {INIT = 0, COMBAT = 1, SPACE_STATION_PLACEMENT = 2}
+local GameModeType = {
+    INIT = 0,
+    COMBAT = 1,
+    SPACE_STATION_PLACEMENT = 2
+}
 
 PlayerStatusType = {
     CRYSTALS_COUNT_CHANGED = 0,
     DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED = 1,
     SELECTED_SPACE_OBJECT_CHANGED = 2,
-    TOWERS_COUNT_CHANGED = 3
+    TOWERS_COUNT_CHANGED = 3,
+    AVAILABLE_MISSILE_TYPES_CHANGED = 4
 }
 
 -- The combat HUD is a single overlay with two states. PREPARATION lets the player place the space
 -- station / build towers, COMBAT runs the wave. Both states share the build palette and upgrade panel;
 -- only a small subset of widgets is state-specific, so switching the state just toggles their visibility.
-local CombatState = {PREPARATION = 0, COMBAT = 1}
+local CombatState = {
+    PREPARATION = 0,
+    COMBAT = 1
+}
 
-local CombatHudOverlay = {CombatState = CombatState, preparationButtonRadius = 6}
+local CombatHudOverlay = {
+    CombatState = CombatState,
+    preparationButtonRadius = 6
+}
 
 local TileSize = 80 -- tower grid main button size (px)
 
@@ -88,23 +103,45 @@ local OBJECTIVE_DEFAULT_LABEL = {
 local function trackerToObjectiveItem(trackerJson)
     local name = trackerJson["name"]
     local hint = trackerJson["hint"]
-    if hint == nil or hint == "" or hint == "nil" then hint = nil end
+    if hint == nil or hint == "" or hint == "nil" then
+        hint = nil
+    end
     local label = hint or OBJECTIVE_DEFAULT_LABEL[name] or tostring(name)
 
     if name == "DestroySpaceshipsTracker" then
         local left = tonumber(trackerJson["left_to_destroy_spaceships_count"]) or 0
         if left > 0 then
-            return {icon = "skull.png", label = label, value = tostring(left), color = Styles.Combat.cyanGlow}
+            return {
+                icon = "skull.png",
+                label = label,
+                value = tostring(left),
+                color = Styles.Combat.cyanGlow
+            }
         end
-        return {icon = "check.png", label = label, color = 0x86efac, done = true}
+        return {
+            icon = "check.png",
+            label = label,
+            color = 0x86efac,
+            done = true
+        }
     elseif name == "MissedSpaceshipsTracker" then
         local doNotMissCount = tonumber(trackerJson["not_to_miss_spaceships_count"]) or 0
         local missedCount = tonumber(trackerJson["missed_spaceships_count"]) or 0
         local stillCanMiss = math.max(doNotMissCount - missedCount, 0)
         if stillCanMiss > 0 then
-            return {icon = "warning.png", label = label, value = tostring(stillCanMiss), color = Styles.Combat.danger}
+            return {
+                icon = "warning.png",
+                label = label,
+                value = tostring(stillCanMiss),
+                color = Styles.Combat.danger
+            }
         end
-        return {icon = "cancel.png", label = label, color = Styles.Combat.danger, failed = true}
+        return {
+            icon = "cancel.png",
+            label = label,
+            color = Styles.Combat.danger,
+            failed = true
+        }
     end
 
     assert(false, "Not supported requirement: " .. tostring(name), debug.traceback())
@@ -127,7 +164,9 @@ function CombatHudOverlay:new(host)
     local towerGridPanel = TowerGridPanel:new(host, combatOverlay, {
         buttonRadius = TowerGridPanel.DEFAULT_BUTTON_RADIUS,
         mainButtonSize = TileSize,
-        onTowerUpgradesButtonClicked = function() towerUpgradesPanel:setIsVisible(true) end
+        onTowerUpgradesButtonClicked = function()
+            towerUpgradesPanel:setIsVisible(true)
+        end
     })
     combatOverlay:addCompoundWidget(towerGridPanel)
 
@@ -261,49 +300,57 @@ function CombatHudOverlay:new(host)
     end
 
     -- "active" reflects the real panel visibility for the wired buttons, and the local flag for placeholders.
-    local dockButtons = {
-        {
-            button = dockArsenalButton,
-            icon = dockArsenalIcon,
-            label = "АРСЕНАЛ",
-            iconTexture = "castle-turret.png",
-            hovered = false,
-            rotationDegrees = 180.0,
-            isActive = function() return towerGridPanel.isCreatePanelVisible() end
-        }, {
-            button = dockObjButton,
-            icon = dockObjIcon,
-            label = "ЗАДАЧИ",
-            iconTexture = "flag-banner-fold.png",
-            hovered = false,
-            rotationDegrees = 180.0,
-            isActive = function() return objectivesActive end
-        }, {
-            button = dockTechButton,
-            icon = dockTechIcon,
-            label = "РАЗВИТИЕ",
-            iconTexture = "graph.png",
-            hovered = false,
-            rotationDegrees = 0.0,
-            isActive = function() return towerUpgradesPanel.background:getIsVisible() end
-        }, {
-            button = dockMapButton,
-            icon = dockMapIcon,
-            label = "КАРТА",
-            iconTexture = "map-trifold.png",
-            hovered = false,
-            rotationDegrees = 0.0,
-            isActive = function() return dockMapActive end
-        }, {
-            button = dockLogButton,
-            icon = dockLogIcon,
-            label = "ЖУРНАЛ",
-            iconTexture = "info.png",
-            hovered = false,
-            rotationDegrees = 0.0,
-            isActive = function() return dockLogActive end
-        }
-    }
+    local dockButtons = {{
+        button = dockArsenalButton,
+        icon = dockArsenalIcon,
+        label = "АРСЕНАЛ",
+        iconTexture = "castle-turret.png",
+        hovered = false,
+        rotationDegrees = 180.0,
+        isActive = function()
+            return towerGridPanel.isCreatePanelVisible()
+        end
+    }, {
+        button = dockObjButton,
+        icon = dockObjIcon,
+        label = "ЗАДАЧИ",
+        iconTexture = "flag-banner-fold.png",
+        hovered = false,
+        rotationDegrees = 180.0,
+        isActive = function()
+            return objectivesActive
+        end
+    }, {
+        button = dockTechButton,
+        icon = dockTechIcon,
+        label = "РАЗВИТИЕ",
+        iconTexture = "graph.png",
+        hovered = false,
+        rotationDegrees = 0.0,
+        isActive = function()
+            return towerUpgradesPanel.background:getIsVisible()
+        end
+    }, {
+        button = dockMapButton,
+        icon = dockMapIcon,
+        label = "КАРТА",
+        iconTexture = "map-trifold.png",
+        hovered = false,
+        rotationDegrees = 0.0,
+        isActive = function()
+            return dockMapActive
+        end
+    }, {
+        button = dockLogButton,
+        icon = dockLogIcon,
+        label = "ЖУРНАЛ",
+        iconTexture = "info.png",
+        hovered = false,
+        rotationDegrees = 0.0,
+        isActive = function()
+            return dockLogActive
+        end
+    }}
 
     for _, d in ipairs(dockButtons) do
         d.button:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
@@ -311,11 +358,15 @@ function CombatHudOverlay:new(host)
         end)
     end
 
-    dockArsenalButton:subscribeOnMouseInputClickedCallback(function() towerGridPanel.toggleCreatePanel() end)
+    dockArsenalButton:subscribeOnMouseInputClickedCallback(function()
+        towerGridPanel.toggleCreatePanel()
+    end)
     dockObjButton:subscribeOnMouseInputClickedCallback(function()
         objectivesActive = not objectivesActive
         objectivesPanel:setIsVisible(objectivesActive)
-        if objectivesActive then rebuildObjectives() end
+        if objectivesActive then
+            rebuildObjectives()
+        end
     end)
     dockTechButton:subscribeOnMouseInputClickedCallback(function()
         local willShow = not towerUpgradesPanel.background:getIsVisible()
@@ -335,7 +386,9 @@ function CombatHudOverlay:new(host)
         onDemolishClicked = function()
             selectedTowerPanel:setIsVisible(false)
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
-                                                      "CombatLevelEvents", json.encode({action = "remove_tower"}))
+                "CombatLevelEvents", json.encode({
+                    action = "remove_tower"
+                }))
         end,
         -- ПРОКАЧАТЬ: open the tower tech tree (same path as the dock ТЕХ button).
         onUpgradeClicked = function()
@@ -350,7 +403,9 @@ function CombatHudOverlay:new(host)
         onDemolishClicked = function()
             selectedBarrierPanel:setIsVisible(false)
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
-                                                      "CombatLevelEvents", json.encode({action = "remove_barrier"}))
+                "CombatLevelEvents", json.encode({
+                    action = "remove_barrier"
+                }))
         end
     })
     combatOverlay:addCompoundWidget(selectedBarrierPanel)
@@ -368,7 +423,9 @@ function CombatHudOverlay:new(host)
     local hadRequirements = false
 
     local function triggerLevelEnd(mode)
-        if levelEndTriggered then return end
+        if levelEndTriggered then
+            return
+        end
         levelEndTriggered = true
         -- UiOverlays is the global registry built by CombatUiController; setMode swaps the unified end
         -- overlay between victory / defeat. Apply the mode now so its ~30 label meshes start syncing to
@@ -381,8 +438,9 @@ function CombatHudOverlay:new(host)
         -- thread instantly, but the mode's text/colours only land via the per-frame replicator sync.
         -- Opening on the same frame would flash the overlay's previous (defeat-default) content first.
         local framesUntilOpen = 3
-        combatOverlay:addActionWithPredicate(function() UiOverlayManager:openOverlay(host, "LevelEndOverlay") end,
-                                             function()
+        combatOverlay:addActionWithPredicate(function()
+            UiOverlayManager:openOverlay(host, "LevelEndOverlay")
+        end, function()
             framesUntilOpen = framesUntilOpen - 1
             return framesUntilOpen <= 0
         end)
@@ -395,15 +453,21 @@ function CombatHudOverlay:new(host)
             if requirementsCount <= 0 then
                 -- Only touch the widgets when the panel is actually shown; the tracker events fire
                 -- regardless of the ЗАДАЧИ toggle, and we must not pop the item plates while it's hidden.
-                if objectivesActive then objectivesPanel:markAllDone() end
+                if objectivesActive then
+                    objectivesPanel:markAllDone()
+                end
                 -- No active requirements left: if the run had any and we are mid-combat, every enemy has
                 -- been destroyed and all stages are cleared -> victory.
-                if inCombat and hadRequirements then triggerLevelEnd("victory") end
+                if inCombat and hadRequirements then
+                    triggerLevelEnd("victory")
+                end
                 return
             end
             hadRequirements = true
             local trackersJson = _GetCurrentProgressStageRequirementTrackers(host)
-            if trackersJson == nil or trackersJson == "" then return end
+            if trackersJson == nil or trackersJson == "" then
+                return
+            end
             local trackers = json.decode(trackersJson)
             local items = {}
             local anyFailed = false
@@ -420,11 +484,15 @@ function CombatHudOverlay:new(host)
                 local item = trackerToObjectiveItem(tracker)
                 if item ~= nil then
                     items[#items + 1] = item
-                    if item.failed then anyFailed = true end
+                    if item.failed then
+                        anyFailed = true
+                    end
                 end
             end
             -- Render the rows only while the panel is visible; the failure side-effect below still runs.
-            if objectivesActive then objectivesPanel:setItems(items) end
+            if objectivesActive then
+                objectivesPanel:setItems(items)
+            end
             if anyFailed then
                 triggerLevelEnd("defeat")
             elseif inCombat and hasDestroyTracker and allEnemiesDestroyed then
@@ -457,7 +525,9 @@ function CombatHudOverlay:new(host)
         progressBarFill:setIsVisible(isCombat)
         progressLegendLabel:setIsVisible(isCombat)
         speedPauseButton:setIsVisible(isCombat)
-        for i = 1, #speedButtons do speedButtons[i]:setIsVisible(isCombat) end
+        for i = 1, #speedButtons do
+            speedButtons[i]:setIsVisible(isCombat)
+        end
 
         -- The top HUD bar (crystals/HP/wave pill/sector) stays visible in both states; only its wave-state
         -- caption changes. The crystals value is always live, so it is not gated by state.
@@ -467,7 +537,9 @@ function CombatHudOverlay:new(host)
         -- the dock panel (not the button), so it must be toggled explicitly alongside the button.
         dockLogButton:setIsVisible(isCombat)
         dockLogIcon:setIsVisible(isCombat)
-        if not isCombat then dockLogActive = false end
+        if not isCombat then
+            dockLogActive = false
+        end
 
         -- The tower context panel is combat-only (shown when a tower is selected during the wave).
         if not isCombat then
@@ -478,7 +550,9 @@ function CombatHudOverlay:new(host)
         -- Objectives are available in BOTH preparation and combat; the ЗАДАЧИ dock toggle (objectivesActive)
         -- decides whether the panel is shown. Pull the current trackers explicitly on every state change.
         objectivesPanel:setIsVisible(objectivesActive)
-        if objectivesActive then rebuildObjectives() end
+        if objectivesActive then
+            rebuildObjectives()
+        end
     end
 
     combatOverlay.currentCombatState = CombatState.PREPARATION
@@ -486,7 +560,9 @@ function CombatHudOverlay:new(host)
     combatOverlay.setCombatState = function(host, newState)
         assert(newState == CombatState.PREPARATION or newState == CombatState.COMBAT, debug.traceback())
         combatOverlay.currentCombatState = newState
-        local apply = function() applyStateVisibility(newState) end
+        local apply = function()
+            applyStateVisibility(newState)
+        end
         if combatOverlay.allWidgetLuaProxiesReady then
             apply()
         else
@@ -496,19 +572,25 @@ function CombatHudOverlay:new(host)
         end
     end
 
-    local function isInCombatState() return combatOverlay.currentCombatState == CombatState.COMBAT end
+    local function isInCombatState()
+        return combatOverlay.currentCombatState == CombatState.COMBAT
+    end
 
     -- ─── Wave-dock: СТАРТ ВОЛНЫ button (PREPARATION) ───────────────────────────
     -- Completes the build stage → COMBAT. Enabled only once at least one tower is placed; its enabled
     -- visual is driven from derivedUpdateCallback.
     startWaveButton:subscribeOnMouseInputClickedCallback(function()
-        if not canCompletePreparationStage then return end
+        if not canCompletePreparationStage then
+            return
+        end
         towerGridPanel.hideCreatePanel()
         EventsHelper:sendChangeGameModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                                                       GameModeType.COMBAT)
+            GameModeType.COMBAT)
     end)
     startWaveButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if not canCompletePreparationStage then return end
+        if not canCompletePreparationStage then
+            return
+        end
         startWaveButton:setButtonColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
                                                    Styles.Combat.green or Styles.Combat.cyan)
     end)
@@ -531,8 +613,7 @@ function CombatHudOverlay:new(host)
             -- restores selectedSpeed when it un-pauses.
             if not isPaused then
                 EventsHelper:sendChangePlaySpeedGameThreadEvent(host,
-                                                                EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE,
-                                                                value)
+                    EventsHelper.enqueueJobPolicy.IF_DUPLICATE_REPLACE, value)
             end
         end)
     end
@@ -552,7 +633,7 @@ function CombatHudOverlay:new(host)
 
     combatOverlay.onWindowSizeChanged = function(width, height)
         assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number",
-               debug.traceback())
+            debug.traceback())
     end
 
     combatOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
@@ -560,9 +641,9 @@ function CombatHudOverlay:new(host)
         -- Objectives panel: top of the right column, just below the top HUD bar.
         objectivesPanel:setParent(host, combatOverlayCanvas.widgetName, combatOverlayCanvas.widgetName)
         objectivesPanel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-                                  combatOverlayCanvas.widgetName, 24)
+            combatOverlayCanvas.widgetName, 24)
         objectivesPanel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-                                  combatOverlayCanvas.widgetName, 66)
+            combatOverlayCanvas.widgetName, 66)
         objectivesPanel:setWidth(300)
         objectivesPanel:setHeight(300)
         objectivesPanel:setupLayout()
@@ -906,7 +987,9 @@ function CombatHudOverlay:new(host)
         speedPauseButton:setUseImageCustomColor(true)
         speedPauseButton:setImageTextureSource("pause.png")
 
-        for i = 1, #speedButtons do speedButtons[i]:setLabelText("×" .. tostring(speedValues[i])) end
+        for i = 1, #speedButtons do
+            speedButtons[i]:setLabelText("×" .. tostring(speedValues[i]))
+        end
         refreshSpeedButtons()
 
         towerGridPanel:setupLayout(combatOverlayCanvas.widgetName)
@@ -920,7 +1003,9 @@ function CombatHudOverlay:new(host)
 
     combatOverlay.onGameEventTriggered = function(eventName, jsonArgs)
         if "LevelProgressChanged" == eventName then
-            if not isInCombatState() then return end
+            if not isInCombatState() then
+                return
+            end
             assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             if parsedJson["level_progress_status_type"] ~= nil then
@@ -969,6 +1054,13 @@ function CombatHudOverlay:new(host)
                             selectedBarrierPanel:setIsVisible(false)
                         end
                     end
+                elseif statusType == PlayerStatusType.AVAILABLE_MISSILE_TYPES_CHANGED then
+                    -- towers panel must be updated with new available missile types
+                    if parsedJson["available_missile_types"] ~= nil and parsedJson["missile_prices"] ~= nil then
+                        local avlTypes = parsedJson["available_missile_types"]
+                        local prices = parsedJson["missile_prices"]
+                        towerGridPanel:updateAvailableMissileTypes(avlTypes, prices)
+                    end
                 end
             end
         end
@@ -979,8 +1071,12 @@ function CombatHudOverlay:new(host)
             assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             local windowSize = {}
-            if parsedJson["width"] ~= nil then windowSize.width = tonumber(parsedJson["width"]) end
-            if parsedJson["height"] ~= nil then windowSize.height = tonumber(parsedJson["height"]) end
+            if parsedJson["width"] ~= nil then
+                windowSize.width = tonumber(parsedJson["width"])
+            end
+            if parsedJson["height"] ~= nil then
+                windowSize.height = tonumber(parsedJson["height"])
+            end
             combatOverlay.onWindowSizeChanged(windowSize.width, windowSize.height)
         end
     end
@@ -998,7 +1094,9 @@ function CombatHudOverlay:new(host)
             end
             -- keep the dock highlights in sync with the real panel visibility (handles panels closed
             -- via their own controls, not just via the dock)
-            for _, d in ipairs(dockButtons) do refreshDockButton(d) end
+            for _, d in ipairs(dockButtons) do
+                refreshDockButton(d)
+            end
         end
     end
 
@@ -1010,7 +1108,9 @@ function CombatHudOverlay:new(host)
                 local action = tostring(parsedJson["action"])
                 if action == "switch_mode" then
                     local mode = tostring(parsedJson["mode"])
-                    if mode == "IDLE" then towerGridPanel:handleBroadcastSwitchModeIdle(host) end
+                    if mode == "IDLE" then
+                        towerGridPanel:handleBroadcastSwitchModeIdle(host)
+                    end
                 end
             end
         end

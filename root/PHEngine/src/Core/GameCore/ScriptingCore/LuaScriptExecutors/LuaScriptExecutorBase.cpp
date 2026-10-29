@@ -132,5 +132,11 @@ void LuaScriptExecutorBase::SetIsEnabled(const bool isEnabled)
 {
     mIsEnabled = isEnabled;
 }
+
+bool LuaScriptExecutorBase::IsLuaStateReady() const
+{
+    return mLuaInstance.IsLuaScriptOpened() && mLuaInstance.GetState();
+}
+
 } // namespace Scripts
 } // namespace EngineCore

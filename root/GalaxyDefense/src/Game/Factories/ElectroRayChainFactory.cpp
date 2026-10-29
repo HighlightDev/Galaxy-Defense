@@ -14,7 +14,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Game/Actors/ElectroRayChainActor.h"
 #include "Game/Actors/MissileActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 using namespace Resources;

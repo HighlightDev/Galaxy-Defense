@@ -26,7 +26,10 @@ void GravityBombExplosionVisitor::StartExplosionForSpaceship(
 
         if (missileCollidedActor->GetObjectId() == beforeExplosionActorId) // missile explosion should be triggered
         {
-            ownerSp->TriggerExplosion();
+            // a collision event can arrive after the missile already exploded or was returned to the pool
+            if (eMissileActivityState::ACTIVE == ownerSp->GetMissileActivityState()) {
+                ownerSp->TriggerExplosion();
+            }
         } else if (missileCollidedActor->GetObjectId() == afterExplosionActorId) // black hole effect should be applied
         {
             if (!spaceship->HasModifier(eModifierType::Gravity, ownerSp->GetObjectId())) {
@@ -75,7 +78,8 @@ void GravityBombExplosionVisitor::StartExplosionForSpaceObject(
         const auto beforeExplosionActorId = gravityBombMissile->GetCombatActivePhaseActor()->GetObjectId();
         const auto afterExplosionActorId = gravityBombMissile->GetExplosionPhaseActor()->GetObjectId();
 
-        if (missileCollidedActor->GetObjectId() == beforeExplosionActorId) // missile explosion should be triggered
+        if (missileCollidedActor->GetObjectId() == beforeExplosionActorId
+            && eMissileActivityState::ACTIVE == ownerSp->GetMissileActivityState()) // missile explosion should be triggered
         {
             ownerSp->TriggerExplosion();
             spaceObject->TriggerDisabled();

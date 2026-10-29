@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Game/MissileType.h"
+
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -26,6 +28,9 @@ extern const int32_t c_numberOfPRDIterations;
 extern const int32_t c_crystalsCountFromStartup;
 extern const uint32_t c_weakSpaceshipDanger;
 extern const uint32_t c_fighterSpaceshipDanger;
+
+extern const std::unordered_map<eMissileType, int16_t> c_missileTypePrices;
+extern const uint32_t c_barrierPerCellPrice;
 } // namespace Game::Constants
 
 namespace Game::Constants::GravityBombMissile {

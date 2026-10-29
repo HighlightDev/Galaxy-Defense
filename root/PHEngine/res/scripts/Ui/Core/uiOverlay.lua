@@ -95,8 +95,6 @@ end
 
 function UiOverlay:getTimerManager() return self.timerManager end
 
-function UiOverlay:__gc(self) end
-
 function UiOverlay:getOverlayCanvas() return self.overlayCanvas end
 
 function UiOverlay:updateFromReplicatorData(host)

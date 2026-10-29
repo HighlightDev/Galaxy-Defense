@@ -70,6 +70,8 @@ public:
 
     void SetIsEnabled(const bool isEnabled);
 
+    bool IsLuaStateReady() const;
+
 protected:
     void SetScript(const std::string& scriptName);
 };

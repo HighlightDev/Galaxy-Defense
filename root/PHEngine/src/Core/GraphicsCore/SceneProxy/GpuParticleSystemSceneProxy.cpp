@@ -295,6 +295,10 @@ void GpuParticleSystemSceneProxy::ResetParticlesData(
     m_gpuParticleLifetimeSSBO->BufferSubData(0, lifetimeDataSize, lifetimeData);
     m_gpuParticleRotationAndSizeSSBO->BufferSubData(0, rotationAndSizeDataSize, rotationAndSizeData);
 
+    // Render() skips the dispatch while there are no alive particles, so m_lastDispatchTime may be seconds or minutes
+    // old here. Without the reset the first dispatch after an emission gets that whole gap as delta time and all
+    // freshly emitted (non-respawning) particles exceed their lifetime at once.
+    m_lastDispatchTime = EngineTime::GetCurrentTime();
     mParticlesEmitted = true;
 }
 

@@ -1,7 +1,7 @@
 #include "PandoraBox.h"
 
 #include "Core/CommonCore/Random.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 
 #include <array>
 #include <numeric>
@@ -9,6 +9,7 @@
 namespace Game {
 
 namespace {
+// When new loot is added -> update this map and total weight
 constexpr std::array<std::pair<eDropLootType, uint32_t>, 1> c_lootWeights = {std::make_pair(eDropLootType::CRYSTALS, 100)};
 constexpr uint32_t c_totalWeight = 100;
 } // namespace

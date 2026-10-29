@@ -8,7 +8,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Game/Actors/BarrierActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 
 using namespace Resources;
 using namespace EngineCore;

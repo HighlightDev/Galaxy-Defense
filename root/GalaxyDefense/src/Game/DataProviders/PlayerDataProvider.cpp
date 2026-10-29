@@ -1,7 +1,7 @@
 #include "PlayerDataProvider.h"
 
 #include "Core/CommonCore/Assertion.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/Events/MainPlayerStatusChangedEvent.h"
 #include "Game/StatusTypes.h"
 
@@ -23,59 +23,29 @@ PlayerDataProvider* PlayerDataProvider::GetInstance()
     return &s_dataProvider;
 }
 
-eMissileType PlayerDataProvider::GetSelectedMissileType() const
+void PlayerDataProvider::SetAvailableMissileTypes(std::set<eMissileType> availableMissileTypes)
 {
-    return mSelectedMissileType.load(std::memory_order::seq_cst);
-}
-
-void PlayerDataProvider::SetSelectedMissileType(const eMissileType missileType)
-{
-    mSelectedMissileType.store(missileType, std::memory_order::seq_cst);
-}
-
-void PlayerDataProvider::SetMissilesCountForType(const eMissileType missileType, const size_t missilesCount)
-{
-    ext_assert(mAvailableMissiles.count(missileType), "Unknown missile type in SetMissilesCountForType");
-    if (mAvailableMissiles.at(missileType) != missilesCount) {
-        mAvailableMissiles[missileType] = missilesCount;
+    {
+        std::lock_guard<std::mutex> lock(mMissileTypesLock);
+        mAvailableMissileTypes = std::move(availableMissileTypes);
     }
+    const eMainPlayerStatusType playerStatusType = eMainPlayerStatusType::AVAILABLE_MISSILE_TYPES_CHANGED;
+    nlohmann::json jsonObj;
+    jsonObj["player_status_type"] = static_cast<int32_t>(playerStatusType);
+    jsonObj["available_missile_types"] = mAvailableMissileTypes;
+    jsonObj["missile_prices"] = Constants::c_missileTypePrices;
+    const auto eventParams = jsonObj.dump();
+    MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);
+    LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eventParams);
 }
 
-void PlayerDataProvider::SetMissilesCount(const std::unordered_map<eMissileType, size_t>& missilesMap)
+std::set<eMissileType> PlayerDataProvider::GetAvailableMissileTypes() const
 {
-    bool bDataUpdated = false;
-    for (const auto [missileType, actualCount] : mAvailableMissiles) {
-        const auto newCount = missilesMap.at(missileType);
-        if (newCount != actualCount) {
-            mAvailableMissiles[missileType] = newCount;
-            bDataUpdated = true;
-        }
+    decltype(mAvailableMissileTypes) result;
+    {
+        std::lock_guard<std::mutex> lock(mMissileTypesLock);
+        result = mAvailableMissileTypes;
     }
-}
-
-size_t PlayerDataProvider::GetMissilesCount(const eMissileType missileType) const
-{
-    ext_assert(mAvailableMissiles.count(missileType), "Unknown missile type in GetMissilesCount");
-    return mAvailableMissiles.at(missileType);
-}
-
-bool PlayerDataProvider::IsMissileAvailable(const eMissileType missileType) const
-{
-    return mAvailableMissiles.count(missileType) > 0;
-}
-
-void PlayerDataProvider::SetAvailableMissileTypes(const std::unordered_map<eMissileType, size_t>& availableMissileTypes)
-{
-    mAvailableMissiles = availableMissileTypes;
-}
-
-std::vector<eMissileType> PlayerDataProvider::GetAvailableMissileTypes() const
-{
-    std::vector<eMissileType> result;
-    std::transform(
-        mAvailableMissiles.cbegin(), mAvailableMissiles.cend(), std::back_inserter(result), [](const auto& availableMissilePair) {
-            return availableMissilePair.first;
-        });
     return result;
 }
 
@@ -127,7 +97,7 @@ int32_t PlayerDataProvider::GetSelectedSpaceObjectId() const
     return mSelectedSpaceObjectId;
 }
 
-void PlayerDataProvider::SetCrystalsCount(const size_t crystalsCount)
+void PlayerDataProvider::SetCrystalsCount(const int32_t crystalsCount)
 {
     LogInfo("PlayerDataProvider::SetCrystalsCount: crystalsCount: ", crystalsCount);
     if (mCrystalsCount != crystalsCount) {
@@ -142,15 +112,17 @@ void PlayerDataProvider::SetCrystalsCount(const size_t crystalsCount)
     }
 }
 
-size_t PlayerDataProvider::GetCrystalsCount() const
+int32_t PlayerDataProvider::GetCrystalsCount() const
 {
     return mCrystalsCount;
 }
 
 void PlayerDataProvider::ResetLevelData()
 {
-    mAvailableMissiles.clear();
-    mSelectedMissileType = eMissileType::NONE;
+    {
+        std::lock_guard<std::mutex> lock(mMissileTypesLock);
+        mAvailableMissileTypes.clear();
+    }
     mDestroyedEnemySpaceshipsCount = 0;
     mSelectedSpaceObjectId = -1;
 }

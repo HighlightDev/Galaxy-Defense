@@ -12,7 +12,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Game/Actors/BarrierActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 
 #include <algorithm>
 

@@ -14,7 +14,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Game/Actors/SpaceStationActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 
 using namespace Graphics;
 using namespace EngineCore;

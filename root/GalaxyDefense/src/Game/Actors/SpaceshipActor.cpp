@@ -13,7 +13,7 @@
 #include "Game/Actors/RouteHandlers/SpaceshipRouteHandler.h"
 #include "Game/Components/MovementComponents/OnRouteMovementComponent.h"
 #include "Game/Components/UiComponents/SpaceObjectUiComponent.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/DataProviders/PlayerDataProvider.h"
 
 using namespace EngineCore::DataProviders;
@@ -144,16 +144,18 @@ void SpaceshipActor::Tick(const float deltaTimeSec, const float playSpeed)
 
 void SpaceshipActor::TriggerDamageReceived(const size_t dmg, const eDamageDealerType damageDealerType)
 {
+    if (not IsAlive()) {
+        return;
+    }
+
     if (CheckIsAliveAfterDamage(dmg)) {
         mIsDamageEffectActive = true;
         mDamageEffectTimePassed = 0.0f;
-
-        const auto c_particle = GetComponentsByType<ParticleSystemBaseComponent>().back();
-        c_particle->EmitParticles();
-
         mUiComponent->SetLabelText(std::to_string(dmg));
         mUiComponent->FadeIn();
     } else if (eDamageDealerType::MAIN_PLAYER == damageDealerType) {
+        const auto c_particle = GetComponentsByType<ParticleSystemBaseComponent>().back();
+        c_particle->EmitParticles();
         const auto& playerDataProvider = PlayerDataProvider::GetInstance();
         playerDataProvider->SetDestroyedEnemySpaceshipsCount(playerDataProvider->GetDestroyedEnemySpaceshipsCount() + 1);
     }

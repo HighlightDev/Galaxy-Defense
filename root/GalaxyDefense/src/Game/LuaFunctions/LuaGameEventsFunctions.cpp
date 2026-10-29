@@ -9,7 +9,6 @@
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Game/DataProviders/LevelDataProvider.h"
-#include "Game/DataProviders/PlayerDataProvider.h"
 #include "Game/EditModeTypeEnum.h"
 #include "Game/Events/ChangeEditModeEvent.h"
 #include "Game/Events/ChangeGameModeEvent.h"
@@ -30,14 +29,12 @@ LuaGameEventsFunctions::LuaGameEventsFunctions(LuaScriptExecutorBase* ownerPtr)
 
 LuaGameEventsFunctions::~LuaGameEventsFunctions()
 {
-    LuaMainPlayerStatusChangedEvent::GetInstance()->RemoveListener(LuaMainPlayerStatusChangedEvent::GetInstanceId());
     LuaLevelProgressChangedEvent::GetInstance()->RemoveListener(LuaLevelProgressChangedEvent::GetInstanceId());
     LuaChangeGameModeEvent::GetInstance()->RemoveListener(LuaChangeGameModeEvent::GetInstanceId());
 }
 
 void LuaGameEventsFunctions::Initialize()
 {
-    LuaMainPlayerStatusChangedEvent::GetInstance()->AddListener(shared_from_this());
     LuaLevelProgressChangedEvent::GetInstance()->AddListener(shared_from_this());
     LuaChangeGameModeEvent::GetInstance()->AddListener(shared_from_this());
 }
@@ -62,26 +59,6 @@ void LuaGameEventsFunctions::OnScriptStopped(const LuaWrapper& luaWrapper)
 
 void LuaGameEventsFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
 {
-    LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetSelectedMissileType"), int32_t(void)>::Bind(
-        luaWrapper,
-        mOwnerPtr,
-        std::bind(&LuaGameEventsFunctions::GetSelectedMissileType, this, std::placeholders::_1),
-        "_GetSelectedMissileType");
-    LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetCollectedCrystalsCount"), int32_t(void)>::Bind(
-        luaWrapper,
-        mOwnerPtr,
-        std::bind(&LuaGameEventsFunctions::GetCollectedCrystalsCount, this, std::placeholders::_1),
-        "_GetCollectedCrystalsCount");
-    LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetAllMissilesData"), std::string(void)>::Bind(
-        luaWrapper,
-        mOwnerPtr,
-        std::bind(&LuaGameEventsFunctions::GetAllMissilesData, this, std::placeholders::_1),
-        "_GetAllMissilesData");
-    LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetEnemySpaceshipsCountDestroyedByPlayer"), int32_t(void)>::Bind(
-        luaWrapper,
-        mOwnerPtr,
-        std::bind(&LuaGameEventsFunctions::GetEnemySpaceshipsCountDestroyedByPlayer, this, std::placeholders::_1),
-        "_GetEnemySpaceshipsCountDestroyedByPlayer");
     LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetEditorLevelAreaBoundingBoxWidth"), float(void)>::Bind(
         luaWrapper,
         mOwnerPtr,
@@ -104,17 +81,6 @@ void LuaGameEventsFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
             mOwnerPtr,
             std::bind(&LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent, this, std::placeholders::_1),
             "_SendChangeEditModeGameThreadEvent");
-}
-
-void LuaGameEventsFunctions::ProcessEvent(
-    const LuaMainPlayerStatusChangedEvent* sender, const LuaMainPlayerStatusChangedEvent::EventData_t& data)
-{
-    LuaFunctionInvoker<void(void*, std::string, std::string)>::Invoke(
-        mOwnerPtr->GetLuaInstance(),
-        "System_OnGameEventTriggered",
-        (void*)mOwnerPtr,
-        std::string("PlayerStatusChanged"),
-        std::get<0>(data));
 }
 
 void LuaGameEventsFunctions::ProcessEvent(
@@ -158,30 +124,6 @@ void LuaGameEventsFunctions::ProcessEvent(
         (void*)mOwnerPtr,
         std::string("EditLevelAreaBoundingBoxChanged"),
         jsonObj.dump());
-}
-
-int32_t LuaGameEventsFunctions::GetSelectedMissileType(const std::tuple<>& data) const
-{
-    return static_cast<int32_t>(PlayerDataProvider::GetInstance()->GetSelectedMissileType());
-}
-
-std::string LuaGameEventsFunctions::GetAllMissilesData(const std::tuple<>& data) const
-{
-    const auto& dataProvider = PlayerDataProvider::GetInstance();
-    std::unordered_map<eMissileType, size_t> allMissilesData;
-    const std::vector<eMissileType> availableMissileTypes = dataProvider->GetAvailableMissileTypes();
-    for (const auto availableMissileType : availableMissileTypes) {
-        allMissilesData[static_cast<eMissileType>(availableMissileType)]
-            = dataProvider->GetMissilesCount(static_cast<eMissileType>(availableMissileType));
-    }
-    nlohmann::json jsonObj;
-    jsonObj["all_missiles_data"] = allMissilesData;
-    return jsonObj.dump();
-}
-
-int32_t LuaGameEventsFunctions::GetEnemySpaceshipsCountDestroyedByPlayer(const std::tuple<>& data) const
-{
-    return static_cast<int32_t>(PlayerDataProvider::GetInstance()->GetDestroyedEnemySpaceshipsCount());
 }
 
 float LuaGameEventsFunctions::GetEditorLevelAreaBoundingBoxWidth(const std::tuple<>& data) const
@@ -240,8 +182,4 @@ void LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent(
     }
 }
 
-int32_t LuaGameEventsFunctions::GetCollectedCrystalsCount(const std::tuple<>& data) const
-{
-    return PlayerDataProvider::GetInstance()->GetCrystalsCount();
-}
 } // namespace Game

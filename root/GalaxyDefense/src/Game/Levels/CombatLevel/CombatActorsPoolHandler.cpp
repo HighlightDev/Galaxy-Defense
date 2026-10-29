@@ -13,7 +13,7 @@
 #include "Game/Actors/PortalActor.h"
 #include "Game/Actors/SpaceObjectActor.h"
 #include "Game/Actors/SpaceshipActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/Factories/AsteroidFactory.h"
 #include "Game/Factories/BarrierFactory.h"
 #include "Game/Factories/BombMissileFactory.h"
@@ -80,8 +80,9 @@ std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayCh
     ext_assert(sceneSp, "Scene pointer is null in SpawnElectroRayChainActor");
 
     ElectroRayChainFactory factory;
-    const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(std::static_pointer_cast<ElectroRayChainActor>(
-        factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1))));
+    const auto& spawnedActor = mElectroRayChainActorPool.emplace_back(
+        std::static_pointer_cast<ElectroRayChainActor>(
+            factory.CreateMissile(sceneSp, shared_from_this(), glm::vec3(), glm::vec3(), glm::vec3(1))));
     spawnedActor->TriggerDisabled();
     return spawnedActor;
 }
@@ -251,7 +252,7 @@ std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::GetFreeSpaceStationA
         return eSpaceStationActivityState::IDLE == spaceStationSp->GetState();
     });
 
-    return idleSpaceStationIt == mSpaceStations.cend() ? nullptr : *idleSpaceStationIt;
+    return idleSpaceStationIt != mSpaceStations.cend() ? *idleSpaceStationIt : nullptr;
 }
 
 std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByType(const eMissileType missileType) const

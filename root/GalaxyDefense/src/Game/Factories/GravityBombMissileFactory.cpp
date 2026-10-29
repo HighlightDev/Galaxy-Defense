@@ -33,7 +33,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Game/Actors/GravityBombMissileActor.h"
 #include "Game/Controllers/AiActorController.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 using namespace Resources;

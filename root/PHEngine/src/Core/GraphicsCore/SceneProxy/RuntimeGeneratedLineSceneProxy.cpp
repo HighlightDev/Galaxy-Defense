@@ -68,7 +68,6 @@ void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
                         return;
                     }
                     const auto engineObject = sceneSp->GetEngineObjectById(goID);
-                    ext_assert(engineObject, "Engine object not found by ID");
                     if (not engineObject) {
                         return;
                     }

@@ -42,7 +42,7 @@
 #include "Game/Components/MovementComponents/OnRouteMovementComponent.h"
 #include "Game/Components/UiComponents/SpaceObjectUiComponent.h"
 #include "Game/Controllers/AiActorController.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 
 using namespace Resources;
 using namespace EngineCore;

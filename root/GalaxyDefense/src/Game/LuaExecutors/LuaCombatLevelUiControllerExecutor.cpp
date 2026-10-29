@@ -3,6 +3,7 @@
 #include "Game/LevelProgressSystem/LevelProgressController.h"
 #include "Game/LuaFunctions/LuaGameEventsFunctions.h"
 #include "Game/LuaFunctions/LuaLvlProgressFunctions.h"
+#include "Game/LuaFunctions/LuaPlayerDataProviderFunctions.h"
 
 using namespace EngineMath;
 using namespace EngineCore;
@@ -26,7 +27,8 @@ void LuaCombatLevelUiControllerExecutor::Initialize()
            std::make_shared<LuaCommonEngineFunctions>(this),
            std::make_shared<LuaEngineEventsFunctions>(this),
            std::make_shared<LuaGameEventsFunctions>(this),
-           std::make_shared<LuaLvlProgressFunctions>(this, mLevelProgressController)};
+           std::make_shared<LuaLvlProgressFunctions>(this, mLevelProgressController),
+           std::make_shared<LuaPlayerDataProviderFunctions>(this)};
 
     for (const auto& luaFunction : mLuaFunctions) {
         luaFunction->Initialize();

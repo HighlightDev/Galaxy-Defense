@@ -3,7 +3,6 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Core/GameCore/ITickable.h"
-#include "ILevelController.h"
 #include "Game/Actors/BackgroundSpaceObjectActor.h"
 #include "Game/Actors/MissileActor.h"
 #include "Game/Actors/SpaceObjectActor.h"
@@ -21,6 +20,7 @@
 #include "Game/Levels/CombatLevel/CombatActorsPoolHandler.h"
 #include "Game/Levels/LevelData.h"
 #include "Game/MissileType.h"
+#include "ILevelController.h"
 
 #include <memory>
 #include <utility>
@@ -70,7 +70,7 @@ public:
 
     void Tick(const float deltaTimeSec, const float playSpeed) override;
 
-    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override{};
+    void UnpausableTick(const float deltaTimeSec, const float playSpeed) override { };
 
     void CleanUp() override;
 
@@ -104,8 +104,8 @@ private:
 
     void ValidatePoolObjects();
 
-    void UpdateMissilesData();
-
     void OnCombatPreparationCompleted();
+
+    void SpawnTowerMissiles(const int32_t towersCount);
 };
 } // namespace Game

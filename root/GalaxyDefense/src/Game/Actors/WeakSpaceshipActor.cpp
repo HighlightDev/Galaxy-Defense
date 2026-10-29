@@ -55,6 +55,10 @@ void WeakSpaceshipActor::InitTweenerSubscriptions()
 
 void WeakSpaceshipActor::TriggerDamageReceived(const size_t damage, const eDamageDealerType damageDealerType)
 {
+    if (not IsAlive()) {
+        return;
+    }
+
     if (CheckIsAliveAfterDamage(damage)) {
         mIsDamageEffectActive = true;
         mDamageEffectTimePassed = 0.0f;

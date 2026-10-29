@@ -16,12 +16,25 @@ const float c_outlineThickness = 3.0f;
 const float c_lootChanceCoef = 0.05f;
 const int32_t c_numberOfPRDIterations = 20;
 #ifdef DEBUG
-const int32_t c_crystalsCountFromStartup = 9999;
+const int32_t c_crystalsCountFromStartup = 200;
 #else
-const int32_t c_crystalsCountFromStartup = 500;
+const int32_t c_crystalsCountFromStartup = 100;
 #endif
 const uint32_t c_weakSpaceshipDanger = 10;
 const uint32_t c_fighterSpaceshipDanger = 20;
+
+// eMissileType::NONE intentionally has no price: it can't be bought
+const std::unordered_map<eMissileType, int16_t> c_missileTypePrices
+    = {{eMissileType::BOMB, 5},
+       {eMissileType::FREEZING_BOMB, 30},
+       {eMissileType::ELECTRO_RAY, 40},
+       {eMissileType::BLACK_HOLE, 100},
+       {eMissileType::FREEZING_RAY, 30},
+       {eMissileType::PLASMA_BOMB, 35},
+       {eMissileType::REPAIR_BEAM, 45},
+       {eMissileType::FORCE_BARRIER, 45}};
+
+const uint32_t c_barrierPerCellPrice = 15;
 } // namespace Game::Constants
 
 namespace Game::Constants::GravityBombMissile {

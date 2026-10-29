@@ -27,7 +27,7 @@
 #include "Game/Actors/LootActor.h"
 #include "Game/Components/MovementComponents/LootDropMovementComponent.h"
 #include "Game/Controllers/AiActorController.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 
 using namespace EngineCore;
 using namespace Graphics;

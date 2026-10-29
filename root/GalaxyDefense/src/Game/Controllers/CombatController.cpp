@@ -12,7 +12,7 @@
 #include "Game/Actors/BarrierActor.h"
 #include "Game/Actors/FighterSpaceshipActor.h"
 #include "Game/Actors/PortalActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/DataProviders/PlayerDataProvider.h"
 #include "Game/Levels/LevelSerializationHelper.h"
 #include "Game/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
@@ -21,8 +21,10 @@
 #include <nlohmann/json.hpp>
 
 #include <array>
+#include <set>
 #include <tuple>
 #include <unordered_map>
+#include <unordered_set>
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -48,7 +50,7 @@ CombatController::~CombatController()
     ElectroRaySphereContactCollisionEvent::GetInstance()->RemoveListener(ElectroRaySphereContactCollisionEvent::GetInstanceId());
     PhysicsCollisionGameThreadEvent::GetInstance()->RemoveListener(PhysicsCollisionGameThreadEvent::GetInstanceId());
     ShootRayCollisionEvent::GetInstance()->RemoveListener(ShootRayCollisionEvent::GetInstanceId());
-    ChangeGameModeEvent::GetInstance()->RemoveListener(ChangeGameModeEvent::GetInstance()->GetInstanceId());
+    ChangeGameModeEvent::GetInstance()->RemoveListener(ChangeGameModeEvent::GetInstanceId());
 }
 
 void CombatController::OnPreLevelInit()
@@ -130,15 +132,37 @@ void CombatController::InitFromLevelData(const LevelData& levelData)
         spaceStationSp->SetIsEnabled(false);
     }
 
-    const int32_t c_bombMissilesCount = 5 * levelData.TowersData.size();
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, c_bombMissilesCount + 10);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_BOMB, 2);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 1);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::PLASMA_BOMB, 1);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING_RAY, 1);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::REPAIR_BEAM, 4);
-    mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FORCE_BARRIER, 4);
+    SpawnTowerMissiles((int32_t)levelData.TowersData.size());
+}
+
+void CombatController::SpawnTowerMissiles(const int32_t towersCount)
+{
+    // todo: https://trello.com/c/An7s8VMa/100-feature-create-save-system
+    // restore available missile types from the saving, for now provide all types as available
+    const std::map<eMissileType, int32_t> c_availabeMissileCount
+        = {{eMissileType::BOMB, 5 * towersCount},
+           {eMissileType::FREEZING_BOMB, 4},
+           {eMissileType::ELECTRO_RAY, 2},
+           {eMissileType::BLACK_HOLE, 1},
+           {eMissileType::PLASMA_BOMB, 4},
+           {eMissileType::FREEZING_RAY, 2},
+           {eMissileType::REPAIR_BEAM, 2},
+           {eMissileType::FORCE_BARRIER, 2}};
+
+    std::set<eMissileType> availabeMissileTypes
+        = {eMissileType::BOMB,
+           eMissileType::FREEZING_BOMB,
+           eMissileType::ELECTRO_RAY,
+           eMissileType::BLACK_HOLE,
+           eMissileType::PLASMA_BOMB,
+           eMissileType::FREEZING_RAY,
+           eMissileType::REPAIR_BEAM,
+           eMissileType::FORCE_BARRIER};
+    for (const auto type : availabeMissileTypes) {
+        mCombatActorsPoolHandler->SpawnMissiles(type, c_availabeMissileCount.at(type));
+    }
+
+    PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 }
 
 std::shared_ptr<NavigationController> CombatController::GetNavigationController() const
@@ -160,16 +184,6 @@ void CombatController::OnPostLevelInit()
     mNavigationController->OnPostLevelInit();
     mUserInteractionController->OnPostLevelInit();
     mLootController->OnPostLevelInit();
-
-    const std::unordered_map<eMissileType, size_t> availabeMissileTypes
-        = {{eMissileType::BOMB, 10},
-           {eMissileType::FREEZING_BOMB, 3},
-           {eMissileType::ELECTRO_RAY, 1},
-           {eMissileType::BLACK_HOLE, 2},
-           {eMissileType::PLASMA_BOMB, 2},
-           {eMissileType::REPAIR_BEAM, 2},
-           {eMissileType::FORCE_BARRIER, 2}};
-    PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 
     mCombatActorsPoolHandler->SpawnEnemySpaceships(5, eSpaceshipType::PAWN);
     mCombatActorsPoolHandler->SpawnEnemySpaceships(5, eSpaceshipType::FIGHTER);
@@ -411,8 +425,8 @@ void CombatController::ProcessEvent(
         const std::shared_ptr<Actor>& srcCollisionActor = eGameObjectsType::SPACESHIP == srcActorGameObjectType
             ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(srcActorId))
             : eGameObjectsType::NEUTRAL_SPACE_OBJECT == srcActorGameObjectType
-                ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
-                : nullptr;
+            ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
+            : nullptr;
         ext_assert(srcCollisionActor, "Source collision actor not found");
         for (const auto& collidedActorId : collidedActorIds) {
             const auto& gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedActorId);
@@ -483,7 +497,6 @@ void CombatController::Tick(const float deltaTimeSec, const float playSpeed)
 {
     if (eGameModeType::COMBAT == mGameModeType) {
         ValidatePoolObjects();
-        UpdateMissilesData();
         ProcessAiAction();
         mNavigationController->Tick(deltaTimeSec, playSpeed);
     }
@@ -552,24 +565,6 @@ void CombatController::ValidatePoolObjects()
             LogInfo("CombatController::ValidatePoolObjects: returnedToPoolMissiles: ", returnedToPoolMissiles);
         }
     }
-}
-
-void CombatController::UpdateMissilesData()
-{
-    // std::unordered_map<eMissileType, size_t> missiles;
-    // const auto &availableMissileTypes = PlayerDataProvider::GetInstance()->GetAvailableMissileTypes();
-    // for (const auto &avlMissileType : availableMissileTypes)
-    // {
-    //     missiles[avlMissileType] = 0;
-    // }
-    // for (auto &missile : mMissilesPool)
-    // {
-    //     if (eMissileActivityState::IDLE == missile->GetMissileActivityState())
-    //     {
-    //         missiles[missile->GetMissileType()] = missiles.at(missile->GetMissileType()) + 1;
-    //     }
-    // }
-    // PlayerDataProvider::GetInstance()->SetMissilesCount(missiles);
 }
 
 void CombatController::ProcessAiAction()

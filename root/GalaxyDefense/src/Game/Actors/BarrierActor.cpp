@@ -26,7 +26,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Game/Components/UiComponents/BarrierUiComponent.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/DataProviders/PlayerDataProvider.h"
 #include "Game/Modifiers/ModifiersHandler.h"
 

@@ -5,7 +5,7 @@
 #include "Game/Actors/MissileActor.h"
 #include "Game/Actors/SpaceObjectActor.h"
 #include "Game/Actors/SpaceshipActor.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 #include "Game/Modifiers/PlasmaModifier.h"
 
 using namespace EngineCore;

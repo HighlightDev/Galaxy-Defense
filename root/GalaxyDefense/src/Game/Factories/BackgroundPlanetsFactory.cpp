@@ -29,7 +29,7 @@
 #include "Game/Actors/BackgroundSpaceObjectActor.h"
 #include "Game/Actors/SpaceObjectActor.h"
 #include "Game/Controllers/AiActorController.h"
-#include "Game/DataProviders/GameConstants.h"
+#include "Game/Constants/GameConstants.h"
 
 using namespace Resources;
 using namespace EngineCore;
