@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <functional>
 #include <list>
 #include <string>
@@ -8,12 +9,12 @@ class FileFacade {
 
     std::list<std::string> mFileSrc;
 
-    std::string mPathToFile;
+    std::filesystem::path mPathToFile;
 
 public:
     FileFacade() = default;
 
-    bool OpenAndReadFile(const std::string& pathToFile);
+    bool OpenAndReadFile(const std::filesystem::path& pathToFile);
 
     size_t GetFileSourceLinesCount() const;
 
@@ -30,10 +31,10 @@ public:
         const std::string& separateBy) const;
     bool ReplaceSourceLineAt(const size_t index, const std::string& insertText);
 
-    bool CheckIfFileExists(const std::string& pathToFile);
+    bool CheckIfFileExists(const std::filesystem::path& pathToFile);
 
 private:
-    bool LoadFile(const std::string& pathToFile);
+    bool LoadFile(const std::filesystem::path& pathToFile);
 
     std::string ConcatFileSrc() const;
 };

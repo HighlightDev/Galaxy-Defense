@@ -29,9 +29,9 @@ LuaWrapper::~LuaWrapper()
     }
 }
 
-bool LuaWrapper::ExecuteScript(const std::string& absPath)
+bool LuaWrapper::ExecuteScript(const std::filesystem::path& absPath)
 {
-    if (luaL_dofile(mState, absPath.c_str()) != LUA_OK) {
+    if (luaL_dofile(mState, EngineUtility::PathToUtf8(absPath).c_str()) != LUA_OK) {
         const auto& message = GetErrorMessageAt(-1);
         LogInfo("ERROR: Lua script execution failed: " + message);
         return false;

@@ -8,7 +8,7 @@
 namespace IO {
 FolderManager::FolderManager()
     : mAbsFilesPathMap()
-    , m_pathToExe("")
+    , m_pathToExe()
 {
 }
 
@@ -21,26 +21,16 @@ bool IsObsoleteName(const std::string& name)
 {
     return name == "obsolete" || name == "Obsolete";
 }
-
-// std::filesystem::path::string() uses the system ANSI code page on Windows and throws
-// std::system_error when the path contains characters outside that code page.
-// This helper always produces a valid UTF-8 std::string regardless of the locale.
-std::string PathToUtf8(const std::filesystem::path& p)
-{
-    // In C++20 u8string() returns std::u8string (char8_t), not std::string.
-    // The underlying bytes are identical to UTF-8 char bytes, so the range
-    // constructor is the safest zero-copy way to obtain a std::string.
-    auto u8 = p.u8string();
-    return {u8.begin(), u8.end()};
-}
 } // namespace
 
 void FolderManager::BuildSystemPathToFolders()
 {
-    m_pathToExe = EngineUtility::GetExecutablePath();
-    ext_assert(m_pathToExe != "", "FolderManager::BuildSystemPathToFolders: m_pathToExe is empty");
+    using EngineUtility::PathToUtf8;
 
-    const std::string rootPath = GetRootPath();
+    m_pathToExe = EngineUtility::GetExecutablePath();
+    ext_assert(!m_pathToExe.empty(), "FolderManager::BuildSystemPathToFolders: m_pathToExe is empty");
+
+    const std::filesystem::path rootPath = GetRootPath();
 
     for (auto it = std::filesystem::recursive_directory_iterator(rootPath); it != std::filesystem::recursive_directory_iterator();
          ++it) {
@@ -58,42 +48,33 @@ void FolderManager::BuildSystemPathToFolders()
             continue;
         }
 
-        const std::string fileName = entryName;
-        const std::string absPath = PathToUtf8(dirEntry.path());
+        const std::string& fileName = entryName;
+        const std::filesystem::path& absPath = dirEntry.path();
 
         ext_assert(
             mAbsFilesPathMap.count(fileName) == 0,
             "FolderManager::BuildSystemPathToFolders: duplicate file name in resource tree: " + fileName
-                + " (existing: " + mAbsFilesPathMap[fileName] + ", new: " + absPath + ")");
+                + " (existing: " + PathToUtf8(mAbsFilesPathMap[fileName]) + ", new: " + PathToUtf8(absPath) + ")");
 
         mAbsFilesPathMap[fileName] = absPath;
-        EngineCore::LogInfo("FolderManager::BuildSystemPathToFolders: indexed: ", absPath);
+        EngineCore::LogInfo("FolderManager::BuildSystemPathToFolders: indexed: ", PathToUtf8(absPath));
     }
 }
 
-std::string FolderManager::GetAbsolutePathToRes(const std::string& fileName) const
+std::filesystem::path FolderManager::GetAbsolutePathToRes(const std::string& fileName) const
 {
     ext_assert(mAbsFilesPathMap.count(fileName), "FolderManager::GetAbsolutePathToRes: missing file: " + fileName);
     return mAbsFilesPathMap.at(fileName);
 }
 
-std::string FolderManager::GetAbsPathToExeFile() const
+std::filesystem::path FolderManager::GetAbsPathToExeFile() const
 {
-    ext_assert(m_pathToExe != "", "FolderManager::GetAbsPathToExeFile: forgot to invoke BuildSystemPathToFolders");
-#ifdef _WIN32
-    return m_pathToExe + SLASH;
-#elif __linux__
+    ext_assert(!m_pathToExe.empty(), "FolderManager::GetAbsPathToExeFile: forgot to invoke BuildSystemPathToFolders");
     return m_pathToExe;
-#endif
 }
 
-std::string FolderManager::GetRootPath() const
+std::filesystem::path FolderManager::GetRootPath() const
 {
-#ifdef _WIN32
-    static std::string pathToRes = GetAbsPathToExeFile() + SLASH + "res" + SLASH;
-#elif __linux__
-    static std::string pathToRes = GetAbsPathToExeFile() + "res" + SLASH;
-#endif
-    return pathToRes;
+    return GetAbsPathToExeFile() / "res";
 }
 } // namespace IO

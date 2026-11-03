@@ -3,30 +3,29 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <filesystem>
 #include <string>
 
 #ifdef _WIN32
-#include <windows.h>
 constexpr auto SLASH = '\\';
 #elif __linux__
-#include <filesystem>
-#define SLASH '/'
+constexpr auto SLASH = '/';
 #endif
-
-#define GENERAL_SLASH '|'
+constexpr auto PIPE = '|';
 
 namespace EngineUtility {
-static std::string sPathToExecutable = "";
+std::filesystem::path GetExecutablePath();
 
-#ifdef _WIN32 // compile only for windows operating system
-const char* get_module_file_name(HMODULE module = NULL);
-#elif __linux__ // compile only for linux system operating system
-std::string get_module_file_name();
-#endif
+std::filesystem::path GetDocumentsDir();
 
-std::string GetExecutablePath();
+std::filesystem::path GetAppDataDir();
 
-std::string ConvertFromRelativeToAbsolutePath(const std::string& relativePath);
+std::filesystem::path ConvertFromRelativeToAbsolutePath(const std::filesystem::path& relativePath);
+
+// std::filesystem::path::string() uses the system ANSI code page on Windows and throws
+// std::system_error when the path contains characters outside that code page.
+// This helper always produces a valid UTF-8 std::string regardless of the locale.
+std::string PathToUtf8(const std::filesystem::path& path);
 
 std::string FromOsSpecificUrlToGeneral(const std::string& path);
 

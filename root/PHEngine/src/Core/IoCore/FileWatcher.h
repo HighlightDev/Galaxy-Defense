@@ -3,9 +3,9 @@
 #include <chrono>
 #include <filesystem>
 #include <functional>
+#include <map>
 #include <string>
 #include <thread>
-#include <unordered_map>
 
 namespace IO {
 enum class FileStatus { CREATED, MODIFIED, ERASED };
@@ -13,7 +13,7 @@ enum class FileStatus { CREATED, MODIFIED, ERASED };
 class FileWatcher {
 public:
     FileWatcher(
-        std::string _path_to_watch,
+        std::filesystem::path _path_to_watch,
         std::chrono::duration<int32_t, std::milli> _delay,
         std::function<void(std::string, FileStatus)> callback);
 
@@ -24,16 +24,16 @@ public:
 private:
     void initialize();
 
-    bool contains(const std::string& key) const;
+    bool contains(const std::filesystem::path& key) const;
 
 private:
     static std::atomic<int32_t> sInstanceCount;
     int32_t mInstanceId;
     std::thread mListenerThread;
-    std::string mPathToWatch;
+    std::filesystem::path mPathToWatch;
     std::chrono::duration<int32_t, std::milli> mDelay;
     std::function<void(std::string, FileStatus)> mCallback;
-    std::unordered_map<std::string, std::filesystem::file_time_type> mPaths;
+    std::map<std::filesystem::path, std::filesystem::file_time_type> mPaths;
     std::atomic_bool mIsRunning = true;
 
 #ifdef __linux__

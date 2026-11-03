@@ -126,7 +126,7 @@ void MainMenuLevel::InitLevel()
 
     using namespace std::literals::chrono_literals;
     mFileWatcher = std::make_unique<FileWatcher>(
-        FolderManager::GetInstance()->GetAbsPathToExeFile() + "/res/scripts/",
+        FolderManager::GetInstance()->GetRootPath() / "scripts",
         1000ms,
         [this](const std::string& path, const FileStatus fileStatus) {
             if (FileStatus::MODIFIED != fileStatus) {

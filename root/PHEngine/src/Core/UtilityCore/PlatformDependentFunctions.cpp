@@ -5,90 +5,104 @@
 
 #include <chrono>
 #include <ctime>
+#include <filesystem>
+
+#ifdef _WIN32
+#include <shlobj.h>
+#include <windows.h>
+#pragma comment(lib, "shell32.lib")
+#pragma comment(lib, "ole32.lib")
+#elif __linux__
+#include <cstdlib>
+#endif
+
+namespace {
+#ifdef __linux__ // compile only for linux OS
+std::filesystem::path XdgDir(const char* envVar, const char* fallbackRelToHome)
+{
+    if (const char* v = std::getenv(envVar); v && *v) {
+        return std::filesystem::path(v);
+    }
+    const char* home = std::getenv("HOME");
+    return std::filesystem::path(home ? home : ".") / fallbackRelToHome;
+}
+#endif
+} // namespace
 
 namespace EngineUtility {
-#ifdef _WIN32 // compile only for windows operating system
 
-const char* get_module_file_name(HMODULE module)
+std::filesystem::path GetExecutablePath()
 {
-    DWORD size = 1;
-    char* buffer;
-    for (;;) {
-        buffer = new char[size + 1];
-        DWORD r = GetModuleFileName(module, buffer, size);
-        if (r < size && r != 0)
-            break;
-        if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-            delete buffer;
-            size += 64;
-        } else
-            return NULL;
+    static std::filesystem::path sPathToExecutable;
+    if (!sPathToExecutable.empty()) {
+        return sPathToExecutable;
     }
-    return buffer;
-}
-#elif __linux__ // compile only for linux system operating system
-
-std::string get_module_file_name()
-{
-    const auto& path = std::filesystem::canonical("/proc/self/exe");
-    const auto& pathToExeStr = path.string();
-    return pathToExeStr;
-}
-
-#endif
-
-std::string GetExecutablePath()
-{
-    if (sPathToExecutable.empty()) {
 #ifdef _WIN32
-        const char* exeFilePathCharPtr = get_module_file_name();
-        std::string exeFilePathStr = exeFilePathCharPtr;
-        delete exeFilePathCharPtr;
-        size_t indexToCurrentDir = LastIndexOf(exeFilePathStr, "\\");
-        ext_assert(std::string::npos != indexToCurrentDir, "EngineUtility::GetExecutablePath: Invalid executable path");
-        sPathToExecutable = exeFilePathStr.substr(0, indexToCurrentDir);
-#elif __linux__
-        const std::string& fullPath = get_module_file_name();
-        const auto indexOfExecutable = LastIndexOf(fullPath, "/");
-        ext_assert(indexOfExecutable != std::string::npos, "EngineUtility::GetExecutablePath: Invalid executable path");
-        sPathToExecutable = fullPath.substr(0, indexOfExecutable + 1);
-#endif
+    std::wstring buffer(MAX_PATH, L'\0');
+    for (;;) {
+        const DWORD length = GetModuleFileNameW(NULL, buffer.data(), static_cast<DWORD>(buffer.size()));
+        ext_assert(length != 0, "EngineUtility::GetExecutablePath: GetModuleFileNameW failed");
+        if (length < buffer.size()) {
+            buffer.resize(length);
+            break;
+        }
+        buffer.resize(buffer.size() * 2);
     }
+    sPathToExecutable = std::filesystem::path(buffer).parent_path();
+#elif __linux__
+    sPathToExecutable = std::filesystem::canonical("/proc/self/exe").parent_path();
+#endif
 
     return sPathToExecutable;
 }
 
-std::string ConvertFromRelativeToAbsolutePath(const std::string& relativePath)
+std::filesystem::path GetDocumentsDir()
 {
-    if ("" == relativePath)
+    std::filesystem::path result;
+#ifdef _WIN32
+    PWSTR raw = nullptr;
+
+    if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Documents, KF_FLAG_CREATE, nullptr, &raw))) {
+        result = std::filesystem::path(raw);
+    }
+    CoTaskMemFree(raw);
+#elif __linux__
+    result = XdgDir("XDG_DOCUMENTS_DIR", "Documents");
+#endif
+    return result;
+}
+
+std::filesystem::path GetAppDataDir()
+{
+    std::filesystem::path result;
+#ifdef _WIN32
+    PWSTR raw = nullptr;
+
+    if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_CREATE, nullptr, &raw))) {
+        result = std::filesystem::path(raw);
+    }
+    CoTaskMemFree(raw);
+#elif __linux__
+    result = XdgDir("XDG_DATA_HOME", ".local/share");
+#endif
+    return result;
+}
+
+std::filesystem::path ConvertFromRelativeToAbsolutePath(const std::filesystem::path& relativePath)
+{
+    if (relativePath.empty())
         return relativePath;
 
-    std::string absolutePath = sPathToExecutable;
+    return (GetExecutablePath() / relativePath).lexically_normal();
+}
 
-    int32_t countOfGoBack = 0;
-    size_t relativeOffset = 0;
-    const std::string& lookForGoBack = "..";
-
-    size_t new_offset = 0;
-    do {
-        new_offset = IndexOf(relativePath, lookForGoBack, relativeOffset);
-        if (new_offset != std::string::npos) {
-            relativeOffset = new_offset + lookForGoBack.size();
-            countOfGoBack++;
-        }
-    } while (new_offset != std::string::npos);
-
-    const std::string& relativeTrimmedGoBack = relativePath.substr(relativeOffset);
-
-    while (countOfGoBack != 0) {
-        size_t lastIndexOfNexDir = EngineUtility::LastIndexOf(absolutePath, "\\");
-        absolutePath = absolutePath.substr(0, lastIndexOfNexDir);
-        countOfGoBack--;
-    }
-
-    absolutePath += relativeTrimmedGoBack;
-
-    return absolutePath;
+std::string PathToUtf8(const std::filesystem::path& path)
+{
+    // In C++20 u8string() returns std::u8string (char8_t), not std::string.
+    // The underlying bytes are identical to UTF-8 char bytes, so the range
+    // constructor is the safest way to obtain a std::string.
+    const auto u8 = path.u8string();
+    return {u8.begin(), u8.end()};
 }
 
 std::string FromOsSpecificUrlToGeneral(const std::string& path)
@@ -98,7 +112,7 @@ std::string FromOsSpecificUrlToGeneral(const std::string& path)
     for (size_t i = 0; i < splitPathBySlash.size(); ++i) {
         if (!splitPathBySlash[i].empty()) {
             if ((i + 1) < splitPathBySlash.size()) {
-                result += splitPathBySlash[i] + GENERAL_SLASH;
+                result += splitPathBySlash[i] + PIPE;
             } else {
                 result += splitPathBySlash[i];
             }
@@ -110,7 +124,7 @@ std::string FromOsSpecificUrlToGeneral(const std::string& path)
 std::string FromGeneralUrlToOsSpecific(const std::string& path)
 {
     std::string result = "";
-    const auto& splitPathBySlash = Split(path, GENERAL_SLASH);
+    const auto& splitPathBySlash = Split(path, PIPE);
     for (size_t i = 0; i < splitPathBySlash.size(); ++i) {
         if (!splitPathBySlash[i].empty()) {
             if ((i + 1) < splitPathBySlash.size()) {

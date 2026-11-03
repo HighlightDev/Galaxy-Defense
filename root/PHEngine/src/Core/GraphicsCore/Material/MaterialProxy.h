@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialProperty.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,7 +15,7 @@ class MaterialProxy : public SceneProxyBase {
 public:
     const std::string MaterialName;
     const std::string MaterialShaderName;
-    const std::string MaterialShaderRelativePath;
+    const std::filesystem::path MaterialShaderRelativePath;
 
 protected:
     std::vector<std::shared_ptr<MaterialProperty>> mProperties;

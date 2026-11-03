@@ -15,7 +15,7 @@ VertexFactoryShader::~VertexFactoryShader()
 {
 }
 
-void VertexFactoryShader::InitShader(const std::string& pathToShaderSource)
+void VertexFactoryShader::InitShader(const std::filesystem::path& pathToShaderSource)
 {
     mShaderSource = Base::LoadShaderSource(pathToShaderSource);
     SetShaderPredefine();

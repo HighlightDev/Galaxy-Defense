@@ -7,6 +7,7 @@
 #include "Uniform.h"
 
 #include <cstddef>
+#include <filesystem>
 #include <string>
 
 namespace Graphics {
@@ -85,7 +86,7 @@ public:
     bool SendToGpuShadersSources(const std::unordered_map<eShaderType, std::string>& shaderSources) const;
 
     std::vector<std::string> LoadShaderSrcVector(const std::string& pathToShader) const;
-    std::string LoadShaderSource(const std::string& pathToShader) const;
+    std::string LoadShaderSource(const std::filesystem::path& pathToShader) const;
 
 private:
     std::string InsertPredefinesToSource(

@@ -54,7 +54,7 @@ public:
     void Undefine(const std::string& name);
 
 protected:
-    void InitShader(const std::string& pathToShaderSource);
+    void InitShader(const std::filesystem::path& pathToShaderSource);
 };
 
 } // namespace OpenGL

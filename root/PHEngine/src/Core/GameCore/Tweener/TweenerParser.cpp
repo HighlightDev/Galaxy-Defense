@@ -134,12 +134,12 @@ typename std::enable_if<std::is_same<float, T>::value, T>::type GetTrivialValueA
 
 std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string& tweenerName)
 {
-    const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePathToRes(tweenerName);
+    const auto& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePathToRes(tweenerName);
 
     FileFacade fileWorker;
     fileWorker.OpenAndReadFile(absolutePath);
     const size_t sizeOfSrc = fileWorker.GetFileSourceLinesCount();
-    ext_assert(sizeOfSrc > 0, "ParseTweenerDescriptor: File is empty or could not be read: " + absolutePath);
+    ext_assert(sizeOfSrc > 0, "ParseTweenerDescriptor: File is empty or could not be read: " + EngineUtility::PathToUtf8(absolutePath));
 
     std::list<std::string> fileSource = fileWorker.GetFileSrc();
     std::string tweenerInnerName = "";

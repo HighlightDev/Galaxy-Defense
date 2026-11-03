@@ -2,6 +2,7 @@
 
 #include "ShaderType.h"
 
+#include <filesystem>
 #include <string>
 #include <unordered_map>
 
@@ -9,7 +10,7 @@ namespace Graphics {
 namespace OpenGL {
 struct ShaderParams {
     std::string ShaderName;
-    std::unordered_map<eShaderType, std::string> ShaderFiles;
+    std::unordered_map<eShaderType, std::filesystem::path> ShaderFiles;
 
     std::unordered_map<uint64_t, std::pair<eShaderType, std::string>> ShaderCodeSnippets;
 
@@ -17,20 +18,22 @@ struct ShaderParams {
 
     explicit ShaderParams();
 
-    void SetMainShaders(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
+    void SetMainShaders(const std::filesystem::path& vertexShaderFile, const std::filesystem::path& fragmentShaderFile);
 
-    void SetGeometryShader(const std::string& geometryShaderFile);
+    void SetGeometryShader(const std::filesystem::path& geometryShaderFile);
 
     void
-    SetTesselationShaders(const std::string& tesselationControlShaderFile, const std::string& tesselationEvaluationShaderFile);
+    SetTesselationShaders(const std::filesystem::path& tesselationControlShaderFile, const std::filesystem::path& tesselationEvaluationShaderFile);
 
-    void SetComputeShader(const std::string& computeShaderFile);
+    void SetComputeShader(const std::filesystem::path& computeShaderFile);
 
     bool IsComputeShader() const;
 
     void AddShaderCodeSnippet(const uint64_t snippetId, const eShaderType shaderType, const std::string& shaderCodeSnippet);
 
     friend struct std::hash<ShaderParams>;
+
+    const std::filesystem::path& GetShaderFile(const eShaderType shaderType) const;
 
     bool operator==(const ShaderParams& other) const;
 };

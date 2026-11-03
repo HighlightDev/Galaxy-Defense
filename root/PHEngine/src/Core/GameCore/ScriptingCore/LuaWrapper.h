@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <list>
 #include <string>
 #include <unordered_set>
@@ -29,7 +30,7 @@ public:
 
     lua_State* GetState() const;
 
-    bool ExecuteScript(const std::string& absPath);
+    bool ExecuteScript(const std::filesystem::path& absPath);
 
     void StopExecution();
 

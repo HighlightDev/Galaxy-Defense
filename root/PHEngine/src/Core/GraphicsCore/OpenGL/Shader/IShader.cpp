@@ -123,7 +123,7 @@ bool IShader::ProcessShaderIncludes(std::string& shaderSource)
                         includes.insert(name);
                         name.erase(std::remove(name.begin(), name.end(), '\"'), name.end()); // remove quotes
 
-                        const std::string& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePathToRes(name);
+                        const auto& absolutePath = IO::FolderManager::GetInstance()->GetAbsolutePathToRes(name);
                         includingSources += LoadShaderSource(absolutePath) + "\n";
                     }
                     it = sourceVector.erase(it);
@@ -159,15 +159,17 @@ bool IShader::SendToGpuSingleShaderSource(int32_t shaderId, const std::string& s
     return bLoadResult;
 }
 
-std::string IShader::LoadShaderSource(const std::string& pathToShader) const
+std::string IShader::LoadShaderSource(const std::filesystem::path& pathToShader) const
 {
     std::string result = "";
 
-    if ("" != pathToShader) {
+    if (!pathToShader.empty()) {
         std::ifstream stream(pathToShader);
         std::string line;
 
-        ext_assert(stream.is_open(), "IShader::LoadShaderSource: Could not open shader file: " + pathToShader);
+        ext_assert(
+            stream.is_open(),
+            "IShader::LoadShaderSource: Could not open shader file: " + EngineUtility::PathToUtf8(pathToShader));
 
         while (stream.is_open() && getline(stream, line)) {
             result += line + "\n";

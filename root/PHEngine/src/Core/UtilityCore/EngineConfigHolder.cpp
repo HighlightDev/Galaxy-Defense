@@ -16,7 +16,7 @@ EngineConfigHolder::EngineConfigHolder()
 {
 }
 
-void EngineConfigHolder::LoadSettings(const std::string& pathToSettings)
+void EngineConfigHolder::LoadSettings(const std::filesystem::path& pathToSettings)
 {
     ext_assert(!bSettingsLoaded, "EngineConfigHolder::LoadSettings: Settings already loaded");
     FileFacade fileLoader;

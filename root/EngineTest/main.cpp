@@ -161,7 +161,7 @@ int32_t main(int32_t argc, char** argv)
     ThreadHelper::GetInstance()->RegisterThread(EngineConstants::c_renderThreadName);
     FolderManager::GetInstance()->BuildSystemPathToFolders();
 
-    std::string logOutputPath = FolderManager::GetInstance()->GetAbsPathToExeFile();
+    std::string logOutputPath = EngineUtility::PathToUtf8(FolderManager::GetInstance()->GetAbsPathToExeFile());
 #if defined(__linux__)
     int character;
     while ((character = getopt(argc, argv, ":l")) != -1) {

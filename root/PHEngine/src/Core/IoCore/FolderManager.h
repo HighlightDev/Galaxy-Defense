@@ -2,6 +2,7 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
+#include <filesystem>
 #include <string>
 #include <unordered_map>
 
@@ -9,8 +10,8 @@ namespace IO {
 class FolderManager {
 
 private:
-    std::unordered_map<std::string /*file name*/, std::string /*abs path to file*/> mAbsFilesPathMap;
-    std::string m_pathToExe;
+    std::unordered_map<std::string /*file name*/, std::filesystem::path /*abs path to file*/> mAbsFilesPathMap;
+    std::filesystem::path m_pathToExe;
 
 public:
     FolderManager();
@@ -24,8 +25,8 @@ public:
 
     void BuildSystemPathToFolders();
 
-    std::string GetAbsolutePathToRes(const std::string& fileName) const;
-    std::string GetAbsPathToExeFile() const;
-    std::string GetRootPath() const;
+    std::filesystem::path GetAbsolutePathToRes(const std::string& fileName) const;
+    std::filesystem::path GetAbsPathToExeFile() const;
+    std::filesystem::path GetRootPath() const;
 };
 } // namespace IO

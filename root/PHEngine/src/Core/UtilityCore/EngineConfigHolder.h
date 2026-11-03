@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <filesystem>
 #include <list>
 #include <string>
 #include <utility>
@@ -73,7 +74,7 @@ public:
         return &sHolder;
     }
 
-    void LoadSettings(const std::string& pathToSettings);
+    void LoadSettings(const std::filesystem::path& pathToSettings);
 
     const EngineConfig& GetEngineConfig() const;
 };

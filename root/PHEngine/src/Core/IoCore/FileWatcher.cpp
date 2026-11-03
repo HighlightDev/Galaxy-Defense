@@ -28,11 +28,11 @@ struct FileWatcher::Impl {
 #endif
 
 FileWatcher::FileWatcher(
-    std::string _path_to_watch,
+    std::filesystem::path _path_to_watch,
     std::chrono::duration<int32_t, std::milli> _delay,
     std::function<void(std::string, FileStatus)> callback)
     : mInstanceId(sInstanceCount++)
-    , mPathToWatch(_path_to_watch)
+    , mPathToWatch(std::move(_path_to_watch))
     , mDelay(_delay)
     , mCallback(callback)
 #ifdef __linux__
@@ -67,7 +67,7 @@ FileWatcher::~FileWatcher()
     }
 }
 
-bool FileWatcher::contains(const std::string& key) const
+bool FileWatcher::contains(const std::filesystem::path& key) const
 {
     return mPaths.count(key) > 0;
 }
@@ -80,9 +80,9 @@ void FileWatcher::initialize()
     int32_t rootWatchDescriptor
         = inotify_add_watch(mImpl->mInotifyFd, mPathToWatch.c_str(), IN_CREATE | IN_CLOSE_WRITE | IN_DELETE);
     if (rootWatchDescriptor != -1) {
-        mImpl->mInotifyWatcherDescriptors[rootWatchDescriptor] = mPathToWatch;
+        mImpl->mInotifyWatcherDescriptors[rootWatchDescriptor] = mPathToWatch.string();
     } else {
-        LogInfo("FileWatcher::initialize: Failed to add inotify watch for root path: " + mPathToWatch);
+        LogInfo("FileWatcher::initialize: Failed to add inotify watch for root path: " + mPathToWatch.string());
     }
 
     for (auto& file : std::filesystem::recursive_directory_iterator(mPathToWatch)) {
@@ -99,7 +99,7 @@ void FileWatcher::initialize()
     }
 
     if (mImpl->mInotifyWatcherDescriptors.empty()) {
-        LogInfo("FileWatcher::initialize: No directories to watch in path: " + mPathToWatch);
+        LogInfo("FileWatcher::initialize: No directories to watch in path: " + mPathToWatch.string());
         return;
     }
 
@@ -165,8 +165,16 @@ void FileWatcher::start()
 #else
 void FileWatcher::initialize()
 {
-    for (auto& file : std::filesystem::recursive_directory_iterator(mPathToWatch)) {
-        mPaths[file.path().string()] = std::filesystem::last_write_time(file);
+    try {
+        for (auto& file : std::filesystem::recursive_directory_iterator(mPathToWatch)) {
+            std::error_code errorCode;
+            const auto lastWriteTime = std::filesystem::last_write_time(file.path(), errorCode);
+            if (!errorCode) {
+                mPaths[file.path()] = lastWriteTime;
+            }
+        }
+    } catch (const std::filesystem::filesystem_error& e) {
+        LogInfo("FileWatcher::initialize: Failed to scan directory: ", e.what());
     }
     mListenerThread = std::thread(std::bind(&FileWatcher::start, this));
 }
@@ -177,30 +185,41 @@ void FileWatcher::start()
     while (mIsRunning) {
         // Wait for "mDelay" milliseconds
         std::this_thread::sleep_for(mDelay);
-        auto it = mPaths.begin();
-        while (it != mPaths.end()) {
-            if (!std::filesystem::exists(it->first)) {
-                mCallback(it->first, FileStatus::ERASED);
-                it = mPaths.erase(it);
-            } else {
-                it++;
-            }
-        }
-
-        for (auto& file : std::filesystem::recursive_directory_iterator(mPathToWatch)) {
-            auto currentFileLastWriteTime = std::filesystem::last_write_time(file);
-
-            if (!contains(file.path().string())) // File creation
-            {
-                mPaths[file.path().string()] = currentFileLastWriteTime;
-                mCallback(file.path().string(), FileStatus::CREATED);
-            } else // File modification
-            {
-                if (mPaths[file.path().string()] != currentFileLastWriteTime) {
-                    mPaths[file.path().string()] = currentFileLastWriteTime;
-                    mCallback(file.path().string(), FileStatus::MODIFIED);
+        // Files may disappear while being scanned, in that case retry on the next tick
+        try {
+            auto it = mPaths.begin();
+            while (it != mPaths.end()) {
+                if (!std::filesystem::exists(it->first)) {
+                    mCallback(EngineUtility::PathToUtf8(it->first), FileStatus::ERASED);
+                    it = mPaths.erase(it);
+                } else {
+                    it++;
                 }
             }
+
+            for (auto& file : std::filesystem::recursive_directory_iterator(mPathToWatch)) {
+                const auto& path = file.path();
+
+                std::error_code errorCode;
+                const auto currentFileLastWriteTime = std::filesystem::last_write_time(path, errorCode);
+                if (errorCode) {
+                    continue;
+                }
+
+                if (!contains(path)) // File creation
+                {
+                    mPaths[path] = currentFileLastWriteTime;
+                    mCallback(EngineUtility::PathToUtf8(path), FileStatus::CREATED);
+                } else // File modification
+                {
+                    if (mPaths[path] != currentFileLastWriteTime) {
+                        mPaths[path] = currentFileLastWriteTime;
+                        mCallback(EngineUtility::PathToUtf8(path), FileStatus::MODIFIED);
+                    }
+                }
+            }
+        } catch (const std::filesystem::filesystem_error& e) {
+            LogInfo("FileWatcher::start: Failed to scan directory: ", e.what());
         }
     }
 }

@@ -3,6 +3,7 @@
 #include "MaterialProperties/MaterialProperty.h"
 #include "MaterialProxy.h"
 
+#include <filesystem>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -26,7 +27,7 @@ public:
 
     const std::string MaterialName;
     const std::string MaterialShaderName;
-    const std::string MaterialShaderRelativePath;
+    const std::filesystem::path MaterialShaderRelativePath;
 
 public:
     IMaterial(const std::string& materialName, const std::string& materialShaderName);

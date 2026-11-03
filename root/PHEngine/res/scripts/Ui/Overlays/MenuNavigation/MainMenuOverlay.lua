@@ -240,7 +240,16 @@ function MainMenuOverlay:new(host)
                 EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
                                                           "CombatLevel")
             end
-        }, {
+        },
+        {
+            id = "selectlevel",
+            label = "ВЫБРАТЬ УРОВЕНЬ",
+            sub = "Перепройти или сыграть в новый уровень",
+            accent = M.accentPrimary,
+            highlight = false,
+            onClick = function() UiOverlayManager:openOverlay(host, "SelectLevelOverlay") end
+        },
+        {
             id = "editor",
             label = "РЕДАКТОР",
             sub = "Открыть редактор уровней",

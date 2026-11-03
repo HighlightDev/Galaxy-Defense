@@ -7,9 +7,9 @@
 #include <fstream>
 #include <iterator>
 
-bool FileFacade::OpenAndReadFile(const std::string& pathToFile)
+bool FileFacade::OpenAndReadFile(const std::filesystem::path& pathToFile)
 {
-    ext_assert(pathToFile != "", "FileFacade::OpenAndReadFile: pathToFile is empty");
+    ext_assert(!pathToFile.empty(), "FileFacade::OpenAndReadFile: pathToFile is empty");
     mPathToFile = pathToFile;
     return LoadFile(pathToFile);
 }
@@ -19,7 +19,7 @@ const std::list<std::string>& FileFacade::GetFileSrc() const
     return mFileSrc;
 }
 
-bool FileFacade::LoadFile(const std::string& pathToFile)
+bool FileFacade::LoadFile(const std::filesystem::path& pathToFile)
 {
     if (CheckIfFileExists(pathToFile)) {
         std::ifstream stream(pathToFile);
@@ -33,7 +33,7 @@ bool FileFacade::LoadFile(const std::string& pathToFile)
     return false;
 }
 
-bool FileFacade::CheckIfFileExists(const std::string& pathToFile)
+bool FileFacade::CheckIfFileExists(const std::filesystem::path& pathToFile)
 {
     return std::filesystem::exists(pathToFile);
 }
@@ -96,7 +96,7 @@ std::string FileFacade::SeparateByFunctor(
 
 void FileFacade::WriteToFile() const
 {
-    ext_assert(mPathToFile != "", "FileFacade::WriteToFile: mPathToFile is empty");
+    ext_assert(!mPathToFile.empty(), "FileFacade::WriteToFile: mPathToFile is empty");
     std::ofstream stream;
     stream.open(mPathToFile, std::fstream::out);
 

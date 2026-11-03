@@ -39,14 +39,14 @@ void MaterialShader::ProcessAllPredefines()
     }
 }
 
-void MaterialShader::InitMaterialShader(const std::string& relativePathToMaterialShader)
+void MaterialShader::InitMaterialShader(const std::filesystem::path& pathToMaterialShader)
 {
-    LoadMaterialShaderSource(relativePathToMaterialShader);
+    LoadMaterialShaderSource(pathToMaterialShader);
 }
 
-void MaterialShader::LoadMaterialShaderSource(const std::string& relativePathToMaterialShader)
+void MaterialShader::LoadMaterialShaderSource(const std::filesystem::path& pathToMaterialShader)
 {
-    mShaderSource = LoadShaderSource(relativePathToMaterialShader);
+    mShaderSource = LoadShaderSource(pathToMaterialShader);
 }
 
 std::string MaterialShader::GetShaderSource() const

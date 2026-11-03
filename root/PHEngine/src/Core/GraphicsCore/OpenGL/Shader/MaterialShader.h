@@ -52,8 +52,8 @@ public:
     void Undefine(const std::string& name);
 
 private:
-    void InitMaterialShader(const std::string& pathToMaterialShader);
-    void LoadMaterialShaderSource(const std::string& relativePathToMaterialShader);
+    void InitMaterialShader(const std::filesystem::path& pathToMaterialShader);
+    void LoadMaterialShaderSource(const std::filesystem::path& pathToMaterialShader);
 };
 } // namespace OpenGL
 } // namespace Graphics
