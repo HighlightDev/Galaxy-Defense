@@ -14,6 +14,7 @@
 #include "Game/Events/ChangeGameModeEvent.h"
 #include "Game/GameModeTypeEnum.h"
 #include "Game/MissileType.h"
+#include "Game/SaveSystem/SaveSystem.h"
 #include "Game/StatusTypes.h"
 
 #include <nlohmann/json.hpp>
@@ -31,12 +32,20 @@ LuaGameEventsFunctions::~LuaGameEventsFunctions()
 {
     LuaLevelProgressChangedEvent::GetInstance()->RemoveListener(LuaLevelProgressChangedEvent::GetInstanceId());
     LuaChangeGameModeEvent::GetInstance()->RemoveListener(LuaChangeGameModeEvent::GetInstanceId());
+    LevelAreaBBChangedLuaThreadEvent::GetInstance()->RemoveListener(LevelAreaBBChangedLuaThreadEvent::GetInstanceId());
+    LuaLevelFilesListChangedEvent::GetInstance()->RemoveListener(LuaLevelFilesListChangedEvent::GetInstanceId());
 }
 
 void LuaGameEventsFunctions::Initialize()
 {
     LuaLevelProgressChangedEvent::GetInstance()->AddListener(shared_from_this());
     LuaChangeGameModeEvent::GetInstance()->AddListener(shared_from_this());
+    LevelAreaBBChangedLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
+    LuaLevelFilesListChangedEvent::GetInstance()->AddListener(shared_from_this());
+}
+
+void LuaGameEventsFunctions::Uninitialize(const LuaWrapper& luaWrapper)
+{
 }
 
 void LuaGameEventsFunctions::SetScene(const std::weak_ptr<Scene>& sceneWp)
@@ -81,6 +90,8 @@ void LuaGameEventsFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
             mOwnerPtr,
             std::bind(&LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent, this, std::placeholders::_1),
             "_SendChangeEditModeGameThreadEvent");
+    LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetLevelsList"), std::string(void)>::Bind(
+        luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::GetLevelsList, this, std::placeholders::_1), "_GetLevelsList");
 }
 
 void LuaGameEventsFunctions::ProcessEvent(
@@ -123,6 +134,21 @@ void LuaGameEventsFunctions::ProcessEvent(
         "System_OnGameEventTriggered",
         (void*)mOwnerPtr,
         std::string("EditLevelAreaBoundingBoxChanged"),
+        jsonObj.dump());
+}
+
+void LuaGameEventsFunctions::ProcessEvent(
+    const LuaLevelFilesListChangedEvent* sender, const LuaLevelFilesListChangedEvent::EventData_t& data)
+{
+    const auto& levelFileNames = std::get<0>(data);
+    nlohmann::json jsonObj;
+    jsonObj["level_files"] = levelFileNames;
+
+    LuaFunctionInvoker<void(void*, std::string, int32_t)>::Invoke(
+        mOwnerPtr->GetLuaInstance(),
+        "System_OnGameEventTriggered",
+        (void*)mOwnerPtr,
+        std::string("LevelFilesListChanged"),
         jsonObj.dump());
 }
 
@@ -180,6 +206,13 @@ void LuaGameEventsFunctions::SendChangeEditModeGameThreadEvent(
                     eExecutionOrder::POST_EXECUTION, static_cast<eEditModeType>(editModeType));
             });
     }
+}
+
+std::string LuaGameEventsFunctions::GetLevelsList(const std::tuple<>& data) const
+{
+    nlohmann::json jsonObj;
+    jsonObj["level_files"] = SaveSystem::GetInstance()->GetLevelFilesNames();
+    return jsonObj.dump();
 }
 
 } // namespace Game

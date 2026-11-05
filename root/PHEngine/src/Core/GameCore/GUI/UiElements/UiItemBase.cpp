@@ -920,6 +920,7 @@ void UiItemBase::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
 #else
             SetChildrenIsVisible(mIsVisible);
 #endif
+            SetIsTransformDirty(true); // If parent is layout - it requires recalculate layout space
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
     }

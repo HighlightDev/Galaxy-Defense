@@ -56,8 +56,8 @@ using namespace EngineCore::GUI;
 
 namespace Game {
 
-CombatLevel::CombatLevel()
-    : LevelBase("CombatLevel")
+CombatLevel::CombatLevel(const std::string& levelPrefabName, const std::string& levelDataJson)
+    : LevelBase(levelPrefabName, levelDataJson)
 {
     Event::GameThreadEventDispatcher::GetInstance()
         ->RegisterEventsByType<

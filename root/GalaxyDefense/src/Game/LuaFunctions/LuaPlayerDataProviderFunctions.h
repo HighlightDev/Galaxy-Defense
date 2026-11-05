@@ -33,6 +33,8 @@ public:
 
     void Initialize() override;
 
+    void Uninitialize(const LuaWrapper& luaWrapper) override;
+
     void SetScene(const std::weak_ptr<::EngineCore::Scene>& sceneWp) override;
 
     void SetLuaScriptProcessor(const std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor>& scriptProcessor) override;

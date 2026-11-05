@@ -20,7 +20,7 @@ class EditorLevel : public LevelBase {
 #endif
 
 public:
-    EditorLevel();
+    explicit EditorLevel(const std::string& levelPrefabName, const std::string& levelDataJson);
 
     ~EditorLevel() override;
 

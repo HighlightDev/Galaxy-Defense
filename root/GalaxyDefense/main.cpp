@@ -11,7 +11,7 @@
 #include "Game/GUI/GameUiWidgetType.h"
 #include "Game/GUI/UiConnectionLineReplicatorFactory.h"
 #include "Game/GUI/UiUpgradeIconReplicatorFactory.h"
-#include "Game/Levels/GameLevelFactory.h"
+#include "Game/Levels/GalaxyDefensePrefabLevelFactory.h"
 
 #include <TinyLogger/LogInterface.h>
 #if defined(__linux__)
@@ -240,7 +240,7 @@ int32_t main(int32_t argc, char** argv)
         const auto engine = std::make_shared<Engine>();
         engine->Initialize();
         engineInputManager = engine->GetInputManager();
-        engine->SetLevelFactory(std::make_shared<GameLevelFactory>());
+        engine->SetLevelFactory(std::make_shared<GalaxyDefensePrefabLevelFactory>());
 
         EngineCore::Scripts::CommonUiWidgetFactoryCreator::GetInstance().RegisterFactory(
             static_cast<int32_t>(Game::eGameUiWidgetType::UI_UPGRADE_ICON),
@@ -249,7 +249,7 @@ int32_t main(int32_t argc, char** argv)
             static_cast<int32_t>(Game::eGameUiWidgetType::UI_CONNECTION_LINE),
             [] { return std::make_unique<UiConnectionLineReplicatorFactory>(); });
 
-        engine->PlayLevel("MainMenuLevel");
+        engine->PlayLevel("MainMenuLevel", "{}");
         // Loop until the user closes the window
         while (!glfwWindowShouldClose(window) && !engine->IsExitGameState()) {
             engine->TickWindow();

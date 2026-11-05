@@ -26,6 +26,8 @@ public:
 
     void Initialize() override;
 
+    void Uninitialize(const LuaWrapper& luaWrapper) override;
+
     void SetScene(const std::weak_ptr<Scene>& sceneWp) override;
 
     void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor) override;

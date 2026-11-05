@@ -30,7 +30,11 @@ protected:
 public:
     LuaCommonUiFunctions(LuaScriptExecutorBase* ownerPtr);
 
+    virtual ~LuaCommonUiFunctions();
+
     void Initialize() override;
+
+    void Uninitialize(const LuaWrapper& luaWrapper) override;
 
     void SetScene(const std::weak_ptr<Scene>& sceneWp) override;
 

@@ -56,7 +56,11 @@ function UiBaseWidget:checkLuaProxyReady(host)
         self.widgetName = _GetUiWidgetName(host, self.luaProxyId)
         if self.luaProxyReady == true then
             -- print("UiBaseWidget:checkLuaProxyReady: " .. tostring(self.widgetName) .. " is now ready.")
-            if self.luaProxyReadyCallback ~= nil then self.luaProxyReadyCallback(host) end
+            if self.luaProxyReadyCallback ~= nil then
+                -- read the initial replicator data first, otherwise it overwrites the values set in the callback
+                self:updateFromReplicatorData(host)
+                self.luaProxyReadyCallback(host)
+            end
         end
     end
 end

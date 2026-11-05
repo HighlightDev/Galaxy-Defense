@@ -4,13 +4,13 @@ include(Flags)
 include(Dependencies)
 
 set(HEADERS
-    src/Game/Levels/TestFeaturesLevelFactory.h
+    src/Game/Levels/TestFeaturesPrefabLevelFactory.h
     src/Game/Levels/TestFeaturesLevel.h
     src/Game/Levels/Controllers/TestFeaturesLevelUiController.h
     src/Game/LuaExecutors/LuaUiControllerExecutor.h)
 
 set(SOURCES
-    src/Game/Levels/TestFeaturesLevelFactory.cpp
+    src/Game/Levels/TestFeaturesPrefabLevelFactory.cpp
     src/Game/Levels/TestFeaturesLevel.cpp
     src/Game/Levels/Controllers/TestFeaturesLevelUiController.cpp
     src/Game/LuaExecutors/LuaUiControllerExecutor.cpp

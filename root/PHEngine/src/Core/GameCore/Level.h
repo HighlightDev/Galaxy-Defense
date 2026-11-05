@@ -12,14 +12,18 @@ class Level : public ITickable {
 protected:
     std::weak_ptr<Scene> mSceneWp;
 
-    std::string mLevelName;
+    std::string mPrefabLevelName;
+
+    std::string mLevelDataJson;
 
 public:
-    Level(const std::string& levelName);
+    Level(const std::string& levelPrefabName, const std::string& levelDataJson);
 
     virtual ~Level();
 
-    std::string GetLevelName() const;
+    std::string GetPrefabLevelName() const;
+
+    std::string GetLevelDataJson() const;
 
     void SetScene(const std::shared_ptr<Scene>& scene);
 

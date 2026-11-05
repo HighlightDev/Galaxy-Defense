@@ -1,7 +1,7 @@
-ActionQueue = {actions = {}, predicates = {}}
+ActionQueue = {}
 
 function ActionQueue:new()
-    local newObj = {}
+    local newObj = {actions = {}, predicates = {}}
 
     self.__index = self
     return setmetatable(newObj, self)
@@ -18,15 +18,15 @@ function ActionQueue:addAction(action, predicate)
 end
 
 function ActionQueue:processActions()
-    if self:hasPendingActions() then
-        for index = 1, #self.actions, 1 do
-            local action = self.actions[index]
-            local predicate = self.predicates[index]
-            if predicate() == true then
-                action()
-                table.remove(self.actions, index)
-                table.remove(self.predicates, index)
-            end
+    local index = 1
+    while index <= #self.actions do
+        if self.predicates[index]() == true then
+            -- remove before the invocation, because the action can add new actions to the queue
+            local action = table.remove(self.actions, index)
+            table.remove(self.predicates, index)
+            action()
+        else
+            index = index + 1
         end
     end
 end

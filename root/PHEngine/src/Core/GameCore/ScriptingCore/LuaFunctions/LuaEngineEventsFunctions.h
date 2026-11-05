@@ -37,6 +37,8 @@ public:
 
     void Initialize() override;
 
+    void Uninitialize(const LuaWrapper& luaWrapper) override;
+
     void SetScene(const std::weak_ptr<Scene>& sceneWp) override;
 
     void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor) override;
@@ -52,7 +54,8 @@ private:
 
     void SendExitGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/>& data);
 
-    void SendLoadLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string /*level name*/>& data);
+    void SendLoadLevelGameThreadEvent(
+        const std::tuple<int32_t /*enqueue policy*/, std::string /*level prefab name*/, std::string /*level data json*/>& data);
 
     void SendBroadcastGameThreadEvent(
         const std::tuple<int32_t /*enqueue policy*/, std::string /*event header*/, std::string /*json parameters*/>& data);

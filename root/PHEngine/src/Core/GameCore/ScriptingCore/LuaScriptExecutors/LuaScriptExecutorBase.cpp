@@ -8,6 +8,7 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <utility>
 
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
@@ -23,10 +24,28 @@ LuaScriptExecutorBase::LuaScriptExecutorBase(const std::string& scriptName)
 {
 }
 
+LuaScriptExecutorBase::~LuaScriptExecutorBase()
+{
+    // The state is already closed if the script was stopped, so there is nothing to clean up in lua
+    if (!IsLuaStateReady()) {
+        return;
+    }
+
+    for (auto luaFunc : mLuaFunctions) {
+        luaFunc->Uninitialize(
+            mLuaInstance); // Do important cleanup to make sure that lua won't invoke c++ callbacks after they were destroyed
+    }
+}
+
 void LuaScriptExecutorBase::SetScript(const std::string& scriptName)
 {
     ext_assert(mScriptName == "", "LuaScriptExecutorBase::SetScript: Script name is already set");
     mScriptName = scriptName;
+}
+
+void LuaScriptExecutorBase::SetLuaFunctions(std::vector<std::shared_ptr<ILuaFunctionable>> luaFunctions)
+{
+    mLuaFunctions = std::move(luaFunctions);
 }
 
 std::string LuaScriptExecutorBase::GetScriptName() const
@@ -78,6 +97,15 @@ void LuaScriptExecutorBase::AddFunctor(const uint64_t functorNameHash, const std
     mFunctors[functorNameHash] = functor;
 }
 
+void LuaScriptExecutorBase::RegisterCallbacks()
+{
+    for (const auto& luaFunction : mLuaFunctions) {
+        luaFunction->SetScene(GetScene());
+        luaFunction->SetLuaScriptProcessor(GetLuaScriptProcessor());
+        luaFunction->RegisterCallbacks(mLuaInstance);
+    }
+}
+
 void LuaScriptExecutorBase::RunScript()
 {
     ext_assert(mScriptName != "", "LuaScriptExecutorBase::RunScript: Script name is not set");
@@ -91,11 +119,19 @@ void LuaScriptExecutorBase::RunScript()
     if (mHasOnStart) {
         LuaFunctionInvoker<void(void*)>::Invoke(mLuaInstance, "System_OnStart", (void*)this);
     }
+
+    for (const auto& luaFunction : mLuaFunctions) {
+        luaFunction->OnScriptStarted(mLuaInstance);
+    }
 }
 
 void LuaScriptExecutorBase::StopScript()
 {
     mLuaInstance.StopExecution();
+
+    for (const auto& luaFunction : mLuaFunctions) {
+        luaFunction->OnScriptStopped(mLuaInstance);
+    }
 }
 
 void LuaScriptExecutorBase::OnUpdate(const float deltaTimeSec)
@@ -120,6 +156,11 @@ void LuaScriptExecutorBase::RestartScript()
 
 void LuaScriptExecutorBase::CleanUp()
 {
+    for (auto luaFunc : mLuaFunctions) {
+        luaFunc->Uninitialize(
+            mLuaInstance); // Do important cleanup to make sure that lua won't invoke c++ callbacks after they were destroyed
+    }
+
     StopScript();
 }
 

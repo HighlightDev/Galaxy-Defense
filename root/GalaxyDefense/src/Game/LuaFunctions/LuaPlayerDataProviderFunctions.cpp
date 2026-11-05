@@ -31,6 +31,10 @@ void LuaPlayerDataProviderFunctions::Initialize()
         std::static_pointer_cast<LuaMainPlayerStatusChangedEvent>(shared_from_this()));
 }
 
+void LuaPlayerDataProviderFunctions::Uninitialize(const LuaWrapper& luaWrapper)
+{
+}
+
 void LuaPlayerDataProviderFunctions::SetScene(const std::weak_ptr<Scene>& sceneWp)
 {
     mSceneWp = sceneWp;

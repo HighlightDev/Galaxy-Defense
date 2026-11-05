@@ -7,7 +7,7 @@
 #include "Core/GameCore/Event/PauseGameEvent.h"
 #include "Core/GameCore/Event/PlaySpeedEvent.h"
 #include "Core/GameCore/Event/RestartLevelEvent.h"
-#include "Core/GameCore/ILevelFactory.h"
+#include "Core/GameCore/ILevelPrefabFactory.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/GameCore/Level.h"
 #include "Core/GameCore/Scene.h"
@@ -51,7 +51,7 @@ class Engine : public PauseGameThreadEvent,
 
     std::shared_ptr<InputManager> mInputManager;
 
-    std::shared_ptr<ILevelFactory> m_levelFactory;
+    std::shared_ptr<ILevelPrefabFactory> m_levelFactory;
 
     std::shared_ptr<Level> m_level;
 
@@ -106,13 +106,13 @@ public:
 
     void Initialize();
 
-    void SetLevelFactory(const std::shared_ptr<ILevelFactory>& lvlFactory);
+    void SetLevelFactory(const std::shared_ptr<ILevelPrefabFactory>& lvlFactory);
 
     void PreLevelInit();
 
     void OnLevelInit();
 
-    void PlayLevel(const std::string& levelName);
+    void PlayLevel(const std::string& levelPrefabName, const std::string& levelDataJson);
 
     void RestartLevel();
 

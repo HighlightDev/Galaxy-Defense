@@ -32,6 +32,10 @@ void LuaCommonEngineFunctions::Initialize()
 {
 }
 
+void LuaCommonEngineFunctions::Uninitialize(const LuaWrapper& luaWrapper)
+{
+}
+
 void LuaCommonEngineFunctions::SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor)
 {
     mLuaScriptProcessor = scriptProcessor;

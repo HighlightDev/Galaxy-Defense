@@ -14,11 +14,11 @@ LuaUiControllerExecutor::LuaUiControllerExecutor(const std::string& scriptName)
 
 void LuaUiControllerExecutor::Initialize()
 {
-    mLuaFunctions
-        = {std::make_shared<LuaCommonUiFunctions>(this),
-           std::make_shared<LuaCommonEngineFunctions>(this),
-           std::make_shared<LuaEngineEventsFunctions>(this),
-           std::make_shared<LuaGameEventsFunctions>(this)};
+    SetLuaFunctions(
+        {std::make_shared<LuaCommonUiFunctions>(this),
+         std::make_shared<LuaCommonEngineFunctions>(this),
+         std::make_shared<LuaEngineEventsFunctions>(this),
+         std::make_shared<LuaGameEventsFunctions>(this)});
 
     for (const auto& luaFunction : mLuaFunctions) {
         luaFunction->Initialize();
@@ -27,32 +27,5 @@ void LuaUiControllerExecutor::Initialize()
 
 LuaUiControllerExecutor::~LuaUiControllerExecutor()
 {
-}
-
-void LuaUiControllerExecutor::RunScript()
-{
-    LuaScriptExecutorBase::RunScript();
-
-    for (const auto& luaFunction : mLuaFunctions) {
-        luaFunction->OnScriptStarted(mLuaInstance);
-    }
-}
-
-void LuaUiControllerExecutor::StopScript()
-{
-    LuaScriptExecutorBase::StopScript();
-
-    for (const auto& luaFunction : mLuaFunctions) {
-        luaFunction->OnScriptStopped(mLuaInstance);
-    }
-}
-
-void LuaUiControllerExecutor::RegisterCallbacks()
-{
-    for (const auto& luaFunction : mLuaFunctions) {
-        luaFunction->SetScene(GetScene());
-        luaFunction->SetLuaScriptProcessor(GetLuaScriptProcessor());
-        luaFunction->RegisterCallbacks(mLuaInstance);
-    }
 }
 } // namespace Game

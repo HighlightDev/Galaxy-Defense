@@ -47,6 +47,10 @@ void LuaEngineEventsFunctions::Initialize()
     BroadcastLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
 }
 
+void LuaEngineEventsFunctions::Uninitialize(const LuaWrapper& luaWrapper)
+{
+}
+
 void LuaEngineEventsFunctions::SetScene(const std::weak_ptr<Scene>& sceneWp)
 {
     mSceneWp = sceneWp;
@@ -77,7 +81,9 @@ void LuaEngineEventsFunctions::RegisterCallbacks(const LuaWrapper& luaWrapper)
         mOwnerPtr,
         std::bind(&LuaEngineEventsFunctions::SendExitGameThreadEvent, this, std::placeholders::_1),
         "_SendExitGameThreadEvent");
-    LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent"), void(int32_t, std::string)>::
+    LuaCallbackBindingHelper<
+        Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent"),
+        void(int32_t, std::string, std::string)>::
         Bind(
             luaWrapper,
             mOwnerPtr,
@@ -144,10 +150,11 @@ void LuaEngineEventsFunctions::SendExitGameThreadEvent(const std::tuple<int32_t 
 }
 
 void LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent(
-    const std::tuple<int32_t /*enqueue policy*/, std::string /*level name*/>& data)
+    const std::tuple<int32_t /*enqueue policy*/, std::string /*level prefab name*/, std::string /*level data json*/>& data)
 {
     const auto enqueuePolicy = std::get<0>(data);
-    const auto levelName = std::get<1>(data);
+    const auto levelPrefabName = std::get<1>(data);
+    const auto levelDataJson = std::get<2>(data);
 
     if (const auto& sceneSp = mSceneWp.lock()) {
         static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent");
@@ -155,11 +162,12 @@ void LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent(
             static_cast<eEnqueueJobPolicy>(enqueuePolicy),
             0,
             functionId,
-            [levelName](
+            [levelPrefabName = std::move(levelPrefabName), levelDataJson = std::move(levelDataJson)](
                 std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
                 std::weak_ptr<EngineCore::Scene> sceneWp,
                 std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
-                LoadLevelGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, levelName);
+                LoadLevelGameThreadEvent::GetInstance()->SendEvent(
+                    eExecutionOrder::POST_EXECUTION, levelPrefabName, levelDataJson);
             });
     }
 }

@@ -73,24 +73,65 @@ local VICTORY = {
     statsTitle = "01 · СТАТИСТИКА БОЯ",
     rightTitle = "02 · НАЧИСЛЕНО",
     bottomTitle = "03 · МЕДАЛИ ОПЕРАЦИИ",
-    stats = {
-        {k = "ВОЛН ОТРАЖЕНО", v = "30 / 30", tone = "cyan"},
-        {k = "ВРАГОВ УНИЧТОЖЕНО", v = "1 247", tone = "cyan"},
-        {k = "БАШЕН ПОСТРОЕНО", v = "18", tone = "cyan"},
-        {k = "БАРЬЕРОВ", v = "9", tone = "purple"}, {k = "ТОЧНОСТЬ", v = "87.4 %", tone = "cyan"},
-        {k = "ВРЕМЯ МИССИИ", v = "24:18", tone = "purple"}, {k = "ПРОПУЩЕНО", v = "0", tone = "ok"},
-        {k = "ЦЕЛОСТНОСТЬ", v = "94 %", tone = "cyan"}
-    },
-    info = {
-        {k = "КРИСТАЛЛЫ", v = "+ 4 280", tone = "purple"},
-        {k = "ОПЫТ КОМАНДИРА", v = "+ 1 250 XP", tone = "cyan"},
-        {k = "ОЧКИ ИССЛЕДОВАНИЙ", v = "+ 3", tone = "cyan"}
-    },
-    actions = {
-        {label = "ПОВТОР МИССИИ", action = "restart", primary = false},
-        {label = "В ГЛАВНОЕ МЕНЮ", action = "menu", primary = false},
-        {label = "СЛЕД. МИССИЯ", action = "next", primary = true}
-    }
+    stats = {{
+        k = "ВОЛН ОТРАЖЕНО",
+        v = "30 / 30",
+        tone = "cyan"
+    }, {
+        k = "ВРАГОВ УНИЧТОЖЕНО",
+        v = "1 247",
+        tone = "cyan"
+    }, {
+        k = "БАШЕН ПОСТРОЕНО",
+        v = "18",
+        tone = "cyan"
+    }, {
+        k = "БАРЬЕРОВ",
+        v = "9",
+        tone = "purple"
+    }, {
+        k = "ТОЧНОСТЬ",
+        v = "87.4 %",
+        tone = "cyan"
+    }, {
+        k = "ВРЕМЯ МИССИИ",
+        v = "24:18",
+        tone = "purple"
+    }, {
+        k = "ПРОПУЩЕНО",
+        v = "0",
+        tone = "ok"
+    }, {
+        k = "ЦЕЛОСТНОСТЬ",
+        v = "94 %",
+        tone = "cyan"
+    }},
+    info = {{
+        k = "КРИСТАЛЛЫ",
+        v = "+ 4 280",
+        tone = "purple"
+    }, {
+        k = "ОПЫТ КОМАНДИРА",
+        v = "+ 1 250 XP",
+        tone = "cyan"
+    }, {
+        k = "ОЧКИ ИССЛЕДОВАНИЙ",
+        v = "+ 3",
+        tone = "cyan"
+    }},
+    actions = {{
+        label = "ПОВТОР МИССИИ",
+        action = "restart",
+        primary = false
+    }, {
+        label = "В ГЛАВНОЕ МЕНЮ",
+        action = "menu",
+        primary = false
+    }, {
+        label = "СЛЕД. МИССИЯ",
+        action = "next",
+        primary = true
+    }}
 }
 
 local DEFEAT = {
@@ -105,46 +146,86 @@ local DEFEAT = {
     statsTitle = "01 · ОТЧЁТ О ПОТЕРЯХ",
     rightTitle = "02 · АНАЛИЗ КОМАНДИРА",
     bottomTitle = "03 · ПРОГРЕСС СОХРАНЁН",
-    stats = {
-        {k = "ВОЛН ОТРАЖЕНО", v = "17 / 30", tone = "fail"},
-        {k = "ВРАГОВ УНИЧТОЖЕНО", v = "684", tone = "ink"},
-        {k = "БАШЕН ПОСТРОЕНО", v = "12", tone = "ink"}, {k = "БАРЬЕРОВ", v = "6", tone = "ink"},
-        {k = "ТОЧНОСТЬ", v = "72.1 %", tone = "ink"},
-        {k = "ВРЕМЯ МИССИИ", v = "13:42", tone = "ink"}, {k = "ПРОПУЩЕНО", v = "21", tone = "fail"},
-        {k = "ЦЕЛОСТНОСТЬ", v = "0 %", tone = "fail"}
-    },
-    info = {
-        {
-            k = "КРИТ. УЯЗВИМОСТЬ",
-            v = "Сектор B-2 без дальнобойного покрытия.",
-            tone = "fail"
-        }, {
-            k = "ДИСБАЛАНС ЭКОНОМИКИ",
-            v = "68% бюджета — в башни ближнего боя.",
-            tone = "warn"
-        },
-        {
-            k = "РЕКОМЕНДАЦИЯ",
-            v = "Изучите ветку «Точные системы».",
-            tone = "info"
-        }
-    },
-    actions = {
-        {label = "В ГЛАВНОЕ МЕНЮ", action = "menu", primary = false},
-        {label = "ДЕРЕВО ТЕХ.", action = "menu", primary = false},
-        {label = "ПОВТОРИТЬ", action = "restart", primary = true}
-    }
+    stats = {{
+        k = "ВОЛН ОТРАЖЕНО",
+        v = "17 / 30",
+        tone = "fail"
+    }, {
+        k = "ВРАГОВ УНИЧТОЖЕНО",
+        v = "684",
+        tone = "ink"
+    }, {
+        k = "БАШЕН ПОСТРОЕНО",
+        v = "12",
+        tone = "ink"
+    }, {
+        k = "БАРЬЕРОВ",
+        v = "6",
+        tone = "ink"
+    }, {
+        k = "ТОЧНОСТЬ",
+        v = "72.1 %",
+        tone = "ink"
+    }, {
+        k = "ВРЕМЯ МИССИИ",
+        v = "13:42",
+        tone = "ink"
+    }, {
+        k = "ПРОПУЩЕНО",
+        v = "21",
+        tone = "fail"
+    }, {
+        k = "ЦЕЛОСТНОСТЬ",
+        v = "0 %",
+        tone = "fail"
+    }},
+    info = {{
+        k = "КРИТ. УЯЗВИМОСТЬ",
+        v = "Сектор B-2 без дальнобойного покрытия.",
+        tone = "fail"
+    }, {
+        k = "ДИСБАЛАНС ЭКОНОМИКИ",
+        v = "68% бюджета — в башни ближнего боя.",
+        tone = "warn"
+    }, {
+        k = "РЕКОМЕНДАЦИЯ",
+        v = "Изучите ветку «Точные системы».",
+        tone = "info"
+    }},
+    actions = {{
+        label = "В ГЛАВНОЕ МЕНЮ",
+        action = "menu",
+        primary = false
+    }, {
+        label = "ДЕРЕВО ТЕХ.",
+        action = "menu",
+        primary = false
+    }, {
+        label = "ПОВТОРИТЬ",
+        action = "restart",
+        primary = true
+    }}
 }
 
 -- Operation medals (victory only; static placeholders — no engine achievement data yet).
-local MEDALS_DATA = {
-    {name = "БЕЗ ПРОПУСКОВ", sub = "0 врагов прошли"},
-    {name = "БЛИЦКРИГ", sub = "< 25:00"}, {name = "СНАЙПЕР", sub = "точность > 85%"}
-}
+local MEDALS_DATA = {{
+    name = "БЕЗ ПРОПУСКОВ",
+    sub = "0 врагов прошли"
+}, {
+    name = "БЛИЦКРИГ",
+    sub = "< 25:00"
+}, {
+    name = "СНАЙПЕР",
+    sub = "точность > 85%"
+}}
 
 local function clamp_to(v, lo, hi)
-    if v < lo then return lo end
-    if v > hi then return hi end
+    if v < lo then
+        return lo
+    end
+    if v > hi then
+        return hi
+    end
     return v
 end
 
@@ -154,10 +235,14 @@ function LevelEndOverlay:new(host)
     local A = UiItemBase.UiAnchorType
     local HALIGN = UiLabel.TextHorizontalAlignmentType
     local VALIGN = UiLabel.TextVerticalAlignmentType
-    local function lh(fontSize) return UiTextSizing.safeLineHeight(fontSize, FONT) end
+    local function lh(fontSize)
+        return UiTextSizing.safeLineHeight(fontSize, FONT)
+    end
 
     local canvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "LevelEndCanvas")
-    canvas:subscribeOnLuaProxyReady(function(h) _InitializeCanvasInputSystem(h, canvas.luaProxyId) end)
+    canvas:subscribeOnLuaProxyReady(function(h)
+        _InitializeCanvasInputSystem(h, canvas.luaProxyId)
+    end)
     local overlay = UiOverlay:createOverlay(host, "LevelEndOverlay", canvas)
 
     local currentMode = "defeat"
@@ -264,10 +349,14 @@ function LevelEndOverlay:new(host)
     end
     local function doMainMenu()
         EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                                                  "MainMenuLevel")
+            "MainMenuLevel", "{}")
     end
     -- TODO: no next-level API yet — falls back to the main menu.
-    local ACTION_FN = {restart = doRestart, menu = doMainMenu, next = doMainMenu}
+    local ACTION_FN = {
+        restart = doRestart,
+        menu = doMainMenu,
+        next = doMainMenu
+    }
 
     backButton:subscribeOnMouseInputClickedCallback(doMainMenu)
     backButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
@@ -280,7 +369,9 @@ function LevelEndOverlay:new(host)
         local M = (mode == "victory") and VICTORY or DEFEAT
         local isVictory = (mode == "victory")
 
-        for i = 1, 8 do braces[i]:setColorHexValue(M.accent) end
+        for i = 1, 8 do
+            braces[i]:setColorHexValue(M.accent)
+        end
 
         centerLabel:setText("[ " .. M.center .. " ]")
         centerLabel:setTextColorHexValue(M.accent)
@@ -349,7 +440,11 @@ function LevelEndOverlay:new(host)
 
     for i = 1, 3 do
         local btn = actionButtons[i]
-        btn:subscribeOnMouseInputClickedCallback(function() if btn.__action then btn.__action() end end)
+        btn:subscribeOnMouseInputClickedCallback(function()
+            if btn.__action then
+                btn.__action()
+            end
+        end)
         btn:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
             local hovered = (newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED)
             btn:setButtonColorHexValue(hovered and C.chipHoverColor or (btn.__baseColor or C.chipColor))
@@ -370,9 +465,19 @@ function LevelEndOverlay:new(host)
         local armLen = math.floor(windowWidth * 0.022)
         local braceThick = 2
         local braceInset = 24
-        local corners = {
-            {h = A.LEFT, v = A.TOP}, {h = A.RIGHT, v = A.TOP}, {h = A.LEFT, v = A.BOTTOM}, {h = A.RIGHT, v = A.BOTTOM}
-        }
+        local corners = {{
+            h = A.LEFT,
+            v = A.TOP
+        }, {
+            h = A.RIGHT,
+            v = A.TOP
+        }, {
+            h = A.LEFT,
+            v = A.BOTTOM
+        }, {
+            h = A.RIGHT,
+            v = A.BOTTOM
+        }}
         for c = 1, 4 do
             local corner = corners[c]
             local hArm = braces[(c - 1) * 2 + 1]
@@ -687,12 +792,17 @@ function LevelEndOverlay:new(host)
     -- Called by the combat HUD just before opening the overlay to pick victory / defeat.
     overlay.setMode = function(h, mode)
         currentMode = (mode == "victory") and "victory" or "defeat"
-        if overlay.allWidgetLuaProxiesReady then applyMode(currentMode) end
+        if overlay.allWidgetLuaProxiesReady then
+            applyMode(currentMode)
+        end
     end
 
-    overlay.onGameEventTriggered = function(eventName, jsonArgs) end
-    overlay.onEngineEventTriggered = function(eventName, jsonArgs) end
-    overlay.onBroadcastEventTriggered = function(eventName, jsonArgs) end
+    overlay.onGameEventTriggered = function(eventName, jsonArgs)
+    end
+    overlay.onEngineEventTriggered = function(eventName, jsonArgs)
+    end
+    overlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
+    end
 
     return overlay
 end

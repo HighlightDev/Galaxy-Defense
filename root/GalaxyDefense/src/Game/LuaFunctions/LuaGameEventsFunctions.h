@@ -3,6 +3,7 @@
 #include "Core/GameCore/ScriptingCore/LuaFunctions/ILuaFunctionable.h"
 #include "Game/Events/ChangeGameModeEvent.h"
 #include "Game/Events/LevelAreaBBChangedEvent.h"
+#include "Game/Events/LevelFilesListChangedEvent.h"
 #include "Game/Events/LevelProgressChangedEvent.h"
 
 using namespace Event;
@@ -19,6 +20,7 @@ namespace Game {
 class LuaGameEventsFunctions : public ILuaFunctionable,
                                public LuaLevelProgressChangedEvent,
                                public LuaChangeGameModeEvent,
+                               public LuaLevelFilesListChangedEvent,
                                public LevelAreaBBChangedLuaThreadEvent,
                                public std::enable_shared_from_this<LuaGameEventsFunctions> {
 protected:
@@ -35,6 +37,8 @@ public:
 
     void Initialize() override;
 
+    void Uninitialize(const LuaWrapper&) override;
+
     void SetScene(const std::weak_ptr<::EngineCore::Scene>& sceneWp) override;
 
     void SetLuaScriptProcessor(const std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor>& scriptProcessor) override;
@@ -49,11 +53,13 @@ public:
 
     void ProcessEvent(const LuaChangeGameModeEvent* sender, const LuaChangeGameModeEvent::EventData_t& data) override;
 
+    void
+    ProcessEvent(const LuaLevelFilesListChangedEvent* sender, const LuaLevelFilesListChangedEvent::EventData_t& data) override;
+
     void ProcessEvent(
         const LevelAreaBBChangedLuaThreadEvent* sender, const LevelAreaBBChangedLuaThreadEvent::EventData_t& data) override;
 
 private:
-
     float GetEditorLevelAreaBoundingBoxWidth(const std::tuple<>& data) const;
 
     float GetEditorLevelAreaBoundingBoxLength(const std::tuple<>& data) const;
@@ -61,5 +67,7 @@ private:
     void SendChangeGameModeGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, int32_t /*game mode type*/>& data);
 
     void SendChangeEditModeGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, int32_t /*edit mode type*/>& data);
+
+    std::string GetLevelsList(const std::tuple<>& data) const;
 };
 } // namespace Game

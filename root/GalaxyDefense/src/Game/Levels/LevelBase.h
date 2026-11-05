@@ -14,7 +14,7 @@ protected:
     std::shared_ptr<LevelProgressController> mLvlProgressController;
 
 public:
-    explicit LevelBase(const std::string& levelName);
+    explicit LevelBase(const std::string& levelPrefabName, const std::string& levelDataJson);
 
     ~LevelBase() = default;
 };

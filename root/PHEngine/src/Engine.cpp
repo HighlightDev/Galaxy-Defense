@@ -183,7 +183,7 @@ InterThreadCommunicationMgr& Engine::GetThreadCommunicationManager()
     return m_interThreadMgr;
 }
 
-void Engine::SetLevelFactory(const std::shared_ptr<ILevelFactory>& lvlFactory)
+void Engine::SetLevelFactory(const std::shared_ptr<ILevelPrefabFactory>& lvlFactory)
 {
     m_levelFactory = lvlFactory;
 }
@@ -233,23 +233,23 @@ void Engine::UnloadCurrentLevel()
     m_sceneRenderer->Initialize();
 }
 
-void Engine::PlayLevel(const std::string& levelName)
+void Engine::PlayLevel(const std::string& levelPrefabName, const std::string& levelDataJson)
 {
-    LogInfo("Engine::PlayLevel: ", levelName);
+    LogInfo("Engine::PlayLevel: ", levelPrefabName);
     ext_assert(
         ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName(EngineConstants::c_renderThreadName),
         "Engine::PlayLevel must be called from Render thread");
     ext_assert(m_levelFactory, "Level factory is not initialized");
 
-    if (!m_level || (m_level->GetLevelName() != levelName)) {
+    if (!m_level || (m_level->GetPrefabLevelName() != levelPrefabName)) {
         bLevelIsLoading.store(true, std::memory_order::seq_cst);
         bPauseGameThreadExecution.store(false, std::memory_order::seq_cst);
         if (m_level) {
             UnloadCurrentLevel();
         }
 
-        const auto newLevel = m_levelFactory->CreateLevel(levelName);
-        ext_assert(newLevel, "Failed to create level: " + levelName);
+        const auto newLevel = m_levelFactory->CreateLevel(levelPrefabName, levelDataJson);
+        ext_assert(newLevel, "Failed to create level: " + levelPrefabName);
         m_level.reset();
         m_level = newLevel;
         m_level->SetScene(m_scene);
@@ -274,11 +274,12 @@ void Engine::RestartLevel()
 
     bLevelIsLoading.store(true, std::memory_order::seq_cst);
     bPauseGameThreadExecution.store(false, std::memory_order::seq_cst);
-    const auto currentLevelName = m_level->GetLevelName();
+    const auto currentPrefabLevelName = m_level->GetPrefabLevelName();
+    const auto currentLevelDataJson = m_level->GetLevelDataJson();
     UnloadCurrentLevel();
 
-    const auto newLevel = m_levelFactory->CreateLevel(currentLevelName);
-    ext_assert(newLevel, "Failed to create level on restart: " + currentLevelName);
+    const auto newLevel = m_levelFactory->CreateLevel(currentPrefabLevelName, currentLevelDataJson);
+    ext_assert(newLevel, "Failed to create level on restart: " + currentPrefabLevelName);
     m_level.reset();
     m_level = newLevel;
     m_level->SetScene(m_scene);
@@ -343,19 +344,20 @@ void Engine::ProcessEvent(const ExitGameThreadEvent* sender, const ExitGameThrea
 
 void Engine::ProcessEvent(const LoadLevelGameThreadEvent* sender, const LoadLevelGameThreadEvent::EventData_t& data)
 {
-    const auto lvlName = std::get<0>(data);
-    LogInfo("Engine::ProcessEvent::LoadLevelGameThreadEvent: ", lvlName);
+    auto lvlPrefabName = std::get<0>(data);
+    auto lvlDataJson = std::get<1>(data);
+    LogInfo("Engine::ProcessEvent::LoadLevelGameThreadEvent: ", lvlPrefabName);
     static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::LoadLevelGameThreadEvent");
     m_interThreadMgr.ExecuteOnRenderThread(
         Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
         0,
         functionId,
-        [weak = weak_from_this(), lvlName](
+        [weak = weak_from_this(), lvlPrefabName = std::move(lvlPrefabName), lvlDataJson = std::move(lvlDataJson)](
             std::weak_ptr<Graphics::Renderer::SceneRenderer> sceneRendererWp,
             std::weak_ptr<EngineCore::Scene> sceneWp,
             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> luaProcessorWp) {
             if (const auto& strong = weak.lock()) {
-                strong->PlayLevel(lvlName);
+                strong->PlayLevel(lvlPrefabName, lvlDataJson);
             }
         });
 }

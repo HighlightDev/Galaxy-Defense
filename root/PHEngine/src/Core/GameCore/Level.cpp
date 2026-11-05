@@ -20,8 +20,9 @@ using namespace Resources;
 
 namespace EngineCore {
 
-Level::Level(const std::string& levelName)
-    : mLevelName(levelName)
+Level::Level(const std::string& levelPrefabName, const std::string& levelDataJson)
+    : mPrefabLevelName(levelPrefabName)
+    , mLevelDataJson(levelDataJson)
 {
 }
 
@@ -29,9 +30,14 @@ Level::~Level()
 {
 }
 
-std::string Level::GetLevelName() const
+std::string Level::GetPrefabLevelName() const
 {
-    return mLevelName;
+    return mPrefabLevelName;
+}
+
+std::string Level::GetLevelDataJson() const
+{
+    return mLevelDataJson;
 }
 
 void Level::SetScene(const std::shared_ptr<Scene>& scene)

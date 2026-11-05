@@ -6,7 +6,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Engine.h"
-#include "src/Game/Levels/TestFeaturesLevelFactory.h"
+#include "src/Game/Levels/TestFeaturesPrefabLevelFactory.h"
 
 #include <TinyLogger/LogInterface.h>
 #if defined(__linux__)
@@ -242,8 +242,8 @@ int32_t main(int32_t argc, char** argv)
         const auto engine = std::make_shared<Engine>();
         engine->Initialize();
         engineInputManager = engine->GetInputManager();
-        engine->SetLevelFactory(std::make_shared<TestFeaturesLevelFactory>());
-        engine->PlayLevel("TestFeaturesLevel");
+        engine->SetLevelFactory(std::make_shared<TestFeaturesPrefabLevelFactory>());
+        engine->PlayLevel("TestFeaturesLevel", "{}");
         // Loop until the user closes the window
         while (!glfwWindowShouldClose(window) && !engine->IsExitGameState()) {
             engine->TickWindow();

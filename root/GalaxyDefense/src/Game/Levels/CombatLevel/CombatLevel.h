@@ -17,7 +17,7 @@ class CombatLevel : public LevelBase {
     std::unique_ptr<CombatLevelUiController> mUiController;
 
 public:
-    CombatLevel();
+    explicit CombatLevel(const std::string& levelPrefabName, const std::string& levelDataJson);
 
     ~CombatLevel() override;
 

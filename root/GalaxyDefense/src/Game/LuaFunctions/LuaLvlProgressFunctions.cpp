@@ -30,6 +30,10 @@ void LuaLvlProgressFunctions::Initialize()
 {
 }
 
+void LuaLvlProgressFunctions::Uninitialize(const LuaWrapper& luaWrapper)
+{
+}
+
 void LuaLvlProgressFunctions::SetScene(const std::weak_ptr<Scene>& sceneWp)
 {
     mSceneWp = sceneWp;

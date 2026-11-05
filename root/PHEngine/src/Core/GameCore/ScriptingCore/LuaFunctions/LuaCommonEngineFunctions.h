@@ -41,6 +41,8 @@ public:
 
     void Initialize() override;
 
+    void Uninitialize(const LuaWrapper& luaWrapper) override;
+
 private:
     /*Get Window height*/
     int32_t GetWindowHeight(const std::tuple<>& data) const;

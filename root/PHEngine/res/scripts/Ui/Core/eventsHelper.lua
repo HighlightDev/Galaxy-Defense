@@ -11,10 +11,11 @@ function EventsHelper:sendExitGameThreadEvent(host, enqueueJobPolicy)
     _SendExitGameThreadEvent(host, enqueueJobPolicy)
 end
 
-function EventsHelper:sendLoadLevelGameThreadEvent(host, enqueueJobPolicy, levelName)
+function EventsHelper:sendLoadLevelGameThreadEvent(host, enqueueJobPolicy, levelPrefabName, levelDataJson)
     assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]", debug.traceback())
-    assert(levelName ~= nil and type(levelName) == "string", debug.traceback())
-    _SendLoadLevelGameThreadEvent(host, enqueueJobPolicy, levelName)
+    assert(levelPrefabName ~= nil and type(levelPrefabName) == "string", debug.traceback())
+    assert(levelDataJson ~= nil and type(levelDataJson) == "string", debug.traceback())
+    _SendLoadLevelGameThreadEvent(host, enqueueJobPolicy, levelPrefabName, levelDataJson)
 end
 
 function EventsHelper:sendChangeGameModeGameThreadEvent(host, enqueueJobPolicy, gameModeType)

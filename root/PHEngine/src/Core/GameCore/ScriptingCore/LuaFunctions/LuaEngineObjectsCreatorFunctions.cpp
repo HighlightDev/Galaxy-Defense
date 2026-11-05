@@ -42,6 +42,10 @@ void LuaEngineObjectsCreatorFunctions::Initialize()
 {
 }
 
+void LuaEngineObjectsCreatorFunctions::Uninitialize(const LuaWrapper& luaWrapper)
+{
+}
+
 void LuaEngineObjectsCreatorFunctions::SetScene(const std::weak_ptr<Scene>& sceneWp)
 {
     mSceneWp = sceneWp;

@@ -21,7 +21,7 @@ class TestFeaturesLevel : public Level {
     std::shared_ptr<Actor> mAmbientMusicDummy;
 
 public:
-    TestFeaturesLevel();
+    explicit TestFeaturesLevel(const std::string& levelPrefabName, const std::string& levelDataJson);
 
     ~TestFeaturesLevel() override;
 

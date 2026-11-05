@@ -68,9 +68,9 @@ end
 function CommonUiWidgetCreator:destroyUiWidget(host, luaProxyId)
     assert(host ~= nil, debug.traceback())
     assert(luaProxyId ~= nil and type(luaProxyId) == "number" and luaProxyId > -1, debug.traceback())
-    -- print("CommonUiWidgetCreator::destroyUiWidget: luaProxyId: " .. tostring(luaProxyId))
-    -- invocation of this function leads to exception, memory is already deallocated
-    -- _DestroyCommonUiWidget(host, luaProxyId)
+    print("CommonUiWidgetCreator::destroyUiWidget: luaProxyId: " .. tostring(luaProxyId))
+    -- invocation o this function leads to exception, memory is already deallocated
+    _DestroyCommonUifWidget(host, luaProxyId)
 end
 
 return CommonUiWidgetCreator

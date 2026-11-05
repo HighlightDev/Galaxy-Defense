@@ -31,6 +31,16 @@ LuaCommonUiFunctions::LuaCommonUiFunctions(LuaScriptExecutorBase* ownerPtr)
 {
 }
 
+LuaCommonUiFunctions::~LuaCommonUiFunctions()
+{
+}
+
+void LuaCommonUiFunctions::Uninitialize(const LuaWrapper& luaWrapper)
+{
+    AssignNil(luaWrapper, "_DestroyCommonUiWidget"); // Make sure _DestroyCommonUiWidget will not be invoked during lua __gc when
+                                                     // this instance is already wiped out from the memory
+}
+
 void LuaCommonUiFunctions::Initialize()
 {
 }

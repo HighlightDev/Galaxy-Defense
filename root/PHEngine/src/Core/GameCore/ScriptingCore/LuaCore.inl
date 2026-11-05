@@ -451,10 +451,13 @@ struct LuaCallbackInvoker<FunctorType, ArgsPack_t, void> {
     FORCEINLINE static int Invoke(lua_State* state, void* ownerPtr, const uint64_t funcHash, const ArgsPack_t& packArgs)
     {
         LuaScriptExecutorBase* baseExecutorInstance = reinterpret_cast<LuaScriptExecutorBase*>(ownerPtr);
-        const auto functor_any = baseExecutorInstance->GetFunctorAny(funcHash);
-        const auto& functor = std::any_cast<FunctorType>(functor_any);
-        functor(packArgs);
-        return 0;
+        auto functor_any = baseExecutorInstance->GetFunctorAny(funcHash);
+        if (functor_any.has_value()) {
+            const auto& functor = std::any_cast<FunctorType>(functor_any);
+            functor(packArgs);
+            return 0;
+        }
+        return -1;
     }
 };
 
@@ -547,6 +550,12 @@ struct LuaFunctionInvoker<void(Args...)> {
 #endif
     }
 };
+
+inline void AssignNil(const LuaWrapper& luaStateWrapper, const std::string& valueName)
+{
+    lua_pushnil(luaStateWrapper.GetState());
+    lua_setglobal(luaStateWrapper.GetState(), valueName.c_str());
+}
 
 template<uint64_t funcHash, typename FunctorType>
 struct LuaCallbackBinder;

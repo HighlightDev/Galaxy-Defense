@@ -22,13 +22,13 @@ LuaCombatLevelUiControllerExecutor::~LuaCombatLevelUiControllerExecutor()
 
 void LuaCombatLevelUiControllerExecutor::Initialize()
 {
-    mLuaFunctions
-        = {std::make_shared<LuaCommonUiFunctions>(this),
-           std::make_shared<LuaCommonEngineFunctions>(this),
-           std::make_shared<LuaEngineEventsFunctions>(this),
-           std::make_shared<LuaGameEventsFunctions>(this),
-           std::make_shared<LuaLvlProgressFunctions>(this, mLevelProgressController),
-           std::make_shared<LuaPlayerDataProviderFunctions>(this)};
+    SetLuaFunctions(
+        {std::make_shared<LuaCommonUiFunctions>(this),
+         std::make_shared<LuaCommonEngineFunctions>(this),
+         std::make_shared<LuaEngineEventsFunctions>(this),
+         std::make_shared<LuaGameEventsFunctions>(this),
+         std::make_shared<LuaLvlProgressFunctions>(this, mLevelProgressController),
+         std::make_shared<LuaPlayerDataProviderFunctions>(this)});
 
     for (const auto& luaFunction : mLuaFunctions) {
         luaFunction->Initialize();

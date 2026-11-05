@@ -35,8 +35,8 @@ using namespace Graphics;
 
 namespace Game {
 
-EditorLevel::EditorLevel()
-    : LevelBase("EditorLevel")
+EditorLevel::EditorLevel(const std::string& levelPrefabName, const std::string& levelDataJson)
+    : LevelBase(levelPrefabName, levelDataJson)
 {
     Event::GameThreadEventDispatcher::GetInstance()
         ->RegisterEventsByType<Event::ChangeEditModeEvent, Event::LevelAreaBBChangedGameThreadEvent>();

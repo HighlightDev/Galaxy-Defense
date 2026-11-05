@@ -24,6 +24,10 @@ void LuaComponentHandlerFunctions::Initialize()
 {
 }
 
+void LuaComponentHandlerFunctions::Uninitialize(const LuaWrapper& luaWrapper)
+{
+}
+
 void LuaComponentHandlerFunctions::SetScene(const std::weak_ptr<Scene>& sceneWp)
 {
     mSceneWp = sceneWp;

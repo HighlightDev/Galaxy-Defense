@@ -88,9 +88,9 @@ function MainMenuOverlay:new(host)
     canvas:subscribeOnLuaProxyReady(function(h)
         _InitializeCanvasInputSystem(h, canvas.luaProxyId)
         canvas:addFadeInAnimation(h, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.3, "Opacity",
-                                  UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
+            UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
         canvas:addFadeOutAnimation(h, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.3, "Opacity",
-                                   UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
+            UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
     local overlay = UiOverlay:createOverlay(host, "MainMenuOverlay", canvas)
 
@@ -107,64 +107,55 @@ function MainMenuOverlay:new(host)
     local CORNER_THK = 2
     local CORNER_PAD = 22
     local corners = {}
-    local cornerSpec = {
-        {
-            name = "TL_H",
-            v = UiItemBase.UiAnchorType.TOP,
-            h = UiItemBase.UiAnchorType.LEFT,
-            w = CORNER_LEN,
-            t = CORNER_THK
-        },
-        {
-            name = "TL_V",
-            v = UiItemBase.UiAnchorType.TOP,
-            h = UiItemBase.UiAnchorType.LEFT,
-            w = CORNER_THK,
-            t = CORNER_LEN
-        },
-        {
-            name = "TR_H",
-            v = UiItemBase.UiAnchorType.TOP,
-            h = UiItemBase.UiAnchorType.RIGHT,
-            w = CORNER_LEN,
-            t = CORNER_THK
-        },
-        {
-            name = "TR_V",
-            v = UiItemBase.UiAnchorType.TOP,
-            h = UiItemBase.UiAnchorType.RIGHT,
-            w = CORNER_THK,
-            t = CORNER_LEN
-        },
-        {
-            name = "BL_H",
-            v = UiItemBase.UiAnchorType.BOTTOM,
-            h = UiItemBase.UiAnchorType.LEFT,
-            w = CORNER_LEN,
-            t = CORNER_THK
-        },
-        {
-            name = "BL_V",
-            v = UiItemBase.UiAnchorType.BOTTOM,
-            h = UiItemBase.UiAnchorType.LEFT,
-            w = CORNER_THK,
-            t = CORNER_LEN
-        },
-        {
-            name = "BR_H",
-            v = UiItemBase.UiAnchorType.BOTTOM,
-            h = UiItemBase.UiAnchorType.RIGHT,
-            w = CORNER_LEN,
-            t = CORNER_THK
-        },
-        {
-            name = "BR_V",
-            v = UiItemBase.UiAnchorType.BOTTOM,
-            h = UiItemBase.UiAnchorType.RIGHT,
-            w = CORNER_THK,
-            t = CORNER_LEN
-        }
-    }
+    local cornerSpec = {{
+        name = "TL_H",
+        v = UiItemBase.UiAnchorType.TOP,
+        h = UiItemBase.UiAnchorType.LEFT,
+        w = CORNER_LEN,
+        t = CORNER_THK
+    }, {
+        name = "TL_V",
+        v = UiItemBase.UiAnchorType.TOP,
+        h = UiItemBase.UiAnchorType.LEFT,
+        w = CORNER_THK,
+        t = CORNER_LEN
+    }, {
+        name = "TR_H",
+        v = UiItemBase.UiAnchorType.TOP,
+        h = UiItemBase.UiAnchorType.RIGHT,
+        w = CORNER_LEN,
+        t = CORNER_THK
+    }, {
+        name = "TR_V",
+        v = UiItemBase.UiAnchorType.TOP,
+        h = UiItemBase.UiAnchorType.RIGHT,
+        w = CORNER_THK,
+        t = CORNER_LEN
+    }, {
+        name = "BL_H",
+        v = UiItemBase.UiAnchorType.BOTTOM,
+        h = UiItemBase.UiAnchorType.LEFT,
+        w = CORNER_LEN,
+        t = CORNER_THK
+    }, {
+        name = "BL_V",
+        v = UiItemBase.UiAnchorType.BOTTOM,
+        h = UiItemBase.UiAnchorType.LEFT,
+        w = CORNER_THK,
+        t = CORNER_LEN
+    }, {
+        name = "BR_H",
+        v = UiItemBase.UiAnchorType.BOTTOM,
+        h = UiItemBase.UiAnchorType.RIGHT,
+        w = CORNER_LEN,
+        t = CORNER_THK
+    }, {
+        name = "BR_V",
+        v = UiItemBase.UiAnchorType.BOTTOM,
+        h = UiItemBase.UiAnchorType.RIGHT,
+        w = CORNER_THK,
+        t = CORNER_LEN
+    }}
     for i = 1, #cornerSpec do
         local rect = UiRectangle:new(host, "MMCorner_" .. cornerSpec[i].name)
         corners[i] = rect
@@ -180,9 +171,9 @@ function MainMenuOverlay:new(host)
     local hudStatusChip = UiRectangle:new(host, "MMHudStatusChip")
     local hudStatusDot = UiRectangle:new(host, "MMHudStatusDot")
     local hudStatusKey = makeLabel(host, "MMHudStatusKey", "СЕТЬ", 12, M.textVeryDim,
-                                   UiLabel.TextHorizontalAlignmentType.LEFT)
+        UiLabel.TextHorizontalAlignmentType.LEFT)
     local hudStatusVal = makeLabel(host, "MMHudStatusVal", "СТАБИЛЬНА", 12, M.textBright,
-                                   UiLabel.TextHorizontalAlignmentType.LEFT)
+        UiLabel.TextHorizontalAlignmentType.LEFT)
     overlay:addWidget(hudStatusChip)
     overlay:addWidget(hudStatusDot)
     overlay:addWidget(hudStatusKey)
@@ -190,22 +181,22 @@ function MainMenuOverlay:new(host)
 
     local hudNodeChip = UiRectangle:new(host, "MMHudNodeChip")
     local hudNodeKey = makeLabel(host, "MMHudNodeKey", "УЗЕЛ", 12, M.textVeryDim,
-                                 UiLabel.TextHorizontalAlignmentType.LEFT)
+        UiLabel.TextHorizontalAlignmentType.LEFT)
     local hudNodeVal = makeLabel(host, "MMHudNodeVal", "КАЛИСТО-3", 12, M.textBright,
-                                 UiLabel.TextHorizontalAlignmentType.LEFT)
+        UiLabel.TextHorizontalAlignmentType.LEFT)
     overlay:addWidget(hudNodeChip)
     overlay:addWidget(hudNodeKey)
     overlay:addWidget(hudNodeVal)
 
     local hudCoord = makeLabel(host, "MMHudCoord", "⟨  RA 19h 35m  ·  DEC −12° 04′  ⟩", 12, M.textDim,
-                               UiLabel.TextHorizontalAlignmentType.CENTER)
+        UiLabel.TextHorizontalAlignmentType.CENTER)
     overlay:addWidget(hudCoord)
 
     local hudCmdrChip = UiRectangle:new(host, "MMHudCmdrChip")
     local hudCmdrRank = makeLabel(host, "MMHudCmdrRank", "КОММОДОР", 10, M.textVeryDim,
-                                  UiLabel.TextHorizontalAlignmentType.RIGHT)
+        UiLabel.TextHorizontalAlignmentType.RIGHT)
     local hudCmdrName = makeLabel(host, "MMHudCmdrName", "«РЕЙВЕН»", 13, M.textBright,
-                                  UiLabel.TextHorizontalAlignmentType.RIGHT)
+        UiLabel.TextHorizontalAlignmentType.RIGHT)
     overlay:addWidget(hudCmdrChip)
     overlay:addWidget(hudCmdrRank)
     overlay:addWidget(hudCmdrName)
@@ -214,12 +205,12 @@ function MainMenuOverlay:new(host)
     -- Title block — eyebrow + main title + subtitle, centered horizontally
     -- ----------------------------------------------------------------------
     local titleEyebrow = makeLabel(host, "MMTitleEyebrow",
-                                   "— ОПЕРАТИВНЫЙ ЦЕНТР · ЛИНИЯ КОТЭЛИН —", 13,
-                                   M.textTitleAccent, UiLabel.TextHorizontalAlignmentType.CENTER)
+        "— ОПЕРАТИВНЫЙ ЦЕНТР · ЛИНИЯ КОТЭЛИН —", 13, M.textTitleAccent,
+        UiLabel.TextHorizontalAlignmentType.CENTER)
     local titleMain = makeLabel(host, "MMTitleMain", "GALAXY DEFENSE", 72, M.textBright,
-                                UiLabel.TextHorizontalAlignmentType.CENTER)
+        UiLabel.TextHorizontalAlignmentType.CENTER)
     local titleSub = makeLabel(host, "MMTitleSub", "— ОБОРОНА ОРБИТАЛЬНОГО РУБЕЖА —", 15,
-                               M.textDim, UiLabel.TextHorizontalAlignmentType.CENTER)
+        M.textDim, UiLabel.TextHorizontalAlignmentType.CENTER)
     overlay:addWidget(titleEyebrow)
     overlay:addWidget(titleMain)
     overlay:addWidget(titleSub)
@@ -229,54 +220,54 @@ function MainMenuOverlay:new(host)
     -- (index, [, mainLabel, sub, ], chevron). Hover/click handlers live on
     -- the rect itself via UiItemBase mouse input.
     -- ----------------------------------------------------------------------
-    local MENU_ITEMS = {
-        {
-            id = "newgame",
-            label = "НОВАЯ ИГРА",
-            sub = "Начать новую кампанию",
-            accent = M.accentPrimary,
-            highlight = false,
-            onClick = function()
-                EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                                                          "CombatLevel")
-            end
-        },
-        {
-            id = "selectlevel",
-            label = "ВЫБРАТЬ УРОВЕНЬ",
-            sub = "Перепройти или сыграть в новый уровень",
-            accent = M.accentPrimary,
-            highlight = false,
-            onClick = function() UiOverlayManager:openOverlay(host, "SelectLevelOverlay") end
-        },
-        {
-            id = "editor",
-            label = "РЕДАКТОР",
-            sub = "Открыть редактор уровней",
-            accent = M.accentSecondary,
-            highlight = false,
-            onClick = function()
-                EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                                                          "EditorLevel")
-            end
-        }, {
-            id = "settings",
-            label = "НАСТРОЙКИ",
-            sub = "Параметры и калибровка",
-            accent = M.accentMuted,
-            highlight = false,
-            onClick = function() UiOverlayManager:openOverlay(host, "GameSettingsOverlay") end
-        }, {
-            id = "exit",
-            label = "ВЫХОД",
-            sub = "Покинуть командный центр",
-            accent = M.accentMuted,
-            highlight = false,
-            onClick = function()
-                EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
-            end
-        }
-    }
+    local MENU_ITEMS = {{
+        id = "newgame",
+        label = "НОВАЯ ИГРА",
+        sub = "Начать новую кампанию",
+        accent = M.accentPrimary,
+        highlight = false,
+        onClick = function()
+            EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+                "CombatLevel", "{}")
+        end
+    }, {
+        id = "selectlevel",
+        label = "ВЫБРАТЬ УРОВЕНЬ",
+        sub = "Перепройти или сыграть в новый уровень",
+        accent = M.accentPrimary,
+        highlight = false,
+        onClick = function()
+            UiOverlayManager:openOverlay(host, "SelectLevelOverlay")
+        end
+    }, {
+        id = "editor",
+        label = "РЕДАКТОР",
+        sub = "Открыть редактор уровней",
+        accent = M.accentSecondary,
+        highlight = false,
+        onClick = function()
+            EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+                "EditorLevel", "{}")
+        end
+    }, {
+        id = "settings",
+        label = "НАСТРОЙКИ",
+        sub = "Параметры и калибровка",
+        accent = M.accentMuted,
+        highlight = false,
+        onClick = function()
+            UiOverlayManager:openOverlay(host, "GameSettingsOverlay")
+        end
+    }, {
+        id = "exit",
+        label = "ВЫХОД",
+        sub = "Покинуть командный центр",
+        accent = M.accentMuted,
+        highlight = false,
+        onClick = function()
+            EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
+        end
+    }}
 
     local buttons = {}
     for i = 1, #MENU_ITEMS do
@@ -286,18 +277,17 @@ function MainMenuOverlay:new(host)
             bg = UiRectangle:new(host, "MMBtn_" .. item.id .. "_bg"),
             accentBar = UiRectangle:new(host, "MMBtn_" .. item.id .. "_accent"),
             indexLabel = makeLabel(host, "MMBtn_" .. item.id .. "_idx", string.format("0%d", i), 16, M.textVeryDim,
-                                   UiLabel.TextHorizontalAlignmentType.CENTER),
+                UiLabel.TextHorizontalAlignmentType.CENTER),
             bracketL = makeLabel(host, "MMBtn_" .. item.id .. "_bl", "[", 32, item.accent,
-                                 UiLabel.TextHorizontalAlignmentType.CENTER),
+                UiLabel.TextHorizontalAlignmentType.CENTER),
             mainLabel = makeLabel(host, "MMBtn_" .. item.id .. "_main", item.label, 26,
-                                  item.highlight and M.textBright or item.accent,
-                                  UiLabel.TextHorizontalAlignmentType.LEFT),
+                item.highlight and M.textBright or item.accent, UiLabel.TextHorizontalAlignmentType.LEFT),
             subLabel = makeLabel(host, "MMBtn_" .. item.id .. "_sub", item.sub, 12, M.textDim,
-                                 UiLabel.TextHorizontalAlignmentType.LEFT),
+                UiLabel.TextHorizontalAlignmentType.LEFT),
             bracketR = makeLabel(host, "MMBtn_" .. item.id .. "_br", "]", 32, item.accent,
-                                 UiLabel.TextHorizontalAlignmentType.CENTER),
+                UiLabel.TextHorizontalAlignmentType.CENTER),
             chevron = makeLabel(host, "MMBtn_" .. item.id .. "_chev", "›", 28, item.accent,
-                                UiLabel.TextHorizontalAlignmentType.CENTER)
+                UiLabel.TextHorizontalAlignmentType.CENTER)
         }
         overlay:addWidget(b.bg)
         overlay:addWidget(b.accentBar)
@@ -314,12 +304,12 @@ function MainMenuOverlay:new(host)
     -- Footer HUD — version meta on the left, key hints on the right
     -- ----------------------------------------------------------------------
     local footerMeta = makeLabel(host, "MMFooterMeta", "v0.4.7-alpha    ·    BUILD 24281    ·    © PHENGINE 2387",
-                                 11, M.textVeryDim, UiLabel.TextHorizontalAlignmentType.LEFT)
+        11, M.textVeryDim, UiLabel.TextHorizontalAlignmentType.LEFT)
     overlay:addWidget(footerMeta)
 
     local footerKeys = makeLabel(host, "MMFooterKeys",
-                                 "↑↓  ВЫБОР     ENTER  ПОДТВЕРДИТЬ     ESC  ВЫХОД", 11,
-                                 M.textDim, UiLabel.TextHorizontalAlignmentType.RIGHT)
+        "↑↓  ВЫБОР     ENTER  ПОДТВЕРДИТЬ     ESC  ВЫХОД", 11, M.textDim,
+        UiLabel.TextHorizontalAlignmentType.RIGHT)
     overlay:addWidget(footerKeys)
 
     -- ----------------------------------------------------------------------
@@ -373,7 +363,7 @@ function MainMenuOverlay:new(host)
         hudStatusDot:setHeight(8)
         hudStatusDot:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, hudStatusChip.widgetName, 12)
         hudStatusDot:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                               hudStatusChip.widgetName)
+            hudStatusChip.widgetName)
         hudStatusDot:setZOrder(Z_HUD + 1)
 
         applyLabelInit(hudStatusKey)
@@ -382,7 +372,7 @@ function MainMenuOverlay:new(host)
         hudStatusKey:setHeight(hudStatusKey.safeLineHeight)
         hudStatusKey:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, hudStatusDot.widgetName, 8)
         hudStatusKey:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                               hudStatusChip.widgetName)
+            hudStatusChip.widgetName)
         hudStatusKey:setZOrder(Z_HUD + 1)
 
         applyLabelInit(hudStatusVal)
@@ -391,7 +381,7 @@ function MainMenuOverlay:new(host)
         hudStatusVal:setHeight(hudStatusVal.safeLineHeight)
         hudStatusVal:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, hudStatusKey.widgetName, 6)
         hudStatusVal:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                               hudStatusChip.widgetName)
+            hudStatusChip.widgetName)
         hudStatusVal:setZOrder(Z_HUD + 1)
 
         -- Node chip
@@ -412,7 +402,7 @@ function MainMenuOverlay:new(host)
         hudNodeKey:setHeight(hudNodeKey.safeLineHeight)
         hudNodeKey:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, hudNodeChip.widgetName, 12)
         hudNodeKey:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                             hudNodeChip.widgetName)
+            hudNodeChip.widgetName)
         hudNodeKey:setZOrder(Z_HUD + 1)
 
         applyLabelInit(hudNodeVal)
@@ -421,7 +411,7 @@ function MainMenuOverlay:new(host)
         hudNodeVal:setHeight(hudNodeVal.safeLineHeight)
         hudNodeVal:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, hudNodeKey.widgetName, 6)
         hudNodeVal:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                             hudNodeChip.widgetName)
+            hudNodeChip.widgetName)
         hudNodeVal:setZOrder(Z_HUD + 1)
 
         -- Coord text (centered)
@@ -431,7 +421,7 @@ function MainMenuOverlay:new(host)
         hudCoord:setHeight(hudCoord.safeLineHeight)
         hudCoord:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, canvasName, 28)
         hudCoord:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                           canvasName)
+            canvasName)
         hudCoord:setZOrder(Z_HUD + 1)
 
         -- Commander chip — sized to fit rank + name with safe line heights.
@@ -456,7 +446,7 @@ function MainMenuOverlay:new(host)
         hudCmdrRank:setWidth(cmdrWidth - 20)
         hudCmdrRank:setHeight(hudCmdrRank.safeLineHeight)
         hudCmdrRank:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, hudCmdrChip.widgetName,
-                              cmdrPadTop)
+            cmdrPadTop)
         hudCmdrRank:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, hudCmdrChip.widgetName, 12)
         hudCmdrRank:setZOrder(Z_HUD + 1)
 
@@ -465,7 +455,7 @@ function MainMenuOverlay:new(host)
         hudCmdrName:setWidth(cmdrWidth - 20)
         hudCmdrName:setHeight(hudCmdrName.safeLineHeight)
         hudCmdrName:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, hudCmdrRank.widgetName,
-                              cmdrGap)
+            cmdrGap)
         hudCmdrName:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, hudCmdrChip.widgetName, 12)
         hudCmdrName:setZOrder(Z_HUD + 1)
 
@@ -477,7 +467,7 @@ function MainMenuOverlay:new(host)
         titleEyebrow:setHeight(titleEyebrow.safeLineHeight)
         titleEyebrow:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, canvasName, titleAnchorTop)
         titleEyebrow:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                               canvasName)
+            canvasName)
         titleEyebrow:setZOrder(Z_TITLE)
 
         applyLabelInit(titleMain)
@@ -486,7 +476,7 @@ function MainMenuOverlay:new(host)
         titleMain:setHeight(titleMain.safeLineHeight)
         titleMain:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, titleEyebrow.widgetName, 4)
         titleMain:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                            canvasName)
+            canvasName)
         titleMain:setZOrder(Z_TITLE)
         titleMain:setTextGradientHexValues(UiLabel.TextGradientColorType.VERTICAL, Combat.cyanGlow, Combat.indigo)
 
@@ -496,7 +486,7 @@ function MainMenuOverlay:new(host)
         titleSub:setHeight(titleSub.safeLineHeight)
         titleSub:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, titleMain.widgetName, 4)
         titleSub:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                           canvasName)
+            canvasName)
         titleSub:setZOrder(Z_TITLE)
 
         -- ---------------- Menu buttons ----------------
@@ -529,12 +519,12 @@ function MainMenuOverlay:new(host)
             b.bg:setWidth(BTN_WIDTH)
             b.bg:setHeight(BTN_HEIGHT)
             b.bg:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-                           canvasName)
+                canvasName)
             if i == 1 then
                 b.bg:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, canvasName, menuTopOffset)
             else
                 b.bg:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-                               buttons[i - 1].bg.widgetName, BTN_GAP)
+                    buttons[i - 1].bg.widgetName, BTN_GAP)
             end
             b.bg:setZOrder(Z_BTN_BG)
             b.bg:enableMouseInputReceiverBase(h)
@@ -557,7 +547,7 @@ function MainMenuOverlay:new(host)
             b.accentBar:setBorderRadius(2)
             b.accentBar:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, b.bg.widgetName, 10)
             b.accentBar:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                                  b.bg.widgetName)
+                b.bg.widgetName)
             b.accentBar:setZOrder(Z_BTN_FG)
             -- Fade animations driven from the hover callback. Highlighted
             -- buttons stay lit so they don't need the reveal/hide pair. The
@@ -565,9 +555,9 @@ function MainMenuOverlay:new(host)
             -- closely enough that the bar feels animated rather than popped.
             if not item.highlight then
                 b.accentBar:addAnimation(h, "AccentReveal", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-                                         0.58, "Opacity", UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
+                    0.58, "Opacity", UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
                 b.accentBar:addAnimation(h, "AccentHide", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.58,
-                                         "Opacity", UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
+                    "Opacity", UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
             end
 
             -- Index label "01"
@@ -576,9 +566,9 @@ function MainMenuOverlay:new(host)
             b.indexLabel:setWidth(46)
             b.indexLabel:setHeight(b.indexLabel.safeLineHeight)
             b.indexLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, b.accentBar.widgetName,
-                                   14)
+                14)
             b.indexLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                                   b.bg.widgetName)
+                b.bg.widgetName)
             b.indexLabel:setZOrder(Z_BTN_FG)
 
             -- Left bracket "["
@@ -588,7 +578,7 @@ function MainMenuOverlay:new(host)
             b.bracketL:setHeight(b.bracketL.safeLineHeight)
             b.bracketL:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, b.indexLabel.widgetName, 6)
             b.bracketL:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                                 b.bg.widgetName)
+                b.bg.widgetName)
             b.bracketL:setZOrder(Z_BTN_FG)
 
             -- Main label
@@ -607,7 +597,7 @@ function MainMenuOverlay:new(host)
             b.subLabel:setHeight(b.subLabel.safeLineHeight)
             b.subLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, b.bracketL.widgetName, 8)
             b.subLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, b.bg.widgetName,
-                                 BTN_PAD_BOTTOM)
+                BTN_PAD_BOTTOM)
             b.subLabel:setZOrder(Z_BTN_FG)
 
             -- Right bracket "]" (anchored to the chevron's left)
@@ -617,7 +607,7 @@ function MainMenuOverlay:new(host)
             b.chevron:setHeight(b.chevron.safeLineHeight)
             b.chevron:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, b.bg.widgetName, 18)
             b.chevron:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                                b.bg.widgetName)
+                b.bg.widgetName)
             b.chevron:setZOrder(Z_BTN_FG)
 
             applyLabelInit(b.bracketR)
@@ -626,7 +616,7 @@ function MainMenuOverlay:new(host)
             b.bracketR:setHeight(b.bracketR.safeLineHeight)
             b.bracketR:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.LEFT, b.chevron.widgetName, 4)
             b.bracketR:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-                                 b.bg.widgetName)
+                b.bg.widgetName)
             b.bracketR:setZOrder(Z_BTN_FG)
 
             -- Hover: brighten the plate + bump the main label to bright text
@@ -646,14 +636,18 @@ function MainMenuOverlay:new(host)
                     b.bg:setBlurMix(M.buttonHoverBlurMix)
                     b.mainLabel:setTextColorHexValue(M.textBright)
                     b.indexLabel:setTextColorHexValue(M.textDim)
-                    if animateAccent then b.accentBar:startAnimation(h, "AccentReveal") end
+                    if animateAccent then
+                        b.accentBar:startAnimation(h, "AccentReveal")
+                    end
                 else
                     b.bg:setColorHexValue(baseBgColor)
                     b.bg:setOpacity(baseBgOpacity)
                     b.bg:setBlurMix(baseBlurMix)
                     b.mainLabel:setTextColorHexValue(baseMainColor)
                     b.indexLabel:setTextColorHexValue(M.textVeryDim)
-                    if animateAccent then b.accentBar:startAnimation(h, "AccentHide") end
+                    if animateAccent then
+                        b.accentBar:startAnimation(h, "AccentHide")
+                    end
                 end
             end)
             b.bg:subscribeOnMouseInputClickedCallback(item.onClick)
@@ -677,9 +671,12 @@ function MainMenuOverlay:new(host)
         footerKeys:setZOrder(Z_HUD)
     end)
 
-    overlay.onGameEventTriggered = function(eventName, jsonArgs) end
-    overlay.onEngineEventTriggered = function(eventName, jsonArgs) end
-    overlay.onBroadcastEventTriggered = function(eventName, jsonArgs) end
+    overlay.onGameEventTriggered = function(eventName, jsonArgs)
+    end
+    overlay.onEngineEventTriggered = function(eventName, jsonArgs)
+    end
+    overlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
+    end
 
     return overlay
 end

@@ -2,11 +2,13 @@
 
 #include "Core/GameCore/Components/AudioComponents/StreamingSoundComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
+#include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Game/Events/LevelFilesListChangedEvent.h"
 #include "Game/Levels/ProceduralSpaceBackgroundBuilder.h"
 
 #include <glm/vec3.hpp>
@@ -20,13 +22,15 @@ using namespace EngineCore::Scripts;
 
 namespace Game {
 
-MainMenuLevel::MainMenuLevel()
-    : LevelBase("MainMenuLevel")
-    , mAmbientMusicDummy(std::make_shared<Actor>(
-          "Ambient Music Dummy",
-          std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent", glm::vec3(), glm::vec3(), glm::vec3(), true)))
+MainMenuLevel::MainMenuLevel(const std::string& levelPrefabName, const std::string& levelDataJson)
+    : LevelBase(levelPrefabName, levelDataJson)
+    , mAmbientMusicDummy(
+          std::make_shared<Actor>(
+              "Ambient Music Dummy",
+              std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent", glm::vec3(), glm::vec3(), glm::vec3(), true)))
 
 {
+    Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaLevelFilesListChangedEvent>();
 }
 
 MainMenuLevel::~MainMenuLevel()

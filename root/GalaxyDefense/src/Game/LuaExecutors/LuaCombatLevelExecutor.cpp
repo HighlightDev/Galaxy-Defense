@@ -11,38 +11,11 @@ namespace Game {
 LuaCombatLevelExecutor::LuaCombatLevelExecutor(
     const std::string& scriptName, const std::shared_ptr<LevelProgressController>& lvlProgressController)
     : LuaScriptExecutorBase(scriptName)
-    , mLuaFunctions(
-          {std::make_shared<LuaCommonEngineFunctions>(this),
-           std::make_shared<LuaEngineObjectsCreatorFunctions>(this),
-           std::make_shared<LuaLvlProgressFunctions>(this, lvlProgressController)})
     , mLvlProgressController(lvlProgressController)
 {
-}
-
-void LuaCombatLevelExecutor::RunScript()
-{
-    LuaScriptExecutorBase::RunScript();
-
-    for (const auto& luaFunction : mLuaFunctions) {
-        luaFunction->OnScriptStarted(mLuaInstance);
-    }
-}
-
-void LuaCombatLevelExecutor::StopScript()
-{
-    LuaScriptExecutorBase::StopScript();
-
-    for (const auto& luaFunction : mLuaFunctions) {
-        luaFunction->OnScriptStopped(mLuaInstance);
-    }
-}
-
-void LuaCombatLevelExecutor::RegisterCallbacks()
-{
-    for (const auto& luaFunction : mLuaFunctions) {
-        luaFunction->SetScene(GetScene());
-        luaFunction->SetLuaScriptProcessor(GetLuaScriptProcessor());
-        luaFunction->RegisterCallbacks(mLuaInstance);
-    }
+    SetLuaFunctions(
+        {std::make_shared<LuaCommonEngineFunctions>(this),
+         std::make_shared<LuaEngineObjectsCreatorFunctions>(this),
+         std::make_shared<LuaLvlProgressFunctions>(this, lvlProgressController)});
 }
 } // namespace Game

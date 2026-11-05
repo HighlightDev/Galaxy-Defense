@@ -4,6 +4,7 @@
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
 #include "ILuaScriptExecutable.h"
+#include "Core/GameCore/ScriptingCore/LuaFunctions/ILuaFunctionable.h"
 
 #include <any>
 #include <tuple>
@@ -33,10 +34,14 @@ protected:
 
     std::weak_ptr<LuaScriptProcessor> mLuaScriptProcessor;
 
+    std::vector<std::shared_ptr<ILuaFunctionable>> mLuaFunctions;
+
     LuaWrapper mLuaInstance;
 
 public:
-    LuaScriptExecutorBase(const std::string& scriptName);
+    explicit LuaScriptExecutorBase(const std::string& scriptName);
+
+    virtual ~LuaScriptExecutorBase();
 
     std::string GetScriptName() const;
 
@@ -56,6 +61,8 @@ public:
 
     void AddFunctor(const uint64_t functorNameHash, const std::any& functor);
 
+    void RegisterCallbacks() override;
+
     void RunScript() override;
 
     void StopScript() override;
@@ -74,6 +81,8 @@ public:
 
 protected:
     void SetScript(const std::string& scriptName);
+
+    void SetLuaFunctions(std::vector<std::shared_ptr<ILuaFunctionable>> luaFunctions);
 };
 } // namespace Scripts
 } // namespace EngineCore

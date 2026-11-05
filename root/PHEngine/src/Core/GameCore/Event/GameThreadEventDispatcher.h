@@ -28,6 +28,13 @@ public:
     template<typename EventType>
     typename std::enable_if<std::is_base_of<IEvent, EventType>::value, void>::type RegisterEventByType()
     {
+        if (std::find_if(
+                m_eventInstances.cbegin(),
+                m_eventInstances.cend(),
+                [](const IEvent* eventInstance) { return eventInstance == EventType::GetInstance(); })
+            != m_eventInstances.cend()) {
+            return; // Event already registered
+        }
         m_eventInstances.emplace_back(EventType::GetInstance());
     }
 

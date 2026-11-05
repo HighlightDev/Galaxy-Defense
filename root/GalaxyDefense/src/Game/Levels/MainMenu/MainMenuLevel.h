@@ -25,7 +25,7 @@ class MainMenuLevel : public LevelBase {
     std::unique_ptr<FileWatcher> mFileWatcher;
 
 public:
-    MainMenuLevel();
+    explicit MainMenuLevel(const std::string& levelPrefabName, const std::string& levelDataJson);
 
     ~MainMenuLevel() override;
 
