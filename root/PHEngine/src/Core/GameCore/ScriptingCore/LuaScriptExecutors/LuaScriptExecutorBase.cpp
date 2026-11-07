@@ -64,11 +64,13 @@ const std::any& LuaScriptExecutorBase::GetFunctorAny(const uint64_t functionHash
     return mFunctors.at(functionHash);
 }
 
+bool LuaScriptExecutorBase::IsLuaStateValid() const
+{
+    return mLuaInstance.IsLuaScriptOpened() && mLuaInstance.GetState();
+}
+
 const LuaWrapper& LuaScriptExecutorBase::GetLuaInstance() const
 {
-    ext_assert(
-        mLuaInstance.IsLuaScriptOpened() && mLuaInstance.GetState(),
-        "LuaScriptExecutorBase::GetLuaInstance: Lua instance is not properly initialized");
     return mLuaInstance;
 }
 

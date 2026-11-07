@@ -6,6 +6,14 @@
 #include "Game/Events/LevelFilesListChangedEvent.h"
 
 #include <algorithm>
+#include <fstream>
+
+namespace {
+std::filesystem::path GetLevelsPath()
+{
+    return EngineUtility::GetDocumentsDir() / "My Games" / "GalaxyDefense" / "Levels";
+}
+} // namespace
 
 namespace Game {
 
@@ -37,6 +45,29 @@ std::vector<std::string> SaveSystem::GetLevelFilesNames() const
     return levelFileNames;
 }
 
+std::map<std::string, std::filesystem::path> SaveSystem::GetLevelPaths() const
+{
+    std::map<std::string, std::filesystem::path> ret;
+    std::lock_guard<std::mutex> lock(mLevelFilesLock);
+    ret = mLevelFiles;
+    return ret;
+}
+
+void SaveSystem::SaveLevel(const std::string& levelName, const std::string& serializedLvl)
+{
+    LogInfo("SaveSystem::SaveLevel: ", levelName);
+    std::filesystem::path pathToLvl = GetLevelsPath() / levelName;
+    if (std::filesystem::exists(pathToLvl)) {
+        LogInfo("SaveSystem::SaveLevel: Warning! File with the same name exists: ", levelName);
+        return;
+    }
+
+    std::ofstream os;
+    os.open(pathToLvl, std::fstream::out);
+    os << serializedLvl;
+    os.close();
+}
+
 void SaveSystem::OnLevelsDirectoryChanged(const std::string& path, IO::FileStatus fileStatus)
 {
     EngineCore::LogInfo("SaveSystem::OnLevelsDirectoryChanged: path: ", path, " fileStatus: ", static_cast<int32_t>(fileStatus));
@@ -52,7 +83,7 @@ void SaveSystem::ScanLevelsDirectory()
         std::lock_guard<std::mutex> lock(mLevelFilesLock);
         mLevelFiles.clear();
         try {
-            const auto levelsDirPath = EngineUtility::GetDocumentsDir() / "My Games" / "GalaxyDefense" / "Levels";
+            const auto levelsDirPath = GetLevelsPath();
             std::error_code errorCode;
             std::filesystem::create_directories(levelsDirPath, errorCode);
             if (errorCode) {

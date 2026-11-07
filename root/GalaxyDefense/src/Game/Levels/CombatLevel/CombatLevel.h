@@ -42,7 +42,7 @@ public:
 private:
     void CreateScene();
 
-    LevelData LoadLevelDataFromFile(const std::string& levelName) const;
+    LevelData LoadLevelDataFromFile(const std::filesystem::path& levelPath) const;
 };
 
 } // namespace Game

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaFunctions/ILuaFunctionable.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
 #include "ILuaScriptExecutable.h"
-#include "Core/GameCore/ScriptingCore/LuaFunctions/ILuaFunctionable.h"
 
 #include <any>
 #include <tuple>
@@ -48,6 +48,8 @@ public:
     size_t GetUId() const;
 
     const std::any& GetFunctorAny(const uint64_t functionHash) const;
+
+    bool IsLuaStateValid() const;
 
     const LuaWrapper& GetLuaInstance() const;
 

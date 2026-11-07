@@ -7,7 +7,7 @@
 #include <algorithm>
 
 namespace Game {
-std::string LevelSerializationHelper::DumpLevelToJsonString(const LevelData& levelData) const
+std::string LevelSerializationHelper::DumpLevelToJsonString(const LevelData& levelData)
 {
     auto preparedTowersData = PrepareTowersData(levelData.TowersData);
     auto preparedBarriersData = PrepareBarriersData(levelData.BarriersData);
@@ -25,7 +25,7 @@ std::string LevelSerializationHelper::DumpLevelToJsonString(const LevelData& lev
     return jsonObj.dump();
 }
 
-LevelData LevelSerializationHelper::RestoreLevelFromJsonString(const std::string& jsonStr) const
+LevelData LevelSerializationHelper::RestoreLevelFromJsonString(const std::string& jsonStr)
 {
     const auto& jsonObj = nlohmann::json::parse(jsonStr);
     LevelData lvlData;
@@ -51,8 +51,8 @@ LevelData LevelSerializationHelper::RestoreLevelFromJsonString(const std::string
     return lvlData;
 }
 
-std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>> LevelSerializationHelper::PrepareTowersData(
-    const std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>& towersData) const
+std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>
+LevelSerializationHelper::PrepareTowersData(const std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>& towersData)
 {
     std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>> result;
     result.reserve(towersData.size());
@@ -66,7 +66,7 @@ std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>> LevelSerializati
 }
 
 std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>
-LevelSerializationHelper::RestoreTowers(const std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>& towersData) const
+LevelSerializationHelper::RestoreTowers(const std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>& towersData)
 {
     std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>> result;
     result.reserve(towersData.size());
@@ -83,7 +83,7 @@ LevelSerializationHelper::RestoreTowers(const std::unordered_map<std::string, st
 }
 
 std::unordered_map<std::string, std::vector<JsonVec3>>
-LevelSerializationHelper::PrepareBarriersData(const std::unordered_map<std::string, std::vector<glm::vec3>>& barrierssData) const
+LevelSerializationHelper::PrepareBarriersData(const std::unordered_map<std::string, std::vector<glm::vec3>>& barrierssData)
 {
     std::unordered_map<std::string, std::vector<JsonVec3>> result;
     result.reserve(barrierssData.size());
@@ -101,7 +101,7 @@ LevelSerializationHelper::PrepareBarriersData(const std::unordered_map<std::stri
 }
 
 std::unordered_map<std::string, std::vector<glm::vec3>>
-LevelSerializationHelper::RestoreBarriers(const std::unordered_map<std::string, std::vector<JsonVec3>>& barriersData) const
+LevelSerializationHelper::RestoreBarriers(const std::unordered_map<std::string, std::vector<JsonVec3>>& barriersData)
 {
     std::unordered_map<std::string, std::vector<glm::vec3>> result;
     result.reserve(barriersData.size());
@@ -118,7 +118,7 @@ LevelSerializationHelper::RestoreBarriers(const std::unordered_map<std::string, 
 
     return result;
 }
-std::vector<JsonVec3> LevelSerializationHelper::PrepareSpawnPortalsData(const std::vector<glm::vec3>& spawnPortalsData) const
+std::vector<JsonVec3> LevelSerializationHelper::PrepareSpawnPortalsData(const std::vector<glm::vec3>& spawnPortalsData)
 {
     std::vector<JsonVec3> result;
     result.reserve(spawnPortalsData.size());
@@ -128,7 +128,7 @@ std::vector<JsonVec3> LevelSerializationHelper::PrepareSpawnPortalsData(const st
     return result;
 }
 
-std::vector<glm::vec3> LevelSerializationHelper::RestoreSpawnPortals(const std::vector<JsonVec3>& spawnPortalsData) const
+std::vector<glm::vec3> LevelSerializationHelper::RestoreSpawnPortals(const std::vector<JsonVec3>& spawnPortalsData)
 {
     std::vector<glm::vec3> result;
     result.reserve(spawnPortalsData.size());

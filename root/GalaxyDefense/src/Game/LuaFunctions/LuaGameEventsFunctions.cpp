@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/CommonCore/ThreadHelper.h"
+#include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
@@ -121,6 +122,10 @@ void LuaGameEventsFunctions::ProcessEvent(const LuaChangeGameModeEvent* sender, 
 void LuaGameEventsFunctions::ProcessEvent(
     const LevelAreaBBChangedLuaThreadEvent* sender, const LevelAreaBBChangedLuaThreadEvent::EventData_t& data)
 {
+    if (not mOwnerPtr->IsLuaStateValid()) {
+        return;
+    }
+
     const auto& levelBb2d = std::get<0>(data);
     const auto& halfExtent = levelBb2d.GetHalfExtent();
     const auto width = halfExtent.x * 2.0f;

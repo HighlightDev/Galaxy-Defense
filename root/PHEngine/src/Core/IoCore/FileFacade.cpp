@@ -97,11 +97,14 @@ std::string FileFacade::SeparateByFunctor(
 void FileFacade::WriteToFile() const
 {
     ext_assert(!mPathToFile.empty(), "FileFacade::WriteToFile: mPathToFile is empty");
+    if (mFileSrc.empty()) {
+        return;
+    }
+
     std::ofstream stream;
     stream.open(mPathToFile, std::fstream::out);
 
-    const std::string& result = ConcatFileSrc();
-    stream << result;
+    stream << (mFileSrc.size() > 1UL ? ConcatFileSrc() : mFileSrc.front());
 }
 
 std::string FileFacade::ConcatFileSrc() const

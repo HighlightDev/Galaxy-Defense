@@ -22,6 +22,10 @@ public:
 
     std::vector<std::string> GetLevelFilesNames() const;
 
+    std::map<std::string, std::filesystem::path> GetLevelPaths() const;
+
+    void SaveLevel(const std::string& levelName, const std::string& serializedLvl);
+
     static SaveSystem* GetInstance()
     {
         static SaveSystem instance;

@@ -12,25 +12,25 @@
 
 namespace Game {
 struct LevelSerializationHelper {
-    std::string DumpLevelToJsonString(const LevelData& levelData) const;
+    static std::string DumpLevelToJsonString(const LevelData& levelData);
 
-    LevelData RestoreLevelFromJsonString(const std::string& jsonStr) const;
+    static LevelData RestoreLevelFromJsonString(const std::string& jsonStr);
 
 private:
-    std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>
-    PrepareTowersData(const std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>& towersData) const;
+    static std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>
+    PrepareTowersData(const std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>& towersData);
 
-    std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>
-    RestoreTowers(const std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>& towersData) const;
+    static std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>>
+    RestoreTowers(const std::unordered_map<std::string, std::tuple<JsonVec3, JsonVec3>>& towersData);
 
-    std::unordered_map<std::string, std::vector<JsonVec3>>
-    PrepareBarriersData(const std::unordered_map<std::string, std::vector<glm::vec3>>& barrierssData) const;
+    static std::unordered_map<std::string, std::vector<JsonVec3>>
+    PrepareBarriersData(const std::unordered_map<std::string, std::vector<glm::vec3>>& barrierssData);
 
-    std::unordered_map<std::string, std::vector<glm::vec3>>
-    RestoreBarriers(const std::unordered_map<std::string, std::vector<JsonVec3>>& barriersData) const;
+    static std::unordered_map<std::string, std::vector<glm::vec3>>
+    RestoreBarriers(const std::unordered_map<std::string, std::vector<JsonVec3>>& barriersData);
 
-    std::vector<JsonVec3> PrepareSpawnPortalsData(const std::vector<glm::vec3>& spawnPortalsData) const;
+    static std::vector<JsonVec3> PrepareSpawnPortalsData(const std::vector<glm::vec3>& spawnPortalsData);
 
-    std::vector<glm::vec3> RestoreSpawnPortals(const std::vector<JsonVec3>& spawnPortalsData) const;
+    static std::vector<glm::vec3> RestoreSpawnPortals(const std::vector<JsonVec3>& spawnPortalsData);
 };
 } // namespace Game

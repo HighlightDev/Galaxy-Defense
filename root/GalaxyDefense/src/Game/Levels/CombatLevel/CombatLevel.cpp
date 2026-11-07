@@ -41,6 +41,7 @@
 #include "Game/Levels/ProceduralSpaceBackgroundBuilder.h"
 #include "Game/LootSystem/PandoraBox.h"
 #include "Game/LuaExecutors/LuaCombatLevelExecutor.h"
+#include "Game/SaveSystem/SaveSystem.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -102,16 +103,17 @@ void CombatLevel::PreLevelInit()
     mUiController->OnPreLevelInit();
 }
 
-LevelData CombatLevel::LoadLevelDataFromFile(const std::string& levelName) const
+LevelData CombatLevel::LoadLevelDataFromFile(const std::filesystem::path& levelPath) const
 {
+    const auto utf8PathStr = EngineUtility::PathToUtf8(levelPath);
+    LogInfo("CombatLevel::LoadLevelDataFromFile: path: ", utf8PathStr);
     const auto& sceneSp = mSceneWp.lock();
     ext_assert(sceneSp, "CombatLevel scene pointer is null in LoadLevelDataFromFile");
     FileFacade fileReader;
-    const bool fileLoaded = fileReader.OpenAndReadFile(levelName);
-    ext_assert(fileLoaded, "Failed to load combat level data file: " + levelName);
+    const bool fileLoaded = fileReader.OpenAndReadFile(levelPath);
+    ext_assert(fileLoaded, "Failed to load combat level data file: " + utf8PathStr);
     const auto& lvlJsonStr = fileReader.GetFileSrc().front();
-    LevelSerializationHelper lvlSerializationHelper;
-    const auto lvlData = lvlSerializationHelper.RestoreLevelFromJsonString(lvlJsonStr);
+    const auto lvlData = LevelSerializationHelper::RestoreLevelFromJsonString(lvlJsonStr);
     ext_assert(lvlData.isDataValid(), "CombatLevel loaded level data is invalid");
     return lvlData;
 }
@@ -121,7 +123,18 @@ void CombatLevel::CreateScene()
     const auto sceneSp = mSceneWp.lock();
     ext_assert(sceneSp, "CombatLevel scene pointer is null in CreateScene");
 
-    const auto levelData = LoadLevelDataFromFile("TestLevelName");
+    const auto levelDataJsonObj = nlohmann::json::parse(mLevelDataJson);
+    if (not levelDataJsonObj.contains("lvl_name")) {
+        throw std::exception("Wrong level data json structure, missing lvl_name");
+    }
+    auto levelName = levelDataJsonObj.at("lvl_name").get<std::string>();
+    auto levelPathsMap = SaveSystem::GetInstance()->GetLevelPaths();
+    auto foundIt = levelPathsMap.find(levelName);
+    if (foundIt == levelPathsMap.end()) {
+        throw std::exception((levelName + " doesn't exist in levels directory").c_str());
+    }
+
+    const auto levelData = LoadLevelDataFromFile(foundIt->second);
 
     const auto& a_sceneCenterActorDummy = sceneSp->GetActorByName("SceneCenterActorDummy");
     ext_assert(a_sceneCenterActorDummy, "CombatLevel scene center actor dummy not found");

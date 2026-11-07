@@ -26,6 +26,7 @@
 #include "Game/DataProviders/LevelDataProvider.h"
 #include "Game/Factories/SpawnPortalFactory.h"
 #include "Game/Levels/LevelSerializationHelper.h"
+#include "Game/SaveSystem/SaveSystem.h"
 
 #include <nlohmann/json.hpp>
 
@@ -39,15 +40,19 @@ namespace Game {
 LevelEditorController::LevelEditorController(const std::weak_ptr<Scene>& sceneWp)
     : mSceneWp(sceneWp)
     , mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent")))
-    , mTowersActor(std::make_shared<Actor>(
-          "TowersActor",
-          std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
-    , mGhostTowerActor(std::make_shared<Actor>(
-          "GhostTowerActor",
-          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
-    , mGhostPortalActor(std::make_shared<Actor>(
-          "GhostPortalActor",
-          std::make_shared<SceneComponent>("GhostPortalActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mTowersActor(
+          std::make_shared<Actor>(
+              "TowersActor",
+              std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mGhostTowerActor(
+          std::make_shared<Actor>(
+              "GhostTowerActor",
+              std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mGhostPortalActor(
+          std::make_shared<Actor>(
+              "GhostPortalActor",
+              std::make_shared<SceneComponent>(
+                  "GhostPortalActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mGhostPortalColorProperty(
           std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(2.0f, 8.0f, 2.0f), "p_colorIntensity"))
@@ -323,12 +328,8 @@ void LevelEditorController::ProcessEvent(
                 }
 
                 ext_assert(lvlData.isDataValid(), "Some data is missing. Level has to include name, routes and towers");
-                LevelSerializationHelper lvlSerialization;
-                const std::string& serializedPathJsonStr = lvlSerialization.DumpLevelToJsonString(lvlData);
-                FileFacade fileFacade;
-                fileFacade.OpenAndReadFile(lvlName);
-                fileFacade.RewriteSrc(serializedPathJsonStr);
-                fileFacade.WriteToFile();
+                const std::string& serializedJsonStr = LevelSerializationHelper::DumpLevelToJsonString(lvlData);
+                SaveSystem::GetInstance()->SaveLevel(lvlName, serializedJsonStr);
             } else if ("set_level_width" == doneAction) {
                 if (jsonObj.contains("width")) {
                     const auto width = nlohmann_utilities::GetFloatFromJson(jsonObj, "width");

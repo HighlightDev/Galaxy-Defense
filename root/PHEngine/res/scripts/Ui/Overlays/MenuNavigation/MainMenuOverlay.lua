@@ -31,12 +31,22 @@ local UiRectangle = require("Ui/Core/uiRectangle")
 local UiLabel = require("Ui/Core/uiLabel")
 local Styles = require("Ui/Common/styles")
 local UiTextSizing = require("Ui/Common/uiTextSizing")
+local json = require("Ui/Core/3rdparty/json")
 
 -- Galaxy-Defense-style main menu, modelled after UiDesign/menu-centered.jsx.
 -- The space skybox lives in MainMenuLvl.lua; this overlay only paints a darkening
 -- scrim plus HUD/title/menu/footer chrome on top of it. No full-screen background
 -- panel is used, so the skybox is still visible behind every UI element.
 MainMenuOverlay = {}
+
+local function getRandomLevelName(host)
+    local lvlListJson = _GetLevelsList(host)
+    local jsonObj = json.decode(lvlListJson)
+    if jsonObj["level_files"] ~= nil then
+        local levels = jsonObj["level_files"]
+        return levels[math.random(1, #levels)]
+    end
+end
 
 local Combat = Styles.Combat
 
@@ -228,7 +238,9 @@ function MainMenuOverlay:new(host)
         highlight = false,
         onClick = function()
             EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                "CombatLevel", "{}")
+                "CombatLevel", json.encode({
+                    lvl_name = getRandomLevelName(host)
+                }))
         end
     }, {
         id = "selectlevel",
