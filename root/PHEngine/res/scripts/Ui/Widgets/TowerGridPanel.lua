@@ -44,12 +44,7 @@ local FONT = "JetBrainsMono-VariableFont_wght"
 -- and DPS from the engine (Game::eMissileType metadata) once exposed to Lua — the values below are
 -- hard-coded mockup placeholders. Costs and the set of available towers already come from the engine.
 local TOWER_CARD_INFO = {
-    [MissileType.BOMB] = {
-        name = "РАКЕТА",
-        role = "ТЯЖЁЛАЯ",
-        dps = 60,
-        accent = Styles.Combat.danger
-    },
+    [MissileType.BOMB] = {name = "РАКЕТА", role = "ТЯЖЁЛАЯ", dps = 60, accent = Styles.Combat.danger},
     [MissileType.FREEZING_BOMB] = {
         name = "КРИО-РАКЕТА",
         role = "ЗАМЕДЛ.",
@@ -95,28 +90,16 @@ local TOWER_CARD_INFO = {
 }
 
 -- Build-palette section sub-plates ("подплашки", mockup sections "01 · БАШНИ" / "02 · БАРЬЕРЫ").
-local TOWER_SECTION = {
-    num = "01",
-    name = "БАШНИ"
-}
+local TOWER_SECTION = {num = "01", name = "БАШНИ"}
 -- Barrier build-palette section. Only the force-field barrier is exposed.
 -- Cost is a mockup placeholder (mirrors CB_BARRIERS_PAL.shield) until sourced from the engine.
-local BARRIER_SECTION = {
-    num = "02",
-    name = "БАРЬЕРЫ"
-}
-local BARRIER_CARD_INFO = {
-    name = "СИЛОВОЕ ПОЛЕ",
-    accent = Styles.Combat.lilac,
-    icon = "shield.png"
-}
+local BARRIER_SECTION = {num = "02", name = "БАРЬЕРЫ"}
+local BARRIER_CARD_INFO = {name = "СИЛОВОЕ ПОЛЕ", accent = Styles.Combat.lilac, icon = "shield.png"}
 
 -- Every tower type that has a card, in enum order. A card is created for each of them up front (widgets cannot be
 -- added after the overlay is initialized); cards of locked types are just kept hidden.
 local ALL_TOWER_TYPES = {}
-for value in pairs(TOWER_CARD_INFO) do
-    ALL_TOWER_TYPES[#ALL_TOWER_TYPES + 1] = value
-end
+for value in pairs(TOWER_CARD_INFO) do ALL_TOWER_TYPES[#ALL_TOWER_TYPES + 1] = value end
 table.sort(ALL_TOWER_TYPES)
 
 -- Missile type values array -> set (only the types that have a card).
@@ -124,9 +107,7 @@ local function toMissileTypeSet(missileTypes)
     local result = {}
     for _, value in ipairs(missileTypes or {}) do
         value = tonumber(value)
-        if TOWER_CARD_INFO[value] then
-            result[value] = true
-        end
+        if TOWER_CARD_INFO[value] then result[value] = true end
     end
     return result
 end
@@ -141,9 +122,7 @@ end
 -- keys as an array of [key, value] pairs.
 local function parseMissilePrices(pricePairs)
     local prices = {}
-    for _, pair in ipairs(pricePairs or {}) do
-        prices[tonumber(pair[1])] = tonumber(pair[2])
-    end
+    for _, pair in ipairs(pricePairs or {}) do prices[tonumber(pair[1])] = tonumber(pair[2]) end
     return prices
 end
 
@@ -164,9 +143,7 @@ local function fetchBarrierPerCellPrice(host)
     return price
 end
 
-TowerGridPanel = {
-    DEFAULT_BUTTON_RADIUS = 6
-}
+TowerGridPanel = {DEFAULT_BUTTON_RADIUS = 6}
 
 -- The towers list scrolls: only this many cards are shown at once, the rest are reachable by scrolling. Keeps the
 -- palette a fixed height so it always fits on screen no matter how many weapon types exist.
@@ -318,9 +295,7 @@ function TowerGridPanel:new(host, overlay, config)
         obj.towerCards[#obj.towerCards + 1] = card
 
         card.bg:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-            if card.locked or not card.available then
-                return
-            end -- not affordable: keep dimmed, no hover highlight
+            if card.locked or not card.available then return end -- not affordable: keep dimmed, no hover highlight
             if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
                 card.bg:setColorHexValue(Styles.Combat.chipHoverColor)
             else
@@ -329,13 +304,12 @@ function TowerGridPanel:new(host, overlay, config)
         end)
 
         card.bg:subscribeOnMouseInputClickedCallback(function()
-            if card.locked or not card.available then
-                return
-            end -- not affordable / not unlocked: ignore clicks
+            if card.locked or not card.available then return end -- not affordable / not unlocked: ignore clicks
             obj.isPlacementMode = true
             obj.hideCreatePanel()
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY,
-                "CombatLevelEvents", json.encode({
+                                                      "CombatLevelEvents", json.encode(
+                                                          {
                     action = "ghost_tower_visibility",
                     tower_type = tostring(missileType),
                     visible = true
@@ -372,9 +346,7 @@ function TowerGridPanel:new(host, overlay, config)
     overlay:addWidget(obj.barrierCard.costLabel)
 
     obj.barrierCard.bg:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if obj.barrierCard.locked then
-            return
-        end -- not affordable: keep dimmed, no hover highlight
+        if obj.barrierCard.locked then return end -- not affordable: keep dimmed, no hover highlight
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
             obj.barrierCard.bg:setColorHexValue(Styles.Combat.chipHoverColor)
         else
@@ -383,43 +355,29 @@ function TowerGridPanel:new(host, overlay, config)
     end)
 
     obj.barrierCard.bg:subscribeOnMouseInputClickedCallback(function()
-        if obj.barrierCard.locked then
-            return
-        end -- not affordable: ignore clicks
+        if obj.barrierCard.locked then return end -- not affordable: ignore clicks
         obj.isPlacementMode = true
         obj.hideCreatePanel()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-            json.encode({
-                action = "barrier_placement_visibility",
-                visible = true
-            }))
+                                                  json.encode({action = "barrier_placement_visibility", visible = true}))
     end)
 
     obj.closeTowerCreatePanelButton = UiImageButton:new(host, overlay, "closeTowerCreatePanelButton")
     overlay:addCompoundWidget(obj.closeTowerCreatePanelButton)
 
     -- show / hide the tower-create popup grid
-    obj.hideCreatePanel = function()
-        obj.gridBackground:setIsVisible(false)
-    end
+    obj.hideCreatePanel = function() obj.gridBackground:setIsVisible(false) end
     obj.showCreatePanel = function()
         obj.isPlacementMode = false
         obj.gridBackground:setIsVisible(true)
         -- showing the popup makes all its children visible on the engine side: re-hide the locked tower cards
         for _, card in ipairs(obj.towerCards) do
-            if not card.available then
-                forceWidgetVisibility(card.bg, false)
-            end
+            if not card.available then forceWidgetVisibility(card.bg, false) end
         end
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-            json.encode({
-                action = "barrier_placement_visibility",
-                visible = false
-            }))
+                                                  json.encode({action = "barrier_placement_visibility", visible = false}))
     end
-    obj.isCreatePanelVisible = function()
-        return obj.gridBackground:getIsVisible()
-    end
+    obj.isCreatePanelVisible = function() return obj.gridBackground:getIsVisible() end
     obj.toggleCreatePanel = function()
         if obj.gridBackground:getIsVisible() then
             obj.hideCreatePanel()
@@ -429,9 +387,7 @@ function TowerGridPanel:new(host, overlay, config)
     end
 
     -- Event handlers
-    obj.createObjectButton:subscribeOnMouseInputClickedCallback(function()
-        obj.showCreatePanel()
-    end)
+    obj.createObjectButton:subscribeOnMouseInputClickedCallback(function() obj.showCreatePanel() end)
 
     obj.createObjectButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -444,9 +400,7 @@ function TowerGridPanel:new(host, overlay, config)
     obj.towerUpgradesButton:subscribeOnMouseInputClickedCallback(function()
         obj.hideCreatePanel()
         EventsHelper:sendPauseGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
-        if onTowerUpgradesButtonClicked then
-            onTowerUpgradesButtonClicked()
-        end
+        if onTowerUpgradesButtonClicked then onTowerUpgradesButtonClicked() end
     end)
 
     obj.towerUpgradesButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
@@ -462,15 +416,9 @@ function TowerGridPanel:new(host, overlay, config)
         obj.hideCreatePanel()
         obj.closeTowerCreatePanelButton:setButtonColorHexValue(Styles.Combat.chipColor)
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-            json.encode({
-                action = "ghost_tower_visibility",
-                visible = false
-            }))
+                                                  json.encode({action = "ghost_tower_visibility", visible = false}))
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-            json.encode({
-                action = "barrier_placement_visibility",
-                visible = false
-            }))
+                                                  json.encode({action = "barrier_placement_visibility", visible = false}))
     end)
 
     obj.closeTowerCreatePanelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
@@ -486,40 +434,29 @@ function TowerGridPanel:new(host, overlay, config)
     return setmetatable(obj, self)
 end
 
-function TowerGridPanel:subscribeOnLuaProxiesReady(callback)
-    self.luaProxiesReadyCallback = callback
-end
+function TowerGridPanel:subscribeOnLuaProxiesReady(callback) self.luaProxiesReadyCallback = callback end
 
 -- Toggle the bottom control bar (hammer / blueprint). Children follow the parent's visibility, so hiding
 -- the background tile hides the whole bar. The create popup is anchored to the canvas, not this bar, so it
 -- is unaffected.
-function TowerGridPanel:setControlBarVisible(isVisible)
-    self.backgroundRect:setIsVisible(isVisible)
-end
+function TowerGridPanel:setControlBarVisible(isVisible) self.backgroundRect:setIsVisible(isVisible) end
 
 function TowerGridPanel:onPreCompoundWidgetInitialize()
     self.widgetName = self.backgroundRect.widgetName
 
-    if self.luaProxiesReadyCallback ~= nil then
-        self.luaProxiesReadyCallback(self.host)
-    end
+    if self.luaProxiesReadyCallback ~= nil then self.luaProxiesReadyCallback(self.host) end
 end
 
-function TowerGridPanel:onCompoundWidgetInitialize()
-end
+function TowerGridPanel:onCompoundWidgetInitialize() end
 
 -- The create popup stays at its anchored position (centered above the bottom panel); it no longer
 -- follows the cursor.
 function TowerGridPanel:update(host, deltaTimeSec)
     -- Safety net for the engine-side visibility propagation: if showing the popup was applied after the card hide,
     -- a locked card comes back visible via the replicator — hide it again.
-    if not self.isLayoutReady or not self.gridBackground:getIsVisible() then
-        return
-    end
+    if not self.isLayoutReady or not self.gridBackground:getIsVisible() then return end
     for _, card in ipairs(self.towerCards) do
-        if not card.available and card.bg:getIsVisible() then
-            forceWidgetVisibility(card.bg, false)
-        end
+        if not card.available and card.bg:getIsVisible() then forceWidgetVisibility(card.bg, false) end
     end
 end
 
@@ -527,27 +464,21 @@ end
 -- crystal count changes.
 local function updateCardAffordability(card, crystalsCount)
     local locked = card.cost > crystalsCount
-    if card.locked == locked then
-        return
-    end
+    if card.locked == locked then return end
     card.locked = locked
     local opacity = locked and 0.4 or 1.0
     card.bg:setOpacity(opacity)
     card.accentBar:setOpacity(opacity)
     card.icon:setOpacity(opacity)
     card.nameLabel:setOpacity(opacity)
-    if card.dpsLabel then
-        card.dpsLabel:setOpacity(opacity)
-    end
+    if card.dpsLabel then card.dpsLabel:setOpacity(opacity) end
     card.costLabel:setOpacity(opacity)
     card.costLabel:setTextColorHexValue(locked and Styles.Combat.danger or Styles.Combat.cyanGlow)
 end
 
 function TowerGridPanel:updateAffordability(crystalsCount)
     self.crystalsCount = crystalsCount
-    for _, card in ipairs(self.towerCards) do
-        updateCardAffordability(card, crystalsCount)
-    end
+    for _, card in ipairs(self.towerCards) do updateCardAffordability(card, crystalsCount) end
     updateCardAffordability(self.barrierCard, crystalsCount)
 end
 
@@ -564,7 +495,7 @@ function TowerGridPanel:setupLayout(canvasName)
 
     self.backgroundRect:setParent(host, canvasName, canvasName)
     self.backgroundRect:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        canvasName)
+                                  canvasName)
     self.backgroundRect:setWidth(panelWidth)
     self.backgroundRect:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, canvasName, 0)
     self.backgroundRect:setColorHexValue(Styles.Combat.panelColor)
@@ -597,7 +528,7 @@ function TowerGridPanel:setupLayout(canvasName)
     -- Arsenal palette is docked to the left edge (mockup left shell), offset to clear the side icon dock.
     self.gridBackground:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, canvasName, 120)
     self.gridBackground:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        canvasName, 0)
+                                  canvasName, 0)
     self.gridBackground:setWidth(gridWidth)
     self.gridBackground:setHeight(gridHeight)
     self.gridBackground:setColorHexValue(Styles.Combat.panelColor)
@@ -608,9 +539,9 @@ function TowerGridPanel:setupLayout(canvasName)
 
     self.gridBackgroundHeader:setParent(host, canvasName, self.gridBackground.widgetName)
     self.gridBackgroundHeader:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-        self.gridBackground.widgetName)
+                                        self.gridBackground.widgetName)
     self.gridBackgroundHeader:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
+                                        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
     self.gridBackgroundHeader:setWidth(gridWidth)
     self.gridBackgroundHeader:setHeight(gridHeader)
     self.gridBackgroundHeader:setColorHexValue(Styles.Combat.panelHeaderColor)
@@ -621,9 +552,9 @@ function TowerGridPanel:setupLayout(canvasName)
     -- Header title.
     self.gridTitleLabel:setParent(host, canvasName, self.gridBackgroundHeader.widgetName)
     self.gridTitleLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-        self.gridBackgroundHeader.widgetName, 12)
+                                  self.gridBackgroundHeader.widgetName, 12)
     self.gridTitleLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.gridBackgroundHeader.widgetName, 0)
+                                  self.gridBackgroundHeader.widgetName, 0)
     self.gridTitleLabel:setWidth(gridWidth - 50)
     self.gridTitleLabel:setHeight(gridHeader)
     self.gridTitleLabel:setFontSize(12)
@@ -643,9 +574,9 @@ function TowerGridPanel:setupLayout(canvasName)
     -- Towers sub-plate header ("01 · БАШНИ"), docked below the main arsenal header.
     self.towerSectionHeader:setParent(host, canvasName, self.gridBackground.widgetName)
     self.towerSectionHeader:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
+                                      UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
     self.towerSectionHeader:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-        self.gridBackgroundHeader.widgetName, cardPad)
+                                      self.gridBackgroundHeader.widgetName, cardPad)
     self.towerSectionHeader:setWidth(cardWidth)
     self.towerSectionHeader:setHeight(self.sectionHeader)
     self.towerSectionHeader:setColorHexValue(Styles.Combat.panelHeaderColor)
@@ -654,9 +585,9 @@ function TowerGridPanel:setupLayout(canvasName)
 
     self.towerSectionLabel:setParent(host, canvasName, self.towerSectionHeader.widgetName)
     self.towerSectionLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-        self.towerSectionHeader.widgetName, 10)
+                                     self.towerSectionHeader.widgetName, 10)
     self.towerSectionLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.towerSectionHeader.widgetName, 0)
+                                     self.towerSectionHeader.widgetName, 0)
     self.towerSectionLabel:setWidth(cardWidth - 50)
     self.towerSectionLabel:setHeight(self.sectionHeader)
     self.towerSectionLabel:setFontSize(11)
@@ -668,9 +599,9 @@ function TowerGridPanel:setupLayout(canvasName)
 
     self.towerSectionCountLabel:setParent(host, canvasName, self.towerSectionHeader.widgetName)
     self.towerSectionCountLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-        self.towerSectionHeader.widgetName, 12)
+                                          self.towerSectionHeader.widgetName, 12)
     self.towerSectionCountLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        UiItemBase.UiAnchorType.VERTICAL_CENTER, self.towerSectionHeader.widgetName, 0)
+                                          UiItemBase.UiAnchorType.VERTICAL_CENTER, self.towerSectionHeader.widgetName, 0)
     self.towerSectionCountLabel:setWidth(40)
     self.towerSectionCountLabel:setHeight(self.sectionHeader)
     self.towerSectionCountLabel:setFontSize(11)
@@ -683,9 +614,9 @@ function TowerGridPanel:setupLayout(canvasName)
     -- Faded divider under the towers heading (mockup .cb-palette section separators).
     self.towerSectionDivider:setParent(host, canvasName, self.gridBackground.widgetName)
     self.towerSectionDivider:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
+                                       UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
     self.towerSectionDivider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-        self.towerSectionHeader.widgetName, 2)
+                                       self.towerSectionHeader.widgetName, 2)
     self.towerSectionDivider:setWidth(cardWidth)
     self.towerSectionDivider:setHeight(4)
     self.towerSectionDivider:setColorHexValue(Styles.Combat.cyan)
@@ -697,9 +628,9 @@ function TowerGridPanel:setupLayout(canvasName)
     -- Scrollable tower-card list: fixed height, cards stack inside and scroll (mouse wheel) when they overflow.
     self.towerCardsScrollList:setParent(host, canvasName, self.gridBackground.widgetName)
     self.towerCardsScrollList:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
+                                        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
     self.towerCardsScrollList:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-        self.towerSectionHeader.widgetName, cardSpacing)
+                                        self.towerSectionHeader.widgetName, cardSpacing)
     self.towerCardsScrollList:setWidth(cardWidth)
     self.towerCardsScrollList:setHeight(towerListHeight)
     self.towerCardsScrollList:setSpacing(cardSpacing)
@@ -733,7 +664,7 @@ function TowerGridPanel:setupLayout(canvasName)
         card.icon:setParent(host, canvasName, card.bg.widgetName)
         card.icon:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, card.bg.widgetName, 16)
         card.icon:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-            card.bg.widgetName, 0)
+                            card.bg.widgetName, 0)
         card.icon:setWidth(30)
         card.icon:setHeight(30)
         card.icon:setTextureSource(imageSource)
@@ -766,7 +697,7 @@ function TowerGridPanel:setupLayout(canvasName)
         card.costLabel:setParent(host, canvasName, card.bg.widgetName)
         card.costLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, card.bg.widgetName, 14)
         card.costLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-            card.bg.widgetName, 0)
+                                 card.bg.widgetName, 0)
         card.costLabel:setWidth(60)
         card.costLabel:setHeight(18)
         card.costLabel:setFontSize(13)
@@ -780,9 +711,9 @@ function TowerGridPanel:setupLayout(canvasName)
     -- Barriers sub-plate header ("02 · БАРЬЕРЫ"), docked below the scrollable tower list.
     self.barrierSectionHeader:setParent(host, canvasName, self.gridBackground.widgetName)
     self.barrierSectionHeader:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
+                                        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
     self.barrierSectionHeader:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-        self.towerCardsScrollList.widgetName, self.sectionGap)
+                                        self.towerCardsScrollList.widgetName, self.sectionGap)
     self.barrierSectionHeader:setWidth(cardWidth)
     self.barrierSectionHeader:setHeight(self.sectionHeader)
     self.barrierSectionHeader:setColorHexValue(Styles.Combat.panelHeaderColor)
@@ -791,9 +722,9 @@ function TowerGridPanel:setupLayout(canvasName)
 
     self.barrierSectionLabel:setParent(host, canvasName, self.barrierSectionHeader.widgetName)
     self.barrierSectionLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-        self.barrierSectionHeader.widgetName, 10)
+                                       self.barrierSectionHeader.widgetName, 10)
     self.barrierSectionLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.barrierSectionHeader.widgetName, 0)
+                                       self.barrierSectionHeader.widgetName, 0)
     self.barrierSectionLabel:setWidth(cardWidth - 50)
     self.barrierSectionLabel:setHeight(self.sectionHeader)
     self.barrierSectionLabel:setFontSize(11)
@@ -805,9 +736,10 @@ function TowerGridPanel:setupLayout(canvasName)
 
     self.barrierSectionCountLabel:setParent(host, canvasName, self.barrierSectionHeader.widgetName)
     self.barrierSectionCountLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-        self.barrierSectionHeader.widgetName, 12)
+                                            self.barrierSectionHeader.widgetName, 12)
     self.barrierSectionCountLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        UiItemBase.UiAnchorType.VERTICAL_CENTER, self.barrierSectionHeader.widgetName, 0)
+                                            UiItemBase.UiAnchorType.VERTICAL_CENTER,
+                                            self.barrierSectionHeader.widgetName, 0)
     self.barrierSectionCountLabel:setWidth(40)
     self.barrierSectionCountLabel:setHeight(self.sectionHeader)
     self.barrierSectionCountLabel:setFontSize(11)
@@ -820,9 +752,9 @@ function TowerGridPanel:setupLayout(canvasName)
     -- Faded divider under the barriers heading (matches the towers one).
     self.barrierSectionDivider:setParent(host, canvasName, self.gridBackground.widgetName)
     self.barrierSectionDivider:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
+                                         UiItemBase.UiAnchorType.HORIZONTAL_CENTER, self.gridBackground.widgetName)
     self.barrierSectionDivider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-        self.barrierSectionHeader.widgetName, 2)
+                                         self.barrierSectionHeader.widgetName, 2)
     self.barrierSectionDivider:setWidth(cardWidth)
     self.barrierSectionDivider:setHeight(4)
     self.barrierSectionDivider:setColorHexValue(Styles.Combat.lilac)
@@ -836,9 +768,9 @@ function TowerGridPanel:setupLayout(canvasName)
     local barrierInfo = barrierCard.info
     barrierCard.bg:setParent(host, canvasName, self.gridBackground.widgetName)
     barrierCard.bg:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        self.gridBackground.widgetName)
+                             self.gridBackground.widgetName)
     barrierCard.bg:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-        self.barrierSectionHeader.widgetName, cardSpacing)
+                             self.barrierSectionHeader.widgetName, cardSpacing)
     barrierCard.bg:setWidth(cardWidth)
     barrierCard.bg:setHeight(cardHeight)
     barrierCard.bg:setColorHexValue(Styles.Combat.chipColor)
@@ -849,11 +781,11 @@ function TowerGridPanel:setupLayout(canvasName)
 
     barrierCard.accentBar:setParent(host, canvasName, barrierCard.bg.widgetName)
     barrierCard.accentBar:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-        barrierCard.bg.widgetName, 0)
+                                    barrierCard.bg.widgetName, 0)
     barrierCard.accentBar:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, barrierCard.bg.widgetName,
-        0)
+                                    0)
     barrierCard.accentBar:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-        barrierCard.bg.widgetName, 0)
+                                    barrierCard.bg.widgetName, 0)
     barrierCard.accentBar:setWidth(4)
     barrierCard.accentBar:setColorHexValue(barrierInfo.accent)
     barrierCard.accentBar:setZOrder(4)
@@ -861,7 +793,7 @@ function TowerGridPanel:setupLayout(canvasName)
     barrierCard.icon:setParent(host, canvasName, barrierCard.bg.widgetName)
     barrierCard.icon:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, barrierCard.bg.widgetName, 16)
     barrierCard.icon:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        barrierCard.bg.widgetName, 0)
+                               barrierCard.bg.widgetName, 0)
     barrierCard.icon:setWidth(30)
     barrierCard.icon:setHeight(30)
     barrierCard.icon:setTextureSource(barrierInfo.icon)
@@ -872,9 +804,9 @@ function TowerGridPanel:setupLayout(canvasName)
 
     barrierCard.nameLabel:setParent(host, canvasName, barrierCard.bg.widgetName)
     barrierCard.nameLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-        barrierCard.bg.widgetName, 58)
+                                    barrierCard.bg.widgetName, 58)
     barrierCard.nameLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        barrierCard.bg.widgetName, 0)
+                                    barrierCard.bg.widgetName, 0)
     barrierCard.nameLabel:setWidth(cardWidth - 130)
     barrierCard.nameLabel:setHeight(18)
     barrierCard.nameLabel:setFontSize(14)
@@ -886,9 +818,9 @@ function TowerGridPanel:setupLayout(canvasName)
 
     barrierCard.costLabel:setParent(host, canvasName, barrierCard.bg.widgetName)
     barrierCard.costLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-        barrierCard.bg.widgetName, 14)
+                                    barrierCard.bg.widgetName, 14)
     barrierCard.costLabel:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        barrierCard.bg.widgetName, 0)
+                                    barrierCard.bg.widgetName, 0)
     barrierCard.costLabel:setWidth(60)
     barrierCard.costLabel:setHeight(18)
     barrierCard.costLabel:setFontSize(13)
@@ -906,9 +838,9 @@ function TowerGridPanel:setupLayout(canvasName)
     self.closeTowerCreatePanelButton:setImageTextureSource("cancel.png")
     self.closeTowerCreatePanelButton:setIsBackgroundVisible(false)
     self.closeTowerCreatePanelButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-        self.gridBackgroundHeader.widgetName, 0)
+                                               self.gridBackgroundHeader.widgetName, 0)
     self.closeTowerCreatePanelButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-        self.gridBackgroundHeader.widgetName, 0)
+                                               self.gridBackgroundHeader.widgetName, 0)
     self.closeTowerCreatePanelButton:setZOrder(4)
 
     self.isLayoutReady = true
@@ -918,24 +850,14 @@ function TowerGridPanel:handleBroadcastSwitchModeIdle(host)
     self.isPlacementMode = false
     self.hideCreatePanel()
     EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-        json.encode({
-            action = "ghost_tower_visibility",
-            visible = false
-        }))
+                                              json.encode({action = "ghost_tower_visibility", visible = false}))
     EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.PUSH_ANYWAY, "CombatLevelEvents",
-        json.encode({
-            action = "barrier_placement_visibility",
-            visible = false
-        }))
+                                              json.encode({action = "barrier_placement_visibility", visible = false}))
 end
 
 function TowerGridPanel:getAvailableTowerCount()
     local count = 0
-    for _, card in ipairs(self.towerCards) do
-        if card.available then
-            count = count + 1
-        end
-    end
+    for _, card in ipairs(self.towerCards) do if card.available then count = count + 1 end end
     return count
 end
 
@@ -950,9 +872,7 @@ function TowerGridPanel:updateAvailableMissileTypes(avlMissileTypes, prices)
         card.cost = priceByType[card.missileValue] or math.huge
     end
 
-    if not self.isLayoutReady then
-        return
-    end
+    if not self.isLayoutReady then return end
 
     local availableCount = self:getAvailableTowerCount()
     local towerListHeight, gridHeight = calcPaletteHeights(self, availableCount)
@@ -966,9 +886,7 @@ function TowerGridPanel:updateAvailableMissileTypes(avlMissileTypes, prices)
         card.costLabel:setText(card.cost == math.huge and "—" or tostring(card.cost))
         -- a hidden popup re-shows its children on open (showCreatePanel re-hides the locked ones), so only an open
         -- popup needs its cards toggled right away
-        if isPopupVisible then
-            forceWidgetVisibility(card.bg, card.available)
-        end
+        if isPopupVisible then forceWidgetVisibility(card.bg, card.available) end
         if self.crystalsCount ~= nil then
             card.locked = nil -- the cost may have changed: force re-applying the locked visual
             updateCardAffordability(card, self.crystalsCount)

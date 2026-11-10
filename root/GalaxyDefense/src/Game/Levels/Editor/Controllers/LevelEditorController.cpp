@@ -40,19 +40,15 @@ namespace Game {
 LevelEditorController::LevelEditorController(const std::weak_ptr<Scene>& sceneWp)
     : mSceneWp(sceneWp)
     , mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent")))
-    , mTowersActor(
-          std::make_shared<Actor>(
-              "TowersActor",
-              std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
-    , mGhostTowerActor(
-          std::make_shared<Actor>(
-              "GhostTowerActor",
-              std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
-    , mGhostPortalActor(
-          std::make_shared<Actor>(
-              "GhostPortalActor",
-              std::make_shared<SceneComponent>(
-                  "GhostPortalActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mTowersActor(std::make_shared<Actor>(
+          "TowersActor",
+          std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mGhostTowerActor(std::make_shared<Actor>(
+          "GhostTowerActor",
+          std::make_shared<SceneComponent>("GhostTowerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
+    , mGhostPortalActor(std::make_shared<Actor>(
+          "GhostPortalActor",
+          std::make_shared<SceneComponent>("GhostPortalActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f), true)))
     , mGhostTowerBlendColorProperty(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "p_blendColor"))
     , mGhostPortalColorProperty(
           std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(2.0f, 8.0f, 2.0f), "p_colorIntensity"))

@@ -32,8 +32,8 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Game/Actors/GravityBombMissileActor.h"
-#include "Game/Controllers/AiActorController.h"
 #include "Game/Constants/GameConstants.h"
+#include "Game/Controllers/AiActorController.h"
 #include "Game/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 using namespace Resources;

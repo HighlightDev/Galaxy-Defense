@@ -86,9 +86,7 @@ namespace std {
 using namespace Graphics::OpenGL;
 std::size_t hash<ShaderParams>::operator()(const ShaderParams& k) const
 {
-    const auto fileHash = [&k](const eShaderType shaderType) {
-        return std::filesystem::hash_value(k.GetShaderFile(shaderType));
-    };
+    const auto fileHash = [&k](const eShaderType shaderType) { return std::filesystem::hash_value(k.GetShaderFile(shaderType)); };
 
     const auto shaderCodeSnippetsHash = std::accumulate(
         k.ShaderCodeSnippets.cbegin(),

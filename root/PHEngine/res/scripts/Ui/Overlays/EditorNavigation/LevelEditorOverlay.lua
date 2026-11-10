@@ -32,18 +32,9 @@ local LabelButton = require("Ui/Widgets/LabelButton")
 local EventsHelper = require("Ui/Core/eventsHelper")
 local Styles = require("Ui/Common/styles")
 
-EditModeType = {
-    IDLE = 0,
-    EDIT_TOWERS = 1,
-    EDIT_BARRIERS = 2,
-    EDIT_DESTINATION_POINT = 3,
-    EDIT_SPAWN_PORTALS = 4
-}
+EditModeType = {IDLE = 0, EDIT_TOWERS = 1, EDIT_BARRIERS = 2, EDIT_DESTINATION_POINT = 3, EDIT_SPAWN_PORTALS = 4}
 
-local EditorContainerState = {
-    Expanded = 0,
-    Hided = 1
-}
+local EditorContainerState = {Expanded = 0, Hided = 1}
 
 LevelEditorOverlay = {
     overlayName = "LevelEditorOverlay",
@@ -57,16 +48,10 @@ local function getRandomColor()
     local g = math.random()
     local b = math.random()
 
-    return {
-        r = r,
-        g = g,
-        b = b
-    }
+    return {r = r, g = g, b = b}
 end
 
-local function generateLvlName()
-    return os.date("%Y_%m_%d_%H_%M_%S")
-end
+local function generateLvlName() return os.date("%Y_%m_%d_%H_%M_%S") end
 
 BarrierName = 1
 
@@ -75,9 +60,7 @@ function LevelEditorOverlay:new(host)
     local windowHeight = _GetWindowHeight(host)
 
     local canvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "EditorCanvas")
-    canvas:subscribeOnLuaProxyReady(function(host)
-        _InitializeCanvasInputSystem(host, canvas.luaProxyId)
-    end)
+    canvas:subscribeOnLuaProxyReady(function(host) _InitializeCanvasInputSystem(host, canvas.luaProxyId) end)
     local overlay = UiOverlay:createBackgroundOverlay(host, LevelEditorOverlay.overlayName, canvas)
 
     local editorContainer = UiRectangle:new(host, "EditorPanelContainer")
@@ -87,18 +70,18 @@ function LevelEditorOverlay:new(host)
     overlay:addCompoundWidget(changeContainerStateButton)
 
     local editStationSocketsButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName,
-        "EditStationSocketsButton")
+                                                     "EditStationSocketsButton")
     overlay:addCompoundWidget(editStationSocketsButton)
 
     local editBarriersButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName, "EditBarriersButton")
     overlay:addCompoundWidget(editBarriersButton)
 
     local editDestinationButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName,
-        "EditDestinationButton")
+                                                  "EditDestinationButton")
     overlay:addCompoundWidget(editDestinationButton)
 
     local editSpawnPortalsButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName,
-        "EditSpawnPortalsButton")
+                                                   "EditSpawnPortalsButton")
     overlay:addCompoundWidget(editSpawnPortalsButton)
 
     local undoLastActionButton = ImageButton:new(host, overlay, "UndoLastActionButton")
@@ -127,7 +110,8 @@ function LevelEditorOverlay:new(host)
                                         EditorContainerState.Hided or EditorContainerState.Expanded
 
         changeContainerStateButton:setRotationDegrees(math.fmod(
-            changeContainerStateButton:getImageRotationDegrees() + 180.0, 360.0))
+                                                          changeContainerStateButton:getImageRotationDegrees() + 180.0,
+                                                          360.0))
         local buttonsVisible = self.editorContainerState == EditorContainerState.Expanded
         editStationSocketsButton:setIsVisible(buttonsVisible)
         editBarriersButton:setIsVisible(buttonsVisible)
@@ -150,7 +134,7 @@ function LevelEditorOverlay:new(host)
         self.currentEditModeType = EditModeType.EDIT_TOWERS == self.currentEditModeType and EditModeType.IDLE or
                                        EditModeType.EDIT_TOWERS
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            self.currentEditModeType)
+                                                       self.currentEditModeType)
     end)
 
     editStationSocketsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
@@ -165,7 +149,7 @@ function LevelEditorOverlay:new(host)
         self.currentEditModeType = EditModeType.EDIT_BARRIERS == self.currentEditModeType and EditModeType.IDLE or
                                        EditModeType.EDIT_BARRIERS
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            self.currentEditModeType)
+                                                       self.currentEditModeType)
     end)
     editBarriersButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -180,7 +164,7 @@ function LevelEditorOverlay:new(host)
             EditModeType.EDIT_DESTINATION_POINT == self.currentEditModeType and EditModeType.IDLE or
                 EditModeType.EDIT_DESTINATION_POINT
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            self.currentEditModeType)
+                                                       self.currentEditModeType)
     end)
     editDestinationButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -194,7 +178,7 @@ function LevelEditorOverlay:new(host)
         self.currentEditModeType = EditModeType.EDIT_SPAWN_PORTALS == self.currentEditModeType and EditModeType.IDLE or
                                        EditModeType.EDIT_SPAWN_PORTALS
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            self.currentEditModeType)
+                                                       self.currentEditModeType)
     end)
     editSpawnPortalsButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -206,17 +190,13 @@ function LevelEditorOverlay:new(host)
 
     undoLastActionButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            "EditorLevelEvents", json.encode({
-                action = "undo"
-            }))
+                                                  "EditorLevelEvents", json.encode({action = "undo"}))
     end)
 
     saveLevelButton:subscribeOnMouseInputClickedCallback(function()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            "EditorLevelEvents", json.encode({
-                action = "save",
-                name = generateLvlName()
-            }))
+                                                  "EditorLevelEvents",
+                                                  json.encode({action = "save", name = generateLvlName()}))
     end)
     saveLevelButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -229,15 +209,11 @@ function LevelEditorOverlay:new(host)
     newBarrierButton:subscribeOnMouseInputClickedCallback(function()
         local newBarrierColor = getRandomColor()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            "EditorLevelEvents", json.encode({
-                action = "new_barrier",
-                barrier_name = "barrier_" .. tostring(BarrierName),
-                barrier_color = {
-                    r = newBarrierColor.r,
-                    g = newBarrierColor.g,
-                    b = newBarrierColor.b
-                }
-            }))
+                                                  "EditorLevelEvents", json.encode({
+            action = "new_barrier",
+            barrier_name = "barrier_" .. tostring(BarrierName),
+            barrier_color = {r = newBarrierColor.r, g = newBarrierColor.g, b = newBarrierColor.b}
+        }))
         BarrierName = BarrierName + 1
     end)
     newBarrierButton:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
@@ -250,7 +226,7 @@ function LevelEditorOverlay:new(host)
 
     overlay.onWindowSizeChanged = function(width, height)
         assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number",
-            debug.traceback())
+               debug.traceback())
 
         editorContainer:setHeight(height * 0.25)
 
@@ -294,9 +270,9 @@ function LevelEditorOverlay:new(host)
 
         levelWidthLabel:setParent(host, canvas.widgetName, editorContainer.widgetName)
         levelWidthLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            editorContainer.widgetName, 10)
+                                  editorContainer.widgetName, 10)
         levelWidthLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, editorContainer.widgetName,
-            10)
+                                  10)
         levelWidthLabel:setHeight(30.0)
         levelWidthLabel:setWidth(windowWidth * 0.25)
         levelWidthLabel:setText("Level width")
@@ -307,9 +283,9 @@ function LevelEditorOverlay:new(host)
 
         levelWidthSlider:setParent(host, canvas.widgetName, editorContainer.widgetName)
         levelWidthSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            editorContainer.widgetName, 10)
+                                   editorContainer.widgetName, 10)
         levelWidthSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            levelWidthLabel.widgetName, 10.0)
+                                   levelWidthLabel.widgetName, 10.0)
         levelWidthSlider:setHeight(30.0)
         levelWidthSlider:setWidth(windowWidth * 0.25)
         levelWidthSlider:setZOrder(2)
@@ -325,17 +301,15 @@ function LevelEditorOverlay:new(host)
         levelWidthSlider:enableSliderMouseInputReceiver(host)
         levelWidthSlider:subscribeOnSliderValueChangedCallback(function(newValue)
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                "EditorLevelEvents", json.encode({
-                    action = "set_level_width",
-                    width = newValue
-                }))
+                                                      "EditorLevelEvents",
+                                                      json.encode({action = "set_level_width", width = newValue}))
         end)
 
         levelHeightLabel:setParent(host, canvas.widgetName, editorContainer.widgetName)
         levelHeightLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            editorContainer.widgetName, 10)
+                                   editorContainer.widgetName, 10)
         levelHeightLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            levelWidthSlider.widgetName, 20)
+                                   levelWidthSlider.widgetName, 20)
         levelHeightLabel:setHeight(30.0)
         levelHeightLabel:setWidth(windowWidth * 0.25)
         levelHeightLabel:setText("Level length")
@@ -346,9 +320,9 @@ function LevelEditorOverlay:new(host)
 
         levelLengthSlider:setParent(host, canvas.widgetName, editorContainer.widgetName)
         levelLengthSlider:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            editorContainer.widgetName, 10)
+                                    editorContainer.widgetName, 10)
         levelLengthSlider:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            levelHeightLabel.widgetName, 10.0)
+                                    levelHeightLabel.widgetName, 10.0)
         levelLengthSlider:setHeight(30.0)
         levelLengthSlider:setWidth(windowWidth * 0.25)
         levelLengthSlider:setZOrder(2)
@@ -364,10 +338,8 @@ function LevelEditorOverlay:new(host)
         levelLengthSlider:enableSliderMouseInputReceiver(host)
         levelLengthSlider:subscribeOnSliderValueChangedCallback(function(newValue)
             EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                "EditorLevelEvents", json.encode({
-                    action = "set_level_length",
-                    length = newValue
-                }))
+                                                      "EditorLevelEvents",
+                                                      json.encode({action = "set_level_length", length = newValue}))
         end)
 
         local buttonWidth = editorContainer:getHeight() * 0.3
@@ -375,9 +347,9 @@ function LevelEditorOverlay:new(host)
 
         changeContainerStateButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            editorContainer.widgetName, 10)
+                                             editorContainer.widgetName, 10)
         changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            editorContainer.widgetName, 10)
+                                             editorContainer.widgetName, 10)
         changeContainerStateButton:setWidth(buttonWidth)
         changeContainerStateButton:setHeight(buttonHeight)
         changeContainerStateButton:setImageTextureSource("arrow_left.png")
@@ -389,9 +361,9 @@ function LevelEditorOverlay:new(host)
 
         undoLastActionButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         undoLastActionButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            editorContainer.widgetName, 10)
+                                       editorContainer.widgetName, 10)
         undoLastActionButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            changeContainerStateButton.widgetName, 40)
+                                       changeContainerStateButton.widgetName, 40)
         undoLastActionButton:setWidth(buttonWidth)
         undoLastActionButton:setHeight(buttonHeight)
         undoLastActionButton:setButtonBorderRadius(8)
@@ -401,9 +373,9 @@ function LevelEditorOverlay:new(host)
 
         editStationSocketsButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editStationSocketsButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            editorContainer.widgetName, 10)
+                                           editorContainer.widgetName, 10)
         editStationSocketsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            undoLastActionButton.widgetName, 10)
+                                           undoLastActionButton.widgetName, 10)
         editStationSocketsButton:setWidth(buttonWidth)
         editStationSocketsButton:setHeight(buttonHeight)
         editStationSocketsButton:setButtonBorderRadius(8)
@@ -417,9 +389,9 @@ function LevelEditorOverlay:new(host)
 
         editBarriersButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editBarriersButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            editorContainer.widgetName, 10)
+                                     editorContainer.widgetName, 10)
         editBarriersButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            editStationSocketsButton.widgetName, 10)
+                                     editStationSocketsButton.widgetName, 10)
         editBarriersButton:setWidth(buttonWidth)
         editBarriersButton:setHeight(buttonHeight)
         editBarriersButton:setButtonBorderRadius(8)
@@ -433,9 +405,9 @@ function LevelEditorOverlay:new(host)
 
         editDestinationButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editDestinationButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            editorContainer.widgetName, 10)
+                                        editorContainer.widgetName, 10)
         editDestinationButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            editBarriersButton.widgetName, 10)
+                                        editBarriersButton.widgetName, 10)
         editDestinationButton:setWidth(buttonWidth)
         editDestinationButton:setHeight(buttonHeight)
         editDestinationButton:setButtonBorderRadius(8)
@@ -449,9 +421,9 @@ function LevelEditorOverlay:new(host)
 
         editSpawnPortalsButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         editSpawnPortalsButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            editorContainer.widgetName, 10)
+                                         editorContainer.widgetName, 10)
         editSpawnPortalsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            editDestinationButton.widgetName, 10)
+                                         editDestinationButton.widgetName, 10)
         editSpawnPortalsButton:setWidth(buttonWidth)
         editSpawnPortalsButton:setHeight(buttonHeight)
         editSpawnPortalsButton:setButtonBorderRadius(8)
@@ -465,9 +437,9 @@ function LevelEditorOverlay:new(host)
 
         newBarrierButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         newBarrierButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            editorContainer.widgetName, 10)
+                                   editorContainer.widgetName, 10)
         newBarrierButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            editSpawnPortalsButton.widgetName, 10)
+                                   editSpawnPortalsButton.widgetName, 10)
         newBarrierButton:setWidth(buttonWidth)
         newBarrierButton:setHeight(buttonHeight)
         newBarrierButton:setButtonBorderRadius(8)
@@ -477,9 +449,9 @@ function LevelEditorOverlay:new(host)
 
         saveLevelButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         saveLevelButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            editorContainer.widgetName, 10)
+                                  editorContainer.widgetName, 10)
         saveLevelButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            editorContainer.widgetName, 10)
+                                  editorContainer.widgetName, 10)
         saveLevelButton:setWidth(buttonWidth)
         saveLevelButton:setHeight(buttonHeight)
         saveLevelButton:setButtonBorderRadius(8)
@@ -492,9 +464,7 @@ function LevelEditorOverlay:new(host)
         if "EditLevelAreaBoundingBoxChanged" == eventName and overlay.allWidgetLuaProxiesReady == true then
             assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs);
-            if parsedJson["width"] ~= nil then
-                levelWidthSlider:setSliderValue(tonumber(parsedJson["width"]))
-            end
+            if parsedJson["width"] ~= nil then levelWidthSlider:setSliderValue(tonumber(parsedJson["width"])) end
             if parsedJson["length"] ~= nil then
                 levelLengthSlider:setSliderValue(tonumber(parsedJson["length"]))
             end
@@ -506,12 +476,8 @@ function LevelEditorOverlay:new(host)
             assert(jsonArgs ~= nil and type(jsonArgs) == "string", debug.traceback())
             local parsedJson = json.decode(jsonArgs)
             local windowSize = {}
-            if parsedJson["width"] ~= nil then
-                windowSize.width = tonumber(parsedJson["width"])
-            end
-            if parsedJson["height"] ~= nil then
-                windowSize.height = tonumber(parsedJson["height"])
-            end
+            if parsedJson["width"] ~= nil then windowSize.width = tonumber(parsedJson["width"]) end
+            if parsedJson["height"] ~= nil then windowSize.height = tonumber(parsedJson["height"]) end
             overlay.onWindowSizeChanged(windowSize.width, windowSize.height)
         end
     end

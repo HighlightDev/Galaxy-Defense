@@ -3,9 +3,9 @@
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/GUI/Common/TextEnums.h"
-#include "IHighlightable.h"
 #include "Game/ActorLeveling/BarrierLevel.h"
 #include "Game/Modifiers/IModifiable.h"
+#include "IHighlightable.h"
 
 #include <glm/vec3.hpp>
 

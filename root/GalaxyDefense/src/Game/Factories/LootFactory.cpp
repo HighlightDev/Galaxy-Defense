@@ -26,8 +26,8 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Game/Actors/LootActor.h"
 #include "Game/Components/MovementComponents/LootDropMovementComponent.h"
-#include "Game/Controllers/AiActorController.h"
 #include "Game/Constants/GameConstants.h"
+#include "Game/Controllers/AiActorController.h"
 
 using namespace EngineCore;
 using namespace Graphics;

@@ -95,9 +95,7 @@ local function forceWidgetVisibility(widget, isVisible)
     widget.properties.visible.dirty = true
 end
 
-local function ParseLevelsList(levelsListJson)
-    return json.decode(levelsListJson)["level_files"]
-end
+local function ParseLevelsList(levelsListJson) return json.decode(levelsListJson)["level_files"] end
 
 local function getLevelDisplayName(levelFileName)
     local nameWithoutExtension = levelFileName:gsub("%.[^%.]+$", "")
@@ -107,21 +105,13 @@ end
 -- A label renders a "container.width < line.width" placeholder instead of a text wider than the label, so a long
 -- name is cut with an ellipsis (the mockup's text-overflow: ellipsis)
 local function fitTextToWidth(host, text, fontSize, maxWidth)
-    local function measure(t)
-        return UiTextSizing.measureLabelWidthPx(host, FONT, fontSize, t)
-    end
-    if measure(text) <= maxWidth then
-        return text
-    end
+    local function measure(t) return UiTextSizing.measureLabelWidthPx(host, FONT, fontSize, t) end
+    if measure(text) <= maxWidth then return text end
     local chars = {}
-    for _, codePoint in utf8.codes(text) do
-        chars[#chars + 1] = utf8.char(codePoint)
-    end
+    for _, codePoint in utf8.codes(text) do chars[#chars + 1] = utf8.char(codePoint) end
     for count = #chars - 1, 1, -1 do
         local candidate = table.concat(chars, "", 1, count) .. "..."
-        if measure(candidate) <= maxWidth then
-            return candidate
-        end
+        if measure(candidate) <= maxWidth then return candidate end
     end
     return "..."
 end
@@ -138,9 +128,9 @@ function SelectLevelOverlay:new(host)
         canvas:setCanvasZOrder(100)
         _InitializeCanvasInputSystem(h, canvas.luaProxyId)
         canvas:addFadeInAnimation(h, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.3, "Opacity",
-            UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
+                                  UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
         canvas:addFadeOutAnimation(h, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.3, "Opacity",
-            UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
+                                   UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
     local overlay = UiOverlay:createOverlay(host, "SelectLevelOverlay", canvas)
 
@@ -157,55 +147,16 @@ function SelectLevelOverlay:new(host)
     local CORNER_THK = 2
     local CORNER_PAD = 22
     local A = UiItemBase.UiAnchorType
-    local cornerSpec = {{
-        name = "TL_H",
-        v = A.TOP,
-        h = A.LEFT,
-        w = CORNER_LEN,
-        t = CORNER_THK
-    }, {
-        name = "TL_V",
-        v = A.TOP,
-        h = A.LEFT,
-        w = CORNER_THK,
-        t = CORNER_LEN
-    }, {
-        name = "TR_H",
-        v = A.TOP,
-        h = A.RIGHT,
-        w = CORNER_LEN,
-        t = CORNER_THK
-    }, {
-        name = "TR_V",
-        v = A.TOP,
-        h = A.RIGHT,
-        w = CORNER_THK,
-        t = CORNER_LEN
-    }, {
-        name = "BL_H",
-        v = A.BOTTOM,
-        h = A.LEFT,
-        w = CORNER_LEN,
-        t = CORNER_THK
-    }, {
-        name = "BL_V",
-        v = A.BOTTOM,
-        h = A.LEFT,
-        w = CORNER_THK,
-        t = CORNER_LEN
-    }, {
-        name = "BR_H",
-        v = A.BOTTOM,
-        h = A.RIGHT,
-        w = CORNER_LEN,
-        t = CORNER_THK
-    }, {
-        name = "BR_V",
-        v = A.BOTTOM,
-        h = A.RIGHT,
-        w = CORNER_THK,
-        t = CORNER_LEN
-    }}
+    local cornerSpec = {
+        {name = "TL_H", v = A.TOP, h = A.LEFT, w = CORNER_LEN, t = CORNER_THK},
+        {name = "TL_V", v = A.TOP, h = A.LEFT, w = CORNER_THK, t = CORNER_LEN},
+        {name = "TR_H", v = A.TOP, h = A.RIGHT, w = CORNER_LEN, t = CORNER_THK},
+        {name = "TR_V", v = A.TOP, h = A.RIGHT, w = CORNER_THK, t = CORNER_LEN},
+        {name = "BL_H", v = A.BOTTOM, h = A.LEFT, w = CORNER_LEN, t = CORNER_THK},
+        {name = "BL_V", v = A.BOTTOM, h = A.LEFT, w = CORNER_THK, t = CORNER_LEN},
+        {name = "BR_H", v = A.BOTTOM, h = A.RIGHT, w = CORNER_LEN, t = CORNER_THK},
+        {name = "BR_V", v = A.BOTTOM, h = A.RIGHT, w = CORNER_THK, t = CORNER_LEN}
+    }
     local corners = {}
     for i = 1, #cornerSpec do
         local rect = UiRectangle:new(host, "SLCorner_" .. cornerSpec[i].name)
@@ -218,18 +169,18 @@ function SelectLevelOverlay:new(host)
     -- ----------------------------------------------------------------------
     local hudBackChip = UiRectangle:new(host, "SLHudBackChip")
     local hudBackArrow = makeLabel(host, "SLHudBackArrow", "‹", 16, M.textBright,
-        UiLabel.TextHorizontalAlignmentType.CENTER)
+                                   UiLabel.TextHorizontalAlignmentType.CENTER)
     local hudBackLabel = makeLabel(host, "SLHudBackLabel", "НАЗАД", 11, M.textBright,
-        UiLabel.TextHorizontalAlignmentType.LEFT)
+                                   UiLabel.TextHorizontalAlignmentType.LEFT)
     overlay:addWidget(hudBackChip)
     overlay:addWidget(hudBackArrow)
     overlay:addWidget(hudBackLabel)
 
     local hudCmdrChip = UiRectangle:new(host, "SLHudCmdrChip")
     local hudCmdrRank = makeLabel(host, "SLHudCmdrRank", "КОММОДОР", 10, M.textVeryDim,
-        UiLabel.TextHorizontalAlignmentType.RIGHT)
+                                  UiLabel.TextHorizontalAlignmentType.RIGHT)
     local hudCmdrName = makeLabel(host, "SLHudCmdrName", "«РЕЙВЕН»", 13, M.textBright,
-        UiLabel.TextHorizontalAlignmentType.RIGHT)
+                                  UiLabel.TextHorizontalAlignmentType.RIGHT)
     overlay:addWidget(hudCmdrChip)
     overlay:addWidget(hudCmdrRank)
     overlay:addWidget(hudCmdrName)
@@ -238,9 +189,9 @@ function SelectLevelOverlay:new(host)
     -- Title block
     -- ----------------------------------------------------------------------
     local titleEyebrow = makeLabel(host, "SLTitleEyebrow", "— КАМПАНИЯ · ЛИНИЯ КОТЭЛИН —", 13,
-        M.textTitleAccent, UiLabel.TextHorizontalAlignmentType.CENTER)
+                                   M.textTitleAccent, UiLabel.TextHorizontalAlignmentType.CENTER)
     local titleMain = makeLabel(host, "SLTitleMain", "ВЫБОР УРОВНЯ", 72, M.textBright,
-        UiLabel.TextHorizontalAlignmentType.CENTER)
+                                UiLabel.TextHorizontalAlignmentType.CENTER)
     overlay:addWidget(titleEyebrow)
     overlay:addWidget(titleMain)
 
@@ -252,7 +203,7 @@ function SelectLevelOverlay:new(host)
     overlay:addWidget(scrollList)
 
     local emptyLabel = makeLabel(host, "SLEmptyLabel", "НЕТ СОХРАНЁННЫХ УРОВНЕЙ", 13, M.textDim,
-        UiLabel.TextHorizontalAlignmentType.CENTER)
+                                 UiLabel.TextHorizontalAlignmentType.CENTER)
     overlay:addWidget(emptyLabel)
 
     local levelsList = ParseLevelsList(_GetLevelsList(host))
@@ -267,33 +218,27 @@ function SelectLevelOverlay:new(host)
             bg = UiRectangle:new(host, prefix .. "_bg"),
             accentBar = UiRectangle:new(host, prefix .. "_accent"),
             indexLabel = makeLabel(host, prefix .. "_idx", string.format("%02d", index), 11, M.textVeryDim,
-                UiLabel.TextHorizontalAlignmentType.CENTER),
+                                   UiLabel.TextHorizontalAlignmentType.CENTER),
             bracketL = makeLabel(host, prefix .. "_bl", "[", 22, M.textVeryDim,
-                UiLabel.TextHorizontalAlignmentType.CENTER),
+                                 UiLabel.TextHorizontalAlignmentType.CENTER),
             nameLabel = makeLabel(host, prefix .. "_name", "", ROW_NAME_FONT_SIZE, M.textBright,
-                UiLabel.TextHorizontalAlignmentType.LEFT),
+                                  UiLabel.TextHorizontalAlignmentType.LEFT),
             bracketR = makeLabel(host, prefix .. "_br", "]", 22, M.textVeryDim,
-                UiLabel.TextHorizontalAlignmentType.CENTER),
+                                 UiLabel.TextHorizontalAlignmentType.CENTER),
             goLabel = makeLabel(host, prefix .. "_go", "НАЧАТЬ ›", 10, Combat.cyanGlow,
-                UiLabel.TextHorizontalAlignmentType.RIGHT),
+                                UiLabel.TextHorizontalAlignmentType.RIGHT),
             isHovered = false
         }
         row.widgets = {row.bg, row.accentBar, row.indexLabel, row.bracketL, row.nameLabel, row.bracketR, row.goLabel}
-        for _, widget in ipairs(row.widgets) do
-            overlay:addWidget(widget)
-        end
+        for _, widget in ipairs(row.widgets) do overlay:addWidget(widget) end
         rows[index] = row
     end
 
-    for i = 1, #levelsList do
-        addRow(i)
-    end
+    for i = 1, #levelsList do addRow(i) end
 
     -- Hover look of a row, per the mockup's .lvl-row.is-hover
     local function applyRowHover(h, row, isHovered)
-        if row.isHovered == isHovered then
-            return
-        end
+        if row.isHovered == isHovered then return end
         row.isHovered = isHovered
         if isHovered then
             row.bg:setColorHexValue(M.buttonHoverBgColor)
@@ -320,9 +265,7 @@ function SelectLevelOverlay:new(host)
 
     local function startLevel(levelFileName)
         EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            "CombatLevel", json.encode({
-                lvl_name = levelFileName
-            }))
+                                                  "CombatLevel", json.encode({lvl_name = levelFileName}))
     end
 
     local function setupRow(h, row, index)
@@ -347,9 +290,7 @@ function SelectLevelOverlay:new(host)
             applyRowHover(h, row, isHovered and levelsList[index] ~= nil)
         end)
         row.bg:subscribeOnMouseInputClickedCallback(function()
-            if levelsList[index] ~= nil then
-                startLevel(levelsList[index])
-            end
+            if levelsList[index] ~= nil then startLevel(levelsList[index]) end
         end)
 
         -- Left accent bar, hidden at rest and revealed on hover (.lvl-row::before)
@@ -362,9 +303,9 @@ function SelectLevelOverlay:new(host)
         row.accentBar:setOpacity(0.0)
         row.accentBar:setZOrder(Z_ROW_FG)
         row.accentBar:addAnimation(h, "AccentReveal", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.25,
-            "Opacity", UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
+                                   "Opacity", UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
         row.accentBar:addAnimation(h, "AccentHide", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.25,
-            "Opacity", UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
+                                   "Opacity", UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
 
         -- Index "01"
         applyLabelInit(row.indexLabel)
@@ -436,9 +377,9 @@ function SelectLevelOverlay:new(host)
     -- Footer: version + key hints
     -- ----------------------------------------------------------------------
     local footerMeta = makeLabel(host, "SLFooterMeta", "v0.4.7-alpha    ·    BUILD 24281", 11, M.textVeryDim,
-        UiLabel.TextHorizontalAlignmentType.LEFT)
+                                 UiLabel.TextHorizontalAlignmentType.LEFT)
     local footerKeys = makeLabel(host, "SLFooterKeys", "↑↓  ВЫБОР     ENTER  НАЧАТЬ     ESC  НАЗАД",
-        11, M.textDim, UiLabel.TextHorizontalAlignmentType.RIGHT)
+                                 11, M.textDim, UiLabel.TextHorizontalAlignmentType.RIGHT)
     overlay:addWidget(footerMeta)
     overlay:addWidget(footerKeys)
 
@@ -486,9 +427,7 @@ function SelectLevelOverlay:new(host)
         hudBackChip:setZOrder(Z_HUD)
         hudBackChip:enableMouseInputReceiverBase(h)
         hudBackChip:setIfCanInterceptMouseInputEvent(true)
-        hudBackChip:subscribeOnMouseInputClickedCallback(function()
-            UiOverlayManager:closeCurrentOverlay(h)
-        end)
+        hudBackChip:subscribeOnMouseInputClickedCallback(function() UiOverlayManager:closeCurrentOverlay(h) end)
         hudBackChip:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
             if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
                 hudBackChip:setColorHexValue(M.buttonHoverBgColor)
@@ -617,20 +556,12 @@ function SelectLevelOverlay:new(host)
     -- The rows are changed only here, between updateFromReplicatorData and sendDataToReplicator. Values set in a game
     -- event handler can be overwritten by the replicator data before they are sent
     overlay.derivedUpdateCallback = function()
-        if not isRowsDirty or not overlay.allWidgetLuaProxiesReady then
-            return
-        end
+        if not isRowsDirty or not overlay.allWidgetLuaProxiesReady then return end
         for i = 1, #rows do
-            for _, widget in ipairs(rows[i].widgets) do
-                if not widget.luaProxyReady then
-                    return
-                end
-            end
+            for _, widget in ipairs(rows[i].widgets) do if not widget.luaProxyReady then return end end
         end
 
-        for i = setUpRowsCount + 1, #rows do
-            setupRow(host, rows[i], i)
-        end
+        for i = setUpRowsCount + 1, #rows do setupRow(host, rows[i], i) end
         setUpRowsCount = #rows
         refreshRows(host)
         isRowsDirty = false
@@ -639,16 +570,12 @@ function SelectLevelOverlay:new(host)
     overlay.onGameEventTriggered = function(eventName, jsonArgs)
         if eventName == "LevelFilesListChanged" then
             levelsList = ParseLevelsList(jsonArgs)
-            for i = #rows + 1, #levelsList do
-                addRow(i)
-            end
+            for i = #rows + 1, #levelsList do addRow(i) end
             isRowsDirty = true
         end
     end
-    overlay.onEngineEventTriggered = function(eventName, jsonArgs)
-    end
-    overlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
-    end
+    overlay.onEngineEventTriggered = function(eventName, jsonArgs) end
+    overlay.onBroadcastEventTriggered = function(eventName, jsonArgs) end
 
     return overlay
 end

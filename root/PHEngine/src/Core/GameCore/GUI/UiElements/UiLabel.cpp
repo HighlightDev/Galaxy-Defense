@@ -29,9 +29,8 @@ UiLabel::UiLabel(const std::string& fontName, const std::string& name)
     , mTextLineWidthHeight()
     , mFontSize(15)
     , mTextColor(glm::vec3())
-    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(mOpacity, "Opacity", [this](const float newOpacityValue) {
-        SetOpacity(newOpacityValue);
-    }))
+    , mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(
+          mOpacity, "Opacity", [this](const float newOpacityValue) { SetOpacity(newOpacityValue); }))
 {
     ext_assert(mFontName.size(), "UiLabel::ctor: fontName is empty");
     ext_assert(!mProperties.count("Opacity"), "UiLabel::ctor: Property 'Opacity' already exists");

@@ -120,18 +120,30 @@ LevelData CombatLevel::LoadLevelDataFromFile(const std::filesystem::path& levelP
 
 void CombatLevel::CreateScene()
 {
+    struct level_exception : public std::exception {
+        const std::string mMessage;
+        level_exception(const std::string& message)
+            : mMessage(message)
+        {
+        }
+        const char* what() const noexcept override
+        {
+            return mMessage.c_str();
+        }
+    };
+
     const auto sceneSp = mSceneWp.lock();
     ext_assert(sceneSp, "CombatLevel scene pointer is null in CreateScene");
 
     const auto levelDataJsonObj = nlohmann::json::parse(mLevelDataJson);
     if (not levelDataJsonObj.contains("lvl_name")) {
-        throw std::exception("Wrong level data json structure, missing lvl_name");
+        throw level_exception("Wrong level data json structure, missing lvl_name");
     }
     auto levelName = levelDataJsonObj.at("lvl_name").get<std::string>();
     auto levelPathsMap = SaveSystem::GetInstance()->GetLevelPaths();
     auto foundIt = levelPathsMap.find(levelName);
     if (foundIt == levelPathsMap.end()) {
-        throw std::exception((levelName + " doesn't exist in levels directory").c_str());
+        throw level_exception("Missing level in the level directory: " + levelName);
     }
 
     const auto levelData = LoadLevelDataFromFile(foundIt->second);

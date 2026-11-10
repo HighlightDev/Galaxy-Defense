@@ -3,9 +3,9 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/NavigationMesh/NavMesh2D.h"
-#include "ILevelController.h"
 #include "Game/Actors/RouteHandlers/SpaceshipRouteHandler.h"
 #include "Game/DamageDealerType.h"
+#include "ILevelController.h"
 
 #include <memory>
 #include <unordered_map>

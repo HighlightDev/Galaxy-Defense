@@ -32,10 +32,9 @@ namespace TestFeatures {
 
 TestFeaturesLevel::TestFeaturesLevel(const std::string& levelPrefabName, const std::string& levelDataJson)
     : Level(levelPrefabName, levelDataJson)
-    , mAmbientMusicDummy(
-          std::make_shared<Actor>(
-              "Ambient Music Dummy",
-              std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent", glm::vec3(), glm::vec3(), glm::vec3(), true)))
+    , mAmbientMusicDummy(std::make_shared<Actor>(
+          "Ambient Music Dummy",
+          std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent", glm::vec3(), glm::vec3(), glm::vec3(), true)))
 
 {
 }

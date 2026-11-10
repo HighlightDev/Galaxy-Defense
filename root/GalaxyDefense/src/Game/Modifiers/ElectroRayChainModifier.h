@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IModifiable.h"
 #include "Game/GameObjectsType.h"
+#include "IModifiable.h"
 
 #include <glm/vec3.hpp>
 

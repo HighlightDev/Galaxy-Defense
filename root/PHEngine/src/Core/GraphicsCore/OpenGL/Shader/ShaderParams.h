@@ -22,8 +22,8 @@ struct ShaderParams {
 
     void SetGeometryShader(const std::filesystem::path& geometryShaderFile);
 
-    void
-    SetTesselationShaders(const std::filesystem::path& tesselationControlShaderFile, const std::filesystem::path& tesselationEvaluationShaderFile);
+    void SetTesselationShaders(
+        const std::filesystem::path& tesselationControlShaderFile, const std::filesystem::path& tesselationEvaluationShaderFile);
 
     void SetComputeShader(const std::filesystem::path& computeShaderFile);
 

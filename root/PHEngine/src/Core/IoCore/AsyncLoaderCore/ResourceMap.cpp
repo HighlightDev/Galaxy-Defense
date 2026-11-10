@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <functional>
 
-#define GET_FUL_PATH_TO_FILE(fileName) \
+#define GET_FUL_PATH_TO_FILE(fileName)                                                                                           \
     (EngineUtility::PathToUtf8(IO::FolderManager::GetInstance()->GetAbsolutePathToRes(fileName)))
 
 using namespace Resources;

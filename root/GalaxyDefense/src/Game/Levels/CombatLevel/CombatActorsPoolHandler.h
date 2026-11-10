@@ -2,9 +2,9 @@
 
 #include "Game/Actors/SpaceStationActor.h"
 #include "Game/Actors/SpaceshipActor.h"
+#include "Game/DropLootType.h"
 #include "Game/GameObjectsCollisionType.h"
 #include "Game/GameObjectsType.h"
-#include "Game/DropLootType.h"
 #include "Game/MissileType.h"
 
 #include <glm/vec3.hpp>

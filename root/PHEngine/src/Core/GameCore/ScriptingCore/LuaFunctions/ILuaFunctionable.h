@@ -26,7 +26,7 @@ public:
     virtual void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor) = 0;
 
     virtual void Initialize() = 0;
-    
+
     virtual void Uninitialize(const LuaWrapper& luaWrapper) = 0;
 };
 } // namespace Scripts

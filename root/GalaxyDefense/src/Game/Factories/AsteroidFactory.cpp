@@ -25,8 +25,8 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Game/Actors/AsteroidActor.h"
 #include "Game/Actors/SpaceObjectActor.h"
-#include "Game/Controllers/AiActorController.h"
 #include "Game/Constants/GameConstants.h"
+#include "Game/Controllers/AiActorController.h"
 
 using namespace Resources;
 using namespace EngineCore;

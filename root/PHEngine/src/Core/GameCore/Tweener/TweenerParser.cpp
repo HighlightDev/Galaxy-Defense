@@ -139,7 +139,8 @@ std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string
     FileFacade fileWorker;
     fileWorker.OpenAndReadFile(absolutePath);
     const size_t sizeOfSrc = fileWorker.GetFileSourceLinesCount();
-    ext_assert(sizeOfSrc > 0, "ParseTweenerDescriptor: File is empty or could not be read: " + EngineUtility::PathToUtf8(absolutePath));
+    ext_assert(
+        sizeOfSrc > 0, "ParseTweenerDescriptor: File is empty or could not be read: " + EngineUtility::PathToUtf8(absolutePath));
 
     std::list<std::string> fileSource = fileWorker.GetFileSrc();
     std::string tweenerInnerName = "";

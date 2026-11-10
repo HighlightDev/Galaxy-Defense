@@ -40,31 +40,33 @@ PauseOverlay = {}
 -- Menu items, mirroring UiMockup/menu-pause-centered.jsx. `accent` colours the left bar and label;
 -- `actionId` selects the click behaviour wired below.
 local function buildItems(Combat)
-    return {{
-        id = "resume",
-        label = "ПРОДОЛЖИТЬ",
-        sub = "Вернуться к обороне станции",
-        accent = Combat.cyanGlow,
-        icon = "play.png"
-    }, {
-        id = "settings",
-        label = "НАСТРОЙКИ",
-        sub = "Графика · звук · управление",
-        accent = Combat.textBright,
-        icon = "gear.png"
-    }, {
-        id = "tomenu",
-        label = "ВЫЙТИ В ГЛАВНОЕ МЕНЮ",
-        sub = "Прогресс волны будет сохранён",
-        accent = Combat.dangerSoft,
-        icon = "arrow-left.png"
-    }, {
-        id = "quit",
-        label = "ВЫЙТИ ИЗ ИГРЫ",
-        sub = "Завершить сеанс",
-        accent = Combat.dangerSoft,
-        icon = "sign-out.png"
-    }}
+    return {
+        {
+            id = "resume",
+            label = "ПРОДОЛЖИТЬ",
+            sub = "Вернуться к обороне станции",
+            accent = Combat.cyanGlow,
+            icon = "play.png"
+        }, {
+            id = "settings",
+            label = "НАСТРОЙКИ",
+            sub = "Графика · звук · управление",
+            accent = Combat.textBright,
+            icon = "gear.png"
+        }, {
+            id = "tomenu",
+            label = "ВЫЙТИ В ГЛАВНОЕ МЕНЮ",
+            sub = "Прогресс волны будет сохранён",
+            accent = Combat.dangerSoft,
+            icon = "arrow-left.png"
+        }, {
+            id = "quit",
+            label = "ВЫЙТИ ИЗ ИГРЫ",
+            sub = "Завершить сеанс",
+            accent = Combat.dangerSoft,
+            icon = "sign-out.png"
+        }
+    }
 end
 
 function PauseOverlay:new(host)
@@ -77,9 +79,9 @@ function PauseOverlay:new(host)
         pauseMenuOverlayCanvas:setCanvasZOrder(100)
         _InitializeCanvasInputSystem(host, pauseMenuOverlayCanvas.luaProxyId)
         pauseMenuOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.3,
-            "Opacity", UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
+                                                  "Opacity", UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
         pauseMenuOverlayCanvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.3,
-            "Opacity", UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
+                                                   "Opacity", UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
     local pauseMenuOverlay = UiOverlay:createOverlay(host, "PauseMenuOverlay", pauseMenuOverlayCanvas)
 
@@ -139,8 +141,10 @@ function PauseOverlay:new(host)
     local confirmActionLabel = UiLabel:new(host, FONT, "PauseConfirmActionLabel")
     pauseMenuOverlay:addWidget(confirmActionLabel)
 
-    local confirmWidgets = {confirmScrim, confirmBox, confirmTitleLabel, confirmBodyLabel, confirmCancelBg,
-                            confirmCancelLabel, confirmActionBg, confirmActionLabel}
+    local confirmWidgets = {
+        confirmScrim, confirmBox, confirmTitleLabel, confirmBodyLabel, confirmCancelBg, confirmCancelLabel,
+        confirmActionBg, confirmActionLabel
+    }
 
     local CONFIRM = {
         tomenu = {
@@ -149,7 +153,7 @@ function PauseOverlay:new(host)
             confirm = "ВЫЙТИ",
             action = function()
                 EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-                    "MainMenuLevel", "{}")
+                                                          "MainMenuLevel", "{}")
             end
         },
         quit = {
@@ -165,9 +169,7 @@ function PauseOverlay:new(host)
     local confirmAction = nil
 
     local function setConfirmVisible(isVisible)
-        for _, w in ipairs(confirmWidgets) do
-            w:setIsVisible(isVisible)
-        end
+        for _, w in ipairs(confirmWidgets) do w:setIsVisible(isVisible) end
         -- toggle input interception so the hidden dialog (full-screen scrim + buttons) does not block
         -- clicks on the pause menu underneath
         confirmScrim:setIfCanInterceptMouseInputEvent(isVisible)
@@ -176,9 +178,7 @@ function PauseOverlay:new(host)
         -- The engine dispatches a click to every widget under the cursor (no top-most consumption), so a
         -- click on the dialog buttons would also fire the pause menu item sitting behind it. Disable the
         -- menu items' input while the dialog is open.
-        for _, item in ipairs(items) do
-            item.bg:setIsUiInputEnabled(not isVisible)
-        end
+        for _, item in ipairs(items) do item.bg:setIsUiInputEnabled(not isVisible) end
     end
 
     local function hideConfirm()
@@ -188,9 +188,7 @@ function PauseOverlay:new(host)
 
     local function showConfirm(target)
         local data = CONFIRM[target]
-        if not data then
-            return
-        end
+        if not data then return end
         confirmTitleLabel:setText(data.title)
         confirmBodyLabel:setText(data.body)
         confirmActionLabel:setText(data.confirm)
@@ -214,27 +212,19 @@ function PauseOverlay:new(host)
         confirmCancelBg:setColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
                                              Combat.chipHoverColor or Combat.chipColor)
     end)
-    confirmCancelBg:subscribeOnMouseInputClickedCallback(function()
-        hideConfirm()
-    end)
+    confirmCancelBg:subscribeOnMouseInputClickedCallback(function() hideConfirm() end)
     confirmActionBg:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
         confirmActionBg:setColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
                                              Combat.dangerSoft or Combat.danger)
     end)
-    confirmActionBg:subscribeOnMouseInputClickedCallback(function()
-        if confirmAction then
-            confirmAction()
-        end
-    end)
+    confirmActionBg:subscribeOnMouseInputClickedCallback(function() if confirmAction then confirmAction() end end)
 
     for _, item in ipairs(items) do
         item.bg:subscribeOnMouseInputCursorHoverStateChangedCallback(function(newState)
             item.bg:setColorHexValue(newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED and
                                          Combat.chipHoverColor or Combat.chipColor)
         end)
-        item.bg:subscribeOnMouseInputClickedCallback(function()
-            runAction(item.id)
-        end)
+        item.bg:subscribeOnMouseInputClickedCallback(function() runAction(item.id) end)
     end
 
     -- ── Layout ───────────────────────────────────────────────────────────────
@@ -245,9 +235,7 @@ function PauseOverlay:new(host)
         local canvasName = pauseMenuOverlayCanvas.widgetName
         -- a label's container height must clear the font's line height, otherwise the engine renders a
         -- literal "container.height < line.height" placeholder instead of the text
-        local function lh(fontSize)
-            return UiTextSizing.safeLineHeight(fontSize, FONT)
-        end
+        local function lh(fontSize) return UiTextSizing.safeLineHeight(fontSize, FONT) end
 
         -- full-screen dimmer over the (paused) battlefield
         scrim:setParent(host, canvasName, canvasName)
@@ -274,19 +262,9 @@ function PauseOverlay:new(host)
         local braceArm = 26
         local braceThick = 2
         local braceInset = 0
-        local braceCorners = {{
-            h = A.LEFT,
-            v = A.TOP
-        }, {
-            h = A.RIGHT,
-            v = A.TOP
-        }, {
-            h = A.LEFT,
-            v = A.BOTTOM
-        }, {
-            h = A.RIGHT,
-            v = A.BOTTOM
-        }}
+        local braceCorners = {
+            {h = A.LEFT, v = A.TOP}, {h = A.RIGHT, v = A.TOP}, {h = A.LEFT, v = A.BOTTOM}, {h = A.RIGHT, v = A.BOTTOM}
+        }
         for c = 1, 4 do
             local corner = braceCorners[c]
             local hArm = braces[(c - 1) * 2 + 1]
@@ -514,12 +492,9 @@ function PauseOverlay:new(host)
         setConfirmVisible(false)
     end)
 
-    pauseMenuOverlay.onGameEventTriggered = function(eventName, jsonArgs)
-    end
-    pauseMenuOverlay.onEngineEventTriggered = function(eventName, jsonArgs)
-    end
-    pauseMenuOverlay.onBroadcastEventTriggered = function(eventName, jsonArgs)
-    end
+    pauseMenuOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
+    pauseMenuOverlay.onEngineEventTriggered = function(eventName, jsonArgs) end
+    pauseMenuOverlay.onBroadcastEventTriggered = function(eventName, jsonArgs) end
 
     return pauseMenuOverlay
 end
