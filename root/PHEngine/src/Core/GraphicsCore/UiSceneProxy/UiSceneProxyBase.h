@@ -77,6 +77,8 @@ public:
 
     const std::vector<int32_t>& GetZPath() const;
 
+    std::string GetName() const;
+
     void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
 
     void SetWidthHeightPixels(const glm::ivec2& widthHeight);

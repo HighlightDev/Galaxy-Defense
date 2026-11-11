@@ -90,6 +90,11 @@ void UiSceneProxyBase::SetScale(const glm::vec2& scale)
     mScale = scale;
 }
 
+std::string UiSceneProxyBase::GetName() const
+{
+    return mName;
+}
+
 glm::vec2 UiSceneProxyBase::GetScale() const
 {
     return mScale;
